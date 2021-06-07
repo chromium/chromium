@@ -2416,6 +2416,7 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   EXPECT_TRUE(
       controller_->GetUserWallpaperInfo(account_id_1, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now confirm the preview wallpaper, verify that there's no wallpaper change
   // because the wallpaper is already shown.

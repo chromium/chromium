@@ -779,6 +779,8 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
     return;
 
   if (preview_mode) {
+    DVLOG(1) << __func__ << " preview_mode=true";
+    base::UmaHistogramBoolean("Ash.Wallpaper.Preview.Show", true);
     for (auto& observer : observers_)
       observer.OnWallpaperPreviewStarted();
   }
