@@ -7,6 +7,7 @@ include_rules = [
   "+components/prefs",
   "+components/resources",
   "+components/safe_browsing",
+  "+components/omnibox/common",
   "+components/security_interstitials",
   "+components/security_state",
   "+components/signin",

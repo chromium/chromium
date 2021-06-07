@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_manager.h"
@@ -402,10 +403,13 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                            IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
                                            SecurityDescriptionType::CONNECTION);
         default:
-          return CreateSecurityDescription(SecuritySummaryColor::GREEN,
-                                           IDS_PAGE_INFO_SECURE_SUMMARY,
-                                           IDS_PAGE_INFO_SECURE_DETAILS,
-                                           SecurityDescriptionType::CONNECTION);
+          return CreateSecurityDescription(
+              SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
+              base::FeatureList::IsEnabled(
+                  omnibox::kUpdatedConnectionSecurityIndicators)
+                  ? IDS_PAGE_INFO_SECURE_DETAILS_V2
+                  : IDS_PAGE_INFO_SECURE_DETAILS,
+              SecurityDescriptionType::CONNECTION);
       }
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
