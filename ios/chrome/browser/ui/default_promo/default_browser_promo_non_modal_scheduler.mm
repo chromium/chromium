@@ -152,20 +152,13 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   if (self.currentPromoReason != PromoReasonNone) {
     return;
   }
-  // This assumes that the currently active webstate is the one that the paste
-  // occured in.
-  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
-  // There should always be an active web state when pasting in the omnibox.
-  if (!activeWebState) {
-    return;
-  }
 
   self.currentPromoReason = PromoReasonExternalLink;
   self.promoTypeForMetrics = NonModalPromoTriggerType::kGrowthKitOpen;
 
   // Store the current web state, so when that web state's page load finishes,
   // the promo can be shown.
-  self.webStateToListenTo = activeWebState;
+  self.webStateToListenTo = self.webStateList->GetActiveWebState();
 }
 
 - (void)logPromoWasDismissed {
