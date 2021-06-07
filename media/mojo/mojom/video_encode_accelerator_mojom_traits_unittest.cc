@@ -70,7 +70,8 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
       kBaseBitrateBps, kBaseFramerate, absl::nullopt, absl::nullopt, false,
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
-      input_spatial_layers);
+      input_spatial_layers,
+      ::media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic);
   DVLOG(4) << input_config.AsHumanReadableString();
 
   ::media::VideoEncodeAccelerator::Config output_config{};

@@ -55,7 +55,8 @@ VideoEncodeAccelerator::Config::Config(
     bool is_constrained_h264,
     absl::optional<StorageType> storage_type,
     ContentType content_type,
-    const std::vector<SpatialLayer>& spatial_layers)
+    const std::vector<SpatialLayer>& spatial_layers,
+    InterLayerPredMode inter_layer_pred)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
@@ -67,7 +68,8 @@ VideoEncodeAccelerator::Config::Config(
       is_constrained_h264(is_constrained_h264),
       storage_type(storage_type),
       content_type(content_type),
-      spatial_layers(spatial_layers) {}
+      spatial_layers(spatial_layers),
+      inter_layer_pred(inter_layer_pred) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;
 
@@ -105,6 +107,21 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
         ", max_qp=%u, num_of_temporal_layers=%u}",
         i, sl.width, sl.height, sl.bitrate_bps, sl.framerate, sl.max_qp,
         sl.num_of_temporal_layers);
+  }
+
+  switch (inter_layer_pred) {
+    case Config::InterLayerPredMode::kOff:
+      str += base::StringPrintf(", InterLayerPredMode::kOff");
+      break;
+    case Config::InterLayerPredMode::kOn:
+      str += base::StringPrintf(", InterLayerPredMode::kOn");
+      break;
+    case Config::InterLayerPredMode::kOnKeyPic:
+      str += base::StringPrintf(", InterLayerPredMode::kOnKeyPic");
+      break;
+    default:
+      str += base::StringPrintf(", Unknown InterLayerPredMode");
+      break;
   }
   return str;
 }
@@ -205,7 +222,8 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
          l.gop_length == r.gop_length &&
          l.h264_output_level == r.h264_output_level &&
          l.storage_type == r.storage_type && l.content_type == r.content_type &&
-         l.spatial_layers == r.spatial_layers;
+         l.spatial_layers == r.spatial_layers &&
+         l.inter_layer_pred == r.inter_layer_pred;
 }
 }  // namespace media
 

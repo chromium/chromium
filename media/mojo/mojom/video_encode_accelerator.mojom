@@ -80,6 +80,13 @@ struct VideoEncodeAcceleratorConfig {
     kDisplay
   };
 
+  // See media::VideoEncodeAccelerator::Config::InterLayerPredMode
+  enum InterLayerPredMode {
+    kOff,
+    kOn,
+    kOnKeyPic
+  };
+
   // See media::VideoEncodeAccelerator::Config::StorageType
   enum StorageType {
     kShmem,
@@ -101,6 +108,7 @@ struct VideoEncodeAcceleratorConfig {
   bool has_storage_type;  // Whether or not config has storage type config
   ContentType content_type;
   array<SpatialLayer> spatial_layers;
+  InterLayerPredMode inter_layer_pred;
   bool require_low_delay;
 };
 

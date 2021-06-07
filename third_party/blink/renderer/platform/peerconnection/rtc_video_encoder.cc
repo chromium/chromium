@@ -199,12 +199,28 @@ webrtc::VideoEncoder::EncoderInfo CopyToWebrtcEncoderInfo(
   return info;
 }
 
+media::VideoEncodeAccelerator::Config::InterLayerPredMode
+CopyFromWebRtcInterLayerPredMode(
+    const webrtc::InterLayerPredMode inter_layer_pred) {
+  switch (inter_layer_pred) {
+    case webrtc::InterLayerPredMode::kOff:
+      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+    case webrtc::InterLayerPredMode::kOn:
+      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOn;
+    case webrtc::InterLayerPredMode::kOnKeyPic:
+      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::
+          kOnKeyPic;
+  }
+}
+
 // Create VEA::Config::SpatialLayer from |codec_settings|. If some config of
 // |codec_settings| is not supported, returns false.
 bool CreateSpatialLayersConfig(
     const webrtc::VideoCodec& codec_settings,
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>*
-        spatial_layers) {
+        spatial_layers,
+    media::VideoEncodeAccelerator::Config::InterLayerPredMode*
+        inter_layer_pred) {
   if (codec_settings.codecType == webrtc::kVideoCodecVP8 &&
       codec_settings.mode == webrtc::VideoCodecMode::kScreensharing &&
       codec_settings.VP8().numberOfTemporalLayers > 1) {
@@ -267,6 +283,8 @@ bool CreateSpatialLayersConfig(
           sl.num_of_temporal_layers =
               base::saturated_cast<uint8_t>(rtc_sl.numberOfTemporalLayers);
         }
+        *inter_layer_pred = CopyFromWebRtcInterLayerPredMode(
+            codec_settings.VP9().interLayerPred);
       }
       break;
     default:
@@ -350,6 +368,8 @@ class RTCVideoEncoder::Impl
       bool is_constrained_h264,
       const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
+      media::VideoEncodeAccelerator::Config::InterLayerPredMode
+          inter_layer_pred,
       SignaledValue init_event);
 
   webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const;
@@ -571,6 +591,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     bool is_constrained_h264,
     const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
+    media::VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred,
     SignaledValue init_event) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -643,7 +664,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
       video_content_type_ == webrtc::VideoContentType::SCREENSHARE
           ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
           : media::VideoEncodeAccelerator::Config::ContentType::kCamera,
-      spatial_layers);
+      spatial_layers, inter_layer_pred);
   if (!video_encoder_->Initialize(config, this)) {
     LogAndNotifyError(FROM_HERE, "Error initializing video_encoder",
                       media::VideoEncodeAccelerator::kInvalidArgumentError);
@@ -1368,8 +1389,12 @@ int32_t RTCVideoEncoder::InitEncode(
 
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
-  if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers))
+  auto inter_layer_pred =
+      media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+  if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers,
+                                 &inter_layer_pred)) {
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
 
   // This wait is necessary because this task is completed in GPU process
   // asynchronously but WebRTC API is synchronous.
@@ -1385,7 +1410,7 @@ int32_t RTCVideoEncoder::InitEncode(
           scoped_refptr<Impl>(impl_),
           gfx::Size(codec_settings->width, codec_settings->height),
           codec_settings->startBitrate, profile_, is_constrained_h264_,
-          spatial_layers,
+          spatial_layers, inter_layer_pred,
           SignaledValue(&initialization_waiter, &initialization_retval)));
 
   // webrtc::VideoEncoder expects this call to be synchronous.

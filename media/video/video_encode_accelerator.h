@@ -134,6 +134,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates if video content should be treated as a "normal" camera feed
     // or as generated (e.g. screen capture).
     enum class ContentType { kCamera, kDisplay };
+    enum class InterLayerPredMode : int {
+      kOff = 0,      // Inter-layer prediction is disabled.
+      kOn = 1,       // Inter-layer prediction is enabled.
+      kOnKeyPic = 2  // Inter-layer prediction is enabled for key picture.
+    };
     // Indicates the storage type of a video frame provided on Encode().
     // kShmem if a video frame has a shared memory.
     // kGpuMemoryBuffer if a video frame has a GpuMemoryBuffer.
@@ -168,7 +173,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
            bool is_constrained_h264 = false,
            absl::optional<StorageType> storage_type = absl::nullopt,
            ContentType content_type = ContentType::kCamera,
-           const std::vector<SpatialLayer>& spatial_layers = {});
+           const std::vector<SpatialLayer>& spatial_layers = {},
+           InterLayerPredMode inter_layer_pred = InterLayerPredMode::kOnKeyPic);
 
     ~Config();
 
@@ -227,6 +233,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // empty, VideoEncodeAccelerator should refer the width, height, bitrate and
     // etc. of |spatial_layers|.
     std::vector<SpatialLayer> spatial_layers;
+
+    // Indicates the inter layer prediction mode for SVC encoding.
+    InterLayerPredMode inter_layer_pred;
 
     // Currently it's Mac only! This flag forces Mac encoder to enforce low
     // latency mode. Initialize() will fail if the system can't do it for some
