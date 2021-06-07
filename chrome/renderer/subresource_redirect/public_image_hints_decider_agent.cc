@@ -93,6 +93,8 @@ PublicImageHintsDeciderAgent::ShouldRedirectSubresource(
 
   if (public_image_urls_->find(GetURLForPublicDecision(url)) !=
       public_image_urls_->end()) {
+    if (!ShouldCompressRedirectSubresource())
+      return SubresourceRedirectResult::kIneligibleCompressionDisabled;
     return SubresourceRedirectResult::kRedirectable;
   }
 
@@ -160,6 +162,7 @@ void PublicImageHintsDeciderAgent::RecordMetrics(
     case SubresourceRedirectResult::kIneligibleRedirectFailed:
     case SubresourceRedirectResult::kIneligibleBlinkDisallowed:
     case SubresourceRedirectResult::kIneligibleSubframeResource:
+    case SubresourceRedirectResult::kIneligibleCompressionDisabled:
       public_image_compression_data_use.SetIneligibleOtherImageBytes(
           content_length);
       break;

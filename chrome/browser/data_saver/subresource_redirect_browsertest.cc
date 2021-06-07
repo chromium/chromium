@@ -1338,10 +1338,10 @@ IN_PROC_BROWSER_TEST_F(RedirectDisabledSubresourceRedirectBrowserTest,
   EXPECT_EQ(GURL(RunScriptExtractString("imageSrc()")).port(),
             https_url().port());
 
-  VerifyCompressibleImageUkm(1);
+  VerifyCompressibleImageUkm(0);
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
-  VerifyIneligibleOtherImageUkm(0);
+  VerifyIneligibleOtherImageUkm(1);
   VerifyImageCompressionPageInfoState(false);
 }
 
@@ -1670,9 +1670,9 @@ IN_PROC_BROWSER_TEST_F(
       "SubresourceRedirect.DidCompress.CompressionPercent", 0);
 
   WaitForImageCompressionUkmMetrics(1);
-  VerifyCompressibleImageUkm(1);
+  VerifyCompressibleImageUkm(0);
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
-  VerifyIneligibleOtherImageUkm(0);
+  VerifyIneligibleOtherImageUkm(1);
   VerifyImageCompressionPageInfoState(false);
 }
