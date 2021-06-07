@@ -218,17 +218,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
-        com_google_protobuf_protobuf_lite: new PropertyOverride(
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
-        com_google_ar_core: new PropertyOverride(
-            url: 'https://github.com/google-ar/arcore-android-sdk',
-            licenseUrl: 'https://raw.githubusercontent.com/google-ar/arcore-android-sdk/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        commons_cli_commons_cli: new PropertyOverride(
-            licenseName: 'Apache 2.0',
-            licenseUrl: 'https://raw.githubusercontent.com/apache/commons-cli/master/LICENSE.txt'),
         javax_annotation_javax_annotation_api: new PropertyOverride(
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.1',
@@ -246,13 +235,7 @@ class ChromiumDepGraph {
         org_checkerframework_checker_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
-        org_checkerframework_dataflow: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL v2 with the classpath exception'),
         org_checkerframework_dataflow_shaded: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL v2 with the classpath exception'),
-        org_checkerframework_javacutil: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
         org_ow2_asm_asm: new PropertyOverride(
@@ -273,15 +256,6 @@ class ChromiumDepGraph {
         org_pcollections_pcollections: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE',
             licenseName: 'The MIT License'),
-        org_plumelib_plume_util: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/plume-lib/plume-util/master/LICENSE',
-            licenseName: 'MIT'),
-        org_plumelib_require_javadoc: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/plume-lib/require-javadoc/master/LICENSE',
-            licenseName: 'MIT'),
-        org_plumelib_reflection_util: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/plume-lib/reflection-util/master/LICENSE',
-            licenseName: 'MIT'),
         org_robolectric_annotations: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
@@ -348,7 +322,7 @@ class ChromiumDepGraph {
         String moduleId = sanitize("${module.id.group}_${module.id.name}")
 
         // Add 'android' suffix for guava-android so that its module name is distinct from the module for guava.
-        if (module.id.name == 'guava' && 'android' in module.id.version) {
+        if (module.id.name == 'guava' && module.id.version.contains('android')) {
             moduleId += '_android'
         }
         return moduleId
@@ -361,7 +335,7 @@ class ChromiumDepGraph {
         String moduleId = sanitize("${componentId.group}_${componentId.module}")
 
         // Add 'android' suffix for guava-android so that its module name is distinct from the module for guava.
-        if (componentId.module == 'guava' && 'android' in componentId.version) {
+        if (componentId.module == 'guava' && componentId.version.contains('android')) {
             moduleId += '_android'
         }
         return moduleId
@@ -447,13 +421,13 @@ class ChromiumDepGraph {
         }
 
         PROPERTY_OVERRIDES.each { id, fallbackProperties ->
-            if (fallbackProperties?.isShipped) {
-                DependencyDescription dep = dependencies.get(id)
-                if (dep) {
-                    dep.isShipped = fallbackProperties.isShipped
-                } else {
-                    logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
-                }
+            DependencyDescription dep = dependencies.get(id)
+            if (!dep) {
+                logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
+            // Null-check is required since isShipped is a boolean. This check must come after all the deps are
+            // resolved instead of in customizeDep, since otherwise it gets overwritten.
+            } else if (fallbackProperties?.isShipped != null) {
+                dep.isShipped = fallbackProperties.isShipped
             }
         }
     }
@@ -556,7 +530,7 @@ class ChromiumDepGraph {
                 exclude: false,
                 cipdSuffix: 'cr0',
         ))
-            }
+    }
 
     private void customizeLicenses(DependencyDescription dep, PropertyOverride fallbackProperties) {
         for (LicenseSpec license : dep.licenses) {
@@ -613,8 +587,13 @@ class ChromiumDepGraph {
                 description = fallbackProperties.description ?: description
                 url = fallbackProperties.url ?: url
                 cipdSuffix = fallbackProperties.cipdSuffix ?: cipdSuffix
-                generateTarget = fallbackProperties.generateTarget ?: generateTarget
-                exclude = fallbackProperties.exclude ?: exclude
+                // Boolean properties require explicit null checks instead of only when truish.
+                if (fallbackProperties.generateTarget != null) {
+                    generateTarget = fallbackProperties.generateTarget
+                }
+                if (fallbackProperties.exclude != null) {
+                    exclude = fallbackProperties.exclude
+                }
             }
         }
 
