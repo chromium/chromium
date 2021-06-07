@@ -18,6 +18,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -78,6 +79,10 @@ class MenuButtonView : public views::Button {
                                              gfx::kPlaceholderColor));
     SetBackground(
         views::CreateRoundedRectBackground(gfx::kPlaceholderColor, radius));
+
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetInstallFocusRingOnFocus(true);
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), radius);
   }
   MenuButtonView(const MenuButtonView&) = delete;
   MenuButtonView& operator=(const MenuButtonView&) = delete;
@@ -85,6 +90,8 @@ class MenuButtonView : public views::Button {
 
  private:
   void Layout() override {
+    views::View::Layout();
+
     constexpr int kIconSize = 24;
     constexpr int kIconTopPadding = 17;
 
