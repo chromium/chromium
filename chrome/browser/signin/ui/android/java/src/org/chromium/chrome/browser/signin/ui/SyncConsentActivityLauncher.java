@@ -22,7 +22,8 @@ public interface SyncConsentActivityLauncher {
     @interface AccessPoint {}
 
     /**
-     * Launches the SigninActivity with default sign-in flow from personalized sign-in promo.
+     * Launches the {@link SyncConsentActivity} with default sign-in flow from personalized sign-in
+     * promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
@@ -30,7 +31,7 @@ public interface SyncConsentActivityLauncher {
             Context context, @SigninAccessPoint int accessPoint, String accountName);
 
     /**
-     * Launches the SigninActivity with "Choose account" sign-in flow from personalized
+     * Launches the {@link SyncConsentActivity} with "Choose account" sign-in flow from personalized
      * sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
@@ -39,17 +40,17 @@ public interface SyncConsentActivityLauncher {
             Context context, @SigninAccessPoint int accessPoint, String accountName);
 
     /**
-     * Launches the SigninActivity with "New account" sign-in flow from personalized sign-in
-     * promo.
+     * Launches the {@link SyncConsentActivity} with "New account" sign-in flow from personalized
+     * sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      */
     void launchActivityForPromoAddAccountFlow(Context context, @SigninAccessPoint int accessPoint);
 
     /**
-     * Launches the {@link SigninActivity} if signin is allowed.
+     * Launches the {@link SyncConsentActivity} if signin is allowed.
      * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @return a boolean indicating if the {@link SigninActivity} is launched.
+     * @return a boolean indicating if the {@link SyncConsentActivity} is launched.
      */
     boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint);
 }

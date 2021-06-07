@@ -42,7 +42,8 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     private SyncConsentActivityLauncherImpl() {}
 
     /**
-     * Launches the SigninActivity with default sign-in flow from personalized sign-in promo.
+     * Launches the {@link SyncConsentActivity} with default sign-in flow from personalized sign-in
+     * promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
@@ -54,7 +55,7 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     }
 
     /**
-     * Launches the SigninActivity with "Choose account" sign-in flow from personalized
+     * Launches the {@link SyncConsentActivity} with "Choose account" sign-in flow from personalized
      * sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
@@ -68,8 +69,8 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     }
 
     /**
-     * Launches the SigninActivity with "New account" sign-in flow from personalized sign-in
-     * promo.
+     * Launches the {@link SyncConsentActivity} with "New account" sign-in flow from personalized
+     * sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      */
     @Override

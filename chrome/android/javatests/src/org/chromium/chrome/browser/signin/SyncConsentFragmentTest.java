@@ -73,7 +73,7 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import java.io.IOException;
 
 /**
- * Render tests for signin fragment.
+ * Render tests for sync consent fragment.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -134,7 +134,7 @@ public class SyncConsentFragmentTest {
 
     @After
     public void tearDown() throws Exception {
-        // Since SigninActivity is launched inside this test class, we need to
+        // Since {@link SyncConsentActivity} is launched inside this test class, we need to
         // tear it down inside the class as well.
         if (mSyncConsentActivity != null) {
             ApplicationTestUtils.finishActivity(mSyncConsentActivity);
