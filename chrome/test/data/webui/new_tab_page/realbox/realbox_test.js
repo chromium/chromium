@@ -164,6 +164,26 @@ function createSearchMatch(modifiers = {}) {
 }
 
 /**
+ * @param {!Object=} modifiers Things to override about the returned result.
+ * @return {!search.mojom.AutocompleteMatch}
+ */
+function createCalculatorMatch(modifiers = {}) {
+  return Object.assign(
+      createAutocompleteMatch(), {
+        isSearchType: true,
+        contents: mojoString16('2 + 3'),
+        contentsClass: [{offset: 0, style: 0}],
+        description: mojoString16('5'),
+        descriptionClass: [{offset: 0, style: 0}],
+        destinationUrl: {url: 'https://www.google.com/search?q=2+%2B+3'},
+        fillIntoEdit: mojoString16('5'),
+        type: 'search-calculator-answer',
+        iconUrl: 'calculator.svg',
+      },
+      modifiers);
+}
+
+/**
  * Verifies the autocomplete match is showing.
  * @param {!search.mojom.AutocompleteMatch} match
  * @param {!Element} matchEl
@@ -2200,4 +2220,48 @@ suite('NewTabPageRealboxTest', () => {
         // Input is cleared.
         assertEquals('', realbox.$.input.value);
       });
+
+  //============================================================================
+  // Test calculator answer type
+  //============================================================================
+
+  test('match calculator answer type', async () => {
+    const matches = [createCalculatorMatch()];
+
+    realbox.$.input.value = '2 + 3';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    assertTrue(areMatchesShowing());
+    let matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+    assertEquals(1, matchEls.length);
+
+    verifyMatch(matches[0], matchEls[0]);
+    assertIconMaskImageUrl(matchEls[0].$.icon, 'calculator.svg');
+    assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
+
+    // Separator is not displayed
+    assertEquals(
+        window.getComputedStyle(matchEls[0].$.separator).display, 'none');
+
+    let arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+    assertEquals('5', realbox.$.input.value);
+    assertIconMaskImageUrl(realbox.$.icon, 'calculator.svg');
+  });
 });

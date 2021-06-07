@@ -30,20 +30,20 @@
     white-space: pre;
   }
 
-  :host([has-image]) #container {
+  :host([is-rich-suggestion]) #container {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  :host([has-image]) #separator {
+  :host([is-rich-suggestion]) #separator {
     display: none;
   }
 
-  :host([has-image]) #contents {
+  :host([is-rich-suggestion]) #contents {
     width: 100%;
   }
 
-  :host([has-image]) #description {
+  :host([is-rich-suggestion]) #description {
     font-size: .875em;
     width: 100%;
   }
@@ -52,12 +52,12 @@
     font-weight: 500;
   }
 
-  :host([has-image]) #description,
+  :host([is-rich-suggestion]) #description,
   .dim {
     color: var(--search-box-results-dim, var(--google-grey-refresh-700));
   }
 
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([has-image]) #description,
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([is-rich-suggestion]) #description,
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
     color: var(--search-box-results-dim-selected, var(--google-grey-refresh-700));
   }

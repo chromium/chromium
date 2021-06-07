@@ -27,6 +27,8 @@ const ACMatchClassificationStyle = {
 };
 // clang-format on
 
+const SEARCH_CALCULATOR_ANSWER_TYPE = 'search-calculator-answer';
+
 // Displays an autocomplete match similar to those in the Omnibox.
 class RealboxMatchElement extends PolymerElement {
   static get is() {
@@ -60,6 +62,17 @@ class RealboxMatchElement extends PolymerElement {
       hasImage: {
         type: Boolean,
         computed: `computeHasImage_(match)`,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Whether the match is a rich suggestion. Rich suggestions are displayed
+       * in two lines and may contain image.
+       * @type {boolean}
+       */
+      isRichSuggestion: {
+        type: Boolean,
+        computed: `computeIsRichSuggestion_(match, hasImage)`,
         reflectToAttribute: true,
       },
 
@@ -296,6 +309,15 @@ class RealboxMatchElement extends PolymerElement {
    */
   computeHasImage_() {
     return this.match && !!this.match.imageUrl;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsRichSuggestion_() {
+    return this.hasImage ||
+        (this.match && this.match.type === SEARCH_CALCULATOR_ANSWER_TYPE);
   }
 
   /**
