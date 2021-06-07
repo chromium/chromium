@@ -82661,10 +82661,12 @@ others/histograms.xml -->
 
 <enum name="WallpaperCollection">
   <int value="-1750392449" label="Landscapes"/>
+  <int value="-1491081024" label="Togetherness"/>
   <int value="-1479919333" label="Made by Canvas"/>
   <int value="-1094276707" label="Element"/>
   <int value="-917389828" label="Collage"/>
   <int value="-622998436" label="Imaginary"/>
+  <int value="41679711" label="Floral"/>
   <int value="711032077" label="Cityscapes"/>
   <int value="1129315377" label="Composition"/>
   <int value="1659755048" label="Illustrations"/>
@@ -82688,6 +82690,333 @@ others/histograms.xml -->
   <int value="9" label="(Normal, Muted): success"/>
   <int value="10" label="(Light, Muted): failure"/>
   <int value="11" label="(Light, Muted): success"/>
+</enum>
+
+<enum name="WallpaperImage">
+  <summary>
+    Enumeration for online wallpaper images. The label has the format of
+    {collection name} - {asset id}
+  </summary>
+  <int value="-2145272898" label="Art - 8080411886468030"/>
+  <int value="-2128102642" label="Leisure - 18443882334872124174"/>
+  <int value="-2115725585" label="Art - 18443991603147478767"/>
+  <int value="-2111482612" label="Solid Colors - 7593482887976204"/>
+  <int value="-2110074118" label="Togetherness - 18444149073834070778"/>
+  <int value="-2094648855" label="Solid Colors - 3931714047324649"/>
+  <int value="-2075846537" label="Composition - 18446099444287215735"/>
+  <int value="-2052639994" label="Landscapes - 3406001502368518"/>
+  <int value="-2034367398" label="Landscapes - 8363308608259162"/>
+  <int value="-2028697222" label="Made by Canvas - 18438928296354023802"/>
+  <int value="-2010890067" label="Cityscapes - 18441361086107369645"/>
+  <int value="-1990378534" label="Cityscapes - 18439845065751608282"/>
+  <int value="-1986859411" label="Cityscapes - 18438879874934566509"/>
+  <int value="-1971674273" label="Leisure - 18438465517979870047"/>
+  <int value="-1953555516" label="Floral - 18439301194079738820"/>
+  <int value="-1938230489" label="Element - 18440708087942279975"/>
+  <int value="-1916450445" label="Art - 18446537445211457907"/>
+  <int value="-1910580223" label="Solid Colors - 18444350009783540737"/>
+  <int value="-1886552792" label="Art - 8008196565073192"/>
+  <int value="-1879435782" label="Illustrations - 6677967891207674"/>
+  <int value="-1878774587" label="Landscapes - 5675002833939653"/>
+  <int value="-1862836010" label="Dessert Time - 3116877378707670"/>
+  <int value="-1851808253" label="Art - 4109856648701443"/>
+  <int value="-1848694292" label="Solid Colors - 18444545048605305324"/>
+  <int value="-1842680590" label="Illustrations - 4696317262228722"/>
+  <int value="-1834253570" label="Element - 7403164574384894"/>
+  <int value="-1756893570" label="Leisure - 7392551787556478"/>
+  <int value="-1747187714" label="Landscapes - 776841872541694"/>
+  <int value="-1741914332" label="Solid Colors - 962603508334372"/>
+  <int value="-1729733169" label="Element - 3111805155433935"/>
+  <int value="-1689000484" label="Togetherness - 18439295116965570012"/>
+  <int value="-1686380267" label="Cityscapes - 1581190523642133"/>
+  <int value="-1677513839" label="Solid Colors - 3228924670847889"/>
+  <int value="-1666643127" label="Art - 113140656835401"/>
+  <int value="-1665140063" label="Art - 7267821734066849"/>
+  <int value="-1639283780" label="Leisure - 18443165363585319868"/>
+  <int value="-1604960688" label="Togetherness - 18443349089435663952"/>
+  <int value="-1597919619" label="Landscapes - 18441164776450141821"/>
+  <int value="-1576508821" label="Landscapes - 18443822536594055787"/>
+  <int value="-1556767157" label="Illustrations - 18442004769015176779"/>
+  <int value="-1554550735" label="Art - 8007458162700337"/>
+  <int value="-1549066409" label="Floral - 517962916896599"/>
+  <int value="-1546696297" label="Cityscapes - 7135584104434071"/>
+  <int value="-1498619902" label="Imaginary - 18446102296722726914"/>
+  <int value="-1483370708" label="Togetherness - 18442740874943500076"/>
+  <int value="-1479093005" label="Cityscapes - 18439940792493987059"/>
+  <int value="-1468340343" label="Togetherness - 18440972443649238921"/>
+  <int value="-1462411412" label="Made by Canvas - 18444286019513966444"/>
+  <int value="-1462000503" label="Art - 18442980641514169481"/>
+  <int value="-1449953016" label="Landscapes - 968994711632136"/>
+  <int value="-1448799565" label="Togetherness - 18440821724676428467"/>
+  <int value="-1447258271" label="Imaginary - 18438478712643819361"/>
+  <int value="-1442843051" label="Cityscapes - 5832933512312405"/>
+  <int value="-1425295914" label="Element - 3960186054882774"/>
+  <int value="-1423648001" label="Floral - 18440779848770444031"/>
+  <int value="-1413440862" label="Togetherness - 18441196336054311586"/>
+  <int value="-1397020104" label="Cityscapes - 3452989100206648"/>
+  <int value="-1389216897" label="Landscapes - 3716322142862207"/>
+  <int value="-1382225891" label="Landscapes - 7848789358209053"/>
+  <int value="-1346329828" label="Collage - 302823912809244"/>
+  <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
+  <int value="-1308168417" label="Solid Colors - 737212648320799"/>
+  <int value="-1299269521" label="Made by Canvas - 18439947063326062703"/>
+  <int value="-1279122115" label="Art - 18440001776934593853"/>
+  <int value="-1277363172" label="Landscapes - 266677537012764"/>
+  <int value="-1274675052" label="Art - 2851414628237460"/>
+  <int value="-1215416857" label="Element - 18445289040653465063"/>
+  <int value="-1206721847" label="Made by Canvas - 18440189784905409225"/>
+  <int value="-1196759923" label="Collage - 18443143257831171213"/>
+  <int value="-1196759879" label="Landscapes - 998419785770169"/>
+  <int value="-1194600035" label="Landscapes - 18439590254727649693"/>
+  <int value="-1180001350" label="Floral - 18440055489894718394"/>
+  <int value="-1129284398" label="Landscapes - 18444079023898262738"/>
+  <int value="-1109386329" label="Art - 18441882994254814119"/>
+  <int value="-1075740934" label="Imaginary - 18439649125963235066"/>
+  <int value="-1070106310" label="Illustrations - 5227562539645242"/>
+  <int value="-1069898232" label="Dessert Time - 5755203567134216"/>
+  <int value="-1045160112" label="Landscapes - 3899056165494608"/>
+  <int value="-1037753922" label="Solid Colors - 1440427914109374"/>
+  <int value="-1002389694" label="Illustrations - 1773605742493506"/>
+  <int value="-1000237501" label="Landscapes - 18445805326002394691"/>
+  <int value="-986918942" label="Collage - 4640844320395234"/>
+  <int value="-985367237" label="Landscapes - 7460537596411195"/>
+  <int value="-978297832" label="Collage - 434821510749208"/>
+  <int value="-970540754" label="Togetherness - 18445185798474479918"/>
+  <int value="-969194060" label="Floral - 8400843392632244"/>
+  <int value="-964600764" label="Landscapes - 18440933531749276740"/>
+  <int value="-961542052" label="Solid Colors - 1021561304778844"/>
+  <int value="-959681560" label="Cityscapes - 8002656984132584"/>
+  <int value="-938586313" label="Imaginary - 18440192284844511031"/>
+  <int value="-925586798" label="Solid Colors - 18439896069553040018"/>
+  <int value="-925172759" label="Landscapes - 18444315844304108521"/>
+  <int value="-905556178" label="Art - 6593894880268078"/>
+  <int value="-896680198" label="Colors - 18443159505992531706"/>
+  <int value="-859494945" label="Composition - 18445597415366272479"/>
+  <int value="-857195788" label="Art - 7186630480247540"/>
+  <int value="-838683647" label="Solid Colors - 18445581412338938881"/>
+  <int value="-833577242" label="Art - 377084410109670"/>
+  <int value="-832380336" label="Cityscapes - 7612704145728080"/>
+  <int value="-828814002" label="Floral - 7564493141396814"/>
+  <int value="-821345517" label="Cityscapes - 2974646283223827"/>
+  <int value="-773948611" label="Cityscapes - 3379210775067453"/>
+  <int value="-755562342" label="Art - 18442108141089261722"/>
+  <int value="-753216621" label="Colors - 6786829258511251"/>
+  <int value="-732111196" label="Solid Colors - 6325085935558308"/>
+  <int value="-671868169" label="Art - 18441859488336321271"/>
+  <int value="-663382773" label="Landscapes - 543123721000203"/>
+  <int value="-650608223" label="Composition - 1914403712172449"/>
+  <int value="-646744548" label="Togetherness - 4852535008654876"/>
+  <int value="-628255755" label="Dessert Time - 18439774784268899317"/>
+  <int value="-620910477" label="Cityscapes - 18441185517824223347"/>
+  <int value="-610816140" label="Landscapes - 8626157735358324"/>
+  <int value="-609002569" label="Landscapes - 4324915493952439"/>
+  <int value="-542665877" label="Solid Colors - 18438508417542230891"/>
+  <int value="-525590300" label="Art - 18440424187721687268"/>
+  <int value="-489912510" label="Togetherness - 18438776225985759042"/>
+  <int value="-484859913" label="Art - 18438709825796415479"/>
+  <int value="-481689207" label="Art - 18445981609158640009"/>
+  <int value="-469592977" label="Art - 18439753932361340015"/>
+  <int value="-467528800" label="Cityscapes - 5871056617345952"/>
+  <int value="-459168519" label="Colors - 3695264848258297"/>
+  <int value="-451545152" label="Element - 7889502283888576"/>
+  <int value="-448005265" label="Colors - 18439071917346126703"/>
+  <int value="-442822843" label="Art - 7783541154451269"/>
+  <int value="-437337985" label="Made by Canvas - 1673421900398719"/>
+  <int value="-435188694" label="Art - 18444631610789694506"/>
+  <int value="-387775828" label="Cityscapes - 18438479018645979820"/>
+  <int value="-359510740" label="Solid Colors - 18440625901026823468"/>
+  <int value="-344702098" label="Landscapes - 18446494149217895278"/>
+  <int value="-335909288" label="Art - 6686963096251992"/>
+  <int value="-329960828" label="Landscapes - 18445540125327045252"/>
+  <int value="-327838917" label="Colors - 5900610426999611"/>
+  <int value="-322205751" label="Floral - 18446441664740034505"/>
+  <int value="-297295937" label="Cityscapes - 18438854514842247103"/>
+  <int value="-290968951" label="Art - 8975227227220617"/>
+  <int value="-288029248" label="Illustrations - 3023519249401280"/>
+  <int value="-275592484" label="Art - 18438681316012772060"/>
+  <int value="-264921592" label="Leisure - 18439547692531424776"/>
+  <int value="-242251369" label="Solid Colors - 2175301908924823"/>
+  <int value="-217934385" label="Togetherness - 6948539607455183"/>
+  <int value="-213086089" label="Art - 18439421351825281143"/>
+  <int value="-207369157" label="Art - 2140169111325755"/>
+  <int value="-186691484" label="Leisure - 4590813046591588"/>
+  <int value="-172685681" label="Landscapes - 5286335769544335"/>
+  <int value="-142061263" label="Collage - 18438478628049670449"/>
+  <int value="-135382394" label="Landscapes - 18438981332503509638"/>
+  <int value="-129359243" label="Landscapes - 18443902390073172597"/>
+  <int value="-121348877" label="Landscapes - 18441833920946527475"/>
+  <int value="-115294461" label="Landscapes - 805211763425027"/>
+  <int value="-101342264" label="Landscapes - 18443627490719409096"/>
+  <int value="-94450653" label="Landscapes - 5658348735089699"/>
+  <int value="-91022393" label="Togetherness - 18440444275718298567"/>
+  <int value="-83023161" label="Landscapes - 5076445102418631"/>
+  <int value="-79218029" label="Imaginary - 4122842107427475"/>
+  <int value="-53727481" label="Togetherness - 6052605298749191"/>
+  <int value="-40293301" label="Landscapes - 6678566730804299"/>
+  <int value="-34451659" label="Landscapes - 18443902699405725493"/>
+  <int value="-14900592" label="Dessert Time - 18445906920144151184"/>
+  <int value="-3017196" label="Art - 1230422227940884"/>
+  <int value="11921136" label="Art - 18441231667880650480"/>
+  <int value="21374230" label="Element - 3650936971339030"/>
+  <int value="50416017" label="Togetherness - 18439398008941529489"/>
+  <int value="58339759" label="Composition - 18438176120818512303"/>
+  <int value="70353551" label="Cityscapes - 2553010235474575"/>
+  <int value="76498078" label="Landscapes - 2385532286878878"/>
+  <int value="77221287" label="Togetherness - 18445362417167388071"/>
+  <int value="82886079" label="Imaginary - 18443185379855089087"/>
+  <int value="129511080" label="Art - 18440290163922316968"/>
+  <int value="132681327" label="Art - 918307090239087"/>
+  <int value="137021120" label="Cityscapes - 7148243056772800"/>
+  <int value="142294246" label="Colors - 6311854015724774"/>
+  <int value="146639624" label="Togetherness - 18439269439191747336"/>
+  <int value="206595208" label="Togetherness - 18442786888618108040"/>
+  <int value="215753161" label="Art - 18438368385186931145"/>
+  <int value="226584088" label="Art - 18438677463929284120"/>
+  <int value="238075985" label="Art - 402666306977873"/>
+  <int value="268022519" label="Cityscapes - 18444150008220070647"/>
+  <int value="284261456" label="Art - 18439588894701878352"/>
+  <int value="336158740" label="Togetherness - 734508463251476"/>
+  <int value="337078580" label="Landscapes - 18439369005314042164"/>
+  <int value="361333906" label="Composition - 2146414562477202"/>
+  <int value="376061409" label="Element - 2924258924314081"/>
+  <int value="380006899" label="Illustrations - 2395522684318195"/>
+  <int value="388794917" label="Element - 18445219579751598629"/>
+  <int value="391648756" label="Landscapes - 18444266200093955572"/>
+  <int value="414767910" label="Imaginary - 18446088339992402726"/>
+  <int value="419310910" label="Dessert Time - 2648504887291198"/>
+  <int value="425591336" label="Landscapes - 5270694096929320"/>
+  <int value="460520651" label="Illustrations - 3514056802761931"/>
+  <int value="474793699" label="Art - 18446204450198308579"/>
+  <int value="481651970" label="Solid Colors - 5104143911185666"/>
+  <int value="500548057" label="Art - 18442613054405722585"/>
+  <int value="502222590" label="Illustrations - 3440479759716094"/>
+  <int value="507283273" label="Colors - 18438533741719357257"/>
+  <int value="514704797" label="Cityscapes - 18444397372813198749"/>
+  <int value="519669485" label="Made by Canvas - 1162381878724333"/>
+  <int value="519705872" label="Cityscapes - 5269745003271440"/>
+  <int value="523171359" label="Landscapes - 456362273207839"/>
+  <int value="582571507" label="Cityscapes - 18437958065853126131"/>
+  <int value="627281636" label="Cityscapes - 18443580607585029860"/>
+  <int value="632498960" label="Element - 18442926110408911632"/>
+  <int value="636241240" label="Imaginary - 18446507769540134232"/>
+  <int value="652440414" label="Togetherness - 18438158975903167326"/>
+  <int value="712360087" label="Solid Colors - 18444153758170857623"/>
+  <int value="723351331" label="Art - 4590504718989091"/>
+  <int value="732594745" label="Collage - 6982402080145977"/>
+  <int value="738877507" label="Leisure - 2226962756689987"/>
+  <int value="766726480" label="Leisure - 18440296559765836112"/>
+  <int value="791271562" label="Floral - 565819782846602"/>
+  <int value="810052365" label="Landscapes - 1422584172800781"/>
+  <int value="810343709" label="Cityscapes - 18441855246390844701"/>
+  <int value="824060572" label="Cityscapes - 1118277163952796"/>
+  <int value="824064889" label="Landscapes - 8554196993194873"/>
+  <int value="842359027" label="Art - 18441530534010380531"/>
+  <int value="857850226" label="Solid Colors - 18441109846274195826"/>
+  <int value="858500007" label="Art - 6573706003065767"/>
+  <int value="860118687" label="Cityscapes - 18438880564976311967"/>
+  <int value="894968490" label="Art - 18446551187623256746"/>
+  <int value="896184259" label="Made by Canvas - 6978249010360259"/>
+  <int value="897122250" label="Landscapes - 1240842718740426"/>
+  <int value="907041473" label="Colors - 18442697274825923265"/>
+  <int value="911504332" label="Cityscapes - 18443243500181156812"/>
+  <int value="911683896" label="Art - 18437782307530551608"/>
+  <int value="917718787" label="Collage - 18440065860043491075"/>
+  <int value="924930082" label="Illustrations - 18441525418786902050"/>
+  <int value="927358911" label="Art - 3207366539894719"/>
+  <int value="929604041" label="Cityscapes - 18439242325846172105"/>
+  <int value="957413410" label="Landscapes - 2541534969919522"/>
+  <int value="962509426" label="Solid Colors - 18444943328028834418"/>
+  <int value="971331677" label="Cityscapes - 8606754655262813"/>
+  <int value="982113383" label="Cityscapes - 7805399667956839"/>
+  <int value="995793386" label="Art - 18440963598480742890"/>
+  <int value="996011870" label="Floral - 7430096849596254"/>
+  <int value="1006682258" label="Landscapes - 18445475075089023122"/>
+  <int value="1009642791" label="Landscapes - 7427614372130087"/>
+  <int value="1013033474" label="Togetherness - 18443715353979759106"/>
+  <int value="1017556212" label="Colors - 7066360385809652"/>
+  <int value="1018875995" label="Cityscapes - 18439819238827544667"/>
+  <int value="1028241114" label="Art - 18440102882772104922"/>
+  <int value="1040676664" label="Landscapes - 858440449095480"/>
+  <int value="1123537047" label="Composition - 18445642548865650839"/>
+  <int value="1141632188" label="Cityscapes - 18443148044763131068"/>
+  <int value="1173629942" label="Colors - 6465464552401910"/>
+  <int value="1192252038" label="Cityscapes - 6488081868804742"/>
+  <int value="1206215167" label="Art - 18445129029773517311"/>
+  <int value="1250920293" label="Art - 18443102780212086629"/>
+  <int value="1259225205" label="Composition - 18442882001721507957"/>
+  <int value="1280051538" label="Made by Canvas - 3143878686017874"/>
+  <int value="1305614077" label="Leisure - 4907156060116733"/>
+  <int value="1308519753" label="Art - 18438839853429714249"/>
+  <int value="1310113836" label="Landscapes - 7841254382944300"/>
+  <int value="1328848153" label="Element - 4680467709467929"/>
+  <int value="1354190091" label="Landscapes - 8257179059965195"/>
+  <int value="1358808705" label="Cityscapes - 18438573333579417217"/>
+  <int value="1361171564" label="Collage - 18446268433212494956"/>
+  <int value="1404576511" label="Collage - 1050009239298815"/>
+  <int value="1414735641" label="Solid Colors - 2615791116822297"/>
+  <int value="1447770551" label="Composition - 18441221902560868791"/>
+  <int value="1456247150" label="Togetherness - 18444641211933036910"/>
+  <int value="1457778021" label="Cityscapes - 18438203687318056293"/>
+  <int value="1458360763" label="Solid Colors - 18446204257908347323"/>
+  <int value="1474756785" label="Solid Colors - 4529882007011505"/>
+  <int value="1496125945" label="Composition - 1054403082392057"/>
+  <int value="1501185309" label="Made by Canvas - 4372527316616477"/>
+  <int value="1502745359" label="Landscapes - 18438125304209871631"/>
+  <int value="1504227783" label="Landscapes - 18444577058054517191"/>
+  <int value="1517259953" label="Illustrations - 18444680442225331377"/>
+  <int value="1520811358" label="Colors - 273157145869662"/>
+  <int value="1535000622" label="Imaginary - 1900923995439150"/>
+  <int value="1561201240" label="Solid Colors - 18440201375495096920"/>
+  <int value="1567507477" label="Art - 2184344624841749"/>
+  <int value="1573305199" label="Collage - 18445466155008572271"/>
+  <int value="1581350106" label="Imaginary - 3113861460884698"/>
+  <int value="1596391393" label="Solid Colors - 7592202400628705"/>
+  <int value="1602775350" label="Dessert Time - 18438498829025700150"/>
+  <int value="1608128987" label="Floral - 18440852058792401371"/>
+  <int value="1617144873" label="Imaginary - 3194353478773801"/>
+  <int value="1622071983" label="Cityscapes - 18446448263754078895"/>
+  <int value="1632606350" label="Cityscapes - 1743436232235150"/>
+  <int value="1639315119" label="Cityscapes - 18446053255629108911"/>
+  <int value="1650555304" label="Cityscapes - 8018267505523112"/>
+  <int value="1679563589" label="Colors - 3148839772756805"/>
+  <int value="1693366509" label="Cityscapes - 18440922723974559981"/>
+  <int value="1696499200" label="Collage - 8802726148212224"/>
+  <int value="1697916989" label="Floral - 4641671638951997"/>
+  <int value="1708825347" label="Leisure - 2442472300649219"/>
+  <int value="1754103911" label="Landscapes - 18442608936785641575"/>
+  <int value="1754712639" label="Leisure - 5120320031083071"/>
+  <int value="1765179526" label="Made by Canvas - 4561510436601990"/>
+  <int value="1784820999" label="Art - 5586126444311815"/>
+  <int value="1785304411" label="Landscapes - 40005110699355"/>
+  <int value="1810781973" label="Cityscapes - 18439990153548027669"/>
+  <int value="1817841735" label="Art - 1018849664831559"/>
+  <int value="1824980809" label="Landscapes - 1364019013680969"/>
+  <int value="1827600028" label="Art - 18444590905352451740"/>
+  <int value="1828136429" label="Landscapes - 2607257430205933"/>
+  <int value="1840610500" label="Composition - 7377364085734596"/>
+  <int value="1873509802" label="Element - 251772856401322"/>
+  <int value="1875798627" label="Landscapes - 5124387486198371"/>
+  <int value="1876517284" label="Solid Colors - 18440249561048506788"/>
+  <int value="1884381553" label="Cityscapes - 3900850096398705"/>
+  <int value="1907520633" label="Landscapes - 189860936840313"/>
+  <int value="1916533002" label="Art - 7863176502442250"/>
+  <int value="1940503573" label="Togetherness - 7095253553757205"/>
+  <int value="1946633320" label="Composition - 18444545112530175080"/>
+  <int value="1995269325" label="Made by Canvas - 1850308266124493"/>
+  <int value="2004024197" label="Landscapes - 18444669937222089605"/>
+  <int value="2013650238" label="Art - 870643424156990"/>
+  <int value="2014697963" label="Collage - 18439872076511042027"/>
+  <int value="2016734767" label="Solid Colors - 18444711048661757487"/>
+  <int value="2034977321" label="Imaginary - 4249945188813353"/>
+  <int value="2045124174" label="Togetherness - 3620388892712526"/>
+  <int value="2070005069" label="Art - 18445703289239618893"/>
+  <int value="2079176343" label="Landscapes - 5148074434213527"/>
+  <int value="2081876500" label="Made by Canvas - 18446123946938395156"/>
+  <int value="2086860149" label="Leisure - 18444981666031269237"/>
+  <int value="2088388455" label="Illustrations - 18443834613412022119"/>
+  <int value="2096017887" label="Dessert Time - 1656717010973151"/>
+  <int value="2111036570" label="Togetherness - 7655330344590490"/>
+  <int value="2111289865" label="Cityscapes - 7963176420751881"/>
 </enum>
 
 <enum name="WallpaperLayout">

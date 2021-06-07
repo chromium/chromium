@@ -373,10 +373,11 @@ WallpaperUtil.fetchURL = function(url, type, onSuccess, onFailure, opt_xhr) {
  */
 WallpaperUtil.setOnlineWallpaperWithoutPreview = function(
     url, layout, onSuccess, onFailure) {
-  // Skip setting the collection id to avoid logging another collection
+  // Skip setting the |asset_id| and |collection_id| to avoid logging another
   // impression when the wallpaper is automatically refreshed.
   chrome.wallpaperPrivate.setWallpaperIfExists(
-      url, /*collection_id=*/ '', layout, /*previewMode=*/ false, exists => {
+      /*asset_id=*/ '', url, /*collection_id=*/ '', layout,
+      /*previewMode=*/ false, exists => {
         if (exists) {
           onSuccess();
           return;

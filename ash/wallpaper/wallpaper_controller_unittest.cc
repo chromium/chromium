@@ -118,6 +118,8 @@ const std::string kDummyUrl2 = "https://best_wallpaper/2";
 
 const std::string kDummyCollectionId = "testCollectionId";
 
+const absl::optional<uint64_t> kAssetId = absl::make_optional(1);
+
 // Creates an image of size |size|.
 gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -1015,7 +1017,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperIfExists(
-      account_id_1, kDummyUrl, kDummyCollectionId, layout,
+      account_id_1, kAssetId, kDummyUrl, kDummyCollectionId, layout,
       /*preview_mode=*/false,
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_FALSE(file_exists);
@@ -1058,7 +1060,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   ClearWallpaperCount();
   run_loop = std::make_unique<base::RunLoop>();
   controller_->SetOnlineWallpaperIfExists(
-      account_id_1, kDummyUrl, kDummyCollectionId, layout,
+      account_id_1, kAssetId, kDummyUrl, kDummyCollectionId, layout,
       /*preview_mode=*/false,
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_TRUE(file_exists);
@@ -1157,7 +1159,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   auto run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaper(
-      account_id_1, GURL(kDummyUrl), kDummyCollectionId, layout,
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId, layout,
       /*preview_mode=*/false,
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
@@ -1172,7 +1174,9 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   WallpaperInfo expected_wallpaper_info(kDummyUrl, layout, ONLINE,
                                         base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
-  // Verify that collection metric is logged.
+  // Verify that wallpaper & collection metrics are logged.
+  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Image", kAssetId.value(),
+                                       1);
   histogram_tester().ExpectBucketCount(
       "Ash.Wallpaper.Collection",
       static_cast<int>(base::PersistentHash(kDummyCollectionId)), 1);

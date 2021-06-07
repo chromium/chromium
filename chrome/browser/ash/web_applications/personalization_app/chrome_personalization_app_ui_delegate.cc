@@ -173,7 +173,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
   DCHECK(client);
 
   client->SetOnlineWallpaper(
-      user->GetAccountId(),
+      user->GetAccountId(), absl::make_optional(image_asset_id),
       GURL(it->second.image_url.spec() +
            WallpaperControllerClientImpl::GetBackdropWallpaperSuffix()),
       it->second.collection_id,

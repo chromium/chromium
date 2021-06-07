@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -61,16 +62,17 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const gfx::ImageSkia& image,
                                   bool preview_mode) = 0;
 
-  // Sets the wallpaper at |url| and |collection_id| as the active wallpaper for
-  // the user at |account_id|. The first time this is called, will download the
-  // wallpaper and cache on disk. Subsequent calls with the same url will use
-  // the stored wallpaper. If |preview_mode| is true, the visible background
-  // wallpaper will change, but that change will not be persisted in
+  // Sets the wallpaper at |asset_id|, |url| and |collection_id| as the active
+  // wallpaper for the user at |account_id|. The first time this is called, will
+  // download the wallpaper and cache on disk. Subsequent calls with the same
+  // url will use the stored wallpaper. If |preview_mode| is true, the visible
+  // background wallpaper will change, but that change will not be persisted in
   // preferences. Call |ConfirmPreviewMode| or |CancelPreviewMode| to finalize.
   // |callback| is required and will be called after the image is fetched (from
   // network or disk) and decoded.
   using SetOnlineWallpaperCallback = base::OnceCallback<void(bool success)>;
   virtual void SetOnlineWallpaper(const AccountId& account_id,
+                                  const absl::optional<uint64_t>& asset_id,
                                   const GURL& url,
                                   const std::string& collection_id,
                                   WallpaperLayout layout,
@@ -84,6 +86,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // (i.e. |SetOnlineWallpaperFromData| was called earlier with the same |url|),
   // returns true and sets wallpaper for the user, otherwise returns false.
   // |account_id|: The user's account id.
+  // |asset_id|: The unique identifier of the wallpaper. if present,
+  // it is logged for wallpaper metric.
   // |url|: The wallpaper url.
   // |collection_id|: The wallpaper collection id .e.g. city_for_chromebook.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
@@ -93,6 +97,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Responds with true if the wallpaper file exists in local file system.
   virtual void SetOnlineWallpaperIfExists(
       const AccountId& account_id,
+      const absl::optional<uint64_t>& asset_id,
       const std::string& url,
       const std::string& collection_id,
       WallpaperLayout layout,

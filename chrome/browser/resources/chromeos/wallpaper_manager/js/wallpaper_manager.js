@@ -219,6 +219,7 @@ WallpaperManager.prototype.getCollectionsInfo_ = function() {
                           var wallpaperInfo = {
                             // Use the next available unique id.
                             wallpaperId: this.imagesInfoCount_,
+                            assetId: imagesInfo[i]['assetId'],
                             baseURL: imagesInfo[i]['imageUrl'],
                             highResolutionURL: imagesInfo[i]['imageUrl'] +
                                 str('highResolutionSuffix'),
@@ -904,8 +905,9 @@ WallpaperManager.prototype.setSelectedOnlineWallpaper_ = function(
 
   var selectedGridItem = this.wallpaperGrid_.getListItem(selectedItem);
   chrome.wallpaperPrivate.setWallpaperIfExists(
-      selectedItem.highResolutionURL, selectedItem.collectionId || '',
-      selectedItem.layout, previewMode, exists => {
+      selectedItem.assetId || '', selectedItem.highResolutionURL,
+      selectedItem.collectionId || '', selectedItem.layout, previewMode,
+      exists => {
         if (exists) {
           successCallback();
           return;
@@ -1658,16 +1660,10 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
           }
 
           this.pendingDailyRefreshInfo_.resumeToken = nextResumeToken;
-          // Find the name of the collection based on its id for display
-          // purpose.
+          // Find the collection based on its id for display purpose.
           var collection = this.collectionsInfo_.find(
               info => info['collectionId'] ===
                   this.pendingDailyRefreshInfo_.collectionId);
-          var collectionName = collection !== undefined ?
-              collection['collectionName'] :
-              undefined;
-          var collectionId =
-              collection !== undefined ? collection['collectionId'] : undefined;
           var dailyRefreshImageInfo = {
             highResolutionURL:
                 imageInfo['imageUrl'] + str('highResolutionSuffix'),
@@ -1675,8 +1671,9 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
             source: Constants.WallpaperSourceEnum.Daily,
             displayText: imageInfo['displayText'],
             authorWebsite: imageInfo['actionUrl'],
-            collectionName: collectionName,
-            collectionId: collectionId
+            collectionName: collection ? collection['collectionName'] :
+                                         undefined,
+            collectionId: collection ? collection['collectionId'] : undefined,
           };
 
           var previewMode = this.shouldPreviewWallpaper_();

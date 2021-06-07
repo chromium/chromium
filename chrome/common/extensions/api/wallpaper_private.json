@@ -35,6 +35,10 @@
         "type": "object",
         "description": "The info (url, description etc.) specific to each wallpaper image.",
         "properties": {
+          "assetId": {
+            "type": "string",
+            "description": "The unique identifier for this image."
+          },
           "imageUrl": {
             "type": "string",
             "description": "The url that points to the image."
@@ -96,6 +100,11 @@
         "description": "Sets wallpaper if it exists in the local file system with specified layout",
         "nodoc": true,
         "parameters": [
+          {
+            "type": "string",
+            "name": "assetId",
+            "description": "The unique identifier of the wallpaper. The id is used for analytics. When empty, the metric will not be logged."
+          },
           {
             "type": "string",
             "name": "url"

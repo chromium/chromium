@@ -100,19 +100,21 @@ chrome.test.getConfig(function(config) {
           "/wallpaper_manager/test.jpg";
       url = url.replace(/PORT/, config.testServer.port);
       chrome.wallpaperPrivate.setWallpaperIfExists(
-          url, /*collection_id=*/'', 'CENTER_CROPPED', /*previewMode=*/false,
-          pass(function(exists) {
+          /* asset_id= */ '', url, /* collection_id= */ '', 'CENTER_CROPPED',
+          /* previewMode= */ false, pass(function(exists) {
             chrome.test.assertTrue(exists);
             // Attempt to set wallpaper from a non-existent file should fail.
             chrome.wallpaperPrivate.setWallpaperIfExists(
-                'http://dummyurl/test1.jpg', /*collection_id=*/'',
-                'CENTER_CROPPED', /*previewMode=*/false,
+                /* asset_id= */ '', 'http://dummyurl/test1.jpg',
+                /* collection_id= */ '', 'CENTER_CROPPED',
+                /* previewMode= */ false,
                 fail('The wallpaper doesn\'t exist in local file system.'));
             // Attempt to preview wallpaper from a non-existent file should
             // also fail.
             chrome.wallpaperPrivate.setWallpaperIfExists(
-                'http://dummyurl/test1.jpg', /*collectionId=*/'',
-                'CENTER_CROPPED', /*previewMode=*/true,
+                /* asset_id= */ '', 'http://dummyurl/test1.jpg',
+                /* collectionId= */ '', 'CENTER_CROPPED',
+                /* previewMode= */ true,
                 fail('The wallpaper doesn\'t exist in local file system.'));
           }));
     },

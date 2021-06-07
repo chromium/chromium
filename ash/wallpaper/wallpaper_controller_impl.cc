@@ -1027,6 +1027,7 @@ void WallpaperControllerImpl::SetCustomWallpaper(
 
 void WallpaperControllerImpl::SetOnlineWallpaper(
     const AccountId& account_id,
+    const absl::optional<uint64_t>& asset_id,
     const GURL& url,
     const std::string& collection_id,
     WallpaperLayout layout,
@@ -1035,7 +1036,7 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   DCHECK(callback);
   WallpaperInfo info = {url.spec(), layout, ONLINE, base::Time::Now()};
   SetOnlineWallpaperIfExists(
-      account_id, url.spec(), collection_id, layout, preview_mode,
+      account_id, asset_id, url.spec(), collection_id, layout, preview_mode,
       base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, info, preview_mode,
                      std::move(callback)));
@@ -1043,6 +1044,7 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
 
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
+    const absl::optional<uint64_t>& asset_id,
     const std::string& url,
     const std::string& collection_id,
     WallpaperLayout layout,
@@ -1051,8 +1053,13 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DCHECK(CanSetUserWallpaper(account_id));
 
-  // |collection_id| is empty when the wallpaper is automatically set with
-  // daily refresh.
+  // |asset_id| and |collection_id| are empty when the wallpaper is
+  // automatically set with daily refresh.
+  if (asset_id.has_value()) {
+    const int asset_id_val = asset_id.value();
+    base::UmaHistogramSparse("Ash.Wallpaper.Image", asset_id_val);
+    DVLOG(1) << "SetOnlineWallpaperIfExists: asset_id=" << asset_id_val;
+  }
   if (!collection_id.empty()) {
     const int collection_id_hash = base::PersistentHash(collection_id);
     base::UmaHistogramSparse("Ash.Wallpaper.Collection", collection_id_hash);
@@ -2335,9 +2342,11 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       break;
     case DAILY:
     case ONLINE:
-      // Skip setting collection id when wallpaper is synced acrossed devices.
-      // We don't want to log a collection impression when wallpaper is synced.
-      SetOnlineWallpaper(account_id, GURL(info.location),
+      // Skip setting |asset_id| and |collection_id| when wallpaper is synced
+      // acrossed devices. We don't want to log their impressions when
+      // wallpaper is synced.
+      SetOnlineWallpaper(account_id, /*asset_id=*/absl::nullopt,
+                         GURL(info.location),
                          /*collection_id=*/std::string(), info.layout,
                          /*preview_mode=*/false, base::DoNothing());
       break;
@@ -2433,8 +2442,8 @@ void WallpaperControllerImpl::SetDailyWallpaper(const AccountId& account_id,
                                                 const std::string& image_url) {
   if (!image_url.empty()) {
     SetOnlineWallpaper(
-        account_id, GURL(image_url), /*collection_id=*/std::string(), layout,
-        preview_mode,
+        account_id, /*asset_id=*/absl::nullopt, GURL(image_url),
+        /*collection_id=*/std::string(), layout, preview_mode,
         base::BindOnce(&WallpaperControllerImpl::OnSetDailyWallpaper,
                        weak_factory_.GetWeakPtr()));
   } else {

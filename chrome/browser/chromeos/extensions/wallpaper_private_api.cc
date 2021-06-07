@@ -189,8 +189,9 @@ std::vector<std::string> GetImagePaths(const base::FilePath& path) {
 void ParseImageInfo(
     const backdrop::Image& image,
     extensions::api::wallpaper_private::ImageInfo* image_info_out) {
-  // The info of each image should contain image url, action url and display
-  // text.
+  // The info of each image should contain image asset id, image url, action url
+  // and display text.
+  image_info_out->asset_id = base::NumberToString(image.asset_id());
   image_info_out->image_url = image.image_url();
   image_info_out->action_url = image.action_url();
   // Display text may have more than one strings.
@@ -349,9 +350,19 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
       params = set_wallpaper_if_exists::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  // Convert asset_id from string to optional uint64_t. Empty string results in
+  // nullopt.
+  absl::optional<uint64_t> asset_id;
+  if (!params->asset_id.empty()) {
+    uint64_t value = 0;
+    if (!base::StringToUint64(params->asset_id, &value))
+      return RespondNow(Error("Failed to parse asset_id."));
+    asset_id = value;
+  }
+
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperIfExists(
-      GetUserFromBrowserContext(browser_context())->GetAccountId(), params->url,
-      params->collection_id,
+      GetUserFromBrowserContext(browser_context())->GetAccountId(), asset_id,
+      params->url, params->collection_id,
       wallpaper_api_util::GetLayoutEnum(
           wallpaper_base::ToString(params->layout)),
       params->preview_mode,

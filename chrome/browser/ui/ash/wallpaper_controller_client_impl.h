@@ -67,6 +67,7 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
                           bool preview_mode);
   void SetOnlineWallpaper(
       const AccountId& account_id,
+      const absl::optional<uint64_t>& asset_id,
       const GURL& url,
       const std::string& collection_id,
       ash::WallpaperLayout layout,
@@ -74,6 +75,7 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
       ash::WallpaperController::SetOnlineWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
       const AccountId& account_id,
+      const absl::optional<uint64_t>& asset_id,
       const std::string& url,
       const std::string& collection_id,
       ash::WallpaperLayout layout,
