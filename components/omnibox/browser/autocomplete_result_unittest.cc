@@ -1744,6 +1744,47 @@ TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
                       AutocompleteResult::GetMaxMatches());
 }
 
+TEST_F(AutocompleteResultTest,
+       GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kUIExperimentMaxAutocompleteMatches,
+        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "7"}}}},
+      {/* nothing disabled */});
+  TestData data[] = {
+      {0, 2, 400, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {3, 1, 600, false, {}, AutocompleteMatchType::TILE_SUGGESTION},
+      {4, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL},
+      {5, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {6, 1, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+  };
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, base::size(data), &matches);
+
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(input, matches);
+  result.GroupSuggestionsBySearchVsURL(std::next(result.matches_.begin()),
+                                       result.matches_.end());
+
+  TestData expected_data[] = {
+      {0, 2, 400, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {3, 1, 600, false, {}, AutocompleteMatchType::TILE_SUGGESTION},
+      {5, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {6, 1, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {4, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL},
+  };
+
+  AssertResultMatches(result, expected_data,
+                      AutocompleteResult::GetMaxMatches());
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
