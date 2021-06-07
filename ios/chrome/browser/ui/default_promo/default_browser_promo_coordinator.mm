@@ -104,6 +104,7 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  LogUserInteractionWithFullscreenPromo();
   if (IsInRemindMeLaterGroup()) {
     if (self.defaultBrowerPromoViewController.tertiaryActionAvailable) {
       // When the "Remind Me Later" button is visible, it is the secondary
@@ -118,13 +119,11 @@
                 CANCEL];
       base::RecordAction(base::UserMetricsAction(
           "IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-      LogUserInteractionWithFullscreenPromo();
     }
   } else {
     [self logDefaultBrowserFullscreenPromoHistogramForAction:CANCEL];
     base::RecordAction(
         base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-    LogUserInteractionWithFullscreenPromo();
   }
   [self.handler hidePromo];
 }
