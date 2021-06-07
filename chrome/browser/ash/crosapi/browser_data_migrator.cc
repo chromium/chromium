@@ -41,9 +41,6 @@ const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache"};
 // directory.
 const char* const kCopyUserDataPaths[] = {"First Run"};
 
-// Lacros' user data is backward compatible up until this version.
-constexpr char kRequiredDataVersion[] = "92.0.0.0";
-
 // Copies `item` to location pointed by `dest`. Returns true on success and
 // false on failure.
 bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,

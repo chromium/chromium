@@ -38,6 +38,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -54,6 +56,7 @@
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -103,22 +106,13 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   // newer than M92, as we can then assume that all relevant users have been
   // migrated.
   //
-  // First, check for Lacros metadata.
-  base::FilePath metadata_path = lacros_dir.Append("metadata.json");
-  JSONFileValueDeserializer deserializer(metadata_path);
-  int error_code = 0;
-  std::string error_message;
-  std::unique_ptr<base::Value> metadata =
-      deserializer.Deserialize(&error_code, &error_message);
-
-  if (browser_util::DoesMetadataSupportNewAccountManager(metadata.get())) {
+  // If we want to use the new account manager, and we haven't yet cleared the
+  // user data dir, do so.
+  if (!cleared_user_data_dir) {
+    params.use_new_account_manager =
+        base::DeletePathRecursively(browser_util::GetUserDataDir());
+  } else {
     params.use_new_account_manager = true;
-
-    // If we want to use the new account manager, and we haven't yet cleared the
-    // user data dir, do so.
-    if (!cleared_user_data_dir) {
-      base::DeletePathRecursively(browser_util::GetUserDataDir());
-    }
   }
 
   base::FilePath::StringType log_path = LacrosLogPath().value();
@@ -458,9 +452,22 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
 
   SetState(State::CREATING_LOG_FILE);
 
-  bool cleared_user_data_dir =
-      ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
-          browser_util::kClearUserDataDir1Pref);
+  // TODO(ythjkt): After M92 cherry-pick, clean up the following code by moving
+  // the data wipe check logic from `BrowserDataMigrator` to browser_util.
+  const std::string user_id_hash =
+      chromeos::ProfileHelper::GetUserIdHashFromProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  // Check if user data directory needs to be wiped for a backward incompatible
+  // update.
+  base::Version data_version = crosapi::browser_util::GetDataVer(
+      g_browser_process->local_state(), user_id_hash);
+  base::Version current_version = version_info::GetVersion();
+  base::Version required_version =
+      base::Version(base::StringPiece(ash::kRequiredDataVersion));
+
+  bool cleared_user_data_dir = !ash::BrowserDataMigrator::IsDataWipeRequired(
+      data_version, current_version, required_version);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
@@ -474,15 +481,20 @@ void BrowserManager::StartWithLogFile(
     LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
-  // If we're using the new account manager, then we must have already cleared
-  // the user data dir. Record this regardless of whether a clear actually
-  // happened in this invocation.
-  if (params.use_new_account_manager) {
-    ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
-        browser_util::kClearUserDataDir1Pref, true);
-
-    // TODO(https://crbug.com/1197220): Set the appropriate BrowserInitParams.
+  if (!params.use_new_account_manager) {
+    // If `use_new_account_manager` is false, that means deleting old lacros
+    // data directory failed. In such a case, do not launch lacros.
+    LOG(ERROR) << "Failed to delete old user data dir.";
+    SetState(State::STOPPED);
+    return;
   }
+
+  const std::string user_id_hash =
+      chromeos::ProfileHelper::GetUserIdHashFromProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
+                                       user_id_hash,
+                                       version_info::GetVersion());
 
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
