@@ -76,6 +76,7 @@ if (is_win) {
       "credui.lib",
       "cryptui.lib",
       "dwmapi.lib",
+      "imm32.lib",  # chrome_elf_init.cc
       "netapi32.lib",
       "ndfapi.lib",  # For browser / net / net_error_diagnostics_dialog_win.h
       "pdh.lib",  # For browser / private_working_set_snapshot.h

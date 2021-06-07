@@ -28336,6 +28336,11 @@ Called by update_extension_permission.py.-->
   <int value="230" label="kScripting"/>
 </enum>
 
+<enum name="ExtensionPointEnableState">
+  <int value="0" label="EXTENSIONPOINT_DISABLED_IME"/>
+  <int value="1" label="EXTENSIONPOINT_ENABLED"/>
+</enum>
+
 <enum name="ExtensionPolicyReinstallReason">
   <int value="0" label="Tried to load a corrupted extension"/>
   <int value="1" label="Corrupted Chrome Web Store extension"/>

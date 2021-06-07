@@ -68,6 +68,41 @@ std::wstring GetBeaconRegistryPath() {
       blacklist::kRegistryBeaconKeyName);
 }
 
+// This enum is used to define the buckets for an enumerated UMA histogram.
+// Hence,
+//   (a) existing enumerated constants should never be deleted or reordered, and
+//   (b) new constants should only be appended in front of EXTENSIONPOINT_MAX.
+enum ExtensionPointEnableState {
+  // Extension point mitigation disabled due to presence of legacy IME.
+  EXTENSIONPOINT_DISABLED_IME,
+
+  // Extension point mitigation enabled.
+  EXTENSIONPOINT_ENABLED,
+
+  // Always keep this at the end.
+  EXTENSIONPOINT_MAX,
+};
+
+void RecordExtensionPointsEnableState(ExtensionPointEnableState enable_state) {
+  base::UmaHistogramEnumeration("ChromeElf.ExtensionPoint.EnableState",
+                                enable_state, EXTENSIONPOINT_MAX);
+}
+
+ExtensionPointEnableState GetExtensionPointsEnableState() {
+  // Legacy IMEs can be detected as HKLs that have a file name.
+  int list_size = GetKeyboardLayoutList(0, nullptr);
+  if (list_size != 0) {
+    std::vector<HKL> hkl_list(list_size);
+    if (GetKeyboardLayoutList(list_size, hkl_list.data()) == list_size) {
+      for (auto* hkl : hkl_list) {
+        if (ImmGetIMEFileName(hkl, nullptr, 0) != 0)
+          return EXTENSIONPOINT_DISABLED_IME;
+      }
+    }
+  }
+  return EXTENSIONPOINT_ENABLED;
+}
+
 }  // namespace
 
 void InitializeChromeElf() {
@@ -88,6 +123,8 @@ void InitializeChromeElf() {
       elf_sec::kRegSecurityFinchKeyName));
   base::win::RegKey finch_security_registry_key(HKEY_CURRENT_USER,
                                                 finch_path.c_str(), KEY_READ);
+
+  RecordExtensionPointsEnableState(GetExtensionPointsEnableState());
 
   if (base::FeatureList::IsEnabled(
           sandbox::policy::features::kWinSboxDisableExtensionPoints)) {
