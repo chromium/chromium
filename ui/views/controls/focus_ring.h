@@ -92,6 +92,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
  private:
   FocusRing();
 
+  SkPath GetPath() const;
+
   void RefreshLayer();
 
   // Translates the provided SkRect or SkRRect, which is in the parent's
