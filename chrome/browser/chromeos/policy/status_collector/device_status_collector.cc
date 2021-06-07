@@ -29,6 +29,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -716,6 +717,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           cros_healthd_data_fetcher,
       bool report_system_info,
       bool report_vpd_info) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cros_healthd_data_fetcher.Run(
         CrosHealthdCollectionMode::kFull,
         base::BindOnce(&DeviceStatusCollectorState::OnCrosHealthdDataReceived,
@@ -748,6 +750,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   void FetchGraphicsStatus(
       const policy::DeviceStatusCollector::GraphicsStatusFetcher&
           graphics_status_fetcher) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     graphics_status_fetcher.Run(base::BindOnce(
         &DeviceStatusCollectorState::OnGraphicsStatusReceived, this));
   }
@@ -755,12 +758,19 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   void FetchCrashReportInfo(
       const policy::DeviceStatusCollector::CrashReportInfoFetcher&
           crash_report_fetcher) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     crash_report_fetcher.Run(base::BindOnce(
         &DeviceStatusCollectorState::OnCrashReportInfoReceived, this));
   }
 
+  void SetDeviceStatusReported() { device_status_reported_ = true; }
+
  private:
-  ~DeviceStatusCollectorState() override = default;
+  ~DeviceStatusCollectorState() override {
+    if (!device_status_reported_) {
+      response_params_.device_status.reset();
+    }
+  }
 
   void OnVolumeInfoReceived(const std::vector<em::VolumeInfo>& volume_info) {
     response_params_.device_status->clear_volume_infos();
@@ -838,9 +848,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             std::move(kv.second));
       }
     }
+    if (!response_params_.device_status->mutable_cpu_temp_infos()->empty()) {
+      SetDeviceStatusReported();
+    }
 
-    if (probe_result.is_null())
+    if (probe_result.is_null()) {
       return;
+    }
 
     // Process NonRemovableBlockDeviceResult.
     const auto& block_device_result = probe_result->block_device_result;
@@ -969,6 +983,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                 break;
             }
           }
+
+          SetDeviceStatusReported();
           break;
         }
       }
@@ -1018,6 +1034,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               battery_info_out->add_samples()->CheckTypeAndMergeFrom(
                   it->second);
           }
+          SetDeviceStatusReported();
           break;
         }
       }
@@ -1093,6 +1110,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               }
             }
           }
+          SetDeviceStatusReported();
           break;
         }
       }
@@ -1114,6 +1132,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               response_params_.device_status->mutable_timezone_info();
           timezone_info_out->set_posix(timezone_info->posix);
           timezone_info_out->set_region(timezone_info->region);
+          SetDeviceStatusReported();
           break;
         }
       }
@@ -1139,6 +1158,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               memory_info->available_memory_kib);
           memory_info_out->set_page_faults_since_last_boot(
               memory_info->page_faults_since_last_boot);
+          SetDeviceStatusReported();
           break;
         }
       }
@@ -1162,6 +1182,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             backlight_info_out->set_max_brightness(backlight->max_brightness);
             backlight_info_out->set_brightness(backlight->brightness);
           }
+          if (response_params_.device_status->backlight_info_size() > 0) {
+            SetDeviceStatusReported();
+          }
           break;
         }
       }
@@ -1182,6 +1205,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             em::FanInfo* const fan_info_out =
                 response_params_.device_status->add_fan_info();
             fan_info_out->set_speed_rpm(fan->speed_rpm);
+          }
+          if (response_params_.device_status->fan_info_size() > 0) {
+            SetDeviceStatusReported();
           }
           break;
         }
@@ -1209,6 +1235,11 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             adapter_info_out->set_num_connected_devices(
                 adapter->num_connected_devices);
           }
+
+          if (response_params_.device_status->bluetooth_adapter_info_size() >
+              0) {
+            SetDeviceStatusReported();
+          }
           break;
         }
       }
@@ -1232,18 +1263,22 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             if (system_info->first_power_date.has_value()) {
               system_status_out->set_first_power_date(
                   system_info->first_power_date.value());
+              SetDeviceStatusReported();
             }
             if (system_info->manufacture_date.has_value()) {
               system_status_out->set_manufacture_date(
                   system_info->manufacture_date.value());
+              SetDeviceStatusReported();
             }
             if (system_info->product_sku_number.has_value()) {
               system_status_out->set_vpd_sku_number(
                   system_info->product_sku_number.value());
+              SetDeviceStatusReported();
             }
             if (system_info->product_serial_number.has_value()) {
               system_status_out->set_vpd_serial_number(
                   system_info->product_serial_number.value());
+              SetDeviceStatusReported();
             }
           }
           if (report_system_info) {
@@ -1268,6 +1303,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               system_status_out->set_product_name(
                   system_info->product_name.value());
             }
+            SetDeviceStatusReported();
           }
           break;
         }
@@ -1327,6 +1363,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
   void OnGraphicsStatusReceived(const em::GraphicsStatus& gs) {
     *response_params_.device_status->mutable_graphics_status() = gs;
+    SetDeviceStatusReported();
   }
 
   void OnCrashReportInfoReceived(
@@ -1335,7 +1372,19 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     for (const em::CrashReportInfo& info : crash_report_infos) {
       *response_params_.device_status->add_crash_report_infos() = info;
     }
+    if (response_params_.device_status->crash_report_infos_size() > 0) {
+      SetDeviceStatusReported();
+    }
   }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Every time the device status is to be reported, the shared object,
+  // DeviceStatusCollector` is created with this being false. asynchronous
+  // status collectors then set this variable to true if any data is collected.
+  // Then, When the `DeviceStatusCollector` object is released, A response is
+  // generated only if this is true.
+  bool device_status_reported_ = false;
 };
 
 TpmStatusInfo::TpmStatusInfo() = default;
@@ -2351,10 +2400,7 @@ bool DeviceStatusCollector::GetHardwareStatus(
   if (report_storage_status_)
     state->FetchEMMCLifeTime(emmc_lifetime_fetcher_);
 
-  if (ShouldFetchCrosHealthdData()) {
-    state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
-                                report_vpd_info_);
-  } else {
+  if (!ShouldFetchCrosHealthdData()) {
     // Sample CPU temperature in a background thread.
     state->SampleCPUTempInfo(cpu_temp_fetcher_);
   }
@@ -2485,19 +2531,15 @@ bool DeviceStatusCollector::GetRunningKioskApp(
   return true;
 }
 
-bool DeviceStatusCollector::GetGraphicsStatus(
+void DeviceStatusCollector::GetGraphicsStatus(
     scoped_refptr<DeviceStatusCollectorState> state) {
   // Fetch Graphics status on a background thread.
   state->FetchGraphicsStatus(graphics_status_fetcher_);
-
-  return true;
 }
 
-bool DeviceStatusCollector::GetCrashReportInfo(
+void DeviceStatusCollector::GetCrashReportInfo(
     scoped_refptr<DeviceStatusCollectorState> state) {
   state->FetchCrashReportInfo(crash_report_info_fetcher_);
-
-  return true;
 }
 
 void DeviceStatusCollector::GetStatusAsync(StatusCollectorCallback response) {
@@ -2562,15 +2604,23 @@ void DeviceStatusCollector::GetDeviceStatus(
   if (report_running_kiosk_app_)
     anything_reported |= GetRunningKioskApp(status);
 
+  // Mark if any of the above functions reported data so that the response is
+  // sent.
+  if (anything_reported)
+    state->SetDeviceStatusReported();
+
+  // The below calls gather data asynchronously. Because they are asynchronous
+  // they cannot set anything_reported. Instead They will call
+  // SetDeviceStatusReported if data is collected.
+  if (ShouldFetchCrosHealthdData())
+    state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
+                                report_vpd_info_);
+
   if (report_graphics_status_)
-    anything_reported |= GetGraphicsStatus(state);
+    GetGraphicsStatus(state);
 
   if (report_crash_report_info_ && stat_reporting_pref_)
-    anything_reported |= GetCrashReportInfo(state);
-
-  // Wipe pointer if we didn't actually add any data.
-  if (!anything_reported)
-    state->response_params().device_status.reset();
+    GetCrashReportInfo(state);
 }
 
 bool DeviceStatusCollector::GetSessionStatusForUser(

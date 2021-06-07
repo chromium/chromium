@@ -3252,11 +3252,10 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
       base::BindRepeating(&FetchFakeFullCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // If the ReportDeviceHardwareStatus policy is false, the policies
-  // corresponding to cros_healthd data are ignored. The policy is true by
-  // default, but set it explicitly to ensure the other policies are tested.
+  // Policies set by fetching Cros Healthd Data were once dependent on
+  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, true);
+      chromeos::kReportDeviceHardwareStatus, false);
 
   // If none of the relevant policies are set to true, expect that the data from
   // cros_healthd isn't present in the protobuf.
@@ -3464,6 +3463,10 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
       base::BindRepeating(&FetchFakeOptionalCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
+  // Policies set by fetching Cros Healthd Data were once dependent on
+  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceHardwareStatus, false);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceCpuInfo, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -3488,6 +3491,10 @@ TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
       base::BindRepeating(&FetchFakePartialCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
+  // Policies set by fetching Cros Healthd Data were once dependent on
+  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceHardwareStatus, false);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceCpuInfo, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -3546,12 +3553,10 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
       base::BindRepeating(&FetchFakeFullCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // If the ReportDeviceHardwareStatus policy is false, the policies
-  // corresponding to cros_healthd data are ignored. The policy is true by
-  // default, but set it explicitly to ensure the other policies are tested.
+  // Policies set by fetching Cros Healthd Data were once dependent on
+  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, true);
-
+      chromeos::kReportDeviceHardwareStatus, false);
   // When the vpd reporting policy is turned on and the system reporting
   // property is turned off, we only expect the protobuf to only have vpd info.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(

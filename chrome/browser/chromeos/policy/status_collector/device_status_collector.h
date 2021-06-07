@@ -283,9 +283,9 @@ class DeviceStatusCollector : public StatusCollector,
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetRunningKioskApp(
       enterprise_management::DeviceStatusReportRequest* status);
-  bool GetGraphicsStatus(scoped_refptr<DeviceStatusCollectorState>
+  void GetGraphicsStatus(scoped_refptr<DeviceStatusCollectorState>
                              state);  // Queues async queries!
-  bool GetCrashReportInfo(scoped_refptr<DeviceStatusCollectorState>
+  void GetCrashReportInfo(scoped_refptr<DeviceStatusCollectorState>
                               state);  // Queues async queries!
 
   // Helpers for the various portions of SESSION STATUS. Return true if they
