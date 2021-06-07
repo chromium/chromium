@@ -143,15 +143,6 @@ void NavigationPredictor::ReportNewAnchorElements(
     }
 
     anchors_.emplace(anchor_id, std::move(element));
-
-    int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
-        blink::features::kNavigationPredictor, "random_anchor_sampling_period",
-        100);
-    int random = base::RandInt(1, sampling_period);
-    if (random > 1) {
-      // This anchor element is sampled out.
-      continue;
-    }
     tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
   }
 
