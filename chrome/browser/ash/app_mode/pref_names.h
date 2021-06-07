@@ -12,8 +12,6 @@ namespace prefs {
 // Prefs related to kiosk mode.
 // ---------------------------------------------------------------------------
 extern const char kAllKioskUsersToRemove[];
-extern const char kRegularKioskUsersToRemove[];
-extern const char kArcKioskUsersToRemove[];
 
 }  // namespace prefs
 }  // namespace ash

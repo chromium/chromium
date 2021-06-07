@@ -50,40 +50,6 @@ void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
   local_state->CommitPendingWrite();
 }
 
-// Functions to deal with legacy prefs -- update the current list from the old
-// pref values(dict for regular kiosk and list for arc kiosk).
-void UpdateFromDictValue(const char* dict_pref_name) {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* const users_to_remove =
-      local_state->GetDictionary(dict_pref_name);
-  {
-    DictionaryPrefUpdate dict_update(local_state,
-                                     prefs::kAllKioskUsersToRemove);
-    for (const auto& element : users_to_remove->DictItems()) {
-      std::string app_id;
-      element.second.GetAsString(&app_id);
-      dict_update->SetKey(element.first, base::Value(app_id));
-    }
-  }
-  local_state->ClearPref(dict_pref_name);
-  local_state->CommitPendingWrite();
-}
-
-void UpdateFromListValue(const std::string& list_pref_name) {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::ListValue* const users_to_remove =
-      local_state->GetList(list_pref_name);
-  {
-    DictionaryPrefUpdate dict_update(local_state,
-                                     prefs::kAllKioskUsersToRemove);
-    for (const auto& element : users_to_remove->GetList()) {
-      dict_update->SetKey(element.GetString(), base::Value(""));
-    }
-  }
-  local_state->ClearPref(list_pref_name);
-  local_state->CommitPendingWrite();
-}
-
 void OnRemoveAppCryptohomeComplete(
     const cryptohome::Identification& id,
     base::OnceClosure callback,
@@ -102,13 +68,6 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
     LOG(ERROR) << "Cryptohome client is not avaiable.";
     return;
   }
-
-  // Legacy: we need to support cases when the prefs are stored in the old
-  // format.
-  // TODO(crbug.com/1014431): Remove this where the migration is
-  // completed.
-  UpdateFromDictValue(prefs::kRegularKioskUsersToRemove);
-  UpdateFromListValue(prefs::kArcKioskUsersToRemove);
 
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* const dict =
@@ -135,8 +94,6 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
 
 void KioskCryptohomeRemover::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAllKioskUsersToRemove);
-  registry->RegisterListPref(prefs::kArcKioskUsersToRemove);
-  registry->RegisterDictionaryPref(prefs::kRegularKioskUsersToRemove);
 }
 
 void KioskCryptohomeRemover::RemoveObsoleteCryptohomes() {
