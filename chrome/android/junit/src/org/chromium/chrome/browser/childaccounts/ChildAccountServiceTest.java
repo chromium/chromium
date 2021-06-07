@@ -37,14 +37,22 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link ChildAccountService}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChildAccountServiceTest {
-    private static final Account CHILD_ACCOUNT =
-            AccountUtils.createAccountFromName("child.account@gmail.com");
+    private static final Account CHILD_ACCOUNT1 =
+            AccountUtils.createAccountFromName("child.account1@gmail.com");
+    private static final Account CHILD_ACCOUNT2 =
+            AccountUtils.createAccountFromName("child.account2@gmail.com");
+    private static final Account ADULT_ACCOUNT1 =
+            AccountUtils.createAccountFromName("adult.account1@gmail.com");
+    private static final Account ADULT_ACCOUNT2 =
+            AccountUtils.createAccountFromName("adult.account2@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
     private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade(null) {
@@ -82,7 +90,7 @@ public class ChildAccountServiceTest {
 
     @Test
     public void testChildAccountStatusWhenNoAccountsOnDevice() {
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(Collections.emptyList(), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
@@ -91,39 +99,34 @@ public class ChildAccountServiceTest {
         // For product reason, child account cannot share device, so as long
         // as more than one account detected on device, the child account status
         // on device should be NOT_CHILD.
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
-        mAccountManagerTestRule.addAccount("child.account2@gmail.com");
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(
+                List.of(CHILD_ACCOUNT1, CHILD_ACCOUNT2), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
     @Test
     public void testChildAccountStatusWhenOneChildAndOneAdultAccountsOnDevice() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
-        mAccountManagerTestRule.addAccount("adult.account@gmail.com");
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(
+                List.of(CHILD_ACCOUNT1, ADULT_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
     @Test
     public void testChildAccountStatusWhenTwoAdultAccountsOnDevice() {
-        mAccountManagerTestRule.addAccount("adult.account1@gmail.com");
-        mAccountManagerTestRule.addAccount("adult.account2@gmail.com");
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(
+                List.of(ADULT_ACCOUNT1, ADULT_ACCOUNT2), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
     @Test
     public void testChildAccountStatusWhenOnlyOneAdultAccountOnDevice() {
-        mAccountManagerTestRule.addAccount("adult.account1@gmail.com");
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(List.of(ADULT_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
     @Test
     public void testChildAccountStatusWhenOnlyOneChildAccountOnDevice() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
-        ChildAccountService.checkChildAccountStatus(mListenerMock);
+        ChildAccountService.checkChildAccountStatus(List.of(CHILD_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
     }
 
@@ -131,7 +134,7 @@ public class ChildAccountServiceTest {
     public void testReauthenticateChildAccountWhenActivityIsNull() {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(null));
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock).onReauthenticationFailed(FAKE_NATIVE_CALLBACK);
     }
 
@@ -141,7 +144,7 @@ public class ChildAccountServiceTest {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(invocation -> {
             Account account = invocation.getArgument(0);
-            Assert.assertEquals(CHILD_ACCOUNT.name, account.name);
+            Assert.assertEquals(CHILD_ACCOUNT1.name, account.name);
             Callback<Boolean> callback = invocation.getArgument(2);
             callback.onResult(true);
             return null;
@@ -150,7 +153,7 @@ public class ChildAccountServiceTest {
                 .updateCredentials(any(Account.class), eq(activity), any());
 
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock, never()).onReauthenticationFailed(anyLong());
     }
 
@@ -160,7 +163,7 @@ public class ChildAccountServiceTest {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(invocation -> {
             Account account = invocation.getArgument(0);
-            Assert.assertEquals(CHILD_ACCOUNT.name, account.name);
+            Assert.assertEquals(CHILD_ACCOUNT1.name, account.name);
             Callback<Boolean> callback = invocation.getArgument(2);
             callback.onResult(false);
             return null;
@@ -169,7 +172,7 @@ public class ChildAccountServiceTest {
                 .updateCredentials(any(Account.class), eq(activity), any());
 
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock).onReauthenticationFailed(FAKE_NATIVE_CALLBACK);
     }
 }

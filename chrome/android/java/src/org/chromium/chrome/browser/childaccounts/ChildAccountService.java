@@ -22,6 +22,8 @@ import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /**
  * This class serves as a simple interface for querying the child account information. It has a
  * method for querying the child account information asynchronously from the system.
@@ -52,21 +54,20 @@ public class ChildAccountService {
      * It should be safe to invoke this method before the native library is initialized (after
      * AccountManagerFacade is set).
      *
+     * @param accounts The list of accounts on device.
      * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
      */
     @MainThread
-    public static void checkChildAccountStatus(ChildAccountStatusListener listener) {
+    public static void checkChildAccountStatus(
+            List<Account> accounts, ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        accountManagerFacade.tryGetGoogleAccounts(accounts -> {
-            if (accounts.size() == 1) {
-                // Child accounts can't share a device.
-                accountManagerFacade.checkChildAccountStatus(accounts.get(0), listener);
-            } else {
-                listener.onStatusReady(ChildAccountStatus.NOT_CHILD);
-            }
-        });
+        if (accounts.size() == 1) {
+            // Child accounts can't share a device.
+            AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
+                    accounts.get(0), listener);
+        } else {
+            listener.onStatusReady(ChildAccountStatus.NOT_CHILD);
+        }
     }
 
     @VisibleForTesting

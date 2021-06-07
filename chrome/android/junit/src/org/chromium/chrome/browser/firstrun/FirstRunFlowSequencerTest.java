@@ -26,10 +26,10 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Tests FirstRunFlowSequencer which contains the core logic of what should be shown during the
@@ -42,8 +42,8 @@ public class FirstRunFlowSequencerTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     /** Information for Google OS account */
-    private static final String GOOGLE_ACCOUNT_TYPE = "com.google";
-    private static final String DEFAULT_ACCOUNT = "test@gmail.com";
+    private static final Account DEFAULT_ACCOUNT =
+            AccountUtils.createAccountFromName("test@gmail.com");
 
     /**
      * Testing version of FirstRunFlowSequencer that allows us to override all needed checks.
@@ -56,7 +56,6 @@ public class FirstRunFlowSequencerTest {
         public boolean isFirstRunFlowComplete;
         public boolean isSignedIn;
         public boolean isSyncAllowed;
-        public List<Account> googleAccounts;
         public boolean shouldSkipFirstUseHints;
         public boolean isFirstRunEulaAccepted;
         public boolean shouldShowDataReductionPage;
@@ -86,11 +85,6 @@ public class FirstRunFlowSequencerTest {
         @Override
         public boolean isSyncAllowed() {
             return isSyncAllowed;
-        }
-
-        @Override
-        public List<Account> getGoogleAccounts() {
-            return googleAccounts;
         }
 
         @Override
@@ -139,10 +133,9 @@ public class FirstRunFlowSequencerTest {
         mSequencer.isFirstRunFlowComplete = false;
         mSequencer.isSignedIn = false;
         mSequencer.isSyncAllowed = true;
-        mSequencer.googleAccounts = Collections.emptyList();
         mSequencer.shouldSkipFirstUseHints = false;
         mSequencer.shouldShowDataReductionPage = false;
-        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD);
+        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
@@ -163,11 +156,10 @@ public class FirstRunFlowSequencerTest {
         mSequencer.isFirstRunFlowComplete = false;
         mSequencer.isSignedIn = false;
         mSequencer.isSyncAllowed = true;
-        mSequencer.googleAccounts =
-                Collections.singletonList(new Account(DEFAULT_ACCOUNT, GOOGLE_ACCOUNT_TYPE));
         mSequencer.shouldSkipFirstUseHints = false;
         mSequencer.shouldShowDataReductionPage = false;
-        mSequencer.initializeSharedState(ChildAccountStatus.REGULAR_CHILD);
+        mSequencer.initializeSharedState(
+                ChildAccountStatus.REGULAR_CHILD, Collections.singletonList(DEFAULT_ACCOUNT));
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
@@ -188,11 +180,10 @@ public class FirstRunFlowSequencerTest {
         mSequencer.isFirstRunFlowComplete = false;
         mSequencer.isSignedIn = false;
         mSequencer.isSyncAllowed = true;
-        mSequencer.googleAccounts = Collections.emptyList();
         mSequencer.shouldSkipFirstUseHints = false;
         mSequencer.shouldShowDataReductionPage = true;
         mSequencer.shouldShowSearchEnginePage = false;
-        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD);
+        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
@@ -213,11 +204,10 @@ public class FirstRunFlowSequencerTest {
         mSequencer.isFirstRunFlowComplete = false;
         mSequencer.isSignedIn = false;
         mSequencer.isSyncAllowed = true;
-        mSequencer.googleAccounts = Collections.emptyList();
         mSequencer.shouldSkipFirstUseHints = false;
         mSequencer.shouldShowDataReductionPage = true;
         mSequencer.shouldShowSearchEnginePage = true;
-        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD);
+        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);

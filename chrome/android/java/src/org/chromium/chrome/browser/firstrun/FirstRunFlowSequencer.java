@@ -71,11 +71,13 @@ public abstract class FirstRunFlowSequencer  {
      */
     public void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
-        ChildAccountService.checkChildAccountStatus(status -> {
-            RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                    SystemClock.elapsedRealtime() - childAccountStatusStart);
-            initializeSharedState(status);
-            processFreEnvironmentPreNative();
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            ChildAccountService.checkChildAccountStatus(accounts, status -> {
+                RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+                        SystemClock.elapsedRealtime() - childAccountStatusStart);
+                initializeSharedState(status, accounts);
+                processFreEnvironmentPreNative();
+            });
         });
     }
 
@@ -97,11 +99,6 @@ public abstract class FirstRunFlowSequencer  {
                 Profile.getLastUsedRegularProfile());
         return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
                 && signinManager.isSigninSupported();
-    }
-
-    @VisibleForTesting
-    protected List<Account> getGoogleAccounts() {
-        return AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
     }
 
     @VisibleForTesting
@@ -134,12 +131,11 @@ public abstract class FirstRunFlowSequencer  {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
 
-    void initializeSharedState(@ChildAccountStatus.Status int childAccountStatus) {
+    @VisibleForTesting
+    void initializeSharedState(
+            @ChildAccountStatus.Status int childAccountStatus, List<Account> accounts) {
         mChildAccountStatus = childAccountStatus;
-        // Note that fetching accounts isn't instrumented because it's typically very fast. It seems
-        // fetching child account status causes accounts to be cached. Revisit this if the ordering
-        // of these calls is changed.
-        mGoogleAccounts = getGoogleAccounts();
+        mGoogleAccounts = accounts;
     }
 
     void processFreEnvironmentPreNative() {
