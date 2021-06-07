@@ -71,4 +71,44 @@ features. An alternative way to implement it is to mix gradle to purely fetch
 dependencies and their pom.xml files, and use Python to process and generate
 the files. This approach was not as successful, as some information about the
 dependencies does not seem to be available purely from the POM file, which
-resulted in expecting dependencies that gradle considered unnecessary.
+resulted in expecting dependencies that gradle considered unnecessary. This is
+especially true nowadays that pom.xml files for many dependencies are no longer
+maintained by the package authors.
+
+#### Groovy Style Guide
+The groovy code in `//third_party/android_deps/buildSrc/src/main/groovy` loosely
+follows the [Groovy Style Guide][groovy_style_guide], and can be linted by each
+dev with [npm-groovy-lint][npm_groovy_lint] via the
+[VS Code extension][vs_code_groovy_lint]. The line length limit for groovy is
+**120** characters.
+
+Here is a sample `.groovylintrc.json` file:
+
+```
+{
+    "extends": "recommended",
+    "rules": {
+        "CatchException": "off",
+        "CompileStatic": "off",
+        "DuplicateMapLiteral": "off",
+        "DuplicateNumberLiteral": "off",
+        "DuplicateStringLiteral": "off",
+        "FactoryMethodName": "off",
+        "JUnitPublicProperty": "off",
+        "JavaIoPackageAccess": "off",
+        "MethodCount": "off",
+        "NestedForLoop": "off",
+        "ThrowRuntimeException": "off",
+        "formatting.Indentation": {
+            "spacesPerIndentLevel": 4
+        }
+    }
+}
+```
+
+This is a list of rule names: [Groovy Rule Index by Name][groovy_rule_index].
+
+[groovy_style_guide]: https://groovy-lang.org/style-guide.html
+[npm_groovy_lint]: https://github.com/nvuillam/npm-groovy-lint
+[vs_code_groovy_lint]: https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint
+[groovy_rule_index]: https://codenarc.org/codenarc-rule-index-by-name.html
