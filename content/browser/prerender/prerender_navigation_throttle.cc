@@ -58,25 +58,47 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   DCHECK(frame_tree_node->IsMainFrame());
   DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
+  // Get the prerender host of the prerendering page.
   PrerenderHostRegistry* prerender_host_registry =
       frame_tree_node->current_frame_host()
           ->delegate()
           ->GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      prerender_host_registry->FindNonReservedHostById(
+          frame_tree_node->frame_tree_node_id());
+  if (!prerender_host) {
+    // If there is no host, we are already reserved for activation. Just let the
+    // navigation proceed, since abandoning prerendering now might break the
+    // activation navigation and cancelling the request while continuing the
+    // activation will break compatibility. We also cannot defer because the
+    // activation machinery waits for the navigation to commit before
+    // activating.
+    // TODO(https://crbug.com/1198395): Somehow handle this, probably by
+    // deferring after support is added to activate while the main frame is
+    // still being navigated; or else cancelling prerendering.
+    DCHECK(prerender_host_registry->FindReservedHostById(
+        frame_tree_node->frame_tree_node_id()));
+    return PROCEED;
+  }
 
-  // Disallow navigation from a prerendering page and cancel prerendering.
-  RenderFrameHostImpl* initiator_render_frame_host_impl =
-      navigation_request->GetInitiatorFrameToken().has_value()
-          ? RenderFrameHostImpl::FromFrameToken(
-                navigation_request->GetInitiatorProcessID(),
-                navigation_request->GetInitiatorFrameToken().value())
-          : nullptr;
-  if (initiator_render_frame_host_impl &&
-      initiator_render_frame_host_impl->frame_tree()->is_prerendering()) {
+  // Navigation after the initial prerendering navigation are disallowed.
+  absl::optional<int64_t> initial_navigation_id =
+      prerender_host->GetInitialNavigationId();
+  if (!initial_navigation_id.has_value()) {
+    // If the PrerenderHost has no initial navigation ID yet, this must be the
+    // initial one, so set it here. This throttle is responsible for setting it
+    // since the PrerenderHost obtains the NavigationRequest, which has the ID,
+    // only after the navigation throttles run.
+    prerender_host->SetInitialNavigationId(
+        navigation_request->GetNavigationId());
+  } else if (*initial_navigation_id != navigation_request->GetNavigationId()) {
+    // If this is not the initial prerendering navigation, cancel the navigation
+    // and cancel prerendering. Same document navigation is exceptionally
+    // allowed but we do nothing here as throttles don't run against the same
+    // document navigation. It should just work.
     prerender_host_registry->AbandonHost(
         frame_tree_node->frame_tree_node_id(),
         PrerenderHost::FinalStatus::kMainFrameNavigation);
-    // TODO(https://crbug.com/1194414): Handle the case the prerendering page
-    // is reserved for activation.
     return CANCEL;
   }
 
@@ -89,23 +111,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
         is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
                        : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
     return CANCEL;
-  }
-
-  // Get the prerender host of the prerendering page.
-  const PrerenderHost* prerender_host =
-      prerender_host_registry->FindNonReservedHostById(
-          frame_tree_node->frame_tree_node_id());
-  if (!prerender_host) {
-    // If there is no host, we are already reserved for activation. Just let
-    // the navigation proceed, since cancelling it now might break the
-    // activation navigation. We also cannot defer because the activation
-    // machinery waits for the navigation to commit before activating.
-    // TODO(https://crbug.com/1198395): Somehow handle this, probably by
-    // deferring after support is added to activate while the main frame is
-    // still being navigated; or else cancelling prerendering.
-    DCHECK(prerender_host_registry->FindReservedHostById(
-        frame_tree_node->frame_tree_node_id()));
-    return PROCEED;
   }
 
   // Cancel prerendering if this is cross-origin prerendering, cross-origin

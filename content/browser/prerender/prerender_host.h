@@ -119,6 +119,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  absl::optional<int64_t> GetInitialNavigationId() const;
+  void SetInitialNavigationId(int64_t navigation_id);
+
   url::Origin initiator_origin() const { return initiator_origin_; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
@@ -157,6 +160,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // attempting to reserve the prerender host for a navigation.
   mojom::BeginNavigationParamsPtr begin_params_;
   mojom::CommonNavigationParamsPtr common_params_;
+
+  // Holds the navigation ID for the main frame initial navigation.
+  absl::optional<int64_t> initial_navigation_id_;
 };
 
 }  // namespace content

@@ -288,6 +288,18 @@ bool PrerenderHost::StartPrerendering() {
   if (!created_navigation_handle)
     return false;
 
+  if (initial_navigation_id_.has_value()) {
+    // In usual code path, `initial_navigation_id_` should be set by
+    // PrerenderNavigationThrottle during `LoadURLWithParams` above.
+    DCHECK_EQ(*initial_navigation_id_,
+              created_navigation_handle->GetNavigationId());
+  } else {
+    // In some exceptional code path, such as the navigation failed due to CSP
+    // violations, PrerenderNavigationThrottle didn't run at this point. So,
+    // set the ID here.
+    initial_navigation_id_ = created_navigation_handle->GetNavigationId();
+  }
+
   NavigationRequest* navigation_request =
       NavigationRequest::From(created_navigation_handle.get());
   // The initial navigation in the prerender frame tree should not wait for
@@ -384,6 +396,15 @@ void PrerenderHost::AddObserver(Observer* observer) {
 
 void PrerenderHost::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+absl::optional<int64_t> PrerenderHost::GetInitialNavigationId() const {
+  return initial_navigation_id_;
+}
+
+void PrerenderHost::SetInitialNavigationId(int64_t navigation_id) {
+  DCHECK(!initial_navigation_id_.has_value());
+  initial_navigation_id_ = navigation_id;
 }
 
 }  // namespace content
