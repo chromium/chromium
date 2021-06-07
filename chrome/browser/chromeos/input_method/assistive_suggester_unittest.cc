@@ -163,26 +163,4 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest, RecordsCoverageForMultiWordCompletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo});
-
-  // TODO(crbug/1146266): Add prediction case once prediction is supported
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "some text"},
-  };
-
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
-
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Match",
-                                       AssistiveType::kMultiWordCompletion, 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
-                                       AssistiveType::kMultiWordCompletion, 1);
-}
-
 }  // namespace chromeos

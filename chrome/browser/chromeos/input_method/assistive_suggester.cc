@@ -47,6 +47,13 @@ const char* kAllowedDomainsForEmojiSuggester[] = {
     "voice.google.com",
 };
 
+const char* kAllowedDomainsForMultiWordSuggester[] = {
+    "discord.com",      "messenger.com",       "web.whatsapp.com",
+    "web.skype.com",    "duo.google.com",      "hangouts.google.com",
+    "chat.google.com",  "messages.google.com", "web.telegram.org",
+    "voice.google.com",
+};
+
 const char* kTestUrls[] = {
     "e14s-test",
     "simple_textarea.html",
@@ -111,6 +118,31 @@ const char* kAllowedAppsForEmojiSuggester[] = {
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
+// For ARC++ apps, use arc package name. For system apps, use app ID.
+const char* kAllowedAppsForMultiWordSuggester[] = {
+    "com.discord",
+    "com.facebook.orca",
+    "com.whatsapp",
+    "com.skype.raider",
+    "com.google.android.apps.tachyon",
+    "com.google.android.talk",
+    "org.telegram.messenger",
+    "com.enflick.android.TextNow",
+    "com.facebook.mlite",
+    "com.viber.voip",
+    "com.skype.m2",
+    "com.imo.android.imoim",
+    "com.google.android.apps.googlevoice",
+    "com.playstation.mobilemessenger",
+    "kik.android",
+    "com.link.messages.sms",
+    "jp.naver.line.android",
+    "com.skype.m2",
+    "co.happybits.marcopolo",
+    "com.imo.android.imous",
+    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
+};
+
 void RecordAssistiveMatch(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Match", type);
 }
@@ -126,6 +158,11 @@ void RecordAssistiveDisabledReasonForPersonalInfo(DisabledReason reason) {
 
 void RecordAssistiveDisabledReasonForEmoji(DisabledReason reason) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled.Emoji", reason);
+}
+
+void RecordAssistiveDisabledReasonForMultiWord(DisabledReason reason) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled.MultiWord",
+                                reason);
 }
 
 void RecordAssistiveUserPrefForPersonalInfo(bool value) {
@@ -225,6 +262,11 @@ bool IsAllowedUrlOrAppForEmojiSuggestion() {
          IsAllowedApp(kAllowedAppsForEmojiSuggester);
 }
 
+bool IsAllowedUrlOrAppForMultiWordSuggestion() {
+  return IsAllowedUrl(kAllowedDomainsForMultiWordSuggester) ||
+         IsAllowedApp(kAllowedAppsForMultiWordSuggester);
+}
+
 bool IsTopResultMultiWord(const std::vector<TextSuggestion>& suggestions) {
   if (suggestions.empty())
     return false;
@@ -320,6 +362,20 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
   return DisabledReason::kNone;
 }
 
+DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)) {
+    return DisabledReason::kFeatureFlagOff;
+  }
+  if (!profile_->GetPrefs()->GetBoolean(
+          prefs::kAssistPredictiveWritingEnabled)) {
+    return DisabledReason::kUserSettingsOff;
+  }
+  if (!IsAllowedUrlOrAppForMultiWordSuggestion()) {
+    return DisabledReason::kUrlOrAppNotAllowed;
+  }
+  return DisabledReason::kNone;
+}
+
 bool AssistiveSuggester::IsActionEnabled(AssistiveType action) {
   switch (action) {
     case AssistiveType::kPersonalEmail:
@@ -387,8 +443,11 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
-  if (!IsMultiWordSuggestEnabled())
+  if (!IsMultiWordSuggestEnabled() ||
+      !IsAllowedUrlOrAppForMultiWordSuggestion()) {
+    RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
     return;
+  }
 
   RecordSuggestionsMatch(suggestions);
 

@@ -89,6 +89,9 @@ class AssistiveSuggester : public SuggestionsSource {
   // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForPersonalInfo();
 
+  // Only the first applicable reason in DisabledReason enum is returned.
+  DisabledReason GetDisabledReasonForMultiWord();
+
   bool IsActionEnabled(AssistiveType action);
 
   bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
