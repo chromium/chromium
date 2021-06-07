@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -115,7 +116,8 @@ public class SigninManagerImplTest {
         mSigninManager.onFirstRunCheckDone();
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE, ACCOUNT_INFO, callback);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE,
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), callback);
 
         verify(mNativeMock)
                 .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(ACCOUNT_INFO), any());
@@ -375,7 +377,8 @@ public class SigninManagerImplTest {
 
         mSigninManager.onFirstRunCheckDone(); // Allow sign-in.
 
-        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN, ACCOUNT_INFO, null);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN,
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), null);
 
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -390,6 +393,7 @@ public class SigninManagerImplTest {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
-        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN, ACCOUNT_INFO, null);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN,
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), null);
     }
 }

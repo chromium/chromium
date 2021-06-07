@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -491,9 +492,9 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         }
 
         if (mCurrentSyncError == SyncError.OTHER_ERRORS) {
-            final CoreAccountInfo account = IdentityServicesProvider.get()
-                                                    .getIdentityManager(getProfile())
-                                                    .getPrimaryAccountInfo(ConsentLevel.SYNC);
+            final CoreAccountInfo accountInfo = IdentityServicesProvider.get()
+                                                        .getIdentityManager(getProfile())
+                                                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
             // TODO(https://crbug.com/873116): Pass the correct reason for the signout.
             IdentityServicesProvider.get()
                     .getSigninManager(getProfile())
@@ -502,7 +503,9 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
                                     -> IdentityServicesProvider.get()
                                                .getSigninManager(getProfile())
                                                .signinAndEnableSync(
-                                                       SigninAccessPoint.SYNC_ERROR_CARD, account,
+                                                       SigninAccessPoint.SYNC_ERROR_CARD,
+                                                       AccountUtils.createAccountFromName(
+                                                               accountInfo.getEmail()),
                                                        null),
                             false);
             return;

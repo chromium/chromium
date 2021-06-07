@@ -275,31 +275,6 @@ class SigninManagerImpl
     }
 
     /**
-     * Starts the sign-in flow, enables sync and executes the callback when finished.
-     *
-     * The sign-in flow goes through the following steps:
-     *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Wait for policy to be checked for the account.
-     *   - If managed, wait for the policy to be fetched.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Enable sync.
-     *   - Call the callback if provided.
-     *
-     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
-     * @param accountInfo The account to sign in to.
-     * @param callback Optional callback for when the sign-in process is finished.
-     */
-    @Override
-    public void signinAndEnableSync(@SigninAccessPoint int accessPoint, CoreAccountInfo accountInfo,
-            @Nullable SignInCallback callback) {
-        mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            signinInternal(
-                    SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
-        });
-    }
-
-    /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:

@@ -259,12 +259,15 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSyncRowSummaryWhenNoDataTypeSynced() {
+        final ProfileSyncService profileSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(ProfileSyncService::get);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ProfileSyncService.get().setChosenDataTypes(false, new HashSet<>()); });
+                () -> { profileSyncService.setChosenDataTypes(false, new HashSet<>()); });
         CoreAccountInfo account = mSyncTestRule.addTestAccount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { SigninTestUtil.signinAndEnableSync(account, ProfileSyncService.get()); });
+        SigninTestUtil.signinAndEnableSync(account, profileSyncService);
+
         launchSettingsActivity();
+
         onView(withText(R.string.sync_data_types_off)).check(matches(isDisplayed()));
     }
 
