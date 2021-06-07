@@ -1,4 +1,3 @@
-foolip@chromium.org
 steimel@chromium.org
 
 per-file *_mojom_traits*.*=set noparent

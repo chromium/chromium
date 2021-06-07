@@ -12,9 +12,7 @@ per-file web_rtc_*=hbos@chromium.org
 # Video SurfaceLayer functionality.
 per-file web_video_frame*=file://media/OWNERS
 per-file webaudiosourceprovider_impl.h=file://media/OWNERS
-per-file web_video_frame*=lethalantidote@chromium.org
 per-file web_surface_layer_bridge*=file://media/OWNERS
-per-file web_surface_layer_bridge*=lethalantidote@chromium.org
 
 # Any core owner can also approve changes to runtime-enabled features.
 # Please make sure to get a review from someone with expertise on the feature
