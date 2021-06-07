@@ -5,6 +5,7 @@
 #include "chrome/browser/browser_process_impl.h"
 
 #include <stddef.h>
+#include <stdio.h>
 
 #include <algorithm>
 #include <map>
@@ -759,6 +760,14 @@ void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
   // StartupBrowserCreator::LaunchBrowser can be run multiple times when browser
   // is started with several profiles or existing browser process is reused.
   if (!remote_debugging_server_) {
+    if (!local_state_->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+      // Follow content/browser/devtools/devtools_http_handler.cc that reports
+      // its remote debugging port on stderr for symmetry.
+      fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
+            stderr);
+      fflush(stderr);
+      return;
+    }
     remote_debugging_server_ = std::make_unique<RemoteDebuggingServer>();
   }
 #endif
@@ -944,6 +953,7 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
+  registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
 }
 
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {

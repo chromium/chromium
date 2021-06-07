@@ -5187,6 +5187,37 @@
       'arc_support': '''This policy also controls access to Android Developer Options. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access Developer Options. If you set this policy to another value or leave it unset, users can access Developer Options by tapping seven times on the build number in the Android settings app.''',
     },
     {
+      'name': 'RemoteDebuggingAllowed',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Allow use of the remote debugging''',
+        },
+        {
+          'value': False,
+          'caption': '''Do not allow use of the remote debugging''',
+        },
+      ],
+      'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': True,
+      'default': True,
+      'id': 864,
+      'caption': '''Allow remote debugging''',
+      'tags': [],
+      'desc': '''Controls whether users may use remote debugging.
+
+      If this policy is set to Enabled or not set, users may use remote debugging by specifying --remote-debugging-port and --remote-debugging-pipe command line switches.
+
+      If this policy is set to Disabled, users are not allowed to use remote debugging.'''
+    },
+    {
       'name': 'HeadlessMode',
       'owners': ['file://headless/OWNERS'],
       'type': 'int-enum',
@@ -27043,6 +27074,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 863,
+  'highest_id_currently_used': 864,
   'highest_atomic_group_id_currently_used': 40
 }

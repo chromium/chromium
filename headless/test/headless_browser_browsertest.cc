@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <tuple>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -764,131 +763,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, BadgingAPI) {
       browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
 
   EXPECT_TRUE(WaitForLoad(web_contents));
-}
-
-class HeadlessBrowserTestWithPolicy : public HeadlessBrowserTest {
- protected:
-  // Implement to set policies before headless browser is instantiated.
-  virtual void SetPolicy() {}
-
-  void SetUp() override {
-    mock_provider_ =
-        std::make_unique<policy::MockConfigurationPolicyProvider>();
-    EXPECT_CALL(*mock_provider_.get(), IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(false));
-    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
-        mock_provider_.get());
-    SetPolicy();
-    HeadlessBrowserTest::SetUp();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    HeadlessBrowserTest::SetUpInProcessBrowserTestFixture();
-    CreateTempUserDir();
-  }
-
-  void TearDown() override {
-    HeadlessBrowserTest::TearDown();
-    mock_provider_->Shutdown();
-    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
-  }
-
-  void CreateTempUserDir() {
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-    EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
-    options()->user_data_dir = user_data_dir();
-  }
-
-  const base::FilePath& user_data_dir() const {
-    return user_data_dir_.GetPath();
-  }
-
-  PrefService* GetPrefs() {
-    return static_cast<HeadlessBrowserImpl*>(browser())->GetPrefs();
-  }
-
-  base::ScopedTempDir user_data_dir_;
-  std::unique_ptr<policy::MockConfigurationPolicyProvider> mock_provider_;
-};
-
-// The following enum values must match HeadlessMode policy template in
-// components/policy/resources/policy_templates.json
-enum {
-  kHeadlessModePolicyEnabled = 1,
-  kHeadlessModePolicyDisabled = 2,
-  kHeadlessModePolicyUnset = -1,  // not in the template
-};
-
-class HeadlessBrowserTestWithHeadlessModePolicy
-    : public HeadlessBrowserTestWithPolicy,
-      public testing::WithParamInterface<std::tuple<int, bool>> {
- protected:
-  void SetPolicy() override {
-    int headless_mode_policy = std::get<0>(GetParam());
-    if (headless_mode_policy != kHeadlessModePolicyUnset) {
-      SetHeadlessModePolicy(
-          static_cast<policy::HeadlessModePolicy::HeadlessMode>(
-              headless_mode_policy));
-    }
-  }
-
-  void SetHeadlessModePolicy(
-      policy::HeadlessModePolicy::HeadlessMode headless_mode) {
-    policy::PolicyMap policy;
-    policy.Set("HeadlessMode", policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(static_cast<int>(headless_mode)),
-               /*external_data_fetcher=*/nullptr);
-    mock_provider_->UpdateChromePolicy(policy);
-  }
-
-  bool expected_enabled() { return std::get<1>(GetParam()); }
-  bool actual_enabled() {
-    return !policy::HeadlessModePolicy::IsHeadlessDisabled(GetPrefs());
-  }
-};
-
-INSTANTIATE_TEST_CASE_P(
-    HeadlessBrowserTestWithHeadlessModePolicy,
-    HeadlessBrowserTestWithHeadlessModePolicy,
-    testing::Values(std::make_tuple(kHeadlessModePolicyEnabled, true),
-                    std::make_tuple(kHeadlessModePolicyDisabled, false),
-                    std::make_tuple(kHeadlessModePolicyUnset, true)));
-
-IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithHeadlessModePolicy,
-                       HeadlessModePolicySettings) {
-  EXPECT_EQ(actual_enabled(), expected_enabled());
-}
-
-class HeadlessBrowserTestWithUrlBlockPolicy
-    : public HeadlessBrowserTestWithPolicy {
- protected:
-  void SetPolicy() override {
-    base::Value::ListStorage storage;
-    storage.emplace_back("*/blocked.html");
-    base::Value value(std::move(storage));
-
-    policy::PolicyMap policy;
-    policy.Set("URLBlocklist", policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               std::move(value), /*external_data_fetcher=*/nullptr);
-    mock_provider_->UpdateChromePolicy(policy);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithUrlBlockPolicy, BlockUrl) {
-  EXPECT_TRUE(embedded_test_server()->Start());
-
-  HeadlessBrowserContext* browser_context =
-      browser()->CreateBrowserContextBuilder().Build();
-
-  GURL url = embedded_test_server()->GetURL("/blocked.html");
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
-
-  net::Error error = net::OK;
-  EXPECT_FALSE(WaitForLoad(web_contents, &error));
-  EXPECT_EQ(error, net::ERR_BLOCKED_BY_ADMINISTRATOR);
 }
 
 }  // namespace headless

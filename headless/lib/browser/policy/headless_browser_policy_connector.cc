@@ -14,11 +14,14 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "headless/lib/browser/headless_pref_names.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
+#include "headless/lib/browser/policy/headless_policies.h"
 
 #if defined(OS_WIN)
 #include "base/win/registry.h"
@@ -53,6 +56,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kURLAllowlist, policy_prefs::kUrlAllowlist,
       base::Value::Type::LIST));
+
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kRemoteDebuggingAllowed,
+      headless::prefs::kDevToolsRemoteDebuggingAllowed,
+      base::Value::Type::BOOLEAN));
 
   return handlers;
 }

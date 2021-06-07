@@ -1701,6 +1701,20 @@
     ]
   },
 
+  "RemoteDebuggingAllowed": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "RemoteDebuggingAllowed": true },
+        "prefs": { "devtools.remote_debugging.allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+
   "HeadlessMode": {},
 
   "RestoreOnStartup": {

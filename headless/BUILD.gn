@@ -384,10 +384,14 @@ component("headless_non_renderer") {
 
   if (headless_use_policy) {
     sources += [
+      "lib/browser/headless_pref_names.cc",
+      "lib/browser/headless_pref_names.h",
       "lib/browser/policy/headless_browser_policy_connector.cc",
       "lib/browser/policy/headless_browser_policy_connector.h",
       "lib/browser/policy/headless_mode_policy.cc",
       "lib/browser/policy/headless_mode_policy.h",
+      "lib/browser/policy/headless_policies.cc",
+      "lib/browser/policy/headless_policies.h",
     ]
   }
 
@@ -684,6 +688,8 @@ test("headless_browsertests") {
     "test/headless_client_browsertest.cc",
     "test/headless_devtools_client_browsertest.cc",
     "test/headless_origin_trials_browsertest.cc",
+    "test/headless_policy_browsertest.cc",
+    "test/headless_policy_browsertest.h",
     "test/headless_test_launcher.cc",
     "test/headless_web_contents_browsertest.cc",
     "test/test_network_interceptor.cc",
