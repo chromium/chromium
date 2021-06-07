@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -644,7 +645,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
   const GURL kNavigateUrl = GURL("https://passwords.google.com/checkup");
 
   // The well known password change URL. The above URL will request a prerender
-  // of this page via the <link rel='prerender'> tag in the response.
+  // of this page via the <script type="speculationrules"> script in the
+  // response.
   // TODO(bokan): Normally the change-password URL would lead to a different
   // origin (e.g. example.com) but prerender2 doesn't yet support cross-origin
   // prerendering. Using passwords.google.com here is a bit unrealistic but
@@ -664,15 +666,24 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
         // is running so fail the test.
         CHECK_NE(params->url_request.url.path(),
                  kWellKnownNotExistingResourcePath);
+        std::string speculation_script = base::ReplaceStringPlaceholders(
+            R"(
+                <script type="speculationrules">
+                {
+                  "prerender":[
+                    {"source": "list",
+                    "urls": ["$1"]}
+                  ]
+                }
+                </script>
+              )",
+            {kWellKnownUrl.spec()}, nullptr);
 
         if (params->url_request.url == kNavigateUrl) {
           URLLoaderInterceptor::WriteResponse(
               "HTTP/1.1 200 OK\n"
               "Content-Type: text/html\n\n",
-              base::StringPrintf(
-                  "<!DOCTYPE html><link rel='prerender' href='%s'>",
-                  kWellKnownUrl.spec().c_str()),
-              params->client.get());
+              speculation_script, params->client.get());
           return true;
         }
 
