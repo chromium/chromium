@@ -9,8 +9,19 @@
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
+
+struct LastKnownTextState {
+  std::u16string text;
+  bool cursor_at_end_of_text;
+};
+
+struct LastKnownSuggestionState {
+  size_t start_pos;
+  std::u16string text;
+};
 
 // Integrates multi word suggestions produced by the system with the assistive
 // framework. Handles showing / accepting / dismissing any multi word
@@ -38,21 +49,22 @@ class MultiWordSuggester : public Suggester {
   std::vector<ime::TextSuggestion> GetSuggestions() override;
 
   void OnSurroundingTextChanged(const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos);
+                                size_t cursor_pos,
+                                size_t anchor_pos);
 
  private:
-  void DisplaySuggestion(const ime::TextSuggestion& suggestion);
+  void DisplaySuggestion(const std::u16string& text, int confirmed_length);
+  void ResetSuggestionState();
+  void ResetTextState();
 
   // The currently focused input (zero if none are focused)
   int focused_context_id_ = 0;
 
-  bool suggestion_shown_ = false;
+  // Previous suggestion details
+  absl::optional<LastKnownSuggestionState> suggestion_state_;
 
   // The last known state of text in the focused text input
-  std::u16string last_known_text_;
-  int last_known_cursor_pos_ = 0;
-  int last_known_anchor_pos_ = 0;
+  LastKnownTextState text_state_;
 
   // Not owned by this class
   SuggestionHandlerInterface* suggestion_handler_;

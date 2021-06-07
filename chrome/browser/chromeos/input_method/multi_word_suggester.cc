@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
@@ -29,21 +28,22 @@ absl::optional<TextSuggestion> GetMultiWordSuggestion(
   return absl::nullopt;
 }
 
-int CalculateConfirmedLength(const std::u16string& suggestion,
-                             const std::u16string& last_known_text_) {
-  int last_space_index = last_known_text_.rfind(u' ');
-  int offset = last_space_index < 0 ? 0 : last_space_index + 1;
-
+int CalculateNumberMatchingChars(const std::u16string& first,
+                                 const std::u16string& second) {
   int matching_character_count = 0;
-  for (int i = 0; i < suggestion.size(); i++) {
-    if (last_known_text_.size() < i + offset)
-      break;
-    if (last_known_text_[i + offset] != suggestion[i])
+  for (int i = 0; i < first.size() && i < second.size(); i++) {
+    if (first[i] != second[i])
       break;
     matching_character_count++;
   }
-
   return matching_character_count;
+}
+
+std::u16string ExtractFinalWord(const std::u16string& text) {
+  size_t last_space_index = text.rfind(u' ');
+  size_t offset =
+      last_space_index == std::u16string::npos ? 0 : last_space_index + 1;
+  return text.substr(offset);
 }
 
 }  // namespace
@@ -56,30 +56,56 @@ MultiWordSuggester::~MultiWordSuggester() = default;
 
 void MultiWordSuggester::OnFocus(int context_id) {
   focused_context_id_ = context_id;
+  ResetSuggestionState();
+  ResetTextState();
 }
 
 void MultiWordSuggester::OnBlur() {
   focused_context_id_ = 0;
+  ResetSuggestionState();
+  ResetTextState();
 }
 
 void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
-                                                  int cursor_pos,
-                                                  int anchor_pos) {
-  last_known_text_ = text;
-  last_known_cursor_pos_ = cursor_pos;
-  last_known_anchor_pos_ = anchor_pos;
+                                                  size_t cursor_pos,
+                                                  size_t anchor_pos) {
+  bool cursor_at_end_of_text =
+      cursor_pos == anchor_pos && cursor_pos == text.length();
+
+  text_state_ = LastKnownTextState{
+      .text = text, .cursor_at_end_of_text = cursor_at_end_of_text};
 }
 
 void MultiWordSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
-  auto multi_word_suggestion = GetMultiWordSuggestion(suggestions);
+  if (suggestion_state_ || !text_state_.cursor_at_end_of_text)
+    return;
+
+  absl::optional<TextSuggestion> multi_word_suggestion =
+      GetMultiWordSuggestion(suggestions);
+
   if (multi_word_suggestion) {
-    DisplaySuggestion(multi_word_suggestion.value());
+    auto suggestion = multi_word_suggestion.value();
+    auto suggestion_text = base::UTF8ToUTF16(suggestion.text);
+    auto final_word = ExtractFinalWord(text_state_.text);
+    int confirmed_length =
+        suggestion.mode == TextSuggestionMode::kCompletion
+            ? CalculateNumberMatchingChars(suggestion_text, final_word)
+            : 0;
+
+    DisplaySuggestion(suggestion_text, confirmed_length);
+
+    int start_pos = text_state_.text.length() >= confirmed_length
+                        ? text_state_.text.length() - confirmed_length
+                        : 0;
+
+    suggestion_state_ = LastKnownSuggestionState{.start_pos = start_pos,
+                                                 .text = suggestion_text};
   }
 }
 
 SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
-  if (!suggestion_shown_)
+  if (!suggestion_state_)
     return SuggestionStatus::kNotHandled;
 
   switch (event.code()) {
@@ -94,6 +120,25 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 bool MultiWordSuggester::Suggest(const std::u16string& text,
                                  size_t cursor_pos,
                                  size_t anchor_pos) {
+  if (!suggestion_state_ || cursor_pos != text.length())
+    return false;
+
+  auto last_suggestion_shown = suggestion_state_.value();
+  auto possibly_confirmed_text =
+      last_suggestion_shown.start_pos < text.length() &&
+              last_suggestion_shown.start_pos >= 0
+          ? text.substr(last_suggestion_shown.start_pos)
+          : base::EmptyString16();
+  bool matches_last_suggestion =
+      base::StartsWith(last_suggestion_shown.text, possibly_confirmed_text,
+                       base::CompareCase::INSENSITIVE_ASCII);
+
+  if (matches_last_suggestion) {
+    DisplaySuggestion(last_suggestion_shown.text,
+                      possibly_confirmed_text.length());
+    return true;
+  }
+
   return false;
 }
 
@@ -105,7 +150,7 @@ bool MultiWordSuggester::AcceptSuggestion(size_t index) {
     return false;
   }
 
-  suggestion_shown_ = false;
+  ResetSuggestionState();
   return true;
 }
 
@@ -117,7 +162,7 @@ void MultiWordSuggester::DismissSuggestion() {
     return;
   }
 
-  suggestion_shown_ = false;
+  ResetSuggestionState();
 }
 
 AssistiveType MultiWordSuggester::GetProposeActionType() {
@@ -132,19 +177,13 @@ std::vector<TextSuggestion> MultiWordSuggester::GetSuggestions() {
   return {};
 }
 
-void MultiWordSuggester::DisplaySuggestion(const TextSuggestion& suggestion) {
+void MultiWordSuggester::DisplaySuggestion(const std::u16string& text,
+                                           int confirmed_length) {
   ui::ime::SuggestionDetails details;
-  details.text = base::UTF8ToUTF16(suggestion.text);
+  details.text = text;
   details.show_accept_annotation = false;
   details.show_quick_accept_annotation = true;
-
-  // TODO(crbug/1146266): Move to suggestions service
-  details.confirmed_length =
-      suggestion.mode == TextSuggestionMode::kCompletion
-          ? CalculateConfirmedLength(details.text, last_known_text_)
-          : 0;
-
-  // TODO(crbug/1146266): Add required pref counter to hide settings link.
+  details.confirmed_length = confirmed_length;
   details.show_setting_link = false;
 
   std::string error;
@@ -153,8 +192,17 @@ void MultiWordSuggester::DisplaySuggestion(const TextSuggestion& suggestion) {
     LOG(ERROR) << "suggest: Failed to show suggestion in assistive framework"
                << " - " << error;
   }
+}
 
-  suggestion_shown_ = true;
+void MultiWordSuggester::ResetSuggestionState() {
+  suggestion_state_ = absl::nullopt;
+}
+
+void MultiWordSuggester::ResetTextState() {
+  text_state_ = LastKnownTextState{
+      .text = u"",
+      .cursor_at_end_of_text = true,
+  };
 }
 
 }  // namespace chromeos

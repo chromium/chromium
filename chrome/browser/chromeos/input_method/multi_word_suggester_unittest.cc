@@ -15,9 +15,9 @@
 namespace chromeos {
 namespace {
 
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
   suggester->HandleKeyEvent(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
@@ -156,6 +156,110 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
   EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"where are you going");
   EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 3);  // whe
+}
+
+TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "where are you going"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"hey there sam wher", 18, 18);
+  suggester.Suggest(u"hey there sam wher", 18, 18);
+  suggester.OnSurroundingTextChanged(u"hey there sam where", 19, 19);
+  suggester.Suggest(u"hey there sam where", 19, 19);
+  suggester.OnSurroundingTextChanged(u"hey there sam where ", 20, 20);
+  suggester.Suggest(u"hey there sam where ", 20, 20);
+  suggester.OnSurroundingTextChanged(u"hey there sam where a", 21, 21);
+  suggester.Suggest(u"hey there sam where a", 21, 21);
+  suggester.OnSurroundingTextChanged(u"hey there sam where ar", 22, 22);
+  suggester.Suggest(u"hey there sam where ar", 22, 22);
+  suggester.OnSurroundingTextChanged(u"hey there sam where are", 23, 23);
+  suggester.Suggest(u"hey there sam where are", 23, 23);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"where are you going");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 9);  // where are
+}
+
+TEST(MultiWordSuggesterTest,
+     TracksLastSuggestionOnSurroundingTextChangeAtBeginningText) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"h", 1, 1);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester.Suggest(u"ho", 2, 2);
+  suggester.OnSurroundingTextChanged(u"how", 3, 3);
+  suggester.Suggest(u"how", 3, 3);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"how are you");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 3);  // how
+}
+
+TEST(MultiWordSuggesterTest, TracksLastSuggestionOnLargeSurroundingTextChange) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"h", 1, 1);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester.Suggest(u"how ar", 6, 6);
+  suggester.OnSurroundingTextChanged(u"how are yo", 10, 10);
+  suggester.Suggest(u"how are yo", 10, 10);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"how are you");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 10);  // how are yo
+}
+
+TEST(MultiWordSuggesterTest,
+     DoesNotTrackLastSuggestionIfSurroundingTextChange) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"h", 1, 1);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester.Suggest(u"how ar", 6, 6);
+  suggester.OnSurroundingTextChanged(u"how yo", 6, 6);
+
+  // The consumer will handle dismissing the suggestion
+  EXPECT_FALSE(suggester.Suggest(u"how yo", 6, 6));
 }
 
 }  // namespace chromeos
