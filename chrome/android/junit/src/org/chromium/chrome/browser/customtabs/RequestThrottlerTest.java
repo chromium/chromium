@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -14,15 +14,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Tests for RequestThrottler.
- *
- * Note: tests are @UiThreadTest because RequestThrottler is not thread-safe.
+/**
+ * Tests for RequestThrottler.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class RequestThrottlerTest {
     private static final int UID = 1234;
     private static final int UID2 = 12345;
@@ -33,7 +33,7 @@ public class RequestThrottlerTest {
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        mContext = ApplicationProvider.getApplicationContext();
         RequestThrottler.purgeAllEntriesForTesting();
     }
 
@@ -45,7 +45,6 @@ public class RequestThrottlerTest {
     /** Tests that a client starts not banned. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testIsInitiallyNotBanned() {
         Assert.assertTrue(RequestThrottler.getForUid(UID).isPrerenderingAllowed());
     }
@@ -53,7 +52,6 @@ public class RequestThrottlerTest {
     /** Tests that a misbehaving client gets banned. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testBansUid() {
         RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
@@ -64,7 +62,6 @@ public class RequestThrottlerTest {
     /** Tests that the URL needs to match to avoid getting banned. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testBanningMatchesUrls() {
         RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
@@ -79,7 +76,6 @@ public class RequestThrottlerTest {
     /** Tests that a client can send a lot of requests, as long as they are matched by successes. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testDontBanAccurateClients() {
         RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
@@ -93,7 +89,6 @@ public class RequestThrottlerTest {
     /** Tests that partially accurate clients are not banned. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testDontBanPartiallyAccurateClients() {
         RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
@@ -109,7 +104,6 @@ public class RequestThrottlerTest {
     /** Tests that banning a UID doesn't ban another one. */
     @Test
     @SmallTest
-    @UiThreadTest
     public void testThrottlingBanIsByUid() {
         RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
