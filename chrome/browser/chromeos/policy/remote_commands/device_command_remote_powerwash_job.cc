@@ -27,7 +27,7 @@ constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
 // The time that we wait for the server to get the ACK, if that passes we
 // immediately start the powerwash process.
 constexpr base::TimeDelta kFailsafeTimerTimeout =
-    base::TimeDelta::FromSeconds(1);
+    base::TimeDelta::FromSeconds(10);
 
 void StartPowerwash(enterprise_management::SignedData signed_command) {
   chromeos::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
