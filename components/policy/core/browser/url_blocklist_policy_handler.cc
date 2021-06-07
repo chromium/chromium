@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -28,12 +29,17 @@ URLBlocklistPolicyHandler::~URLBlocklistPolicyHandler() = default;
 
 bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
+  size_t disabled_schemes_entries = 0;
   // This policy is deprecated but still supported so check it first.
   const base::Value* disabled_schemes =
       policies.GetValue(key::kDisabledSchemes);
-  if (disabled_schemes && !disabled_schemes->is_list()) {
-    errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
-                     base::Value::GetTypeName(base::Value::Type::LIST));
+  if (disabled_schemes) {
+    if (!disabled_schemes->is_list()) {
+      errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::LIST));
+    } else {
+      disabled_schemes_entries = disabled_schemes->GetList().size();
+    }
   }
 
   const base::Value* url_blocklist = policies.GetValue(policy_name());
@@ -45,6 +51,15 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                      base::Value::GetTypeName(base::Value::Type::LIST));
 
     return true;
+  }
+
+  // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
+  // warning message.
+  if (url_blocklist->GetList().size() + disabled_schemes_entries >
+      url_util::GetMaxFiltersPerPolicy()) {
+    errors->AddError(policy_name(),
+                     IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
+                     base::NumberToString(url_util::GetMaxFiltersPerPolicy()));
   }
 
   bool type_error = false;

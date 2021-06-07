@@ -228,6 +228,10 @@ GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
 }
 
+size_t GetMaxFiltersPerPolicy() {
+  return kMaxFiltersPerPolicy;
+}
+
 FilterComponents::FilterComponents()
     : port(0), match_subdomains(true), allow(true) {}
 FilterComponents::~FilterComponents() = default;

@@ -23,6 +23,9 @@ POLICY_EXPORT GURL Normalize(const GURL& url);
 // a known format.
 POLICY_EXPORT GURL GetEmbeddedURL(const GURL& url);
 
+// Gets maximum filters per policy.
+POLICY_EXPORT size_t GetMaxFiltersPerPolicy();
+
 struct FilterComponents {
   FilterComponents();
   FilterComponents(const FilterComponents&) = delete;
