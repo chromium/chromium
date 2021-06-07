@@ -9,7 +9,6 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
+import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import javax.inject.Inject;

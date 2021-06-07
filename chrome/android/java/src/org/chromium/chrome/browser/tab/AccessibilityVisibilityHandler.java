@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 
 /**

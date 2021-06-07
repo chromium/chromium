@@ -10,12 +10,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Collections;

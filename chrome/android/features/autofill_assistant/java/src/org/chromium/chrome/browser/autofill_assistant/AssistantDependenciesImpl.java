@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCo
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
