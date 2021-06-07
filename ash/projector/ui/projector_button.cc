@@ -34,6 +34,8 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/true,
                                                /*highlight_on_focus=*/true);
+
+  SetTooltipText(name);
 }
 
 void ProjectorButton::OnPaintBackground(gfx::Canvas* canvas) {

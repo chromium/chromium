@@ -1277,12 +1277,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_NO_RECEPTION_STATE_TOOLTIP" desc="Tooltip message that indicates to the user that the Enable Hotspot feature is disabled because their phone does not have mobile data.">
         Your phone must have mobile data to provide a hotspot
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_PROJECTOR_BUTTON_LABEL" desc="The label text for the button in the status tray to Projector.">
-        Presentation tools
-      </message>
-      <message name="IDS_ASH_PROJECTOR_KEY_IDEA_MARKED" desc="Message content on the toast that appears when a key idea is marked">
-        Marked as a key idea
-      </message>
       <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL" desc="The label next to the stylus battery indicator when the battery level is below 24%">
         Low
       </message>
@@ -3631,6 +3625,13 @@ Here are some things you can try to get started.
 
       <!-- Strings for Projector-->
 
+      <message name="IDS_ASH_STATUS_TRAY_PROJECTOR_BUTTON_LABEL" desc="The label text for the button in the status tray to Projector.">
+        Presentation tools
+      </message>
+      <message name="IDS_ASH_PROJECTOR_KEY_IDEA_MARKED" desc="Message content on the toast that appears when a key idea is marked">
+        Marked as a key idea
+      </message>
+
       <message name="IDS_KEY_IDEA_BUTTON" desc="The name for the key idea button.">
         Add key idea
       </message>
@@ -3639,8 +3640,8 @@ Here are some things you can try to get started.
         Laser pointer
       </message>
 
-      <message name="IDS_MARKER_BUTTON" desc="The name for the marker button.">
-        Marker
+      <message name="IDS_MARKER_TOOLS_BUTTON" desc="The name for the button that enables or disables marker tools.">
+        Marker drawing tools
       </message>
 
       <message name="IDS_INK_PEN_BUTTON" desc="The name for the ink pen button.">
@@ -3695,8 +3696,8 @@ Here are some things you can try to get started.
         Stop closed captions
       </message>
 
-      <message name="IDS_BAR_LOCATION_BUTTON" desc="The name for the bar location button.">
-        Toggle bar location
+      <message name="IDS_TOOLBAR_LOCATION_BUTTON" desc="The name for the button that toggles the toolbar location.">
+        Toggle toolbar location
       </message>
 
       <message name="IDS_BLACK_COLOR_BUTTON" desc="The name for the black marker button.">

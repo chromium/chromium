@@ -206,7 +206,8 @@ void ProjectorBarView::InitLayout() {
   marker_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnMarkerPressed,
                           base::Unretained(this)),
-      kProjectorMarkerIcon, l10n_util::GetStringUTF16(IDS_MARKER_BUTTON)));
+      kProjectorMarkerIcon,
+      l10n_util::GetStringUTF16(IDS_MARKER_TOOLS_BUTTON)));
 
   CreateMarkerOptionsBar();
 
@@ -356,7 +357,7 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
               &ProjectorBarView::OnChangeBarLocationButtonPressed,
               base::Unretained(this)),
           kAutoclickPositionBottomLeftIcon,
-          l10n_util::GetStringUTF16(IDS_BAR_LOCATION_BUTTON)));
+          l10n_util::GetStringUTF16(IDS_TOOLBAR_LOCATION_BUTTON)));
   bar_location_button_->SetVisible(true);
   tools_bar_ = AddChildView(std::move(box_layout));
 }
