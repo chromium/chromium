@@ -20,13 +20,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 namespace {
-
-constexpr char kAPIScope[] =
-    "https://www.googleapis.com/auth/identity.passwords.leak.check";
 
 // Returns a Google account that can be used for getting a token.
 CoreAccountId GetAccountForRequest(
@@ -171,8 +169,9 @@ std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
     signin::AccessTokenFetcher::TokenCallback callback) {
   return identity_manager->CreateAccessTokenFetcherForAccount(
       GetAccountForRequest(identity_manager),
-      /*oauth_consumer_name=*/"leak_detection_service", {kAPIScope},
-      std::move(callback), signin::AccessTokenFetcher::Mode::kImmediate);
+      /*oauth_consumer_name=*/"leak_detection_service",
+      {GaiaConstants::kPasswordsLeakCheckOAuth2Scope}, std::move(callback),
+      signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 }  // namespace password_manager
