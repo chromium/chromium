@@ -69,7 +69,14 @@ bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
 // considered safe and permitted to update their names.
 bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
-  return web_app && web_app->IsPreinstalledApp();
+  if (!web_app)
+    return false;
+  if (web_app->IsPolicyInstalledApp() &&
+      base::FeatureList::IsEnabled(
+          features::kWebAppManifestPolicyAppIdentityUpdate)) {
+    return true;
+  }
+  return web_app->IsPreinstalledApp();
 }
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore
@@ -77,8 +84,14 @@ bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
 // flag needs to be on.
 bool AllowIconUpdating(const AppId& app_id, const AppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
-  return web_app &&
-         (web_app->IsPreinstalledApp() ||
+  if (!web_app)
+    return false;
+  if (web_app->IsPolicyInstalledApp() &&
+      base::FeatureList::IsEnabled(
+          features::kWebAppManifestPolicyAppIdentityUpdate)) {
+    return true;
+  }
+  return (web_app->IsPreinstalledApp() ||
           base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating));
 }
 
