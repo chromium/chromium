@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 import javax.inject.Inject;

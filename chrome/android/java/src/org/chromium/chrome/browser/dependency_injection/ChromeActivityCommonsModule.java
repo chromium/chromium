@@ -17,6 +17,7 @@ import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
-import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -80,7 +80,7 @@ public class ChromeActivityCommonsModule {
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
-    private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
+    private final ObservableSupplier<Integer> mmAutofillUiBottomInsetSupplier;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -163,7 +163,7 @@ public class ChromeActivityCommonsModule {
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
+        mmAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
     }
 
     @Provides
@@ -344,6 +344,6 @@ public class ChromeActivityCommonsModule {
 
     @Provides
     public ObservableSupplier<Integer> provideAutofillUiBottomInsetSupplier() {
-        return mAutofillUiBottomInsetSupplier;
+        return mmAutofillUiBottomInsetSupplier;
     }
 }

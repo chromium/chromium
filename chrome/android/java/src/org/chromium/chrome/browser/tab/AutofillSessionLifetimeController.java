@@ -9,9 +9,9 @@ import android.app.Activity;
 import android.os.Build;
 
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.tab_provider.ActivityTabProvider;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /**
