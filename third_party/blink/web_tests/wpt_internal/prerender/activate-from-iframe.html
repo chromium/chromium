@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* startPrerendering() usage is replaced with a WebDriver API
+-->
+<title>Activate a prerendered page from iframe via window.parent.location</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async t => {
+  const resultChannel = new BroadcastChannel('result-channel');
+  t.add_cleanup(_ => resultChannel.close());
+
+  const url = `resources/activate-from-iframe.html?mode=triggering`;
+  window.open(url, '_blank', 'noopener');
+
+  const gotMessage = await new Promise(r => resultChannel.onmessage = r);
+  assert_equals(gotMessage.data, 'activated');
+}, `Navigation on the main frame initiated by an iframe via ` +
+   `window.parent.location should activate a prerendered page`);
+
+</script>
