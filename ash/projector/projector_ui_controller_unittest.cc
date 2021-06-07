@@ -266,6 +266,10 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kClearAllMarkers,
       /*count=*/1);
+  bar_view_->OnUndoButtonPressed();
+  histogram_tester.ExpectBucketCount(kProjectorToolbarHistogramName,
+                                     /*sample=*/ProjectorToolbar::kUndo,
+                                     /*count=*/1);
 
   bar_view_->OnMagnifierButtonPressed(/*enabled=*/true);
   histogram_tester.ExpectBucketCount(
@@ -345,7 +349,7 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       /*sample=*/ProjectorToolbar::kToolbarClosed,
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorToolbarHistogramName,
-                                    /*count=*/19);
+                                    /*count=*/20);
 }
 
 }  // namespace ash

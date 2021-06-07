@@ -246,6 +246,13 @@ void ProjectorUiController::OnClearAllMarkersPressed() {
   RecordToolbarMetrics(ProjectorToolbar::kClearAllMarkers);
 }
 
+void ProjectorUiController::OnUndoPressed() {
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  marker_controller->UndoLastStroke();
+  RecordToolbarMetrics(ProjectorToolbar::kUndo);
+}
+
 void ProjectorUiController::OnCaptionBubbleModelStateChanged(bool opened) {
   projector_bar_view_->OnCaptionBubbleModelStateChanged(opened);
   projector_controller_->OnCaptionBubbleModelStateChanged(opened);

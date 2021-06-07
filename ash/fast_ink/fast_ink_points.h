@@ -46,6 +46,10 @@ class ASH_EXPORT FastInkPoints {
   // Updates the collection latest time. Automatically clears points that are
   // too old.
   void MoveForwardToTime(const base::TimeTicks& latest_time);
+  // Removes the last stroke by removing the points since the last gap. If there
+  // are no gaps, deletes all points. Returns the bounding rectangle of the
+  // deleted points.
+  gfx::Rect UndoLastStroke();
   // Removes all points.
   void Clear();
   // Gets the bounding box of the points, int coordinates.

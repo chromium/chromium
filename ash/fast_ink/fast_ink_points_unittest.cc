@@ -253,4 +253,51 @@ TEST_F(FastInkPointsTest, AddGap) {
   EXPECT_FALSE(points[5].gap_after);
 }
 
+// Tests deleting points from the last stroke.
+TEST_F(FastInkPointsTest, UndoLastStroke) {
+  // Calling undo with no points should not crash.
+  gfx::Rect bounding_box = points_.UndoLastStroke();
+  EXPECT_EQ(bounding_box, gfx::Rect());
+
+  points_.AddPoint(gfx::PointF(0, 0), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(1, 1), base::TimeTicks());
+  points_.AddGap();
+
+  // Calling undo should clear all points.
+  bounding_box = points_.UndoLastStroke();
+  EXPECT_TRUE(points_.IsEmpty());
+  EXPECT_EQ(bounding_box, gfx::Rect(0, 0, 1, 1));
+
+  points_.AddPoint(gfx::PointF(0, 0), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(1, 1), base::TimeTicks());
+  points_.AddGap();
+  points_.AddPoint(gfx::PointF(2, 2), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(3, 3), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(4, 4), base::TimeTicks());
+  points_.AddGap();
+
+  // Calling undo should clear the second stroke only.
+  bounding_box = points_.UndoLastStroke();
+  EXPECT_EQ(points_.GetNumberOfPoints(), 2);
+  EXPECT_TRUE(points_.GetNewest().gap_after);
+  EXPECT_EQ(bounding_box, gfx::Rect(2, 2, 2, 2));
+
+  points_.AddPoint(gfx::PointF(0, 0), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(1, 1), base::TimeTicks());
+  points_.AddGap();
+  points_.AddPoint(gfx::PointF(2, 2), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(3, 3), base::TimeTicks());
+  points_.AddPoint(gfx::PointF(4, 4), base::TimeTicks());
+  points_.AddGap();
+  points_.AddPoint(gfx::PointF(5, 5), base::TimeTicks());
+
+  // Calling undo twice should clear the third and second strokes.
+  bounding_box = points_.UndoLastStroke();
+  EXPECT_EQ(bounding_box, gfx::Rect(5, 5, 0, 0));
+  bounding_box = points_.UndoLastStroke();
+  EXPECT_EQ(bounding_box, gfx::Rect(2, 2, 2, 2));
+  EXPECT_EQ(points_.GetNumberOfPoints(), 4);
+  EXPECT_TRUE(points_.GetNewest().gap_after);
+}
+
 }  // namespace fast_ink

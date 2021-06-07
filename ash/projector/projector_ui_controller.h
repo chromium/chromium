@@ -50,6 +50,8 @@ class ASH_EXPORT ProjectorUiController
   virtual void OnMarkerPressed();
   // Invoked when the clear all markers button is pressed. Virtual for testing.
   virtual void OnClearAllMarkersPressed();
+  // Invoked when the undo marker button is pressed. Virtual for testing.
+  virtual void OnUndoPressed();
   // Invoked when transcription is available for rendering. Virtual for testing.
   virtual void OnTranscription(const std::string& transcription, bool is_final);
   // Invoked when the selfie cam button is pressed. Virtual for testing.

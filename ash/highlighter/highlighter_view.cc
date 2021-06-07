@@ -149,6 +149,24 @@ void HighlighterView::Animate(const gfx::PointF& pivot,
                      gesture_type, std::move(done)));
 }
 
+void HighlighterView::UndoLastStroke() {
+  if (points_.IsEmpty())
+    return;
+
+  // Previous prediction needs to be erased.
+  if (!predicted_points_.IsEmpty()) {
+    highlighter_damage_rect_.Union(
+        InflateDamageRect(predicted_points_.GetBoundingBox()));
+    predicted_points_.Clear();
+  }
+
+  const gfx::Rect bounding_box = points_.UndoLastStroke();
+  // Ensure deleting the points also erases them by expanding the damage
+  // rectangle.
+  highlighter_damage_rect_.Union(InflateDamageRect(bounding_box));
+  ScheduleUpdateBuffer();
+}
+
 void HighlighterView::FadeOut(const gfx::PointF& pivot,
                               HighlighterGestureType gesture_type,
                               base::OnceClosure done) {

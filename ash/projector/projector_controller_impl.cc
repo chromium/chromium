@@ -115,6 +115,10 @@ void ProjectorControllerImpl::OnClearAllMarkersPressed() {
   ui_controller_->OnClearAllMarkersPressed();
 }
 
+void ProjectorControllerImpl::OnUndoPressed() {
+  ui_controller_->OnUndoPressed();
+}
+
 void ProjectorControllerImpl::OnSelfieCamPressed(bool enabled) {
   ui_controller_->OnSelfieCamPressed(enabled);
 

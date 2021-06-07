@@ -42,6 +42,8 @@ class ASH_EXPORT MarkerController : public fast_ink::FastInkPointerController {
 
   // Clears marker pointer.
   void Clear();
+  // Clears the last stroke.
+  void UndoLastStroke();
 
   void ChangeColor(SkColor new_color);
 

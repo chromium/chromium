@@ -138,6 +138,7 @@ void ProjectorBarView::OnLaserPointerStateChanged(bool enabled) {
 
 void ProjectorBarView::OnMarkerStateChanged(bool enabled) {
   marker_button_->SetToggled(enabled);
+  undo_button_->SetEnabled(enabled);
   clear_all_markers_button_->SetEnabled(enabled);
 
   marker_bar_state_ =
@@ -260,6 +261,9 @@ void ProjectorBarView::CreateMarkerOptionsBar() {
           base::BindRepeating(&ProjectorBarView::OnUndoButtonPressed,
                               base::Unretained(this)),
           kUndoIcon, l10n_util::GetStringUTF16(IDS_UNDO_BUTTON)));
+
+  // This button is disabled by default until marker mode activated.
+  undo_button_->SetEnabled(marker_button_->GetToggled());
 
   // Add clear all markers button.
   clear_all_markers_button_ =
@@ -422,7 +426,7 @@ void ProjectorBarView::OnCaretButtonPressed(bool expand) {
 }
 
 void ProjectorBarView::OnUndoButtonPressed() {
-  // TODO(crbug/1203444) Implement undo for marker.
+  projector_controller_->OnUndoPressed();
 }
 
 void ProjectorBarView::OnChangeMarkerColorPressed(SkColor new_color) {
@@ -452,7 +456,8 @@ void ProjectorBarView::UpdateToolbarButtonsVisibility() {
       marker_bar_->SetVisible(true);
       ink_pen_button_->SetVisible(false);
       marker_pen_button_->SetVisible(false);
-      undo_button_->SetVisible(false);
+      undo_button_->SetVisible(true);
+      clear_all_markers_button_->SetVisible(false);
       caret_left_->SetVisible(false);
       caret_right_->SetVisible(true);
       for (auto* color_button : marker_color_buttons_)
@@ -464,6 +469,7 @@ void ProjectorBarView::UpdateToolbarButtonsVisibility() {
       ink_pen_button_->SetVisible(true);
       marker_pen_button_->SetVisible(true);
       undo_button_->SetVisible(true);
+      clear_all_markers_button_->SetVisible(true);
       caret_left_->SetVisible(true);
       caret_right_->SetVisible(false);
       for (auto* color_button : marker_color_buttons_)

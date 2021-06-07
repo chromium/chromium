@@ -30,10 +30,11 @@ enum class ProjectorToolbar {
   kToolbarLocationTopLeft = 15,
   kToolbarLocationTopRight = 16,
   kToolbarLocationBottomRight = 17,
+  kUndo = 18,
   // Add future entries above this comment, in sync with
   // "ProjectorToolbar" in src/tools/metrics/histograms/enums.xml.
   // Update kMaxValue to the last value.
-  kMaxValue = kToolbarLocationBottomRight
+  kMaxValue = kUndo
 };
 
 // These enum values represent marker colors on the Projector toolbar and log to

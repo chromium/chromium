@@ -69,6 +69,26 @@ void FastInkPoints::MoveForwardToTime(const base::TimeTicks& latest_time) {
   }
 }
 
+gfx::Rect FastInkPoints::UndoLastStroke() {
+  if (points_.empty())
+    return gfx::Rect();
+
+  gfx::PointF min_point = GetNewest().location;
+  gfx::PointF max_point = min_point;
+  // Skip the last gap to delete until the penultimate gap.
+  if (points_.back().gap_after)
+    points_.pop_back();
+
+  while (!points_.empty() && !points_.back().gap_after) {
+    const gfx::PointF& location = points_.back().location;
+    min_point.SetToMin(location);
+    max_point.SetToMax(location);
+    points_.pop_back();
+  }
+
+  return gfx::ToEnclosingRect(gfx::BoundingRect(min_point, max_point));
+}
+
 void FastInkPoints::Clear() {
   points_.clear();
 }
@@ -82,7 +102,7 @@ gfx::RectF FastInkPoints::GetBoundingBoxF() const {
     return gfx::RectF();
 
   gfx::PointF min_point = GetOldest().location;
-  gfx::PointF max_point = GetOldest().location;
+  gfx::PointF max_point = min_point;
   for (const FastInkPoint& point : points_) {
     min_point.SetToMin(point.location);
     max_point.SetToMax(point.location);

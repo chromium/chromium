@@ -32,6 +32,7 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
   MOCK_METHOD0(OnLaserPointerPressed, void());
   MOCK_METHOD0(OnMarkerPressed, void());
   MOCK_METHOD0(OnClearAllMarkersPressed, void());
+  MOCK_METHOD0(OnUndoPressed, void());
   MOCK_METHOD2(OnTranscription,
                void(const std::string& transcription, bool is_final));
   MOCK_METHOD1(OnSelfieCamPressed, void(bool enabled));

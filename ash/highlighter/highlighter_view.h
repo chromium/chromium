@@ -51,12 +51,14 @@ class HighlighterView : public fast_ink::FastInkView {
   void Animate(const gfx::PointF& pivot,
                HighlighterGestureType gesture_type,
                base::OnceClosure done);
+  // Deletes the last stroke.
+  void UndoLastStroke();
 
  private:
   friend class HighlighterControllerTestApi;
   friend class MarkerControllerTestApi;
 
-  HighlighterView(const base::TimeDelta presentation_delay);
+  explicit HighlighterView(const base::TimeDelta presentation_delay);
 
   void FadeOut(const gfx::PointF& pivot,
                HighlighterGestureType gesture_type,

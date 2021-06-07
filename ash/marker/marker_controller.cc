@@ -47,6 +47,11 @@ void MarkerController::Clear() {
   DestroyMarkerView();
 }
 
+void MarkerController::UndoLastStroke() {
+  if (GetMarkerView())
+    GetMarkerView()->UndoLastStroke();
+}
+
 void MarkerController::ChangeColor(SkColor new_color) {
   marker_color_ = new_color;
 

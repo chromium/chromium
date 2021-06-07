@@ -221,6 +221,11 @@ TEST_F(ProjectorControllerTest, OnChangeMarkerColorPressed) {
   controller_->OnChangeMarkerColorPressed(SK_ColorBLACK);
 }
 
+TEST_F(ProjectorControllerTest, OnUndoPressed) {
+  EXPECT_CALL(*mock_ui_controller_, OnUndoPressed());
+  controller_->OnUndoPressed();
+}
+
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/true));
