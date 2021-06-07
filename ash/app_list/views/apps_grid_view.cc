@@ -94,15 +94,6 @@ constexpr int kFolderItemReparentDelay = 50;
 // Maximum vertical and horizontal spacing between tiles.
 constexpr int kMaximumTileSpacing = 96;
 
-// Animation curve used for fading in the target page when opening or closing
-// a folder.
-constexpr gfx::Tween::Type kFolderFadeInTweenType = gfx::Tween::EASE_IN_2;
-
-// Animation curve used for fading out the target page when opening or closing
-// a folder.
-constexpr gfx::Tween::Type kFolderFadeOutTweenType =
-    gfx::Tween::FAST_OUT_LINEAR_IN;
-
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
 // the original position, then the item is moved to just before its target
@@ -757,25 +748,6 @@ AppListItemView* AppsGridView::GetItemViewAt(int index) const {
   if (index < 0 || index >= view_model_.view_size())
     return nullptr;
   return view_model_.view_at(index);
-}
-
-void AppsGridView::ScheduleShowHideAnimation(bool show) {
-  // Stop any previous animation.
-  layer()->GetAnimator()->StopAnimating();
-
-  // Set initial state.
-  SetVisible(true);
-  layer()->SetOpacity(show ? 0.0f : 1.0f);
-
-  ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.AddObserver(this);
-  animation.SetTweenType(show ? kFolderFadeInTweenType
-                              : kFolderFadeOutTweenType);
-  animation.SetTransitionDuration(
-      show ? GetAppListConfig().folder_transition_in_duration()
-           : GetAppListConfig().folder_transition_out_duration());
-
-  layer()->SetOpacity(show ? 1.0f : 0.0f);
 }
 
 void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(

@@ -201,9 +201,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // view at |index|.
   AppListItemView* GetItemViewAt(int index) const;
 
-  // Schedules an animation to show or hide the view.
-  void ScheduleShowHideAnimation(bool show);
-
   // Called to initiate drag for reparenting a folder item in root level grid
   // view.
   // Both |drag_view_rect| and |drag_pint| is in the coordinates of root level
