@@ -4066,7 +4066,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size.ht
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size-and-viewbox.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-with-multiple-tspans.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-with-text-path.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/hixie/perf/004.xml [ Pass Timeout Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/masking/mask-of-root.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/stroke/non-scaling-stroke-text-decoration.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/stroke/non-scaling-stroke-text-decoration-dashed.html [ Failure ]
@@ -6160,9 +6159,6 @@ crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ 
 
 crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Timeout ]
 crbug.com/1168785 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Pass Timeout ]
-
-# Sheriff 2021-01-29
-crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
 
 # flaky test
 crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
