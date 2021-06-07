@@ -652,7 +652,8 @@ public class BottomSheetControllerTest {
             }
         });
 
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(),
+                shown ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING);
         ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 

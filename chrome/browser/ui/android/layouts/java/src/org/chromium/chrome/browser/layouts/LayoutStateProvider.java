@@ -60,6 +60,13 @@ public interface LayoutStateProvider {
     boolean isLayoutVisible(@LayoutType int layoutType);
 
     /**
+     * Get the type of the layout that is currently active.
+     * @return The {@link LayoutType} of the active layout.
+     */
+    @LayoutType
+    int getActiveLayoutType();
+
+    /**
      * @param listener Registers {@code listener} for all layout status changes.
      */
     void addObserver(LayoutStateObserver listener);

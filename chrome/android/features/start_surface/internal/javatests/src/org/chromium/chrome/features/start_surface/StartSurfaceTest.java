@@ -230,8 +230,13 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver(
-                (obs) -> { obs.addObserver(mLayoutObserver); });
+        mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver((manager) -> {
+            if (manager.getActiveLayout() != null) {
+                mCurrentlyActiveLayout = manager.getActiveLayout().getLayoutType();
+                mLayoutChangedCallbackHelper.notifyCalled();
+            }
+            manager.addObserver(mLayoutObserver);
+        });
     }
 
     @Test

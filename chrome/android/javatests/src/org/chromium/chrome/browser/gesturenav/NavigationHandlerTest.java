@@ -297,7 +297,7 @@ public class NavigationHandlerTest {
                 mActivityTestRule.getActivity().getLayoutManager().hideOverview(false);
             }
         });
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+        LayoutTestUtils.waitForLayout(mActivityTestRule.getActivity().getLayoutManager(),
+                inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING);
     }
 }
