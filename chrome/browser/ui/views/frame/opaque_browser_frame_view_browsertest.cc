@@ -240,6 +240,9 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
 
+    EXPECT_TRUE(ExecJs(browser_view_->GetActiveWebContents(),
+                       "overlay = navigator.windowControlsOverlay"));
+
     return true;
   }
 
@@ -255,32 +258,33 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  static_cast<views::View*>(opaque_browser_frame_view_)->Layout();
+  opaque_browser_frame_view_->Layout();
 
-  auto* web_contents =
-      opaque_browser_frame_view_->browser_view()->GetActiveWebContents();
+  auto* web_contents = browser_view_->GetActiveWebContents();
 
-  // window controls overlay should be not be an empty rect and visible as this
-  // a web app.
-  int empty_rect_value = 0;
+  // Verify titlebar rect is empty before enabling window controls overlay.
+  EXPECT_EQ(false, EvalJs(web_contents, "overlay.visible"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().x"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().y"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().width"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().height"));
 
-  EXPECT_EQ(true, EvalJs(web_contents,
-                         "window.navigator.windowControlsOverlay.visible"));
+  // Enable window controls overlay and verify titlebar rect is not empty.
+  browser_view_->ToggleWindowControlsOverlayEnabled();
+  opaque_browser_frame_view_->Layout();
 
-  EXPECT_EQ(
-      0, EvalJs(web_contents,
-                "navigator.windowControlsOverlay.getBoundingClientRect().x"));
-  EXPECT_EQ(
-      0, EvalJs(web_contents,
-                "navigator.windowControlsOverlay.getBoundingClientRect().y"));
-  EXPECT_NE(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().width"));
-  EXPECT_NE(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+  EXPECT_EQ(true, EvalJs(web_contents, "overlay.visible"));
+  EXPECT_LT(0, EvalJs(web_contents, "overlay.getBoundingClientRect().width"));
+  EXPECT_LT(0, EvalJs(web_contents, "overlay.getBoundingClientRect().height"));
+
+  // Disable window controls overlay and ensure that titlebar rect is empty.
+  browser_view_->ToggleWindowControlsOverlayEnabled();
+
+  EXPECT_EQ(false, EvalJs(web_contents, "overlay.visible"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().x"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().y"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().width"));
+  EXPECT_EQ(0, EvalJs(web_contents, "overlay.getBoundingClientRect().height"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
@@ -288,8 +292,10 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  auto* web_contents =
-      opaque_browser_frame_view_->browser_view()->GetActiveWebContents();
+  // Enable window controls overlay before checking for geometrychange events.
+  browser_view_->ToggleWindowControlsOverlayEnabled();
+
+  auto* web_contents = browser_view_->GetActiveWebContents();
 
   EXPECT_TRUE(ExecuteScript(
       web_contents->GetMainFrame(),
@@ -301,20 +307,15 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
       "}"));
 
   // Change size of widget to trigger a "geometrychange" event.
-  gfx::Rect bounds =
-      opaque_browser_frame_view_->browser_view()->GetLocalBounds();
+  gfx::Rect bounds = browser_view_->GetLocalBounds();
   bounds.set_width(bounds.width() - 1);
-  opaque_browser_frame_view_->browser_view()->GetWidget()->SetBounds(bounds);
+  browser_view_->GetWidget()->SetBounds(bounds);
 
-  // Window controls overlay should be not be an empty rect and visible as this
-  // a web app.
-  int empty_rect_value = 0;
-
-  // expect the "geometrychange" event to have fired.
+  // Expect the "geometrychange" event to have fired.
   EXPECT_NE(0, EvalJs(web_contents, "geometrychangeCount"));
 
   // Validate event payload.
   EXPECT_EQ(true, EvalJs(web_contents, "visible"));
-  EXPECT_NE(empty_rect_value, EvalJs(web_contents, "rect.width"));
-  EXPECT_NE(empty_rect_value, EvalJs(web_contents, "rect.height"));
+  EXPECT_NE(0, EvalJs(web_contents, "rect.width"));
+  EXPECT_NE(0, EvalJs(web_contents, "rect.height"));
 }

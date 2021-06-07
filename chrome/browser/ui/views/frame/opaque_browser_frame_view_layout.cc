@@ -235,6 +235,31 @@ int OpaqueBrowserFrameViewLayout::GetNonClientRestoredExtraThickness() const {
   return thickness;
 }
 
+void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
+    bool enabled,
+    views::View* host) {
+  if (enabled == is_window_controls_overlay_enabled_)
+    return;
+
+  is_window_controls_overlay_enabled_ = enabled;
+
+  for (auto* button :
+       {minimize_button_, maximize_button_, restore_button_, close_button_}) {
+    if (!button)
+      continue;
+
+    if (is_window_controls_overlay_enabled_) {
+      // Move button to top of hierarchy to ensure that it receives events
+      // before the placeholder container.
+      host->AddChildView(button);
+      button->SetPaintToLayer();
+      button->layer()->SetFillsBoundsOpaquely(false);
+    } else {
+      button->DestroyLayer();
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameViewLayout, protected:
 

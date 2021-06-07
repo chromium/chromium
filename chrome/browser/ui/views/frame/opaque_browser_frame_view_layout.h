@@ -120,15 +120,14 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Returns the extra thickness of the area above the tabs.
   int GetNonClientRestoredExtraThickness() const;
 
+  // Enables or disables WCO and updates child views accordingly.
+  void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
+
   // views::LayoutManager:
   // Called explicitly from OpaqueBrowserFrameView so we can't group it with
   // the other overrides.
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
-  void set_window_controls_overlay_enabled(
-      bool is_window_controls_overlay_enabled) {
-    is_window_controls_overlay_enabled_ = is_window_controls_overlay_enabled;
-  }
 
  protected:
   // Whether a specific button should be inserted on the leading or trailing
