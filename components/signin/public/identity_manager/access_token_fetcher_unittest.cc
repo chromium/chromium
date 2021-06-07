@@ -199,6 +199,26 @@ class AccessTokenFetcherTest
   base::OnceClosure on_access_token_request_callback_;
 };
 
+TEST_F(AccessTokenFetcherTest, EmptyAccountFailsButDoesNotCrash) {
+  TestTokenCallback callback;
+
+  base::RunLoop run_loop;
+
+  // This should result in a request for an access token.
+  auto fetcher = CreateFetcher(CoreAccountId(), callback.Get(),
+                               AccessTokenFetcher::Mode::kImmediate);
+
+  // Fetching access tokens for an empty account id should respond with
+  // USER_NOT_SIGNED_UP error.
+  EXPECT_CALL(callback,
+              Run(GoogleServiceAuthError(
+                      GoogleServiceAuthError::State::USER_NOT_SIGNED_UP),
+                  AccessTokenInfo()))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  run_loop.Run();
+}
+
 TEST_F(AccessTokenFetcherTest, OneShotShouldCallBackOnFulfilledRequest) {
   TestTokenCallback callback;
 
