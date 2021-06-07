@@ -1814,6 +1814,7 @@ try_.chromium_win_builder(
     executable = "recipe:chromium_upload_clang",
     goma_backend = None,
     os = os.WINDOWS_ANY,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.chromium_win_builder(
