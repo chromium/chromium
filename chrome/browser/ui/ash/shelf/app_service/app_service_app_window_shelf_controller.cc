@@ -646,10 +646,8 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     return ash::ShelfID(plugin_vm::kPluginVmShelfAppId);
 
   ash::ShelfID shelf_id;
-  if (arc_tracker_) {
-    shelf_id = arc_tracker_->GetShelfId(
-        arc::GetWindowTaskId(window).value_or(arc::kNoTaskId));
-  }
+  if (arc_tracker_)
+    shelf_id = arc_tracker_->GetShelfId(window);
 
   if (!shelf_id.IsNull())
     return shelf_id;

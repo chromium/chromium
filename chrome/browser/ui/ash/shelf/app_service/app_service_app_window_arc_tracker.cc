@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -101,15 +102,17 @@ void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
 void AppServiceAppWindowArcTracker::HandleWindowDestroying(
     aura::Window* window) {
   app_service_controller_->UnregisterWindow(window);
+
   // Replace the pointers to the window by nullptr to prevent from using it
   // before OnTaskDestroyed() is called to remove the entry from
   // |task_id_to_arc_app_window_info_|;
-  auto task_id = arc::GetWindowTaskId(window);
-  if (!task_id.has_value())
-    return;
-  auto it = task_id_to_arc_app_window_info_.find(*task_id);
-  if (it != task_id_to_arc_app_window_info_.end())
-    it->second->set_window(nullptr);
+  ArcAppWindowInfo* info = GetArcAppWindowInfo(window);
+  if (info)
+    info->set_window(nullptr);
+
+  auto session_id = arc::GetWindowSessionId(window);
+  if (session_id.has_value())
+    session_id_to_arc_app_window_info_.erase(*session_id);
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
@@ -371,15 +374,15 @@ void AppServiceAppWindowArcTracker::OnItemDelegateDiscarded(
   }
 }
 
-ash::ShelfID AppServiceAppWindowArcTracker::GetShelfId(int task_id) const {
+ash::ShelfID AppServiceAppWindowArcTracker::GetShelfId(aura::Window* window) {
   if (observed_profile_ != app_service_controller_->owner()->profile())
     return ash::ShelfID();
 
-  const auto it = task_id_to_arc_app_window_info_.find(task_id);
-  if (it == task_id_to_arc_app_window_info_.end())
+  ArcAppWindowInfo* info = GetArcAppWindowInfo(window);
+  if (!info)
     return ash::ShelfID();
 
-  return it->second->shelf_id();
+  return info->shelf_id();
 }
 
 void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
@@ -508,4 +511,36 @@ void AppServiceAppWindowArcTracker::OnIconLoaded(int32_t task_id,
                                                  const gfx::ImageSkia& icon) {
   gfx::ImageSkia image = icon;
   SetDescription(task_id, title, image);
+}
+
+ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
+    aura::Window* window) {
+  const auto task_id = arc::GetWindowTaskId(window);
+  if (task_id.has_value()) {
+    auto it = task_id_to_arc_app_window_info_.find(*task_id);
+    if (it != task_id_to_arc_app_window_info_.end())
+      return it->second.get();
+  }
+
+  const auto session_id = arc::GetWindowSessionId(window);
+  if (!session_id.has_value())
+    return nullptr;
+
+  const std::string* arc_app_id = window->GetProperty(full_restore::kAppIdKey);
+  if (!arc_app_id || arc_app_id->empty())
+    return nullptr;
+
+  auto session_id_it = session_id_to_arc_app_window_info_.find(*session_id);
+  if (session_id_it != session_id_to_arc_app_window_info_.end())
+    return session_id_it->second.get();
+
+  const arc::ArcAppShelfId arc_app_shelf_id =
+      arc::ArcAppShelfId::FromIntentAndAppId(/*intent=*/std::string(),
+                                             *arc_app_id);
+  session_id_to_arc_app_window_info_[*session_id] =
+      std::make_unique<ArcAppWindowInfo>(arc_app_shelf_id,
+                                         /*intent=*/std::string(),
+                                         /*package_name=*/std::string());
+
+  return session_id_to_arc_app_window_info_[*session_id].get();
 }

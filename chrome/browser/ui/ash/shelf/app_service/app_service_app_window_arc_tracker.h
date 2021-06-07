@@ -92,12 +92,15 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   void OnItemDelegateDiscarded(const ash::ShelfID& shelf_id,
                                ash::ShelfItemDelegate* delegate);
 
-  ash::ShelfID GetShelfId(int task_id) const;
+  ash::ShelfID GetShelfId(aura::Window* window);
 
   int active_task_id() const { return active_task_id_; }
 
  private:
   using TaskIdToArcAppWindowInfo =
+      std::map<int, std::unique_ptr<ArcAppWindowInfo>>;
+
+  using SessionIdToArcAppWindowInfo =
       std::map<int, std::unique_ptr<ArcAppWindowInfo>>;
 
   // Maps shelf group id to controller. Shelf group id is optional parameter for
@@ -136,10 +139,13 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                       const std::string& title,
                       gfx::ImageSkia icon);
 
+  ArcAppWindowInfo* GetArcAppWindowInfo(aura::Window* window);
+
   Profile* const observed_profile_;
   AppServiceAppWindowShelfController* const app_service_controller_;
 
   TaskIdToArcAppWindowInfo task_id_to_arc_app_window_info_;
+  SessionIdToArcAppWindowInfo session_id_to_arc_app_window_info_;
   ShelfGroupToAppControllerMap app_shelf_group_to_controller_map_;
 
   // ARC app task id could be created after the window initialized.
