@@ -252,7 +252,10 @@ def blink_type_info(idl_type, use_new_union=True):
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
         if real_type.is_enumeration:
-            return TypeInfo(typename, clear_member_var_fmt="")
+            return TypeInfo(typename,
+                            ref_fmt="{}",
+                            const_ref_fmt="{}",
+                            clear_member_var_fmt="")
         return TypeInfo(typename,
                         member_fmt="Member<{}>",
                         ref_fmt="{}*",
@@ -593,12 +596,22 @@ def make_default_value_expr(idl_type, default_value, use_new_union=True):
         initializer_expr = None  # VectorOf<T>::size() == 0 by default
         assignment_value = "{}()".format(type_info.value_t)
     elif default_value.idl_type.is_object:
-        dict_name = blink_class_name(idl_type.unwrap().type_definition_object)
-        value = _format("{}::Create(${isolate})", dict_name)
-        initializer_expr = value
-        initializer_deps = ["isolate"]
-        assignment_value = value
-        assignment_deps = ["isolate"]
+        dictionary = idl_type.unwrap().type_definition_object
+        # Currently "isolate" is the only possible dependency, so whenever
+        # .initializer_deps exists, it must be ["isolate"].
+        if any((make_default_value_expr(member.idl_type,
+                                        member.default_value).initializer_deps)
+               for member in dictionary.members if member.default_value):
+            value = _format("{}::Create(${isolate})",
+                            blink_class_name(dictionary))
+            initializer_expr = value
+            initializer_deps = ["isolate"]
+            assignment_value = value
+            assignment_deps = ["isolate"]
+        else:
+            value = _format("{}::Create()", blink_class_name(dictionary))
+            initializer_expr = value
+            assignment_value = value
     elif default_value.idl_type.is_boolean:
         value = "true" if default_value.value else "false"
         initializer_expr = value

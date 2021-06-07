@@ -89,8 +89,8 @@ def collect_forward_decls_and_include_headers(idl_types):
         elif idl_type.is_promise:
             header_include_headers.add(
                 "third_party/blink/renderer/bindings/core/v8/script_promise.h")
-        elif (idl_type.is_sequence or idl_type.is_record
-              or idl_type.is_frozen_array or idl_type.is_variadic):
+        elif (idl_type.is_sequence or idl_type.is_frozen_array
+              or idl_type.is_record or idl_type.is_variadic):
             header_include_headers.add(
                 "third_party/blink/renderer/platform/heap/heap_allocator.h")
         elif idl_type.is_string:

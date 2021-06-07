@@ -99,6 +99,13 @@ class PLATFORM_EXPORT ExceptionState {
 
     ~ContextScope() { exception_state_.PopContextScope(); }
 
+    // This is used for a performance hack to reduce the number of construction
+    // and destruction times of ContextScope when iterating over properties.
+    // Only the generated bindings code is allowed to use this hack.
+    void ChangePropertyNameAsOptimizationHack(const char* property_name) {
+      context_.ChangePropertyNameAsOptimizationHack(property_name);
+    }
+
    private:
     void SetParent(const ContextScope* parent) { parent_ = parent; }
     const ContextScope* GetParent() const { return parent_; }
@@ -106,7 +113,7 @@ class PLATFORM_EXPORT ExceptionState {
 
     ExceptionState& exception_state_;
     const ContextScope* parent_ = nullptr;
-    const ExceptionContext context_;
+    ExceptionContext context_;
 
     friend class ExceptionState;
   };
@@ -205,6 +212,13 @@ class PLATFORM_EXPORT ExceptionState {
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const {
     DCHECK(!context_stack_top_);
+    return main_context_;
+  }
+
+  // Returns the innermost context of the nested exception contexts.
+  const ExceptionContext& GetInnerMostContext() const {
+    if (context_stack_top_)
+      return context_stack_top_->GetContext();
     return main_context_;
   }
 

@@ -210,36 +210,34 @@ CORE_EXPORT v8::Local<v8::Array> EnumerateIndexedProperties(
 //
 // |try_block| must be the innermost v8::TryCatch and it's used to internally
 // capture an exception, which is rethrown in |exception_state|.
-template <typename NVTTag, bool is_required, typename T>
-bool ConvertDictionaryMember(v8::Isolate* isolate,
-                             v8::Local<v8::Context> current_context,
-                             v8::Local<v8::Object> v8_dictionary,
-                             v8::Local<v8::Name> v8_member_name,
-                             const char* dictionary_name,
-                             const char* member_name,
-                             T& value,
-                             bool& presence,
-                             v8::TryCatch& try_block,
-                             ExceptionState& exception_state) {
+template <typename IDLType, bool is_required, typename ValueType>
+bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
+                                     v8::Local<v8::Context> current_context,
+                                     v8::Local<v8::Object> v8_dictionary,
+                                     v8::Local<v8::Name> v8_member_name,
+                                     bool& presence,
+                                     ValueType& value,
+                                     v8::TryCatch& try_block,
+                                     ExceptionState& exception_state) {
   v8::Local<v8::Value> v8_value;
   if (!v8_dictionary->Get(current_context, v8_member_name).ToLocal(&v8_value)) {
     exception_state.RethrowV8Exception(try_block.Exception());
-    try_block.Reset();
     return false;
   }
 
   if (v8_value->IsUndefined()) {
     if (is_required) {
       exception_state.ThrowTypeError(ExceptionMessages::FailedToGet(
-          member_name, dictionary_name, "Required member is undefined."));
+          exception_state.GetInnerMostContext().GetPropertyName(),
+          exception_state.GetInnerMostContext().GetClassName(),
+          "Required member is undefined."));
       return false;
     }
-    presence = false;
     return true;
   }
 
-  value = NativeValueTraits<NVTTag>::NativeValue(isolate, v8_value,
-                                                 exception_state);
+  value = NativeValueTraits<IDLType>::NativeValue(isolate, v8_value,
+                                                  exception_state);
   if (exception_state.HadException()) {
     return false;
   }

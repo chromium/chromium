@@ -42,6 +42,14 @@ from .task_queue import TaskQueue
 
 
 class _UnionMember(object):
+    """
+    _UnionMember represents the properties that the code generator directly
+    needs while web_idl.Union represents properties of IDL union independent
+    from ECMAScript binding.  _UnionMember is specific to not only ECMAScript
+    binding but also Blink implementation of IDL union and its flattened member
+    types.
+    """
+
     def __init__(self, base_name):
         assert isinstance(base_name, str)
 

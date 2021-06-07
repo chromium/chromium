@@ -84,7 +84,14 @@ class CodeGenContext(object):
             "named_property_deleter": None,
             "stringifier": None,
 
-            # Contents of union.
+            # Cache of a tuple of dictionary._DictionaryMember for the own
+            # members of the dictionary of which the Blink class is being
+            # generated.  The cache is used in dictionary.py to save code
+            # generation time.
+            "dictionary_own_members": (),
+            # Cache of a tuple of union._UnionMember for the flattened member
+            # types of the union of which the Blink class is being generated.
+            # The cache is used in union.py to save code generation time.
             "union_members": (),
 
             # The names of the class being generated and its base class.
