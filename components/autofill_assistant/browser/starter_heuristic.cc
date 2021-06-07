@@ -46,6 +46,7 @@ void StarterHeuristic::InitFromTrialParams() {
 
   std::string parameters = kFieldTrialParams.Get();
   if (parameters.empty()) {
+    VLOG(2) << "Field trial parameter not set";
     return;
   }
   absl::optional<base::Value> dict = base::JSONReader::Read(parameters);
@@ -106,6 +107,8 @@ void StarterHeuristic::InitFromTrialParams() {
     }
   }
 
+  VLOG(2) << "Read " << condition_sets.size() << " condition sets and "
+          << denylisted_domains.size() << " denylisted domains.";
   denylisted_domains_ = std::move(denylisted_domains);
   url_matcher_.AddConditionSets(condition_sets);
   matcher_id_to_intent_map_ = std::move(mapping);
