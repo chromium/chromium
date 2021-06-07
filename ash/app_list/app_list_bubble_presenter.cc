@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/bubble/app_list_bubble_event_filter.h"
@@ -40,9 +41,11 @@ void AppListBubblePresenter::Show(int64_t display_id) {
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   Shelf* shelf = Shelf::ForWindow(root_window);
-  bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<AppListBubbleView>(controller_, root_window,
-                                          shelf->alignment()));
+  auto bubble_view = std::make_unique<AppListBubbleView>(
+      controller_, root_window, shelf->alignment());
+  bubble_view_ = bubble_view.get();
+  bubble_widget_ =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   bubble_widget_->AddObserver(this);
   bubble_widget_->Show();
   // TODO(https://crbug.com/1205494): Focus search box.
@@ -82,6 +85,7 @@ void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   bubble_event_filter_.reset();
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
+  bubble_view_ = nullptr;
 }
 
 }  // namespace ash

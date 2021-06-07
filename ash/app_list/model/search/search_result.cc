@@ -5,6 +5,7 @@
 #include "ash/app_list/model/search/search_result.h"
 
 #include <map>
+#include <utility>
 
 #include "ash/app_list/model/search/search_result_observer.h"
 #include "ui/base/models/image_model.h"

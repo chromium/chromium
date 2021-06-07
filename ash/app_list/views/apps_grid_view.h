@@ -152,7 +152,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool IsDragging() const override;
   bool IsDraggedView(const AppListItemView* view) const override;
   bool IsDragViewMoved(const AppListItemView& view) const override;
-  const gfx::Rect& GetIdealBounds(AppListItemView* view) const override;
+  gfx::Rect GetIdealBounds(AppListItemView* view) const override;
 
   void ClearDragState();
   void SetDragViewVisible(bool visible);

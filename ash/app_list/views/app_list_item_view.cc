@@ -723,7 +723,12 @@ bool AppListItemView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  // Triggers the button's click handler callback, which might delete `this`.
   Button::OnMouseReleased(event);
+  if (!weak_this)
+    return;
+
   SetMouseDragging(false);
 
   // EndDrag may delete |this|.

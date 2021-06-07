@@ -80,7 +80,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
     virtual bool IsDragViewMoved(const AppListItemView& view) const = 0;
 
     // Returns the ideal bounds for `view` in AppsGridView coordinates.
-    virtual const gfx::Rect& GetIdealBounds(AppListItemView* view) const = 0;
+    virtual gfx::Rect GetIdealBounds(AppListItemView* view) const = 0;
 
     // TODO(crbug.com/1211592): Eliminate this method.
     virtual const AppListConfig& GetAppListConfig() const = 0;

@@ -9,9 +9,7 @@
 #include <string>
 
 #include "ash/app_list/model/app_list_model_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/selection_model.h"
 
 namespace ash {
@@ -23,6 +21,8 @@ class SearchBoxModelObserver;
 class APP_LIST_MODEL_EXPORT SearchBoxModel {
  public:
   SearchBoxModel();
+  SearchBoxModel(const SearchBoxModel&) = delete;
+  SearchBoxModel& operator=(const SearchBoxModel&) = delete;
   ~SearchBoxModel();
 
   void SetTabletMode(bool is_tablet_mode);
@@ -49,8 +49,6 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   bool show_assistant_button_ = false;
 
   base::ObserverList<SearchBoxModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxModel);
 };
 
 }  // namespace ash

@@ -738,7 +738,7 @@ void AppsGridView::StopPageFlipTimer() {
   page_flip_target_ = -1;
 }
 
-const gfx::Rect& AppsGridView::GetIdealBounds(AppListItemView* view) const {
+gfx::Rect AppsGridView::GetIdealBounds(AppListItemView* view) const {
   const int index = view_model_.GetIndexOfView(view);
   DCHECK_NE(-1, index);
   return view_model_.ideal_bounds(index);

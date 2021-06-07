@@ -11,6 +11,7 @@
 namespace ash {
 
 class AppListViewDelegate;
+class RecentAppsView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -23,6 +24,11 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
+
+  RecentAppsView* recent_apps_for_test() { return recent_apps_; }
+
+ private:
+  RecentAppsView* recent_apps_ = nullptr;
 };
 
 }  // namespace ash

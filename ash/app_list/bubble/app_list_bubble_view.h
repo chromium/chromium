@@ -35,6 +35,8 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
+  AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }
+
  private:
   // Flips between the apps, search and assistant pages.
   // TODO(https://crbug.com/1204551): Delete this when search box is hooked up.

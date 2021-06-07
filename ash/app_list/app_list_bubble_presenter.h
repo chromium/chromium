@@ -15,6 +15,7 @@
 namespace ash {
 
 class AppListBubbleEventFilter;
+class AppListBubbleView;
 class AppListControllerImpl;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
@@ -43,12 +44,16 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
+  AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
  private:
   AppListControllerImpl* const controller_;
 
   // Owned by native widget.
   views::Widget* bubble_widget_ = nullptr;
+
+  // Owned by views.
+  AppListBubbleView* bubble_view_ = nullptr;
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;

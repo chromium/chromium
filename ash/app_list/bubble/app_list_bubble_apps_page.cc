@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/bubble/recent_apps_view.h"
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/bubble/bubble_utils.h"
@@ -73,19 +74,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     continue_section->AddChildView(CreateLabel(u"Item"));
   }
 
-  // TODO(https://crbug.com/1204551): Replace with real recent apps view.
-  auto* recent_apps =
-      scroll_contents->AddChildView(std::make_unique<views::View>());
-  const int kRecentAppsSpacing = 16;
-  auto* recent_apps_layout =
-      recent_apps->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kRecentAppsSpacing));
-  recent_apps_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  for (int i = 0; i < 5; ++i) {
-    recent_apps->AddChildView(CreateLabel(u"Item"));
-  }
+  // Recent apps row.
+  recent_apps_ = scroll_contents->AddChildView(
+      std::make_unique<RecentAppsView>(view_delegate));
 
   // All apps section.
   auto* apps_grid =

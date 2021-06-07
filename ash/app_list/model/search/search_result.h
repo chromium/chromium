@@ -14,10 +14,7 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
@@ -46,6 +43,8 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using OmniboxType = ash::SearchResultOmniboxDisplayType;
 
   SearchResult();
+  SearchResult(const SearchResult&) = delete;
+  SearchResult& operator=(const SearchResult&) = delete;
   virtual ~SearchResult();
 
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
@@ -189,8 +188,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   std::unique_ptr<SearchResultMetadata> metadata_;
 
   base::ObserverList<SearchResultObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResult);
 };
 
 }  // namespace ash
