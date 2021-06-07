@@ -30,6 +30,9 @@ export class EnterpriseProfileWelcomeBrowserProxy {
    */
   initialized() {}
 
+  /** @param {number} height */
+  initializedWithSize(height) {}
+
   /**
    * Called when the user clicks the proceed button.
    */
@@ -46,6 +49,11 @@ export class EnterpriseProfileWelcomeBrowserProxyImpl {
   /** @override */
   initialized() {
     return sendWithPromise('initialized');
+  }
+
+  /** @override */
+  initializedWithSize(height) {
+    chrome.send('initializedWithSize', [height]);
   }
 
   /** @override */

@@ -409,8 +409,9 @@ void ProfilePickerSignInFlowController::
           ->GetWebUI()
           ->GetController()
           ->GetAs<EnterpriseProfileWelcomeUI>();
-  enterprise_profile_welcome_ui->Initialize(
-      type, GetUserDomain(), GetProfileColor(), std::move(proceed_callback));
+  enterprise_profile_welcome_ui->Initialize(/*browser=*/nullptr, type,
+                                            GetUserDomain(), GetProfileColor(),
+                                            std::move(proceed_callback));
 }
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowser(

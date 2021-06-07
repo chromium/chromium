@@ -19,7 +19,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 
 EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
   webui::SetJSModuleDefaults(source);
@@ -40,6 +40,7 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   source->AddLocalizedString("enterpriseProfileWelcomeTitle",
                              IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);
+  source->AddBoolean("isModalDialog", false);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
@@ -47,13 +48,25 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;
 
 void EnterpriseProfileWelcomeUI::Initialize(
+    Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
     const std::string& domain_name,
     SkColor profile_color,
     base::OnceCallback<void(bool)> proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
-      type, domain_name, profile_color, std::move(proceed_callback));
+      browser, type, domain_name, profile_color, std::move(proceed_callback));
   handler_ = handler.get();
+
+  base::DictionaryValue update_data;
+  update_data.SetBoolKey(
+      "isModalDialog",
+      type ==
+          EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation);
+  content::WebUIDataSource::Update(
+      Profile::FromWebUI(web_ui()),
+      chrome::kChromeUIEnterpriseProfileWelcomeHost,
+      update_data.CreateDeepCopy());
+
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

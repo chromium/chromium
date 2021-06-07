@@ -30,6 +30,11 @@ export class TestEnterpriseProfileWelcomeBrowserProxy extends TestBrowserProxy {
     return Promise.resolve(this.enterpriseProfileInfo_);
   }
 
+  /** @param {number} height */
+  initializedWithSize(height) {
+    this.methodCalled('initializedWithSize');
+  }
+
   /** @override */
   proceed() {
     this.methodCalled('proceed');

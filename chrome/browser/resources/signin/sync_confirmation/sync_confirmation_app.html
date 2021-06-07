@@ -2,6 +2,10 @@
   :host {
     --avatar-size: 100px;
     --banner-height: 244px;
+    --banner-size: auto;
+    --confirmation-description-margin-inline: auto;
+    --content-container-margin-bottom: calc(48px + var(--footer-margin));
+    --content-container-margin-top: 104px;
     --footer-margin: 40px;
     --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
@@ -92,6 +96,20 @@
   }
 
   /* New design */
+  :host([is-new-design-modal-dialog_]) {
+    --avatar-size: 76px;
+    --banner-height: 128px;
+    --banner-size: 90% 90%;
+    --content-container-margin-bottom: 0;
+    --content-container-margin-top: 96px;
+    --confirmation-description-margin-inline: 32px;
+    --footer-margin: 16px;
+    --text-font-size: unset;
+    min-height: 468px;
+    position: relative;
+    width: 512px;
+  }
+
   #headerContainer {
     background-color: var(--theme-frame-color);
     height: var(--banner-height);
@@ -103,6 +121,7 @@
     background-image: url(images/sync_confirmation_refreshed_illustration.svg);
     background-position: center;
     background-repeat: no-repeat;
+    background-size: var(--banner-size);
     height: 100%;
     position: absolute;
     top: 0;
@@ -140,6 +159,11 @@
     width: var(--badge-width);
   }
 
+  :host([is-new-design-modal-dialog_]) .work-badge {
+    --badge-width: 26px;
+    --badge-offset: -8px;
+  }
+
   .work-badge > iron-icon {
     --work-icon-size: 20px;
     background-color: var(--md-background-color);
@@ -152,8 +176,8 @@
   }
 
   #contentContainer {
-    margin-bottom: calc(48px + var(--footer-margin));
-    margin-top: 104px;
+    margin-bottom: var(--content-container-margin-bottom);
+    margin-top: var(--content-container-margin-top);
     text-align: center;
   }
 
@@ -164,7 +188,7 @@
 
   #confirmationDescription {
     font-size: var(--text-font-size);
-    margin-inline: auto;
+    margin-inline: var(--confirmation-description-margin-inline);
     margin-top: 16px;
     max-width: 516px;
   }
@@ -212,7 +236,7 @@
   which user clicks to indicate consent.
 -->
 
-<template is="dom-if" if="[[!isProfileCreationFlow_]]">
+<template is="dom-if" if="[[!isNewDesign_]]">
   <div id="illustration-container">
     <div id="grey-banner"></div>
     <div id="illustration"></div>
@@ -255,7 +279,7 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[isProfileCreationFlow_]]">
+<template is="dom-if" if="[[isNewDesign_]]">
   <div id="headerContainer" style$="--theme-frame-color:[[highlightColor_]]">
     <div id="syncPromoBanner"></div>
     <div id="avatarContainer">

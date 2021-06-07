@@ -2,10 +2,31 @@
   :host {
     --avatar-size: 100px;
     --banner-height: 244px;
+    --banner-size: auto;
     --footer-margin: 40px;
+    --content-container-margin-bottom: calc(48px + var(--footer-margin));
+    --content-container-margin-top: 104px;
+    --info-box-margin-inline: auto;
+    --info-box-margin-top: 32px;
+    --info-box-width: 514px;
     --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
     display: block;
+  }
+
+  :host([is-modal-dialog_]) {
+    --avatar-size: 76px;
+    --banner-height: 128px;
+    --banner-size: 90% 90%;
+    --content-container-margin-bottom: 0;
+    --content-container-margin-top: 96px;
+    --info-box-margin-inline: 32px;
+    --info-box-margin-top: 28px;
+    --info-box-width: auto;
+    --footer-margin: 16px;
+    min-height: 468px;
+    position: relative;
+    width: 512px;
   }
 
   .secondary {
@@ -30,6 +51,7 @@
     background-image: url(images/enterprise_profile_welcome_illustration.svg);
     background-position: center;
     background-repeat: no-repeat;
+    background-size: var(--banner-size);
     height: 100%;
     position: absolute;
     top: 0;
@@ -79,9 +101,9 @@
   }
 
   #contentContainer {
-    margin-bottom: calc(48px + var(--footer-margin));
+    margin-bottom: var(--content-container-margin-bottom);
     margin-inline: auto;
-    margin-top: 104px;
+    margin-top: var(--content-container-margin-top);
     text-align: center;
   }
 
@@ -98,11 +120,11 @@
     color: var(--google-grey-refresh-700);
     display: flex;
     flex-direction: row;
-    margin-inline: auto;
-    margin-top: 32px;
+    margin-inline: var(--info-box-margin-inline);
+    margin-top: var(--info-box-margin-top);
     padding-block: 12px;
     padding-inline-end: 18px;
-    width: 514px;
+    width: var(--info-box-width);
   }
 
   .info-box > p {
@@ -126,10 +148,6 @@
     height: var(--icon-size);
     padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
     width: var(--icon-size);
-  }
-
-  #buttonsContainer {
-    --action-container-padding: var(--footer-margin);
   }
 
   #buttonsContainer cr-button {

@@ -314,5 +314,9 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
       FinishSyncConfirmation(
           LoginUIService::SYNC_WITH_DEFAULT_SETTINGS,
           ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled);
+      break;
+    case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
+      NOTREACHED() << "The profile picker should not show an enterprise "
+                      "welcome that prompts for profile creation";
   }
 }

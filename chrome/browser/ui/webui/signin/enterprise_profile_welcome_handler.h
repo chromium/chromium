@@ -12,9 +12,12 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+class Browser;
 
 namespace base {
 class FilePath;
@@ -24,9 +27,11 @@ class FilePath;
 // profile creation flow.
 class EnterpriseProfileWelcomeHandler
     : public content::WebUIMessageHandler,
-      public ProfileAttributesStorage::Observer {
+      public ProfileAttributesStorage::Observer,
+      public BrowserListObserver {
  public:
   EnterpriseProfileWelcomeHandler(
+      Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
       const std::string& domain_name,
       SkColor profile_color,
@@ -50,12 +55,19 @@ class EnterpriseProfileWelcomeHandler
   void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) override;
 
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override;
+
   // Access to construction parameters for tests.
   EnterpriseProfileWelcomeUI::ScreenType GetTypeForTesting();
   void CallProceedCallbackForTesting(bool proceed);
 
  private:
   void HandleInitialized(const base::ListValue* args);
+  // Handles the web ui message sent when the html content is done being laid
+  // out and it's time to resize the native view hosting it to fit. |args| is
+  // a single integer value for the height the native view should resize to.
+  void HandleInitializedWithSize(const base::ListValue* args);
   void HandleProceed(const base::ListValue* args);
   void HandleCancel(const base::ListValue* args);
 
@@ -75,6 +87,7 @@ class EnterpriseProfileWelcomeHandler
                           ProfileAttributesStorage::Observer>
       observed_profile_{this};
 
+  Browser* browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const std::string domain_name_;
   SkColor profile_color_;

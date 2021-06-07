@@ -36,10 +36,20 @@ Polymer({
     },
 
     /** @private */
-    isProfileCreationFlow_: {
+    isNewDesignModalDialog_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value() {
+        return loadTimeData.getBoolean('isModalDialog') &&
+            loadTimeData.getBoolean('isNewDesign');
+      }
+    },
+
+    /** @private */
+    isNewDesign_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isProfileCreationFlow');
+        return loadTimeData.getBoolean('isNewDesign');
       }
     },
 

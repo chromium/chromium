@@ -45,7 +45,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   // Initializing the WebUIDataSource in the constructor is needed for polymer
   // tests.
-  Initialize(/*profile_creation_flow_color=*/absl::nullopt);
+  Initialize(/*profile_creation_flow_color=*/absl::nullopt,
+             /*is_modal_dialog=*/true);
 }
 
 SyncConfirmationUI::~SyncConfirmationUI() = default;
@@ -57,12 +58,21 @@ void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
 void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow(
     SkColor profile_color) {
   // Redo the initialization with `profile_color`.
-  Initialize(profile_color);
+  Initialize(profile_color, /*is_modal_dialog=*/false);
   InitializeMessageHandler(/*browser=*/nullptr);
 }
 
+void SyncConfirmationUI::InitializeMessageHandlerForEnterpriseInterception(
+    Browser* browser,
+    SkColor profile_color) {
+  // Redo the initialization with `profile_color`.
+  Initialize(profile_color, /*is_modal_dialog=*/true);
+  InitializeMessageHandler(browser);
+}
+
 void SyncConfirmationUI::Initialize(
-    absl::optional<SkColor> profile_creation_flow_color) {
+    absl::optional<SkColor> profile_creation_flow_color,
+    bool is_modal_dialog) {
   const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
 
   content::WebUIDataSource* source =
@@ -85,7 +95,8 @@ void SyncConfirmationUI::Initialize(
                     IDS_SYNC_LOADING_CONFIRMATION_TITLE);
 
   if (is_sync_allowed) {
-    InitializeForSyncConfirmation(source, profile_creation_flow_color);
+    InitializeForSyncConfirmation(source, profile_creation_flow_color,
+                                  is_modal_dialog);
   } else {
     InitializeForSyncDisabled(source);
   }
@@ -107,7 +118,8 @@ void SyncConfirmationUI::InitializeMessageHandler(Browser* browser) {
 
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
-    absl::optional<SkColor> profile_creation_flow_color) {
+    absl::optional<SkColor> profile_creation_flow_color,
+    bool is_modal_dialog) {
   // Resources for testing.
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
@@ -148,8 +160,10 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
                           IDR_SYNC_CONFIRMATION_APP_JS);
   source->SetDefaultResource(IDR_SYNC_CONFIRMATION_HTML);
 
-  source->AddBoolean("isProfileCreationFlow",
-                     profile_creation_flow_color.has_value());
+  source->AddBoolean("isNewDesign", profile_creation_flow_color.has_value());
+
+  source->AddBoolean("isModalDialog", is_modal_dialog);
+
   if (!profile_creation_flow_color.has_value()) {
     AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
 
