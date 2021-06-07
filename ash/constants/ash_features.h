@@ -198,6 +198,8 @@ extern const base::Feature kHelpAppLauncherSearch;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppSearchServiceIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHiddenNetworkWarning;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeMojoDecoder;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;

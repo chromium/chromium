@@ -196,13 +196,6 @@ const base::Feature kWebUITabStripNewTabButtonInTabStrip{
 const base::Feature kWebUIFeedback{"WebUIFeedback",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables a warning about connecting to hidden WiFi networks.
-// https://crbug.com/903908
-const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_MAC)
 const base::Feature kViewsFirstRunDialog{"ViewsFirstRunDialog",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

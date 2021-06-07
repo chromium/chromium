@@ -439,6 +439,11 @@ const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
 const base::Feature kHelpAppSearchServiceIntegration{
     "HelpAppSearchServiceIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables a warning about connecting to hidden WiFi networks.
+// https://crbug.com/903908
+const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_ENABLED_BY_DEFAULT};

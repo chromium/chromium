@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/net/shill_error.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -409,7 +408,7 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
-      base::FeatureList::IsEnabled(::features::kHiddenNetworkWarning));
+      base::FeatureList::IsEnabled(features::kHiddenNetworkWarning));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.

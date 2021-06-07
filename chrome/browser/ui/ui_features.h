@@ -137,10 +137,6 @@ extern const base::Feature kWebUITabStripNewTabButtonInTabStrip;
 
 extern const base::Feature kWebUIFeedback;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kHiddenNetworkWarning;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Cocoa to views migration.
 #if defined(OS_MAC)
 extern const base::Feature kViewsFirstRunDialog;
