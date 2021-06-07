@@ -419,11 +419,10 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (remote_to_engine_.is_bound() && ShouldRouteToRuleBasedEngine(engine_id)) {
-    remote_to_engine_->ResetForRulebased();
-  } else if (ShouldRouteToFstMojoEngine(engine_id)) {
+  if (ShouldRouteToFstMojoEngine(engine_id) ||
+      ShouldRouteToRuleBasedEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
-      remote_to_engine_->OnCompositionCanceled();
+      remote_to_engine_->OnCompositionCanceledBySystem();
     }
   } else {
     ime_base_observer_->OnReset(engine_id);

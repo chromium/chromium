@@ -54,8 +54,7 @@ class MockInputChannel : public mojom::InputChannel {
                uint32_t offset,
                mojom::SelectionRangePtr selection_range),
               (override));
-  MOCK_METHOD(void, OnCompositionCanceled, (), (override));
-  MOCK_METHOD(void, ResetForRulebased, (), (override));
+  MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
   MOCK_METHOD(void,
               CommitText,
               (const std::string& text,

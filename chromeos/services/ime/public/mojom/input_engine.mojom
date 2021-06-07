@@ -273,16 +273,13 @@ interface InputChannel {
 
   // Informs the IME that composition was canceled by the system. This can
   // for example happen if the user presses the Escape key.
-  OnCompositionCanceled();
+  OnCompositionCanceledBySystem();
 
   // Process a PhysicalKeyEvent using the rule-based engine and return a
   // KeypressResponseForRulebased object with a list of operations to be handled
   // by the caller.
   ProcessKeypressForRulebased(PhysicalKeyEvent event)
                               => (KeypressResponseForRulebased result);
-
-  // Resets the engine for rulebased logic.
-  ResetForRulebased();
 
   // Asks the input field to commit `text`. If there is a composition, then that
   // composition is removed and `text` is inserted. Otherwise, `text` is

@@ -50,8 +50,7 @@ class SystemEngine : public mojom::InputChannel {
       const std::string& text,
       uint32_t offset,
       mojom::SelectionRangePtr selection_range) override;
-  void OnCompositionCanceled() override;
-  void ResetForRulebased() override {}
+  void OnCompositionCanceledBySystem() override;
   void CommitText(const std::string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
   void SetComposition(const std::string& text) override {}

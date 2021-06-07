@@ -108,8 +108,13 @@ void InputEngine::OnSurroundingTextChanged(
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::OnCompositionCanceled() {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+void InputEngine::OnCompositionCanceledBySystem() {
+  // TODO(https://crbug.com/1633694) Handle the case when the engine is not
+  // defined
+  if (engine_) {
+    engine_->Reset();
+  }
+  isAltRightDown_ = false;
 }
 
 void InputEngine::ProcessKeypressForRulebased(
@@ -154,15 +159,6 @@ void InputEngine::ProcessKeypressForRulebased(
 void InputEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
                              OnKeyEventCallback callback) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void InputEngine::ResetForRulebased() {
-  // TODO(https://crbug.com/1633694) Handle the case when the engine is not
-  // defined
-  if (engine_) {
-    engine_->Reset();
-  }
-  isAltRightDown_ = false;
 }
 
 void InputEngine::CommitText(const std::string& text,

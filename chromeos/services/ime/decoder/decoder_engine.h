@@ -42,11 +42,10 @@ class DecoderEngine : public mojom::InputChannel {
       const std::string& text,
       uint32_t offset,
       mojom::SelectionRangePtr selection_range) override {}
-  void OnCompositionCanceled() override {}
+  void OnCompositionCanceledBySystem() override {}
   void ProcessKeypressForRulebased(
       mojom::PhysicalKeyEventPtr event,
       ProcessKeypressForRulebasedCallback callback) override {}
-  void ResetForRulebased() override {}
   void CommitText(const std::string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
   void SetComposition(const std::string& text) override {}

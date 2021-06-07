@@ -250,7 +250,7 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   EXPECT_EQ(response.result, false);
 
   // TODO(keithlee) Test reset function
-  to_engine_remote->ResetForRulebased();
+  to_engine_remote->OnCompositionCanceledBySystem();
 
   // Test invalid request.
   to_engine_remote->ProcessKeypressForRulebased(

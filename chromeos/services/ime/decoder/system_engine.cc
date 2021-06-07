@@ -212,7 +212,7 @@ void SystemEngine::OnSurroundingTextChanged(
                  base::DoNothing());
 }
 
-void SystemEngine::OnCompositionCanceled() {
+void SystemEngine::OnCompositionCanceledBySystem() {
   const uint64_t seq_id = current_seq_id_;
   ++current_seq_id_;
 

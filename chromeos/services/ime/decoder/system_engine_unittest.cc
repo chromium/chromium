@@ -218,7 +218,7 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
-  client->OnCompositionCanceled();
+  client->OnCompositionCanceledBySystem();
   client.FlushForTesting();
 }
 
