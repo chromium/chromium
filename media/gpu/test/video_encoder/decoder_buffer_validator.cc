@@ -142,13 +142,24 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           LOG(ERROR) << "Failed parsing slice";
           return false;
         }
-        // TODO(hiroh): Add more checks.
+
         if (IsNewPicture(slice_hdr)) {
           // A new frame is found. Initialize |cur_pic|.
           num_frames++;
           if (!UpdateCurrentPicture(slice_hdr))
             return false;
         }
+
+        if (slice_hdr.disable_deblocking_filter_idc != 0) {
+          LOG(ERROR) << "Deblocking filter is not enabled";
+          return false;
+        }
+
+        if (slice_hdr.slice_type == H264SliceHeader::Type::kBSlice) {
+          LOG(ERROR) << "Found B slice";
+          return false;
+        }
+
         break;
       }
       case H264NALU::kSPS: {
@@ -193,6 +204,20 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           return false;
         }
         seen_pps_ = true;
+
+        const H264PPS* pps = parser_.GetPPS(pps_id);
+        if ((profile_ == H264SPS::kProfileIDCMain ||
+             profile_ == H264SPS::kProfileIDCHigh) &&
+            !pps->entropy_coding_mode_flag) {
+          // CABAC must be selected if a profile is Main and High.
+          LOG(ERROR) << "The entropy coding is not CABAC";
+          return false;
+        }
+
+        // 8x8 transform should be enabled if a profile is High. However, we
+        // don't check it because it is not enabled due to a hardware limitation
+        // on AMD stoneyridge and picasso.
+
         break;
       }
       default:
