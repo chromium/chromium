@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -31,47 +30,6 @@
 namespace web_launch {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLaunchFilesHelper)
-
-// static
-void WebLaunchFilesHelper::SetLaunchPaths(
-    content::WebContents* web_contents,
-    const GURL& launch_url,
-    std::vector<base::FilePath> launch_paths) {
-  if (launch_paths.size() == 0)
-    return;
-
-  web_contents->SetUserData(
-      UserDataKey(), std::make_unique<WebLaunchFilesHelper>(
-                         web_contents, launch_url, std::move(launch_paths)));
-}
-
-// static
-void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-    content::WebContents* web_contents,
-    const GURL& launch_url,
-    base::FilePath launch_dir,
-    std::vector<base::FilePath> launch_paths) {
-  if (launch_dir.empty())
-    return;
-
-  if (launch_paths.size() == 0)
-    return;
-
-  web_contents->SetUserData(UserDataKey(),
-                            std::make_unique<WebLaunchFilesHelper>(
-                                web_contents, launch_url, std::move(launch_dir),
-                                std::move(launch_paths)));
-}
-
-void WebLaunchFilesHelper::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Currently, launch data is only sent for the main frame.
-  if (!handle->IsInMainFrame())
-    return;
-
-  MaybeSendLaunchEntries();
-}
 
 namespace {
 
@@ -119,6 +77,7 @@ class EntriesBuilder {
         context_, path_type, entry_path,
         content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
+
   void AddDirectoryEntry(const base::FilePath& path) {
     base::FilePath entry_path = path;
     content::FileSystemAccessEntryFactory::PathType path_type =
@@ -136,24 +95,43 @@ class EntriesBuilder {
 
 }  // namespace
 
-WebLaunchFilesHelper::WebLaunchFilesHelper(
+WebLaunchFilesHelper::~WebLaunchFilesHelper() = default;
+
+// static
+void WebLaunchFilesHelper::SetLaunchPaths(
     content::WebContents* web_contents,
     const GURL& launch_url,
-    std::vector<base::FilePath> launch_paths)
-    : content::WebContentsObserver(web_contents), launch_url_(launch_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(launch_paths.size());
+    std::vector<base::FilePath> launch_paths) {
+  if (launch_paths.size() == 0)
+    return;
 
-  launch_entries_.reserve(launch_paths.size());
+  CreateHelperAndSendEntries(web_contents, launch_url, /*launch_dir=*/{},
+                             std::move(launch_paths));
+}
 
-  EntriesBuilder entries_builder(&launch_entries_, web_contents, launch_url);
-  for (const auto& path : launch_paths)
-    entries_builder.AddFileEntry(path);
+// static
+void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
+    content::WebContents* web_contents,
+    const GURL& launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths) {
+  if (launch_dir.empty())
+    return;
 
-  // Asynchronously call MaybeSendLaunchEntries, since it may destroy |this|.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&WebLaunchFilesHelper::MaybeSendLaunchEntries,
-                                weak_ptr_factory_.GetWeakPtr()));
+  if (launch_paths.size() == 0)
+    return;
+
+  CreateHelperAndSendEntries(web_contents, launch_url, launch_dir,
+                             std::move(launch_paths));
+}
+
+void WebLaunchFilesHelper::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  // Currently, launch data is only sent for the main frame.
+  if (!handle->IsInMainFrame())
+    return;
+
+  MaybeSendLaunchEntries();
 }
 
 WebLaunchFilesHelper::WebLaunchFilesHelper(
@@ -162,28 +140,35 @@ WebLaunchFilesHelper::WebLaunchFilesHelper(
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths)
     : content::WebContentsObserver(web_contents), launch_url_(launch_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!launch_dir.empty());
   DCHECK(launch_paths.size());
 
-  launch_entries_.reserve(launch_paths.size() + 1);
-
   EntriesBuilder entries_builder(&launch_entries_, web_contents, launch_url);
-  entries_builder.AddDirectoryEntry(launch_dir);
+  if (launch_dir.empty()) {
+    launch_entries_.reserve(launch_paths.size());
+  } else {
+    launch_entries_.reserve(launch_paths.size() + 1);
+    entries_builder.AddDirectoryEntry(launch_dir);
+  }
+
   for (const auto& path : launch_paths)
     entries_builder.AddFileEntry(path);
-
-  // Asynchronously call MaybeSendLaunchEntries, since it may destroy |this|.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&WebLaunchFilesHelper::MaybeSendLaunchEntries,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-WebLaunchFilesHelper::~WebLaunchFilesHelper() = default;
+// static
+void WebLaunchFilesHelper::CreateHelperAndSendEntries(
+    content::WebContents* web_contents,
+    const GURL& launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths) {
+  auto helper = base::WrapUnique(
+      new WebLaunchFilesHelper(web_contents, launch_url, std::move(launch_dir),
+                               std::move(launch_paths)));
+  WebLaunchFilesHelper* helper_ptr = helper.get();
+  web_contents->SetUserData(UserDataKey(), std::move(helper));
+  helper_ptr->MaybeSendLaunchEntries();
+}
 
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (launch_entries_.size() == 0)
     return;
   if (launch_url_ != web_contents()->GetLastCommittedURL())
@@ -204,7 +189,6 @@ void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
 void WebLaunchFilesHelper::MaybeSendLaunchEntriesWithPermission(
     ContentSetting content_setting) {
   if (content_setting == CONTENT_SETTING_ALLOW) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
     web_contents()
         ->GetMainFrame()

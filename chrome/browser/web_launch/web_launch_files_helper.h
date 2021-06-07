@@ -40,34 +40,38 @@ class WebLaunchFilesHelper
       public content::WebContentsUserData<WebLaunchFilesHelper> {
  public:
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  ~WebLaunchFilesHelper() override;
+
+  // For use with standard web apps, or system web apps that don't receive the
+  // launch directory in their launch params.
   static void SetLaunchPaths(content::WebContents* web_contents,
                              const GURL& launch_url,
                              std::vector<base::FilePath> launch_paths);
 
-  // System Web Apps Only. |launch_dir| is prepended to |launch_entries_| and
-  // sent to the JavaScript side.
+  // For use by System Web Apps Only. |launch_dir| is prepended to
+  // |launch_entries_| and sent to the JavaScript side.
   static void SetLaunchDirectoryAndLaunchPaths(
       content::WebContents* web_contents,
       const GURL& launch_url,
       base::FilePath launch_dir,
       std::vector<base::FilePath> launch_paths);
 
-  WebLaunchFilesHelper(content::WebContents* web_contents,
-                       const GURL& launch_url,
-                       std::vector<base::FilePath> launch_paths);
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
 
-  // System Web Apps Only.
+ private:
   WebLaunchFilesHelper(content::WebContents* web_contents,
                        const GURL& launch_url,
                        base::FilePath launch_dir,
                        std::vector<base::FilePath> launch_paths);
 
-  ~WebLaunchFilesHelper() override;
+  static void CreateHelperAndSendEntries(
+      content::WebContents* web_contents,
+      const GURL& launch_url,
+      base::FilePath launch_dir,
+      std::vector<base::FilePath> launch_paths);
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
-
- private:
   // Sends the launch entries to the renderer if they have been created and the
   // renderer is ready to receive them.
   void MaybeSendLaunchEntries();
