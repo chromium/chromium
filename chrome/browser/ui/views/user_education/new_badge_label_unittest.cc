@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout.h"
@@ -53,9 +54,9 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  views::View* contents_ = nullptr;
-  views::Label* control_label_ = nullptr;
-  NewBadgeLabel* new_badge_label_ = nullptr;
+  CheckedPtr<views::View> contents_ = nullptr;
+  CheckedPtr<views::Label> control_label_ = nullptr;
+  CheckedPtr<NewBadgeLabel> new_badge_label_ = nullptr;
 };
 
 TEST_F(NewBadgeLabelTest, NoBadgeReportsSameSizes) {

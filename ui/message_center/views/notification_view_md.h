@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -82,8 +83,8 @@ class CompactTitleMessageView : public views::View {
   void set_message(const std::u16string& message);
 
  private:
-  views::Label* title_ = nullptr;
-  views::Label* message_ = nullptr;
+  CheckedPtr<views::Label> title_ = nullptr;
+  CheckedPtr<views::Label> message_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CompactTitleMessageView);
 };
@@ -141,13 +142,13 @@ class NotificationInputContainerMD : public views::View,
  private:
   void UpdateButtonImage();
 
-  NotificationInputDelegate* const delegate_;
+  const CheckedPtr<NotificationInputDelegate> delegate_;
 
   views::InkDropHost ink_drop_{this};
-  views::InkDropContainerView* const ink_drop_container_;
+  const CheckedPtr<views::InkDropContainerView> ink_drop_container_;
 
-  views::Textfield* const textfield_;
-  views::ImageButton* const button_;
+  const CheckedPtr<views::Textfield> textfield_;
+  const CheckedPtr<views::ImageButton> button_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationInputContainerMD);
 };

@@ -33,6 +33,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -578,8 +579,8 @@ class HistoryDBTaskImpl : public HistoryDBTask {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
-  int* invoke_count_;
-  bool* done_invoked_;
+  CheckedPtr<int> invoke_count_;
+  CheckedPtr<bool> done_invoked_;
 
  private:
   ~HistoryDBTaskImpl() override = default;

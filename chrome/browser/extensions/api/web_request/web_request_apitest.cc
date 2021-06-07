@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -212,7 +213,7 @@ class NavigateTabMessageHandler : public content::NotificationObserver {
   }
 
   content::NotificationRegistrar registrar_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 // Sends an XHR request to the provided host, port, and path, and responds when

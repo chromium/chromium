@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -98,7 +99,7 @@ class MockGalleryChangeObserver
     ++notifications_;
   }
 
-  MediaGalleriesPreferences* pref_;
+  CheckedPtr<MediaGalleriesPreferences> pref_;
   int notifications_;
 
   DISALLOW_COPY_AND_ASSIGN(MockGalleryChangeObserver);

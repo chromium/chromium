@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -105,7 +106,7 @@ class CaptionBubbleModel {
   const base::RepeatingClosure activate_context_callback_;
 
   // The CaptionBubble observing changes to this model.
-  CaptionBubble* observer_ = nullptr;
+  CheckedPtr<CaptionBubble> observer_ = nullptr;
 };
 
 }  // namespace captions

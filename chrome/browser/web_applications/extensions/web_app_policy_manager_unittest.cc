@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -309,10 +310,10 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  TestAppRegistrar* test_app_registrar_ = nullptr;
-  TestExternallyManagedAppManager* test_externally_managed_app_manager_ =
-      nullptr;
-  WebAppPolicyManager* web_app_policy_manager_ = nullptr;
+  CheckedPtr<TestAppRegistrar> test_app_registrar_ = nullptr;
+  CheckedPtr<TestExternallyManagedAppManager>
+      test_externally_managed_app_manager_ = nullptr;
+  CheckedPtr<WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 };
 
 TEST_F(WebAppPolicyManagerTest, NoPrefValues) {

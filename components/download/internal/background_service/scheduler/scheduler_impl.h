@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_SCHEDULER_IMPL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_SCHEDULER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/download/internal/background_service/scheduler/scheduler.h"
 
 #include <map>
@@ -50,10 +51,10 @@ class SchedulerImpl : public Scheduler {
       const DeviceStatus& device_status);
 
   // Used to create platform dependent background tasks.
-  TaskScheduler* task_scheduler_;
+  CheckedPtr<TaskScheduler> task_scheduler_;
 
   // Download service configuration.
-  Configuration* config_;
+  CheckedPtr<Configuration> config_;
 
   // List of all download client id, used in round robin load balancing.
   // Downloads will be delivered to clients with incremental order based on

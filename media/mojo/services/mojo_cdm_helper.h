@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
 #include "media/media_buildflags.h"
@@ -61,7 +62,7 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   void ConnectToCdmPrefService();
 
   // Provides interfaces when needed.
-  mojom::FrameInterfaceFactory* frame_interfaces_;
+  CheckedPtr<mojom::FrameInterfaceFactory> frame_interfaces_;
 
   // Connections to the additional services. For the mojom classes, if a
   // connection error occurs, we will not be able to reconnect to the

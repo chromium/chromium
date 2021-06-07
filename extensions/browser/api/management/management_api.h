@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/management/management_api_delegate.h"
@@ -299,7 +300,7 @@ class ManagementEventRouter : public ExtensionRegistryObserver {
                       events::HistogramValue histogram_value,
                       const char* event_name);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -343,7 +344,7 @@ class ManagementAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<ManagementAPI>;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "ManagementAPI"; }

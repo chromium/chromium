@@ -5,6 +5,7 @@
 #include "media/blink/video_frame_compositor.h"
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -139,7 +140,7 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
 
   base::TimeDelta preferred_render_interval_;
   base::SimpleTestTickClock tick_clock_;
-  StrictMock<MockWebVideoFrameSubmitter>* submitter_;
+  CheckedPtr<StrictMock<MockWebVideoFrameSubmitter>> submitter_;
   std::unique_ptr<StrictMock<MockWebVideoFrameSubmitter>> client_;
   std::unique_ptr<VideoFrameCompositor> compositor_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =

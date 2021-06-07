@@ -18,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/logging/win/file_logger.h"
@@ -123,7 +124,7 @@ class TestLogCollector {
     }
 
    private:
-    TestLogCollector* test_log_collector_;
+    CheckedPtr<TestLogCollector> test_log_collector_;
     std::unique_ptr<testing::TestEventListener> default_result_printer_;
 
     DISALLOW_COPY_AND_ASSIGN(EventListener);

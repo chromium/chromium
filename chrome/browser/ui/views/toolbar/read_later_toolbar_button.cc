@@ -92,7 +92,7 @@ void ReadLaterToolbarButton::ButtonPressed() {
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
   } else {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
-        side_panel_webview_);
+        side_panel_webview_.get());
     side_panel_webview_ = nullptr;
     // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
     // SetHighlighted(false) here.

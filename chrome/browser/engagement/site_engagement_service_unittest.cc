@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -80,7 +81,7 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementChangeWaiter);
@@ -152,7 +153,7 @@ class ObserverTester : public SiteEngagementObserver {
   }
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   GURL url_;
   double score_;
   EngagementType type_;
@@ -268,7 +269,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::ScopedTempDir temp_dir_;
-  SiteEngagementService* service_;
+  CheckedPtr<SiteEngagementService> service_;
   base::SimpleTestClock clock_;
 };
 

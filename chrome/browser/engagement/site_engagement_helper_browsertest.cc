@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,7 +74,7 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   void SetInputTrackerPauseTimer(SiteEngagementService::Helper* helper) {
     input_tracker_timer_ = new TestOneShotTimer;
     helper->input_tracker_.SetPauseTimerForTesting(
-        base::WrapUnique(input_tracker_timer_));
+        base::WrapUnique(input_tracker_timer_.get()));
   }
 
   bool IsInputTrackerTimerRestarted(SiteEngagementService::Helper* helper) {
@@ -94,7 +95,7 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::HistogramTester histogram_tester_;
-  TestOneShotTimer* input_tracker_timer_;
+  CheckedPtr<TestOneShotTimer> input_tracker_timer_;
 };
 
 // Tests if SiteEngagementHelper checks the primary main frame in the

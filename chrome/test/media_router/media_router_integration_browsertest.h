@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/providers/test/test_media_route_provider.h"
@@ -148,7 +149,7 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   void Wait(base::TimeDelta timeout);
 
   // Test API for manipulating the UI.
-  MediaRouterUiForTest* test_ui_ = nullptr;
+  CheckedPtr<MediaRouterUiForTest> test_ui_ = nullptr;
 
   // Enabled features.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -182,7 +183,7 @@ class MediaRouterIntegrationIncognitoBrowserTest
   Browser* browser() override;
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  CheckedPtr<Browser> incognito_browser_ = nullptr;
 };
 
 }  // namespace media_router

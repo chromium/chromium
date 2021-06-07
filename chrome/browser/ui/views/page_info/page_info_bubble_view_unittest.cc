@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -119,12 +120,12 @@ class PageInfoBubbleViewTestApi {
   }
 
   std::u16string GetPermissionComboboxTextAt(int index) {
-    auto* combobox = GetPermissionSelectorAt(index)->combobox_;
+    auto* combobox = GetPermissionSelectorAt(index)->combobox_.get();
     return combobox->GetTextForRow(combobox->GetSelectedRow());
   }
 
   void SimulateUserSelectingComboboxItemAt(int selector_index, int menu_index) {
-    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_;
+    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_.get();
     combobox->SetSelectedRow(menu_index);
   }
 
@@ -157,12 +158,12 @@ class PageInfoBubbleViewTestApi {
     quit_closure.Run();
   }
 
-  PageInfoBubbleView* view_;  // Weak. Owned by its Widget.
+  CheckedPtr<PageInfoBubbleView> view_;  // Weak. Owned by its Widget.
 
   // For recreating the view.
   gfx::NativeView parent_;
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
@@ -196,7 +197,7 @@ class ScopedWebContentsTestHelper {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebContentsFactory factory_;
-  content::WebContents* web_contents_;  // Weak. Owned by factory_.
+  CheckedPtr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
 
   DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsTestHelper);
 };
@@ -233,7 +234,8 @@ class PageInfoBubbleViewTest : public testing::Test {
   views::ScopedViewsTestHelper views_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
 
-  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
+  CheckedPtr<views::Widget> parent_window_ =
+      nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 
  private:

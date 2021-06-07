@@ -8,10 +8,10 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
-
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
 
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFEventRouter {
 
   Microsoft::WRL::ComPtr<Delegate> delegate_;
 
-  TSFEventRouterObserver* observer_;
+  CheckedPtr<TSFEventRouterObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TSFEventRouter);
 };

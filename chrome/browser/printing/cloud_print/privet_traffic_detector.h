@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
@@ -89,7 +90,7 @@ class PrivetTrafficDetector
     DISALLOW_COPY_AND_ASSIGN(Helper);
   };
 
-  Helper* const helper_;
+  const CheckedPtr<Helper> helper_;
 
   DISALLOW_COPY_AND_ASSIGN(PrivetTrafficDetector);
 };

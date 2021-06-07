@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -45,11 +46,11 @@ class SigninProfileAttributesUpdater
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  signin::IdentityManager* identity_manager_;
-  SigninErrorController* signin_error_controller_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
+  CheckedPtr<SigninErrorController> signin_error_controller_;
+  CheckedPtr<ProfileAttributesStorage> profile_attributes_storage_;
   const base::FilePath profile_path_;
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

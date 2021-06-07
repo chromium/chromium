@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -69,7 +70,7 @@ class TrustedBiddingSignals {
                           absl::optional<std::string> error_msg);
 
   const GURL trusted_bidding_signals_url_;  // original, for error messages.
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
 
   LoadSignalsCallback load_signals_callback_;
   std::unique_ptr<AuctionDownloader> auction_downloader_;

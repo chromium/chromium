@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_PROCESSOR_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_PROCESSOR_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/common/content_export.h"
@@ -64,7 +65,7 @@ class CONTENT_EXPORT PrerenderProcessor final
 
   // `this` may outlive the registry. The registry is set on the constructor and
   // unset on OnRegistryDestroyed().
-  PrerenderHostRegistry* registry_;
+  CheckedPtr<PrerenderHostRegistry> registry_;
   base::ScopedObservation<PrerenderHostRegistry,
                           PrerenderHostRegistry::Observer>
       observation_{this};

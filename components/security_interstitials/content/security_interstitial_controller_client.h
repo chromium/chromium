@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 
@@ -51,10 +52,10 @@ class SecurityInterstitialControllerClient
  protected:
   // security_interstitials::ControllerClient overrides.
   const std::string GetExtendedReportingPrefName() const override;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
  private:
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   const std::string app_locale_;
   // The default safe page we should go to if there is no previous page to go
   // back to, e.g. chrome:kChromeUINewTabURL.

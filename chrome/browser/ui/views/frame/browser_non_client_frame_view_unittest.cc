@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -40,7 +41,7 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
  protected:
   // Owned by the browser view.
-  BrowserNonClientFrameView* frame_view_;
+  CheckedPtr<BrowserNonClientFrameView> frame_view_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewTest);

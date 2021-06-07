@@ -8,6 +8,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_CAST_MESSAGE_PORT_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 
@@ -49,7 +50,7 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
       std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) final;
   void OnPipeError() final;
 
-  Client* client_ = nullptr;
+  CheckedPtr<Client> client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   base::OnceClosure on_close_;
 };

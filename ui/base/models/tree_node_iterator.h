@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace ui {
 
@@ -88,7 +89,7 @@ class TreeNodeIterator {
   struct Position {
     Position(PositionNodeType* node, size_t index) : node(node), index(index) {}
 
-    PositionNodeType* node;
+    CheckedPtr<PositionNodeType> node;
     size_t index;
   };
 

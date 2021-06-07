@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -259,7 +260,7 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
   ~SelectDirectoryDialog() override = default;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  WebContents* web_contents_;
+  CheckedPtr<WebContents> web_contents_;
   Callback callback_;
 };
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -126,7 +127,7 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
   BulkLeakCheckService service_{
       identity_test_env_.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>()};
-  MockLeakDetectionCheckFactory* factory_ = nullptr;
+  CheckedPtr<MockLeakDetectionCheckFactory> factory_ = nullptr;
   TestingPrefServiceSimple prefs_;
   BulkLeakCheckServiceAdapter adapter_{&presenter_, &service_, &prefs_};
 };

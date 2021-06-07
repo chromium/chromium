@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -199,7 +200,8 @@ class CONTENT_EXPORT VideoCaptureController
     int buffer_id_;
     bool is_retired_;
     int frame_feedback_id_;
-    media::VideoFrameConsumerFeedbackObserver* consumer_feedback_observer_;
+    CheckedPtr<media::VideoFrameConsumerFeedbackObserver>
+        consumer_feedback_observer_;
     media::mojom::VideoBufferHandlePtr buffer_handle_;
     media::VideoCaptureFeedback combined_consumer_feedback_;
 

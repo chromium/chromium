@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/console.h"
@@ -164,7 +165,7 @@ class AuctionV8Helper {
     ~ScopedConsoleTarget();
 
    private:
-    AuctionV8Helper* owner_;
+    CheckedPtr<AuctionV8Helper> owner_;
   };
 
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
@@ -179,7 +180,7 @@ class AuctionV8Helper {
   base::TimeDelta script_timeout_ = kScriptTimeout;
 
   // See corresponding getters for description.
-  std::vector<std::string>* console_buffer_ = nullptr;
+  CheckedPtr<std::vector<std::string>> console_buffer_ = nullptr;
   std::string console_script_name_;
 };
 

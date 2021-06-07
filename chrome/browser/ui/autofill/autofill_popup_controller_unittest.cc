@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -284,7 +285,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
-  NiceMock<TestAutofillPopupController>* autofill_popup_controller_;
+  CheckedPtr<NiceMock<TestAutofillPopupController>> autofill_popup_controller_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

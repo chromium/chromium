@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
@@ -59,7 +60,7 @@ class ServiceMainTest : public testing::Test {
   elevation_service::ServiceMain* service_main() { return service_main_; }
 
  private:
-  elevation_service::ServiceMain* service_main_ = nullptr;
+  CheckedPtr<elevation_service::ServiceMain> service_main_ = nullptr;
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
   bool class_registration_succeeded_ = false;
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -219,7 +220,7 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   Row AddNewRowToLayout(NewRow row);
   void UpdateScrollHeight(const Row& row);
 
-  ContentSettingBubbleContents* parent_;
+  CheckedPtr<ContentSettingBubbleContents> parent_;
 
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.
@@ -263,7 +264,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
           parent->LinkClicked(std::distance(items->cbegin(), it), event);
         },
         base::Unretained(&list_item_views_), base::Unretained(link.get()),
-        base::Unretained(parent_)));
+        base::Unretained(parent_.get())));
     item_contents = std::move(link);
   } else {
     item_contents = std::make_unique<views::View>();

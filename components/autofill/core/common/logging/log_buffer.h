@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -184,7 +185,7 @@ class LogTableRowBuffer {
   friend LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf,
                                         Attrib&& attrib);
 
-  LogBuffer* parent_ = nullptr;
+  CheckedPtr<LogBuffer> parent_ = nullptr;
 };
 
 LogTableRowBuffer operator<<(LogBuffer& buf, Tr&& tr);

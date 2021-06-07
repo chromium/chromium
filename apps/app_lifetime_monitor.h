@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
@@ -78,7 +79,7 @@ class AppLifetimeMonitor : public KeyedService,
   void NotifyAppStop(const std::string& app_id);
 
   content::NotificationRegistrar registrar_;
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
 };
 

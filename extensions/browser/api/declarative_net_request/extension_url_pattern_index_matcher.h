@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 
@@ -60,7 +61,7 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
       const RequestParams& params,
       flat::IndexType index) const;
 
-  const ExtensionMetadataList* const metadata_list_;
+  const CheckedPtr<const ExtensionMetadataList> metadata_list_;
 
   // UrlPatternIndexMatchers corresponding to entries in flat::IndexType.
   const std::vector<UrlPatternIndexMatcher> matchers_;

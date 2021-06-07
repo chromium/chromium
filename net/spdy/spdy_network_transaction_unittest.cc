@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1624,7 +1625,7 @@ class KillerCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  HttpNetworkTransaction* transaction_;
+  CheckedPtr<HttpNetworkTransaction> transaction_;
 };
 
 }  // namespace

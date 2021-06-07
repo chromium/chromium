@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -46,7 +47,7 @@ class WorkletLoader {
                           absl::optional<std::string> error_msg);
 
   const GURL script_source_url_;
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;

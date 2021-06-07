@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -151,7 +152,7 @@ class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  ChromeBrowserCloudManagementControllerObserver* observer_;
+  CheckedPtr<ChromeBrowserCloudManagementControllerObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserExtraSetUp);
 };
@@ -175,7 +176,7 @@ class PolicyFetchStoreObserver : public CloudPolicyStore::Observer {
   }
 
  private:
-  CloudPolicyStore* store_;
+  CheckedPtr<CloudPolicyStore> store_;
   base::OnceClosure quit_closure_;
   DISALLOW_COPY_AND_ASSIGN(PolicyFetchStoreObserver);
 };
@@ -203,7 +204,7 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
   void OnRemoteCommandsServiceStarted(CloudPolicyCore* core) override {}
 
  private:
-  CloudPolicyCore* core_;
+  CheckedPtr<CloudPolicyCore> core_;
   base::OnceClosure quit_closure_;
 };
 

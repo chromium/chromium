@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -101,7 +102,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   bool fail_to_allocate_gpu_memory_buffer_ = false;
 
-  gpu::SharedImageInterface* sii_;
+  CheckedPtr<gpu::SharedImageInterface> sii_;
 
   std::vector<gfx::GpuMemoryBuffer*> created_memory_buffers_;
 };

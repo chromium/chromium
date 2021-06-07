@@ -5,6 +5,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -87,8 +88,8 @@ class SerialChooserContextTest : public testing::Test {
 
     context_ = SerialChooserContextFactory::GetForProfile(&profile_);
     context_->SetPortManagerForTesting(std::move(port_manager));
-    scoped_permission_observation_.Observe(context_);
-    scoped_port_observation_.Observe(context_);
+    scoped_permission_observation_.Observe(context_.get());
+    scoped_port_observation_.Observe(context_.get());
 
     // Ensure |context_| is ready to receive SerialPortManagerClient messages.
     context_->FlushPortManagerConnectionForTesting();
@@ -127,7 +128,7 @@ class SerialChooserContextTest : public testing::Test {
   device::FakeSerialPortManager port_manager_;
   ScopedTestingLocalState testing_local_state_;
   TestingProfile profile_;
-  SerialChooserContext* context_;
+  CheckedPtr<SerialChooserContext> context_;
   permissions::MockPermissionObserver permission_observer_;
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,

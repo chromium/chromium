@@ -5,6 +5,7 @@
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/abseil_string_conversions.h"
@@ -86,7 +87,7 @@ class ConnectStream : public quic::QuicSpdyClientStream {
   }
 
  private:
-  DedicatedWebTransportHttp3Client* client_;
+  CheckedPtr<DedicatedWebTransportHttp3Client> client_;
 };
 
 class DedicatedWebTransportHttp3ClientSession
@@ -146,7 +147,7 @@ class DedicatedWebTransportHttp3ClientSession
   }
 
  private:
-  DedicatedWebTransportHttp3Client* client_;
+  CheckedPtr<DedicatedWebTransportHttp3Client> client_;
 };
 
 class WebTransportVisitorProxy : public quic::WebTransportVisitor {
@@ -172,7 +173,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   }
 
  private:
-  quic::WebTransportVisitor* visitor_;
+  CheckedPtr<quic::WebTransportVisitor> visitor_;
 };
 
 }  // namespace

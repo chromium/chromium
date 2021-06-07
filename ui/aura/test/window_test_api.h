@@ -6,6 +6,7 @@
 #define UI_AURA_TEST_WINDOW_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window.h"
 
 namespace aura {
@@ -24,7 +25,7 @@ class WindowTestApi {
   void SetOcclusionState(aura::Window::OcclusionState state);
 
  private:
-  Window* window_;
+  CheckedPtr<Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowTestApi);
 };

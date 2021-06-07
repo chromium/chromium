@@ -8,6 +8,8 @@
 #include <dawn_wire/WireClient.h>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
+
 namespace gpu {
 
 class CommandBufferHelper;
@@ -46,7 +48,7 @@ class DawnClientMemoryTransferService final
   // than once per block.
   void MarkHandleFree(void* ptr);
 
-  MappedMemoryManager* mapped_memory_;
+  CheckedPtr<MappedMemoryManager> mapped_memory_;
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
   std::vector<void*> free_blocks_;

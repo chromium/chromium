@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/profiles/profile.h"
@@ -118,7 +119,7 @@ class AndroidPageLoadMetricsObserverTest
     observer_ptr_ =
         new TestAndroidPageLoadMetricsObserver(&mock_network_quality_tracker_);
     observer_ = base::WrapUnique<page_load_metrics::PageLoadMetricsObserver>(
-        observer_ptr_);
+        observer_ptr_.get());
   }
 
   TestAndroidPageLoadMetricsObserver* observer() const { return observer_ptr_; }
@@ -150,7 +151,7 @@ class AndroidPageLoadMetricsObserverTest
 
  private:
   std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> observer_;
-  TestAndroidPageLoadMetricsObserver* observer_ptr_;
+  CheckedPtr<TestAndroidPageLoadMetricsObserver> observer_ptr_;
   MockNetworkQualityTracker mock_network_quality_tracker_;
   base::TimeTicks navigation_start_;
 };

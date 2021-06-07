@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -151,8 +152,8 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
-  ContentBrowserClient* old_content_browser_client_ = nullptr;
-  InterestGroupManager* storage_;
+  CheckedPtr<ContentBrowserClient> old_content_browser_client_ = nullptr;
+  CheckedPtr<InterestGroupManager> storage_;
 };
 
 // Check basic success case.

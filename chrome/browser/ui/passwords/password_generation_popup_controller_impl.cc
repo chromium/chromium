@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -72,7 +73,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   }
 
  private:
-  content::RenderFrameHost* const frame_;
+  const CheckedPtr<content::RenderFrameHost> frame_;
   content::RenderWidgetHost::KeyPressEventCallback callback_;
 };
 

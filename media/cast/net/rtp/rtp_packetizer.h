@@ -10,6 +10,7 @@
 
 #include <cmath>
 
+#include "base/memory/checked_ptr.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/rtp/packet_storage.h"
 
@@ -56,8 +57,8 @@ class RtpPacketizer {
                             RtpTimeTicks rtp_timestamp);
 
   RtpPacketizerConfig config_;
-  PacedSender* const transport_;  // Not owned by this class.
-  PacketStorage* packet_storage_;
+  const CheckedPtr<PacedSender> transport_;  // Not owned by this class.
+  CheckedPtr<PacketStorage> packet_storage_;
 
   uint16_t sequence_number_;
 

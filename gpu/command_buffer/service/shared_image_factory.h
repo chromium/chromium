@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -147,9 +148,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       bool* allow_legacy_mailbox,
       gfx::GpuMemoryBufferType gmb_type = gfx::EMPTY_BUFFER);
 
-  MailboxManager* mailbox_manager_;
-  SharedImageManager* shared_image_manager_;
-  SharedContextState* shared_context_state_;
+  CheckedPtr<MailboxManager> mailbox_manager_;
+  CheckedPtr<SharedImageManager> shared_image_manager_;
+  CheckedPtr<SharedContextState> shared_context_state_;
   std::unique_ptr<MemoryTypeTracker> memory_tracker_;
 
   // This is |shared_context_state_|'s context type. Some tests leave
@@ -187,7 +188,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       buffer_collections_;
 #endif  // OS_FUCHSIA
 
-  SharedImageBackingFactory* backing_factory_for_testing_ = nullptr;
+  CheckedPtr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
 };
 
 class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
@@ -216,7 +217,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
       const Mailbox& mailbox);
 
  private:
-  SharedImageManager* const manager_;
+  const CheckedPtr<SharedImageManager> manager_;
   std::unique_ptr<MemoryTypeTracker> tracker_;
 };
 

@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/policy_export.h"
@@ -66,7 +67,7 @@ class POLICY_EXPORT CloudExternalDataStore {
   // Task runner that |this| runs on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  ResourceCache* cache_;  // Not owned.
+  CheckedPtr<ResourceCache> cache_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(CloudExternalDataStore);
 };

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -220,7 +221,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
   base::TimeDelta response_delay() const { return std::get<2>(GetParam()); }
 
  private:
-  ContentAnalysisDialog* dialog_;
+  CheckedPtr<ContentAnalysisDialog> dialog_;
 
   base::TimeTicks ctor_called_timestamp_;
   base::TimeTicks first_shown_timestamp_;
@@ -760,7 +761,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
   }
 
  private:
-  ContentAnalysisDialog* dialog_;
+  CheckedPtr<ContentAnalysisDialog> dialog_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -40,7 +41,7 @@ class SafeBrowsingTabObserver
       safebrowsing_detection_host_;
 
   // Our owning WebContents.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

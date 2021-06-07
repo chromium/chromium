@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/proto/control.pb.h"
@@ -26,7 +27,7 @@ class FakeExtension::Session : public HostExtensionSession {
                           const protocol::ExtensionMessage& message) override;
 
  private:
-  FakeExtension* extension_;
+  CheckedPtr<FakeExtension> extension_;
   std::string message_type_;
 
   DISALLOW_COPY_AND_ASSIGN(Session);

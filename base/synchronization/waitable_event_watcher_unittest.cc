@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -42,7 +43,7 @@ class DecrementCountContainer {
   }
 
  private:
-  int* counter_;
+  CheckedPtr<int> counter_;
 };
 
 }  // namespace

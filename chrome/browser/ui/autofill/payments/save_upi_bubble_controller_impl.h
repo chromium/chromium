@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -43,7 +44,7 @@ class SaveUPIBubbleControllerImpl
   void ShowBubble();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  SaveUPIBubble* save_upi_bubble_ = nullptr;
+  CheckedPtr<SaveUPIBubble> save_upi_bubble_ = nullptr;
 
   base::OnceCallback<void(bool accept)> save_upi_prompt_callback_;
 

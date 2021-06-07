@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
@@ -241,12 +242,12 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     }
 
    private:
-    ForwardingThrottleDelegate* const owner_;
+    const CheckedPtr<ForwardingThrottleDelegate> owner_;
     DISALLOW_COPY_AND_ASSIGN(ScopedDelegateCall);
   };
 
-  ThrottlingURLLoader* loader_;
-  URLLoaderThrottle* const throttle_;
+  CheckedPtr<ThrottlingURLLoader> loader_;
+  const CheckedPtr<URLLoaderThrottle> throttle_;
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingThrottleDelegate);
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -94,8 +95,8 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebAppOpaqueBrowserFrameViewTest);
@@ -243,8 +244,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest
     return true;
   }
 
-  BrowserView* browser_view_ = nullptr;
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+  CheckedPtr<BrowserView> browser_view_ = nullptr;
+  CheckedPtr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

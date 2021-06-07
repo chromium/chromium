@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -138,8 +139,8 @@ struct TabInfo {
     return script_result;
   }
 
-  Browser* browser;
-  WebContents* web_contents;
+  CheckedPtr<Browser> browser;
+  CheckedPtr<WebContents> web_contents;
   int tab_strip_index;
   std::string capture_handle;  // Expected value for those who may observe.
 };

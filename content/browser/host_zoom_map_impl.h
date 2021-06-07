@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/public/browser/host_zoom_map.h"
 
@@ -134,7 +135,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
 
   TemporaryZoomLevels temporary_zoom_levels_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(HostZoomMapImpl);
 };

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -57,8 +58,8 @@ class OfflinePageArchivePublisherImpl : public OfflinePageArchivePublisher {
       const std::vector<PublishedArchiveId>& publish_ids) const override;
 
  private:
-  ArchiveManager* archive_manager_;
-  Delegate* delegate_;
+  CheckedPtr<ArchiveManager> archive_manager_;
+  CheckedPtr<Delegate> delegate_;
 };
 
 }  // namespace offline_pages

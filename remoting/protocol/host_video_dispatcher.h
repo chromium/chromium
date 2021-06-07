@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/video_stub.h"
 
@@ -31,7 +32,7 @@ class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
-  VideoFeedbackStub* video_feedback_stub_ = nullptr;
+  CheckedPtr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(HostVideoDispatcher);
 };

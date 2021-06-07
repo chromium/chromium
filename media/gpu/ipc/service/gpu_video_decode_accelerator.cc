@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -136,7 +137,7 @@ class GpuVideoDecodeAccelerator::MessageFilter : public IPC::MessageFilter {
       return false;
 
     IPC_BEGIN_MESSAGE_MAP(MessageFilter, msg)
-      IPC_MESSAGE_FORWARD(AcceleratedVideoDecoderMsg_Decode, owner_,
+      IPC_MESSAGE_FORWARD(AcceleratedVideoDecoderMsg_Decode, owner_.get(),
                           GpuVideoDecodeAccelerator::OnDecode)
       IPC_MESSAGE_UNHANDLED(return false)
     IPC_END_MESSAGE_MAP()
@@ -156,10 +157,10 @@ class GpuVideoDecodeAccelerator::MessageFilter : public IPC::MessageFilter {
   ~MessageFilter() override = default;
 
  private:
-  GpuVideoDecodeAccelerator* const owner_;
+  const CheckedPtr<GpuVideoDecodeAccelerator> owner_;
   const int32_t host_route_id_;
   // The sender to which this filter was added.
-  IPC::Sender* sender_;
+  CheckedPtr<IPC::Sender> sender_;
 };
 
 GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(

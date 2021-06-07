@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUTTON_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -37,9 +38,9 @@ class SendTabToSelfToolbarButtonView
  private:
   void ButtonPressed();
 
-  const Browser* const browser_;
+  const CheckedPtr<const Browser> browser_;
 
-  const SendTabToSelfEntry* entry_;
+  CheckedPtr<const SendTabToSelfEntry> entry_;
 };
 
 }  // namespace send_tab_to_self

@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -77,7 +78,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
-  DWriteFontLookupTableBuilder* font_lookup_table_builder_;
+  CheckedPtr<DWriteFontLookupTableBuilder> font_lookup_table_builder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

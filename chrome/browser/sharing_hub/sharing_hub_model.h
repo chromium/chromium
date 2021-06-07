@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class GURL;
 class Profile;
@@ -68,7 +69,7 @@ class SharingHubModel {
   // A list of third party action URLs mapped to action id.
   std::map<int, GURL> third_party_action_urls_;
 
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubModel);
 };

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,7 +42,7 @@ class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
 
  private:
   const url::Origin origin_;
-  SharedWorkerHost* owner_;
+  CheckedPtr<SharedWorkerHost> owner_;
   mojo::Receiver<blink::mojom::WorkerContentSettingsProxy> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedWorkerContentSettingsProxyImpl);

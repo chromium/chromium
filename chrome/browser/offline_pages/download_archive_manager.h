@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_DOWNLOAD_ARCHIVE_MANAGER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/archive_manager.h"
 
@@ -32,7 +33,7 @@ class DownloadArchiveManager : public ArchiveManager {
   const base::FilePath& GetPublicArchivesDir() override;
 
  private:
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   base::FilePath download_archives_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadArchiveManager);

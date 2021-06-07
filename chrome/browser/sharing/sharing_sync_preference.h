@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info.h"
@@ -89,9 +90,9 @@ class SharingSyncPreference {
  private:
   friend class SharingSyncPreferenceTest;
 
-  PrefService* prefs_;
-  syncer::DeviceInfoSyncService* device_info_sync_service_;
-  syncer::LocalDeviceInfoProvider* local_device_info_provider_;
+  CheckedPtr<PrefService> prefs_;
+  CheckedPtr<syncer::DeviceInfoSyncService> device_info_sync_service_;
+  CheckedPtr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
   PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingSyncPreference);
