@@ -19,27 +19,19 @@ using blink::CanvasResourceProvider;
 const char* const kHostTypeName_Canvas = ".Canvas";
 const char* const kHostTypeName_OffscreenCanvas = ".OffscreenCanvas";
 
-const char* const kThreadTypeName_Main = ".MainThread";
-const char* const kThreadTypeName_Worker = ".Worker";
-
-const char* const kContextTypeName_2D = ".2D";
+const char* const kContextTypeName_2D_Accelerated = ".2D.Accelerated";
+const char* const kContextTypeName_2D_Unaccelerated = ".2D.Unaccelerated";
 const char* const kContextTypeName_WebGL = ".WebGL";
 const char* const kContextTypeName_WebGL2 = ".WebGL2";
 const char* const kContextTypeName_WebGPU = ".WebGPU";
 const char* const kContextTypeName_ImageBitmap = ".ImageBitmap";
 
-const char* const kResourceTypeName_Bitmap = ".Bitmap";
-const char* const kResourceTypeName_SharedBitmap = ".SharedBitmap";
-const char* const kResourceTypeName_SharedImage = ".SharedImage";
-const char* const kResourceTypeName_PassThrough = ".PassThrough";
-const char* const kResourceTypeName_SwapChain = ".SwapChain";
-const char* const kResourceTypeName_SkiaDawnSharedImage =
-    ".SkiaDawnSharedImage";
-
 const char* const kFilterName_All = ".All";
 const char* const kFilterName_Animation = ".Animation";
 
 const char* const kMeasurementName_RenderTaskDuration = ".RenderTaskDuration";
+const char* const kMeasurementName_PartitionAlloc = ".PartitionAlloc";
+const char* const kMeasurementName_BlinkGC = ".BlinkGC";
 
 // The inverse of the probability that a given task will be measured.
 // I.e. a value of X means that each task has a probability 1/X of being
@@ -54,22 +46,20 @@ class RenderingContextDescriptionCodec {
   explicit RenderingContextDescriptionCodec(const uint32_t& key);
 
   bool IsOffscreen() const { return key_.get<IsOffscreenField>(); }
+  bool IsAccelerated() const { return key_.get<IsAcceleratedField>(); }
   CanvasRenderingContext::ContextType ContextType() const;
-  CanvasResourceProvider::ResourceProviderType ResourceType() const;
   uint32_t GetKey() const { return key_.bits(); }
   bool IsValid() const { return is_valid_; }
 
   const char* GetHostTypeName() const;
-  const char* GetThreadTypeName() const;
   const char* GetContextTypeName() const;
-  const char* GetResourceTypeName() const;
 
  private:
   using Key = WTF::SingleThreadedBitField<uint32_t>;
   using IsOffscreenField = Key::DefineFirstValue<bool, 1>;
-  using ContextTypeField = IsOffscreenField::DefineNextValue<uint32_t, 8>;
-  using ResourceTypeField = ContextTypeField::DefineNextValue<uint32_t, 8>;
-  using PaddingField = ResourceTypeField::DefineNextValue<bool, 1>;
+  using IsAcceleratedField = IsOffscreenField::DefineNextValue<bool, 1>;
+  using ContextTypeField = IsAcceleratedField::DefineNextValue<uint32_t, 8>;
+  using PaddingField = ContextTypeField::DefineNextValue<bool, 1>;
 
   Key key_;
   bool is_valid_;
@@ -82,8 +72,8 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     return;
 
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
+  key_.set<IsOffscreenField>(context->IsAccelerated());
   key_.set<ContextTypeField>(context->GetContextType());
-  key_.set<ResourceTypeField>(context->Host()->ResourceProvider()->GetType());
   // The padding field ensures at least one bit is set in the key in order
   // to avoid a key == 0, which is not supported by WTF::HashSet
   key_.set<PaddingField>(true);
@@ -99,24 +89,15 @@ RenderingContextDescriptionCodec::ContextType() const {
       key_.get<ContextTypeField>());
 }
 
-CanvasResourceProvider::ResourceProviderType
-RenderingContextDescriptionCodec::ResourceType() const {
-  return static_cast<CanvasResourceProvider::ResourceProviderType>(
-      key_.get<ResourceTypeField>());
-}
-
 const char* RenderingContextDescriptionCodec::GetHostTypeName() const {
   return IsOffscreen() ? kHostTypeName_OffscreenCanvas : kHostTypeName_Canvas;
-}
-
-const char* RenderingContextDescriptionCodec::GetThreadTypeName() const {
-  return WTF::IsMainThread() ? kThreadTypeName_Main : kThreadTypeName_Worker;
 }
 
 const char* RenderingContextDescriptionCodec::GetContextTypeName() const {
   switch (ContextType()) {
     case CanvasRenderingContext::kContext2D:
-      return kContextTypeName_2D;
+      return IsAccelerated() ? kContextTypeName_2D_Accelerated
+                             : kContextTypeName_2D_Unaccelerated;
     case CanvasRenderingContext::kContextExperimentalWebgl:
     case CanvasRenderingContext::kContextWebgl:
       return kContextTypeName_WebGL;
@@ -126,26 +107,6 @@ const char* RenderingContextDescriptionCodec::GetContextTypeName() const {
       return kContextTypeName_WebGPU;
     case CanvasRenderingContext::kContextImageBitmap:
       return kContextTypeName_ImageBitmap;
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-const char* RenderingContextDescriptionCodec::GetResourceTypeName() const {
-  switch (ResourceType()) {
-    case CanvasResourceProvider::kBitmap:
-      return kResourceTypeName_Bitmap;
-    case CanvasResourceProvider::kSharedBitmap:
-      return kResourceTypeName_SharedBitmap;
-    case CanvasResourceProvider::kSharedImage:
-      return kResourceTypeName_SharedImage;
-    case CanvasResourceProvider::kPassThrough:
-      return kResourceTypeName_PassThrough;
-    case CanvasResourceProvider::kSwapChain:
-      return kResourceTypeName_SwapChain;
-    case CanvasResourceProvider::kSkiaDawnSharedImage:
-      return kResourceTypeName_SkiaDawnSharedImage;
     default:
       NOTREACHED();
       return "";
@@ -211,16 +172,6 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
   int partition_alloc_kb = WTF::Partitions::TotalActiveBytes() / kKiloByte;
   int blink_gc_alloc_kb = ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
 
-  bool canvas_context_type_was_used[CanvasRenderingContext::kMaxValue];
-  for (bool& b : canvas_context_type_was_used) {
-    b = false;
-  }
-
-  bool offscreen_context_type_was_used[CanvasRenderingContext::kMaxValue];
-  for (bool& b : offscreen_context_type_was_used) {
-    b = false;
-  }
-
   while (!rendering_context_descriptions_.IsEmpty()) {
     RenderingContextDescriptionCodec desc(
         rendering_context_descriptions_.TakeAny());
@@ -230,10 +181,9 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
     // info.
     WTF::String histogram_name_prefix =
         WTF::String("Blink") + desc.GetHostTypeName();
-    WTF::String histogram_name_radical = WTF::String(desc.GetThreadTypeName()) +
-                                         desc.GetContextTypeName() +
-                                         desc.GetResourceTypeName();
+    WTF::String histogram_name_radical = WTF::String(desc.GetContextTypeName());
 
+    // Render task duration metric for all render tasks.
     {
       WTF::String histogram_name = histogram_name_prefix +
                                    kMeasurementName_RenderTaskDuration +
@@ -242,6 +192,7 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                                           elapsed_time);
     }
 
+    // Render task duration metric for rAF callbacks only.
     if (call_type_ == CallType::kAnimation) {
       WTF::String histogram_name =
           histogram_name_prefix + kMeasurementName_RenderTaskDuration +
@@ -249,85 +200,24 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
       base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                           elapsed_time);
     }
-    if (desc.IsOffscreen()) {
-      offscreen_context_type_was_used[desc.ContextType()] = true;
-    } else {
-      canvas_context_type_was_used[desc.ContextType()] = true;
+
+    // PartitionAlloc heap size metric
+    {
+      WTF::String histogram_name = histogram_name_prefix +
+                                   kMeasurementName_PartitionAlloc +
+                                   histogram_name_radical;
+      base::UmaHistogramMemoryKB(histogram_name.Latin1(), partition_alloc_kb);
+    }
+
+    // Blink garbage collected heap size metric
+    {
+      WTF::String histogram_name = histogram_name_prefix +
+                                   kMeasurementName_BlinkGC +
+                                   histogram_name_radical;
+      base::UmaHistogramMemoryKB(histogram_name.Latin1(), blink_gc_alloc_kb);
     }
   }
 
-  if (canvas_context_type_was_used[CanvasRenderingContext::kContext2D]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.PartionAlloc.2D", partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.BlinkGC.2D", blink_gc_alloc_kb);
-  }
-
-  if (canvas_context_type_was_used[CanvasRenderingContext::kContextWebgl] ||
-      canvas_context_type_was_used
-          [CanvasRenderingContext::kContextExperimentalWebgl]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.PartionAlloc.WebGL",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.BlinkGC.WebGL", blink_gc_alloc_kb);
-  }
-
-  if (canvas_context_type_was_used[CanvasRenderingContext::kContextWebgl2]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.PartionAlloc.WebGL2",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.BlinkGC.WebGL2", blink_gc_alloc_kb);
-  }
-
-  if (canvas_context_type_was_used
-          [CanvasRenderingContext::kContextGPUPresent]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.PartionAlloc.WebGPU",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.BlinkGC.WebGPU", blink_gc_alloc_kb);
-  }
-
-  if (canvas_context_type_was_used
-          [CanvasRenderingContext::kContextImageBitmap]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.PartionAlloc.ImageBitmap",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.Canvas.BlinkGC.ImageBitmap",
-                            blink_gc_alloc_kb);
-  }
-
-  if (offscreen_context_type_was_used[CanvasRenderingContext::kContext2D]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.PartionAlloc.2D",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.BlinkGC.2D",
-                            blink_gc_alloc_kb);
-  }
-
-  if (offscreen_context_type_was_used[CanvasRenderingContext::kContextWebgl] ||
-      offscreen_context_type_was_used
-          [CanvasRenderingContext::kContextExperimentalWebgl]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.PartionAlloc.WebGL",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.BlinkGC.WebGL",
-                            blink_gc_alloc_kb);
-  }
-
-  if (offscreen_context_type_was_used[CanvasRenderingContext::kContextWebgl2]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.PartionAlloc.WebGL2",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.BlinkGC.WebGL2",
-                            blink_gc_alloc_kb);
-  }
-
-  if (offscreen_context_type_was_used
-          [CanvasRenderingContext::kContextGPUPresent]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.PartionAlloc.WebGPU",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.BlinkGC.WebGPU",
-                            blink_gc_alloc_kb);
-  }
-
-  if (offscreen_context_type_was_used
-          [CanvasRenderingContext::kContextImageBitmap]) {
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.PartionAlloc.ImageBitmap",
-                            partition_alloc_kb);
-    UMA_HISTOGRAM_MEMORY_KB("Blink.OffscreenCanvas.BlinkGC.ImageBitmap",
-                            blink_gc_alloc_kb);
-  }
 }
 
 void CanvasPerformanceMonitor::DidProcessTask(TimeTicks start_time,
