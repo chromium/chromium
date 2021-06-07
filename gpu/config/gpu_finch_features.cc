@@ -69,7 +69,7 @@ const base::FeatureParam<std::string> kAndroidSurfaceControlDeviceBlocklist{
 // List of models on which SurfaceControl should be disabled.
 const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
     &kAndroidSurfaceControl, "AndroidSurfaceControlModelBlocklist",
-    "SM-F7*|SM-F9*"};
+    "SM-F9*|SM-W202?|SCV44|SCG05|SCG11|SC-55B"};
 
 // Hardware Overlays for WebView.
 const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
