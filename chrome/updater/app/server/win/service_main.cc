@@ -95,7 +95,7 @@ HRESULT ServiceMain::RegisterClassObject() {
   unsigned int flags = Microsoft::WRL::ModuleType::OutOfProc;
 
   HRESULT hr = Microsoft::WRL::Details::CreateClassFactory<
-      Microsoft::WRL::SimpleClassFactory<UpdaterImpl>>(
+      Microsoft::WRL::SimpleClassFactory<UpdaterInternalImpl>>(
       &flags, nullptr, __uuidof(IClassFactory), &factory);
   if (FAILED(hr)) {
     LOG(ERROR) << "Factory creation failed; hr: " << hr;
@@ -115,7 +115,7 @@ HRESULT ServiceMain::RegisterClassObject() {
       std::extent<decltype(cookies_)>() == base::size(class_factories),
       "Arrays cookies_ and class_factories must be the same size.");
 
-  IID class_ids[] = {__uuidof(UpdaterClass)};
+  IID class_ids[] = {__uuidof(UpdaterInternalClass)};
   DCHECK_EQ(base::size(cookies_), base::size(class_ids));
   static_assert(std::extent<decltype(cookies_)>() == base::size(class_ids),
                 "Arrays cookies_ and class_ids must be the same size.");

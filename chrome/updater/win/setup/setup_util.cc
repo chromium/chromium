@@ -202,7 +202,8 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                                         "*/chrome/updater/*=2");
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       kWindowsServiceName, kWindowsServiceName, com_service_command,
-      base::ASCIIToWide(UPDATER_KEY), {__uuidof(UpdaterServiceClass)}, {}));
+      base::ASCIIToWide(UPDATER_KEY), GetSideBySideServers(),
+      GetSideBySideInterfaces()));
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
