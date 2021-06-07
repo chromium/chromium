@@ -31,6 +31,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -113,20 +114,21 @@ public class ChromeActionModeHandlerUnitTest {
         Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
         Mockito.when(mActionModeCallbackHelper.getSelectedText()).thenReturn("OhHai");
 
-        LocaleManager localeManager = Mockito.spy(new LocaleManager() {
+        LocaleManagerDelegate delegate = Mockito.spy(new LocaleManagerDelegate() {
             @Override
             public void showSearchEnginePromoIfNeeded(
                     Activity activity, Callback<Boolean> onSearchEngineFinalized) {
                 onSearchEngineFinalized.onResult(true);
             }
         });
-        LocaleManager.setInstanceForTest(localeManager);
+
+        LocaleManager.getInstance().setDelegateForTest(delegate);
 
         MenuItem shareItem = Mockito.mock(MenuItem.class);
         Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_web_search);
         mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
 
-        Mockito.verify(localeManager).showSearchEnginePromoIfNeeded(Mockito.any(), Mockito.any());
+        Mockito.verify(delegate).showSearchEnginePromoIfNeeded(Mockito.any(), Mockito.any());
     }
 
     @Test

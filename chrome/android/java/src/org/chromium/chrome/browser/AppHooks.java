@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
@@ -163,21 +162,6 @@ public abstract class AppHooks {
 
     public InstantAppsHandler createInstantAppsHandler() {
         return new InstantAppsHandler();
-    }
-
-    /**
-     * @return An instance of {@link LocaleManager} that handles customized locale related logic.
-     */
-    protected LocaleManager createLocaleManager() {
-        return new LocaleManager();
-    }
-
-    /**
-     * Return LocaleManager. Create a new one if not available.
-     **/
-    public LocaleManager getLocaleManager() {
-        if (LocaleManager.getInstance() == null) LocaleManager.setInstance(createLocaleManager());
-        return LocaleManager.getInstance();
     }
 
     /**

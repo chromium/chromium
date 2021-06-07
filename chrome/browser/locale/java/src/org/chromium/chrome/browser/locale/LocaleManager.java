@@ -230,12 +230,6 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
         mDelegate.recordUserTypeMetrics();
     }
 
-    /** Set a LocaleManager to be used for testing. */
-    @VisibleForTesting
-    public static void setInstanceForTest(LocaleManager instance) {
-        sInstance = instance;
-    }
-
     /** Set a LocaleManagerDelegate to be used for testing. */
     @VisibleForTesting
     public void setDelegateForTest(LocaleManagerDelegate delegate) {
