@@ -28,6 +28,8 @@
 
 namespace media {
 
+constexpr int kRefFrameMaxCount = 16;
+
 class D3D11H264Accelerator;
 class MediaLog;
 
@@ -75,8 +77,7 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   void PicParamsFromSliceHeader(DXVA_PicParams_H264* pic_param,
                                 const H264SliceHeader* pps);
 
-  void PicParamsFromPic(DXVA_PicParams_H264* pic_param,
-                        scoped_refptr<H264Picture> pic);
+  void PicParamsFromPic(DXVA_PicParams_H264* pic_param, D3D11H264Picture* pic);
 
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 
@@ -98,10 +99,10 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.
-  DXVA_PicEntry_H264 ref_frame_list_[16];
+  DXVA_PicEntry_H264 ref_frame_list_[kRefFrameMaxCount];
   H264SPS sps_;
-  INT field_order_cnt_list_[16][2];
-  USHORT frame_num_list_[16];
+  INT field_order_cnt_list_[kRefFrameMaxCount][2];
+  USHORT frame_num_list_[kRefFrameMaxCount];
   UINT used_for_reference_flags_;
   USHORT non_existing_frame_flags_;
 
