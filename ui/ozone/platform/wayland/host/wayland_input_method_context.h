@@ -68,6 +68,12 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // including dead key etc.
   CharacterComposer character_composer_;
 
+  // Stores the parameters required for OnDeleteSurroundingText.
+  // The index moved by SetSurroundingText. This is byte-offset in UTF8 form.
+  size_t surrounding_text_offset_ = 0;
+  // The string in SetSurroundingText.
+  std::string surrounding_text_;
+
   DISALLOW_COPY_AND_ASSIGN(WaylandInputMethodContext);
 };
 

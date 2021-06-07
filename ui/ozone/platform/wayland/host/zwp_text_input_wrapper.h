@@ -48,7 +48,8 @@ class ZWPTextInputWrapperClient {
   virtual void OnCommitString(base::StringPiece text) = 0;
 
   // Called when client needs to delete all or part of the text surrounding
-  // the cursor
+  // the cursor. |index| and |length| are expected to be a byte offset of |text|
+  // passed via ZWPTextInputWrapper::SetSurroundingText.
   virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
 
   // Notify when a key event was sent. Key events should not be used
@@ -77,7 +78,7 @@ class ZWPTextInputWrapper {
   virtual void HideInputPanel() = 0;
 
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
-  virtual void SetSurroundingText(const std::u16string& text,
+  virtual void SetSurroundingText(const std::string& text,
                                   const gfx::Range& selection_range) = 0;
 };
 

@@ -7,10 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/utf_offset_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -81,30 +78,10 @@ void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
 }
 
 void ZWPTextInputWrapperV1::SetSurroundingText(
-    const std::u16string& text,
+    const std::string& text,
     const gfx::Range& selection_range) {
-  static constexpr size_t kWaylandMessageDataMaxLength = 4000;
-  std::vector<size_t> offsets_for_adjustment = {selection_range.start(),
-                                                selection_range.end()};
-  const std::string text_utf8 =
-      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets_for_adjustment);
-  // The text length for set_surrounding_text can not be longer than the maximum
-  // length of wayland messages. The maximum length of the text is explicitly
-  // specified as 4000 in the protocol spec of text-input-unstable-v3.
-  // If the client is unware of the text around the cursor, we can skip sending
-  // set_surrounding_text requests. We fall back to this case when the text is
-  // too long.
-  // TODO(fukino): If the length of |text| doesn't fit into the 4000 bytes
-  // limitation, we should truncate the text and adjust indices of
-  // |selection_range| to make use of set_surrounding_text as much as possible.
-  // crbug.com/1173465.
-  if (text_utf8.size() > kWaylandMessageDataMaxLength)
-    return;
-
-  text_for_surrounding_text_ = text_utf8;
-  zwp_text_input_v1_set_surrounding_text(obj_.get(), text_utf8.c_str(),
-                                         offsets_for_adjustment[0],
-                                         offsets_for_adjustment[1]);
+  zwp_text_input_v1_set_surrounding_text(
+      obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
 void ZWPTextInputWrapperV1::ResetInputEventState() {
@@ -191,22 +168,7 @@ void ZWPTextInputWrapperV1::OnDeleteSurroundingText(
     int32_t index,
     uint32_t length) {
   ZWPTextInputWrapperV1* wti = static_cast<ZWPTextInputWrapperV1*>(data);
-  std::vector<size_t> offsets_for_adjustment = {index, index + length};
-  if (wti->text_for_surrounding_text_.empty()) {
-    LOG(DFATAL)
-        << "SetSurroundingText should run before OnDeleteSurrondingText.";
-    return;
-  }
-  base::UTF8ToUTF16AndAdjustOffsets(wti->text_for_surrounding_text_,
-                                    &offsets_for_adjustment);
-  if (offsets_for_adjustment[0] == std::u16string::npos ||
-      offsets_for_adjustment[1] == std::u16string::npos) {
-    LOG(DFATAL) << "The selection range for surrounding text is invalid.";
-    return;
-  }
-  wti->client_->OnDeleteSurroundingText(
-      offsets_for_adjustment[0],
-      offsets_for_adjustment[1] - offsets_for_adjustment[0]);
+  wti->client_->OnDeleteSurroundingText(index, length);
 }
 
 void ZWPTextInputWrapperV1::OnKeysym(void* data,

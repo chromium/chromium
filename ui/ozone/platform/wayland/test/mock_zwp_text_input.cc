@@ -33,6 +33,15 @@ void TextInputV1Reset(wl_client* client, wl_resource* resource) {
   GetUserDataAs<MockZwpTextInput>(resource)->Reset();
 }
 
+void TextInputV1SetSurroundingText(wl_client* client,
+                                   wl_resource* resource,
+                                   const char* text,
+                                   uint32_t cursor,
+                                   uint32_t anchor) {
+  GetUserDataAs<MockZwpTextInput>(resource)->SetSurroundingText(
+      text, gfx::Range(cursor, anchor));
+}
+
 void TextInputV1SetCursorRectangle(wl_client* client,
                                    wl_resource* resource,
                                    int32_t x,
@@ -50,7 +59,7 @@ const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl = {
     &TextInputV1ShowInputPanel,      // show_input_panel
     &TextInputV1HideInputPanel,      // hide_input_panel
     &TextInputV1Reset,               // reset
-    nullptr,                         // set_surrounding_text
+    &TextInputV1SetSurroundingText,  // set_surrounding_text
     nullptr,                         // set_content_type
     &TextInputV1SetCursorRectangle,  // set_cursor_rectangle
     nullptr,                         // set_preferred_language
