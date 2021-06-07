@@ -359,6 +359,18 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
   [self waitForSnackBarMessage:IDS_IOS_BOOKMARK_PAGE_SAVED
       triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
+
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_EDIT_SCREEN_TITLE)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests the Share action on a tab grid item's context menu.
@@ -959,7 +971,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
                                     timeout:kSnackbarAppearanceTimeout];
 
-  // Add the page to the reading list.
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
   // Wait for the snackbar to appear.
