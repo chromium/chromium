@@ -19,7 +19,8 @@ found in the LICENSE file. -->
   <template>
     <style include="oobe-dialog-host"></style>
 
-    <oobe-adaptive-dialog id="osInstallDialog" role="dialog" for-step="intro"
+    <oobe-adaptive-dialog id="osInstallDialogIntro"
+        role="dialog" for-step="intro"
         aria-label$="[[i18nDynamic(locale, 'osInstallDialogIntroTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogIntroTitle')]]</h1>
@@ -41,7 +42,8 @@ found in the LICENSE file. -->
       </div>
     </oobe-adaptive-dialog>
 
-    <oobe-adaptive-dialog id="osInstallDialog" role="dialog" for-step="confirm"
+    <oobe-adaptive-dialog id="osInstallDialogConfirm"
+        role="dialog" for-step="confirm"
         aria-label$="[[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]
@@ -58,10 +60,26 @@ found in the LICENSE file. -->
       </div>
     </oobe-adaptive-dialog>
 
-    <oobe-loading-dialog id="osInstallDialog" for-step="in_progress"
+    <oobe-loading-dialog id="osInstallDialogInProgress"
+        role="dialog" for-step="in_progress"
         text-key="osInstallDialogInProgressTitle"
         aria-label$="[[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
     </oobe-loading-dialog>
+
+    <oobe-adaptive-dialog id="osInstallDialogError"
+        role="dialog" for-step="error"
+        aria-label$="[[i18nDynamic(locale, 'osInstallDialogErrorTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogErrorTitle')]]</h1>
+    </oobe-adaptive-dialog>
+
+    <oobe-adaptive-dialog id="osInstallDialogSuccess"
+        role="dialog" for-step="success"
+        aria-label$="[[i18nDynamic(locale, 'osInstallDialogSuccessTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogSuccessTitle')]]
+      </h1>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

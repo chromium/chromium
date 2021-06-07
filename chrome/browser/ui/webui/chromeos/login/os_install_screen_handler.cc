@@ -46,6 +46,10 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
 
   builder->Add("osInstallDialogInProgressTitle",
                IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE);
+
+  builder->Add("osInstallDialogErrorTitle", IDS_OS_INSTALL_SCREEN_ERROR_TITLE);
+  builder->Add("osInstallDialogSuccessTitle",
+               IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
 }
 
 void OsInstallScreenHandler::Initialize() {}

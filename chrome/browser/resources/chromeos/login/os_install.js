@@ -11,6 +11,8 @@ const UIState = {
   INTRO: 'intro',
   CONFIRM: 'confirm',
   IN_PROGRESS: 'in_progress',
+  ERROR: 'error',
+  SUCCESS: 'success',
 };
 
 Polymer({
