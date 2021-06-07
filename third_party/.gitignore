@@ -72,6 +72,7 @@
 /depot_tools
 /devtools-frontend/src
 /directxsdk
+/distributed_point_functions/src
 /dom_distiller_js/dist
 /eigen3/src
 /elfutils/src

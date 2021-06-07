@@ -1,0 +1,53 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "src/dpf/distributed_point_function.proto" ]
+  proto_out_dir = "third_party/distributed_point_functions/dpf"
+  cc_generator_options = "lite"
+}
+
+if (!defined(dpf_abseil_cpp_dir)) {
+  dpf_abseil_cpp_dir = "//third_party/abseil-cpp"
+}
+
+config("distributed_point_functions_includes") {
+  include_dirs = [
+    ".",
+    "src",
+    "$target_gen_dir",
+  ]
+}
+
+source_set("distributed_point_functions") {
+  sources = [
+    "glog/logging.h",
+    "src/dpf/distributed_point_function.cc",
+    "src/dpf/distributed_point_function.h",
+    "src/dpf/internal/array_conversions.h",
+    "src/dpf/internal/pseudorandom_generator.cc",
+    "src/dpf/internal/pseudorandom_generator.h",
+    "src/dpf/status_macros.h",
+  ]
+
+  public_deps = [
+    ":proto",
+    "$dpf_abseil_cpp_dir:absl",
+    "//third_party/boringssl",
+  ]
+
+  # Do not apply Chromium code rules to this third-party code.
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":distributed_point_functions_includes" ]
+}
+
+fuzzer_test("dpf_fuzzer") {
+  sources = [ "fuzz/dpf_fuzzer.cc" ]
+  deps = [ ":distributed_point_functions" ]
+}
