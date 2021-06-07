@@ -2033,8 +2033,10 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     return;
   }
 
-  if (InStyleRecalc())
+  if (InStyleRecalc()) {
+    NOTREACHED() << "We should not re-enter style recalc for the same document";
     return;
+  }
 
 #if DCHECK_IS_ON()
   int assigned_nodes_in_slot_count = 0;
