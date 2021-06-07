@@ -369,6 +369,9 @@ function protocolIdToRemoteObject(objectId) {
   return remoteObject;
 }
 
+// Strings longer than this will be truncated when creating protocol values.
+const MaxStringLength = 10000;
+
 function remoteObjectToProtocolValue(obj) {
   switch (obj.type) {
     case "undefined":
@@ -379,6 +382,9 @@ function remoteObjectToProtocolValue(obj) {
       if (obj.unserializableValue) {
         assert(obj.type == "number");
         return { unserializableNumber: obj.unserializableValue };
+      }
+      if (typeof obj.value == "string" && obj.value.length > MaxStringLength) {
+        return { value: obj.value.substring(0, MaxStringLength) + "…" };
       }
       return { value: obj.value };
     case "bigint": {
@@ -430,10 +436,18 @@ function createProtocolObject(objectId, level) {
   return { objectId, className, preview };
 }
 
-// Note: this is higher than on gecko-dev because typed arrays don't render
-// properly in the devtools currently unless we include a minimum number of
-// properties. This would be nice to fix.
-const NumItemsBeforeOverflow = 12;
+// Target limit for the number of items (properties etc.) to include in object
+// previews before overflowing.
+const MaxItems = {
+  "noProperties": 0,
+
+  // Note: this is higher than on gecko-dev because typed arrays don't render
+  // properly in the devtools currently unless we include a minimum number of
+  // properties. This would be nice to fix.
+  "canOverflow": 10,
+
+  "full": 1000,
+};
 
 function ProtocolObjectPreview(obj, level) {
   this.obj = obj;
@@ -445,11 +459,7 @@ function ProtocolObjectPreview(obj, level) {
 
 ProtocolObjectPreview.prototype = {
   canAddItem(force) {
-    if (this.level == "noProperties") {
-      this.overflow = true;
-      return false;
-    }
-    if (!force && this.level == "canOverflow" && this.numItems >= NumItemsBeforeOverflow) {
+    if (!force && this.numItems >= MaxItems[this.level]) {
       this.overflow = true;
       return false;
     }
@@ -515,7 +525,7 @@ ProtocolObjectPreview.prototype = {
     }
     return {
       prototypeId,
-      overflow: this.overflow ? true : undefined,
+      overflow: (this.overflow && this.level != "full") ? true : undefined,
       properties: this.properties,
       containerEntries: this.containerEntries,
       ...this.extra,
