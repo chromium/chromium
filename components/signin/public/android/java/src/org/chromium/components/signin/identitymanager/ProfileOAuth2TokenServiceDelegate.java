@@ -83,28 +83,30 @@ final class ProfileOAuth2TokenServiceDelegate {
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
-        final Account account = AccountUtils.findAccountByName(
-                mAccountManagerFacade.tryGetGoogleAccounts(), accountEmail);
-        if (account == null) {
-            ThreadUtils.postOnUiThread(() -> {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                        null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
-            });
-            return;
-        }
-        String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-        getAccessToken(account, oauth2Scope, new GetAccessTokenCallback() {
-            @Override
-            public void onGetTokenSuccess(AccessTokenData token) {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                        token.getToken(), token.getExpirationTimeSecs(), false, nativeCallback);
+        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
+            final Account account = AccountUtils.findAccountByName(accounts, accountEmail);
+            if (account == null) {
+                ThreadUtils.postOnUiThread(() -> {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
+                            null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
+                });
+                return;
             }
+            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
+            getAccessToken(account, oauth2Scope, new GetAccessTokenCallback() {
+                @Override
+                public void onGetTokenSuccess(AccessTokenData token) {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
+                            token.getToken(), token.getExpirationTimeSecs(), false, nativeCallback);
+                }
 
-            @Override
-            public void onGetTokenFailure(boolean isTransientError) {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(null,
-                        AccessTokenData.NO_KNOWN_EXPIRATION_TIME, isTransientError, nativeCallback);
-            }
+                @Override
+                public void onGetTokenFailure(boolean isTransientError) {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(null,
+                            AccessTokenData.NO_KNOWN_EXPIRATION_TIME, isTransientError,
+                            nativeCallback);
+                }
+            });
         });
     }
 
