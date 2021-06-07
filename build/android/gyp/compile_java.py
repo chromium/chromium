@@ -421,9 +421,7 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
                  save_outputs=True):
   logging.info('Starting _RunCompiler')
 
-  # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
-  # rules run both in parallel, with Error Prone only used for checks.
-  save_outputs = not options.enable_errorprone
+  java_files = java_files.copy()
 
   # Use jar_path's directory to ensure paths are relative (needed for goma).
   temp_dir = jar_path + '.staging'
