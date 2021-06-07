@@ -5355,29 +5355,6 @@
             ]
         }
     ],
-    "OmniboxDefaultTypedNavigationsToHttps": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_3secondTimeout",
-                    "params": {
-                        "timeout": "3s"
-                    },
-                    "enable_features": [
-                        "OmniboxDefaultTypedNavigationsToHttps"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxDocumentProviderNonDogfoodExperiments": [
         {
             "platforms": [
