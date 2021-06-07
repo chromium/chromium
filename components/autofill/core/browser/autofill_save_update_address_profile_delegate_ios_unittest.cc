@@ -70,4 +70,49 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
             std::u16string(u"John Doe, 666 Erebus St."));
 }
 
+// Tests that the callback is run with kDeclined on destruction.
+TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+     TestCallbackOnDestruction) {
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+      callback.Get());
+
+  delegate->Cancel();
+  EXPECT_CALL(
+      callback,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+          testing::_));
+  // The callback should run in the destructor.
+  delegate.reset();
+}
+
+// Tests that the callback is run with kAccepted on Accept.
+TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestCallbackOnSave) {
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+          testing::_));
+  AutofillSaveUpdateAddressProfileDelegateIOS(
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US", callback.Get())
+      .Accept();
+}
+
+// Tests that the callback is run with kEditAccepted on EditAccepted.
+TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+     TestCallbackOnEditAccepted) {
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
+          testing::_));
+  AutofillSaveUpdateAddressProfileDelegateIOS(
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US", callback.Get())
+      .EditAccepted();
+}
+
 }  // namespace autofill

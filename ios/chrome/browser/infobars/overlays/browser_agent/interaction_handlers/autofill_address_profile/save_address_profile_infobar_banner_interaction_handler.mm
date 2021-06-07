@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler.h"
 
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 
@@ -23,3 +24,20 @@ SaveAddressProfileInfobarBannerInteractionHandler::
 
 SaveAddressProfileInfobarBannerInteractionHandler::
     ~SaveAddressProfileInfobarBannerInteractionHandler() = default;
+
+void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
+    InfoBarIOS* infobar,
+    bool visible) {
+  if (!visible) {
+    autofill::AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
+        infobar->delegate())
+        ->MessageTimeout();
+  }
+}
+
+void SaveAddressProfileInfobarBannerInteractionHandler::BannerDismissedByUser(
+    InfoBarIOS* infobar) {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
+      infobar->delegate())
+      ->MessageDeclined();
+}
