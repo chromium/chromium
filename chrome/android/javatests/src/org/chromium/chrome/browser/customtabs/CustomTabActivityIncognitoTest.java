@@ -59,6 +59,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
@@ -79,7 +80,7 @@ import java.util.concurrent.TimeoutException;
  * in the first place. Screenshot of the Custom tab menu item is broken.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.FORCE_FIRST_RUN_FLOW_COMPLETE_FOR_TESTING})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityIncognitoTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
@@ -99,6 +100,7 @@ public class CustomTabActivityIncognitoTest {
 
     @Before
     public void setUp() throws TimeoutException {
+        FirstRunStatus.setFirstRunFlowComplete(true);
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
@@ -160,11 +162,11 @@ public class CustomTabActivityIncognitoTest {
         Menu menu = mCustomTabActivityTestRule.getMenu();
         MenuItem iconRow = menu.findItem(R.id.icon_row_menu_id);
 
-        assertEquals(4, CustomTabsTestUtils.getVisibleMenuSize(iconRow.getSubMenu()));
         assertTrue(iconRow.getSubMenu().findItem(R.id.forward_menu_id).isVisible());
         assertTrue(iconRow.getSubMenu().findItem(R.id.reload_menu_id).isVisible());
         assertTrue(iconRow.getSubMenu().findItem(R.id.bookmark_this_page_id).isVisible());
         assertTrue(iconRow.getSubMenu().findItem(R.id.info_menu_id).isVisible());
+        assertEquals(4, CustomTabsTestUtils.getVisibleMenuSize(iconRow.getSubMenu()));
     }
 
     private CustomTabActivity launchIncognitoCustomTab(Intent intent) throws InterruptedException {

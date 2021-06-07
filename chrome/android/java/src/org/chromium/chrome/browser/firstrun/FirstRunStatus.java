@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import org.chromium.base.CommandLine;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -41,18 +39,14 @@ public class FirstRunStatus {
      * includes ToS and Sign In pages if necessary.
      */
     public static boolean getFirstRunFlowComplete() {
-        if (SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false)) {
-            return true;
-        }
-        return CommandLine.getInstance().hasSwitch(
-                ChromeSwitches.FORCE_FIRST_RUN_FLOW_COMPLETE_FOR_TESTING);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
     }
 
     /**
-    * Sets the preference to skip the welcome page from the main First Run Experience.
-     * @param isSkip Whether the welcome page should be skpped
-    */
+     * Sets the preference to skip the welcome page from the main First Run Experience.
+     * @param isSkip Whether the welcome page should be skipped.
+     */
     public static void setSkipWelcomePage(boolean isSkip) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE, isSkip);
