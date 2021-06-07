@@ -18,84 +18,102 @@
 <script>
 var scrollAmount = 1;
 var last_event = null;
+// TODO(crbug.com/1204176): expectedDeltaY will not match expectations if
+// percent-based scrolling is enabled.
 var expectedDeltaY = scrollAmount * pixelsPerTick();
-var testDiv;
-
-function wheelHandler(e) {
-    assert_equals(last_event, null);
-    last_event = e;
-}
+var testDiv = document.getElementById('target');
+var scroller_target = elementCenter(testDiv);
 
 // Reset the page state and last wheel event.
 function reset() {
-    last_event = null;
-    window.scrollTo(0,0);
+  last_event = null;
+  testDiv.scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 
-testDiv = document.getElementById('target');
+function wheelHandler(e) {
+  assert_equals(last_event, null);
+  last_event = e;
+}
+
 document.addEventListener('wheel', wheelHandler);
-var scroller_target = elementCenter(testDiv);
 
 promise_test(async () => {
-    reset();
-    await wheelTick(0, scrollAmount, scroller_target, SPEED_INSTANT, Modifiers.CONTROL);
-    await conditionHolds( () => {
-        return testDiv.scrollTop == 0;
-    });
-    assert_equals(last_event.deltaY, expectedDeltaY);
-    assert_true(last_event.ctrlKey);
+  reset();
+  await waitForCompositorCommit();
+  const wheelPromise = waitForEvent(document, 'wheel');
+  await wheelTick(0, scrollAmount, scroller_target, SPEED_INSTANT,
+                  Modifiers.CONTROL);
+  await wheelPromise;
+  await conditionHolds(() => {
+    return testDiv.scrollTop == 0;
+  });
+  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_true(last_event.ctrlKey);
 }, "Div: Ctrl+wheel doesn't scroll.");
 
 promise_test(async () => {
-    reset();
-    await wheelTick(0, scrollAmount, scroller_target, SPEED_INSTANT);
-    await waitFor( () => {
-        return testDiv.scrollTop == last_event.deltaY;
-    });
-    assert_equals(last_event.deltaY, expectedDeltaY);
-    assert_false(last_event.ctrlKey);
+  reset();
+  await waitForCompositorCommit();
+  const wheelPromise = waitForEvent(document, 'wheel');
+  await wheelTick(0, scrollAmount, scroller_target, SPEED_INSTANT);
+  await wheelPromise;
+  await waitForAnimationEndTimeBased(() => { return testDiv.scrollTop; });
+  assert_equals(testDiv.scrollTop, expectedDeltaY);
+  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_false(last_event.ctrlKey);
 }, "Div: No-Ctrl wheel scrolls.");
 
 // Test mousewheel events over the document
 var document_element = document.getElementById('target2');
 var document_target = elementCenter(document_element);
 promise_test(async () => {
-    reset();
-    await wheelTick(0, scrollAmount, document_target, SPEED_INSTANT, Modifiers.CONTROL);
-    await conditionHolds( () => {
-        return document_element.scrollTop == 0;
-    });
-    assert_equals(last_event.deltaY, expectedDeltaY);
-    assert_true(last_event.ctrlKey);
-    assert_equals(window.scrollY, 0);
+  reset();
+  await waitForCompositorCommit();
+  const wheelPromise = waitForEvent(document, 'wheel');
+  await wheelTick(0, scrollAmount, document_target, SPEED_INSTANT,
+                  Modifiers.CONTROL);
+  await wheelPromise;
+  await conditionHolds(() => {
+    return document_element.scrollTop == 0;
+  });
+  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_true(last_event.ctrlKey);
+  assert_equals(window.scrollY, 0);
 }, "Doc: Ctrl+wheel doesn't scroll.");
 
 // The smoothScrollWithXY here indicates that we set |precise_scrolling_deltas| to
 // true to simulate a high precision touch pad which should scroll even if
 // control is down, rather than zooming.
 promise_test(async () => {
-    reset();
-    var source = GestureSourceType.MOUSE_INPUT;
-    await smoothScrollWithXY(0, scrollAmount* pixelsPerTick(), document_target.x,
-                             document_target.y, source, SPEED_INSTANT,
-                             true /* precise_scrolling_deltas */,
-                             false /* scroll_by_page */, true /* cursor_visible */,
-                             false /* scroll_by_percentage */, Modifiers.CONTROL);
-    await waitFor( () => {
-        return window.scrollY == last_event.deltaY;
-    });
-    assert_equals(last_event.deltaY, expectedDeltaY);
-    assert_true(last_event.ctrlKey);
+  reset();
+  await waitForCompositorCommit();
+  const wheelPromise = waitForEvent(document, 'wheel');
+  var source = GestureSourceType.MOUSE_INPUT;
+  await smoothScrollWithXY(0, scrollAmount* pixelsPerTick(), document_target.x,
+                           document_target.y, source, SPEED_INSTANT,
+                           true /* precise_scrolling_deltas */,
+                           false /* scroll_by_page */,
+                           true /* cursor_visible */,
+                           false /* scroll_by_percentage */,
+                           Modifiers.CONTROL);
+  await wheelPromise;
+  await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+  assert_equals(window.scrollY, expectedDeltaY);
+  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_true(last_event.ctrlKey);
 }, "Doc: Ctrl+high precision touchpad scroll scrolls.");
 
 promise_test(async () => {
-    reset();
-    await wheelTick(0, scrollAmount, document_target, SPEED_INSTANT);
-    await waitFor( () => {
-        return window.scrollY == expectedDeltaY;
-    });
-    assert_equals(last_event.deltaY, expectedDeltaY);
-    assert_false(last_event.ctrlKey);
+  reset();
+  await waitForCompositorCommit();
+  const wheelPromise =  waitForEvent(document, 'wheel');
+  await wheelTick(0, scrollAmount, document_target, SPEED_INSTANT);
+  await wheelPromise;
+  await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+  assert_equals(window.scrollY, expectedDeltaY);
+  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_false(last_event.ctrlKey);
 }, "Doc: No-Ctrl wheel scrolls.");
 
 </script>
