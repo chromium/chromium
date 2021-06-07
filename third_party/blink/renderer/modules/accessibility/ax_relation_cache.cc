@@ -57,8 +57,11 @@ void AXRelationCache::ProcessUpdatesWithCleanLayout() {
 }
 
 bool AXRelationCache::IsAriaOwned(const AXObject* child) const {
-  return child &&
-         aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
+  if (!child)
+    return false;
+  DCHECK(!child->IsDetached())
+      << "Child was detached: " << child->ToString(true, true);
+  return aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
 }
 
 AXObject* AXRelationCache::GetAriaOwnedParent(const AXObject* child) const {
