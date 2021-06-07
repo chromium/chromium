@@ -83,7 +83,7 @@ If you use VS Code, you can create folder `.vscode`, and put 2 files in it:
       "skipFiles": ["<node_internals>/**"],
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal",
-      "program": "${workspaceFolder}/src/.build/server.js",
+      "program": "${workspaceFolder}/src/.build/index.js",
       "outFiles": ["${workspaceFolder}/src/.build/**/*.js"],
       "env": {
         "DEBUG": "*",

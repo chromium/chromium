@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "server.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bidi-server": "npm run build && node ./src/.build/server.js",
+    "bidi-server": "npm run build && node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
