@@ -44,6 +44,7 @@
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/page_navigator.h"
@@ -260,9 +261,13 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   if (GetOpenApplicationCallback())
     return GetOpenApplicationCallback().Run(std::move(params));
 
+  bool is_share_intent =
+      params.intent &&
+      (params.intent->action == apps_util::kIntentActionSend ||
+       params.intent->action == apps_util::kIntentActionSendMultiple);
   const apps::ShareTarget* const share_target =
-      params.intent ? provider_->registrar().GetAppShareTarget(params.app_id)
-                    : nullptr;
+      is_share_intent ? provider_->registrar().GetAppShareTarget(params.app_id)
+                      : nullptr;
   const GURL url = GetLaunchUrl(*provider_, params, share_target);
   DCHECK(url.is_valid());
 

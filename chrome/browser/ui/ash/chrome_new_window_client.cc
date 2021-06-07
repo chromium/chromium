@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -61,6 +63,10 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/custom_tab.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/url_formatter/url_fixer.h"
@@ -250,6 +256,23 @@ std::string GetPathAndQuery(const GURL& url) {
     result += url.query();
   }
   return result;
+}
+
+apps::mojom::IntentPtr ConvertLaunchIntent(
+    const arc::mojom::LaunchIntentPtr& launch_intent) {
+  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+
+  const char* action =
+      apps_util::ConvertArcToAppServiceIntentAction(launch_intent->action);
+  if (action)
+    intent->action = action;
+
+  intent->url = launch_intent->data;
+  intent->mime_type = launch_intent->type;
+  intent->share_title = launch_intent->extra_subject;
+  intent->share_text = launch_intent->extra_text;
+
+  return intent;
 }
 
 }  // namespace
@@ -684,6 +707,58 @@ void ChromeNewWindowClient::OpenChromePageFromArc(ChromePage page) {
   }
 
   NOTREACHED();
+}
+
+void ChromeNewWindowClient::OpenAppWithIntent(
+    const GURL& start_url,
+    arc::mojom::LaunchIntentPtr arc_intent) {
+  DCHECK(start_url.is_valid());
+  DCHECK(start_url.SchemeIs(url::kHttpsScheme));
+
+  // Fetch the profile associated with ARC. This method should only be called
+  // for a |url| which was installed via ARC, and so we want the web app that is
+  // opened through here to be installed in the profile associated with ARC.
+  const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(user);
+
+  // |profile| may be null if sign-in has happened but the profile isn't loaded
+  // yet.
+  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  if (!profile)
+    return;
+
+  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+
+  bool app_installed = false;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&app_installed](const apps::AppUpdate& update) {
+        app_installed = apps_util::IsInstalled(update.Readiness());
+      });
+
+  if (!app_installed) {
+    if (arc_intent->data)
+      OpenUrlFromArc(*arc_intent->data);
+    return;
+  }
+
+  apps::mojom::IntentPtr intent = ConvertLaunchIntent(arc_intent);
+
+  auto launch_container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&launch_container, &disposition](const apps::AppUpdate& update) {
+        if (update.WindowMode() == apps::mojom::WindowMode::kBrowser) {
+          launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+          disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        }
+      });
+
+  int event_flags = apps::GetEventFlags(launch_container, disposition,
+                                        /*prefer_container=*/false);
+
+  proxy->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
+                             apps::mojom::LaunchSource::kFromArc);
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,

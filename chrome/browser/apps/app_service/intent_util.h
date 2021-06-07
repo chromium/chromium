@@ -68,6 +68,10 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
 // Convert between App Service and ARC Intents.
 arc::mojom::IntentInfoPtr CreateArcIntent(const apps::mojom::IntentPtr& intent);
 
+// Converts an ARC intent action to an App Service intent action. Returns
+// nullptr if |arc_action| is an action which is not supported by App Service.
+const char* ConvertArcToAppServiceIntentAction(const std::string& arc_action);
+
 // Convert an apps::mojom::Intent struct to a string to call the LaunchIntent
 // interface from arc::mojom::AppInstance. If |intent| has |ui_bypassed|, |url|
 // or |data|, returns an empty string as these intents cannot be represented in

@@ -110,6 +110,8 @@ class ArcIntentHelperBridge : public KeyedService,
                               std::vector<IntentFilter> deleted) override;
   void OnDownloadAdded(const std::string& relative_path,
                        const std::string& owner_package_name) override;
+  void OnOpenAppWithIntent(const GURL& start_url,
+                           arc::mojom::LaunchIntentPtr intent) override;
 
   // Retrieves icons for the |activities| and calls |callback|.
   // See ActivityIconLoader::GetActivityIcons() for more details.

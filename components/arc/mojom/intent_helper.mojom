@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 45
+// Next MinVersion: 46
 
 module arc.mojom;
 
@@ -11,6 +11,7 @@ import "components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/camera_intent.mojom";
 import "components/arc/mojom/intent_common.mojom";
 import "components/arc/mojom/scale_factor.mojom";
+import "url/mojom/url.mojom";
 
 [Extensible]
 enum PatternType {
@@ -235,6 +236,24 @@ struct TextSelectionAction {
   [MinVersion=23] ArcBitmap? bitmap_icon;
 };
 
+// Contains the information needed to launch an app along with any data which
+// was shared to it.
+struct LaunchIntent {
+  string action;
+
+  // URI for the data to be handled by this intent.
+  url.mojom.Url? data;
+
+  // MIME type of the intent data.
+  string? type;
+
+  // The contents of Intent.EXTRA_SUBJECT.
+  string? extra_subject;
+
+  // The contents of Intent.EXTRA_TEXT.
+  string? extra_text;
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -245,7 +264,7 @@ interface CustomTabSession {
 
 // Handles intents from ARC in Chrome.
 // Deprecated method ID: 4, 10
-// Next method ID: 19
+// Next method ID: 20
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -340,6 +359,15 @@ interface IntentHelperHost {
   //                      "com.bar.foo").
   [MinVersion=44] OnDownloadAdded@18(
       string relative_path, string owner_package_name);
+
+  // Opens the web app for a specified URL, if it is installed, and delivers
+  // |intent| to it. If the URL is not installed, will open |intent.data| in a
+  // browser tab, unless |intent.data| is not set, in which case nothing
+  // happens.
+  // Note that the |start_url| is used for resolving the app to open, but the
+  // actual URL which is loaded is based on the contents of |intent|.
+  [MinVersion=45] OnOpenAppWithIntent@19(
+      url.mojom.Url start_url, LaunchIntent intent);
 };
 
 // Sends intents to ARC on behalf of Chrome.

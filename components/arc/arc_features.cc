@@ -49,6 +49,10 @@ const base::Feature kEnableUnmanagedToManagedTransitionFeature{
 const base::Feature kEnableUsap{"ArcEnableUsap",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether ARC apps can share to Web Apps through WebAPKs and TWAs.
+const base::Feature kEnableWebAppShareFeature{
+    "ArcEnableWebAppShare", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};

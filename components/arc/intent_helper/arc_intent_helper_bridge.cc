@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
@@ -324,6 +325,27 @@ void ArcIntentHelperBridge::OnDownloadAdded(
 
   for (auto& observer : observer_list_)
     observer.OnArcDownloadAdded(relative_path, owner_package_name);
+}
+
+void ArcIntentHelperBridge::OnOpenAppWithIntent(
+    const GURL& start_url,
+    arc::mojom::LaunchIntentPtr intent) {
+  // Fall-back to the previous behavior where the web app opens without any
+  // share data.
+  if (!base::FeatureList::IsEnabled(arc::kEnableWebAppShareFeature)) {
+    if (intent->data)
+      OnOpenWebApp(intent->data->spec());
+    return;
+  }
+
+  if (!start_url.is_valid())
+    return;
+
+  RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
+
+  // Web app launches should only be invoked on HTTPS URLs.
+  if (start_url.SchemeIs(url::kHttpsScheme))
+    g_open_url_delegate->OpenAppWithIntent(start_url, std::move(intent));
 }
 
 ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(

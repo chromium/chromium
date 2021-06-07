@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -17,11 +19,15 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/intent_helper/intent_constants.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -228,6 +234,94 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, OpenAboutChromePage) {
   content::WebContents* contents =
       GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL), contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientWebAppBrowserTest,
+                       OpenAppWithIntent) {
+  ASSERT_TRUE(https_server().Start());
+  const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
+
+  // InstallTestWebApp() but with a ShareTarget definition added.
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope =
+      https_server().GetURL(GetAppUrlHost(), GetAppScopePath());
+  web_app_info->title = base::UTF8ToUTF16(GetAppName());
+  web_app_info->open_as_window = true;
+  apps::ShareTarget share_target;
+  share_target.method = apps::ShareTarget::Method::kGet;
+  share_target.action = app_url;
+  share_target.params.text = "text";
+  web_app_info->share_target = share_target;
+  std::string id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  const char* arc_transition_key =
+      arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
+
+  {
+    // Calling OpenAppWithIntent for a not installed HTTPS URL should open in
+    // an ordinary browser tab.
+    const GURL url("https://www.google.com");
+    arc::mojom::LaunchIntentPtr intent = arc::mojom::LaunchIntent::New();
+    intent->action = arc::kIntentActionView;
+    intent->data = url;
+
+    auto observer = GetTestNavigationObserver(url);
+    ChromeNewWindowClient::Get()->OpenAppWithIntent(url, std::move(intent));
+    observer->WaitForNavigationFinished();
+
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_FALSE(GetLastActiveBrowser()->is_type_app());
+    content::WebContents* contents =
+        GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(url, contents->GetLastCommittedURL());
+    EXPECT_NE(nullptr, contents->GetUserData(arc_transition_key));
+  }
+
+  {
+    // Calling OpenAppWithIntent for an installed web app URL should open the
+    // intent in an app window.
+    GURL launch_url =
+        https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+    arc::mojom::LaunchIntentPtr intent = arc::mojom::LaunchIntent::New();
+    intent->action = arc::kIntentActionView;
+    intent->data = launch_url;
+
+    auto observer = GetTestNavigationObserver(launch_url);
+    ChromeNewWindowClient::Get()->OpenAppWithIntent(app_url, std::move(intent));
+    observer->WaitForNavigationFinished();
+
+    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_TRUE(GetLastActiveBrowser()->is_type_app());
+    content::WebContents* contents =
+        GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(launch_url, contents->GetLastCommittedURL());
+    EXPECT_NE(nullptr, contents->GetUserData(arc_transition_key));
+  }
+  {
+    // Calling OpenAppWithIntent for an installed web app URL with shared
+    // content should open the app with the share data passed through.
+    arc::mojom::LaunchIntentPtr intent = arc::mojom::LaunchIntent::New();
+    intent->action = arc::kIntentActionSend;
+    intent->extra_text = "shared_text";
+
+    GURL::Replacements add_query;
+    add_query.SetQueryStr("text=shared_text");
+    GURL launch_url = app_url.ReplaceComponents(add_query);
+
+    auto observer = GetTestNavigationObserver(launch_url);
+    ChromeNewWindowClient::Get()->OpenAppWithIntent(app_url, std::move(intent));
+    observer->WaitForNavigationFinished();
+
+    EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+    EXPECT_TRUE(GetLastActiveBrowser()->is_type_app());
+    content::WebContents* contents =
+        GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(launch_url, contents->GetLastCommittedURL());
+  }
 }
 
 void TestOpenChromePage(ChromePage page, const GURL& expected_url) {

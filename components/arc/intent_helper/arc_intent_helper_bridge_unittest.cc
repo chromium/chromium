@@ -10,6 +10,9 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/arc/arc_features.h"
+#include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -56,6 +59,11 @@ class ArcIntentHelperTest : public testing::Test {
       std::move(callback).Run(mojo::NullRemote());
     }
     void OpenChromePageFromArc(mojom::ChromePage chrome_page) override {}
+    void OpenAppWithIntent(const GURL& url,
+                           mojom::LaunchIntentPtr intent) override {
+      last_opened_url_ = url;
+      last_opened_intent_ = std::move(intent);
+    }
 
     GURL TakeLastOpenedUrl() {
       GURL result = std::move(last_opened_url_);
@@ -63,8 +71,15 @@ class ArcIntentHelperTest : public testing::Test {
       return result;
     }
 
+    mojom::LaunchIntentPtr TakeLastOpenedIntent() {
+      auto result = std::move(last_opened_intent_);
+      last_opened_intent_.reset();
+      return result;
+    }
+
    private:
     GURL last_opened_url_;
+    mojom::LaunchIntentPtr last_opened_intent_;
   };
 
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
@@ -392,6 +407,55 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl_ChromeScheme) {
 
   instance_->OnOpenUrl("about:blank");
   EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+}
+
+// Tests that OnOpenAppWithIntents opens only HTTPS URLs.
+TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
+  {
+    // When the feature is enabled, open the Intent through the delegate.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(arc::kEnableWebAppShareFeature);
+
+    auto intent = mojom::LaunchIntent::New();
+    intent->action = arc::kIntentActionSend;
+    intent->extra_text = "Foo";
+    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
+                                   std::move(intent));
+    EXPECT_EQ(GURL("https://www.google.com"),
+              test_open_url_delegate_->TakeLastOpenedUrl());
+    EXPECT_EQ("Foo",
+              test_open_url_delegate_->TakeLastOpenedIntent()->extra_text);
+
+    instance_->OnOpenAppWithIntent(GURL("http://www.google.com"),
+                                   mojom::LaunchIntent::New());
+    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+
+    instance_->OnOpenAppWithIntent(GURL("chrome://settings"),
+                                   mojom::LaunchIntent::New());
+    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+  }
+  {
+    // When the feature is disabled, open the Intent's URL through the delegate.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(arc::kEnableWebAppShareFeature);
+
+    auto intent = mojom::LaunchIntent::New();
+    intent->data = GURL("https://www.google.com/maps");
+    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
+                                   std::move(intent));
+    EXPECT_EQ(GURL("https://www.google.com/maps"),
+              test_open_url_delegate_->TakeLastOpenedUrl());
+    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+
+    intent = mojom::LaunchIntent::New();
+    intent->data = GURL("chrome://settings");
+    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
+                                   std::move(intent));
+    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+  }
 }
 
 // Tests that AppendStringToIntentHelperPackageName works.
