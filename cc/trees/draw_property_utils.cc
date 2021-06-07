@@ -1285,7 +1285,7 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
   if (!transform_node->node_and_ancestors_are_animated_or_invertible ||
       !effect_node->is_drawn)
     return true;
-  if (layer->layer_tree_impl()->settings().enable_transform_interop) {
+  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
     return layer->should_check_backface_visibility() &&
            IsLayerBackFaceVisible(layer, layer->transform_tree_index(),
                                   property_trees);
@@ -1297,7 +1297,7 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
 bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
                                       int transform_tree_index,
                                       const PropertyTrees* property_trees) {
-  if (layer->layer_tree_impl()->settings().enable_transform_interop) {
+  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
     return IsTransformToRootOf3DRenderingContextBackFaceVisible(
         layer, transform_tree_index, property_trees);
   } else {
@@ -1309,7 +1309,9 @@ bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
 bool CC_EXPORT IsLayerBackFaceVisible(Layer* layer,
                                       int transform_tree_index,
                                       const PropertyTrees* property_trees) {
-  if (layer->layer_tree_host()->GetSettings().enable_transform_interop) {
+  if (layer->layer_tree_host()
+          ->GetSettings()
+          .enable_backface_visibility_interop) {
     return IsTransformToRootOf3DRenderingContextBackFaceVisible(
         layer, transform_tree_index, property_trees);
   } else {

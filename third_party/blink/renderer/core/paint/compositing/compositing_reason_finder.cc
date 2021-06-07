@@ -111,7 +111,7 @@ static bool ShouldPreferCompositingForLayoutView(
 
 static CompositingReasons BackfaceInvisibility3DAncestorReason(
     const PaintLayer& layer) {
-  if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+  if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled()) {
     if (auto* compositing_container = layer.CompositingContainer()) {
       if (compositing_container->GetLayoutObject()
               .StyleRef()

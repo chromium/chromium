@@ -833,8 +833,9 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeContents) {
 
 TEST_P(PaintPropertyTreeBuilderTest,
        BackfaceVisibilityWithPseudoStacking3DChildren) {
-  ScopedTransformInteropForTest enabled(true);
-  // TODO(chrishtr): implement for CAP. This entails computing
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
+  // TODO(chrishtr, dbaron): implement for CAP. This entails computing
   // has_backface_invisible_ancestor_in_same_3d_context in the pre-paint tree
   // walk.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())

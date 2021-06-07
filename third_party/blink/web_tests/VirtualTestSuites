@@ -863,6 +863,15 @@
     "args": [ "--enable-features=TransformInterop" ]
   },
   {
+    "prefix": "backface-visibility-interop",
+    "bases": [ "external/wpt/css/css-transforms",
+               "transforms/",
+               "compositing/geometry/",
+               "compositing/overflow/",
+               "paint/invalidation/" ],
+    "args": [ "--enable-features=TransformInterop,BackfaceVisibilityInterop" ]
+  },
+  {
     "prefix": "portals",
     "bases": [ "external/wpt/fetch/metadata/portal.https.sub.html",
                "external/wpt/portals",

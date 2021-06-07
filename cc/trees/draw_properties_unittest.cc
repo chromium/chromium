@@ -3575,21 +3575,22 @@ TEST_F(DrawPropertiesTest, OpacityAnimatingOnPendingTree) {
       active_child->effect_tree_index()));
 }
 
-class TransformInteropTest : public DrawPropertiesTestBase,
-                             public testing::Test {
+class BackfaceVisibilityInteropTest : public DrawPropertiesTestBase,
+                                      public testing::Test {
  public:
-  TransformInteropTest() : DrawPropertiesTestBase(TransformInteropSettings()) {}
+  BackfaceVisibilityInteropTest()
+      : DrawPropertiesTestBase(BackfaceVisibilityInteropSettings()) {}
 
  protected:
-  LayerTreeSettings TransformInteropSettings() {
+  LayerTreeSettings BackfaceVisibilityInteropSettings() {
     LayerListSettings settings;
 
-    settings.enable_transform_interop = true;
+    settings.enable_backface_visibility_interop = true;
     return settings;
   }
 };
 
-TEST_F(TransformInteropTest, BackfaceInvisibleTransform) {
+TEST_F(BackfaceVisibilityInteropTest, BackfaceInvisibleTransform) {
   LayerImpl* root = root_layer();
   root->SetDrawsContent(true);
   LayerImpl* back_facing = AddLayer<LayerImpl>();

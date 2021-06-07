@@ -769,7 +769,7 @@ static CompositingReasons CompositingReasonsForTransformProperty() {
   reasons |= CompositingReason::kWillChangeFilter;
   reasons |= CompositingReason::kWillChangeBackdropFilter;
 
-  if (RuntimeEnabledFeatures::TransformInteropEnabled())
+  if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled())
     reasons |= CompositingReason::kBackfaceInvisibility3DAncestor;
 
   return reasons;

@@ -539,8 +539,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   // Disable occlusion if de-jelly effect is enabled.
   settings.enable_occlusion &= !settings.allow_de_jelly_effect;
 
-  settings.enable_transform_interop =
-      base::FeatureList::IsEnabled(features::kTransformInterop);
+  settings.enable_backface_visibility_interop =
+      base::FeatureList::IsEnabled(features::kBackfaceVisibilityInterop);
 
   return settings;
 }

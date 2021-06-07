@@ -528,6 +528,8 @@ const base::Feature kSubresourceRedirectSrcVideo{
 // See crbug.com/1008483.
 const base::Feature kTransformInterop{"TransformInterop",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kBackfaceVisibilityInterop{
+    "BackfaceVisibilityInterop", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, beacons (and friends) have ResourceLoadPriority::kLow,
 // not ResourceLoadPriority::kVeryLow.

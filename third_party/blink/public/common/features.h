@@ -159,6 +159,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kIgnoreCrossOriginWindowWhenNamedAccessOnWindow;
 
 BLINK_COMMON_EXPORT extern const base::Feature kTransformInterop;
+BLINK_COMMON_EXPORT extern const base::Feature kBackfaceVisibilityInterop;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSubresourceRedirect;
 

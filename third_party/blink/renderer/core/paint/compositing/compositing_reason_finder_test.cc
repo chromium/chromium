@@ -290,7 +290,8 @@ TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
 
 TEST_F(CompositingReasonFinderTest,
        CompositeWithBackfaceVisibilityAncestorAndPreserve3D) {
-  ScopedTransformInteropForTest enabled(true);
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -311,7 +312,8 @@ TEST_F(CompositingReasonFinderTest,
 
 TEST_F(CompositingReasonFinderTest,
        CompositeWithBackfaceVisibilityAncestorAndPreserve3DWithInterveningDiv) {
-  ScopedTransformInteropForTest enabled(true);
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -334,7 +336,8 @@ TEST_F(CompositingReasonFinderTest,
 
 TEST_F(CompositingReasonFinderTest,
        CompositeWithBackfaceVisibilityAncestorWithInterveningStackingDiv) {
-  ScopedTransformInteropForTest enabled(true);
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -362,7 +365,8 @@ TEST_F(CompositingReasonFinderTest,
 
 TEST_F(CompositingReasonFinderTest,
        CompositeWithBackfaceVisibilityAncestorAndFlattening) {
-  ScopedTransformInteropForTest enabled(true);
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -382,7 +386,8 @@ TEST_F(CompositingReasonFinderTest,
 }
 
 TEST_F(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
-  ScopedTransformInteropForTest enabled(true);
+  ScopedTransformInteropForTest ti_enabled(true);
+  ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>

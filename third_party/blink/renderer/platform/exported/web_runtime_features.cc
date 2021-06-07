@@ -652,6 +652,10 @@ void WebRuntimeFeatures::EnableTransformInterop(bool enable) {
   RuntimeEnabledFeatures::SetTransformInteropEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableBackfaceVisibilityInterop(bool enable) {
+  RuntimeEnabledFeatures::SetBackfaceVisibilityInteropEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableVideoWakeLockOptimisationHiddenMuted(
     bool enable) {
   RuntimeEnabledFeatures::SetVideoWakeLockOptimisationHiddenMutedEnabled(

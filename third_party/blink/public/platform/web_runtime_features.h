@@ -233,6 +233,7 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableInstalledApp(bool);
   BLINK_PLATFORM_EXPORT static void EnableTransformInterop(bool);
+  BLINK_PLATFORM_EXPORT static void EnableBackfaceVisibilityInterop(bool);
   BLINK_PLATFORM_EXPORT static void EnableVideoWakeLockOptimisationHiddenMuted(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableContentIndex(bool);

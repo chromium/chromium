@@ -299,6 +299,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableTimerThrottlingForHiddenFrames,
      features::kTimerThrottlingForHiddenFrames},
     {wf::EnableTransformInterop, blink::features::kTransformInterop},
+    {wf::EnableBackfaceVisibilityInterop,
+     blink::features::kBackfaceVisibilityInterop},
     {wf::EnableUserActivationSameOriginVisibility,
      features::kUserActivationSameOriginVisibility},
     {wf::EnableVideoPlaybackQuality, features::kVideoPlaybackQuality},

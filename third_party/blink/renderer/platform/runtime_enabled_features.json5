@@ -237,6 +237,11 @@
       name: "AutoplayIgnoresWebAudio",
       settable_from_internals: true,
     },
+    // When enabled, enforces new interoperable semantics for 3D transforms.
+    // See crbug.com/1008483.
+    {
+      name: "BackfaceVisibilityInterop",
+    },
     {
       name: "BackForwardCache",
     },
