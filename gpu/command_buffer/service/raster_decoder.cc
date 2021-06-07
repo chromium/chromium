@@ -3185,6 +3185,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   if (!needs_clear && !shared_image_->IsCleared()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
                        "SharedImage not cleared before use.");
+    shared_image_.reset();
     return;
   }
 
