@@ -69,7 +69,6 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
   PrerenderHandle(PassKey,
                   ExecutionContext*,
                   const KURL&,
-                  HeapMojoRemote<mojom::blink::PrerenderProcessor>,
                   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>);
   ~PrerenderHandle();
 
@@ -82,7 +81,6 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
 
  private:
   const KURL url_;
-  HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_prerender_processor_;
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>
       remote_prefetch_processor_;
 

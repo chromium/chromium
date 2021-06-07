@@ -32,7 +32,6 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -64,29 +63,14 @@ PrerenderHandle* PrerenderHandle::Create(
   attributes->view_size =
       gfx::Size(document.GetFrame()->GetMainFrameViewportSize());
 
-  HeapMojoRemote<mojom::blink::PrerenderProcessor> prerender_processor(context);
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor> prefetch_processor(
       context);
 
-  // Run prerendering only when kPrerender2 is enabled and the origin of the
-  // prerendering URL is the same as the origin of the trigger context.
-  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
-  // support cross-origin prerendering later.
-  if (features::IsPrerender2Enabled() &&
-      context->GetSecurityOrigin()->IsSameOriginWith(
-          SecurityOrigin::Create(url).get())) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        prerender_processor.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    prerender_processor->Start(std::move(attributes));
-  } else {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        prefetch_processor.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    prefetch_processor->Start(std::move(attributes));
-  }
+  context->GetBrowserInterfaceBroker().GetInterface(
+      prefetch_processor.BindNewPipeAndPassReceiver(
+          context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  prefetch_processor->Start(std::move(attributes));
   return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, url,
-                                               std::move(prerender_processor),
                                                std::move(prefetch_processor));
 }
 
@@ -94,20 +78,14 @@ PrerenderHandle::PrerenderHandle(
     PassKey pass_key,
     ExecutionContext* context,
     const KURL& url,
-    HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_prerender_processor,
     HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>
         remote_fetch_processor)
     : url_(url),
-      remote_prerender_processor_(std::move(remote_prerender_processor)),
       remote_prefetch_processor_(std::move(remote_fetch_processor)) {}
 
 PrerenderHandle::~PrerenderHandle() = default;
 
 void PrerenderHandle::Cancel() {
-  if (remote_prerender_processor_.is_bound())
-    remote_prerender_processor_->Cancel();
-  remote_prerender_processor_.reset();
-
   if (remote_prefetch_processor_.is_bound())
     remote_prefetch_processor_->Cancel();
   remote_prefetch_processor_.reset();
@@ -118,7 +96,6 @@ const KURL& PrerenderHandle::Url() const {
 }
 
 void PrerenderHandle::Trace(Visitor* visitor) const {
-  visitor->Trace(remote_prerender_processor_);
   visitor->Trace(remote_prefetch_processor_);
 }
 

@@ -33,11 +33,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -68,22 +66,17 @@ class TestWebNoStatePrefetchClient : public WebNoStatePrefetchClient {
   bool IsPrefetchOnly() override { return false; }
 };
 
-class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor,
-                               public mojom::blink::NoStatePrefetchProcessor {
+class MockNoStatePrefetchProcessor
+    : public mojom::blink::NoStatePrefetchProcessor {
  public:
-  explicit MockPrerenderProcessor(
-      mojo::PendingReceiver<mojom::blink::PrerenderProcessor>
-          pending_receiver) {
-    receiver_.Bind(std::move(pending_receiver));
-  }
-  explicit MockPrerenderProcessor(
+  explicit MockNoStatePrefetchProcessor(
       mojo::PendingReceiver<mojom::blink::NoStatePrefetchProcessor>
           pending_receiver) {
     receiver_for_prefetch_.Bind(std::move(pending_receiver));
   }
-  ~MockPrerenderProcessor() override = default;
+  ~MockNoStatePrefetchProcessor() override = default;
 
-  // mojom::blink::PrerenderProcessor implementation
+  // mojom::blink::NoStatePrefetchProcessor implementation
   void Start(mojom::blink::PrerenderAttributesPtr attributes) override {
     attributes_ = std::move(attributes);
   }
@@ -99,21 +92,14 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor,
 
  private:
   mojom::blink::PrerenderAttributesPtr attributes_;
-  mojo::Receiver<mojom::blink::PrerenderProcessor> receiver_{this};
   mojo::Receiver<mojom::blink::NoStatePrefetchProcessor> receiver_for_prefetch_{
       this};
 
   size_t cancel_count_ = 0;
 };
 
-class PrerenderTest : public testing::Test,
-                      public testing::WithParamInterface<bool> {
+class PrerenderTest : public testing::Test {
  public:
-  PrerenderTest() {
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-  }
-
   ~PrerenderTest() override {
     if (web_view_helper_.GetWebView())
       UnregisterMockPrerenderProcessor();
@@ -130,15 +116,9 @@ class PrerenderTest : public testing::Test,
     web_view_helper_.GetWebView()->SetNoStatePrefetchClient(
         &no_state_prefetch_client_);
 
-    if (features::IsPrerender2Enabled()) {
-      GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::PrerenderProcessor::Name_,
-          WTF::BindRepeating(&PrerenderTest::Bind, WTF::Unretained(this)));
-    } else {
-      GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::NoStatePrefetchProcessor::Name_,
-          WTF::BindRepeating(&PrerenderTest::Bind, WTF::Unretained(this)));
-    }
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::NoStatePrefetchProcessor::Name_,
+        WTF::BindRepeating(&PrerenderTest::Bind, WTF::Unretained(this)));
 
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(),
@@ -146,17 +126,10 @@ class PrerenderTest : public testing::Test,
   }
 
   void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
-    if (features::IsPrerender2Enabled()) {
-      auto processor = std::make_unique<MockPrerenderProcessor>(
-          mojo::PendingReceiver<mojom::blink::PrerenderProcessor>(
-              std::move(message_pipe_handle)));
-      processors_.push_back(std::move(processor));
-    } else {
-      auto processor = std::make_unique<MockPrerenderProcessor>(
-          mojo::PendingReceiver<mojom::blink::NoStatePrefetchProcessor>(
-              std::move(message_pipe_handle)));
-      processors_.push_back(std::move(processor));
-    }
+    auto processor = std::make_unique<MockNoStatePrefetchProcessor>(
+        mojo::PendingReceiver<mojom::blink::NoStatePrefetchProcessor>(
+            std::move(message_pipe_handle)));
+    processors_.push_back(std::move(processor));
   }
 
   void NavigateAway() {
@@ -181,19 +154,14 @@ class PrerenderTest : public testing::Test,
     test::RunPendingTasks();
   }
 
-  std::vector<std::unique_ptr<MockPrerenderProcessor>>& processors() {
+  std::vector<std::unique_ptr<MockNoStatePrefetchProcessor>>& processors() {
     return processors_;
   }
 
  private:
   void UnregisterMockPrerenderProcessor() {
-    if (features::IsPrerender2Enabled()) {
-      GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::PrerenderProcessor::Name_, {});
-    } else {
-      GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::NoStatePrefetchProcessor::Name_, {});
-    }
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::NoStatePrefetchProcessor::Name_, {});
   }
 
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() {
@@ -202,24 +170,19 @@ class PrerenderTest : public testing::Test,
         ->GetBrowserInterfaceBroker();
   }
 
-  std::vector<std::unique_ptr<MockPrerenderProcessor>> processors_;
-  mojo::ReceiverSet<mojom::blink::PrerenderProcessor> receiver_set_;
+  std::vector<std::unique_ptr<MockNoStatePrefetchProcessor>> processors_;
 
   TestWebNoStatePrefetchClient no_state_prefetch_client_;
 
   frame_test_helpers::WebViewHelper web_view_helper_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, PrerenderTest, testing::Bool());
-
-TEST_P(PrerenderTest, SinglePrerender) {
+TEST_F(PrerenderTest, SinglePrerender) {
   Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
+  MockNoStatePrefetchProcessor& processor = *processors()[0];
 
   EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
   EXPECT_EQ(mojom::blink::PrerenderTriggerType::kLinkRelPrerender,
@@ -228,35 +191,35 @@ TEST_P(PrerenderTest, SinglePrerender) {
   EXPECT_EQ(0u, processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, CancelPrerender) {
+TEST_F(PrerenderTest, CancelPrerender) {
   Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
+  MockNoStatePrefetchProcessor& processor = *processors()[0];
 
   EXPECT_EQ(0u, processor.CancelCount());
   ExecuteScript("removePrerender()");
   EXPECT_EQ(1u, processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, TwoPrerenders) {
+TEST_F(PrerenderTest, TwoPrerenders) {
   Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
-  MockPrerenderProcessor& first_processor = *processors()[0];
+  MockNoStatePrefetchProcessor& first_processor = *processors()[0];
   EXPECT_EQ(KURL("http://example.com/first"), first_processor.Url());
-  MockPrerenderProcessor& second_processor = *processors()[1];
+  MockNoStatePrefetchProcessor& second_processor = *processors()[1];
   EXPECT_EQ(KURL("http://example.com/second"), second_processor.Url());
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
+TEST_F(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
   Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
-  MockPrerenderProcessor& first_processor = *processors()[0];
-  MockPrerenderProcessor& second_processor = *processors()[1];
+  MockNoStatePrefetchProcessor& first_processor = *processors()[0];
+  MockNoStatePrefetchProcessor& second_processor = *processors()[1];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
@@ -272,12 +235,12 @@ TEST_P(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
   EXPECT_EQ(0u, second_processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, TwoPrerendersAddingThird) {
+TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
   Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
-  MockPrerenderProcessor& first_processor = *processors()[0];
-  MockPrerenderProcessor& second_processor = *processors()[1];
+  MockNoStatePrefetchProcessor& first_processor = *processors()[0];
+  MockNoStatePrefetchProcessor& second_processor = *processors()[1];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
@@ -285,17 +248,17 @@ TEST_P(PrerenderTest, TwoPrerendersAddingThird) {
   ExecuteScript("addThirdPrerender()");
 
   ASSERT_EQ(processors().size(), 3u);
-  MockPrerenderProcessor& third_processor = *processors()[2];
+  MockNoStatePrefetchProcessor& third_processor = *processors()[2];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
   EXPECT_EQ(0u, third_processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, MutateTarget) {
+TEST_F(PrerenderTest, MutateTarget) {
   Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
+  MockNoStatePrefetchProcessor& processor = *processors()[0];
 
   EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
 
@@ -306,17 +269,17 @@ TEST_P(PrerenderTest, MutateTarget) {
   ExecuteScript("mutateTarget()");
 
   ASSERT_EQ(processors().size(), 2u);
-  MockPrerenderProcessor& mutated_processor = *processors()[1];
+  MockNoStatePrefetchProcessor& mutated_processor = *processors()[1];
   EXPECT_EQ(KURL("http://example.com/mutated"), mutated_processor.Url());
 
   EXPECT_EQ(1u, processor.CancelCount());
   EXPECT_EQ(0u, mutated_processor.CancelCount());
 }
 
-TEST_P(PrerenderTest, MutateRel) {
+TEST_F(PrerenderTest, MutateRel) {
   Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
+  MockNoStatePrefetchProcessor& processor = *processors()[0];
 
   EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
 
