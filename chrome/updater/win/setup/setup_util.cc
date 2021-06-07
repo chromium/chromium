@@ -28,6 +28,7 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
@@ -53,7 +54,6 @@ struct std::hash<IID> {
 };
 
 namespace updater {
-
 namespace {
 
 constexpr wchar_t kTaskName[] = L"UpdateApps";
@@ -61,6 +61,7 @@ constexpr wchar_t kTaskDescription[] = L"Update all applications.";
 
 }  // namespace
 
+// crbug.com(1216670) - the name of the task must be scoped for user or system.
 bool RegisterWakeTask(const base::CommandLine& run_command) {
   auto task_scheduler = TaskScheduler::CreateInstance();
   if (!task_scheduler->RegisterTask(
@@ -73,6 +74,7 @@ bool RegisterWakeTask(const base::CommandLine& run_command) {
   return true;
 }
 
+// crbug.com(1216670) - the name of the task must be scoped for user or system.
 void UnregisterWakeTask() {
   auto task_scheduler = TaskScheduler::CreateInstance();
   task_scheduler->DeleteTask(kTaskName);
@@ -173,12 +175,9 @@ void AddInstallServerWorkItems(HKEY root,
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
-#if !defined(NDEBUG)
   run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
   run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                            "*/chrome/updater/*=2");
-#endif
-
   list->AddSetRegValueWorkItem(
       root, local_server32_reg_path, WorkItem::kWow64Default, L"",
       run_com_server_command.GetCommandLineString(), true);
@@ -194,10 +193,16 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
     return;
   }
 
+  // This assumes the COM service runs elevated and in the system updater scope.
+  base::CommandLine com_service_command(com_service_path);
+  com_service_command.AppendSwitch(kSystemSwitch);
+  com_service_command.AppendSwitch(kComServiceSwitch);
+  com_service_command.AppendSwitch(kEnableLoggingSwitch);
+  com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                        "*/chrome/updater/*=2");
   list->AddWorkItem(new installer::InstallServiceWorkItem(
-      kWindowsServiceName, kWindowsServiceName,
-      base::CommandLine(com_service_path), base::ASCIIToWide(UPDATER_KEY),
-      {__uuidof(UpdaterServiceClass)}, {}));
+      kWindowsServiceName, kWindowsServiceName, com_service_command,
+      base::ASCIIToWide(UPDATER_KEY), {__uuidof(UpdaterServiceClass)}, {}));
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {

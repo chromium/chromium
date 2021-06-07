@@ -171,26 +171,26 @@ int Setup(UpdaterScope scope) {
 
   static constexpr base::FilePath::StringPieceType kUpdaterExe =
       FILE_PATH_LITERAL("updater.exe");
-  AddComServerWorkItems(key, versioned_dir->Append(kUpdaterExe),
-                        install_list.get());
 
   AddComInterfacesWorkItems(key, versioned_dir->Append(kUpdaterExe),
                             install_list.get());
-
-  if (scope == UpdaterScope::kSystem) {
-    AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe),
-                           install_list.get());
+  switch (scope) {
+    case UpdaterScope::kUser:
+      AddComServerWorkItems(key, versioned_dir->Append(kUpdaterExe),
+                            install_list.get());
+      break;
+    case UpdaterScope::kSystem:
+      AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe),
+                             install_list.get());
+      break;
   }
 
   base::CommandLine run_updater_wake_command(
       versioned_dir->Append(kUpdaterExe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
-
-#if !defined(NDEBUG)
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              "*/chrome/updater/*=2");
-#endif
   if (!install_list->Do() || !RegisterWakeTask(run_updater_wake_command)) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();

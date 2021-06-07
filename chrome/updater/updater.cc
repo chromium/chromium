@@ -139,13 +139,15 @@ int UpdaterMain(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  VLOG(1) << "Command line: " << command_line->GetCommandLineString();
 
   if (command_line->HasSwitch(kTestSwitch))
     return 0;
 
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope, *command_line);
+
+  VLOG(1) << "Command line: " << command_line->GetCommandLineString();
+
   if (command_line->HasSwitch(kCrashHandlerSwitch))
     return CrashReporterMain();
   InitializeCrashReporting(updater_scope);
