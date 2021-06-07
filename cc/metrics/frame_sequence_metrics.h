@@ -230,6 +230,14 @@ class CC_EXPORT FrameSequenceMetrics {
   std::unique_ptr<JankMetrics> jank_reporter_;
 };
 
+bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
+                              FrameSequenceMetrics::ThreadType thread_type);
+
+bool ShouldReportForInteraction(
+    FrameSequenceTrackerType sequence_type,
+    FrameSequenceMetrics::ThreadType reporting_thread_type,
+    FrameSequenceMetrics::ThreadType metrics_effective_thread_type);
+
 }  // namespace cc
 
 #endif  // CC_METRICS_FRAME_SEQUENCE_METRICS_H_

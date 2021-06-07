@@ -237,6 +237,29 @@ void JankMetrics::ReportJankMetrics(int frames_expected) {
           GetJankHistogramName(tracker_type_, jank_thread_name), 1, 100, 101,
           base::HistogramBase::kUmaTargetedHistogramFlag));
 
+  const bool is_animation =
+      ShouldReportForAnimation(tracker_type_, effective_thread_);
+
+  // Jank reporter's effective thread is guaranteed to be identical to that of
+  // the owning FrameSequenceMetrics instance.
+  const bool is_interaction = ShouldReportForInteraction(
+      tracker_type_, effective_thread_, effective_thread_);
+
+  if (is_animation) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllAnimations",
+                             jank_percent);
+  }
+
+  if (is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllInteractions",
+                             jank_percent);
+  }
+
+  if (is_animation || is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllSequences",
+                             jank_percent);
+  }
+
   // Report the max staleness metrics
   STATIC_HISTOGRAM_POINTER_GROUP(
       GetMaxStaleHistogramName(tracker_type_),

@@ -19,6 +19,36 @@
 
 namespace cc {
 
+bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
+                              FrameSequenceMetrics::ThreadType thread_type) {
+  if (sequence_type == FrameSequenceTrackerType::kCompositorAnimation)
+    return thread_type == FrameSequenceMetrics::ThreadType::kCompositor;
+
+  if (sequence_type == FrameSequenceTrackerType::kMainThreadAnimation ||
+      sequence_type == FrameSequenceTrackerType::kRAF)
+    return thread_type == FrameSequenceMetrics::ThreadType::kMain;
+
+  return false;
+}
+
+bool ShouldReportForInteraction(
+    FrameSequenceTrackerType sequence_type,
+    FrameSequenceMetrics::ThreadType reporting_thread_type,
+    FrameSequenceMetrics::ThreadType metrics_effective_thread_type) {
+  // For scrollbar/touch/wheel scroll, the slower thread is the one we want to
+  // report. For pinch-zoom, it's the compositor-thread.
+  if (sequence_type == FrameSequenceTrackerType::kScrollbarScroll ||
+      sequence_type == FrameSequenceTrackerType::kTouchScroll ||
+      sequence_type == FrameSequenceTrackerType::kWheelScroll)
+    return reporting_thread_type == metrics_effective_thread_type;
+
+  if (sequence_type == FrameSequenceTrackerType::kPinchZoom)
+    return reporting_thread_type ==
+           FrameSequenceMetrics::ThreadType::kCompositor;
+
+  return false;
+}
+
 namespace {
 
 // Avoid reporting any throughput metric for sequences that do not have a
@@ -62,37 +92,6 @@ std::string GetFrameSequenceLengthHistogramName(FrameSequenceTrackerType type) {
   return base::StrCat(
       {"Graphics.Smoothness.FrameSequenceLength.",
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
-bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
-                              FrameSequenceMetrics::ThreadType thread_type) {
-  if (sequence_type == FrameSequenceTrackerType::kCompositorAnimation)
-    return thread_type == FrameSequenceMetrics::ThreadType::kCompositor;
-
-  if (sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
-      sequence_type == FrameSequenceTrackerType::kJSAnimation ||
-      sequence_type == FrameSequenceTrackerType::kMainThreadAnimation ||
-      sequence_type == FrameSequenceTrackerType::kRAF)
-    return thread_type == FrameSequenceMetrics::ThreadType::kMain;
-
-  return false;
-}
-
-bool ShouldReportForInteraction(FrameSequenceMetrics* metrics,
-                                FrameSequenceMetrics::ThreadType thread_type) {
-  const auto sequence_type = metrics->type();
-
-  // For scrollbar/touch/wheel scroll, the slower thread is the one we want to
-  // report. For pinch-zoom, it's the compositor-thread.
-  if (sequence_type == FrameSequenceTrackerType::kScrollbarScroll ||
-      sequence_type == FrameSequenceTrackerType::kTouchScroll ||
-      sequence_type == FrameSequenceTrackerType::kWheelScroll)
-    return thread_type == metrics->GetEffectiveThread();
-
-  if (sequence_type == FrameSequenceTrackerType::kPinchZoom)
-    return thread_type == FrameSequenceMetrics::ThreadType::kCompositor;
-
-  return false;
 }
 
 bool IsInteractionType(FrameSequenceTrackerType sequence_type) {
@@ -346,12 +345,16 @@ void FrameSequenceMetrics::ReportMetrics() {
   if (jank_reporter_) {
     if (jank_reporter_->thread_type() ==
             FrameSequenceMetrics::ThreadType::kCompositor &&
-        impl_throughput_.frames_expected >= kMinFramesForThroughputMetric)
+        impl_throughput_.frames_expected >= kMinFramesForThroughputMetric) {
+      DCHECK_EQ(jank_reporter_->thread_type(), this->GetEffectiveThread());
       jank_reporter_->ReportJankMetrics(impl_throughput_.frames_expected);
-    else if (jank_reporter_->thread_type() ==
-                 FrameSequenceMetrics::ThreadType::kMain &&
-             main_throughput_.frames_expected >= kMinFramesForThroughputMetric)
+    } else if (jank_reporter_->thread_type() ==
+                   FrameSequenceMetrics::ThreadType::kMain &&
+               main_throughput_.frames_expected >=
+                   kMinFramesForThroughputMetric) {
+      DCHECK_EQ(jank_reporter_->thread_type(), this->GetEffectiveThread());
       jank_reporter_->ReportJankMetrics(main_throughput_.frames_expected);
+    }
   }
 
   // Reset the metrics that reach reporting threshold.
@@ -447,7 +450,8 @@ int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(
 
   const bool is_animation =
       ShouldReportForAnimation(sequence_type, thread_type);
-  const bool is_interaction = ShouldReportForInteraction(metrics, thread_type);
+  const bool is_interaction = ShouldReportForInteraction(
+      metrics->type(), thread_type, metrics->GetEffectiveThread());
 
   ThroughputUkmReporter* const ukm_reporter = metrics->ukm_reporter();
 
@@ -518,7 +522,8 @@ int FrameSequenceMetrics::ThroughputData::
 
   const bool is_animation =
       ShouldReportForAnimation(sequence_type, thread_type);
-  const bool is_interaction = ShouldReportForInteraction(metrics, thread_type);
+  const bool is_interaction = ShouldReportForInteraction(
+      metrics->type(), thread_type, metrics->GetEffectiveThread());
 
   if (is_animation) {
     TRACE_EVENT_INSTANT2(

@@ -28,6 +28,12 @@ const base::TimeDelta kDefaultFrameInterval =
 // This makes it easier to numerically distinguish sequence numbers versus
 // frame tokens, which always start at 1.
 const uint32_t kSequenceNumberStartsAt = 100u;
+
+const char* kAllSequencesMetricName = "Graphics.Smoothness.Jank.AllSequences";
+const char* kAllAnimationsMetricName = "Graphics.Smoothness.Jank.AllAnimations";
+const char* kAllInteractionsMetricName =
+    "Graphics.Smoothness.Jank.AllInteractions";
+
 }  // namespace
 
 namespace cc {
@@ -158,6 +164,17 @@ TEST_F(JankMetricsTest, CompositorAnimationOneJankWithMildFluctuation) {
   EXPECT_THAT(histogram_tester.GetAllSamples(metric),
               testing::ElementsAre(base::Bucket(1, 1)));
 
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
+
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.CompositorAnimation";
   const char* maxstale_metric =
@@ -206,6 +223,17 @@ TEST_F(JankMetricsTest, MainThreadAnimationOneJankWithNoUpdate) {
   // No jank is reported for "Compositor"
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
+
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.MainThreadAnimation";
   const char* maxstale_metric =
@@ -248,6 +276,11 @@ TEST_F(JankMetricsTest, VideoManyJanksOver300ExpectedFrames) {
   // No jank is reported for "Main"
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 
+  // Test all-sequence metrics. Videos are not counted into AllSequences.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 0u);
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
+
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.Video";
   const char* maxstale_metric = "Graphics.Smoothness.MaxStale.Video";
@@ -288,6 +321,17 @@ TEST_F(JankMetricsTest, WheelScrollMainThreadNoJanksWithNoUpdates) {
               testing::ElementsAre(base::Bucket(0, 1)));
 
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
+
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(0, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllInteractionsMetricName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.WheelScroll";
@@ -331,6 +375,17 @@ TEST_F(JankMetricsTest, WheelScrollCompositorTwoJanksWithLargeFluctuation) {
 
   // No reporting for "Main".
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
+
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(2, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllInteractionsMetricName),
+              testing::ElementsAre(base::Bucket(2, 1)));
 
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.WheelScroll";
@@ -377,6 +432,17 @@ TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanksLongLatency) {
               testing::ElementsAre(base::Bucket(4, 1)));
 
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
+
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(4, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllInteractionsMetricName),
+              testing::ElementsAre(base::Bucket(4, 1)));
 
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.TouchScroll";
@@ -436,6 +502,17 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
 
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
+              testing::ElementsAre(base::Bucket(6, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kAllAnimationsMetricName),
+              testing::ElementsAre(base::Bucket(6, 1)));
+
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
+
   // Stale-frame metrics
   const char* stale_metric = "Graphics.Smoothness.Stale.RAF";
   const char* maxstale_metric = "Graphics.Smoothness.MaxStale.RAF";
@@ -471,6 +548,11 @@ TEST_F(JankMetricsTest, CustomNotReported) {
   histogram_tester.ExpectTotalCount("Graphics.Smoothness.Jank.Main.Custom", 0u);
   histogram_tester.ExpectTotalCount(
       "Graphics.Smoothness.Jank.Compositor.Custom", 0u);
+
+  // Test all-sequence metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 0u);
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
+  histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
 
   // Stale-frame metrics
   histogram_tester.ExpectTotalCount("Graphics.Smoothness.Stale.Custom", 0u);
