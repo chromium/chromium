@@ -83,6 +83,7 @@ void VmDiskManagementServiceProvider::GetDiskInfo(
         std::move(response), std::move(response_sender),
         borealis::Expected<borealis::BorealisDiskManager::GetDiskInfoResponse,
                            std::string>::Unexpected(std::move(error)));
+    return;
   }
 
   borealis::BorealisService::GetForProfile(
@@ -122,6 +123,7 @@ void VmDiskManagementServiceProvider::RequestSpace(
     OnRequestSpace(std::move(response), std::move(response_sender),
                    borealis::Expected<uint64_t, std::string>::Unexpected(
                        std::move(error)));
+    return;
   }
 
   borealis::BorealisService::GetForProfile(
@@ -162,6 +164,7 @@ void VmDiskManagementServiceProvider::ReleaseSpace(
     OnReleaseSpace(std::move(response), std::move(response_sender),
                    borealis::Expected<uint64_t, std::string>::Unexpected(
                        std::move(error)));
+    return;
   }
 
   borealis::BorealisService::GetForProfile(
