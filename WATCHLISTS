@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Watchlist Rules
-# Refer: https://chromium.googlesource.com/chromium/src/+/master/docs/infra/watchlists.md
+# Refer: https://chromium.googlesource.com/chromium/src/+/main/docs/infra/watchlists.md
 
 # IMPORTANT: The regular expression filepath is tested against each path using
 # re.search, so it is not usually necessary to add .*.

@@ -9,7 +9,7 @@
 # CIPD (the "Chrome Infrastructure Package Deployer" service). Unlike `pip`,
 # this never requires the end-user machine to have a working python extension
 # compilation environment. All of these packages are built using:
-#   https://chromium.googlesource.com/infra/infra/+/master/infra/tools/dockerbuild/
+#   https://chromium.googlesource.com/infra/infra/+/main/infra/tools/dockerbuild/
 #
 # All python scripts in the repo share this same spec, to avoid dependency
 # fragmentation.
@@ -20,10 +20,10 @@
 #   vpython path/to/script.py some --arguments
 #
 # Read more about `vpython` and how to modify this file here:
-#   https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
+#   https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
 #
 # For the definition of this spec, see:
-#   https://chromium.googlesource.com/infra/luci/luci-go/+/master/vpython/api/vpython/spec.proto
+#   https://chromium.googlesource.com/infra/luci/luci-go/+/main/vpython/api/vpython/spec.proto
 
 python_version: "2.7"
 

@@ -158,7 +158,7 @@ This creates a new [`GridLayout`](https://source.chromium.org/chromium/chromium/
 row for a given field in our form. The call to
 [`SetAssociatedLabel()`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h;l=250;drc=291180454e079aa5c3677dc3f3eaf619a1cf1d42)
 sets the accessible label relationship between the
-[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h) and the [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
+[`Label`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/label.h) and the [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
 and copies the `Label`’s accessible name to the `Textfield`.
 
 

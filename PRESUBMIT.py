@@ -4030,7 +4030,7 @@ def CheckFuzzTargetsOnUpload(input_api, output_api):
       'LLVMFuzzerInitialize should not be used, unless your fuzz target needs '
       'to access command line arguments passed to the fuzzer. Instead, prefer '
       'static initialization and shared resources as documented in '
-      'https://chromium.googlesource.com/chromium/src/+/master/testing/'
+      'https://chromium.googlesource.com/chromium/src/+/main/testing/'
       'libfuzzer/efficient_fuzzing.md#simplifying-initialization_cleanup.\n' % (
           ', '.join(EXPORTED_SYMBOLS), REQUIRED_HEADER)
     )
