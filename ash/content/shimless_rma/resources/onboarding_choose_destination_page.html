@@ -7,20 +7,24 @@
     <h1>After repair, who will be using the device.</h1>
   </div>
   <div slot="body">
-    <input type="radio" name="destinationOwner" id="destinationOriginalOwner">
-      Device will go to the same owner
-    </input>
-    <p>
-      Select this option if the ownership of the device isn't changing.
-      For example the device is being transferred to a different person within
-      an organization
-    </p>
-    <input type="radio" name="destinationOwner" id="destinationNewOwner">
-      Device will go to a different owner
-    </input>
-    <p>
-      Select this option if the device is being restocked or refurbished for
-      distribution to a new customer
-    </p>
+    <cr-radio-group
+        id="chooseDestinationGroup"
+        on-selected-changed="onDestinationSelectionChanged_">
+      <cr-radio-button name="originalOwner" id="destinationOriginalOwner">
+        Device will go to the same owner
+      </cr-radio-button>
+      <p>
+        Select this option if the ownership of the device isn't changing.
+        For example the device is being transferred to a different person within
+        an organization
+      </p>
+      <cr-radio-button name="newOwner" id="destinationNewOwner">
+        Device will go to a different owner
+      </cr-radio-button>
+      <p>
+        Select this option if the device is being restocked or refurbished for
+        distribution to a new customer
+      </p>
+    </cr-radio-group>
 </div>
 </base-page>

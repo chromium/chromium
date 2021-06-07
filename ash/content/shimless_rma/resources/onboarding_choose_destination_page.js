@@ -7,8 +7,11 @@ import './base_page.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -31,6 +34,12 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
         type: Object,
         value: {},
       },
+
+      /** @private {string} */
+      destinationOwner_: {
+        type: String,
+        value: "",
+      },
     };
   }
 
@@ -40,9 +49,24 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextButtonClicked that will:
-  //  - call shimlessRmaService_.setSameOwner() if original owner chosen.
-  //  - call shimlessRmaService_.setDifferentOwner() if different owner chosen.
+  /**
+   * @param {!CustomEvent<{value: string}>} event
+   * @protected
+   */
+  onDestinationSelectionChanged_(event) {
+    this.destinationOwner_ = event.detail.value;
+  }
+
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    if (this.destinationOwner_ === 'originalOwner') {
+      return this.shimlessRmaService_.setSameOwner();
+    } else if (this.destinationOwner_ === 'newOwner') {
+      return this.shimlessRmaService_.setDifferentOwner();
+    } else {
+      return Promise.reject(new Error('No destination selected'));
+    }
+  }
 };
 
 customElements.define(

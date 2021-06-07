@@ -55,10 +55,9 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.HIDDEN,
   },
-  // TODO(joonbug): update to correct RmaState
   [RmaState.kChooseDestination]: {
     componentIs: 'onboarding-choose-destination-page',
-    buttonNext: ButtonState.HIDDEN,
+    buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
@@ -256,7 +255,7 @@ export class ShimlessRmaElement extends PolymerElement {
     assert(typeof prepPageAdvance === 'function');
 
     // TODO(gavindodd): Handle stateResult.error
-    prepPageAdvance()
+    prepPageAdvance.call(page)
         .then(
             (stateResult) => !!stateResult ? Promise.resolve(stateResult) :
                                              this.fetchNextState_())

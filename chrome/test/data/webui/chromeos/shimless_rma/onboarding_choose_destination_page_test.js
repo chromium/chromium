@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingChooseDestinationPageElement} from 'chrome://shimless-rma/onboarding_choose_destination_page.js';
@@ -75,4 +76,34 @@ export function onboardingChooseDestinationPageTest() {
     assertFalse(originalOwnerComponent.checked);
     assertTrue(newOwnerComponent.checked);
   });
+
+  test('ChooseDestinationPageSameOwnerOnNextCallsSetSameOwner', async () => {
+    const resolver = new PromiseResolver();
+    await initializeChooseDestinationPage();
+    service.setSameOwner = () => resolver.promise;
+    const originalOwnerComponent =
+        component.shadowRoot.querySelector('#destinationOriginalOwner');
+
+    originalOwnerComponent.click();
+    await flushTasks;
+    assertTrue(originalOwnerComponent.checked);
+
+    assertEquals(component.onNextButtonClick(), resolver.promise);
+  });
+
+  test(
+      'ChooseDestinationPageDifferentOwnerOnNextCallsSetDifferentOwner',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeChooseDestinationPage();
+        service.setDifferentOwner = () => resolver.promise;
+        const newOwnerComponent =
+            component.shadowRoot.querySelector('#destinationNewOwner');
+
+        newOwnerComponent.click();
+        await flushTasks;
+        assertTrue(newOwnerComponent.checked);
+
+        assertEquals(component.onNextButtonClick(), resolver.promise);
+      });
 }
