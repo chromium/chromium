@@ -76,7 +76,8 @@ TEST_F(PluginPlaceholderTest, AppletFallback) {
 }
 
 // Tests placeholder for a large <applet> with no fallback.
-TEST_F(PluginPlaceholderTest, AppletOnly) {
+// TODO(crbug.com/1217175): Test failing on iOS 14.5.
+TEST_F(PluginPlaceholderTest, DISABLED_AppletOnly) {
   const char kPageDescription[] = "Applet, no fallback";
   const std::string page =
       base::StringPrintf("<html><body width='800' height='600'>"
