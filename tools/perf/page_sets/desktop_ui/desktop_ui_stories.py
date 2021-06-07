@@ -51,20 +51,20 @@ class DesktopUIStorySet(story.StorySet):
     for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
           cls(self, [
-              '--enable-ui-devtools=enabled',
+              '--enable-ui-devtools=0',
               '--top-chrome-touch-ui=disabled',
           ]))
 
     for cls in self.DOWNLOAD_SHELF_STORIES:
       self.AddStory(cls(self, [
-          '--enable-ui-devtools=enabled',
+          '--enable-ui-devtools=0',
       ]))
 
     for cls in self.DOWNLOAD_SHELF_WEBUI_STORIES:
       self.AddStory(
           cls(self, [
               '--enable-features=WebUIDownloadShelf',
-              '--enable-ui-devtools=enabled',
+              '--enable-ui-devtools=0',
           ]))
 
     # WebUI Tab Strip is not available on Mac.
@@ -73,6 +73,6 @@ class DesktopUIStorySet(story.StorySet):
         self.AddStory(
             cls(self, [
                 '--enable-features=WebUITabStrip',
-                '--enable-ui-devtools=enabled',
+                '--enable-ui-devtools=0',
                 '--top-chrome-touch-ui=enabled',
             ]))
