@@ -487,7 +487,6 @@ component("headless_non_renderer") {
       "//components/security_state/content",
       "//gin",
       "//third_party/blink/public:blink",
-      "//third_party/blink/public:blink_headers",
       "//ui/gl",
       "//v8",
     ]
