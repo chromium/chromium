@@ -37,13 +37,13 @@ import tempfile
 import split_variations_cmd
 
 _CHROME_PATH_WIN = {
-  # The following three paths are relative to %ProgramFiles(x86)%
-  "stable": r"Google\Chrome\Application\chrome.exe",
-  "beta": r"Google\Chrome\Application\chrome.exe",
-  "dev": r"Google\Chrome Dev\Application\chrome.exe",
-  # The following two paths are relative to %LOCALAPPDATA%
-  "canary": r"Google\Chrome SxS\Application\chrome.exe",
-  "chromium": r"Chromium\Application\chrome.exe",
+    # The following three paths are relative to %ProgramFiles(x86)%
+    "stable": r"Google\Chrome\Application\chrome.exe",
+    "beta": r"Google\Chrome Beta\Application\chrome.exe",
+    "dev": r"Google\Chrome Dev\Application\chrome.exe",
+    # The following two paths are relative to %LOCALAPPDATA%
+    "canary": r"Google\Chrome SxS\Application\chrome.exe",
+    "chromium": r"Chromium\Application\chrome.exe",
 }
 
 _CHROME_PATH_MAC = {
