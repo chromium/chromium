@@ -14,14 +14,14 @@
 namespace ash {
 
 // A custom grid layout that facilitates the removal of views from the grid,
-// which can change the number of rows required. views::GridLayout makes this
-// case difficult. SimpleGridLayout assumes all children have identical sizes.
+// which can change the number of rows required. `views::GridLayout` makes this
+// case difficult. `SimpleGridLayout` assumes all children have identical sizes.
 class ASH_EXPORT SimpleGridLayout : public views::LayoutManagerBase {
  public:
   SimpleGridLayout(int column_count, int column_spacing, int row_spacing);
+  SimpleGridLayout(const SimpleGridLayout&) = delete;
+  SimpleGridLayout& operator=(const SimpleGridLayout&) = delete;
   ~SimpleGridLayout() override;
-  gfx::Size GetChildPreferredSize() const;
-  gfx::Size CalculatePreferredSize() const;
 
  protected:
   // views::LayoutManagerBase:
@@ -30,6 +30,9 @@ class ASH_EXPORT SimpleGridLayout : public views::LayoutManagerBase {
   void OnLayoutChanged() override;
 
  private:
+  gfx::Size GetChildPreferredSize() const;
+  gfx::Size CalculatePreferredSize() const;
+
   mutable absl::optional<gfx::Size> cached_child_preferred_size_;
 
   const int column_count_;

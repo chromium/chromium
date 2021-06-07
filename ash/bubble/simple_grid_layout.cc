@@ -4,7 +4,6 @@
 
 #include "ash/bubble/simple_grid_layout.h"
 
-#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -17,40 +16,6 @@ SimpleGridLayout::SimpleGridLayout(int column_count,
       row_spacing_(row_spacing) {}
 
 SimpleGridLayout::~SimpleGridLayout() = default;
-
-gfx::Size SimpleGridLayout::GetChildPreferredSize() const {
-  if (cached_child_preferred_size_)
-    return *cached_child_preferred_size_;
-
-  if (!host_view()->children().size())
-    return gfx::Size();
-
-  cached_child_preferred_size_ = host_view()->children()[0]->GetPreferredSize();
-  return *cached_child_preferred_size_;
-}
-
-gfx::Size SimpleGridLayout::CalculatePreferredSize() const {
-  int total_children = 0;
-  for (auto* child : host_view()->children()) {
-    if (IsChildIncludedInLayout(child))
-      ++total_children;
-  }
-  // Equivalent to `ceil(children().size() / column_count_)`.
-  int number_of_rows = (total_children + column_count_ - 1) / column_count_;
-
-  if (!number_of_rows)
-    return gfx::Size();
-
-  // SimpleGridLayout assumes all children have identical sizes.
-  int child_height = GetChildPreferredSize().height();
-  int child_width = GetChildPreferredSize().width();
-
-  int height = (number_of_rows * (row_spacing_ + child_height)) - row_spacing_;
-  int width =
-      (column_count_ * (child_width + column_spacing_)) - column_spacing_;
-
-  return gfx::Size(width, height);
-}
 
 views::ProposedLayout SimpleGridLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
@@ -91,6 +56,40 @@ void SimpleGridLayout::OnLayoutChanged() {
   LayoutManagerBase::OnLayoutChanged();
   cached_child_preferred_size_.reset();
   host_view()->SetPreferredSize(CalculatePreferredSize());
+}
+
+gfx::Size SimpleGridLayout::GetChildPreferredSize() const {
+  if (cached_child_preferred_size_)
+    return *cached_child_preferred_size_;
+
+  if (!host_view()->children().size())
+    return gfx::Size();
+
+  cached_child_preferred_size_ = host_view()->children()[0]->GetPreferredSize();
+  return *cached_child_preferred_size_;
+}
+
+gfx::Size SimpleGridLayout::CalculatePreferredSize() const {
+  int total_children = 0;
+  for (auto* child : host_view()->children()) {
+    if (IsChildIncludedInLayout(child))
+      ++total_children;
+  }
+  // Equivalent to `ceil(children().size() / column_count_)`.
+  int number_of_rows = (total_children + column_count_ - 1) / column_count_;
+
+  if (!number_of_rows)
+    return gfx::Size();
+
+  // `SimpleGridLayout` assumes all children have identical sizes.
+  int child_height = GetChildPreferredSize().height();
+  int child_width = GetChildPreferredSize().width();
+
+  int height = (number_of_rows * (row_spacing_ + child_height)) - row_spacing_;
+  int width =
+      (column_count_ * (child_width + column_spacing_)) - column_spacing_;
+
+  return gfx::Size(width, height);
 }
 
 }  // namespace ash

@@ -30,9 +30,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kNumberOfChipsPerRow = 2;
-constexpr int kChipSpacing = 8;
-
 // CallbackPathGenerator -------------------------------------------------------
 
 class CallbackPathGenerator : public views::HighlightPathGenerator {
@@ -157,8 +154,9 @@ std::unique_ptr<views::View> DownloadsSection::CreateHeader() {
 std::unique_ptr<views::View> DownloadsSection::CreateContainer() {
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kNumberOfChipsPerRow, /*column_spacing=*/kChipSpacing,
-      /*row_spacing=*/kChipSpacing));
+      kHoldingSpaceChipCountPerRow,
+      /*column_spacing=*/kHoldingSpaceSectionContainerChildSpacing,
+      /*row_spacing=*/kHoldingSpaceSectionContainerChildSpacing));
   return container;
 }
 

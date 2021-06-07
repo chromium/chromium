@@ -43,8 +43,6 @@ constexpr int kFilesAppChipHeight = 32;
 constexpr int kFilesAppChipIconSize = 20;
 constexpr gfx::Insets kFilesAppChipInsets(0, 8, 0, 16);
 constexpr int kPlaceholderChildSpacing = 16;
-constexpr int kNumberOfChipsPerRow = 2;
-constexpr int kChipSpacing = 8;
 
 // FilesAppChip ----------------------------------------------------------------
 
@@ -170,8 +168,9 @@ std::unique_ptr<views::View> PinnedFilesSection::CreateHeader() {
 std::unique_ptr<views::View> PinnedFilesSection::CreateContainer() {
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kNumberOfChipsPerRow, /*column_spacing=*/kChipSpacing,
-      /*row_spacing=*/kChipSpacing));
+      kHoldingSpaceChipCountPerRow,
+      /*column_spacing=*/kHoldingSpaceSectionContainerChildSpacing,
+      /*row_spacing=*/kHoldingSpaceSectionContainerChildSpacing));
   return container;
 }
 
