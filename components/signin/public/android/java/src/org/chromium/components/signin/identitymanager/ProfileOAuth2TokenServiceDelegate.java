@@ -72,18 +72,6 @@ final class ProfileOAuth2TokenServiceDelegate {
     }
 
     /**
-     * Called by the native method
-     * ProfileOAuth2TokenServiceDelegate::GetSystemAccountNames()
-     * to list the active account names on device.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    String[] getSystemAccountNames() {
-        return AccountUtils.toAccountNames(mAccountManagerFacade.tryGetGoogleAccounts())
-                .toArray(new String[0]);
-    }
-
-    /**
      * Called by native method AndroidAccessTokenFetcher::Start() to retrieve OAuth2 tokens.
      * @param accountEmail The account email.
      * @param scope The scope to get an auth token for (without Android-style 'oauth2:' prefix).
@@ -170,12 +158,15 @@ final class ProfileOAuth2TokenServiceDelegate {
 
     @VisibleForTesting
     @CalledByNative
-    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String accountId) {
+    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
         ThreadUtils.assertOnUiThread();
-        mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            ProfileOAuth2TokenServiceDelegateJni.get()
-                    .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                            mNativeProfileOAuth2TokenServiceDelegate, accountId);
+        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
+            mAccountTrackerService.seedAccountsIfNeeded(() -> {
+                ProfileOAuth2TokenServiceDelegateJni.get()
+                        .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                                mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
+                                AccountUtils.toAccountNames(accounts).toArray(new String[0]));
+            });
         });
     }
 
@@ -194,6 +185,7 @@ final class ProfileOAuth2TokenServiceDelegate {
         void onOAuth2TokenFetched(String authToken, long expirationTimeSecs,
                 boolean isTransientError, long nativeCallback);
         void reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId);
+                long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId,
+                String[] deviceAccountNames);
     }
 }

@@ -37,8 +37,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /** Tests for {@link ProfileOAuth2TokenServiceDelegate}. */
@@ -113,32 +111,6 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetAccountsNoAccountsRegistered() {
-        Assert.assertArrayEquals(new String[] {}, mDelegate.getSystemAccountNames());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAccountsOneAccountRegistered() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertArrayEquals(new String[] {ACCOUNT.name}, mDelegate.getSystemAccountNames());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAccountsTwoAccountsRegistered() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        final Account account2 = AccountUtils.createAccountFromName("bar@gmail.com");
-        mAccountManagerFacade.addAccount(account2);
-
-        final List<String> accounts = Arrays.asList(mDelegate.getSystemAccountNames());
-        Assert.assertEquals("There should be two registered account", 2, accounts.size());
-        Assert.assertTrue("The list should contain " + ACCOUNT, accounts.contains(ACCOUNT.name));
-        Assert.assertTrue("The list should contain " + account2, accounts.contains(account2.name));
-    }
-
-    @Test
-    @SmallTest
     public void testGetOAuth2AccessTokenOnSuccess() {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
@@ -186,6 +158,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Test
     @SmallTest
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
+        mAccountManagerFacade.addAccount(ACCOUNT);
         doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(0);
             runnable.run();
@@ -195,6 +168,8 @@ public class ProfileOAuth2TokenServiceDelegateTest {
                 .seedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
-        verify(mNativeMock).reloadAllAccountsWithPrimaryAccountAfterSeeding(NATIVE_DELEGATE, null);
+        verify(mNativeMock)
+                .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                        NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});
     }
 }

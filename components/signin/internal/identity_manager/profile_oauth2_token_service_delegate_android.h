@@ -58,7 +58,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // internalized, use CoreAccountId instead of String.
   void ReloadAllAccountsWithPrimaryAccountAfterSeeding(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& account_id);
+      const base::android::JavaParamRef<jstring>& j_primary_account_id,
+      const base::android::JavaParamRef<jobjectArray>& j_device_account_names);
 
   // Takes a the signed in sync account as well as all the other
   // android account ids and check the token status of each.
@@ -105,11 +106,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
                          const std::vector<CoreAccountId>& curr_ids,
                          std::vector<CoreAccountId>* refreshed_ids,
                          std::vector<CoreAccountId>* revoked_ids);
-
-  // Lists account names at the OS level.
-  std::vector<std::string> GetSystemAccountNames();
-  // As |GetSystemAccountNames| but returning account IDs.
-  std::vector<CoreAccountId> GetSystemAccounts();
   // As |GetAccounts| but with only validated account IDs.
   std::vector<CoreAccountId> GetValidAccounts();
   // Set accounts that have been advertised by OnRefreshTokenAvailable.
