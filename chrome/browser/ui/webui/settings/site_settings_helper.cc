@@ -410,26 +410,34 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
   // First build the list of permissions that will be shown regardless of
   // `origin`. Some categories such as COOKIES store their data in a custom way,
   // so are not included here.
-  static base::NoDestructor<std::vector<ContentSettingsType>> base_types({
-    ContentSettingsType::AR, ContentSettingsType::AUTOMATIC_DOWNLOADS,
-        ContentSettingsType::BACKGROUND_SYNC,
-        ContentSettingsType::CLIPBOARD_READ_WRITE,
-        ContentSettingsType::FILE_HANDLING,
-        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-        ContentSettingsType::FONT_ACCESS, ContentSettingsType::GEOLOCATION,
-        ContentSettingsType::HID_GUARD, ContentSettingsType::IDLE_DETECTION,
-        ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
-        ContentSettingsType::MEDIASTREAM_CAMERA,
-        ContentSettingsType::MEDIASTREAM_MIC, ContentSettingsType::MIDI_SYSEX,
-        ContentSettingsType::MIXEDSCRIPT, ContentSettingsType::NOTIFICATIONS,
-        ContentSettingsType::POPUPS,
+  static base::NoDestructor<std::vector<ContentSettingsType>> base_types{{
+      ContentSettingsType::AR,
+      ContentSettingsType::AUTOMATIC_DOWNLOADS,
+      ContentSettingsType::BACKGROUND_SYNC,
+      ContentSettingsType::CLIPBOARD_READ_WRITE,
+      ContentSettingsType::FILE_HANDLING,
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+      ContentSettingsType::FONT_ACCESS,
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::HID_GUARD,
+      ContentSettingsType::IDLE_DETECTION,
+      ContentSettingsType::IMAGES,
+      ContentSettingsType::JAVASCRIPT,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSettingsType::MIDI_SYSEX,
+      ContentSettingsType::MIXEDSCRIPT,
+      ContentSettingsType::NOTIFICATIONS,
+      ContentSettingsType::POPUPS,
 #if defined(IS_CHROMEOS_ASH) || defined(OS_WIN)
-        ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
 #endif
-        ContentSettingsType::SENSORS, ContentSettingsType::SERIAL_GUARD,
-        ContentSettingsType::SOUND, ContentSettingsType::USB_GUARD,
-        ContentSettingsType::VR,
-  });
+      ContentSettingsType::SENSORS,
+      ContentSettingsType::SERIAL_GUARD,
+      ContentSettingsType::SOUND,
+      ContentSettingsType::USB_GUARD,
+      ContentSettingsType::VR,
+  }};
   static bool initialized = false;
   if (!initialized) {
     // The permission categories in this block are only shown when running with
