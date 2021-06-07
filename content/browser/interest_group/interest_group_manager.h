@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,20 +14,22 @@
 
 namespace content {
 
-// InterestGroupManager acts as a proxy to access the InterestGroupStorage.
-// Calls to the proxy functions can be called concurrently from multiple
-// sequences as they are executed serially on a separate (blocking) sequence.
+// InterestGroupManager is a per-StoragePartition class that owns shared
+// state needed to run FLEDGE auctions. It lives on the UI thread.
+//
+// It acts as a proxy to access an InterestGroupStorage, which lives off-thread
+// as it performs blocking file IO when backed by on-disk storage.
 class CONTENT_EXPORT InterestGroupManager {
  public:
   // Creates an interest group manager using the provided directory path for
-  // storage. If in_memory is true the path is ignored and an in-memory
-  // database is used instead.
+  // persistent storage. If `in_memory` is true the path is ignored and only
+  // in-memory storage is used.
   explicit InterestGroupManager(const base::FilePath& path, bool in_memory);
   ~InterestGroupManager();
   InterestGroupManager(const InterestGroupManager& other) = delete;
   InterestGroupManager& operator=(const InterestGroupManager& other) = delete;
 
-  /******** Proxy function calls to InterestGroupsStorageSqlImpl **********/
+  /******** Proxy function calls to InterestGroupsStorage **********/
 
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
@@ -60,14 +62,14 @@ class CONTENT_EXPORT InterestGroupManager {
       base::OnceCallback<
           void(std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>)>
           callback);
-
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
       base::RepeatingCallback<bool(const url::Origin&)> origin_matcher);
 
  private:
-  // Remote for accessing the interest group storage from the browser UI thread.
+  // Owns and manages access to the InterestGroupStorage living on a different
+  // thread.
   base::SequenceBound<InterestGroupStorage> impl_;
 };
 

@@ -104,7 +104,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         &InterestGroupBrowserTest::OnHttpsTestServerRequestMonitor,
         base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());
-    storage_ =
+    manager_ =
         static_cast<StoragePartitionImpl*>(shell()
                                                ->web_contents()
                                                ->GetBrowserContext()
@@ -193,7 +193,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::vector<url::Origin> GetAllInterestGroupsOwners() {
     std::vector<url::Origin> interest_group_owners;
     base::RunLoop run_loop;
-    storage_->GetAllInterestGroupOwners(base::BindLambdaForTesting(
+    manager_->GetAllInterestGroupOwners(base::BindLambdaForTesting(
         [&run_loop, &interest_group_owners](std::vector<url::Origin> owners) {
           interest_group_owners = std::move(owners);
           run_loop.Quit();
@@ -207,7 +207,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
         interest_groups;
     base::RunLoop run_loop;
-    storage_->GetInterestGroupsForOwner(
+    manager_->GetInterestGroupsForOwner(
         owner,
         base::BindLambdaForTesting(
             [&run_loop, &interest_groups](
@@ -317,7 +317,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   AllowlistedOriginContentBrowserClient content_browser_client_;
   ContentBrowserClient* old_content_browser_client_;
-  InterestGroupManager* storage_;
+  InterestGroupManager* manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // for the API.
   // Inject an interest group into the DB for that for that site so we can try
   // to remove it.
-  storage_->JoinInterestGroup(blink::mojom::InterestGroup::New(
+  manager_->JoinInterestGroup(blink::mojom::InterestGroup::New(
       /* expiry */ base::Time::Now() + base::TimeDelta::FromSeconds(300),
       /* owner= */ test_origin_d,
       /* name = */ "candy",
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   disabled_group->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
   disabled_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
       GURL("https://stop_bidding_after_win.com/render"), absl::nullopt));
-  storage_->JoinInterestGroup(std::move(disabled_group));
+  manager_->JoinInterestGroup(std::move(disabled_group));
   ASSERT_EQ(1, GetJoinCount(url::Origin::Create(disabled_domain), "candy"));
 
   GURL test_url = https_server_->GetURL("a.test", "/echo");

@@ -67,7 +67,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(kUrlA);
 
-    storage_ = (static_cast<StoragePartitionImpl*>(
+    manager_ = (static_cast<StoragePartitionImpl*>(
                     browser_context()->GetDefaultStoragePartition()))
                    ->GetInterestGroupStorage();
   }
@@ -77,7 +77,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
         interest_groups;
     base::RunLoop run_loop;
-    storage_->GetInterestGroupsForOwner(
+    manager_->GetInterestGroupsForOwner(
         owner,
         base::BindLambdaForTesting(
             [&run_loop, &interest_groups](
@@ -152,7 +152,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
   ContentBrowserClient* old_content_browser_client_ = nullptr;
-  InterestGroupManager* storage_;
+  InterestGroupManager* manager_;
 };
 
 // Check basic success case.
