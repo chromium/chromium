@@ -379,6 +379,28 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     return;
   if (navigation_url.DomainIs(kElectronicExpressDomain))
     return;
+  if (IsCartHeuristicsImprovementEnabled()) {
+    if (navigation_url.DomainIs("abebooks.com"))
+      return;
+    if (navigation_url.DomainIs("abercrombie.com"))
+      return;
+    if (navigation_url.DomainIs(kAmazonDomain) &&
+        url.host() != "fls-na.amazon.com")
+      return;
+    if (navigation_url.DomainIs("bestbuy.com"))
+      return;
+    if (navigation_url.DomainIs("containerstore.com"))
+      return;
+    if (navigation_url.DomainIs("gap.com") && url.DomainIs("granify.com"))
+      return;
+    if (navigation_url.DomainIs("kohls.com"))
+      return;
+    if (navigation_url.DomainIs("officedepot.com") &&
+        url.DomainIs("chatid.com"))
+      return;
+    if (navigation_url.DomainIs("pier1.com"))
+      return;
+  }
 
   blink::WebHTTPBody body = request.HttpBody();
   if (body.IsNull())
