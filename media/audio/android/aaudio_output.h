@@ -15,6 +15,7 @@
 
 namespace media {
 
+class AAudioDestructionHelper;
 class AudioManagerAndroid;
 
 class AAudioOutputStream : public MuteableAudioOutputStream {
@@ -59,6 +60,10 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   std::unique_ptr<AudioBus> audio_bus_;
 
   AAudioStream* aaudio_stream_ = nullptr;
+
+  // Bound to the audio data callback. Outlives |this| in case the callbacks
+  // continue after |this| is destroyed. See crbug.com/1183255.
+  std::unique_ptr<AAudioDestructionHelper> destruction_helper_;
 
   // Lock protects all members below which may be read concurrently from the
   // audio manager thread and the OS provided audio thread.
