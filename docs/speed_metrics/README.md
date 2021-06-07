@@ -94,6 +94,7 @@ changelog](../speed/metrics_changelog/README.md) which will be updated over time
   * [Properties of a good metric](../speed/good_toplevel_metrics.md)
   * [Survey of current
     metrics](https://docs.google.com/document/d/1Ww487ZskJ-xBmJGwPO-XPz_QcJvw-kSNffm0nPhVpj8/edit)
+  * [Debugging CLS](http://bit.ly/debug-cls)
 
 ## Talks
   * [Lessons learned from performance monitoring in
