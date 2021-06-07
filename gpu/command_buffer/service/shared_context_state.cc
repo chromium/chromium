@@ -621,10 +621,8 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
 
 void SharedContextState::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (!gr_context_) {
-    DCHECK(!transfer_cache_);
+  if (!gr_context_)
     return;
-  }
 
   // Ensure the context is current before doing any GPU cleanup.
   if (!MakeCurrent(nullptr))
