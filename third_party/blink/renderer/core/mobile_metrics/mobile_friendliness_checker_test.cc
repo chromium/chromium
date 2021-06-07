@@ -42,8 +42,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
       // destruction sequence of WebView.
       frame_test_helpers::WebViewHelper helper;
       helper.Initialize(&web_frame_client, nullptr, ConfigureAndroidSettings);
-      helper.GetWebView()->EnableAutoResizeForTesting(gfx::Size(480, 800),
-                                                      gfx::Size(480, 800));
+      helper.Resize(gfx::Size(480, 800));
       frame_test_helpers::LoadHTMLString(
           helper.GetWebView()->MainFrameImpl(), html,
           url_test_helpers::ToKURL("about:blank"));
@@ -64,8 +63,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
       // destruction sequence of WebView.
       frame_test_helpers::WebViewHelper helper;
       helper.Initialize(&web_frame_client, nullptr, ConfigureAndroidSettings);
-      helper.GetWebView()->EnableAutoResizeForTesting(gfx::Size(480, 800),
-                                                      gfx::Size(480, 800));
+      helper.Resize(gfx::Size(480, 800));
       url_test_helpers::RegisterMockedURLLoadFromBase(
           WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
           WebString::FromUTF8(path));
