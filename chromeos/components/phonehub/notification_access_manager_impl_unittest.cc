@@ -76,6 +76,7 @@ class NotificationAccessManagerImplTest : public testing::Test {
   void Initialize(NotificationAccessManager::AccessStatus expected_status) {
     pref_service_.SetInteger(prefs::kNotificationAccessStatus,
                              static_cast<int>(expected_status));
+    SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/false);
     manager_ = std::make_unique<NotificationAccessManagerImpl>(
         &pref_service_, fake_feature_status_provider_.get(),
         fake_message_sender_.get(), fake_connection_scheduler_.get());
@@ -129,6 +130,11 @@ class NotificationAccessManagerImplTest : public testing::Test {
   }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
+
+  void SetNeedsOneTimeNotificationAccessUpdate(bool needs_update) {
+    pref_service_.SetBoolean(prefs::kNeedsOneTimeNotificationAccessUpdate,
+                             needs_update);
+  }
 
  private:
   TestingPrefServiceSimple pref_service_;
@@ -404,6 +410,7 @@ TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
       NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToProhibited) {
@@ -415,6 +422,58 @@ TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToProhibited) {
   SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited);
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kProhibited);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(NotificationAccessManagerImplTest, AccessNotChanged) {
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+
+  // If the access state is unchanged, we do not expect any notifications.
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  EXPECT_EQ(0u, GetNumObserverCalls());
+}
+
+TEST_F(NotificationAccessManagerImplTest,
+       NeedsOneTimeNotificationAccessUpdate_AccessGranted) {
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+
+  // Send a one-time signal to observers if access is granted. See
+  // http://crbug.com/1215559.
+  SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/true);
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  // Observers should be notified only once ever.
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(NotificationAccessManagerImplTest,
+       NeedsOneTimeNotificationAccessUpdate_Prohibited) {
+  Initialize(NotificationAccessManager::AccessStatus::kProhibited);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited);
+
+  // Only send the one-time signal to observers if access is granted. See
+  // http://crbug.com/1215559.
+  SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/true);
+  SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited);
+  EXPECT_EQ(0u, GetNumObserverCalls());
 }
 
 }  // namespace phonehub

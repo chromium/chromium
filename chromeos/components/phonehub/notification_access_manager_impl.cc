@@ -21,6 +21,8 @@ void NotificationAccessManagerImpl::RegisterPrefs(
       prefs::kNotificationAccessStatus,
       static_cast<int>(AccessStatus::kAvailableButNotGranted));
   registry->RegisterBooleanPref(prefs::kHasDismissedSetupRequiredUi, false);
+  registry->RegisterBooleanPref(prefs::kNeedsOneTimeNotificationAccessUpdate,
+                                true);
 }
 
 NotificationAccessManagerImpl::NotificationAccessManagerImpl(
@@ -60,8 +62,25 @@ NotificationAccessManagerImpl::GetAccessStatus() const {
 
 void NotificationAccessManagerImpl::SetAccessStatusInternal(
     AccessStatus access_status) {
-  if (access_status == GetAccessStatus())
+  // TODO(http://crbug.com/1215559): Deprecate when there are no more active
+  // Phone Hub notification users on M89. Some users had notifications
+  // automatically disabled when updating from M89 to M90+ because the
+  // notification feature state went from enabled-by-default to
+  // disabled-by-default. To re-enable those users, we once and only once notify
+  // observers if access has been granted by the phone. Notably, the
+  // MultideviceSetupStateUpdate will decide whether or not the notification
+  // feature should be enabled. See MultideviceSetupStateUpdater's method
+  // IsWaitingForAccessToInitiallyEnableNotifications() for more details.
+  bool needs_one_time_notifications_access_update =
+      pref_service_->GetBoolean(prefs::kNeedsOneTimeNotificationAccessUpdate) &&
+      access_status == AccessStatus::kAccessGranted;
+
+  if (access_status == GetAccessStatus() &&
+      !needs_one_time_notifications_access_update) {
     return;
+  }
+  pref_service_->SetBoolean(prefs::kNeedsOneTimeNotificationAccessUpdate,
+                            false);
 
   PA_LOG(INFO) << "Notification access: " << GetAccessStatus() << " => "
                << access_status;

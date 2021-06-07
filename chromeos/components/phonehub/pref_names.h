@@ -13,6 +13,7 @@ extern const char kNotificationAccessStatus[];
 extern const char kHideOnboardingUi[];
 extern const char kIsAwaitingVerifiedHost[];
 extern const char kHasDismissedSetupRequiredUi[];
+extern const char kNeedsOneTimeNotificationAccessUpdate[];
 
 }  // namespace prefs
 }  // namespace phonehub
