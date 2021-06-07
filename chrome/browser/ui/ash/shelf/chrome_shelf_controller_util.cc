@@ -96,7 +96,6 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // context when launching. Pinning these creates an item that does nothing.
   const char* kNoPinAppIds[] = {
       file_manager::kVideoPlayerAppId,
-      file_manager::kGalleryAppId,
       file_manager::kAudioPlayerAppId,
       extension_misc::kFeedbackExtensionId,
   };

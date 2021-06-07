@@ -53,11 +53,6 @@ void VerifyTasks(int* remaining,
   ASSERT_TRUE(result) << expectation.file_extensions;
   --*remaining;
 
-  for (const auto& t : *result) {
-    EXPECT_FALSE(t.task_descriptor().app_id == kGalleryAppId)
-        << "Gallery has been deprecated and should never appear as a task.";
-  }
-
   auto default_task =
       std::find_if(result->begin(), result->end(),
                    [](const auto& task) { return task.is_default(); });

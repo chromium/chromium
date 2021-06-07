@@ -386,16 +386,6 @@ void ComponentLoader::AddAudioPlayerExtension() {
       base::FilePath(FILE_PATH_LITERAL("audio_player")));
 }
 
-void ComponentLoader::AddGalleryExtension() {
-  // TODO(crbug.com/1030935): Delete this entirely around M93 when it has has a
-  // chance to be cleaned up.
-  if (extensions::ExtensionPrefs::Get(profile_)
-          ->ShouldInstallObsoleteComponentExtension(
-              file_manager::kGalleryAppId)) {
-    Add(IDR_GALLERY_MANIFEST, base::FilePath(FILE_PATH_LITERAL("gallery")));
-  }
-}
-
 void ComponentLoader::AddImageLoaderExtension() {
   Add(IDR_IMAGE_LOADER_MANIFEST,
       base::FilePath(FILE_PATH_LITERAL("image_loader")));
@@ -556,7 +546,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     AddVideoPlayerExtension();
     AddAudioPlayerExtension();
     AddFileManagerExtension();
-    AddGalleryExtension();
     AddImageLoaderExtension();
 
 #if BUILDFLAG(ENABLE_NACL)

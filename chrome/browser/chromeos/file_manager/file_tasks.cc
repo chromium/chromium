@@ -183,15 +183,6 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
     });
   };
 
-  // Gallery app was replaced by media app in m86, deprecated in m91, and will
-  // be deleted in m93. However, it still sometimes appears in the file task
-  // list because its manifest registers it as a handler for many file types.
-  // Manually erase it from the list here. This can be removed at the same time
-  // as the gallery app deletion (currently planned for m93). See b/180347590.
-  const auto gallery_task = task_for_app(kGalleryAppId);
-  if (gallery_task != tasks->end())
-    tasks->erase(gallery_task);
-
   const auto media_app_task = task_for_app(web_app::kMediaAppId);
   if (media_app_task == tasks->end())
     return;

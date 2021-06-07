@@ -2112,7 +2112,6 @@ if (!is_android) {
         "//chromeos/test/data/",
         "//ui/file_manager/base/",
         "//ui/file_manager/file_manager/",
-        "//ui/file_manager/gallery/",
         "//ui/file_manager/image_loader/",
         "//ui/file_manager/integration_tests/",
         "//ui/file_manager/video_player",
@@ -2141,7 +2140,6 @@ if (!is_android) {
         "//ui/file_manager/file_manager/foreground/js/metadata:modulize_runtime_data",
         "//ui/file_manager/file_manager/foreground/js/ui:modulize_runtime_data",
         "//ui/file_manager/file_manager/foreground/js/ui/table:modulize_runtime_data",
-        "//ui/file_manager/gallery/js/image_editor:modulize_runtime_data",
         "//ui/file_manager/image_loader:modulize_runtime_data",
       ]
 
@@ -3245,8 +3243,6 @@ if (!is_android) {
         "../browser/chromeos/file_manager/file_manager_jstest_base.cc",
         "../browser/chromeos/file_manager/file_manager_jstest_base.h",
         "../browser/chromeos/file_manager/file_tasks_browsertest.cc",
-        "../browser/chromeos/file_manager/gallery_browsertest.cc",
-        "../browser/chromeos/file_manager/gallery_jstest.cc",
         "../browser/chromeos/file_manager/image_loader_jstest.cc",
         "../browser/chromeos/file_manager/video_player_browsertest.cc",
         "../browser/chromeos/file_manager/video_player_jstest.cc",

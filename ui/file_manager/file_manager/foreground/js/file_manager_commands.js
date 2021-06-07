@@ -1200,8 +1200,8 @@ CommandHandler.deleteCommand_ = new class extends FilesCommand {
     }
 
     const message = entries.length === 1 ?
-        strf('GALLERY_CONFIRM_DELETE_ONE', entries[0].name) :
-        strf('GALLERY_CONFIRM_DELETE_SOME', entries.length);
+        strf('CONFIRM_DELETE_ONE', entries[0].name) :
+        strf('CONFIRM_DELETE_SOME', entries.length);
 
     if (!dialog) {
       dialog = fileManager.ui.deleteConfirmDialog;

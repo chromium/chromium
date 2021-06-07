@@ -4788,8 +4788,7 @@ TEST_F(ChromeShelfControllerTest, UnpinnableComponentApps) {
   InitShelfController();
 
   const char* kPinnableApp = file_manager::kFileManagerAppId;
-  const char* kNoPinApps[] = {file_manager::kGalleryAppId,
-                              extension_misc::kFeedbackExtensionId};
+  const char* kNoPinApps[] = {extension_misc::kFeedbackExtensionId};
 
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(kPinnableApp, profile()));

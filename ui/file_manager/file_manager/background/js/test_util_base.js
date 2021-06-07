@@ -67,7 +67,6 @@ test.util.registerRemoteTestUtils = () => {
          */
         const kTestingExtensionIds = [
           'oobinhbdbiehknkpbpejbbpdbkdjmoco',  // File Manager test extension.
-          'ejhcmmdhhpdhhgmifplfmjobgegbibkn',  // Gallery test extension.
           'ljoplibgfehghmibaoaepfagnmbbfiga',  // Video Player test extension.
           'ddabbgbggambiildohfagdkliahiecfl',  // Audio Player test extension.
         ];

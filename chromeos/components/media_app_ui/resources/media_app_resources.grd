@@ -13,14 +13,14 @@
       <include name="IDR_MEDIA_APP_LAUNCH_JS" file="${root_gen_dir}/chromeos/components/media_app_ui/resources/js/launch.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
 
       <!-- TODO(b/141588875): Switch these to IDR_MEDIA_APP_APP_ICON_*_PNG in the internal media_app_bundle_resources.grd file (and add more icon resolutions) when the final icon is ready. -->
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_16_PNG" file="../../../../ui/file_manager/gallery/images/icon16.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_32_PNG" file="../../../../ui/file_manager/gallery/images/icon32.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_48_PNG" file="../../../../ui/file_manager/gallery/images/icon48.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_64_PNG" file="../../../../ui/file_manager/gallery/images/icon64.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_96_PNG" file="../../../../ui/file_manager/gallery/images/icon96.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_128_PNG" file="../../../../ui/file_manager/gallery/images/icon128.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_192_PNG" file="../../../../ui/file_manager/gallery/images/icon192.png" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_GALLERY_ICON_256_PNG" file="../../../../ui/file_manager/gallery/images/icon256.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_16_PNG" file="assets/icon16.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_32_PNG" file="assets/icon32.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_48_PNG" file="assets/icon48.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_64_PNG" file="assets/icon64.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_96_PNG" file="assets/icon96.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_128_PNG" file="assets/icon128.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_192_PNG" file="assets/icon192.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_GALLERY_ICON_256_PNG" file="assets/icon256.png" type="BINDATA" />
 
       <!-- Unprivileged guest contents. -->
       <include name="IDR_MEDIA_APP_APP_HTML" file="app.html" type="BINDATA" />

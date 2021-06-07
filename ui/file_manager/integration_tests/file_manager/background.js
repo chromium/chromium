@@ -14,15 +14,6 @@ const FILE_MANAGER_EXTENSIONS_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 const remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
 
 /**
- * Extension ID of Gallery.
- * @type {string}
- * @const
- */
-const GALLERY_APP_ID = 'nlkncpkkdoccmpiclbokaimcnedabhhm';
-
-const galleryApp = new RemoteCallGallery(GALLERY_APP_ID);
-
-/**
  * Extension ID of Audio Player.
  * @type {string}
  * @const

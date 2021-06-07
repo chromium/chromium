@@ -20,8 +20,7 @@
           type="BINDATA" />
       <!-- Use a placeholder icon when enable_cros_media_app = false. -->
       <include name="IDR_MEDIA_APP_APP_ICON_256_PNG"
-            file="../../../../../ui/file_manager/gallery/images/icon256.png"
-            type="BINDATA" />
+          file="../assets/icon256.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

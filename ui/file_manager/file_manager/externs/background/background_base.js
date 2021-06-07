@@ -9,11 +9,11 @@
 
 /**
  * Interface exposed in window.background in the background page. Used for
- * Audio, Video and Gallery.
+ * Audio and Video.
  *
  * Files app uses a larger interface: `FileBrowserBackgroundFull`.
  * Interface exposed in window.background in the background page. Used for
- * Audio, Video and Gallery.
+ * Audio and Video.
  *
  * Files app uses a larger interface: `FileBrowserBackgroundFull`.
  *

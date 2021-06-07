@@ -16,9 +16,6 @@ const char kFileManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 // The video player's app ID.
 const char kVideoPlayerAppId[] = "jcgeabjmjgoblfofpppfkcoakmfobdko";
 
-// The gallery's app ID.
-const char kGalleryAppId[] = "nlkncpkkdoccmpiclbokaimcnedabhhm";
-
 // The audio player's app ID.
 const char kAudioPlayerAppId[] = "cjbfomnbifhcdnihkgipgfcihmgjfhbf";
 

@@ -43,8 +43,6 @@ group("closure_compile") {
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",
-    "gallery/js:closure_compile",
-    "gallery/js/image_editor:closure_compile",
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
@@ -61,9 +59,6 @@ group("unit_test_data") {
     "file_manager/foreground/js:js_test_gen_html_modules",
     "file_manager/foreground/js/metadata:js_test_gen_html_modules",
     "file_manager/foreground/js/ui:js_test_gen_html_modules",
-    "gallery/js:js_test_gen_html",
-    "gallery/js/image_editor:js_test_gen_html",
-    "gallery/js/image_editor:js_test_gen_html_modules",
     "image_loader:js_test_gen_html_modules",
     "video_player/js:js_test_gen_html_modules",
   ]

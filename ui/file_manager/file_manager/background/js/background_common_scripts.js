@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview Scripts which are commonly used as parts of background scripts
- * in Files app, Gallery app, Video Player app, and Audio Player app.
+ * in Files app, Video Player app, and Audio Player app.
  * The purpose of this file is to share common files between Files app and its
  * companion apps to save the size.
  * Note that adding a script in this file results in being loaded in each app.

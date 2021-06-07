@@ -31,7 +31,8 @@ enum class DefaultAppName {
   kCalculator = 10,
   kText = 11,
   kGetHelp = 12,
-  kGallery = 13,
+  // Gallery was replaced by MediaApp in M86 and deleted in M91.
+  kDeletedGalleryChromeApp = 13,
   kVideoPlayer = 14,
   kAudioPlayer = 15,
   kChromeCanvas = 16,
@@ -212,8 +213,6 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
-  } else if (app_id == file_manager::kGalleryAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kGallery, launch_source);
   } else if (app_id == file_manager::kVideoPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kVideoPlayer, launch_source);
   } else if (app_id == file_manager::kAudioPlayerAppId) {
