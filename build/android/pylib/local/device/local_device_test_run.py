@@ -315,7 +315,6 @@ class LocalDeviceTestRun(test_run.TestRun):
     last_partition_size = 0
     for test in tests:
       test_count = len(test) if CountTestsIndividually(test) else 1
-      num_not_yet_allocated -= test_count
       # Make a new shard whenever we would overfill the previous one. However,
       # if the size of the test group is larger than the max partition size on
       # its own, just put the group in its own shard instead of splitting up the
@@ -323,9 +322,6 @@ class LocalDeviceTestRun(test_run.TestRun):
       if (last_partition_size + test_count > partition_size
           and last_partition_size > 0):
         num_desired_partitions -= 1
-        partitions.append([])
-        partitions[-1].append(test)
-        last_partition_size = test_count
         if num_desired_partitions <= 0:
           # Too many tests for number of partitions, just fill all partitions
           # beyond num_desired_partitions.
@@ -334,9 +330,14 @@ class LocalDeviceTestRun(test_run.TestRun):
           # Re-balance remaining partitions.
           partition_size = min(num_not_yet_allocated // num_desired_partitions,
                                max_partition_size)
+        partitions.append([])
+        partitions[-1].append(test)
+        last_partition_size = test_count
       else:
         partitions[-1].append(test)
         last_partition_size += test_count
+
+      num_not_yet_allocated -= test_count
 
     if not partitions[-1]:
       partitions.pop()
