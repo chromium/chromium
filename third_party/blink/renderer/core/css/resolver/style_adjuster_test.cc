@@ -275,4 +275,21 @@ TEST_F(StyleAdjusterTest, OverflowClipUseCount) {
       GetDocument().IsUseCounted(WebFeature::kOverflowClipAlongEitherAxis));
 }
 
+// crbug.com/1216721
+TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
+  SetBodyInnerHTML(R"HTML(
+<style>
+.class1 { dominant-baseline: no-change; }
+</style>
+<svg>
+<tref>
+<tspan id="svgvar00005" />
+</svg>
+<svg>
+<use xlink:href="#svgvar00005" class="class1" />
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if we had no null pointer dereferences.
+}
+
 }  // namespace blink

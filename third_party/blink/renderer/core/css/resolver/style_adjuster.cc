@@ -825,8 +825,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       while (baseline == EDominantBaseline::kNoChange ||
              baseline == EDominantBaseline::kResetSize) {
         parent = LayoutTreeBuilderTraversal::Parent(*parent);
-        baseline = parent ? parent->GetComputedStyle()->DominantBaseline()
-                          : EDominantBaseline::kAuto;
+        baseline = parent && parent->GetComputedStyle()
+                       ? parent->GetComputedStyle()->DominantBaseline()
+                       : EDominantBaseline::kAuto;
       }
     }
     style.SetCssDominantBaseline(baseline);
