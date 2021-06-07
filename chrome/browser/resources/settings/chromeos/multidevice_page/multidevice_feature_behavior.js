@@ -72,6 +72,26 @@ const MultiDeviceFeatureBehaviorImpl = {
   },
 
   /**
+   * Whether the top-level Phone Hub feature is enabled.
+   * @return {boolean}
+   */
+  isPhoneHubOn() {
+    return this.getFeatureState(settings.MultiDeviceFeature.PHONE_HUB) ===
+        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+  },
+
+  /**
+   * @param {!settings.MultiDeviceFeature} feature
+   * @return {boolean}
+   */
+  isPhoneHubSubFeature(feature) {
+    return [
+      settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+      settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION
+    ].includes(feature);
+  },
+
+  /**
    * @return {boolean} Whether or not Phone Hub notification access is
    *     prohibited (i.e., due to the user having a work profile).
    */
@@ -92,6 +112,12 @@ const MultiDeviceFeatureBehaviorImpl = {
     // (as opposed to the full suite).
     if (feature !== settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE &&
         !this.isSuiteOn()) {
+      return false;
+    }
+
+    // Cannot edit Phone Hub sub-feature toggles if the top-level Phone Hub
+    // feature is not enabled.
+    if (this.isPhoneHubSubFeature(feature) && !this.isPhoneHubOn()) {
       return false;
     }
 

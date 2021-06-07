@@ -64,6 +64,19 @@ suite('Multidevice', () => {
   }
 
   /**
+   * Sets the state of the top-level Phone Hub feature. Note that in order to
+   * trigger featureToggle's bindings to update, we set its pageContentData to a
+   * new object as the actual UI does.
+   * @param {?settings.MultiDeviceFeatureState} newPhoneHubState. New value for
+   * featureToggle.pageContentData.phoneHubState.
+   */
+  function setPhoneHubState(newPhoneHubState) {
+    featureToggle.pageContentData = Object.assign(
+        {}, featureToggle.pageContentData, {phoneHubState: newPhoneHubState});
+    Polymer.dom.flush();
+  }
+
+  /**
    * @param {!settings.MultiDeviceFeature} feature
    * @param {string} key
    */
@@ -90,7 +103,6 @@ suite('Multidevice', () => {
 
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
-    assertFalse(crToggle.disabled);
   }
 
   setup(() => {
@@ -179,6 +191,8 @@ suite('Multidevice', () => {
         settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         'phoneHubNotificationsState');
 
+    setPhoneHubState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+
     setFeatureState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
@@ -190,4 +204,34 @@ suite('Multidevice', () => {
     assertFalse(crToggle.checked);
     assertTrue(crToggle.disabled);
   });
+
+  test(
+      'Phone Hub notifications toggle unclickable if Phone Hub disabled',
+      () => {
+        init(
+            settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+            'phoneHubNotificationsState');
+
+        setPhoneHubState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+        setNotificationAccessStatus(
+            settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED);
+        assertFalse(crToggle.disabled);
+
+        setPhoneHubState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+        assertTrue(crToggle.disabled);
+      });
+
+  test(
+      'Phone Hub task-continuation toggle unclickable if Phone Hub disabled',
+      () => {
+        init(
+            settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
+            'phoneHubTaskContinuationState');
+
+        setPhoneHubState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+        assertFalse(crToggle.disabled);
+
+        setPhoneHubState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+        assertTrue(crToggle.disabled);
+      });
 });
