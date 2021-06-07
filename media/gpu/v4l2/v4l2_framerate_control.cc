@@ -6,6 +6,29 @@
 
 #include "base/sequence_checker.h"
 
+namespace {
+
+bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
+  DCHECK(device);
+
+  struct v4l2_streamparm parms;
+  memset(&parms, 0, sizeof(parms));
+  parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+  // Try to set the framerate to 30fps to see if the control is available.
+  // VIDIOC_G_PARM can not be used as it does not return the current framerate.
+  parms.parm.output.timeperframe.numerator = 30;
+  parms.parm.output.timeperframe.denominator = 1000L;
+
+  if (device->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
+    VLOG(1) << "Failed to issue VIDIOC_S_PARM command";
+    return false;
+  }
+
+  return parms.parm.output.capability & V4L2_CAP_TIMEPERFRAME;
+}
+
+}  // namespace
 namespace media {
 
 static constexpr int kMovingAverageWindowSize = 32;
@@ -18,12 +41,14 @@ V4L2FrameRateControl::V4L2FrameRateControl(
     scoped_refptr<V4L2Device> device,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : device_(device),
-      framerate_control_present_(FrameRateControlPresent()),
+      framerate_control_present_(FrameRateControlPresent(device)),
       current_frame_duration_avg_ms_(0),
       last_frame_display_time_(base::TimeTicks::Now()),
       frame_duration_moving_average_(kMovingAverageWindowSize),
       task_runner_(task_runner),
-      weak_this_factory_(this) {}
+      weak_this_factory_(this) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 V4L2FrameRateControl::~V4L2FrameRateControl() = default;
 
@@ -103,27 +128,6 @@ void V4L2FrameRateControl::AttachToVideoFrame(
   video_frame->AddDestructionObserver(
       base::BindOnce(&V4L2FrameRateControl::RecordFrameDurationThunk,
                      weak_this_factory_.GetWeakPtr(), task_runner_));
-}
-
-bool V4L2FrameRateControl::FrameRateControlPresent() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(device_);
-
-  struct v4l2_streamparm parms;
-  memset(&parms, 0, sizeof(parms));
-  parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-
-  // Try to set the framerate to 30fps to see if the control is available.
-  // VIDIOC_G_PARM can not be used as it does not return the current framerate.
-  parms.parm.output.timeperframe.numerator = 30;
-  parms.parm.output.timeperframe.denominator = 1000L;
-
-  if (device_->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
-    VLOG(1) << "Failed to issue VIDIOC_S_PARM command";
-    return false;
-  }
-
-  return parms.parm.output.capability & V4L2_CAP_TIMEPERFRAME;
 }
 
 }  // namespace media

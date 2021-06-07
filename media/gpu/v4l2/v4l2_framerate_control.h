@@ -42,7 +42,6 @@ class V4L2FrameRateControl {
 
  private:
   void UpdateFrameRate();
-  bool FrameRateControlPresent();
 
   scoped_refptr<V4L2Device> device_;
   const bool framerate_control_present_;
