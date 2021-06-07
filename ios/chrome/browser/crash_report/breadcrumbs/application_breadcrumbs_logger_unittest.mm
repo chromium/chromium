@@ -77,8 +77,7 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 }
 
 // Tests that memory pressure events are logged by ApplicationBreadcrumbsLogger.
-// TODO(crbug.com/1046588): This test is flaky.
-TEST_F(ApplicationBreadcrumbsLoggerTest, DISABLED_MemoryPressure) {
+TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_EQ(1U, breadcrumb_manager_.GetEvents(0).size());  // startup event
 
   base::MemoryPressureListener::SimulatePressureNotification(
@@ -88,7 +87,9 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, DISABLED_MemoryPressure) {
   base::RunLoop().RunUntilIdle();
 
   std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  ASSERT_EQ(3ul, events.size());
+  // Pop startup.
+  events.pop_front();
   EXPECT_NE(std::string::npos, events.front().find("Moderate"));
   // Ensure UserAction events are labeled as such.
   EXPECT_NE(std::string::npos, events.front().find("Memory Pressure: "));
