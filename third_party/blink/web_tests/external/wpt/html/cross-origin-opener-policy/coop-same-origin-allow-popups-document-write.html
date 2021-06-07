@@ -1,0 +1,61 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="./resources/dispatcher.js"></script>
+<script>
+
+/*
+  Regression test for: https://crbug.com/1216244
+  From a window using Cross-Origin-Opener-Policy:same-origin-allow-popup, open
+  a new blank window and navigate it cross-origin using document.write and a
+  meta refresh. The openee/opener relationship must hold.
+*/
+
+const directory = '/html/cross-origin-opener-policy';
+const executor_path = directory + '/resources/executor.html?pipe=';
+const coep_soap =
+  "|header(Cross-Origin-Opener-Policy,same-origin-allow-popups)";
+const same_origin = get_host_info().HTTPS_ORIGIN;
+const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
+
+promise_test(async t => {
+  // This window:
+  const this_window_token = token();
+
+  // The opener, using COEP:same-origin-allow-popups:
+  const opener_token = token();
+  const opener_url = same_origin + executor_path + coep_soap +
+    `&uuid=${opener_token}`;
+  const opener = window.open(opener_url);
+
+  // Open a blank window, then use document.write and a meta refresh to navigate
+  // cross-origin.
+  const openee_token = token();
+  const openee_url = cross_origin + executor_path + `&uuid=${openee_token}`;
+  send(opener_token, `
+    openee = window.open();
+    openee.document.write(\`
+      <meta http-equiv="refresh" content="0; url=${openee_url}">
+    \`);
+    openee.document.close();
+  `);
+
+  // Check the openee is loaded and has access to its opener.
+  send(openee_token, `
+    send("${this_window_token}", opener != null)
+    send("${this_window_token}", opener.closed);
+  `);
+  assert_equals(await receive(this_window_token), "true", "opener exists");
+  assert_equals(await receive(this_window_token), "false", "opener not closed");
+
+  // Check the opener has still access to its openee.
+  send(opener_token, `
+    send("${this_window_token}", openee != null)
+    send("${this_window_token}", openee.closed);
+  `);
+  assert_equals(await receive(this_window_token), "true", "openee exists");
+  assert_equals(await receive(this_window_token), "false", "openee not closed");
+});
+</script>
