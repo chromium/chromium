@@ -10,12 +10,15 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner_helpers.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "components/prefs/pref_service.h"
@@ -45,6 +48,35 @@ using content::BrowserThread;
 using content::WebContents;
 
 namespace safe_browsing {
+
+namespace {
+
+// Command-line flag that can be used to write extracted CSD features to disk.
+// This is also enables a few other behaviors that are useful for debugging.
+const char kCsdDebugFeatureDirectoryFlag[] = "csd-debug-feature-directory";
+
+void WriteFeaturesToDisk(const ClientPhishingRequest& features,
+                         const base::FilePath& base_path) {
+  base::FilePath path =
+      base_path.AppendASCII(base::GUID::GenerateRandomV4().AsLowercaseString());
+  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!file.IsValid())
+    return;
+  std::string serialized_features = features.SerializeAsString();
+  file.WriteAtCurrentPos(serialized_features.data(),
+                         serialized_features.size());
+}
+
+bool HasDebugFeatureDirectory() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kCsdDebugFeatureDirectoryFlag);
+}
+
+base::FilePath GetDebugFeatureDirectory() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+      kCsdDebugFeatureDirectoryFlag);
+}
+}  // namespace
 
 typedef base::OnceCallback<void(bool)> ShouldClassifyUrlCallback;
 
@@ -192,6 +224,14 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   void CheckSafeBrowsingDatabase(const GURL& url) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     PreClassificationCheckResult phishing_reason = NO_CLASSIFY_MAX;
+
+    // When doing debug feature dumps, ignore the allowlist.
+    if (HasDebugFeatureDirectory()) {
+      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_MAX,
+                               /*match_allowlist=*/false);
+      return;
+    }
+
     if (!database_manager_.get()) {
       // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
@@ -234,8 +274,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     }
     // If result is cached, we don't want to run classification again.
     // In that case we're just trying to show the warning.
+    // If we're dumping features for debugging, ignore the cache.
     bool is_phishing;
-    if (csd_service_->GetValidCachedResult(url_, &is_phishing)) {
+    if (!HasDebugFeatureDirectory() &&
+        csd_service_->GetValidCachedResult(url_, &is_phishing)) {
       base::UmaHistogramBoolean("SBClientPhishing.RequestSatisfiedFromCache",
                                 true);
       // Since we are already on the UI thread, this is safe.
@@ -249,7 +291,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // too many pages as phishing, but for those that we already think are
     // phishing we want to send a request to the server to give ourselves
     // a chance to fix misclassifications.
-    if (!csd_service_->IsInCache(url_) &&
+    // If we're dumping features for debugging, allow us to exceed the report
+    // limit.
+    if (!HasDebugFeatureDirectory() && !csd_service_->IsInCache(url_) &&
         csd_service_->OverPhishingReportLimit()) {
       DontClassifyForPhishing(NO_CLASSIFY_TOO_MANY_REPORTS);
     }
@@ -468,6 +512,13 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       VLOG(2) << "Phash Score: " << match.vision_matched_phash_score();
       VLOG(2) << "EMD Score: " << match.vision_matched_emd_score();
     }
+
+    if (HasDebugFeatureDirectory()) {
+      base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                                 base::BindOnce(&WriteFeaturesToDisk, *verdict,
+                                                GetDebugFeatureDirectory()));
+    }
+
     if (!IsExtendedReportingEnabled(*delegate_->GetPrefs()) &&
         !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       // These fields should only be set for SBER users.

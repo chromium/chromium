@@ -18,6 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
@@ -1222,6 +1223,60 @@ TEST_F(ClientSideDetectionHostTest, AllowsScreenshotDataForSBER) {
   EXPECT_TRUE(request.has_phash_dimension_size());
   EXPECT_TRUE(request.has_screenshot_phash());
   EXPECT_TRUE(request.has_screenshot_digest());
+}
+
+class ClientSideDetectionHostDebugFeaturesTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostDebugFeaturesTest() = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    command_line_.GetProcessCommandLine()->AppendSwitchPath(
+        "--csd-debug-feature-directory", temp_dir_.GetPath());
+
+    ClientSideDetectionHostTest::SetUp();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::test::ScopedCommandLine command_line_;
+};
+
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsAllowlistWhenDumpingFeatures) {
+  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr);
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _)).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
+}
+
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsCacheWhenDumpingFeatures) {
+  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr);
+  EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull())).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
+}
+
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsReportLimitWhenDumpingFeatures) {
+  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr);
+  EXPECT_CALL(*csd_service_, OverPhishingReportLimit()).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
 }
 
 }  // namespace safe_browsing
