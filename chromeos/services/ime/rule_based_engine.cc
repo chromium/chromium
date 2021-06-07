@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/ime/input_engine.h"
+#include "chromeos/services/ime/rule_based_engine.h"
 
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -73,42 +73,43 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 }  // namespace
 
-std::unique_ptr<InputEngine> InputEngine::Create(
+std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> receiver) {
-  // InputEngine constructor is private, so have to use WrapUnique here.
+  // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
-             ? base::WrapUnique(new InputEngine(ime_spec, std::move(receiver)))
+             ? base::WrapUnique(
+                   new RuleBasedEngine(ime_spec, std::move(receiver)))
              : nullptr;
 }
 
-InputEngine::~InputEngine() = default;
+RuleBasedEngine::~RuleBasedEngine() = default;
 
-void InputEngine::ProcessMessage(const std::vector<uint8_t>& message,
-                                 ProcessMessageCallback callback) {
+void RuleBasedEngine::ProcessMessage(const std::vector<uint8_t>& message,
+                                     ProcessMessageCallback callback) {
   NOTIMPLEMENTED();  // Protobuf message is not used in the rulebased engine.
 }
 
-void InputEngine::OnInputMethodChanged(const std::string& engine_id) {
+void RuleBasedEngine::OnInputMethodChanged(const std::string& engine_id) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
+void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::OnBlur() {
+void RuleBasedEngine::OnBlur() {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::OnSurroundingTextChanged(
+void RuleBasedEngine::OnSurroundingTextChanged(
     const std::string& text,
     uint32_t offset,
     mojom::SelectionRangePtr selection_range) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::OnCompositionCanceledBySystem() {
+void RuleBasedEngine::OnCompositionCanceledBySystem() {
   // TODO(https://crbug.com/1633694) Handle the case when the engine is not
   // defined
   if (engine_) {
@@ -117,7 +118,7 @@ void InputEngine::OnCompositionCanceledBySystem() {
   isAltRightDown_ = false;
 }
 
-void InputEngine::ProcessKeypressForRulebased(
+void RuleBasedEngine::ProcessKeypressForRulebased(
     mojom::PhysicalKeyEventPtr event,
     ProcessKeypressForRulebasedCallback callback) {
   // According to the W3C spec, |altKey| is false if the AltGr key
@@ -156,54 +157,56 @@ void InputEngine::ProcessKeypressForRulebased(
   std::move(callback).Run(std::move(keypress_response));
 }
 
-void InputEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                             OnKeyEventCallback callback) {
+void RuleBasedEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
+                                 OnKeyEventCallback callback) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::CommitText(const std::string& text,
-                             mojom::CommitTextCursorBehavior cursor_behavior) {
+void RuleBasedEngine::CommitText(
+    const std::string& text,
+    mojom::CommitTextCursorBehavior cursor_behavior) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::SetComposition(const std::string& text) {
+void RuleBasedEngine::SetComposition(const std::string& text) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::SetCompositionRange(uint32_t start, uint32_t end) {
+void RuleBasedEngine::SetCompositionRange(uint32_t start, uint32_t end) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::FinishComposition() {
+void RuleBasedEngine::FinishComposition() {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::DeleteSurroundingText(uint32_t num_bytes_before_cursor,
-                                        uint32_t num_bytes_after_cursor) {
+void RuleBasedEngine::DeleteSurroundingText(uint32_t num_bytes_before_cursor,
+                                            uint32_t num_bytes_after_cursor) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::HandleAutocorrect(
+void RuleBasedEngine::HandleAutocorrect(
     mojom::AutocorrectSpanPtr autocorrect_span) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::RequestSuggestions(mojom::SuggestionsRequestPtr request,
-                                     RequestSuggestionsCallback callback) {
+void RuleBasedEngine::RequestSuggestions(mojom::SuggestionsRequestPtr request,
+                                         RequestSuggestionsCallback callback) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::DisplaySuggestions(
+void RuleBasedEngine::DisplaySuggestions(
     const std::vector<TextSuggestion>& suggestions) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::RecordUkm(mojom::UkmEntryPtr entry) {
+void RuleBasedEngine::RecordUkm(mojom::UkmEntryPtr entry) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-InputEngine::InputEngine(const std::string& ime_spec,
-                         mojo::PendingReceiver<mojom::InputChannel> receiver)
+RuleBasedEngine::RuleBasedEngine(
+    const std::string& ime_spec,
+    mojo::PendingReceiver<mojom::InputChannel> receiver)
     : receiver_(this, std::move(receiver)),
       engine_(std::make_unique<rulebased::Engine>()) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));

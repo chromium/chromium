@@ -21,6 +21,7 @@
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 #include "chromeos/services/ime/decoder/system_engine.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
+#include "chromeos/services/ime/rule_based_engine.h"
 
 namespace chromeos {
 namespace ime {
@@ -123,7 +124,7 @@ void ImeService::ConnectToInputMethod(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> to_engine,
     ConnectToInputMethodCallback callback) {
-  input_engine_ = InputEngine::Create(ime_spec, std::move(to_engine));
+  input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(to_engine));
   std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
 }
 

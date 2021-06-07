@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_IME_INPUT_ENGINE_H_
-#define CHROMEOS_SERVICES_IME_INPUT_ENGINE_H_
+#ifndef CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
+#define CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
 
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
@@ -18,18 +18,19 @@ namespace rulebased {
 class Engine;
 }
 
-// A basic implementation of InputEngine without using any decoder.
-// TODO(https://crbug.com/1019541): Rename this to RuleBasedEngine.
-class InputEngine : public mojom::InputChannel {
+// Handles rule-based input methods such as Arabic and Vietnamese.
+// Rule-based input methods are based off deterministic rules and do not
+// provide features such as suggestions.
+class RuleBasedEngine : public mojom::InputChannel {
  public:
-  // Returns nullptr if |ime_spec| is not valid for this InputEngine.
-  static std::unique_ptr<InputEngine> Create(
+  // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
+  static std::unique_ptr<RuleBasedEngine> Create(
       const std::string& ime_spec,
       mojo::PendingReceiver<mojom::InputChannel> receiver);
 
-  InputEngine(const InputEngine& other) = delete;
-  InputEngine& operator=(const InputEngine& other) = delete;
-  ~InputEngine() override;
+  RuleBasedEngine(const RuleBasedEngine& other) = delete;
+  RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
+  ~RuleBasedEngine() override;
 
   // mojom::InputChannel overrides:
   void ProcessMessage(const std::vector<uint8_t>& message,
@@ -65,8 +66,8 @@ class InputEngine : public mojom::InputChannel {
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
  private:
-  InputEngine(const std::string& ime_spec,
-              mojo::PendingReceiver<mojom::InputChannel> receiver);
+  RuleBasedEngine(const std::string& ime_spec,
+                  mojo::PendingReceiver<mojom::InputChannel> receiver);
 
   mojo::Receiver<mojom::InputChannel> receiver_;
   std::unique_ptr<rulebased::Engine> engine_;
@@ -78,4 +79,4 @@ class InputEngine : public mojom::InputChannel {
 }  // namespace ime
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_IME_INPUT_ENGINE_H_
+#endif  // CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
