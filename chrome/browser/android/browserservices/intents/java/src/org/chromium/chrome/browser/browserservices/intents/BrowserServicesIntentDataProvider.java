@@ -464,13 +464,6 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * Returns true if new notification requests from cct should be blocked.
-     */
-    public boolean shouldBlockNewNotificationRequests() {
-        return false;
-    }
-
-    /**
      * Returns true if 'open in chrome' should be shown in the tab context menu.
      */
     public boolean shouldShowOpenInChromeMenuItemInContextMenu() {

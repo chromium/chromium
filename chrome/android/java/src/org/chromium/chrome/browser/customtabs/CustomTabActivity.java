@@ -213,7 +213,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 if (tab != null) {
                     tab.setAddApi2TransitionToFutureNavigations(false);
                     tab.setHideFutureNavigations(false);
-                    tab.setShouldBlockNewNotificationRequests(false);
                 }
                 mConnection.notifyOpenInBrowser(mSession, webContents);
             }

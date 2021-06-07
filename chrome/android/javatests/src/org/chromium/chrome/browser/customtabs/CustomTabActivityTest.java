@@ -1988,41 +1988,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    public void testShouldBlockNewNotificationRequestsDefaultsToFalse() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
-                                   .getActivityTab()
-                                   .getShouldBlockNewNotificationRequests());
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldBlockNewNotificationRequests() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        intent.setData(Uri.parse(mTestPage));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_BLOCK_NEW_NOTIFICATION_REQUESTS_IN_CCT, true);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(
-                token, "com.google.android.googlequicksearchbox");
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Assert.assertTrue(mCustomTabActivityTestRule.getActivity()
-                                  .getActivityTab()
-                                  .getShouldBlockNewNotificationRequests());
-    }
-
-    @Test
-    @SmallTest
     public void testHideOpenInChromeMenuItemInContextMenu() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()

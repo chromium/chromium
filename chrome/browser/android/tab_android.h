@@ -116,9 +116,6 @@ class TabAndroid : public base::SupportsUserData {
 
   bool hide_future_navigations() const { return hide_future_navigations_; }
 
-  bool should_block_new_notification_requests() const {
-    return should_block_new_notification_requests_;
-  }
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
@@ -164,11 +161,6 @@ class TabAndroid : public base::SupportsUserData {
   jboolean GetHideFutureNavigations(JNIEnv* env) {
     return hide_future_navigations_;
   }
-  void SetShouldBlockNewNotificationRequests(JNIEnv* env, jboolean value);
-  jboolean GetShouldBlockNewNotificationRequests(JNIEnv* env) {
-    return should_block_new_notification_requests_;
-  }
-
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
@@ -177,9 +169,6 @@ class TabAndroid : public base::SupportsUserData {
   // Calls set_hide_future_navigations() on the HistoryTabHelper associated
   // with |web_contents_|.
   void PropagateHideFutureNavigationsToHistoryTabHelper();
-
-  // Calls SetBlockNewNotificationRequests() on NotificationPermissionContext.
-  void PropagateBlockNewNotificationRequestsToWebContents();
 
   JavaObjectWeakGlobalRef weak_java_tab_;
 
@@ -195,7 +184,6 @@ class TabAndroid : public base::SupportsUserData {
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
   bool should_add_api2_transition_to_future_navigations_ = false;
   bool hide_future_navigations_ = false;
-  bool should_block_new_notification_requests_ = false;
 
   base::ObserverList<Observer> observers_;
 

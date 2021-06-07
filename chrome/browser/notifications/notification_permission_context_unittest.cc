@@ -511,55 +511,6 @@ TEST_F(NotificationPermissionContextTest, GetNotificationsSettings) {
   EXPECT_EQ(CONTENT_SETTING_ASK, settings[4].GetContentSetting());
 }
 
-TEST_F(NotificationPermissionContextTest, BlockNewNotificationRequests) {
-  GURL url("https://example.com");
-  NavigateAndCommit(url);
-
-  NotificationPermissionContext context(profile());
-  const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
-      permissions::PermissionRequestID::RequestLocalId());
-  ContentSetting result = CONTENT_SETTING_DEFAULT;
-  context.RequestPermission(web_contents(), id, url, true /* user_gesture */,
-                            base::BindOnce(&StoreContentSetting, &result));
-  EXPECT_NE(result, CONTENT_SETTING_BLOCK);
-
-  NotificationPermissionContext::SetBlockNewNotificationRequests(web_contents(),
-                                                                 true);
-  context.RequestPermission(web_contents(), id, url, true /* user_gesture */,
-                            base::BindOnce(&StoreContentSetting, &result));
-  EXPECT_EQ(result, CONTENT_SETTING_BLOCK);
-
-  NotificationPermissionContext::SetBlockNewNotificationRequests(web_contents(),
-                                                                 false);
-  result = CONTENT_SETTING_DEFAULT;
-  context.RequestPermission(web_contents(), id, url, true /* user_gesture */,
-                            base::BindOnce(&StoreContentSetting, &result));
-  EXPECT_NE(result, CONTENT_SETTING_BLOCK);
-}
-
-TEST_F(NotificationPermissionContextTest,
-       BlockNewNotificationRequestsDoesNothingIfGranted) {
-  GURL url("https://example.com");
-  NavigateAndCommit(url);
-
-  NotificationPermissionContext::UpdatePermission(profile(), url,
-                                                  CONTENT_SETTING_ALLOW);
-
-  NotificationPermissionContext context(profile());
-  const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
-      permissions::PermissionRequestID::RequestLocalId());
-  NotificationPermissionContext::SetBlockNewNotificationRequests(web_contents(),
-                                                                 true);
-  ContentSetting result = CONTENT_SETTING_DEFAULT;
-  context.RequestPermission(web_contents(), id, url, true /* user_gesture */,
-                            base::BindOnce(&StoreContentSetting, &result));
-  EXPECT_EQ(result, CONTENT_SETTING_ALLOW);
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(NotificationPermissionContextTest, ExtensionPermissionAskByDefault) {
   // Verifies that notification permission is not granted to extensions by

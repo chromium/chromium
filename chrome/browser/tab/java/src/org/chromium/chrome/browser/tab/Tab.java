@@ -295,12 +295,6 @@ public interface Tab extends TabLifecycle {
     public boolean getHideFutureNavigations();
 
     /**
-     * If true, new notification requests are blocked.
-     */
-    public void setShouldBlockNewNotificationRequests(boolean value);
-    public boolean getShouldBlockNewNotificationRequests();
-
-    /**
      * Set whether {@link Tab} metadata (specifically all {@link PersistedTabData})
      * will be saved. Not all Tabs need to be persisted across restarts.
      * The default value when a Tab is initialized is false.

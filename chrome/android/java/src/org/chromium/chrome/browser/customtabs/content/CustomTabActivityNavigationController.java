@@ -201,10 +201,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (provider.shouldHideCctVisits()) {
             tab.setHideFutureNavigations(true);
         }
-
-        if (provider.shouldBlockNewNotificationRequests()) {
-            tab.setShouldBlockNewNotificationRequests(true);
-        }
     }
 
     /**
