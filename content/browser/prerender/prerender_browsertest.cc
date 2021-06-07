@@ -2207,6 +2207,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       "activated, initial",
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 
+  // Speculative fix for the test flakiness (crbug.com/1216038), which may be
+  // caused by the delayed async IPC of Session Storage (StorageArea.Put()).
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "new Promise(resolve => requestIdleCallback(resolve));"));
+
   // Make sure that the initial renderer process is destroyed. So that the
   // initial renderer process will not be reused after the back forward
   // navigation below.
@@ -2249,6 +2254,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(
       "activated, initial",
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
+
+  // Speculative fix for the test flakiness (crbug.com/1216038), which may be
+  // caused by the delayed async IPC of Session Storage (StorageArea.Put()).
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "new Promise(resolve => requestIdleCallback(resolve));"));
 
   // Navigate back to the initial page.
   content::TestNavigationObserver observer(shell()->web_contents());
@@ -2368,6 +2378,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
   EXPECT_EQ(
       "activated, initial",
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
+
+  // Speculative fix for the test flakiness (crbug.com/1216038), which may be
+  // caused by the delayed async IPC of Session Storage (StorageArea.Put()).
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "new Promise(resolve => requestIdleCallback(resolve));"));
 
   // Navigate back to the initial page.
   shell()->GoBackOrForward(-1);
