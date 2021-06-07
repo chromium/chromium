@@ -391,14 +391,6 @@ int OnDeviceHeadSuggestDelaySuggestRequestMs(bool is_incognito);
 // Function only works in non-incognito when server suggestions are available.
 std::string OnDeviceHeadSuggestDemoteMode();
 
-// Experiment to hide components of the URL in the steady state.
-bool ShouldRevealPathQueryRefOnHover();
-bool ShouldHidePathQueryRefOnInteraction();
-// If true, the above two features elide subdomains beyond the registrable
-// domain, as well as the path, query, and ref.
-bool ShouldMaybeElideToRegistrableDomain();
-int UnelideURLOnHoverThresholdMs();
-
 // Returns true if CGI parameter names should not be considered when scoring
 // suggestions.
 bool ShouldDisableCGIParamMatching();

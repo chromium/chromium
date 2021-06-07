@@ -700,28 +700,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadSuggestDemoteMode() {
   return demote_mode;
 }
 
-bool OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover);
-}
-
-bool OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kHideSteadyStateUrlPathQueryAndRefOnInteraction);
-}
-
-bool OmniboxFieldTrial::ShouldMaybeElideToRegistrableDomain() {
-  return base::FeatureList::IsEnabled(omnibox::kMaybeElideToRegistrableDomain);
-}
-
-int OmniboxFieldTrial::UnelideURLOnHoverThresholdMs() {
-  const int kDefaultThresholdMs = 250;
-  int threshold = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover,
-      kOmniboxUIUnelideURLOnHoverThresholdMsParam, kDefaultThresholdMs);
-  return threshold < 0 ? kDefaultThresholdMs : threshold;
-}
-
 bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
@@ -814,9 +792,6 @@ const char OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode[] =
     "DemoteOnDeviceSearchSuggestionsMode";
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
-
-const char OmniboxFieldTrial::kOmniboxUIUnelideURLOnHoverThresholdMsParam[] =
-    "OmniboxUIUnelideURLOnHoverThresholdMsdMs";
 
 namespace OmniboxFieldTrial {
 

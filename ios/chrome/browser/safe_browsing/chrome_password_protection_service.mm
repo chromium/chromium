@@ -356,13 +356,6 @@ ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
       base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
   experiment.set_delayed_warnings_mouse_clicks_enabled(
       safe_browsing::kDelayedWarningsEnableMouseClicks.Get());
-  // Actual URL display experiments:
-  experiment.set_reveal_on_hover(base::FeatureList::IsEnabled(
-      omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover));
-  experiment.set_hide_on_interaction(base::FeatureList::IsEnabled(
-      omnibox::kHideSteadyStateUrlPathQueryAndRefOnInteraction));
-  experiment.set_elide_to_registrable_domain(
-      base::FeatureList::IsEnabled(omnibox::kMaybeElideToRegistrableDomain));
   return experiment;
 }
 

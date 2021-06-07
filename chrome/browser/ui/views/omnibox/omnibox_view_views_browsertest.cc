@@ -527,10 +527,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FragmentUnescapedForDisplay) {
   ui_test_utils::NavigateToURL(browser(),
                                GURL("http://example.com/#%E2%98%83"));
 
-  EXPECT_EQ(view->GetText(),
-            OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover()
-                ? u"http://example.com/#\u2603"
-                : u"example.com/#\u2603");
+  EXPECT_EQ(view->GetText(), u"example.com/#\u2603");
 }
 
 // Ensure that when the user navigates between suggestions, that the accessible
@@ -721,16 +718,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
 
   ui_test_utils::NavigateToURL(browser(), url);
 
-  // By default, the URL should be elided. Depending on field trial
-  // configuration, this will be implemented by pushing the scheme out of the
-  // display area or by eliding it from the actual text.
-  if (OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover()) {
-    EXPECT_EQ(url_text, omnibox_view_views->GetText());
-    EXPECT_GT(
-        0, omnibox_view_views->GetRenderText()->GetUpdatedDisplayOffset().x());
-  } else {
-    EXPECT_EQ(url_text, u"http://" + omnibox_view_views->GetText());
-  }
+  EXPECT_EQ(url_text, u"http://" + omnibox_view_views->GetText());
 
   // After toggling the setting, the full URL should be shown.
   chrome::ToggleShowFullURLs(browser());
@@ -740,13 +728,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
 
   // Toggling the setting again should go back to the elided URL.
   chrome::ToggleShowFullURLs(browser());
-  if (OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover()) {
-    EXPECT_EQ(url_text, omnibox_view_views->GetText());
-    EXPECT_GT(
-        0, omnibox_view_views->GetRenderText()->GetUpdatedDisplayOffset().x());
-  } else {
-    EXPECT_EQ(url_text, u"http://" + omnibox_view_views->GetText());
-  }
+  EXPECT_EQ(url_text, u"http://" + omnibox_view_views->GetText());
 }
 
 // The following set of tests require UIA accessibility support, which only

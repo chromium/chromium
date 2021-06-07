@@ -7276,31 +7276,6 @@
             ]
         }
     ],
-    "SimplifiedUrlDisplay": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AllDisplayExperimentsEnabled",
-                    "params": {
-                        "enable_keyword_elision": "false"
-                    },
-                    "enable_features": [
-                        "OmniboxUIExperimentElideToRegistrableDomain",
-                        "OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction",
-                        "OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover",
-                        "SafeBrowsingDelayedWarnings"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimplifySignOutIOS": [
         {
             "platforms": [

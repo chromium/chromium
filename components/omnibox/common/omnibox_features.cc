@@ -301,27 +301,6 @@ const base::Feature kUpdatedConnectionSecurityIndicators{
     "OmniboxUpdatedConnectionSecurityIndicators",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to reveal the path, query and ref from steady state URLs
-// on hover.
-const base::Feature kRevealSteadyStateUrlPathQueryAndRefOnHover{
-    "OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature used to hide the path, query and ref from steady state URLs
-// on interaction with the page.
-const base::Feature kHideSteadyStateUrlPathQueryAndRefOnInteraction{
-    "OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature used to possibly elide not just the path, query, and ref from steady
-// state URLs, but also subdomains beyond the registrable domain, depending on
-// whether the hostname fails lookalike checks. Has no effect unless
-// kRevealSteadyStateUrlPathQueryAndRefOnHover and/or
-// kHideSteadyStateUrlPathQueryAndRefOnInteraction are enabled.
-const base::Feature kMaybeElideToRegistrableDomain{
-    "OmniboxUIExperimentElideToRegistrableDomain",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
 // "example.com". Presently, typing "example.com" in a clean browsing profile

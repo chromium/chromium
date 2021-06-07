@@ -1457,8 +1457,6 @@ static_library("browser") {
     "reputation/safety_tip_ui.h",
     "reputation/safety_tip_ui_helper.cc",
     "reputation/safety_tip_ui_helper.h",
-    "reputation/url_elision_policy.cc",
-    "reputation/url_elision_policy.h",
     "resource_coordinator/resource_coordinator_parts.cc",
     "resource_coordinator/resource_coordinator_parts.h",
     "resource_coordinator/session_restore_policy.cc",
