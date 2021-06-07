@@ -202,8 +202,12 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
           ? cache_storage_control_for_testing_
           : render_process_host_->GetStoragePartition()
                 ->GetCacheStorageControl();
+
+  // TODO(https://crbug.com/1199077): `CodeCacheHostImpl` will need to get the
+  // real StorageKey somehow.
   cache_storage_control->AddReceiver(
-      cross_origin_embedder_policy, mojo::NullRemote(), cache_storage_origin,
+      cross_origin_embedder_policy, mojo::NullRemote(),
+      blink::StorageKey(cache_storage_origin),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());
 

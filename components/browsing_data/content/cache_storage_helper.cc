@@ -24,7 +24,7 @@ using content::StorageUsageInfo;
 namespace browsing_data {
 namespace {
 
-void GetAllOriginsInfoForCacheStorageCallback(
+void GetAllStorageKeysInfoForCacheStorageCallback(
     CacheStorageHelper::FetchCallback callback,
     std::vector<storage::mojom::StorageUsageInfoPtr> usage_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -53,13 +53,17 @@ CacheStorageHelper::~CacheStorageHelper() {}
 void CacheStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  partition_->GetCacheStorageControl()->GetAllOriginsInfo(base::BindOnce(
-      &GetAllOriginsInfoForCacheStorageCallback, std::move(callback)));
+  partition_->GetCacheStorageControl()->GetAllStorageKeysInfo(base::BindOnce(
+      &GetAllStorageKeysInfoForCacheStorageCallback, std::move(callback)));
 }
 
 void CacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  partition_->GetCacheStorageControl()->DeleteForOrigin(origin);
+
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+  // function directly.
+  partition_->GetCacheStorageControl()->DeleteForStorageKey(
+      blink::StorageKey(origin));
 }
 
 CannedCacheStorageHelper::CannedCacheStorageHelper(

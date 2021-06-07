@@ -71,8 +71,8 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
 
   void GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
-      override;
+      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+          callback) override;
   void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
@@ -124,7 +124,8 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   ~LegacyCacheStorageManager() override;
 
   void GetAllStorageKeysUsageGetSizes(
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback,
+      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+          callback,
       std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
 
   void DeleteStorageKeyDidClose(

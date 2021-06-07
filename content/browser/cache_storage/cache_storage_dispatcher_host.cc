@@ -970,22 +970,17 @@ CacheStorageDispatcherHost::~CacheStorageDispatcherHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// TODO(https://crbug.com/1211797): Replace `url::Origin` with
-// `blink::StorageKey` in the argument list.
 void CacheStorageDispatcherHost::AddReceiver(
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool incognito = context_ ? context_->is_incognito() : false;
-  // TODO(https://crbug.com/1211797): Pass a StorageKey into
-  // CacheStorageDispatcherHost::AddReceiver directly and avoid the translation
-  // here.
   auto impl = std::make_unique<CacheStorageImpl>(
-      this, blink::StorageKey(origin), incognito, cross_origin_embedder_policy,
+      this, storage_key, incognito, cross_origin_embedder_policy,
       std::move(coep_reporter), owner);
   receivers_.Add(std::move(impl), std::move(receiver));
 }

@@ -2113,9 +2113,13 @@ void RenderProcessHostImpl::BindCacheStorage(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+  // function directly.
   storage_partition_impl_->GetCacheStorageControl()->AddReceiver(
-      cross_origin_embedder_policy, std::move(coep_reporter_remote), origin,
-      storage::mojom::CacheStorageOwner::kCacheAPI, std::move(receiver));
+      cross_origin_embedder_policy, std::move(coep_reporter_remote),
+      blink::StorageKey(origin), storage::mojom::CacheStorageOwner::kCacheAPI,
+      std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindIndexedDB(

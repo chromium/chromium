@@ -90,8 +90,12 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
   // This origin and unique_id has never been opened before.
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // TODO(https://crbug.com/1199077): `BackgroundFetchDataManager` needs to be
+  // updated to use StorageKey.
   storage_partition_->GetCacheStorageControl()->AddReceiver(
-      cross_origin_embedder_policy, mojo::NullRemote(), origin,
+      cross_origin_embedder_policy, mojo::NullRemote(),
+      blink::StorageKey(origin),
       storage::mojom::CacheStorageOwner::kBackgroundFetch,
       remote.BindNewPipeAndPassReceiver());
 

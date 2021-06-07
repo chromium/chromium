@@ -34,10 +34,6 @@ namespace storage {
 class QuotaManagerProxy;
 }
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 class CacheStorageDispatcherHost;
@@ -72,13 +68,13 @@ class CONTENT_EXPORT CacheStorageContextImpl
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
-  void DeleteForOrigin(const url::Origin& origin) override;
-  void GetAllOriginsInfo(
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
-      override;
+  void DeleteForStorageKey(const blink::StorageKey& storage_key) override;
+  void GetAllStorageKeysInfo(
+      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+          callback) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>

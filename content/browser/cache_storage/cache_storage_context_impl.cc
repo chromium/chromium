@@ -96,7 +96,7 @@ void CacheStorageContextImpl::AddReceiver(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -104,21 +104,23 @@ void CacheStorageContextImpl::AddReceiver(
   if (!dispatcher_host_)
     dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
-                                std::move(coep_reporter), origin, owner,
+                                std::move(coep_reporter), storage_key, owner,
                                 std::move(receiver));
 }
 
-void CacheStorageContextImpl::GetAllOriginsInfo(
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
+void CacheStorageContextImpl::GetAllStorageKeysInfo(
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_manager_->GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
 }
 
-void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
+void CacheStorageContextImpl::DeleteForStorageKey(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_manager_->DeleteStorageKeyData(
-      blink::StorageKey(origin), storage::mojom::CacheStorageOwner::kCacheAPI);
+      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI);
 }
 
 void CacheStorageContextImpl::AddObserver(

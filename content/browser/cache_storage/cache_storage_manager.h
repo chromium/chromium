@@ -35,7 +35,7 @@ class CONTENT_EXPORT CacheStorageManager
   // QuotaClient and Browsing Data Deletion support.
   virtual void GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
+      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
           callback) = 0;
   virtual void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,

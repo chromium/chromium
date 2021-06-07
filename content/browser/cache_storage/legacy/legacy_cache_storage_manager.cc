@@ -127,7 +127,7 @@ void RecordIndexValidationResult(IndexResult value) {
 // Open the various cache directories' index files and extract their storage
 // keys, sizes (if current), and last modified times.
 std::vector<storage::mojom::StorageUsageInfoPtr>
-GetOriginsAndLastModifiedOnTaskRunner(
+GetStorageKeysAndLastModifiedOnTaskRunner(
     std::vector<storage::mojom::StorageUsageInfoPtr> usages,
     base::FilePath root_path,
     storage::mojom::CacheStorageOwner owner) {
@@ -195,7 +195,7 @@ std::vector<url::Origin> ListOriginsOnTaskRunner(
     base::FilePath root_path,
     storage::mojom::CacheStorageOwner owner) {
   std::vector<storage::mojom::StorageUsageInfoPtr> usages =
-      GetOriginsAndLastModifiedOnTaskRunner(
+      GetStorageKeysAndLastModifiedOnTaskRunner(
           std::vector<storage::mojom::StorageUsageInfoPtr>(), root_path, owner);
 
   std::vector<url::Origin> out_origins;
@@ -221,7 +221,8 @@ void GetOriginsForHostDidListOrigins(
 
 void AllOriginSizesReported(
     std::vector<storage::mojom::StorageUsageInfoPtr> usages,
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+        callback) {
   // On scheduler sequence.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
@@ -340,17 +341,18 @@ void LegacyCacheStorageManager::CacheStorageUnreferenced(
 
 void LegacyCacheStorageManager::GetAllStorageKeysUsage(
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<storage::mojom::StorageUsageInfoPtr> usages;
 
   if (IsMemoryBacked()) {
-    for (const auto& origin_details : cache_storage_map_) {
-      if (origin_details.first.second != owner)
+    for (const auto& storage_keys_details : cache_storage_map_) {
+      if (storage_keys_details.first.second != owner)
         continue;
       usages.emplace_back(storage::mojom::StorageUsageInfo::New(
-          origin_details.first.first.origin(),
+          storage_keys_details.first.first.origin(),
           /*total_size_bytes=*/0,
           /*last_modified=*/base::Time()));
     }
@@ -360,14 +362,14 @@ void LegacyCacheStorageManager::GetAllStorageKeysUsage(
 
   cache_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&GetOriginsAndLastModifiedOnTaskRunner, std::move(usages),
-                     root_path_, owner),
+      base::BindOnce(&GetStorageKeysAndLastModifiedOnTaskRunner,
+                     std::move(usages), root_path_, owner),
       base::BindOnce(&LegacyCacheStorageManager::GetAllStorageKeysUsageGetSizes,
                      base::WrapRefCounted(this), std::move(callback)));
 }
 
 void LegacyCacheStorageManager::GetAllStorageKeysUsageGetSizes(
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback,
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
     std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

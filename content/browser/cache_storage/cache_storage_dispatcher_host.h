@@ -16,10 +16,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
-namespace url {
-class Origin;
-}
-
 namespace network {
 struct CrossOriginEmbedderPolicy;
 }
@@ -47,7 +43,7 @@ class CacheStorageDispatcherHost {
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 

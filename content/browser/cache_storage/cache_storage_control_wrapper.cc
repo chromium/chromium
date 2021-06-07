@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -63,29 +64,31 @@ void CacheStorageControlWrapper::AddReceiver(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_remote,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (storage_policy_observer_)
-    storage_policy_observer_->StartTrackingOrigin(origin);
+    storage_policy_observer_->StartTrackingOrigin(storage_key.origin());
   cache_storage_control_->AddReceiver(cross_origin_embedder_policy,
-                                      std::move(coep_reporter_remote), origin,
-                                      owner, std::move(receiver));
+                                      std::move(coep_reporter_remote),
+                                      storage_key, owner, std::move(receiver));
 }
 
-void CacheStorageControlWrapper::DeleteForOrigin(const url::Origin& origin) {
+void CacheStorageControlWrapper::DeleteForStorageKey(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cache_storage_control_->DeleteForOrigin(origin);
+  cache_storage_control_->DeleteForStorageKey(storage_key);
 }
 
-void CacheStorageControlWrapper::GetAllOriginsInfo(
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
+void CacheStorageControlWrapper::GetAllStorageKeysInfo(
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cache_storage_control_->GetAllOriginsInfo(std::move(callback));
+  cache_storage_control_->GetAllStorageKeysInfo(std::move(callback));
 }
 
 void CacheStorageControlWrapper::AddObserver(

@@ -2126,7 +2126,7 @@ class CacheStorageSideDataSizeChecker
     network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
     cache_storage_control->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        url::Origin::Create(origin),
+        blink::StorageKey(url::Origin::Create(origin)),
         storage::mojom::CacheStorageOwner::kCacheAPI,
         cache_storage_remote.InitWithNewPipeAndPassReceiver());
 
@@ -2400,17 +2400,19 @@ class CacheStorageControlForBadOrigin
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
-    // The CodeCacheHostImpl should not try to add a receiver if the origin is
-    // bad.
+    // The CodeCacheHostImpl should not try to add a receiver if the StorageKey
+    // is bad.
     NOTREACHED();
   }
-  void DeleteForOrigin(const url::Origin& origin) override { NOTREACHED(); }
-  void GetAllOriginsInfo(
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
-      override {
+  void DeleteForStorageKey(const blink::StorageKey& storage_key) override {
+    NOTREACHED();
+  }
+  void GetAllStorageKeysInfo(
+      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+          callback) override {
     NOTREACHED();
   }
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
