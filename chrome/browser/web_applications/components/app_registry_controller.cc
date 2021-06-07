@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 
 namespace web_app {
 
