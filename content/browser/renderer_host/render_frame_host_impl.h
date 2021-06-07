@@ -2387,8 +2387,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #endif
 
   // mojom::RenderAccessibilityHost:
-  void HandleAXEvents(const std::vector<ui::AXTreeUpdate>& updates,
-                      const std::vector<ui::AXEvent>& events,
+  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override;
   void HandleAXLocationChanges(

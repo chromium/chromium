@@ -367,6 +367,11 @@ namespace {
 const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // OS_ANDROID
 
+// Causes RenderAccessibilityHost HandleAXEvents messages to be handled with
+// minimal copying of the data.
+const base::Feature kRenderAccessibilityHostAvoidCopying{
+    "RenderAccessibilityHostAvoidCopying", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The next value to use for the accessibility reset token.
 int g_next_accessibility_reset_token = 1;
 
@@ -6427,10 +6432,12 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 }
 
 void RenderFrameHostImpl::HandleAXEvents(
-    const std::vector<ui::AXTreeUpdate>& updates,
-    const std::vector<ui::AXEvent>& events,
+    mojom::AXUpdatesAndEventsPtr updates_and_events,
     int32_t reset_token,
     HandleAXEventsCallback callback) {
+  TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
+  SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.HandleAXEvents");
+
   // Don't process this IPC if either we're waiting on a reset and this IPC
   // doesn't have the matching token ID, or if we're not waiting on a reset but
   // this message includes a reset token.
@@ -6451,14 +6458,28 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   AXEventNotificationDetails details;
   details.ax_tree_id = GetAXTreeID();
-  details.events = events;
 
-  details.updates.resize(updates.size());
-  for (size_t i = 0; i < updates.size(); ++i) {
-    details.updates[i] = updates[i];
-    if (updates[i].has_tree_data) {
-      ax_tree_data_ = updates[i].tree_data;
-      details.updates[i].tree_data = GetAXTreeData();
+  // TODO(1213848): Remove the false path when the experiment is complete.
+  if (base::FeatureList::IsEnabled(kRenderAccessibilityHostAvoidCopying)) {
+    details.events = std::move(updates_and_events->events);
+
+    details.updates = std::move(updates_and_events->updates);
+    for (auto& update : details.updates) {
+      if (update.has_tree_data) {
+        ax_tree_data_ = update.tree_data;
+        update.tree_data = GetAXTreeData();
+      }
+    }
+  } else {
+    details.events = updates_and_events->events;
+
+    details.updates.resize(updates_and_events->updates.size());
+    for (size_t i = 0; i < updates_and_events->updates.size(); ++i) {
+      details.updates[i] = updates_and_events->updates[i];
+      if (updates_and_events->updates[i].has_tree_data) {
+        ax_tree_data_ = updates_and_events->updates[i].tree_data;
+        details.updates[i].tree_data = GetAXTreeData();
+      }
     }
   }
 

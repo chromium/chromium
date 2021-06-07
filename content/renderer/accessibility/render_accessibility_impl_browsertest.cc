@@ -170,12 +170,12 @@ class RenderAccessibilityHostInterceptor
                    content::mojom::RenderAccessibilityHost>(std::move(handle)));
   }
 
-  void HandleAXEvents(const std::vector<::ui::AXTreeUpdate>& updates,
-                      const std::vector<::ui::AXEvent>& events,
+  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override {
-    handled_updates_.insert(handled_updates_.end(), updates.begin(),
-                            updates.end());
+    handled_updates_.insert(handled_updates_.end(),
+                            updates_and_events->updates.begin(),
+                            updates_and_events->updates.end());
     std::move(callback).Run();
   }
 

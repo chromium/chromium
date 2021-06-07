@@ -800,8 +800,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   pending_events_.clear();
 
   // The serialized list of updates and events to send to the browser.
-  std::vector<ui::AXTreeUpdate> updates;
-  std::vector<ui::AXEvent> events;
+  mojom::AXUpdatesAndEventsPtr updates_and_events =
+      mojom::AXUpdatesAndEvents::New();
+  std::vector<ui::AXTreeUpdate>& updates = updates_and_events->updates;
+  std::vector<ui::AXEvent>& events = updates_and_events->events;
 
   // Keep track of nodes in the tree that need to be updated.
   std::vector<DirtyObject> dirty_objects = dirty_objects_;
@@ -1017,9 +1019,12 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     }
   }
 
+  if (image_annotation_debugging_)
+    AddImageAnnotationDebuggingAttributes(updates);
+
   event_schedule_status_ = EventScheduleStatus::kWaitingForAck;
   render_accessibility_manager_->HandleAccessibilityEvents(
-      updates, events, reset_token_,
+      std::move(updates_and_events), reset_token_,
       base::BindOnce(&RenderAccessibilityImpl::OnAccessibilityEventsHandled,
                      weak_factory_for_pending_events_.GetWeakPtr()));
   reset_token_ = 0;
@@ -1036,8 +1041,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // If any interactive events come in, the batch will be processed immediately.
   event_schedule_mode_ = EventScheduleMode::kDeferEvents;
 
-  if (image_annotation_debugging_)
-    AddImageAnnotationDebuggingAttributes(updates);
 
   // Measure the amount of time spent in this function. Keep track of the
   // maximum within a time interval so we can upload UKM.

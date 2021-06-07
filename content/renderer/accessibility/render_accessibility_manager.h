@@ -69,8 +69,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
 
   // Communication with the browser process.
   void HandleAccessibilityEvents(
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const std::vector<ui::AXEvent>& events,
+      mojom::AXUpdatesAndEventsPtr updates_and_events,
       int32_t reset_token,
       mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
   void HandleLocationChanges(std::vector<mojom::LocationChangesPtr> changes);

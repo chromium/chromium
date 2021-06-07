@@ -36,6 +36,13 @@ struct HitTestResponse {
   int32 hit_node_id;
 };
 
+// Structure containing the large parameters to HandleAXEvents, that allows them
+// to be moved rather than copied.
+struct AXUpdatesAndEvents {
+  array<ax.mojom.AXTreeUpdate> updates;
+  array<ax.mojom.AXEvent> events;
+};
+
 // Interface for accessibility messages sent from the renderer to the browser,
 // implemented by RenderFrameHostImpl in the browser process.
 interface RenderAccessibilityHost {
@@ -56,8 +63,8 @@ interface RenderAccessibilityHost {
   // become arbitrarily large.
   // TODO(crbug.com/1088484) tracks work to improve the payload size.
   [UnlimitedSize]
-  HandleAXEvents(array<ax.mojom.AXTreeUpdate> updates,
-                 array<ax.mojom.AXEvent> events, int32 reset_token) => ();
+  HandleAXEvents(AXUpdatesAndEvents events_and_updates,
+                 int32 reset_token) => ();
 
   // Sent to update the browser of the location of accessibility objects.
   // Similar to HandleAXEvents, the message size is also unbounded (though in
