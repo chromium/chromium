@@ -14,6 +14,8 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/filters/vp9_parser.h"
+#include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -166,20 +168,12 @@ MATCHER_P2(MatchFrameParam, frame_type, temporal_layer_id, "") {
          (!temporal_layer_id || arg.temporal_layer_id == *temporal_layer_id);
 }
 
-class MockVP9Accelerator : public VP9Encoder::Accelerator {
+class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVP9Accelerator() = default;
-  ~MockVP9Accelerator() override = default;
-  MOCK_METHOD1(
-      GetPicture,
-      scoped_refptr<VP9Picture>(VaapiVideoEncoderDelegate::EncodeJob*));
+  MockVaapiWrapper() : VaapiWrapper(kEncodeConstantQuantizationParameter) {}
 
-  MOCK_METHOD5(SubmitFrameParameters,
-               bool(VaapiVideoEncoderDelegate::EncodeJob*,
-                    const VP9Encoder::EncodeParams&,
-                    scoped_refptr<VP9Picture>,
-                    const Vp9ReferenceFrameVector&,
-                    const std::array<bool, kVp9NumRefsPerFrame>&));
+ protected:
+  ~MockVaapiWrapper() override = default;
 };
 
 class MockVP9RateControl : public VP9RateControl {
@@ -206,6 +200,8 @@ class VP9EncoderTest : public ::testing::TestWithParam<VP9EncoderTestParam> {
 
   void SetUp() override;
 
+  MOCK_METHOD0(OnError, void());
+
  protected:
   void InitializeVP9Encoder(BitrateControl bitrate_control,
                             size_t num_temporal_layers);
@@ -219,25 +215,33 @@ class VP9EncoderTest : public ::testing::TestWithParam<VP9EncoderTestParam> {
 
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
-      bool keyframe);
+      bool keyframe,
+      const scoped_refptr<VASurface>& va_surface,
+      const scoped_refptr<VP9Picture>& picture);
   void UpdateRatesSequence(const VideoBitrateAllocation& bitrate_allocation,
                            uint32_t framerate,
                            BitrateControl bitrate_control,
                            size_t num_temporal_layers);
 
   std::unique_ptr<VP9Encoder> encoder_;
-  MockVP9Accelerator* mock_accelerator_ = nullptr;
+  scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   MockVP9RateControl* mock_rate_ctrl_ = nullptr;
 };
 
 void VP9EncoderTest::SetUp() {
-  auto mock_accelerator = std::make_unique<MockVP9Accelerator>();
-  mock_accelerator_ = mock_accelerator.get();
-  encoder_ = std::make_unique<VP9Encoder>(std::move(mock_accelerator));
+  mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>();
+  ASSERT_TRUE(mock_vaapi_wrapper_);
+
+  encoder_ = std::make_unique<VP9Encoder>(
+      mock_vaapi_wrapper_,
+      base::BindRepeating(&VP9EncoderTest::OnError, base::Unretained(this)));
+  EXPECT_CALL(*this, OnError()).Times(0);
 }
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
-VP9EncoderTest::CreateEncodeJob(bool keyframe) {
+VP9EncoderTest::CreateEncodeJob(bool keyframe,
+                                const scoped_refptr<VASurface>& va_surface,
+                                const scoped_refptr<VP9Picture>& picture) {
   auto input_frame = VideoFrame::CreateFrame(
       kDefaultVideoEncodeAcceleratorConfig.input_format,
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
@@ -245,8 +249,15 @@ VP9EncoderTest::CreateEncodeJob(bool keyframe) {
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
       base::TimeDelta());
   LOG_ASSERT(input_frame) << " Failed to create VideoFrame";
+
+  constexpr VABufferID kDummyVABufferID = 12;
+  auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(
+      kDummyVABufferID, VAEncCodedBufferType,
+      kDefaultVideoEncodeAcceleratorConfig.input_visible_size.GetArea());
+
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, base::DoNothing());
+      input_frame, keyframe, base::DoNothing(), va_surface, picture,
+      std::move(scoped_va_buffer));
 }
 
 void VP9EncoderTest::InitializeVP9Encoder(BitrateControl bitrate_control,
@@ -294,12 +305,15 @@ void VP9EncoderTest::EncodeConstantQuantizationParameterSequence(
         expected_ref_frames_used,
     absl::optional<uint8_t> expected_temporal_layer_id) {
   InSequence seq;
-  auto encode_job = CreateEncodeJob(is_keyframe);
-  scoped_refptr<VP9Picture> picture(new VP9Picture);
-  EXPECT_CALL(*mock_accelerator_, GetPicture(encode_job.get()))
-      .WillOnce(Invoke([picture](VaapiVideoEncoderDelegate::EncodeJob*) {
-        return picture;
-      }));
+
+  constexpr VASurfaceID kDummyVASurfaceID = 123;
+  auto va_surface = base::MakeRefCounted<VASurface>(
+      kDummyVASurfaceID,
+      kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
+      VA_RT_FORMAT_YUV420, base::DoNothing());
+  scoped_refptr<VP9Picture> picture = new VaapiVP9Picture(va_surface);
+
+  auto encode_job = CreateEncodeJob(is_keyframe, va_surface, picture);
 
   FRAME_TYPE libvpx_frame_type =
       is_keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
@@ -312,17 +326,9 @@ void VP9EncoderTest::EncodeConstantQuantizationParameterSequence(
   EXPECT_CALL(*mock_rate_ctrl_, GetQP()).WillOnce(Return(kDefaultQP));
   EXPECT_CALL(*mock_rate_ctrl_, GetLoopfilterLevel())
       .WillOnce(Return(kDefaultLoopFilterLevel));
-  if (expected_ref_frames_used) {
-    EXPECT_CALL(*mock_accelerator_,
-                SubmitFrameParameters(
-                    encode_job.get(), _, _, _,
-                    ::testing::ElementsAreArray(*expected_ref_frames_used)))
-        .WillOnce(Return(true));
-  } else {
-    EXPECT_CALL(*mock_accelerator_,
-                SubmitFrameParameters(encode_job.get(), _, _, _, _))
-        .WillOnce(Return(true));
-  }
+
+  // TODO(mcasas): Consider setting expectations on MockVaapiWrapper calls.
+
   EXPECT_TRUE(encoder_->PrepareEncodeJob(encode_job.get()));
 
   // TODO(hiroh): Test for encoder_->reference_frames_.

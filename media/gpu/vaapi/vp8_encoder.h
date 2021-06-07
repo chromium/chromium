@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/sequence_checker.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_picture.h"
@@ -17,6 +16,7 @@
 #include "media/parsers/vp8_parser.h"
 
 namespace media {
+class VaapiWrapper;
 
 class VP8Encoder : public VaapiVideoEncoderDelegate {
  public:
@@ -47,32 +47,8 @@ class VP8Encoder : public VaapiVideoEncoderDelegate {
     bool error_resilient_mode;
   };
 
-  // An accelerator interface. The client must provide an appropriate
-  // implementation on creation.
-  class Accelerator {
-   public:
-    Accelerator() = default;
-    virtual ~Accelerator() = default;
-
-    // Returns the VP8Picture to be used as output for |job|.
-    virtual scoped_refptr<VP8Picture> GetPicture(EncodeJob* job) = 0;
-
-    // Initializes |job| to use the provided |encode_params| as its parameters,
-    // and |pic| as the target, as well as |ref_frames| as reference frames for
-    // it. |ref_frames_used| specifies which frames in |ref_frames| will be
-    // actually used as reference frames on encoding. Returns true on success.
-    virtual bool SubmitFrameParameters(
-        EncodeJob* job,
-        const VP8Encoder::EncodeParams& encode_params,
-        scoped_refptr<VP8Picture> pic,
-        const Vp8ReferenceFrameVector& ref_frames,
-        const std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Accelerator);
-  };
-
-  explicit VP8Encoder(std::unique_ptr<Accelerator> accelerator);
+  VP8Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+             base::RepeatingClosure error_cb);
   ~VP8Encoder() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -90,6 +66,15 @@ class VP8Encoder : public VaapiVideoEncoderDelegate {
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
   void Reset();
 
+  scoped_refptr<VP8Picture> GetPicture(EncodeJob* job);
+
+  bool SubmitFrameParameters(
+      EncodeJob* job,
+      const EncodeParams& encode_params,
+      scoped_refptr<VP8Picture> pic,
+      const Vp8ReferenceFrameVector& ref_frames,
+      const std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used);
+
   gfx::Size visible_size_;
   gfx::Size coded_size_;  // Macroblock-aligned.
 
@@ -101,9 +86,6 @@ class VP8Encoder : public VaapiVideoEncoderDelegate {
   Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
 
-  const std::unique_ptr<Accelerator> accelerator_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(VP8Encoder);
 };
 

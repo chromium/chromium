@@ -6,11 +6,13 @@
 
 #include <va/va.h>
 
+#include "base/memory/ref_counted_memory.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -93,12 +95,25 @@ VaapiVideoEncoderDelegate::EncodeJob::picture() const {
   return picture_;
 }
 
+VaapiVideoEncoderDelegate::VaapiVideoEncoderDelegate(
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
+    base::RepeatingClosure error_cb)
+    : vaapi_wrapper_(vaapi_wrapper), error_cb_(error_cb) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+VaapiVideoEncoderDelegate::~VaapiVideoEncoderDelegate() = default;
+
 size_t VaapiVideoEncoderDelegate::GetBitstreamBufferSize() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return GetEncodeBitstreamBufferSize(GetCodedSize());
 }
 
 void VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   NOTREACHED()
       << __func__ << "() is called to on an"
       << "VaapiVideoEncoderDelegate that doesn't support BitrateControl"
@@ -108,7 +123,38 @@ void VaapiVideoEncoderDelegate::BitrateControlUpdate(
 BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
     EncodeJob* encode_job,
     size_t payload_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return BitstreamBufferMetadata(
       payload_size, encode_job->IsKeyframeRequested(), encode_job->timestamp());
 }
+
+void VaapiVideoEncoderDelegate::SubmitBuffer(
+    VABufferType type,
+    scoped_refptr<base::RefCountedBytes> buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!vaapi_wrapper_->SubmitBuffer(type, buffer->size(), buffer->front()))
+    error_cb_.Run();
+}
+
+void VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer(
+    VAEncMiscParameterType type,
+    scoped_refptr<base::RefCountedBytes> buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) + buffer->size();
+  std::vector<uint8_t> temp(temp_size);
+
+  auto* const va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
+  va_buffer->type = type;
+  memcpy(va_buffer->data, buffer->front(), buffer->size());
+
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncMiscParameterBufferType, temp_size,
+                                    temp.data())) {
+    error_cb_.Run();
+  }
+}
+
 }  // namespace media

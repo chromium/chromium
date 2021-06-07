@@ -49,7 +49,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
  private:
   friend class VaapiVideoEncodeAcceleratorTest;
   class H264Accelerator;
-  class VP8Accelerator;
   class VP9Accelerator;
 
   using EncodeJob = VaapiVideoEncoderDelegate::EncodeJob;
@@ -137,22 +136,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Sets the encoder state to |state| on the correct thread.
   void SetState(State state);
 
-  // Submits |buffer| of |type| to the driver.
-  void SubmitBuffer(VABufferType type,
-                    scoped_refptr<base::RefCountedBytes> buffer);
-
-  // Submits a VAEncMiscParameterBuffer |buffer| of type |type| to the driver.
-  void SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
-                                  scoped_refptr<base::RefCountedBytes> buffer);
-
-  // Submits a H264BitstreamBuffer |buffer| to the driver.
-  void SubmitH264BitstreamBuffer(scoped_refptr<H264BitstreamBuffer> buffer);
-
-  // Gets the encoded chunk size whose id is |buffer_id| and notifies |encoder_|
-  // the size.
-  void NotifyEncodedChunkSize(VABufferID buffer_id,
-                              VASurfaceID sync_surface_id);
-
   bool IsConfiguredForTesting() const {
     return !supported_profiles_for_testing_.empty();
   }
@@ -204,6 +187,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   State state_;
 
   // Encoder instance managing video codec state and preparing encode jobs.
+  // Should only be used on |encoder_task_runner_|.
   std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
 
   // VA surfaces available for encoding.

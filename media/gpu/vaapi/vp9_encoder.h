@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/sequence_checker.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
@@ -19,6 +18,7 @@
 #include "media/gpu/vp9_reference_frame_vector.h"
 
 namespace media {
+class VaapiWrapper;
 class VP9TemporalLayers;
 class VP9RateControl;
 
@@ -51,34 +51,8 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
     bool error_resilient_mode;
   };
 
-  // An accelerator interface. The client must provide an appropriate
-  // implementation on creation.
-  class Accelerator {
-   public:
-    Accelerator() = default;
-    virtual ~Accelerator() = default;
-
-    // Returns the VP9Picture to be used as output for |job|.
-    virtual scoped_refptr<VP9Picture> GetPicture(EncodeJob* job) = 0;
-
-    // Initializes |job| to use the provided |encode_params| as its parameters,
-    // and |pic| as the target, as well as |ref_frames| as reference frames for
-    // it. |ref_frames_used| is to specify whether each of |ref_frame_idx| of
-    // VP9FrameHeader in |pic| is used. If |ref_frames_used[i]| is true,
-    // ref_frame_idx[i] will be used as a reference frame. Returns true on
-    // success.
-    virtual bool SubmitFrameParameters(
-        EncodeJob* job,
-        const VP9Encoder::EncodeParams& encode_params,
-        scoped_refptr<VP9Picture> pic,
-        const Vp9ReferenceFrameVector& ref_frames,
-        const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Accelerator);
-  };
-
-  explicit VP9Encoder(std::unique_ptr<Accelerator> accelerator);
+  VP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+             base::RepeatingClosure error_cb);
   ~VP9Encoder() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -95,6 +69,7 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
 
  private:
   friend class VP9EncoderTest;
+  friend class VaapiVideoEncodeAcceleratorTest;
 
   void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
 
@@ -103,6 +78,20 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
                       VP9Picture* picture,
                       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP9Picture> picture);
+
+  // Gets the encoded chunk size whose id is |buffer_id| and updates the bitrate
+  // control.
+  void NotifyEncodedChunkSize(VABufferID buffer_id,
+                              VASurfaceID sync_surface_id);
+
+  scoped_refptr<VP9Picture> GetPicture(EncodeJob* job);
+
+  bool SubmitFrameParameters(
+      EncodeJob* job,
+      const EncodeParams& encode_params,
+      scoped_refptr<VP9Picture> pic,
+      const Vp9ReferenceFrameVector& ref_frames,
+      const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used);
 
   gfx::Size visible_size_;
   gfx::Size coded_size_;  // Macroblock-aligned.
@@ -117,9 +106,7 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
   std::unique_ptr<VP9TemporalLayers> temporal_layers_;
 
   std::unique_ptr<VP9RateControl> rate_ctrl_;
-  const std::unique_ptr<Accelerator> accelerator_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(VP9Encoder);
 };
 }  // namespace media

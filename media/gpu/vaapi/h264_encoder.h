@@ -9,12 +9,12 @@
 #include <list>
 
 #include "base/macros.h"
-#include "base/sequence_checker.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
 namespace media {
+class VaapiWrapper;
 
 // This class provides an H264 encoder functionality, generating stream headers,
 // managing encoder state, reference frames, and other codec parameters, while
@@ -68,41 +68,8 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
     size_t max_ref_pic_list1_size;
   };
 
-  // An accelerator interface. The client must provide an appropriate
-  // implementation on creation.
-  class Accelerator {
-   public:
-    Accelerator() = default;
-    virtual ~Accelerator();
-
-    // Returns the H264Picture to be used as output for |job|.
-    virtual scoped_refptr<H264Picture> GetPicture(EncodeJob* job) = 0;
-
-    // Initializes |job| to insert the provided |packed_sps| and |packed_pps|
-    // before the frame produced by |job| into the output video stream.
-    virtual bool SubmitPackedHeaders(
-        EncodeJob* job,
-        scoped_refptr<H264BitstreamBuffer> packed_sps,
-        scoped_refptr<H264BitstreamBuffer> packed_pps) = 0;
-
-    // Initializes |job| to use the provided |sps|, |pps|, |encode_params|, and
-    // encoded picture parameters in |pic|, as well as |ref_pic_list0| and
-    // |ref_pic_list1| as the corresponding H264 reference frame lists
-    // (RefPicList0 and RefPicList1 per spec) for the frame to be produced.
-    virtual bool SubmitFrameParameters(
-        EncodeJob* job,
-        const H264Encoder::EncodeParams& encode_params,
-        const H264SPS& sps,
-        const H264PPS& pps,
-        scoped_refptr<H264Picture> pic,
-        const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
-        const std::list<scoped_refptr<H264Picture>>& ref_pic_list1) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Accelerator);
-  };
-
-  explicit H264Encoder(std::unique_ptr<Accelerator> accelerator);
+  H264Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+              base::RepeatingClosure error_cb);
   ~H264Encoder() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -129,6 +96,24 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
   // Check if |bitrate| and |framerate| and current coded size are supported by
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
+
+  // Submits a H264BitstreamBuffer |buffer| to the driver.
+  void SubmitH264BitstreamBuffer(scoped_refptr<H264BitstreamBuffer> buffer);
+
+  scoped_refptr<H264Picture> GetPicture(EncodeJob* job);
+
+  bool SubmitPackedHeaders(EncodeJob* job,
+                           scoped_refptr<H264BitstreamBuffer> packed_sps,
+                           scoped_refptr<H264BitstreamBuffer> packed_pps);
+
+  bool SubmitFrameParameters(
+      EncodeJob* job,
+      const H264Encoder::EncodeParams& encode_params,
+      const H264SPS& sps,
+      const H264PPS& pps,
+      scoped_refptr<H264Picture> pic,
+      const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
+      const std::list<scoped_refptr<H264Picture>>& ref_pic_list1);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
@@ -169,10 +154,6 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
   // RefPicList0 per spec (spec section 8.2.4.2).
   std::list<scoped_refptr<H264Picture>> ref_pic_list0_;
 
-  // Accelerator instance used to prepare encode jobs.
-  const std::unique_ptr<Accelerator> accelerator_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(H264Encoder);
 };
 

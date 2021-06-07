@@ -7,9 +7,14 @@
 #include <algorithm>
 #include <numeric>
 
+#include <va/va.h>
+
 #include "base/bits.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
@@ -153,6 +158,13 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   }
   return rc_cfg;
 }
+
+static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
+                                                                size_t size) {
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      reinterpret_cast<uint8_t*>(ptr), size);
+}
+
 }  // namespace
 
 VP9Encoder::EncodeParams::EncodeParams()
@@ -170,11 +182,12 @@ void VP9Encoder::set_rate_ctrl_for_testing(
   rate_ctrl_ = std::move(rate_ctrl);
 }
 
-VP9Encoder::VP9Encoder(std::unique_ptr<Accelerator> accelerator)
-    : accelerator_(std::move(accelerator)) {}
+VP9Encoder::VP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+                       base::RepeatingClosure error_cb)
+    : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
 
 VP9Encoder::~VP9Encoder() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // VP9Encoder can be destroyed on any thread.
 }
 
 bool VP9Encoder::Initialize(
@@ -264,15 +277,14 @@ bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
   frame_num_++;
   frame_num_ %= current_params_.kf_period_frames;
 
-  scoped_refptr<VP9Picture> picture = accelerator_->GetPicture(encode_job);
+  scoped_refptr<VP9Picture> picture = GetPicture(encode_job);
   DCHECK(picture);
 
   std::array<bool, kVp9NumRefsPerFrame> ref_frames_used = {false, false, false};
   SetFrameHeader(encode_job->IsKeyframeRequested(), picture.get(),
                  &ref_frames_used);
-  if (!accelerator_->SubmitFrameParameters(encode_job, current_params_, picture,
-                                           reference_frames_,
-                                           ref_frames_used)) {
+  if (!SubmitFrameParameters(encode_job, current_params_, picture,
+                             reference_frames_, ref_frames_used)) {
     LOG(ERROR) << "Failed submitting frame parameters";
     return false;
   }
@@ -283,15 +295,19 @@ bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
 
 BitstreamBufferMetadata VP9Encoder::GetMetadata(EncodeJob* encode_job,
                                                 size_t payload_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = accelerator_->GetPicture(encode_job);
+  auto picture = GetPicture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
   return metadata;
 }
 
 void VP9Encoder::BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!rate_ctrl_) {
     DLOG(ERROR) << __func__ << "() is called when no bitrate controller exists";
     return;
@@ -333,6 +349,8 @@ bool VP9Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
 }
 
 Vp9FrameHeader VP9Encoder::GetDefaultFrameHeader(const bool keyframe) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   Vp9FrameHeader hdr{};
   DCHECK(!visible_size_.IsEmpty());
   hdr.frame_width = visible_size_.width();
@@ -351,6 +369,7 @@ void VP9Encoder::SetFrameHeader(
     bool keyframe,
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(picture);
   DCHECK(ref_frames_used);
 
@@ -398,6 +417,131 @@ void VP9Encoder::SetFrameHeader(
 
 void VP9Encoder::UpdateReferenceFrames(scoped_refptr<VP9Picture> picture) {
   reference_frames_.Refresh(picture);
+}
+
+void VP9Encoder::NotifyEncodedChunkSize(VABufferID buffer_id,
+                                        VASurfaceID sync_surface_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const uint64_t encoded_chunk_size =
+      vaapi_wrapper_->GetEncodedChunkSize(buffer_id, sync_surface_id);
+  if (encoded_chunk_size == 0)
+    error_cb_.Run();
+
+  BitrateControlUpdate(encoded_chunk_size);
+}
+
+scoped_refptr<VP9Picture> VP9Encoder::GetPicture(EncodeJob* job) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return base::WrapRefCounted(
+      reinterpret_cast<VP9Picture*>(job->picture().get()));
+}
+
+bool VP9Encoder::SubmitFrameParameters(
+    EncodeJob* job,
+    const EncodeParams& encode_params,
+    scoped_refptr<VP9Picture> pic,
+    const Vp9ReferenceFrameVector& ref_frames,
+    const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  VAEncSequenceParameterBufferVP9 seq_param = {};
+
+  const auto& frame_header = pic->frame_hdr;
+  // TODO(crbug.com/811912): Double check whether the
+  // max_frame_width or max_frame_height affects any of the memory
+  // allocation and tighten these values based on that.
+  constexpr gfx::Size kMaxFrameSize(4096, 4096);
+  seq_param.max_frame_width = kMaxFrameSize.height();
+  seq_param.max_frame_height = kMaxFrameSize.width();
+  seq_param.bits_per_second = encode_params.bitrate_allocation.GetSumBps();
+  seq_param.intra_period = encode_params.kf_period_frames;
+
+  VAEncPictureParameterBufferVP9 pic_param = {};
+
+  pic_param.frame_width_src = frame_header->frame_width;
+  pic_param.frame_height_src = frame_header->frame_height;
+  pic_param.frame_width_dst = frame_header->render_width;
+  pic_param.frame_height_dst = frame_header->render_height;
+
+  pic_param.reconstructed_frame = pic->AsVaapiVP9Picture()->GetVASurfaceID();
+  DCHECK_NE(pic_param.reconstructed_frame, VA_INVALID_ID);
+
+  for (size_t i = 0; i < kVp9NumRefFrames; i++) {
+    auto ref_pic = ref_frames.GetFrame(i);
+    pic_param.reference_frames[i] =
+        ref_pic ? ref_pic->AsVaapiVP9Picture()->GetVASurfaceID()
+                : VA_INVALID_ID;
+  }
+
+  pic_param.coded_buf = job->coded_buffer_id();
+  DCHECK_NE(pic_param.coded_buf, VA_INVALID_ID);
+
+  if (frame_header->IsKeyframe()) {
+    pic_param.ref_flags.bits.force_kf = true;
+  } else {
+    // Non-key frame mode, the frame has at least 1 reference frames.
+    size_t first_used_ref_frame = 3;
+    for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
+      if (ref_frames_used[i]) {
+        first_used_ref_frame = std::min(first_used_ref_frame, i);
+        pic_param.ref_flags.bits.ref_frame_ctrl_l0 |= (1 << i);
+      }
+    }
+    CHECK_LT(first_used_ref_frame, 3u);
+
+    pic_param.ref_flags.bits.ref_last_idx =
+        ref_frames_used[0] ? frame_header->ref_frame_idx[0]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
+    pic_param.ref_flags.bits.ref_gf_idx =
+        ref_frames_used[1] ? frame_header->ref_frame_idx[1]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
+    pic_param.ref_flags.bits.ref_arf_idx =
+        ref_frames_used[2] ? frame_header->ref_frame_idx[2]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
+  }
+
+  pic_param.pic_flags.bits.frame_type = frame_header->frame_type;
+  pic_param.pic_flags.bits.show_frame = frame_header->show_frame;
+  pic_param.pic_flags.bits.error_resilient_mode =
+      frame_header->error_resilient_mode;
+  pic_param.pic_flags.bits.intra_only = frame_header->intra_only;
+  pic_param.pic_flags.bits.allow_high_precision_mv =
+      frame_header->allow_high_precision_mv;
+  pic_param.pic_flags.bits.mcomp_filter_type =
+      frame_header->interpolation_filter;
+  pic_param.pic_flags.bits.frame_parallel_decoding_mode =
+      frame_header->frame_parallel_decoding_mode;
+  pic_param.pic_flags.bits.reset_frame_context =
+      frame_header->reset_frame_context;
+  pic_param.pic_flags.bits.refresh_frame_context =
+      frame_header->refresh_frame_context;
+  pic_param.pic_flags.bits.frame_context_idx = frame_header->frame_context_idx;
+
+  pic_param.refresh_frame_flags = frame_header->refresh_frame_flags;
+
+  pic_param.luma_ac_qindex = frame_header->quant_params.base_q_idx;
+  pic_param.luma_dc_qindex_delta = frame_header->quant_params.delta_q_y_dc;
+  pic_param.chroma_ac_qindex_delta = frame_header->quant_params.delta_q_uv_ac;
+  pic_param.chroma_dc_qindex_delta = frame_header->quant_params.delta_q_uv_dc;
+  pic_param.filter_level = frame_header->loop_filter.level;
+  pic_param.log2_tile_rows = frame_header->tile_rows_log2;
+  pic_param.log2_tile_columns = frame_header->tile_cols_log2;
+
+  job->AddSetupCallback(
+      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
+                     base::Unretained(this), VAEncSequenceParameterBufferType,
+                     MakeRefCountedBytes(&seq_param, sizeof(seq_param))));
+
+  job->AddSetupCallback(
+      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
+                     base::Unretained(this), VAEncPictureParameterBufferType,
+                     MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
+
+  job->AddPostExecuteCallback(base::BindOnce(
+      &VP9Encoder::NotifyEncodedChunkSize, base::Unretained(this),
+      job->coded_buffer_id(), job->input_surface()->id()));
+  return true;
 }
 
 }  // namespace media

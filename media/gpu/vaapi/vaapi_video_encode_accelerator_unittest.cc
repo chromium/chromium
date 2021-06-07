@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/gpu/vaapi/vp9_encoder.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
@@ -88,6 +89,7 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
 class MockVaapiWrapper : public VaapiWrapper {
  public:
   MockVaapiWrapper(CodecMode mode) : VaapiWrapper(mode) {}
+
   MOCK_METHOD2(GetVAEncMaxNumOfRefFrames, bool(VideoCodecProfile, size_t*));
   MOCK_METHOD5(CreateContextAndSurfaces,
                bool(unsigned int,
@@ -110,8 +112,11 @@ class MockVaapiWrapper : public VaapiWrapper {
   ~MockVaapiWrapper() override = default;
 };
 
-class MockVaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
+class MockVP9Encoder : public VP9Encoder {
  public:
+  MockVP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+                 base::RepeatingClosure error_cb)
+      : VP9Encoder(vaapi_wrapper, error_cb) {}
   MOCK_METHOD2(Initialize,
                bool(const VideoEncodeAccelerator::Config&,
                     const VaapiVideoEncoderDelegate::Config&));
@@ -135,16 +140,23 @@ class VaapiVideoEncodeAcceleratorTest
   VaapiVideoEncodeAcceleratorTest() = default;
   ~VaapiVideoEncodeAcceleratorTest() override = default;
 
+  MOCK_METHOD0(OnError, void());
+
   void SetUp() override {
     mock_vaapi_wrapper_ =
         base::MakeRefCounted<MockVaapiWrapper>(VaapiWrapper::kEncode);
+
     encoder_.reset(new VaapiVideoEncodeAccelerator);
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
     vaapi_encoder->vaapi_wrapper_ = mock_vaapi_wrapper_;
-    vaapi_encoder->encoder_ = std::make_unique<MockVaapiVideoEncoderDelegate>();
-    mock_encoder_ = reinterpret_cast<MockVaapiVideoEncoderDelegate*>(
-        vaapi_encoder->encoder_.get());
+    vaapi_encoder->encoder_ = std::make_unique<MockVP9Encoder>(
+        mock_vaapi_wrapper_,
+        base::BindRepeating(&VaapiVideoEncodeAcceleratorTest::OnError,
+                            base::Unretained(this)));
+    EXPECT_CALL(*this, OnError()).Times(0);
+    mock_encoder_ =
+        reinterpret_cast<MockVP9Encoder*>(vaapi_encoder->encoder_.get());
   }
 
   void SetDefaultMocksBehavior(const VideoEncodeAccelerator::Config& config) {
@@ -233,11 +245,13 @@ class VaapiVideoEncodeAcceleratorTest
                 reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                     Vp9Metadata();
               }
-              job->AddPostExecuteCallback(base::BindOnce(
-                  &VaapiVideoEncodeAccelerator::NotifyEncodedChunkSize,
-                  base::Unretained(
-                      reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder)),
-                  kCodedBufferId, kInputSurfaceId));
+              auto* vaapi_encoder =
+                  reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
+              job->AddPostExecuteCallback(
+                  base::BindOnce(&VP9Encoder::NotifyEncodedChunkSize,
+                                 base::Unretained(reinterpret_cast<VP9Encoder*>(
+                                     vaapi_encoder->encoder_.get())),
+                                 kCodedBufferId, kInputSurfaceId));
               return true;
             }));
     EXPECT_CALL(
@@ -302,7 +316,7 @@ class VaapiVideoEncodeAcceleratorTest
   MockVideoEncodeAcceleratorClient client_;
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
-  MockVaapiVideoEncoderDelegate* mock_encoder_ = nullptr;
+  MockVP9Encoder* mock_encoder_ = nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {

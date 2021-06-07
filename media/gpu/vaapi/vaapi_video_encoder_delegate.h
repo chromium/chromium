@@ -5,12 +5,14 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
+#include <va/va.h>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
@@ -18,16 +20,17 @@
 #include "media/video/video_encoder_info.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace media {
+namespace base {
+class RefCountedBytes;
+}
 
+namespace media {
 struct BitstreamBufferMetadata;
 class CodecPicture;
 class ScopedVABuffer;
 class VideoFrame;
 class VASurface;
-
-// Verbatim from va/va.h.
-typedef unsigned int VABufferID;
+class VaapiWrapper;
 
 // An VaapiVideoEncoderDelegate  performs high-level, platform-independent
 // encoding process tasks, such as managing codec state, reference frames, etc.,
@@ -41,8 +44,9 @@ typedef unsigned int VABufferID;
 // clients, and associated with the EncodeJob object.
 class VaapiVideoEncoderDelegate {
  public:
-  VaapiVideoEncoderDelegate() = default;
-  virtual ~VaapiVideoEncoderDelegate() = default;
+  VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                            base::RepeatingClosure error_cb);
+  virtual ~VaapiVideoEncoderDelegate();
 
   enum class BitrateControl {
     kConstantBitrate,  // Constant Bitrate mode. This class relies on other
@@ -200,6 +204,21 @@ class VaapiVideoEncoderDelegate {
 
   virtual BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
                                               size_t payload_size);
+
+  // Submits |buffer| of |type| to the driver.
+  void SubmitBuffer(VABufferType type,
+                    scoped_refptr<base::RefCountedBytes> buffer);
+
+  // Submits a VAEncMiscParameterBuffer |buffer| of type |type| to the driver.
+  void SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
+                                  scoped_refptr<base::RefCountedBytes> buffer);
+
+ protected:
+  const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
+
+  base::RepeatingClosure error_cb_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

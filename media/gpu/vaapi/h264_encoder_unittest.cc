@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,25 +31,14 @@ VideoEncodeAccelerator::Config kDefaultVEAConfig(
     VideoEncodeAccelerator::Config::StorageType::kShmem,
     VideoEncodeAccelerator::Config::ContentType::kCamera);
 
-class MockH264Accelerator : public H264Encoder::Accelerator {
+class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockH264Accelerator() = default;
-  MOCK_METHOD1(
-      GetPicture,
-      scoped_refptr<H264Picture>(VaapiVideoEncoderDelegate::EncodeJob* job));
-  MOCK_METHOD3(SubmitPackedHeaders,
-               bool(VaapiVideoEncoderDelegate::EncodeJob*,
-                    scoped_refptr<H264BitstreamBuffer>,
-                    scoped_refptr<H264BitstreamBuffer>));
-  MOCK_METHOD7(SubmitFrameParameters,
-               bool(VaapiVideoEncoderDelegate::EncodeJob*,
-                    const H264Encoder::EncodeParams&,
-                    const H264SPS&,
-                    const H264PPS&,
-                    scoped_refptr<H264Picture>,
-                    const std::list<scoped_refptr<H264Picture>>&,
-                    const std::list<scoped_refptr<H264Picture>>&));
+  MockVaapiWrapper() : VaapiWrapper(kEncode) {}
+
+ protected:
+  ~MockVaapiWrapper() override = default;
 };
+
 }  // namespace
 
 class H264EncoderTest : public ::testing::Test {
@@ -58,25 +48,21 @@ class H264EncoderTest : public ::testing::Test {
 
   void ExpectLevel(uint8_t level) { EXPECT_EQ(encoder_->level_, level); }
 
+  MOCK_METHOD0(OnError, void());
+
  protected:
   std::unique_ptr<H264Encoder> encoder_;
-  MockH264Accelerator* accelerator_;
+  scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
 };
 
 void H264EncoderTest::SetUp() {
-  auto mock_accelerator = std::make_unique<MockH264Accelerator>();
-  accelerator_ = mock_accelerator.get();
-  encoder_ = std::make_unique<H264Encoder>(std::move(mock_accelerator));
+  mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>();
+  ASSERT_TRUE(mock_vaapi_wrapper_);
 
-  // Set default behaviors for mock methods for convenience.
-  ON_CALL(*accelerator_, GetPicture(_))
-      .WillByDefault(Invoke([](VaapiVideoEncoderDelegate::EncodeJob*) {
-        return new H264Picture();
-      }));
-  ON_CALL(*accelerator_, SubmitPackedHeaders(_, _, _))
-      .WillByDefault(Return(true));
-  ON_CALL(*accelerator_, SubmitFrameParameters(_, _, _, _, _, _, _))
-      .WillByDefault(Return(true));
+  encoder_ = std::make_unique<H264Encoder>(
+      mock_vaapi_wrapper_,
+      base::BindRepeating(&H264EncoderTest::OnError, base::Unretained(this)));
+  EXPECT_CALL(*this, OnError()).Times(0);
 }
 
 TEST_F(H264EncoderTest, Initialize) {
