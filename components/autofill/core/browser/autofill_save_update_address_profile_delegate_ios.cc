@@ -157,6 +157,11 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::Cancel() {
   return true;
 }
 
+bool AutofillSaveUpdateAddressProfileDelegateIOS::EqualsDelegate(
+    infobars::InfoBarDelegate* delegate) const {
+  return delegate->GetIdentifier() == GetIdentifier();
+}
+
 int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
   // TODO(crbug.com/1167062): Replace with proper icon.
   return IDR_INFOBAR_AUTOFILL_CC;

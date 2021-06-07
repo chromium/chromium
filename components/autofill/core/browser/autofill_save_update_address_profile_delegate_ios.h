@@ -82,6 +82,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
  private:
   // Fires the |address_profile_save_prompt_callback_| callback.
