@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_SURFACE_AGGREGATOR_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SURFACE_AGGREGATOR_H_
 
+#include <map>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/render_pass_id_remapper.h"
+#include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
@@ -93,7 +95,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
  private:
   struct PrewalkResult;
   struct ChildSurfaceInfo;
-  struct RenderPassMapEntry;
   struct MaskFilterInfoExt;
 
   struct AggregateStatistics {
@@ -106,11 +107,12 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
     base::TimeDelta declare_resources_time;
   };
 
-  // Helper function that gets a list of render passes and returns a map from
-  // render pass ids to render passes.
-  static base::flat_map<CompositorRenderPassId, RenderPassMapEntry>
-  GenerateRenderPassMap(const CompositorRenderPassList& render_pass_list,
-                        bool is_root_surface);
+  // Get resolved frame data for the resolved surfaces active frame. Returns
+  // null if there is no matching surface or the surface doesn't have an active
+  // CompositorFrame.
+  ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
+  ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
+  ResolvedFrameData* GetResolvedFrame(Surface* surface);
 
   absl::optional<gfx::Rect> CalculateClipRect(
       const absl::optional<gfx::Rect>& surface_clip,
@@ -127,7 +129,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                          bool* damage_rect_in_quad_space_valid,
                          const MaskFilterInfoExt& mask_filter_info_pair);
 
-  void EmitSurfaceContent(Surface* surface,
+  void EmitSurfaceContent(ResolvedFrameData& resolved_frame,
                           float parent_device_scale_factor,
                           const SurfaceDrawQuad* surface_quad,
                           const gfx::Transform& target_transform,
@@ -172,24 +174,21 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       AggregatedRenderPass* dest_render_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
-  void CopyQuadsToPass(
-      const CompositorRenderPass& source_pass,
-      AggregatedRenderPass* dest_pass,
-      float parent_device_scale_factor,
-      const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
-          resource_to_child_map,
-      const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect>& clip_rect,
-      const Surface* surface,
-      const MaskFilterInfoExt& mask_filter_info_pair);
+  void CopyQuadsToPass(const ResolvedPassData& resolved_pass,
+                       AggregatedRenderPass* dest_pass,
+                       float parent_device_scale_factor,
+                       const gfx::Transform& target_transform,
+                       const absl::optional<gfx::Rect>& clip_rect,
+                       const Surface* surface,
+                       const MaskFilterInfoExt& mask_filter_info_pair);
 
   // Recursively walks through the render pass and updates the
   // |intersects_damage_under| flag on all RenderPassDrawQuads(RPDQ).
   // The function returns the damage rect of the render pass in its own content
   // space.
-  //  - |render_pass_entry| specifies the render pass in the entry map to be
-  //  prewalked
-  //  - |surface| is the surface containing the render pass.
+  //  - |resolved_frame| is the resolved frame containing the render pass.
+  //  - |resolved_pass| contains the render pass data corresponding to the
+  //    render pass to be walked.
   //  - |render_pass_map| is a map that contains all render passes and their
   //    entry data.
   //  - |will_draw| indicates that the surface can be aggregated into the final
@@ -212,38 +211,33 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   //    ancestor render pass with a pixel-moving foreground filter.
   //  - |result| is the result of a prewalk of the surface that contains the
   //    render pass.
-  gfx::Rect PrewalkRenderPass(
-      RenderPassMapEntry* render_pass_entry,
-      const Surface* surface,
-      base::flat_map<CompositorRenderPassId, RenderPassMapEntry>*
-          render_pass_map,
-      bool will_draw,
-      const gfx::Rect& damage_from_parent,
-      const gfx::Transform& target_to_root_transform,
-      bool in_moved_pixel_rp,
-      PrewalkResult* result);
+  gfx::Rect PrewalkRenderPass(ResolvedFrameData& resolved_frame,
+                              ResolvedPassData& resolved_pass,
+                              bool will_draw,
+                              const gfx::Rect& damage_from_parent,
+                              const gfx::Transform& target_to_root_transform,
+                              bool in_moved_pixel_rp,
+                              PrewalkResult* result);
 
-  // Walk the Surface tree from |surface|. Validate the resources of the
+  // Walk the Surface tree from |resolved_frame|. Validate the resources of the
   // current surface and its descendants, check if there are any copy requests,
   // and return the combined damage rect.
-  gfx::Rect PrewalkSurface(Surface* surface,
+  gfx::Rect PrewalkSurface(ResolvedFrameData& resolved_frame,
                            bool in_moved_pixel_rp,
                            AggregatedRenderPassId parent_pass,
                            bool will_draw,
                            const gfx::Rect& damage_from_parent,
                            PrewalkResult* result);
 
-  // Declares all of the resources to the resource provider. Also declares
-  // resources that are used in the render_pass_list. Returns true if this seems
-  // to be a valid frame (all resources used in the render pass are present in
-  // the resource list).
-  bool DeclareResourcesToProvider(
-      Surface* surface,
-      const std::vector<TransferableResource>& resource_list,
-      const CompositorRenderPassList& render_pass_list);
+  // Processes a new resolved CompositorFrame. This declares all of the
+  // transferable resources plus what resources that are used in the
+  // render_pass_list to the resource provider. Also repopulates render pass and
+  // quad data in |resolved_frame| based on the active CompositorFrame.
+  void ProcessResolvedFrame(ResolvedFrameData& resolved_frame);
 
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
-  void CopyPasses(const CompositorFrame& frame, Surface* surface);
+  void CopyPasses(ResolvedFrameData& resolved_frame,
+                  const CompositorFrame& frame);
   void AddColorConversionPass();
   void AddDisplayTransformPass();
 
@@ -434,6 +428,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::flat_map<AggregatedRenderPassId, base::flat_set<AggregatedRenderPassId>>
       render_pass_dependencies_;
 
+  // Map from SurfaceRange to Surface for current aggregation.
+  base::flat_map<SurfaceRange, Surface*> resolved_surface_ranges_;
+
   // The root damage rect of the currently-aggregating frame.
   gfx::Rect root_damage_rect_;
 
@@ -501,6 +498,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // Indicates whether video capture has been enabled for this frame.
   bool video_capture_enabled_ = false;
+
+  // Persistent storage for ResolvedFrameData.
+  std::map<Surface*, ResolvedFrameData> resolved_frames_;
 
   // A helper class used to remap render pass IDs from the surface namespace to
   // a common space, to avoid collisions.
