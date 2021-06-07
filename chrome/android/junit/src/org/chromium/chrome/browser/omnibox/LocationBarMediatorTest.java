@@ -99,7 +99,6 @@ import java.util.List;
                 LocationBarMediatorTest.GSAStateShadow.class,
                 LocationBarMediatorTest.DownloadUtilsShadow.class})
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-@Features.DisableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
 public class LocationBarMediatorTest {
     @Implements(UrlUtilities.class)
     static class ShadowUrlUtilities {
@@ -898,20 +897,6 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testButtonVisibility_phone() {
-        // Regression test for phones: toolbar mic visibility shouldn't impact the location
-        // bar mic.
-        verifyPhoneMicButtonVisibility();
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-    public void testButtonVisibility_toolbarMicEnabled_phone() {
-        // Regression test for phones: toolbar mic visibility shouldn't impact the location
-        // bar mic.
-        verifyPhoneMicButtonVisibility();
-    }
-
-    private void verifyPhoneMicButtonVisibility() {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
@@ -933,68 +918,15 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testMicButtonVisibility_toolbarMicDisabled_tablet() {
-        verifyMicButtonVisibilityWhenFocusChanges(true);
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-    public void testMicButtonVisibility_toolbarMicEnabled_tablet() {
-        verifyMicButtonVisibilityWhenFocusChanges(false);
-    }
-
-    // Sets up and executes a test for visibility of a mic button on a tablet.
-    // The mic button should not be visible if toolbar mic is visible as well.
-    private void verifyMicButtonVisibilityWhenFocusChanges(boolean shouldBeVisible) {
-        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
-        mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
-        mTabletMediator.onFinishNativeInitialization();
-        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(true);
-        mTabletMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mTabletMediator.onUrlFocusChange(true);
-        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
-        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        Mockito.reset(mLocationBarTablet);
-
-        mTabletMediator.updateButtonVisibility();
-        verify(mLocationBarTablet).setMicButtonVisibility(shouldBeVisible);
-    }
-
-    @Test
     public void testButtonVisibility_showMicUnfocused() {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
-        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(false);
         mMediator.setShouldShowMicButtonWhenUnfocusedForPhone(true);
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
 
         mMediator.updateButtonVisibility();
         verify(mLocationBarLayout).setMicButtonVisibility(true);
-    }
-
-    @Test
-    public void testButtonVisibility_showMicUnfocused_toolbarMicDisabled_tablet() {
-        verifyMicButtonVisibilityWhenShowMicUnfocused(true);
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-    public void testButtonVisibility_showMicUnfocused_toolbarMicEnabled_tablet() {
-        verifyMicButtonVisibilityWhenShowMicUnfocused(false);
-    }
-
-    private void verifyMicButtonVisibilityWhenShowMicUnfocused(boolean shouldBeVisible) {
-        mTabletMediator.onFinishNativeInitialization();
-        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(false);
-        mTabletMediator.setShouldShowMicButtonWhenUnfocusedForTesting(true);
-        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
-        mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
-        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        Mockito.reset(mLocationBarTablet);
-
-        mTabletMediator.updateButtonVisibility();
-        verify(mLocationBarTablet).setMicButtonVisibility(shouldBeVisible);
     }
 
     @Test
@@ -1004,7 +936,6 @@ public class LocationBarMediatorTest {
         Mockito.reset(mLocationBarTablet);
         mTabletMediator.updateButtonVisibility();
 
-        verify(mLocationBarTablet).setMicButtonVisibility(false);
         verify(mLocationBarTablet).setBookmarkButtonVisibility(true);
         verify(mLocationBarTablet).setSaveOfflineButtonVisibility(true, true);
     }
@@ -1017,7 +948,6 @@ public class LocationBarMediatorTest {
         Mockito.reset(mLocationBarTablet);
         mTabletMediator.updateButtonVisibility();
 
-        verify(mLocationBarTablet).setMicButtonVisibility(false);
         verify(mLocationBarTablet).setBookmarkButtonVisibility(false);
         verify(mLocationBarTablet).setSaveOfflineButtonVisibility(false, true);
     }
