@@ -54,6 +54,12 @@ namespace {
 const char kDiscoverFeedInfiniteFeedTriggered[] =
     "ContentSuggestions.Feed.LoadStreamStatus.LoadMore";
 
+// User action names for the device orientation having changed.
+const char kDiscoverFeedHistogramDeviceOrientationChangedToPortrait[] =
+    "ContentSuggestions.Feed.DeviceOrientationChanged.Portrait";
+const char kDiscoverFeedHistogramDeviceOrientationChangedToLandscape[] =
+    "ContentSuggestions.Feed.DeviceOrientationChanged.Landscape";
+
 // Histogram name for the Discover feed user actions.
 const char kDiscoverFeedUserActionHistogram[] =
     "ContentSuggestions.Feed.UserActions";
@@ -206,6 +212,17 @@ const int kMinutesBetweenSessions = 5;
                             FeedLoadStreamStatus::kLoadedFromNetwork);
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionInfiniteFeedTriggered));
+}
+
+- (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation {
+  if (orientation == UIDeviceOrientationPortrait) {
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedHistogramDeviceOrientationChangedToPortrait));
+  } else if (orientation == UIDeviceOrientationLandscapeLeft ||
+             orientation == UIDeviceOrientationLandscapeRight) {
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedHistogramDeviceOrientationChangedToLandscape));
+  }
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {

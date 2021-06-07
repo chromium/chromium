@@ -202,6 +202,10 @@ initWithCollectionController:
 
 #pragma mark - ContentSuggestionsHeaderSynchronizing
 
+- (BOOL)isOmniboxFocused {
+  return [self.headerController isOmniboxFocused];
+}
+
 - (void)updateFakeOmniboxForScrollPosition {
   // Unfocus the omnibox when the scroll view is scrolled by the user (but not
   // when a scroll is triggered by layout/UIKit).

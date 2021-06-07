@@ -18,6 +18,10 @@
 // feed.
 - (void)recordInfiniteFeedTriggered;
 
+// Record metrics for when the user changes the device orientation with the feed
+// visible.
+- (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
+
 // Record metrics for when the user selects the 'Learn More' item in the feed
 // header menu.
 - (void)recordHeaderMenuLearnMoreTapped;
