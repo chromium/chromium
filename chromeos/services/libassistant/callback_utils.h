@@ -8,21 +8,46 @@
 #include <functional>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromeos {
 namespace libassistant {
 
+namespace internal {
+
+template <typename CALLBACK_TYPE>
+class RefCountedCallback
+    : public base::RefCounted<RefCountedCallback<CALLBACK_TYPE>> {
+ public:
+  RefCountedCallback(CALLBACK_TYPE callback) : callback_(std::move(callback)) {}
+  RefCountedCallback(const RefCountedCallback&) = delete;
+  RefCountedCallback& operator=(const RefCountedCallback&) = delete;
+
+  CALLBACK_TYPE& callback() { return callback_; }
+
+ private:
+  friend class base::RefCounted<RefCountedCallback<CALLBACK_TYPE>>;
+
+  ~RefCountedCallback() = default;
+  CALLBACK_TYPE callback_;
+};
+
+}  // namespace internal
+
 // Wrapper around a |base::OnceCallback| that converts it to a std::function.
+// Crashes if called more than once.
 template <typename... Args>
 std::function<void(Args...)> ToStdFunction(
     base::OnceCallback<void(Args...)> once_callback) {
-  // Note we need to wrap the move-only once callback in a repeating callback,
+  // Note we need to wrap the move-only once callback,
   // as std::function must always be copyable.
-  return [repeating_callback = base::AdaptCallbackForRepeating(
+  using CallbackType = base::OnceCallback<void(Args...)>;
+  using RefCountedCallbackType = internal::RefCountedCallback<CallbackType>;
+
+  return [callback_ref = base::MakeRefCounted<RefCountedCallbackType>(
               std::move(once_callback))](Args... args) {
-    repeating_callback.Run(std::forward<Args>(args)...);
+    std::move(callback_ref->callback()).Run(std::forward<Args>(args)...);
   };
 }
 
