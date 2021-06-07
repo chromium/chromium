@@ -326,6 +326,15 @@ base::scoped_nsobject<NSMenuItem> BuildHistoryMenu(
               Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
                   .command_id(IDC_SHOW_HISTORY)
                   .remove_if(is_pwa),
+              Item()
+                  .tag(HistoryMenuBridge::kIncognitoDisclaimerSeparator)
+                  .is_separator()
+                  .set_hidden(true)
+                  .remove_if(is_pwa),
+              Item(IDS_HISTORY_INCOGNITO_DISCLAIMER_MAC)
+                  .tag(HistoryMenuBridge::kIncognitoDisclaimerLabel)
+                  .set_hidden(true)
+                  .remove_if(is_pwa),
           })
           .Build();
   return item;
@@ -528,6 +537,7 @@ base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
     if (tag_) {
       [item setTag:tag_];
     }
+    [item setHidden:is_hidden_];
     return item;
   }
 
@@ -560,6 +570,7 @@ base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
   [item setTag:tag_];
   [item setKeyEquivalentModifierMask:key_equivalent_flags];
   [item setAlternate:is_alternate_];
+  [item setHidden:is_hidden_];
 
   if (submenu_.has_value()) {
     base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:title]);

@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -70,9 +71,30 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
       tab_restore_service_(NULL),
       create_in_progress_(false),
       need_recreate_(false) {
+  // Set the static icons in the menu.
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
+  [full_history_item
+      setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
+  NSMenuItem* incognito_disclaimer_item =
+      [HistoryMenu() itemWithTag:kIncognitoDisclaimerLabel];
+  [incognito_disclaimer_item
+      setImage:rb.GetNativeImageNamed(IDR_INFO_FAVICON).ToNSImage()];
+
   // If we don't have a profile, do not bother initializing our data sources.
   // This shouldn't happen except in unit tests.
   if (profile_) {
+    // Set the visibility of menu items according to profile type.
+    // "Recently Visited", "Recently Closed" and "Show Full History" sections
+    // should be hidden for incognito mode, while incognito disclaimer should be
+    // visible.
+    SetVisibilityOfMenuItems();
+
+    // If the profile is incognito, no need to set history and tab restore
+    // services.
+    if (profile_->IsOffTheRecord())
+      return;
+
     // Check to see if the history service is ready. Because it loads async, it
     // may not be ready when the Bridge is created. If this happens, register
     // for a notification that tells us the HistoryService is ready.
@@ -99,13 +121,8 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     }
   }
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   default_favicon_.reset(
       [rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage() retain]);
-
-  // Set the static icons in the menu.
-  NSMenuItem* item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
-  [item setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
 
   [HistoryMenu() setDelegate:controller_];
 }
@@ -409,8 +426,11 @@ void HistoryMenuBridge::CreateMenu() {
   // If the menu is currently open, wait until it closes.
   // If the history service got torn down while our async task was queued, don't
   // do anything - the browser is exiting anyway.
-  if (create_in_progress_ || is_menu_open_ || !history_service_)
+  // If the current profile is incognito, do not fill the menu.
+  if (create_in_progress_ || is_menu_open_ || !history_service_ ||
+      profile_->IsOffTheRecord()) {
     return;
+  }
   create_in_progress_ = true;
   need_recreate_ = false;
 
@@ -544,4 +564,46 @@ void HistoryMenuBridge::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   if (history_service_ == history_service)
     history_service_ = nullptr;
+}
+
+void HistoryMenuBridge::SetVisibilityOfMenuItems() {
+  NSMenu* menu = HistoryMenu();
+  for (int i = 0; i < [menu numberOfItems]; i++) {
+    NSMenuItem* item = [menu itemAtIndex:i];
+    [item setHidden:!ShouldMenuItemBeVisible(item)];
+  }
+}
+
+bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
+  if (!base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito)) {
+    return [item tag] != kIncognitoDisclaimerLabel &&
+           [item tag] != kIncognitoDisclaimerSeparator;
+  }
+
+  int tag = [item tag];
+  switch (tag) {
+    // The common menu items for both profiles
+    case IDC_HOME:
+    case IDC_BACK:
+    case IDC_FORWARD:
+      return true;
+    // The original profile specific menu items
+    case kRecentlyClosedSeparator:
+    case kRecentlyClosedTitle:
+    case kVisitedSeparator:
+    case kVisitedTitle:
+    case kShowFullSeparator:
+    case IDC_SHOW_HISTORY:
+      return !profile_->IsOffTheRecord();
+    // The incognito profile specific menu items
+    case kIncognitoDisclaimerSeparator:
+    case kIncognitoDisclaimerLabel:
+      return profile_->IsOffTheRecord();
+  }
+
+  // When a new menu item is introduced, it should be added to one of the cases
+  // above.
+  NOTREACHED();
+  return false;
 }

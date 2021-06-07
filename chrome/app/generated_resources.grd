@@ -9205,6 +9205,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC" desc="The Mac menu item for restoring all the tabs of a recently closed window.">
           Restore All Tabs
         </message>
+        <message name="IDS_HISTORY_INCOGNITO_DISCLAIMER_MAC" desc="The Mac menu item for the Incognito disclaimer text.">
+          History isn’t saved in Incognito
+        </message>
         <!-- Window menu -->
         <message name="IDS_MINIMIZE_WINDOW_MAC"
                  desc="The Mac menu item for minimize the window menu."
