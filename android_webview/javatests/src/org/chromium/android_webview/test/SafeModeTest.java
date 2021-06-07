@@ -21,15 +21,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
+import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.SafeModeService;
+import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoader;
+import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoaderResult;
 import org.chromium.android_webview.test.services.ServiceConnectionHelper;
+import org.chromium.android_webview.test.util.VariationsTestUtils;
+import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.BuildConfig;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -312,5 +319,74 @@ public class SafeModeTest {
                 testAction2.getExecutionOrder());
         Assert.assertEquals("testAction1 should be executed third the next time", 6,
                 testAction1.getExecutionOrder());
+    }
+
+    @Test
+    @MediumTest
+    public void testSafeModeAction_canRegisterBrowserActions() throws Exception {
+        // Validity check: verify we can register the production SafeModeAction list. As long as
+        // this finishes without throwing, assume the list is in good shape (e.g., no duplicate
+        // SafeModeAction IDs).
+        SafeModeController.getInstance().registerActions(BrowserSafeModeActionList.sList);
+    }
+
+    @Test
+    @MediumTest
+    public void testVariations_deletesSeedFiles() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
+            Assert.assertTrue("New seed file already exists", newFile.createNewFile());
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
+            VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
+            action.execute();
+            Assert.assertFalse(
+                    "Old seed should have been deleted but it still exists", oldFile.exists());
+            Assert.assertFalse(
+                    "New seed should have been deleted but it still exists", newFile.exists());
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testVariations_doesNotLoadExperiments() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
+            Assert.assertTrue("New seed file already exists", newFile.createNewFile());
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
+            VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
+            action.execute();
+
+            TestLoader loader = new TestLoader(new TestLoaderResult());
+            loader.startVariationsInit();
+            boolean loadedSeed = loader.finishVariationsInit();
+            Assert.assertFalse(
+                    "Loaded a variations seed even though it should have been deleted by SafeMode",
+                    loadedSeed);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testVariations_doesNothingIfSeedDoesNotExist() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
+            action.execute();
+            Assert.assertFalse("Old seed should never have existed", oldFile.exists());
+            Assert.assertFalse("New seed should never have existed", newFile.exists());
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
     }
 }
