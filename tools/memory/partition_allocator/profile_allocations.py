@@ -90,7 +90,8 @@ def _ParseTrace(trace: dict) -> dict:
     }
     size_counts = []
     for allocator in allocators:
-      if 'malloc/thread_cache/buckets_alloc/' not in allocator:
+      if ('malloc/partitions/allocator/thread_cache/buckets_alloc/' not in
+          allocator):
         continue
       size = int(allocator[allocator.rindex('/') + 1:])
       count = int(allocators[allocator]['attrs']['count']['value'], 16)
@@ -119,11 +120,12 @@ def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
   plt.title('Allocation count vs Size - %s - %s' %
             (data['name'], data['labels']))
   plt.stem(data['data']['size'], data['data']['count'])
-  plt.xscale('log')
-  plt.yscale('log')
+  plt.xscale('log', base=2)
+  plt.yscale('log', base=10)
   plt.xlabel('Size (log)')
   plt.ylabel('Allocations (log)')
   plt.savefig('%s_%d_count.png' % (output_prefix, pid), bbox_inches='tight')
+  plt.close()
 
   # CDF.
   plt.figure(figsize=(16, 8))
@@ -138,12 +140,13 @@ def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
   plt.step(data['data']['size'], cdf, color='black', where='post')
   plt.ylim(ymin=0, ymax=100)
   plt.xlim(xmin=10, xmax=1e6)
-  plt.xscale('log')
+  plt.xscale('log', base=2)
   plt.xlabel('Size (log)')
   plt.ylabel('CDF (%)')
   plt.savefig('%s_%d_cdf.png' % (output_prefix, pid),
               bbox_inches='tight',
               dpi=300)
+  plt.close()
 
 
 def _CreateArgumentParser():
