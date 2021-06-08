@@ -17,4 +17,3 @@ interface MeetDevicesDiagnostics {
   GetCrosHealthdProcessInfo@1(uint32 pid)
       => (chromeos.cros_healthd.mojom.ProcessResult process_info);
 };
-

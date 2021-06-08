@@ -46,7 +46,8 @@ class FakeCfmLoggerServiceDelegate : public CfmLoggerService::Delegate {
     enqueue_count_++;
     enqueue_record_ = record;
     enqueue_priority_ = std::move(priority);
-    std::move(callback).Run(mojom::LoggerStatus::New(0, "Debug Message."));
+    std::move(callback).Run(mojom::LoggerStatus::New(
+        mojom::LoggerErrorCode::kOk, "Debug Message."));
   }
 
   int init_count_ = 0;
@@ -218,7 +219,7 @@ TEST_F(CfmLoggerServiceTest, CfmLoggerServiceEnqueue) {
   remote->Enqueue(
       "foo", mojom::EnqueuePriority::kHigh,
       base::BindLambdaForTesting([&](mojom::LoggerStatusPtr status) {
-        ASSERT_EQ(0, status->code);
+        ASSERT_EQ(mojom::LoggerErrorCode::kOk, status->code);
         enqueue_loop.Quit();
       }));
   enqueue_loop.Run();
@@ -227,7 +228,7 @@ TEST_F(CfmLoggerServiceTest, CfmLoggerServiceEnqueue) {
 // This test functionality of enqueue when disabled.
 TEST_F(CfmLoggerServiceTest, CfmLoggerServiceDisabledEnqueue) {
   DisableLoggerFeature();
-  constexpr int kUnimplemented = 12;
+  constexpr auto kUnimplemented = mojom::LoggerErrorCode::kUnimplemented;
 
   auto remote = GetLoggerRemote();
 
