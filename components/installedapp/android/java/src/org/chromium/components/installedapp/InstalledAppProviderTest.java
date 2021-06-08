@@ -380,9 +380,10 @@ public class InstalledAppProviderTest {
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();
         mocker.mock(InstalledAppProviderImplJni.TEST_HOOKS, mTestInstalledAppProviderImplJni);
 
+        GURL urlOnOrigin = new GURL(URL_ON_ORIGIN);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(urlOnOrigin);
+
         mFakePackageManager = new FakePackageManager();
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(URL_ON_ORIGIN));
         mFakeInstantAppsHandler = new FakeInstantAppsHandler();
         mInstalledAppProvider =
                 new InstalledAppProviderTestImpl(mMockRenderFrameHost, mFakeInstantAppsHandler);
@@ -399,12 +400,12 @@ public class InstalledAppProviderTest {
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
         RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {};
 
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_MISSING_SCHEME));
+        GURL originMissingScheme = new GURL(ORIGIN_MISSING_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originMissingScheme);
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_MISSING_HOST));
+        GURL originMissingHost = new GURL(ORIGIN_MISSING_HOST);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originMissingHost);
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
@@ -594,8 +595,8 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
         // Simulate a navigation to a different origin.
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_DIFFERENT_SCHEME));
+        GURL originDifferentScheme = new GURL(ORIGIN_DIFFERENT_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originDifferentScheme);
 
         // Now the result should include the Android app that relates to the new origin.
         expectedInstalledRelatedApps = manifestRelatedApps;
