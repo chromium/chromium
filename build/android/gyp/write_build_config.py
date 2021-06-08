@@ -966,10 +966,7 @@ def main(argv):
   parser.add_option('--resources-zip', help='Path to target\'s resources zip.')
   parser.add_option('--package-name',
       help='Java package name for these resources.')
-  parser.add_option('--android-manifest',
-                    help='Path to the root android manifest.')
-  parser.add_option('--merged-android-manifest',
-                    help='Path to the merged android manifest.')
+  parser.add_option('--android-manifest', help='Path to android manifest.')
   parser.add_option('--resource-dirs', action='append', default=[],
                     help='GYP-list of resource dirs')
   parser.add_option(
@@ -1349,9 +1346,6 @@ def main(argv):
 
   if options.android_manifest:
     deps_info['android_manifest'] = options.android_manifest
-
-  if options.merged_android_manifest:
-    deps_info['merged_android_manifest'] = options.merged_android_manifest
 
   if options.bundled_srcjars:
     deps_info['bundled_srcjars'] = build_utils.ParseGnList(
