@@ -111,9 +111,6 @@ const char kNTPContentSuggestionsEnabled[] =
 const char kMetricsReportingWifiOnly[] =
     "ios.user_experience_metrics.wifi_only";
 
-// Boolean controlling whether history saving is disabled.
-const char kSavingBrowserHistoryDisabled[] = "history.saving_disabled";
-
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

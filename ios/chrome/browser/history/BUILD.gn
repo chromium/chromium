@@ -25,6 +25,7 @@ source_set("history") {
     "//components/browser_sync",
     "//components/dom_distiller/core",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/history/ios/browser",
     "//components/history/metrics",
     "//components/keyed_service/core",

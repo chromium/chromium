@@ -45,6 +45,7 @@ source_set("sync") {
     "//components/consent_auditor",
     "//components/dom_distiller/core",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/invalidation/impl",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",

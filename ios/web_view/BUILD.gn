@@ -172,8 +172,6 @@ source_set("web_view_sources") {
     "internal/passwords/web_view_password_requirements_service_factory.mm",
     "internal/passwords/web_view_password_store_factory.h",
     "internal/passwords/web_view_password_store_factory.mm",
-    "internal/pref_names.h",
-    "internal/pref_names.mm",
     "internal/signin/cwv_identity.mm",
     "internal/signin/ios_web_view_signin_client.h",
     "internal/signin/ios_web_view_signin_client.mm",

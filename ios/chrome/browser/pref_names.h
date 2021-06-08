@@ -33,7 +33,6 @@ extern const char kLastSessionExitedCleanly[];
 extern const char kNTPContentSuggestionsEnabled[];
 extern const char kMetricsReportingWifiOnly[];
 extern const char kPrintingEnabled[];
-extern const char kSavingBrowserHistoryDisabled[];
 extern const char kSearchSuggestEnabled[];
 
 extern const char kNetworkPredictionSetting[];
