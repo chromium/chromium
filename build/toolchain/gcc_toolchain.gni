@@ -260,7 +260,8 @@ template("gcc_toolchain") {
 
       # The wrapper needs to know what OS we target because it uses that to
       # select a list of files that should not be instrumented.
-      _coverage_wrapper = _coverage_wrapper + " --target-os=" + target_os
+      _coverage_wrapper = _coverage_wrapper + " --target-os=" +
+                          invoker_toolchain_args.current_os
 
       # We want to instrument everything if there is no input file set.
       # If there is a file we need to give it to the wrapper script so it can
