@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -89,4 +89,4 @@ UserActivityUkmLoggerBucketizer::BucketizeUserActivityEventData(
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

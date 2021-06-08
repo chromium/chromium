@@ -6,14 +6,12 @@
 
 #include "components/assist_ranker/proto/example_preprocessor.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
 namespace {
-
 using chromeos::machine_learning::mojom::FlatBufferModelSpec;
-
 }  // namespace
 
 SmartDimWorker::SmartDimWorker()
@@ -43,4 +41,4 @@ void SmartDimWorker::OnConnectionError() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

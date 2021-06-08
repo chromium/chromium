@@ -34,7 +34,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -766,4 +766,4 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, BrowsersWithIncognito) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

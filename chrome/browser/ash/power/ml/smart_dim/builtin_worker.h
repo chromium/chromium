@@ -10,7 +10,7 @@
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -37,6 +37,6 @@ class BuiltinWorker : public SmartDimWorker {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_BUILTIN_WORKER_H_

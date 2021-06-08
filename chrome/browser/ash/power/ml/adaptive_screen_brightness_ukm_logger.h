@@ -7,7 +7,7 @@
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -28,6 +28,6 @@ class AdaptiveScreenBrightnessUkmLogger {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_ADAPTIVE_SCREEN_BRIGHTNESS_UKM_LOGGER_H_

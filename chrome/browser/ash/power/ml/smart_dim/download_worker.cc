@@ -15,7 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -127,4 +127,4 @@ void DownloadWorker::LoadModelAndCreateGraphExecutor(
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

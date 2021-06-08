@@ -11,23 +11,16 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): forward declare UserActivityController.
+#include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
-
 class MethodCall;
-
 }  // namespace dbus
 
 namespace chromeos {
-namespace power {
-namespace ml {
-
-class UserActivityController;
-
-}  // namespace ml
-}  // namespace power
 
 // This class processes machine learning decision requests from Chrome OS side.
 //

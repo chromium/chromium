@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -88,4 +88,4 @@ TEST(UserActivityUkmLoggerBucketizerTest, BucketizeUserActivityEventData) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

@@ -47,7 +47,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -124,9 +124,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
         &session_manager_, observer.InitWithNewPipeAndPassReceiver(),
         &fake_user_manager_);
 
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   void TearDown() override {
@@ -265,7 +265,8 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   // Only used to get SourceIds for URLs.
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   TabActivitySimulator tab_activity_simulator_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
 
   const GURL url1_ = GURL("https://example1.com/");
   const GURL url2_ = GURL("https://example2.com/");
@@ -1395,4 +1396,4 @@ TEST_F(UserActivityManagerTest, NoOpenTabs) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

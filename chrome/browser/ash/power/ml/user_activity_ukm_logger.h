@@ -7,7 +7,7 @@
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -24,6 +24,6 @@ class UserActivityUkmLogger {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_H_

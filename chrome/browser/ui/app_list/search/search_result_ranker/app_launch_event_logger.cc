@@ -78,11 +78,11 @@ std::vector<std::string> Sample(const std::vector<std::string>& population,
 AppLaunchEventLogger::AppLaunchEventLogger()
     : start_time_(base::Time::Now()),
       all_clicks_last_hour_(
-          std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+          std::make_unique<ash::power::ml::RecentEventsCounter>(
               kHourDuration,
               kMinutesInAnHour)),
       all_clicks_last_24_hours_(
-          std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+          std::make_unique<ash::power::ml::RecentEventsCounter>(
               kDayDuration,
               kQuarterHoursInADay)),
       weak_factory_(this) {
@@ -285,10 +285,10 @@ void AppLaunchEventLogger::ProcessClick(const AppLaunchEvent& event,
   if (!app_launch_features->has_most_recently_used_index()) {
     // Handle first click on an id.
     app_clicks_last_hour_[event.app_id()] =
-        std::make_unique<chromeos::power::ml::RecentEventsCounter>(
-            kHourDuration, kMinutesInAnHour);
+        std::make_unique<ash::power::ml::RecentEventsCounter>(kHourDuration,
+                                                              kMinutesInAnHour);
     app_clicks_last_24_hours_[event.app_id()] =
-        std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+        std::make_unique<ash::power::ml::RecentEventsCounter>(
             kDayDuration, kQuarterHoursInADay);
     for (int hour = 0; hour < 24; hour++) {
       app_launch_features->add_clicks_each_hour(0);

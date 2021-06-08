@@ -18,13 +18,13 @@
 #include "extensions/browser/extension_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 class RecentEventsCounter;
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 namespace ukm {
 namespace builders {
@@ -134,23 +134,23 @@ class AppLaunchEventLogger {
   // A map from app id to a counter of the number of clicks in the last hour.
   // Has a time resolution one minute.
   base::flat_map<std::string,
-                 std::unique_ptr<chromeos::power::ml::RecentEventsCounter>>
+                 std::unique_ptr<ash::power::ml::RecentEventsCounter>>
       app_clicks_last_hour_;
   // A map from app id to a counter of the number of clicks in the last 24
   // hours. Has a time resolution of 15 minutes.
   base::flat_map<std::string,
-                 std::unique_ptr<chromeos::power::ml::RecentEventsCounter>>
+                 std::unique_ptr<ash::power::ml::RecentEventsCounter>>
       app_clicks_last_24_hours_;
 
   // The time this class was instantiated. Allows duration to be calculated.
   base::Time start_time_;
   // A counter for the click in the last hour. Has a time resolution of 1
   // minute.
-  const std::unique_ptr<chromeos::power::ml::RecentEventsCounter>
+  const std::unique_ptr<ash::power::ml::RecentEventsCounter>
       all_clicks_last_hour_;
   // A counter for the clicks in the last 24 hours. Has a time resolution of 15
   // minutes.
-  const std::unique_ptr<chromeos::power::ml::RecentEventsCounter>
+  const std::unique_ptr<ash::power::ml::RecentEventsCounter>
       all_clicks_last_24_hours_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

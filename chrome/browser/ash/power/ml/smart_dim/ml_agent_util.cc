@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -91,4 +91,4 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

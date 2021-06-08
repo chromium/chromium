@@ -13,7 +13,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -272,4 +272,4 @@ TEST_F(UserActivityUkmLoggerTest, TwoUserActivityEvents) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

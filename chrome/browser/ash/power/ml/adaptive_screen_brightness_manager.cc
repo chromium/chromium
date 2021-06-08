@@ -37,7 +37,7 @@
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -148,7 +148,7 @@ AdaptiveScreenBrightnessManager::~AdaptiveScreenBrightnessManager() = default;
 
 std::unique_ptr<AdaptiveScreenBrightnessManager>
 AdaptiveScreenBrightnessManager::CreateInstance() {
-  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
+  if (GetDeviceType() != DeviceType::kChromebook)
     return nullptr;
 
   chromeos::PowerManagerClient* const power_manager_client =
@@ -480,4 +480,4 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

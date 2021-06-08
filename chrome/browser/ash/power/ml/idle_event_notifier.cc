@@ -13,7 +13,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -284,4 +284,4 @@ void IdleEventNotifier::ResetTimestampsForRecentActivity() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

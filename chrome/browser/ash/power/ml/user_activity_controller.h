@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_manager.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_impl.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -36,6 +36,15 @@ class UserActivityController {
   DISALLOW_COPY_AND_ASSIGN(UserActivityController);
 };
 
+}  // namespace ml
+}  // namespace power
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace power {
+namespace ml {
+using ::ash::power::ml::UserActivityController;
 }  // namespace ml
 }  // namespace power
 }  // namespace chromeos

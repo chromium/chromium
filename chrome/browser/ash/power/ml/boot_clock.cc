@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/time/time_override.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -36,4 +36,4 @@ base::TimeDelta BootClock::GetTimeSinceBoot() const {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

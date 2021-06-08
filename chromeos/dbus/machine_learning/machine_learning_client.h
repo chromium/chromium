@@ -53,4 +53,9 @@ class COMPONENT_EXPORT(MACHINE_LEARNING) MachineLearningClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash
+namespace ash {
+using ::chromeos::MachineLearningClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_MACHINE_LEARNING_MACHINE_LEARNING_CLIENT_H_

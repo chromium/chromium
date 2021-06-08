@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -33,4 +33,4 @@ void LogComponentVersionType(ComponentVersionType type) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

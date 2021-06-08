@@ -30,7 +30,7 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -252,6 +252,6 @@ class UserActivityManager : public ui::UserActivityObserver,
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_MANAGER_H_

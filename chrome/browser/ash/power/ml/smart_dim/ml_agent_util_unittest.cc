@@ -12,7 +12,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -75,4 +75,4 @@ TEST(SmartDimMlAgentUtilTest, ParseValidMetadata) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

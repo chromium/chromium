@@ -12,7 +12,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -135,4 +135,4 @@ void UserActivityUkmLoggerImpl::LogActivity(const UserActivityEvent& event) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

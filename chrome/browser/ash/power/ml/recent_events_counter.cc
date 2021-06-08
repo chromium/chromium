@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -93,4 +93,4 @@ int RecentEventsCounter::GetBucketIndex(base::TimeDelta timestamp) const {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

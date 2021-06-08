@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -20,7 +20,7 @@ class UserActivityUkmLoggerImpl : public UserActivityUkmLogger {
   UserActivityUkmLoggerImpl();
   ~UserActivityUkmLoggerImpl() override;
 
-  // chromeos::power::ml::UserActivityUkmLogger overrides:
+  // ash::power::ml::UserActivityUkmLogger overrides:
   void LogActivity(const UserActivityEvent& event) override;
 
  private:
@@ -37,6 +37,6 @@ class UserActivityUkmLoggerImpl : public UserActivityUkmLogger {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_IMPL_H_

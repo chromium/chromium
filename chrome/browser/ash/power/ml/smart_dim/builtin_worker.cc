@@ -14,7 +14,7 @@
 #include "components/assist_ranker/proto/example_preprocessor.pb.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -100,4 +100,4 @@ void BuiltinWorker::LazyInitialize() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

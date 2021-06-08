@@ -15,7 +15,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -197,4 +197,4 @@ TEST_F(AdaptiveScreenBrightnessUkmLoggerImplTest, AccessibilityOff) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

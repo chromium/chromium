@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -67,6 +67,15 @@ class RecentEventsCounter {
   DISALLOW_COPY_AND_ASSIGN(RecentEventsCounter);
 };
 
+}  // namespace ml
+}  // namespace power
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace power {
+namespace ml {
+using ::ash::power::ml::RecentEventsCounter;
 }  // namespace ml
 }  // namespace power
 }  // namespace chromeos

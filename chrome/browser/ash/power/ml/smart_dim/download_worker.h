@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/power/ml/smart_dim/smart_dim_worker.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -59,6 +59,6 @@ class DownloadWorker : public SmartDimWorker {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_DOWNLOAD_WORKER_H_

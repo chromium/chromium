@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-package chromeos.power.ml;
+package ash.power.ml;
 
 option optimize_for = LITE_RUNTIME;
 

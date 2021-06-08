@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -30,6 +30,6 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_ML_AGENT_UTIL_H_

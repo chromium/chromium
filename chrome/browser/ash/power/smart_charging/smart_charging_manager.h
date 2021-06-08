@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
+// TODO(https://crbug.com/1164001): forward declare RecentEventsCounter
+#include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
 #include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,9 +29,6 @@
 
 namespace chromeos {
 namespace power {
-namespace ml {
-class RecentEventsCounter;
-}  // namespace ml
 
 using PastEvent = PastChargingEvents::Event;
 using EventReason = UserChargingEvent::Event::Reason;

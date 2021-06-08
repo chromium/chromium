@@ -26,7 +26,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/ukm/content/source_url_recorder.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -129,7 +129,7 @@ UserActivityManager::UserActivityManager(
   DCHECK(session_manager);
   session_manager_observation_.Observe(session_manager);
 
-  if (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook) {
+  if (GetDeviceType() == DeviceType::kChromebook) {
     device_type_ = UserActivityEvent::Features::CHROMEBOOK;
   } else {
     device_type_ = UserActivityEvent::Features::UNKNOWN_DEVICE;
@@ -605,4 +605,4 @@ void UserActivityManager::CancelDimDecisionRequest() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

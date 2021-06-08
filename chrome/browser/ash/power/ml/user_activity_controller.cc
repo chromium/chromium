@@ -15,7 +15,7 @@
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -68,4 +68,4 @@ void UserActivityController::ShouldDeferScreenDim(
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

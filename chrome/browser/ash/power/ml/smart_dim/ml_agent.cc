@@ -20,7 +20,7 @@
 #include "components/assist_ranker/proto/example_preprocessor.pb.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -345,4 +345,4 @@ SmartDimWorker* SmartDimMlAgent::GetWorker() {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

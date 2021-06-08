@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -79,6 +79,6 @@ class UserActivityUkmLoggerBucketizer {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_HELPERS_H_

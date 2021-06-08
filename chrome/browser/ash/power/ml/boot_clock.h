@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -33,6 +33,15 @@ class BootClock {
   DISALLOW_COPY_AND_ASSIGN(BootClock);
 };
 
+}  // namespace ml
+}  // namespace power
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace power {
+namespace ml {
+using ::ash::power::ml::BootClock;
 }  // namespace ml
 }  // namespace power
 }  // namespace chromeos

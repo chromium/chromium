@@ -16,7 +16,7 @@ namespace assist_ranker {
 class ExamplePreprocessorConfig;
 }  // namespace assist_ranker
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -70,6 +70,6 @@ class SmartDimWorker {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_SMART_DIM_WORKER_H_

@@ -22,7 +22,7 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -175,6 +175,6 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_IDLE_EVENT_NOTIFIER_H_

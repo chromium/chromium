@@ -19,7 +19,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -664,4 +664,4 @@ TEST_F(IdleEventNotifierTest, UserInputEventsTwoIdleEvents) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

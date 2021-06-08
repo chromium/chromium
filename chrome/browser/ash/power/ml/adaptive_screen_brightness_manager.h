@@ -12,10 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): use forward declaration when moving to
-// chrome/browser/ash/.
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/ml/screen_brightness_event.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -30,7 +26,11 @@ namespace base {
 class RepeatingTimer;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
+
+class AccessibilityManager;
+class MagnificationManager;
+
 namespace power {
 namespace ml {
 
@@ -159,6 +159,15 @@ class AdaptiveScreenBrightnessManager
   DISALLOW_COPY_AND_ASSIGN(AdaptiveScreenBrightnessManager);
 };
 
+}  // namespace ml
+}  // namespace power
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace power {
+namespace ml {
+using ::ash::power::ml::AdaptiveScreenBrightnessManager;
 }  // namespace ml
 }  // namespace power
 }  // namespace chromeos

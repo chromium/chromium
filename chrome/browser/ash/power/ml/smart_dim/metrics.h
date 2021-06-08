@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_METRICS_H_
 #define CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_METRICS_H_
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -65,6 +65,6 @@ void LogLoadComponentEvent(LoadComponentEvent event);
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_METRICS_H_

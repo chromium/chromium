@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace ml {
 
@@ -45,4 +45,4 @@ TEST(BootClockTest, UnderMockTime) {
 
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
