@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,17 +31,13 @@ class SequencedTaskRunner;
 // the SequencedTaskRunner where it was created.
 //
 // The inspection of all modules is quite expensive in terms of resources, so it
-// is done one by one, in a task with a background priority level. If needed, it
-// is possible to increase the priority level of these tasks by calling
-// IncreaseInspectionPriority().
+// is done after startup, one by one, in a utility process. If needed, it is
+// possible to skip waiting for startup to be finished by calling
+// ForceStartInspection().
 //
 // This class is not thread safe and it enforces safety via a SEQUENCE_CHECKER.
 class ModuleInspector : public ModuleDatabaseObserver {
  public:
-  // Controls whether or not module inspection is done out of process.
-  static constexpr base::Feature kWinOOPInspectModuleFeature = {
-      "WinOOPInspectModule", base::FEATURE_ENABLED_BY_DEFAULT};
-
   // The amount of time before the |inspection_results_cache_| is flushed to
   // disk while the ModuleDatabase is not idle.
   static constexpr base::TimeDelta kFlushInspectionResultsTimerTimeout =
@@ -60,8 +55,8 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // process if the |queue_| is empty.
   void AddModule(const ModuleInfoKey& module_key);
 
-  // Removes the throttling.
-  void IncreaseInspectionPriority();
+  // Skips waiting for startup to be finished.
+  void ForceStartInspection();
 
   // Returns true if ModuleInspector is not doing anything right now.
   bool IsIdle();
@@ -119,19 +114,13 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // inspection tasks in order to not negatively impact startup performance.
   bool is_after_startup_;
 
-  // A remote interface to the UtilWin service. Only used if the
-  // WinOOPInspectModule feature is enabled. It is created when inspection is
+  // A remote interface to the UtilWin service. It is created when inspection is
   // ongoing, and freed when no longer needed.
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
 
   // The test remote interface for the UtilWin service. This is kept alive for
   // the duration of this instance's lifetime.
   mojo::Remote<chrome::mojom::UtilWin> test_remote_util_win_;
-
-  // The task runner where module inspections takes place. It originally starts
-  // at BEST_EFFORT priority, but is changed to USER_VISIBLE when
-  // IncreaseInspectionPriority() is called.
-  scoped_refptr<base::SequencedTaskRunner> inspection_task_runner_;
 
   // The vector of paths to %env_var%, used to account for differences in
   // localization and where people keep their files.
