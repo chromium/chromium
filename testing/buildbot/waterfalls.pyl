@@ -5440,6 +5440,20 @@
           'gtest_tests': 'updater_gtests',
         },
       },
+      'mac10.11-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.11',
+            }
+          ]
+        },
+      },
       'mac10.11-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
@@ -5450,6 +5464,20 @@
               'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.11',
+            }
+          ]
+        },
+      },
+      'mac10.12-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.12',
             }
           ]
         },
@@ -5468,6 +5496,20 @@
           ]
         },
       },
+      'mac10.13-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.13',
+            }
+          ]
+        },
+      },
       'mac10.13-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
@@ -5478,6 +5520,20 @@
               'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.13',
+            }
+          ]
+        },
+      },
+      'mac10.14-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.14',
             }
           ]
         },
@@ -5524,6 +5580,20 @@
           ]
         },
       },
+      'mac11.0-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-11',
+            }
+          ]
+        },
+      },
       'mac11.0-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
@@ -5534,7 +5604,6 @@
               'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
-              'cpu': 'x86-64',
             }
           ]
         },

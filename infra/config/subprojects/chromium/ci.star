@@ -3355,12 +3355,30 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "mac10.11-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.11",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "mac10.11-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
         short_name = "10.11",
     ),
     triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
+    name = "mac10.12-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.12",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
 )
 
 ci.updater_builder(
@@ -3373,12 +3391,30 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "mac10.13-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.13",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "mac10.13-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
         short_name = "10.13",
     ),
     triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
+    name = "mac10.14-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.14",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
 )
 
 ci.updater_builder(
@@ -3409,12 +3445,30 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "mac11.0-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "11.0",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "mac11.0-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
         short_name = "11.0",
     ),
     triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
+    name = "mac-arm64-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "11.0 arm64",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
 )
 
 ci.updater_builder(
