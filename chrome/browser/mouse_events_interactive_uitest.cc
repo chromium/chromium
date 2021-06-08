@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
 }
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if defined(OS_MAC) || defined(OS_WIN) || defined(USE_OZONE)
 // Test that a mouseleave is not triggered when showing the context menu.
 // If the test is failed, it means that Blink gets the mouseleave event
 // when showing the context menu and it could make the unexpecting
@@ -143,6 +143,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
 // TODO: Make test pass on OS_WIN and OS_MAC
 // OS_WIN: Flaky. See http://crbug.com/656101.
 // OS_MAC: Missing automation provider support: http://crbug.com/45892.
+// USE_OZONE: Flaky. See http://crbug.com/656101.
 #define MAYBE_ContextMenu DISABLED_ContextMenu
 #else
 #define MAYBE_ContextMenu ContextMenu
