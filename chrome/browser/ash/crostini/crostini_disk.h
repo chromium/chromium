@@ -36,7 +36,7 @@ namespace disk {
 constexpr int64_t kGiB = 1024 * 1024 * 1024;
 constexpr int64_t kDiskHeadroomBytes = 1 * kGiB;
 constexpr int64_t kMinimumDiskSizeBytes = 2 * kGiB;
-constexpr int64_t kRecommendedDiskSizeBytes = 7.5 * kGiB;
+constexpr int64_t kRecommendedDiskSizeBytes = 10 * kGiB;
 
 // A number which influences the interval size and number of ticks selected for
 // a given range. At 400 >400 GiB gets 1 GiB ticks, smaller sizes get smaller
