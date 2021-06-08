@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // TODO(jimmyxgong): Update to correct icon and app sizes.
 std::unique_ptr<WebApplicationInfo>
@@ -31,4 +32,21 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+ShortcutCustomizationSystemAppDelegate::ShortcutCustomizationSystemAppDelegate(
+    Profile* profile)
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::SHORTCUT_CUSTOMIZATION,
+          "ShortcutCustomization",
+          GURL(ash::kChromeUIShortcutCustomizationAppURL),
+          profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForShortcutCustomizationSystemWebApp();
+}
+
+bool ShortcutCustomizationSystemAppDelegate::IsAppEnabled() const {
+  return features::IsShortcutCustomizationAppEnabled();
 }

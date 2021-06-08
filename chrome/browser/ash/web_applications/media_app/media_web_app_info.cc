@@ -76,6 +76,12 @@ AcceptMap MakeHandlerAccept() {
 
 }  // namespace
 
+MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::MEDIA,
+                                    "Media",
+                                    GURL("chrome://media-app/pwa.html"),
+                                    profile) {}
+
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
@@ -108,4 +114,26 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   file_handler.accept = MakeHandlerAccept();
   info->file_handlers.push_back(std::move(file_handler));
   return info;
+}
+
+std::unique_ptr<WebApplicationInfo> MediaSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForMediaWebApp();
+}
+
+bool MediaSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
+  return true;
+}
+
+bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+bool MediaSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
+web_app::OriginTrialsMap MediaSystemAppDelegate::GetEnabledOriginTrials()
+    const {
+  return web_app::OriginTrialsMap(
+      {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}});
 }

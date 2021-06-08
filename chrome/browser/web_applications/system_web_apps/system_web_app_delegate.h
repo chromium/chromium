@@ -202,7 +202,7 @@ class SystemWebAppDelegate {
   virtual gfx::Rect GetDefaultBounds(Browser* browser) const;
 
   // If false, the application will not be installed.
-  virtual bool IsAppEnabled(bool install_experimental_apps) const;
+  virtual bool IsAppEnabled() const;
 
  protected:
   SystemAppType type_;

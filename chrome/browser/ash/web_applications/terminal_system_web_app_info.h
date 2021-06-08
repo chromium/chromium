@@ -7,10 +7,24 @@
 
 #include <memory>
 
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
 struct WebApplicationInfo;
+class Browser;
+
+class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
+ public:
+  explicit TerminalSystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  bool ShouldBeSingleWindow() const override;
+  bool ShouldHaveTabStrip() const override;
+  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+};
 
 // Returns a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp();

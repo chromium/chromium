@@ -40,3 +40,26 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForScanningSystemWebApp() {
 
   return info;
 }
+
+ScanningSystemAppDelegate::ScanningSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::SCANNING,
+                                    "Scanning",
+                                    GURL("chrome://scanning"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> ScanningSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForScanningSystemWebApp();
+}
+
+bool ScanningSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool ScanningSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+gfx::Size ScanningSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 420};
+}

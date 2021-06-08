@@ -27,3 +27,30 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCroshSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
 }
+
+CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::CROSH,
+                                    "Crosh",
+                                    GURL(chrome::kChromeUIUntrustedCroshURL),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> CroshSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForCroshSystemWebApp();
+}
+
+bool CroshSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool CroshSystemAppDelegate::ShouldBeSingleWindow() const {
+  return false;
+}
+
+bool CroshSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
+bool CroshSystemAppDelegate::ShouldHaveTabStrip() const {
+  return true;
+}

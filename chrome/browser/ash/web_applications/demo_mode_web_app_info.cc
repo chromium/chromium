@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -26,4 +27,23 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForDemoModeApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+DemoModeSystemAppDelegate::DemoModeSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::DEMO_MODE,
+                                    "DemoMode",
+                                    GURL("chrome://demo-mode-app"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> DemoModeSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForDemoModeApp();
+}
+
+bool DemoModeSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool DemoModeSystemAppDelegate::IsAppEnabled() const {
+  return chromeos::features::IsDemoModeSWAEnabled();
 }

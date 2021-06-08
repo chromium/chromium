@@ -25,7 +25,7 @@ SystemWebAppDelegate::SystemWebAppDelegate(const SystemAppType type,
       install_url_(install_url),
       profile_(profile) {}
 
-SystemWebAppDelegate ::~SystemWebAppDelegate() = default;
+SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 
 std::vector<AppId> SystemWebAppDelegate::GetAppIdsToUninstallAndReplace()
     const {
@@ -89,7 +89,7 @@ absl::optional<SystemAppBackgroundTaskInfo> SystemWebAppDelegate::GetTimerInfo()
   return absl::nullopt;
 }
 
-bool SystemWebAppDelegate::IsAppEnabled(bool install_experimental_apps) const {
+bool SystemWebAppDelegate::IsAppEnabled() const {
   return true;
 }
 

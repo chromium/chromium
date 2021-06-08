@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/content/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/content/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,4 +30,27 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   info->open_as_window = true;
 
   return info;
+}
+
+FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::FILE_MANAGER,
+                                    "File Manager",
+                                    GURL("chrome://file-manager"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+FileManagerSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForFileManager();
+}
+
+bool FileManagerSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool FileManagerSystemAppDelegate::ShouldBeSingleWindow() const {
+  return false;
+}
+
+bool FileManagerSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kFilesSWA);
 }

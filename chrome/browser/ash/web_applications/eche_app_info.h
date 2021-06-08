@@ -5,12 +5,29 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_ECHE_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_ECHE_APP_INFO_H_
 
-#include <memory>
-
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
 struct WebApplicationInfo;
+
+class EcheSystemAppDelegate : public web_app::SystemWebAppDelegate {
+ public:
+  explicit EcheSystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  bool ShouldCaptureNavigations() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
+  bool ShouldAllowResize() const override;
+  bool ShouldAllowMaximize() const override;
+  bool ShouldHaveReloadButtonInMinimalUi() const override;
+  bool ShouldAllowScriptsToCloseWindows() const override;
+  gfx::Rect GetDefaultBounds(Browser*) const override;
+  bool IsAppEnabled() const override;
+};
 
 // Return a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp();

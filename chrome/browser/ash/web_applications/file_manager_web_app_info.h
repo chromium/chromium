@@ -5,13 +5,26 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_
 
-#include <memory>
+#include "ash/content/shortcut_customization_ui/url_constants.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+
+struct WebApplicationInfo;
 
 #if defined(OFFICIAL_BUILD)
 #error File Manager should only be included in unofficial builds.
 #endif
 
-struct WebApplicationInfo;
+class FileManagerSystemAppDelegate : public web_app::SystemWebAppDelegate {
+ public:
+  explicit FileManagerSystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  bool ShouldCaptureNavigations() const override;
+  bool ShouldBeSingleWindow() const override;
+  bool IsAppEnabled() const override;
+};
 
 // Return a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager();

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -27,4 +28,19 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTelemetryExtension() {
   info->open_as_window = true;
 
   return info;
+}
+
+TelemetrySystemAppDelegate::TelemetrySystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TELEMETRY,
+                                    "Telemetry",
+                                    GURL("chrome://telemetry-extension"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> TelemetrySystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForTelemetryExtension();
+}
+
+bool TelemetrySystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension);
 }

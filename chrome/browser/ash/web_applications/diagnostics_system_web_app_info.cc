@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -32,4 +33,27 @@ CreateWebAppInfoForDiagnosticsSystemWebApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::DIAGNOSTICS,
+                                    "Diagnostics",
+                                    GURL("chrome://diagnostics"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+DiagnosticsSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForDiagnosticsSystemWebApp();
+}
+
+bool DiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+gfx::Size DiagnosticsSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 390};
+}
+
+bool DiagnosticsSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
 }

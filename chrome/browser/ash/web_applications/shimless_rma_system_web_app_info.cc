@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/content/shimless_rma/url_constants.h"
 #include "ash/grit/ash_shimless_rma_resources.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -30,4 +31,39 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::SHIMLESS_RMA,
+                                    "ShimlessRMA",
+                                    GURL(ash::kChromeUIShimlessRMAUrl),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+ShimlessRMASystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForShimlessRMASystemWebApp();
+}
+
+bool ShimlessRMASystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool ShimlessRMASystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool ShimlessRMASystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
+bool ShimlessRMASystemAppDelegate::ShouldAllowResize() const {
+  return false;
+}
+
+bool ShimlessRMASystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
+  return true;
+}
+
+bool ShimlessRMASystemAppDelegate::IsAppEnabled() const {
+  return ash::features::IsShimlessRMAFlowEnabled();
 }

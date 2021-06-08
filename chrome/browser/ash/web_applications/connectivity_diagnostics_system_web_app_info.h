@@ -5,9 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CONNECTIVITY_DIAGNOSTICS_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CONNECTIVITY_DIAGNOSTICS_SYSTEM_WEB_APP_INFO_H_
 
-#include <memory>
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 
 struct WebApplicationInfo;
+
+class ConnectivityDiagnosticsSystemAppDelegate
+    : public web_app::SystemWebAppDelegate {
+ public:
+  explicit ConnectivityDiagnosticsSystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
+};
 
 // Returns a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo>

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
@@ -29,4 +30,25 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
+    Profile* profile)
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::PERSONALIZATION,
+          "Personalization",
+          GURL(chromeos::kChromeUIPersonalizationAppURL),
+          profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+PersonalizationSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForPersonalizationApp();
+}
+
+bool PersonalizationSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool PersonalizationSystemAppDelegate::IsAppEnabled() const {
+  return chromeos::features::IsWallpaperWebUIEnabled();
 }

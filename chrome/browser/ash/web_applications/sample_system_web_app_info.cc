@@ -34,3 +34,34 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
 
   return info;
 }
+
+SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::SAMPLE,
+          "Sample",
+          GURL("chrome://sample-system-web-app/pwa.html"),
+          profile) {}
+
+std::unique_ptr<WebApplicationInfo> SampleSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForSampleSystemWebApp();
+}
+
+web_app::OriginTrialsMap SampleSystemAppDelegate::GetEnabledOriginTrials()
+    const {
+  return web_app::OriginTrialsMap(
+      {{web_app::GetOrigin("chrome://sample-system-web-app"), {"Frobulate"}},
+       {web_app::GetOrigin("chrome-untrusted://sample-system-web-app"),
+        {"Frobulate"}}});
+}
+
+bool SampleSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+absl::optional<web_app::SystemAppBackgroundTaskInfo>
+SampleSystemAppDelegate::GetTimerInfo() const {
+  return web_app::SystemAppBackgroundTaskInfo(
+      base::TimeDelta::FromSeconds(30),
+      GURL("chrome://sample-system-web-app/timer.html"));
+}

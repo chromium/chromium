@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -50,4 +51,48 @@ gfx::Rect GetDefaultBoundsForEche(Browser*) {
   }
   bounds.ClampToCenteredSize(gfx::Size(new_width, new_width * aspect_ratio));
   return bounds;
+}
+
+EcheSystemAppDelegate::EcheSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::ECHE,
+                                    "Eche",
+                                    GURL("chrome://eche-app"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> EcheSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForEcheApp();
+}
+bool EcheSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+bool EcheSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+bool EcheSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
+bool EcheSystemAppDelegate::ShouldAllowResize() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kEcheSWAResizing);
+}
+
+bool EcheSystemAppDelegate::ShouldAllowMaximize() const {
+  return false;
+}
+
+bool EcheSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
+  return false;
+}
+
+bool EcheSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
+  return true;
+}
+
+gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+  return GetDefaultBoundsForEche(browser);
+}
+
+bool EcheSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
 }

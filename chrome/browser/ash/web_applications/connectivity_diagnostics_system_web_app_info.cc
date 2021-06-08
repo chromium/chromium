@@ -35,3 +35,24 @@ CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
 
   return info;
 }
+
+ConnectivityDiagnosticsSystemAppDelegate::
+    ConnectivityDiagnosticsSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
+          "ConnectivityDiagnostics",
+          GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl),
+          profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp();
+}
+
+bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}

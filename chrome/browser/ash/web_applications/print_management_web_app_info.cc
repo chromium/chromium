@@ -30,3 +30,22 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
 
   return info;
 }
+
+PrintManagementSystemAppDelegate::PrintManagementSystemAppDelegate(
+    Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PRINT_MANAGEMENT,
+                                    "PrintManagement",
+                                    GURL("chrome://print-management/pwa.html"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo>
+PrintManagementSystemAppDelegate::GetWebAppInfo() const {
+  return CreateWebAppInfoForPrintManagementApp();
+}
+
+bool PrintManagementSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+gfx::Size PrintManagementSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 320};
+}

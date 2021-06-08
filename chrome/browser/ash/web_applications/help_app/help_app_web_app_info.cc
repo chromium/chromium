@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -47,4 +49,43 @@ gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
   return bounds;
+}
+
+HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::HELP,
+                                    "Help",
+                                    GURL("chrome://help-app/pwa.html"),
+                                    profile) {}
+
+gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+  return GetDefaultBoundsForHelpApp(browser);
+}
+
+bool HelpAppSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+gfx::Size HelpAppSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 320};
+}
+
+std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
+  return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
+}
+
+absl::optional<web_app::SystemAppBackgroundTaskInfo>
+HelpAppSystemAppDelegate::GetTimerInfo() const {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kHelpAppLauncherSearch)) {
+    return web_app::SystemAppBackgroundTaskInfo(
+        absl::nullopt, GURL("chrome://help-app/background"),
+        /*open_immediately=*/true);
+  } else {
+    return absl::nullopt;
+  }
+}
+
+std::unique_ptr<WebApplicationInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForHelpWebApp();
 }

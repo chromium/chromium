@@ -5,9 +5,26 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
-#include <memory>
+#include "ash/content/shimless_rma/url_constants.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "ui/gfx/geometry/size.h"
 
 struct WebApplicationInfo;
+
+class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegate {
+ public:
+  explicit ShimlessRMASystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  bool ShouldCaptureNavigations() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
+  bool ShouldAllowResize() const override;
+  bool ShouldAllowScriptsToCloseWindows() const override;
+  bool IsAppEnabled() const override;
+};
 
 // Returns a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo>

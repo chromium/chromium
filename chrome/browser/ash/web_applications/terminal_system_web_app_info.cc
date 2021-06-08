@@ -46,3 +46,25 @@ gfx::Rect GetDefaultBoundsForTerminal(Browser* browser) {
   }
   return TERMINAL_DEFAULT_BOUNDS;
 }
+
+TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TERMINAL,
+                                    "Terminal",
+                                    GURL(chrome::kChromeUIUntrustedTerminalURL),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> TerminalSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForTerminalSystemWebApp();
+}
+
+bool TerminalSystemAppDelegate::ShouldBeSingleWindow() const {
+  return false;
+}
+bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
+  return true;
+}
+
+gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+  return GetDefaultBoundsForTerminal(browser);
+}

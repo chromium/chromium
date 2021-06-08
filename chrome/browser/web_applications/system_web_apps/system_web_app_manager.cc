@@ -114,22 +114,46 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
   info_vec.emplace_back(std::make_unique<CameraSystemAppDelegate>(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  info_vec.emplace_back(
+      std::make_unique<DiagnosticsSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<OSSettingsSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<CroshSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<TerminalSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<HelpAppSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<MediaSystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<PrintManagementSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<ScanningSystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<ShimlessRMASystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<ConnectivityDiagnosticsSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<EcheSystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<PersonalizationSystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<ShortcutCustomizationSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<OSFeedbackAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
-  bool install_experimental_apps = true;
-#else
-  bool install_experimental_apps = false;
-#endif
+  info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<FileManagerSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<SampleSystemAppDelegate>(profile));
+#endif  // !defined(OFFICIAL_BUILD)
 
   base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>> info_map;
   for (auto& info : info_vec) {
-    if (info->IsAppEnabled(install_experimental_apps) ||
+    if (info->IsAppEnabled() ||
         base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
       info_map.emplace(info->GetType(), std::move(info));
     }
   }
   // return info_map;
+#else
+  // return {};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::flat_map<SystemAppType, SystemAppInfo> infos;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // SystemAppInfo's |name| field should be defined. These names are persisted
