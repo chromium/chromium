@@ -294,8 +294,10 @@ js_library("metrics") {
 
 js_library("cloud_print_interface") {
   deps = [
+    ":metrics",
     ":native_layer",
     "data:destination",
+    "data:destination_match",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
