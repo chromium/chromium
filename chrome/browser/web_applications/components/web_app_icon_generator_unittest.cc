@@ -411,4 +411,35 @@ TEST_F(WebAppIconGeneratorTest, GenerateIcons) {
   EXPECT_TRUE(sizes.empty());
 }
 
+TEST_F(WebAppIconGeneratorTest, ConvertImageToSolidFillMonochrome) {
+  const int size_px = 512;
+  const float scale = 1.0f;
+
+  SkBitmap mixed_bitmap = CreateSquareIcon(size_px, SK_ColorBLUE);
+
+  SkIRect transparent_area = SkIRect::MakeXYWH(128, 128, 256, 256);
+  mixed_bitmap.erase(SK_ColorTRANSPARENT, transparent_area);
+
+  gfx::ImageSkia weird_image;
+  weird_image.AddRepresentation(gfx::ImageSkiaRep(mixed_bitmap, scale));
+
+  gfx::ImageSkia converted =
+      ConvertImageToSolidFillMonochrome(SK_ColorRED, weird_image);
+
+  EXPECT_TRUE(converted.IsThreadSafe());
+  ASSERT_TRUE(converted.HasRepresentation(scale));
+
+  const SkBitmap& converted_bitmap =
+      converted.GetRepresentation(scale).GetBitmap();
+
+  EXPECT_EQ(converted_bitmap.getColor(0, 0), SK_ColorRED);
+  EXPECT_EQ(converted_bitmap.getColor(256, 256), SK_ColorTRANSPARENT);
+}
+
+TEST_F(WebAppIconGeneratorTest, ConvertImageToSolidFillMonochrome_Empty) {
+  gfx::ImageSkia converted =
+      ConvertImageToSolidFillMonochrome(SK_ColorRED, gfx::ImageSkia());
+  EXPECT_TRUE(converted.isNull());
+}
+
 }  // namespace web_app

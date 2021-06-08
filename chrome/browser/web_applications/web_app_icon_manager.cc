@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -19,11 +20,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/layout.h"
@@ -621,6 +624,11 @@ WebAppIconManager* WebAppIconManager::AsWebAppIconManager() {
 void WebAppIconManager::Start() {
   for (const AppId& app_id : registrar_.GetAppIds()) {
     ReadFavicon(app_id);
+
+    if (base::FeatureList::IsEnabled(
+            features::kDesktopPWAsNotificationIconAndTitle)) {
+      ReadMonochromeFavicon(app_id);
+    }
   }
   registrar_observation_.Observe(&registrar_);
 }
@@ -789,8 +797,19 @@ gfx::ImageSkia WebAppIconManager::GetFaviconImageSkia(
   return iter != favicon_cache_.end() ? iter->second : gfx::ImageSkia();
 }
 
+gfx::ImageSkia WebAppIconManager::GetMonochromeFavicon(
+    const AppId& app_id) const {
+  auto iter = favicon_monochrome_cache_.find(app_id);
+  return iter != favicon_monochrome_cache_.end() ? iter->second
+                                                 : gfx::ImageSkia();
+}
+
 void WebAppIconManager::OnWebAppInstalled(const AppId& app_id) {
   ReadFavicon(app_id);
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsNotificationIconAndTitle)) {
+    ReadMonochromeFavicon(app_id);
+  }
 }
 
 void WebAppIconManager::OnAppRegistrarDestroyed() {
@@ -823,12 +842,13 @@ void WebAppIconManager::ReadIconAndResize(const AppId& app_id,
 
 void WebAppIconManager::ReadUiScaleFactorsIcons(
     const AppId& app_id,
+    IconPurpose purpose,
     SquareSizeDip size_in_dip,
     ReadImageSkiaCallback callback) {
   SortedSizesPx ui_scale_factors_px_sizes;
   for (ui::ScaleFactor scale_factor : ui::GetSupportedScaleFactors()) {
     auto size_and_purpose = FindIconMatchBigger(
-        app_id, {IconPurpose::ANY},
+        app_id, {purpose},
         gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
                                 ui::GetScaleForScaleFactor(scale_factor))
             .width());
@@ -841,7 +861,7 @@ void WebAppIconManager::ReadUiScaleFactorsIcons(
     return;
   }
 
-  ReadIcons(app_id, IconPurpose::ANY, ui_scale_factors_px_sizes,
+  ReadIcons(app_id, purpose, ui_scale_factors_px_sizes,
             base::BindOnce(&WebAppIconManager::OnReadUiScaleFactorsIcons,
                            weak_ptr_factory_.GetWeakPtr(), size_in_dip,
                            std::move(callback)));
@@ -858,6 +878,11 @@ void WebAppIconManager::OnReadUiScaleFactorsIcons(
 void WebAppIconManager::SetFaviconReadCallbackForTesting(
     FaviconReadCallback callback) {
   favicon_read_callback_ = std::move(callback);
+}
+
+void WebAppIconManager::SetFaviconMonochromeReadCallbackForTesting(
+    FaviconReadCallback callback) {
+  favicon_monochrome_read_callback_ = std::move(callback);
 }
 
 absl::optional<AppIconManager::IconSizeAndPurpose>
@@ -885,7 +910,7 @@ WebAppIconManager::FindIconMatchSmaller(
 
 void WebAppIconManager::ReadFavicon(const AppId& app_id) {
   ReadUiScaleFactorsIcons(
-      app_id, gfx::kFaviconSize,
+      app_id, IconPurpose::ANY, gfx::kFaviconSize,
       base::BindOnce(&WebAppIconManager::OnReadFavicon,
                      weak_ptr_factory_.GetWeakPtr(), app_id));
 }
@@ -897,6 +922,48 @@ void WebAppIconManager::OnReadFavicon(const AppId& app_id,
 
   if (favicon_read_callback_)
     favicon_read_callback_.Run(app_id);
+}
+
+void WebAppIconManager::ReadMonochromeFavicon(const AppId& app_id) {
+  ReadUiScaleFactorsIcons(
+      app_id, IconPurpose::MONOCHROME, gfx::kFaviconSize,
+      base::BindOnce(&WebAppIconManager::OnReadMonochromeFavicon,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
+void WebAppIconManager::OnReadMonochromeFavicon(
+    const AppId& app_id,
+    gfx::ImageSkia manifest_monochrome_image) {
+  const WebApp* web_app = registrar_.GetAppById(app_id);
+  if (!web_app)
+    return;
+
+  if (manifest_monochrome_image.isNull()) {
+    OnMonochromeIconConverted(app_id, manifest_monochrome_image);
+    return;
+  }
+
+  const SkColor solid_color =
+      web_app->theme_color() ? *web_app->theme_color() : SK_ColorDKGRAY;
+
+  manifest_monochrome_image.MakeThreadSafe();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(ConvertImageToSolidFillMonochrome, solid_color,
+                     std::move(manifest_monochrome_image)),
+      base::BindOnce(&WebAppIconManager::OnMonochromeIconConverted,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
+void WebAppIconManager::OnMonochromeIconConverted(
+    const AppId& app_id,
+    gfx::ImageSkia converted_image) {
+  if (!converted_image.isNull())
+    favicon_monochrome_cache_[app_id] = converted_image;
+
+  if (favicon_monochrome_read_callback_)
+    favicon_monochrome_read_callback_.Run(app_id);
 }
 
 }  // namespace web_app

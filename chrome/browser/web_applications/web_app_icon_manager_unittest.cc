@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
@@ -29,9 +30,11 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
@@ -282,6 +285,17 @@ class WebAppIconManagerTest : public WebAppTest {
   void StartIconManagerWaitFavicon(const AppId& app_id) {
     base::RunLoop run_loop;
     icon_manager().SetFaviconReadCallbackForTesting(
+        base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+          EXPECT_EQ(cached_app_id, app_id);
+          run_loop.Quit();
+        }));
+    icon_manager().Start();
+    run_loop.Run();
+  }
+
+  void StartIconManagerWaitFaviconMonochrome(const AppId& app_id) {
+    base::RunLoop run_loop;
+    icon_manager().SetFaviconMonochromeReadCallbackForTesting(
         base::BindLambdaForTesting([&](const AppId& cached_app_id) {
           EXPECT_EQ(cached_app_id, app_id);
           run_loop.Quit();
@@ -1557,6 +1571,160 @@ TEST_F(WebAppIconManagerTest,
   }
   EXPECT_FALSE(image_skia.HasRepresentation(2.0f));
   EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
+}
+
+class WebAppIconManagerTest_NotificationIconAndTitle
+    : public WebAppIconManagerTest {
+ public:
+  WebAppIconManagerTest_NotificationIconAndTitle() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsNotificationIconAndTitle);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
+       CacheAppMonochromeFavicon_NoMissingIcons) {
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  web_app->SetThemeColor(absl::make_optional(SK_ColorBLUE));
+
+  const AppId app_id = web_app->app_id();
+
+  // App declares icons precisely matching suspported UI scale factors.
+  const std::vector<int> sizes_px{icon_size::k16, icon_size::k32,
+                                  icon_size::k64};
+  ASSERT_TRUE(base::Contains(sizes_px, gfx::kFaviconSize));
+
+  const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorTRANSPARENT,
+                                    SK_ColorRED};
+  WriteGeneratedIcons(app_id, {{IconPurpose::MONOCHROME, sizes_px, colors}});
+
+  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFaviconMonochrome(app_id);
+
+  gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
+  ASSERT_FALSE(monochrome_image.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.width());
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/1.0f,
+                       /*size_px=*/icon_size::k16, SK_ColorBLUE);
+  }
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/2.0f,
+                       /*size_px=*/icon_size::k32, SK_ColorTRANSPARENT);
+  }
+  {
+    SCOPED_TRACE(icon_size::k48);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/3.0f,
+                       /*size_px=*/icon_size::k48, SK_ColorBLUE);
+  }
+}
+
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
+       CacheAppMonochromeFavicon_CacheAfterAppInstall) {
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
+
+  icon_manager().Start();
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  web_app->SetThemeColor(absl::make_optional(SK_ColorGREEN));
+
+  const AppId app_id = web_app->app_id();
+
+  // App declares only one jumbo icon.
+  const std::vector<int> sizes_px{icon_size::k512};
+  const std::vector<SkColor> colors{SK_ColorRED};
+  WriteGeneratedIcons(app_id, {{IconPurpose::MONOCHROME, sizes_px, colors}});
+  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
+
+  base::RunLoop run_loop;
+  icon_manager().SetFaviconMonochromeReadCallbackForTesting(
+      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+        EXPECT_EQ(cached_app_id, app_id);
+        run_loop.Quit();
+      }));
+
+  controller().RegisterApp(std::move(web_app));
+  registrar().NotifyWebAppInstalled(app_id);
+
+  run_loop.Run();
+
+  gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
+  ASSERT_FALSE(monochrome_image.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.width());
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.height());
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/2.0f,
+                       /*size_px=*/icon_size::k32, SK_ColorGREEN);
+  }
+  {
+    SCOPED_TRACE(icon_size::k48);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/3.0f,
+                       /*size_px=*/icon_size::k48, SK_ColorGREEN);
+  }
+}
+
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
+       CacheAppMonochromeFavicon_NoThemeColor) {
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  web_app->SetThemeColor(absl::nullopt);
+
+  const AppId app_id = web_app->app_id();
+
+  // Provides only SCALE_FACTOR_200P icon.
+  const std::vector<int> sizes_px{icon_size::k32};
+  const std::vector<SkColor> colors{SK_ColorRED};
+  WriteGeneratedIcons(app_id, {{IconPurpose::MONOCHROME, sizes_px, colors}});
+  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFaviconMonochrome(app_id);
+
+  gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
+  ASSERT_FALSE(monochrome_image.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.width());
+  EXPECT_EQ(gfx::kFaviconSize, monochrome_image.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/1.0f,
+                       /*size_px=*/icon_size::k16, SK_ColorDKGRAY);
+  }
+  EXPECT_FALSE(monochrome_image.HasRepresentation(2.0));
+  EXPECT_FALSE(monochrome_image.HasRepresentation(3.0));
+}
+
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
+       CacheAppMonochromeFavicon_NoIcons) {
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFaviconMonochrome(app_id);
+
+  gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
+  EXPECT_TRUE(monochrome_image.isNull());
 }
 
 }  // namespace web_app

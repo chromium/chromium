@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace web_app {
 
@@ -254,6 +255,26 @@ SizeToBitmap GenerateIcons(const std::string& app_name,
     icons[size] = GenerateBitmap(size, background_icon_color, icon_letter);
   }
   return icons;
+}
+
+gfx::ImageSkia ConvertImageToSolidFillMonochrome(SkColor solid_color,
+                                                 const gfx::ImageSkia& image) {
+  if (image.isNull())
+    return image;
+
+  // Create a monochrome image by combining alpha channel of |image| and
+  // |solid_color|.
+  gfx::ImageSkia solid_fill_image =
+      gfx::ImageSkiaOperations::CreateColorMask(image, solid_color);
+
+  // Does the actual conversion from the source image.
+  for (const gfx::ImageSkiaRep& src_ui_scalefactor_rep : image.image_reps())
+    solid_fill_image.GetRepresentation(src_ui_scalefactor_rep.scale());
+
+  // Deletes the pointer to the source image.
+  solid_fill_image.MakeThreadSafe();
+
+  return solid_fill_image;
 }
 
 }  // namespace web_app

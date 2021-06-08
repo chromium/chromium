@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -129,8 +130,10 @@ void ExpectImageSkiaRep(const gfx::ImageSkia& image_skia,
   EXPECT_EQ(size_px, image_skia.GetRepresentation(scale).GetBitmap().width());
   EXPECT_EQ(size_px, image_skia.GetRepresentation(scale).GetBitmap().height());
 
-  EXPECT_EQ(color,
-            image_skia.GetRepresentation(scale).GetBitmap().getColor(0, 0));
+  EXPECT_EQ(
+      color_utils::SkColorToRgbaString(color),
+      color_utils::SkColorToRgbaString(
+          image_skia.GetRepresentation(scale).GetBitmap().getColor(0, 0)));
 }
 
 blink::Manifest::ImageResource CreateSquareImageResource(

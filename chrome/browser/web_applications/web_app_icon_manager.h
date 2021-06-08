@@ -92,6 +92,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   SkBitmap GetFavicon(const AppId& app_id) const override;
 
   gfx::ImageSkia GetFaviconImageSkia(const AppId& app_id) const;
+  gfx::ImageSkia GetMonochromeFavicon(const AppId& app_id) const;
 
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
@@ -111,10 +112,12 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   // for all supported UI scale factors (matches only bigger icons, no
   // upscaling).
   void ReadUiScaleFactorsIcons(const AppId& app_id,
+                               IconPurpose purpose,
                                SquareSizeDip size_in_dip,
                                ReadImageSkiaCallback callback);
 
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
+  void SetFaviconMonochromeReadCallbackForTesting(FaviconReadCallback callback);
 
  private:
   absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
@@ -129,6 +132,12 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   void ReadFavicon(const AppId& app_id);
   void OnReadFavicon(const AppId& app_id, gfx::ImageSkia image_skia);
 
+  void ReadMonochromeFavicon(const AppId& app_id);
+  void OnReadMonochromeFavicon(const AppId& app_id,
+                               gfx::ImageSkia manifest_monochrome_image);
+  void OnMonochromeIconConverted(const AppId& app_id,
+                                 gfx::ImageSkia converted_image);
+
   WebAppRegistrar& registrar_;
   base::FilePath web_apps_directory_;
   std::unique_ptr<FileUtilsWrapper> utils_;
@@ -138,11 +147,12 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
 
   // We cache different densities for high-DPI displays per each app.
   std::map<AppId, gfx::ImageSkia> favicon_cache_;
+  std::map<AppId, gfx::ImageSkia> favicon_monochrome_cache_;
 
   FaviconReadCallback favicon_read_callback_;
+  FaviconReadCallback favicon_monochrome_read_callback_;
 
   base::WeakPtrFactory<WebAppIconManager> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app

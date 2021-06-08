@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -79,6 +80,12 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
 // name and some background color. |app_name| is encoded as UTF8.
 SizeToBitmap GenerateIcons(const std::string& app_name,
                            SkColor background_icon_color);
+
+// Converts any image with arbitrary RGB channels to a monochrome image
+// according to the spec.
+// https://www.w3.org/TR/appmanifest/#monochrome-icons-and-solid-fills
+gfx::ImageSkia ConvertImageToSolidFillMonochrome(SkColor solid_color,
+                                                 const gfx::ImageSkia& image);
 
 }  // namespace web_app
 
