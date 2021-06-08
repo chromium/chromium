@@ -48,7 +48,10 @@ class TasksSurfaceViewBinder {
     private static void updateLayoutAndVisibility(ViewHolder viewHolder, PropertyModel model) {
         boolean isShowing = model.get(IS_SHOWING_OVERVIEW);
         if (isShowing && viewHolder.tasksSurfaceView.getParent() == null) {
-            viewHolder.parentView.addView(viewHolder.tasksSurfaceView);
+            // Insert right above compositor view if present.
+            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
+            int pos = viewHolder.parentView.getChildCount() > 0 ? 1 : 0;
+            viewHolder.parentView.addView(viewHolder.tasksSurfaceView, pos);
             MarginLayoutParams layoutParams =
                     (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
             layoutParams.bottomMargin = model.get(BOTTOM_BAR_HEIGHT);

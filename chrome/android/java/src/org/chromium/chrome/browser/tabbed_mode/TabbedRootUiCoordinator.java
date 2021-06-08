@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickOb
 import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerFactory;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -351,7 +352,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 activityTabProvider, mActivity.getInsetObserverView(), new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
-                        if (tab.canGoBack()) return ActionType.NAVIGATE_BACK;
+                        if (isShowingStartSurfaceHomepage()) return ActionType.EXIT_APP;
+                        if (tab.canGoBack()
+                                || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE) {
+                            return ActionType.NAVIGATE_BACK;
+                        }
                         if (TabAssociatedApp.isOpenedFromExternalApp(tab)) {
                             return ActionType.EXIT_APP;
                         }
@@ -363,6 +368,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     public void onBackGesture() {
                         // Back navigation gesture performs what the back button would do.
                         mActivity.onBackPressed();
+                    }
+
+                    @Override
+                    public boolean isNavigable() {
+                        return isShowingStartSurfaceHomepage();
                     }
                 }, cvh::addTouchEventObserver, mLayoutManager);
         mRootUiTabObserver.swapToTab(activityTabProvider.get());
@@ -405,6 +415,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         initMerchantTrustSignals();
         initCommerceSubscriptionsService();
+    }
+
+    private boolean isShowingStartSurfaceHomepage() {
+        return mStartSurfaceSupplier.get() != null
+                && mStartSurfaceSupplier.get().getController().getStartSurfaceState()
+                == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
     private void initMerchantTrustSignals() {

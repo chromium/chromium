@@ -95,6 +95,7 @@ public class HistoryNavigationCoordinator
         mBackActionDelegate = backActionDelegate;
         lifecycleDispatcher.register(this);
 
+        // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
         parentView.addView(mNavigationLayout);
 
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier,

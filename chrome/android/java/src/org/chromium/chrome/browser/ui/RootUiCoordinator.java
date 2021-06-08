@@ -184,7 +184,7 @@ public class RootUiCoordinator
     protected final CallbackController mCallbackController;
     private final BrowserControlsManager mBrowserControlsManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
     private ManagedMessageDispatcher mMessageDispatcher;
     @Nullable

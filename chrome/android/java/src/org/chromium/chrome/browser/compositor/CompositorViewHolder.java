@@ -1382,6 +1382,7 @@ public class CompositorViewHolder extends FrameLayout
             }
 
             // CompositorView always has index of 0.
+            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
             addView(mView, 1);
 
             setFocusable(false);
