@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.test.espresso.DataInteraction;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
@@ -62,7 +63,6 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -84,6 +84,10 @@ public class FlagsFragmentTest {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
+        // Always close the soft keyboard when the activity is launched which is sometimes shown
+        // because flags search TextView has input focus by default. The keyboard may cover up some
+        // Views causing test flakiness/failures.
+        Espresso.closeSoftKeyboard();
     }
 
     @After
@@ -399,7 +403,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1141442")
     public void testToggledFlagsFloatToTop() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
         int totalNumFlags = flagsList.getCount();
