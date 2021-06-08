@@ -2711,6 +2711,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AttachedToWindowIn30s" enum="Boolean"
     expires_after="2021-06-09">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -2721,6 +2724,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AttachedToWindowIn3m" enum="Boolean"
     expires_after="2021-06-09">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -2731,6 +2737,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AttachedToWindowIn5s" enum="Boolean"
     expires_after="2021-06-09">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -2741,6 +2750,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AttachedToWindowTime" units="ms"
     expires_after="2021-06-09">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -3091,6 +3103,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.EverAttachedToWindow" enum="Boolean"
     expires_after="2021-06-09">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>

@@ -7,8 +7,6 @@ import("//build/config/android/rules.gni")
 
 source_set("gfx") {
   sources = [
-    "aw_attaching_to_window_recorder.cc",
-    "aw_attaching_to_window_recorder.h",
     "aw_draw_fn_impl.cc",
     "aw_draw_fn_impl.h",
     "aw_gl_functor.cc",

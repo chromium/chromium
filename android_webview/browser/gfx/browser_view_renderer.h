@@ -38,7 +38,6 @@ class WebContents;
 
 namespace android_webview {
 
-class AwAttachingToWindowRecorder;
 class BrowserViewRendererClient;
 class ChildFrame;
 class CompositorFrameConsumer;
@@ -277,8 +276,6 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   ParentCompositorDrawConstraints external_draw_constraints_;
 
   std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
-
-  scoped_refptr<AwAttachingToWindowRecorder> recorder_;
 
   base::WeakPtrFactory<CompositorFrameProducer> weak_ptr_factory_{this};
 
