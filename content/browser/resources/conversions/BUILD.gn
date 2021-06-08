@@ -12,18 +12,13 @@ js_type_check("closure_compile") {
             rebase_path("$root_gen_dir/mojom-webui/content/browser/conversions",
                         root_build_dir),
       ]
-  deps = [ ":conversions_internals" ]
+  deps = [ ":conversion_internals" ]
 }
 
-js_library("conversions_internals") {
-  sources = [
-    # TODO(crbug.com/1217165): Fix Closure errors in .js and uncomment the line
-    #                          below.
-    # "conversion_internals.js"
-  ]
-
+js_library("conversion_internals") {
   deps = [
     "//content/browser/conversions:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
   ]
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
@@ -9,7 +10,7 @@ import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SentReport
 
 /**
  * Reference to the backend providing all the data.
- * @type {ConversionInternalsHandlerRemote}
+ * @type {?ConversionInternalsHandlerRemote}
  */
 let pageHandler = null;
 
@@ -17,23 +18,23 @@ let pageHandler = null;
  * All sources held in storage at last update.
  * @type {!Array<!WebUIImpression>}
  */
-let sources = null;
+let sources = [];
 
 /**
  * All reports held in storage at last update.
  * @type {!Array<!WebUIConversionReport>}
  */
-let reports = null;
+let reports = [];
 
 /**
  * All sent reports at last update.
  * @type {!Array<!SentReportInfo>}
  */
-let sentReports = null;
+let sentReports = [];
 
 /**
  * This is used to create TrustedHTML.
- * @type {!TrustedTypePolicy}
+ * @type {?TrustedTypePolicy}
  */
 let staticHtmlPolicy = null;
 
@@ -66,7 +67,7 @@ function UrlToText(origin) {
 
 /**
  * Converts a mojo SourceType into a user-readable string.
- * @param {WebUIImpression_SourceType} sourceType Source type to convert
+ * @param {SourceType} sourceType Source type to convert
  * @return {string}
  */
 function SourceTypeToText(sourceType) {
@@ -83,7 +84,7 @@ function SourceTypeToText(sourceType) {
 /**
  * Creates a single row for the source table.
  * @param {!WebUIImpression} source The info to create the row.
- * @return {!HTMLElement}
+ * @return {!Node}
  */
 function createSourceRow(source) {
   const template = $('source-row').cloneNode(true);
@@ -103,7 +104,7 @@ function createSourceRow(source) {
 /**
  * Creates a single row for the report table.
  * @param {!WebUIConversionReport} report The info to create the row.
- * @return {!HTMLElement}
+ * @return {!Node}
  */
 function createReportRow(report) {
   const template = $('report-row').cloneNode(true);
@@ -121,7 +122,7 @@ function createReportRow(report) {
 /**
  * Creates a single row for the sent report table.
  * @param {!SentReportInfo} info The info to create the row.
- * @return {!HTMLElement}
+ * @return {!Node}
  */
 function createSentReportRow(info) {
   const template = $('sent-report-row').cloneNode(true);
@@ -138,6 +139,7 @@ function createSentReportRow(info) {
  */
 function renderSourceTable() {
   const sourceTable = $('source-table-body');
+  assert(sourceTable);
   clearTable(sourceTable);
   sources.forEach(source => sourceTable.appendChild(createSourceRow(source)));
 
@@ -156,6 +158,7 @@ function renderSourceTable() {
  */
 function renderReportTable() {
   const reportTable = $('report-table-body');
+  assert(reportTable);
   clearTable(reportTable);
   reports.forEach(report => reportTable.appendChild(createReportRow(report)));
 
@@ -174,6 +177,7 @@ function renderReportTable() {
  */
 function renderSentReportTable() {
   const sentReportTable = $('sent-report-table-body');
+  assert(sentReportTable);
   clearTable(sentReportTable);
   sentReports.forEach(
       report => sentReportTable.appendChild(createSentReportRow(report)));
