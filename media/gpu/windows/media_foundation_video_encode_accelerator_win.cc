@@ -869,8 +869,10 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     input_texture->GetDesc(&input_desc);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
-    if (input_desc.Width != uint32_t{input_visible_size_.width()} ||
-        input_desc.Height != uint32_t{input_visible_size_.height()}) {
+    if (input_desc.Width !=
+            static_cast<uint32_t>(input_visible_size_.width()) ||
+        input_desc.Height !=
+            static_cast<uint32_t>(input_visible_size_.height())) {
       hr = PerformD3DScaling(input_texture.Get());
       RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
       sample_texture = scaled_d3d11_texture_;

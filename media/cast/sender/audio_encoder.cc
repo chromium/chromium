@@ -65,7 +65,7 @@ class AudioEncoder::ImplBase
         callback_(std::move(callback)),
         operational_status_(STATUS_UNINITIALIZED),
         frame_duration_(base::TimeDelta::FromSecondsD(
-            double{samples_per_frame_} / sampling_rate)),
+            static_cast<double>(samples_per_frame_) / sampling_rate)),
         buffer_fill_end_(0),
         frame_id_(FrameId::first()),
         samples_dropped_from_buffer_(0) {
