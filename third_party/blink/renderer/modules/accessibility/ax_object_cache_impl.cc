@@ -520,15 +520,18 @@ bool IsNodeRelevantForAccessibility(const Node* node,
 void DetachAndRemoveFromChildrenOfAncestors(AXObject* obj) {
   DCHECK(obj);
 
-  bool is_included = obj->LastKnownIsIncludedInTreeValue();
+  bool has_included_object_in_subtree =
+      obj->LastKnownIsIncludedInTreeValue() ||
+      obj->CachedUChildrenIncludingIgnored().size();
 
   AXObject* parent = obj->CachedParentObject();
 
   obj->Detach();
 
-  // If |obj| is not included, it cannot be in any ancestor's cached children.
-  // This rule improves performance when removing an entire of unincluded nodes.
-  if (!is_included)
+  // If |obj| is not included, and it has no included descendants, then there is
+  // nothing in any ancestor's cached children that needs clearing. This rule
+  // improves performance when removing an entire subtree of unincluded nodes.
+  if (!has_included_object_in_subtree)
     return;
 
   // Clear children of ancestors in order to ensure this detached object is not
