@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -85,8 +86,12 @@ using BrowserFrameAshTest = InProcessBrowserTest;
 // Tests that the correct bounds are being saved when a snapped window is
 // closed.
 IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  const gfx::Rect restored_bounds(200, 200);
+  auto* profile = browser()->profile();
+
+  // Get the params using the same profile.
+  Browser* browser = CreateBrowser(profile);
+  aura::Window* window = browser->window()->GetNativeWindow();
+  const gfx::Rect restored_bounds(600, 600);
   window->SetBounds(restored_bounds);
 
   // Snap the window to the left.
@@ -94,16 +99,14 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
   const gfx::Size snapped_size = window->GetBoundsInScreen().size();
 
-  // Get the params using the same profile.
-  Browser::CreateParams params =
-      Browser::CreateParams(browser()->profile(), /*user_gesture=*/true);
-  browser()->window()->Close();
+  browser->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(browser);
 
   // Recreate the browser window. Test that the bounds are the same as the
   // snapped size (position has been shifted by the ash auto window positioner).
-  Browser* browser = Browser::Create(params);
-  browser->window()->Show();
-  aura::Window* new_window = browser->window()->GetNativeWindow();
+  Browser* new_browser = CreateBrowser(profile);
+  new_browser->window()->Show();
+  aura::Window* new_window = new_browser->window()->GetNativeWindow();
   EXPECT_EQ(snapped_size, new_window->GetBoundsInScreen().size());
 }
 
