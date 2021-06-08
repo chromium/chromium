@@ -32,7 +32,7 @@ HistogramBase* SparseHistogram::FactoryGet(const std::string& name,
     // TODO(gayane): |HashMetricName| is called again in Histogram constructor.
     // Refactor code to avoid the additional call.
     bool should_record =
-        StatisticsRecorder::ShouldRecordHistogram(HashMetricName(name));
+        StatisticsRecorder::ShouldRecordHistogram(HashMetricNameAs32Bits(name));
     if (!should_record)
       return DummyHistogram::GetInstance();
     // Try to create the histogram using a "persistent" allocator. As of
