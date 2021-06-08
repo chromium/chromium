@@ -231,6 +231,47 @@ TEST(PasswordReuseDetectorTest, OnLoginsChanged) {
   }
 }
 
+TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
+  PasswordReuseDetector reuse_detector;
+  std::vector<std::unique_ptr<PasswordForm>> login_credentials =
+      GetForms(GetTestDomainsPasswords());
+  // Add the test domain passwords into the saved passwords map.
+  PasswordStoreChangeList add_changes =
+      GetChangeList(PasswordStoreChange::ADD, login_credentials);
+  reuse_detector.OnLoginsChanged(add_changes);
+
+  const std::vector<MatchingReusedCredential>
+      expected_matching_reused_credentials = {
+          {"https://accounts.google.com", u"gUsername"}};
+  MockPasswordReuseDetectorConsumer mockConsumer;
+  // One of the passwords in |login_credentials| has less than the minimum
+  // requirement of characters in a password so it will not be stored.
+  int valid_passwords = login_credentials.size() - 1;
+  EXPECT_CALL(
+      mockConsumer,
+      OnReuseCheckDone(
+          /*is_reuse_found=*/true, strlen("saved_password"),
+          Matches(NO_GAIA_OR_ENTERPRISE_REUSE),
+          UnorderedElementsAreArray(expected_matching_reused_credentials),
+          valid_passwords));
+
+  // "saved_password" is a substring of "123saved_password" so it should trigger
+  // a reuse and get the matching credentials.
+  reuse_detector.CheckReuse(u"123saved_password", "https://evil.com",
+                            &mockConsumer);
+  testing::Mock::VerifyAndClearExpectations(&mockConsumer);
+
+  // Remove the test domain passwords from the saved passwords map.
+  PasswordStoreChangeList remove_changes =
+      GetChangeList(PasswordStoreChange::REMOVE, login_credentials);
+  reuse_detector.OnLoginsChanged(remove_changes);
+  EXPECT_CALL(mockConsumer,
+              OnReuseCheckDone(/*is_reuse_found=*/false, _, _, _, _));
+  // The stored credentials were removed so no reuse should be found.
+  reuse_detector.CheckReuse(u"123saved_password", "https://evil.com",
+                            &mockConsumer);
+}
+
 TEST(PasswordReuseDetectorTest, MatchMultiplePasswords) {
   // These all have different length passwods so we can check the
   // returned length.

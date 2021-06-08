@@ -100,6 +100,11 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   // |passwords_with_matching_reused_credentials_|.
   void AddPassword(const PasswordForm& form);
 
+  // Remove password of |form| from
+  // |passwords_with_matching_reused_credentials_| and lower the counter of
+  // |saved_passwords_|.
+  void RemovePassword(const PasswordForm& form);
+
   // If Gaia password reuse is found, return the PasswordHashData of the reused
   // password. If no reuse is found, return |absl::nullopt|.
   absl::optional<PasswordHashData> CheckGaiaPasswordReuse(

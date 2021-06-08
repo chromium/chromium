@@ -98,6 +98,8 @@ void PasswordReuseDetector::OnLoginsChanged(
     if (change.type() == PasswordStoreChange::ADD ||
         change.type() == PasswordStoreChange::UPDATE)
       AddPassword(change.form());
+    if (change.type() == PasswordStoreChange::REMOVE)
+      RemovePassword(change.form());
   }
 }
 
@@ -295,6 +297,19 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
           {form.signon_realm, form.username_value, form.in_store});
   if (result.second) {
     saved_passwords_++;
+  }
+}
+
+void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
+  if (form.password_value.size() < kMinPasswordLengthToCheck)
+    return;
+
+  const auto result =
+      passwords_with_matching_reused_credentials_.find(form.password_value);
+  if (!(result == passwords_with_matching_reused_credentials_.end()) ||
+      !result->second.empty()) {
+    passwords_with_matching_reused_credentials_.erase(form.password_value);
+    saved_passwords_--;
   }
 }
 
