@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
 from telemetry import story
 from page_sets.desktop_ui import download_shelf_story, tab_search_story, webui_tab_strip_story
+from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
 
 class DesktopUIStorySet(story.StorySet):
@@ -40,6 +40,7 @@ class DesktopUIStorySet(story.StorySet):
 
   WEBUI_TAB_STRIP_STORIES = [
       webui_tab_strip_story.WebUITabStripStoryCleanSlate,
+      webui_tab_strip_story.WebUITabStripStoryMeasureMemory,
       webui_tab_strip_story.WebUITabStripStoryTop10,
       webui_tab_strip_story.WebUITabStripStoryTop10Loading,
   ]
@@ -68,7 +69,7 @@ class DesktopUIStorySet(story.StorySet):
           ]))
 
     # WebUI Tab Strip is not available on Mac.
-    if sys.platform != 'darwin':
+    if not IsMac():
       for cls in self.WEBUI_TAB_STRIP_STORIES:
         self.AddStory(
             cls(self, [
