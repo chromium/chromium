@@ -35,7 +35,7 @@ class SystemEngine : public mojom::InputChannel {
   // the given ime_spec is supported by the engine.
   bool BindRequest(const std::string& ime_spec,
                    mojo::PendingReceiver<mojom::InputChannel> receiver,
-                   mojo::PendingRemote<mojom::InputChannel> remote,
+                   mojo::PendingRemote<mojom::InputChannel> delegate,
                    base::OnceCallback<void()> disconnect_callback);
 
   // mojom::InputChannel:
@@ -74,6 +74,8 @@ class SystemEngine : public mojom::InputChannel {
   void OnSuggestionsReturned(mojom::SuggestionsResponsePtr response);
 
  private:
+  void ProcessMessage(const std::vector<uint8_t>& message);
+
   // Try to load the decoding functions from some decoder shared library.
   // Returns whether loading decoder is successful.
   bool TryLoadDecoder();
@@ -84,13 +86,13 @@ class SystemEngine : public mojom::InputChannel {
   // Called when there's a reply from the shared library.
   // Deserializes |message| and converts it into Mojo calls to the receiver.
   void OnReply(const std::vector<uint8_t>& message,
-               mojo::Remote<mojom::InputChannel>& remote);
+               mojo::Remote<mojom::InputChannel>& delegate);
 
   ImeCrosPlatform* platform_ = nullptr;
 
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
-  mojo::Receiver<mojom::InputChannel> decoder_channel_receiver_;
+  mojo::Receiver<mojom::InputChannel> receiver_{this};
 
   // Sequence ID for protobuf messages sent from the engine.
   uint64_t current_seq_id_ = 0;
