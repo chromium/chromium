@@ -32,6 +32,18 @@ const char kIsAwaitingVerifiedHost[] =
 const char kHasDismissedSetupRequiredUi[] =
     "cros.phonehub.has_dismissed_setup_required_ui";
 
+// TODO(http://crbug.com/1215559): Deprecate when there are no more active Phone
+// Hub notification users on M89. Some users had notifications automatically
+// disabled when updating from M89 to M90+ because the notification feature
+// state went from enabled-by-default to disabled-by-default. To re-enable those
+// users, we once and only once notify observers if access has been granted by
+// the phone. Notably, the MultideviceSetupStateUpdate will decide whether or
+// not the notification feature should be enabled. See
+// MultideviceSetupStateUpdater's method
+// IsWaitingForAccessToInitiallyEnableNotifications() for more details.
+const char kNeedsOneTimeNotificationAccessUpdate[] =
+    "cros.phonehub.needs_one_time_notification_access_update";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace chromeos
