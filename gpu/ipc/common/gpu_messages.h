@@ -10,9 +10,6 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
-
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -57,15 +54,6 @@
 #define IPC_MESSAGE_EXPORT GPU_EXPORT
 
 #define IPC_MESSAGE_START GpuChannelMsgStart
-
-IPC_STRUCT_BEGIN(GpuCommandBufferMsg_CreateImage_Params)
-  IPC_STRUCT_MEMBER(int32_t, id)
-  IPC_STRUCT_MEMBER(gfx::GpuMemoryBufferHandle, gpu_memory_buffer)
-  IPC_STRUCT_MEMBER(gfx::Size, size)
-  IPC_STRUCT_MEMBER(gfx::BufferFormat, format)
-  IPC_STRUCT_MEMBER(gfx::BufferPlane, plane)
-  IPC_STRUCT_MEMBER(uint64_t, image_release_count)
-IPC_STRUCT_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(GrSurfaceOrigin, kBottomLeft_GrSurfaceOrigin)
 
@@ -128,81 +116,5 @@ IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
                     gfx::Size /* rotated_visible_size */)
 
 #endif
-
-//------------------------------------------------------------------------------
-// GPU Command Buffer Messages
-// These are messages between a renderer process to the GPU process relating to
-// a single OpenGL context.
-
-// Sent by the GPU process to notify the renderer process of a GPU switch.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_GpuSwitched,
-                    gl::GpuPreference /* active_gpu_heuristic */)
-
-// Register an existing shared memory transfer buffer. The id that can be
-// used to identify the transfer buffer from a command buffer.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_RegisterTransferBuffer,
-                    int32_t /* id */,
-                    base::UnsafeSharedMemoryRegion /* transfer_buffer */)
-
-// Tells the proxy that there was an error and the command buffer had to be
-// destroyed for some reason.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_Destroyed,
-                    gpu::error::ContextLostReason, /* reason */
-                    gpu::error::Error /* error */)
-
-// Tells the browser that SwapBuffers returned.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_SwapBuffersCompleted,
-                    gpu::SwapBuffersCompleteParams /* params */)
-
-// Tells the browser a buffer has been presented on screen.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_BufferPresented,
-                    uint64_t, /* swap_id */
-                    gfx::PresentationFeedback /* feedback */)
-
-// The receiver will asynchronously wait until the SyncToken is signaled, and
-// then return a GpuCommandBufferMsg_SignalAck message.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_SignalSyncToken,
-                    gpu::SyncToken /* sync_token */,
-                    uint32_t /* signal_id */)
-
-// Makes this command buffer signal when a query is reached, by sending
-// back a GpuCommandBufferMsg_SignalSyncPointAck message with the same
-// signal_id.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_SignalQuery,
-                    uint32_t /* query */,
-                    uint32_t /* signal_id */)
-
-// Response to SignalSyncPoint, SignalSyncToken, and SignalQuery.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_SignalAck,
-                    uint32_t /* signal_id */,
-                    gpu::CommandBuffer::State /* state */)
-
-// Create an image from an existing gpu memory buffer. The id that can be
-// used to identify the image from a command buffer.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_CreateImage,
-                    GpuCommandBufferMsg_CreateImage_Params /* params */)
-
-// Destroy a previously created image.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_DestroyImage, int32_t /* id */)
-
-// Send a GPU fence handle and store it for the specified gpu fence ID.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_CreateGpuFenceFromHandle,
-                    uint32_t /* gpu_fence_id */,
-                    gfx::GpuFenceHandle)
-
-// Request retrieval of a GpuFenceHandle by ID.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_GetGpuFenceHandle,
-                    uint32_t /* gpu_fence_id */)
-
-// Response to GetGpuFenceHandle.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_GetGpuFenceHandleComplete,
-                    uint32_t /* gpu_fence_id */,
-                    gfx::GpuFenceHandle)
-
-// Returns a block of data from the GPU process to the renderer.
-// This contains server->client messages produced by dawn_wire and is used to
-// remote WebGPU.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_ReturnData,
-                    std::vector<uint8_t> /* data */)
 
 #endif  // GPU_IPC_COMMON_GPU_MESSAGES_H_

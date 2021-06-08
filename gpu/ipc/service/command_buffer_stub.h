@@ -34,7 +34,8 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/swap_result.h"
@@ -99,7 +100,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // Establish Mojo bindings for the receiver and client endpoints.
   void BindEndpoints(
       mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
-      mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client);
+      mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   MemoryTracker* GetMemoryTracker() const;
   virtual MemoryTracker* GetContextGroupMemoryTracker() const = 0;
@@ -184,10 +186,42 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   scoped_refptr<gl::GLShareGroup> share_group() { return share_group_; }
 
  protected:
+  // Scoper to help with setup and teardown boilerplate around operations which
+  // may require the context to be current and which may need to process pending
+  // queries or schedule other delayed work after completion. This makes the
+  // context current on construction if possible.
+  class ScopedContextOperation {
+   public:
+    explicit ScopedContextOperation(CommandBufferStub& stub);
+    ~ScopedContextOperation();
+
+    // Making the context current on construction may fail, in which case the
+    // caller may wish to avoid doing work. This indicates whether it succeeded
+    // or failed.
+    bool is_context_current() const { return cache_use_.has_value(); }
+
+   private:
+    CommandBufferStub& stub_;
+    bool have_context_ = false;
+    absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
+  };
+
+  mojom::CommandBufferClient& client() { return *client_.get(); }
+
   // mojom::CommandBuffer:
   void SetGetBuffer(int32_t shm_id) override;
+  void RegisterTransferBuffer(
+      int32_t id,
+      base::UnsafeSharedMemoryRegion transfer_buffer) override;
+  void CreateGpuFenceFromHandle(uint32_t id,
+                                gfx::GpuFenceHandle handle) override;
+  void GetGpuFenceHandle(uint32_t id,
+                         GetGpuFenceHandleCallback callback) override;
+  void CreateImage(mojom::CreateImageParamsPtr params) override;
+  void DestroyImage(int32_t id) override;
+  void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
+  void SignalQuery(uint32_t query, uint32_t id) override;
 
-  virtual bool HandleMessage(const IPC::Message& message) = 0;
   virtual void OnTakeFrontBuffer(const Mailbox& mailbox) {}
   virtual void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {}
 
@@ -202,6 +236,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   // Sets |active_url_| as the active GPU process URL.
   void UpdateActiveUrl();
+
+  bool MakeCurrent();
 
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
@@ -236,8 +272,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
  private:
   void Destroy();
 
-  bool MakeCurrent();
-
   gles2::ProgramCache::ScopedCacheUse CreateCacheUse();
 
   // Message handlers:
@@ -245,14 +279,10 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void OnAsyncFlush(int32_t put_offset,
                     uint32_t flush_id,
                     const std::vector<SyncToken>& sync_token_fences);
-  void OnRegisterTransferBuffer(int32_t id,
-                                base::UnsafeSharedMemoryRegion transfer_buffer);
   void OnDestroyTransferBuffer(int32_t id);
   void OnGetTransferBuffer(int32_t id, IPC::Message* reply_message);
 
-  void OnSignalSyncToken(const SyncToken& sync_token, uint32_t id);
   void OnSignalAck(uint32_t id);
-  void OnSignalQuery(uint32_t query, uint32_t id);
 
   void ReportState();
 
@@ -297,7 +327,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   uint32_t wait_set_get_buffer_count_;
 
   mojo::AssociatedReceiver<mojom::CommandBuffer> receiver_{this};
-  mojo::AssociatedRemote<mojom::CommandBufferClient> client_;
+  mojo::SharedAssociatedRemote<mojom::CommandBufferClient> client_;
 
   DISALLOW_COPY_AND_ASSIGN(CommandBufferStub);
 };

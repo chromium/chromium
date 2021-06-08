@@ -12,8 +12,8 @@
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
-struct GpuCommandBufferMsg_CreateImage_Params;
 namespace gpu {
+
 struct Mailbox;
 
 class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
@@ -56,14 +56,15 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
  private:
-  bool HandleMessage(const IPC::Message& message) override;
+  // CommandBufferStub overrides:
   void OnTakeFrontBuffer(const Mailbox& mailbox) override;
   void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
-  void OnCreateGpuFenceFromHandle(uint32_t gpu_fence_id,
-                                  gfx::GpuFenceHandle handle);
-  void OnGetGpuFenceHandle(uint32_t gpu_fence_id);
-  void OnCreateImage(GpuCommandBufferMsg_CreateImage_Params params);
-  void OnDestroyImage(int32_t id);
+  void CreateGpuFenceFromHandle(uint32_t id,
+                                gfx::GpuFenceHandle handle) override;
+  void GetGpuFenceHandle(uint32_t gpu_fence_id,
+                         GetGpuFenceHandleCallback callback) override;
+  void CreateImage(mojom::CreateImageParamsPtr params) override;
+  void DestroyImage(int32_t id) override;
 
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
 

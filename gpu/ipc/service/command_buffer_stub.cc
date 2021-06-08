@@ -135,20 +135,14 @@ void CommandBufferStub::ExecuteDeferredRequest(
     mojom::DeferredCommandBufferRequestParams& params) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
                "data", DevToolsChannelData::CreateForChannel(channel()));
-  UpdateActiveUrl();
 
   // Ensure the appropriate GL context is current before handling any IPC
   // messages directed at the command buffer. This ensures that the message
   // handler can assume that the context is current (not necessary for
   // RetireSyncPoint or WaitSyncPoint).
-  bool have_context = false;
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
-  if (!params.is_destroy_transfer_buffer()) {
-    if (!MakeCurrent())
-      return;
-    cache_use.emplace(CreateCacheUse());
-    have_context = true;
-  }
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
 
   switch (params.which()) {
     case mojom::DeferredCommandBufferRequestParams::Tag::kAsyncFlush: {
@@ -171,61 +165,10 @@ void CommandBufferStub::ExecuteDeferredRequest(
       break;
     }
   }
-
-  CheckCompleteWaits();
-
-  if (have_context) {
-    if (decoder_context_)
-      decoder_context_->ProcessPendingQueries(false);
-    ScheduleDelayedWork(
-        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
-  }
 }
 
 bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
-               "data", DevToolsChannelData::CreateForChannel(channel()));
-  UpdateActiveUrl();
-  bool have_context = false;
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
-  // Ensure the appropriate GL context is current before handling any IPC
-  // messages directed at the command buffer. This ensures that the message
-  // handler can assume that the context is current (not necessary for
-  // RetireSyncPoint or WaitSyncPoint).
-  if (decoder_context_.get() &&
-      message.type() != GpuCommandBufferMsg_RegisterTransferBuffer::ID &&
-      message.type() != GpuCommandBufferMsg_SignalSyncToken::ID &&
-      message.type() != GpuCommandBufferMsg_SignalQuery::ID) {
-    if (!MakeCurrent())
-      return false;
-    cache_use.emplace(CreateCacheUse());
-    have_context = true;
-  }
-
-  bool handled = HandleMessage(message);
-  if (!handled) {
-    handled = true;
-    IPC_BEGIN_MESSAGE_MAP(CommandBufferStub, message)
-      IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_RegisterTransferBuffer,
-                          OnRegisterTransferBuffer);
-      IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SignalSyncToken,
-                          OnSignalSyncToken)
-      IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SignalQuery, OnSignalQuery)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-  }
-
-  CheckCompleteWaits();
-
-  // Ensure that any delayed work that was created will be handled.
-  if (have_context) {
-    if (decoder_context_)
-      decoder_context_->ProcessPendingQueries(false);
-    ScheduleDelayedWork(
-        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
-  }
-
-  return handled;
+  return false;
 }
 
 bool CommandBufferStub::Send(IPC::Message* message) {
@@ -453,10 +396,7 @@ void CommandBufferStub::OnParseError() {
   TRACE_EVENT0("gpu", "CommandBufferStub::OnParseError");
   DCHECK(command_buffer_.get());
   gpu::CommandBuffer::State state = command_buffer_->GetState();
-  IPC::Message* msg = new GpuCommandBufferMsg_Destroyed(
-      route_id_, state.context_lost_reason, state.error);
-  msg->set_unblock(true);
-  Send(msg);
+  client_->OnDestroyed(state.context_lost_reason, state.error);
 
   // Tell the browser about this context loss as well, so it can
   // determine whether client APIs like WebGL need to be immediately
@@ -578,9 +518,13 @@ void CommandBufferStub::OnAsyncFlush(
 #endif
 }
 
-void CommandBufferStub::OnRegisterTransferBuffer(
+void CommandBufferStub::RegisterTransferBuffer(
     int32_t id,
     base::UnsafeSharedMemoryRegion transfer_buffer) {
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
+               "data", DevToolsChannelData::CreateForChannel(channel()));
+  UpdateActiveUrl();
+
   TRACE_EVENT0("gpu", "CommandBufferStub::OnRegisterTransferBuffer");
 
   // Map the shared memory into this process.
@@ -597,6 +541,25 @@ void CommandBufferStub::OnRegisterTransferBuffer(
   }
 }
 
+void CommandBufferStub::CreateGpuFenceFromHandle(uint32_t id,
+                                                 gfx::GpuFenceHandle handle) {
+  DLOG(ERROR) << "CreateGpuFenceFromHandle unsupported.";
+}
+
+void CommandBufferStub::GetGpuFenceHandle(uint32_t id,
+                                          GetGpuFenceHandleCallback callback) {
+  DLOG(ERROR) << "GetGpuFenceHandle unsupported.";
+  std::move(callback).Run(gfx::GpuFenceHandle());
+}
+
+void CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
+  DLOG(ERROR) << "CreateImage unsupported.";
+}
+
+void CommandBufferStub::DestroyImage(int32_t id) {
+  DLOG(ERROR) << "DestroyImage unsupported.";
+}
+
 void CommandBufferStub::OnDestroyTransferBuffer(int32_t id) {
   TRACE_EVENT0("gpu", "CommandBufferStub::OnDestroyTransferBuffer");
 
@@ -608,8 +571,9 @@ void CommandBufferStub::ReportState() {
   command_buffer_->UpdateState();
 }
 
-void CommandBufferStub::OnSignalSyncToken(const SyncToken& sync_token,
-                                          uint32_t id) {
+void CommandBufferStub::SignalSyncToken(const SyncToken& sync_token,
+                                        uint32_t id) {
+  UpdateActiveUrl();
   auto callback =
       base::BindOnce(&CommandBufferStub::OnSignalAck, this->AsWeakPtr(), id);
   if (!sync_point_client_state_->WaitNonThreadSafe(
@@ -621,17 +585,18 @@ void CommandBufferStub::OnSignalSyncToken(const SyncToken& sync_token,
 void CommandBufferStub::OnSignalAck(uint32_t id) {
   gpu::CommandBuffer::State state = command_buffer_->GetState();
   ReportState();
-  Send(new GpuCommandBufferMsg_SignalAck(route_id_, id, state));
+  client_->OnSignalAck(id, state);
 }
 
-void CommandBufferStub::OnSignalQuery(uint32_t query_id, uint32_t id) {
+void CommandBufferStub::SignalQuery(uint32_t query_id, uint32_t id) {
+  UpdateActiveUrl();
   if (decoder_context_) {
     decoder_context_->SetQueryCallback(
         query_id,
         base::BindOnce(&CommandBufferStub::OnSignalAck, this->AsWeakPtr(), id));
   } else {
     // Something went wrong, run callback immediately.
-    VLOG(1) << "CommandBufferStub::OnSignalQueryk: No decoder to set query "
+    VLOG(1) << "CommandBufferStub::SignalQuery: No decoder to set query "
                "callback on. Running the callback immediately.";
     OnSignalAck(id);
   }
@@ -663,10 +628,7 @@ void CommandBufferStub::ScheduleGrContextCleanup() {
 }
 
 void CommandBufferStub::HandleReturnData(base::span<const uint8_t> data) {
-  std::vector<uint8_t> vec(data.begin(), data.end());
-  IPC::Message* msg =
-      new GpuCommandBufferMsg_ReturnData(route_id_, std::move(vec));
-  Send(msg);
+  client_->OnReturnData(std::vector<uint8_t>(data.begin(), data.end()));
 }
 
 void CommandBufferStub::OnConsoleMessage(int32_t id,
@@ -707,13 +669,14 @@ void CommandBufferStub::SetMemoryTrackerFactoryForTesting(
 
 void CommandBufferStub::BindEndpoints(
     mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
-    mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client) {
+    mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   DCHECK(!receiver_);
   DCHECK(!client_);
 
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), scheduler_task_runner_);
-  client_.Bind(std::move(client));
+  client_.Bind(std::move(client), std::move(io_task_runner));
 }
 
 MemoryTracker* CommandBufferStub::GetMemoryTracker() const {
@@ -783,6 +746,26 @@ CommandBufferStub::SetOrGetMemoryTrackerFactory(MemoryTrackerFactory factory) {
   if (factory)
     *current_factory = factory;
   return *current_factory;
+}
+
+CommandBufferStub::ScopedContextOperation::ScopedContextOperation(
+    CommandBufferStub& stub)
+    : stub_(stub) {
+  stub_.UpdateActiveUrl();
+  if (stub_.decoder_context_ && stub_.MakeCurrent()) {
+    have_context_ = true;
+    cache_use_.emplace(stub_.CreateCacheUse());
+  }
+}
+
+CommandBufferStub::ScopedContextOperation::~ScopedContextOperation() {
+  stub_.CheckCompleteWaits();
+  if (have_context_) {
+    if (stub_.decoder_context_)
+      stub_.decoder_context_->ProcessPendingQueries(/*did_finish=*/false);
+    stub_.ScheduleDelayedWork(
+        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
+  }
 }
 
 }  // namespace gpu

@@ -290,6 +290,15 @@ mojom("gpu_channel_mojom") {
       traits_headers = [ "scheduling_priority_mojom_traits.h" ]
       traits_public_deps = [ "//gpu/command_buffer/common:common_base_sources" ]
     },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SwapBuffersCompleteParams"
+          cpp = "::gpu::SwapBuffersCompleteParams"
+        },
+      ]
+      traits_headers = [ "gpu_param_traits_macros.h" ]
+    },
   ]
 
   # Unlike some definitions in ":interfaces_mojom", these bindings are never

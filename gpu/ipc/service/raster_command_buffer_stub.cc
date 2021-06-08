@@ -181,10 +181,6 @@ MemoryTracker* RasterCommandBufferStub::GetContextGroupMemoryTracker() const {
   return nullptr;
 }
 
-bool RasterCommandBufferStub::HandleMessage(const IPC::Message& message) {
-  return false;
-}
-
 void RasterCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 void RasterCommandBufferStub::SetActiveURL(GURL url) {

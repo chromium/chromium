@@ -952,7 +952,7 @@ void GpuChannel::CreateCommandBuffer(
     return;
   }
 
-  stub->BindEndpoints(std::move(receiver), std::move(client));
+  stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);
 
   responder.set_result(ContextResult::kSuccess);
   responder.set_capabilities(stub->decoder_context()->GetCapabilities());

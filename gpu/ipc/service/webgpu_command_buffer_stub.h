@@ -30,7 +30,6 @@ class GPU_IPC_SERVICE_EXPORT WebGPUCommandBufferStub
   MemoryTracker* GetContextGroupMemoryTracker() const override;
 
  private:
-  bool HandleMessage(const IPC::Message& message) override;
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
 
   DISALLOW_COPY_AND_ASSIGN(WebGPUCommandBufferStub);

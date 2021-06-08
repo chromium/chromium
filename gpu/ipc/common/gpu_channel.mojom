@@ -14,8 +14,10 @@ import "services/viz/public/mojom/compositing/resource_format.mojom";
 import "skia/public/mojom/image_info.mojom";
 import "skia/public/mojom/surface_origin.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "url/mojom/url.mojom";
 
@@ -200,6 +202,15 @@ interface GpuChannel {
       => (CommandBufferState state);
 };
 
+struct CreateImageParams {
+  int32 id;
+  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer;
+  gfx.mojom.Size size;
+  gfx.mojom.BufferFormat format;
+  gfx.mojom.BufferPlane plane;
+  uint64 image_release_count;
+};
+
 // Interface used to issue commands to a specific CommandBuffer instance in the
 // GPU process.
 interface CommandBuffer {
@@ -207,7 +218,44 @@ interface CommandBuffer {
   // correspond to one registered by a prior RegisterTransferBuffer IPC to the
   // same CommandBuffer.
   SetGetBuffer(int32 shm_id);
+
+  // Registers an existing shared memory transfer buffer with an `id` that can
+  // be used to identify it within a command buffer.
+  RegisterTransferBuffer(int32 id,
+                         mojo_base.mojom.UnsafeSharedMemoryRegion buffer);
+
+  // Sends a GPU fence handle and store it for the specified gpu fence ID.
+  CreateGpuFenceFromHandle(uint32 gpu_fence_id,
+                           gfx.mojom.GpuFenceHandle fence_handle);
+
+  // Requests retrieval of a GpuFenceHandle by ID.
+  GetGpuFenceHandle(uint32 id) => (gfx.mojom.GpuFenceHandle? fence_handle);
+
+  // Creates an image from an existing gpu memory buffer. The id that can be
+  // used to identify the image from a command buffer.
+  //
+  // TODO(crbug.com/1216120): Remove this once CreateImageCHROMIUM is gone.
+  CreateImage(CreateImageParams params);
+
+  // Destroys a previously created image identified by `id`.
+  //
+  // TODO(crbug.com/1216120): Remove this once CreateImageCHROMIUM is gone.
+  DestroyImage(int32 id);
+
+  // Asynchronously waits until the SyncToken is signaled, then sends a
+  // corresponding SignalAck on the CommandBufferClient interface, using
+  // `signal_id` to identify this request.
+  SignalSyncToken(SyncToken sync_token, uint32 signal_id);
+
+  // Asynchronously waits until a given query is reached in the command buffer,
+  // then sends a corresponding SignalAck on the CommandBufferClient interface,
+  // using `signal_id` to identify this request.
+  SignalQuery(uint32 query, uint32 signal_id);
 };
+
+// Corresponds to gpu::SwapBuffersCompleteParams.
+[Native]
+struct SwapBuffersCompleteParams;
 
 // Interface used by the GPU process to send the client messages from a specific
 // CommandBuffer instance.
@@ -216,6 +264,29 @@ interface CommandBufferClient {
   // command buffer. These messages are intended to be exposed by
   // developer-facing UI such as the DevTools console.
   OnConsoleMessage(string message);
+
+  // Notifies the client of a GPU switch.
+  OnGpuSwitched(gl.mojom.GpuPreference active_gpu_heuristic);
+
+  // Tells the proxy that there was an error and the command buffer had to be
+  // destroyed for some reason.
+  OnDestroyed(ContextLostReason reason, Error error);
+
+  // Tells the browser that SwapBuffers returned.
+  OnSwapBuffersCompleted(SwapBuffersCompleteParams params);
+
+  // Tells the browser a buffer has been presented on screen.
+  OnBufferPresented(uint64 swap_id, gfx.mojom.PresentationFeedback feedback);
+
+  // Returns a block of data from the GPU process to the client.
+  // This contains server->client messages produced by dawn_wire and is used to
+  // remote WebGPU.
+  OnReturnData(array<uint8> data);
+
+  // Signals the completion of an asynchronous wait initiated by SignalSyncToken
+  // or SignalQuery on the corresponding CommandBuffer interface. `signal_id`
+  // identifies the specific request being acknowledged.
+  OnSignalAck(uint32 signal_id, CommandBufferState state);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only

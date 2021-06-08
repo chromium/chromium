@@ -131,6 +131,7 @@ void GpuChannelTestCommon::CreateCommandBuffer(
   mojo::PendingAssociatedRemote<mojom::CommandBuffer> remote;
   mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client;
   ignore_result(client.InitWithNewEndpointAndPassReceiver());
+  client.EnableUnassociatedUsage();
   channel.CreateCommandBuffer(
       std::move(init_params), routing_id, std::move(shared_state),
       remote.InitWithNewEndpointAndPassReceiver(), std::move(client),

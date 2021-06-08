@@ -153,10 +153,6 @@ MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
   return nullptr;
 }
 
-bool WebGPUCommandBufferStub::HandleMessage(const IPC::Message& message) {
-  return false;
-}
-
 void WebGPUCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 }  // namespace gpu

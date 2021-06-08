@@ -69,7 +69,6 @@ class GpuMemoryBufferManager;
 // CommandBufferStub.
 class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
                                           public gpu::GpuControl,
-                                          public IPC::Listener,
                                           public mojom::CommandBufferClient {
  public:
   class DeletionObserver {
@@ -95,9 +94,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
                            const gpu::ContextCreationAttribs& attribs,
                            const GURL& active_url);
 
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnChannelError() override;
+  void OnDisconnect();
 
   // CommandBuffer implementation:
   State GetLastState() override;
@@ -188,17 +185,19 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message) override;
-
-  // Message handlers:
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
-                   gpu::error::Error error);
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic);
-  void OnSignalAck(uint32_t id, const CommandBuffer::State& state);
-  void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params);
+                   gpu::error::Error error) override;
+  void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params) override;
   void OnBufferPresented(uint64_t swap_id,
-                         const gfx::PresentationFeedback& feedback);
-  void OnGetGpuFenceHandleComplete(uint32_t gpu_fence_id, gfx::GpuFenceHandle);
-  void OnReturnData(const std::vector<uint8_t>& data);
+                         const gfx::PresentationFeedback& feedback) override;
+  void OnReturnData(const std::vector<uint8_t>& data) override;
+  void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
+
+  void OnGetGpuFenceHandleComplete(
+      uint32_t gpu_fence_id,
+      base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback,
+      gfx::GpuFenceHandle);
 
   // Try to read an updated copy of the state from shared memory, and calls
   // OnGpuStateError() if the new state has an error.
@@ -295,11 +294,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
   base::HistogramBase* uma_histogram_ensure_work_visible_duration_ = nullptr;
-
-  using GetGpuFenceTaskMap =
-      base::flat_map<uint32_t,
-                     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>>;
-  GetGpuFenceTaskMap get_gpu_fence_tasks_;
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};

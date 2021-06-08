@@ -4,6 +4,9 @@
 
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -108,6 +111,7 @@ class CommandBufferProxyImplTest : public testing::Test {
               // endpoint, which will send them to `mock_command_buffer` if
               // provided by the test.
               receiver.EnableUnassociatedUsage();
+              clients_.push_back(std::move(client));
               if (mock_command_buffer)
                 mock_command_buffer->Bind(std::move(receiver));
               *result = ContextResult::kSuccess;
@@ -143,6 +147,8 @@ class CommandBufferProxyImplTest : public testing::Test {
   IPC::TestSink sink_;
   MockGpuChannel mock_gpu_channel_;
   scoped_refptr<TestGpuChannelHost> channel_;
+  std::vector<mojo::PendingAssociatedRemote<mojom::CommandBufferClient>>
+      clients_;
 };
 
 TEST_F(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {

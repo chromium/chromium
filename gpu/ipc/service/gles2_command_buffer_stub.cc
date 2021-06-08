@@ -403,7 +403,7 @@ void GLES2CommandBufferStub::DidSwapBuffersComplete(
     SwapBuffersCompleteParams params) {
   params.swap_response.swap_id = pending_swap_completed_params_.front().swap_id;
   pending_swap_completed_params_.pop_front();
-  Send(new GpuCommandBufferMsg_SwapBuffersCompleted(route_id_, params));
+  client().OnSwapBuffersCompleted(params);
 }
 
 const gles2::FeatureInfo* GLES2CommandBufferStub::GetFeatureInfo() const {
@@ -418,8 +418,7 @@ void GLES2CommandBufferStub::BufferPresented(
     const gfx::PresentationFeedback& feedback) {
   SwapBufferParams params = pending_presented_params_.front();
   pending_presented_params_.pop_front();
-  Send(new GpuCommandBufferMsg_BufferPresented(route_id_, params.swap_id,
-                                               feedback));
+  client().OnBufferPresented(params.swap_id, feedback);
 }
 
 viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
@@ -436,21 +435,7 @@ MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
 
 void GLES2CommandBufferStub::OnGpuSwitched(
     gl::GpuPreference active_gpu_heuristic) {
-  Send(new GpuCommandBufferMsg_GpuSwitched(route_id_, active_gpu_heuristic));
-}
-
-bool GLES2CommandBufferStub::HandleMessage(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(GLES2CommandBufferStub, message)
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateImage, OnCreateImage);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyImage, OnDestroyImage);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateGpuFenceFromHandle,
-                        OnCreateGpuFenceFromHandle)
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_GetGpuFenceHandle,
-                        OnGetGpuFenceHandle)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  client().OnGpuSwitched(active_gpu_heuristic);
 }
 
 void GLES2CommandBufferStub::OnTakeFrontBuffer(const Mailbox& mailbox) {
@@ -465,9 +450,13 @@ void GLES2CommandBufferStub::OnReturnFrontBuffer(const Mailbox& mailbox,
   gles2_decoder_->ReturnFrontBuffer(mailbox, is_lost);
 }
 
-void GLES2CommandBufferStub::OnCreateGpuFenceFromHandle(
+void GLES2CommandBufferStub::CreateGpuFenceFromHandle(
     uint32_t gpu_fence_id,
     gfx::GpuFenceHandle handle) {
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
+
   if (!context_group_->feature_info()->feature_flags().chromium_gpu_fence) {
     DLOG(ERROR) << "CHROMIUM_gpu_fence unavailable";
     command_buffer_->SetParseError(error::kLostContext);
@@ -484,7 +473,13 @@ void GLES2CommandBufferStub::OnCreateGpuFenceFromHandle(
   CheckContextLost();
 }
 
-void GLES2CommandBufferStub::OnGetGpuFenceHandle(uint32_t gpu_fence_id) {
+void GLES2CommandBufferStub::GetGpuFenceHandle(
+    uint32_t gpu_fence_id,
+    GetGpuFenceHandleCallback callback) {
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
+
   if (!context_group_->feature_info()->feature_flags().chromium_gpu_fence) {
     DLOG(ERROR) << "CHROMIUM_gpu_fence unavailable";
     command_buffer_->SetParseError(error::kLostContext);
@@ -505,20 +500,18 @@ void GLES2CommandBufferStub::OnGetGpuFenceHandle(uint32_t gpu_fence_id) {
     CheckContextLost();
   }
 
-  // IPC accepts handles by const reference. However, on platforms where the
-  // handle is backed by base::ScopedFD, const is casted away and the handle is
-  // forcibly taken from you.
-  Send(new GpuCommandBufferMsg_GetGpuFenceHandleComplete(route_id_,
-                                                         gpu_fence_id, handle));
+  std::move(callback).Run(std::move(handle));
 }
 
-void GLES2CommandBufferStub::OnCreateImage(
-    GpuCommandBufferMsg_CreateImage_Params params) {
+void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnCreateImage");
-  const int32_t id = params.id;
-  const gfx::Size& size = params.size;
-  const gfx::BufferFormat& format = params.format;
-  const uint64_t image_release_count = params.image_release_count;
+  const int32_t id = params->id;
+  const gfx::Size& size = params->size;
+  const gfx::BufferFormat& format = params->format;
+  const uint64_t image_release_count = params->image_release_count;
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
 
   gles2::ImageManager* image_manager = channel_->image_manager();
   DCHECK(image_manager);
@@ -538,14 +531,14 @@ void GLES2CommandBufferStub::OnCreateImage(
     return;
   }
 
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params.plane, format)) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(params.plane)
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params->plane, format)) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(params->plane)
                << " for " << gfx::BufferFormatToString(format);
     return;
   }
 
   scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params.gpu_memory_buffer), size, format, params.plane,
+      std::move(params->gpu_memory_buffer), size, format, params->plane,
       surface_handle_);
   if (!image.get())
     return;
@@ -555,8 +548,11 @@ void GLES2CommandBufferStub::OnCreateImage(
     sync_point_client_state_->ReleaseFenceSync(image_release_count);
 }
 
-void GLES2CommandBufferStub::OnDestroyImage(int32_t id) {
+void GLES2CommandBufferStub::DestroyImage(int32_t id) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnDestroyImage");
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
 
   gles2::ImageManager* image_manager = channel_->image_manager();
   DCHECK(image_manager);
