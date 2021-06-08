@@ -48,7 +48,8 @@ class AudioSourceFetcherImpl
                base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) final;
-  void OnCaptureError(const std::string& message) final;
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}
 
   void set_audio_capturer_source_for_tests(

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
 #include "media/audio/audio_input_ipc.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -60,7 +61,7 @@ class PepperPlatformAudioInput
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
-  void OnError() override;
+  void OnError(media::AudioCapturerSource::ErrorCode code) override;
   void OnMuted(bool is_muted) override;
   void OnIPCClosed() override;
 

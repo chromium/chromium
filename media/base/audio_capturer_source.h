@@ -23,6 +23,11 @@ class AudioProcessorControls;
 class AudioCapturerSource
     : public base::RefCountedThreadSafe<media::AudioCapturerSource> {
  public:
+  enum class ErrorCode {
+    kUnknown = 0,
+    kSystemPermissions = 1,
+  };
+
   class CaptureCallback {
    public:
     // Signals that audio recording has been started.  Called asynchronously
@@ -40,7 +45,7 @@ class AudioCapturerSource
                          bool key_pressed) = 0;
 
     // Signals an error has occurred.
-    virtual void OnCaptureError(const std::string& message) = 0;
+    virtual void OnCaptureError(ErrorCode code, const std::string& message) = 0;
 
     // Signals the muted state has changed. May be called before
     // OnCaptureStarted.

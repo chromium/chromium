@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -121,8 +122,8 @@ void InputIPC::CloseStream() {
 void InputIPC::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
-  // TODO(toprice): propagate the errorcode to the delegate_.
-  delegate_->OnError();
+
+  delegate_->OnError(media::ConvertToCaptureCallbackCode(code));
 }
 
 void InputIPC::OnMutedStateChanged(bool is_muted) {

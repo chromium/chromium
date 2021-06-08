@@ -109,7 +109,8 @@ void PepperPlatformAudioInput::OnStreamCreated(
   }
 }
 
-void PepperPlatformAudioInput::OnError() {}
+void PepperPlatformAudioInput::OnError(
+    media::AudioCapturerSource::ErrorCode code) {}
 
 void PepperPlatformAudioInput::OnMuted(bool is_muted) {}
 

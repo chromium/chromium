@@ -270,7 +270,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     auto* capture_callback =
         static_cast<media::AudioCapturerSource::CaptureCallback*>(
             recognizer_.get());
-    capture_callback->OnCaptureError("");
+    capture_callback->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown, "");
   }
 
   void WaitForAudioThreadToPostDeviceInfo() {

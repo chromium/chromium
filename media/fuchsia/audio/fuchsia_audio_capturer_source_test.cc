@@ -156,7 +156,8 @@ class TestCaptureCallback : public AudioCapturerSource::CaptureCallback {
     packets_.push_back(std::move(bus));
   }
 
-  void OnCaptureError(const std::string& message) final {
+  void OnCaptureError(AudioCapturerSource::ErrorCode code,
+                      const std::string& message) final {
     EXPECT_FALSE(have_error_);
     have_error_ = true;
   }

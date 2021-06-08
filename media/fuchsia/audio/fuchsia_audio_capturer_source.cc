@@ -171,7 +171,7 @@ void FuchsiaAudioCapturerSource::SetOutputDeviceForAec(
 void FuchsiaAudioCapturerSource::NotifyCaptureError(
     const std::string& message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  callback_->OnCaptureError(message);
+  callback_->OnCaptureError(AudioCapturerSource::ErrorCode::kUnknown, message);
 }
 
 void FuchsiaAudioCapturerSource::NotifyCaptureStarted() {

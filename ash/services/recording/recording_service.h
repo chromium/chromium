@@ -93,7 +93,8 @@ class RecordingService : public mojom::RecordingService,
                base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) override;
-  void OnCaptureError(const std::string& message) override;
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) override;
   void OnCaptureMuted(bool is_muted) override;
 
  private:

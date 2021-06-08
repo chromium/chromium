@@ -368,8 +368,10 @@ void RecordingService::Capture(const media::AudioBus* audio_source,
                                 std::move(audio_data), audio_capture_time));
 }
 
-void RecordingService::OnCaptureError(const std::string& message) {
-  LOG(ERROR) << message;
+void RecordingService::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
+  LOG(ERROR) << static_cast<uint32_t>(code) << ", " << message;
 }
 
 void RecordingService::OnCaptureMuted(bool is_muted) {}

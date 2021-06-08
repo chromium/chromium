@@ -116,7 +116,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
-  void OnError() override;
+  void OnError(AudioCapturerSource::ErrorCode code) override;
   void OnMuted(bool is_muted) override;
   void OnIPCClosed() override;
 

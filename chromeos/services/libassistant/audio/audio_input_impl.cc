@@ -210,7 +210,8 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   }
 
   // Runs on audio service thread.
-  void OnCaptureError(const std::string& message) override {
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) override {
     LOG(ERROR) << "Capture error " << message;
     base::AutoLock lock(observers_lock_);
     for (auto* observer : observers_)

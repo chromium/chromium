@@ -103,7 +103,9 @@ void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported()));
 }
 
-void AudioSourceFetcherImpl::OnCaptureError(const std::string& message) {
+void AudioSourceFetcherImpl::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   speech_recognition_recognizer_->OnSpeechRecognitionError();
 }
 
