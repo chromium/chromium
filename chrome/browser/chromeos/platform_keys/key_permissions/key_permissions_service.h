@@ -47,8 +47,9 @@ class KeyPermissionsService : public KeyedService {
   KeyPermissionsService();
   ~KeyPermissionsService() override;
 
-  // Determines if the user can grant any permission for |public_key_spki_der|
-  // to extensions. |callback| will be invoked with the result.
+  // Determines if the user can grant unlimited sign permission for
+  // |public_key_spki_der| to extensions. |callback| will be invoked with the
+  // result.
   virtual void CanUserGrantPermissionForKey(
       const std::string& public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback) = 0;
