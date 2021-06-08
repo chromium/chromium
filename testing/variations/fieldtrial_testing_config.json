@@ -3020,21 +3020,6 @@
             ]
         }
     ],
-    "DisableCryptAuthV1DeviceSync": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableCryptAuthV1DeviceSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [

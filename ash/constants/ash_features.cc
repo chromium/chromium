@@ -254,7 +254,7 @@ const base::Feature kDiagnosticsAppNavigation{
 // is needed to disable the v1 service during the second phase of the rollout.
 // kCryptAuthV2DeviceSync should be enabled before this flag is flipped.
 const base::Feature kDisableCryptAuthV1DeviceSync{
-    "DisableCryptAuthV1DeviceSync", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DisableCryptAuthV1DeviceSync", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
 // won't be registered, making it possible to install another version for
@@ -316,8 +316,7 @@ const base::Feature kEnablePciguardUi{"EnablePciguardUi",
 // Enables SAML re-authentication on the lock screen once the sign-in time
 // limit expires.
 const base::Feature kEnableSamlReauthenticationOnLockscreen{
-    "EnableSamlReauthenticationOnLockScreen",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    "EnableSamlReauthenticationOnLockScreen", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",

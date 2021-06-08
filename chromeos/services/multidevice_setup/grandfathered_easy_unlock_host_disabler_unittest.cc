@@ -21,16 +21,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// Parameterized test types, indicating the following test scenarios:
-enum class TestType {
-  // Use v1 DeviceSync and host does not have an Instance ID.
-  kYesV1NoInstanceId,
-  // Use v1 DeviceSync and host has an Instance ID.
-  kYesV1YesInstanceId,
-  // Do not use v1 DeviceSync and host has an Instance ID.
-  kNoV1YesInstanceId
-};
-
 const char kEasyUnlockHostIdToDisablePrefName[] =
     "multidevice_setup.easy_unlock_host_id_to_disable";
 const char kEasyUnlockHostInstanceIdToDisablePrefName[] =
@@ -43,7 +33,7 @@ const size_t kNumTestDevices = 2;
 }  // namespace
 
 class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
-    : public ::testing::TestWithParam<TestType> {
+    : public ::testing::Test {
  protected:
   MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest()
       : test_devices_(
@@ -52,12 +42,7 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
 
   // testing::Test:
   void SetUp() override {
-    SetDeviceSyncFeatureFlags();
-
     for (auto& device : test_devices_) {
-      if (!HasInstanceId())
-        GetMutableRemoteDevice(device)->instance_id.clear();
-
       // Don't rely on a legacy device ID if not using v1 DeviceSync, even
       // though we almost always expect one in practice.
       if (!features::ShouldUseV1DeviceSync())
@@ -184,31 +169,6 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   base::MockOneShotTimer* mock_timer() const { return mock_timer_; }
 
  private:
-  bool HasInstanceId() {
-    switch (GetParam()) {
-      case TestType::kYesV1YesInstanceId:
-        FALLTHROUGH;
-      case TestType::kNoV1YesInstanceId:
-        return true;
-      case TestType::kYesV1NoInstanceId:
-        return false;
-    }
-  }
-
-  void SetDeviceSyncFeatureFlags() {
-    bool use_v1;
-    switch (GetParam()) {
-      case TestType::kYesV1YesInstanceId:
-        FALLTHROUGH;
-      case TestType::kYesV1NoInstanceId:
-        use_v1 = true;
-        break;
-      case TestType::kNoV1YesInstanceId:
-        use_v1 = false;
-        break;
-    }
-  }
-
   void VerifyLatestEasyUnlockHostDisableRequest(
       const multidevice::RemoteDeviceRef& expected_host) {
     // Verify inputs to SetSoftwareFeatureState().
@@ -265,7 +225,7 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
 //
 // Grandfathering prevents EUH from being disabled automatically. This class
 // disables EUH manually.
-TEST_P(
+TEST_F(
     MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
     IfBetterTogetherHostChangedFromOneDeviceToNoDeviceThenDisableEasyUnlock) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
@@ -297,7 +257,7 @@ TEST_P(
 // The CryptAuth backend (via GmsCore) disables EUH on device A when BTH is
 // enabled (exclusively) on another device, B. No action necessary from this
 // class.
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfBetterTogetherHostChangedFromNoDeviceToADeviceThenDoNothing) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  absl::nullopt /* initial_better_together_host */,
@@ -323,7 +283,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 // The CryptAuth backend (via GmsCore) disables EUH on device A when BTH is
 // enabled (exclusively) on another device, B. We still attempt to disable
 // EUH in this case to be safe.
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfBetterTogetherHostChangedFromOneDeviceToAnotherThenDisableEasyUnlock) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -341,7 +301,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
   EXPECT_FALSE(mock_timer()->IsRunning());
 }
 
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfDisablePendingThenConstructorAttemptsToDisableEasyUnlock) {
   InitializeTest(test_devices()[0] /* initial_device_in_prefs */,
                  absl::nullopt /* initial_better_together_host */,
@@ -361,7 +321,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 // BTH| 1 | 0 |        BTH| 0 | 0 |
 // ---+---+---+  --->  ---+---+---+
 // EUH| 1 | 0 |        EUH| 1 | 0 |
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfHostToDisableIsNotInListOfSyncedDevicesThenClearPref) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -384,7 +344,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 // BTH| 1 | 0 |        BTH| 0 | 0 |
 // ---+---+---+  --->  ---+---+---+
 // EUH| 1 | 0 |        EUH| 1 | 0 |
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfEasyUnlockDisableUnsuccessfulThenScheduleRetry) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -409,7 +369,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
                                      test_devices()[0]);
 }
 
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfNoDisablePendingThenConstructorDoesNothing) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  absl::nullopt /* initial_better_together_host */,
@@ -420,7 +380,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
                                      absl::nullopt /* expected_host */);
 }
 
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfDisablePendingButIsNotCurrentEasyUnlockHostThenClearPref) {
   InitializeTest(test_devices()[0] /* initial_device_in_prefs */,
                  test_devices()[1] /* initial_better_together_host */,
@@ -431,7 +391,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
                                      absl::nullopt /* expected_host */);
 }
 
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfDisablePendingButIsCurrentBetterTogetherHostThenClearPref) {
   InitializeTest(test_devices()[0] /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -448,7 +408,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 //     device 0 but fails
 //   - Timer is running while we wait to retry
 //   - Re-enable BETTER_TOGETHER_HOST on device 0
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfHostChangesWhileRetryTimerIsRunningThenCancelTimerAndClearPref) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -478,7 +438,7 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
 //   - Set device 1 as host
 //   - Disable host
 //   - SetSoftwareFeatureState callback for device 0 is called
-TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
+TEST_F(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
        IfDifferentHostDisabledBeforeFirstCallbackThenFirstCallbackDoesNothing) {
   InitializeTest(absl::nullopt /* initial_device_in_prefs */,
                  test_devices()[0] /* initial_better_together_host */,
@@ -498,18 +458,6 @@ TEST_P(MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
       device_sync::mojom::NetworkRequestResult::kSuccess);
   VerifyDeviceInPrefs(test_devices()[1]);
 }
-// Runs tests for the following scenarios.
-//   - Use v1 DeviceSync and host does not have an Instance ID.
-//   - Use v1 DeviceSync and host has an Instance ID.
-//   - Do not use v1 DeviceSync and host has an Instance ID.
-// TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled,
-// when all devices should have an Instance ID.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest,
-    ::testing::Values(TestType::kYesV1NoInstanceId,
-                      TestType::kYesV1YesInstanceId,
-                      TestType::kNoV1YesInstanceId));
 
 }  // namespace multidevice_setup
 
