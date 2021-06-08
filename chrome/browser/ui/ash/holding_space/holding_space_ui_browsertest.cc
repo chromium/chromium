@@ -1731,11 +1731,10 @@ class HoldingSpaceUiScreenCaptureBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1212736): Fix and re-enable.
 // Verifies that taking a screen recording adds a screen recording holding space
 // item.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
-                       DISABLED_AddScreenRecording) {
+                       AddScreenRecording) {
   // Verify that no screen recordings exist in holding space UI.
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
