@@ -164,4 +164,14 @@ TEST(TriggerContextTest, HasExperimentId) {
   EXPECT_TRUE(single_element.HasExperimentId("1"));
 }
 
+TEST(TriggerContextTest, SetScriptParameters) {
+  TriggerContext::Options options;
+  TriggerContext context = {std::make_unique<ScriptParameters>(),
+                            TriggerContext::Options()};
+  auto new_script_params = std::make_unique<ScriptParameters>();
+  auto* new_script_params_ptr = new_script_params.get();
+  context.SetScriptParameters(std::move(new_script_params));
+  EXPECT_THAT(&context.GetScriptParameters(), Eq(new_script_params_ptr));
+}
+
 }  // namespace autofill_assistant

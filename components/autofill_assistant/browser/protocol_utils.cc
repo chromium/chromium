@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
+#include <map>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -432,11 +433,13 @@ bool ProtocolUtils::ParseTriggerScripts(
     std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
     std::vector<std::string>* additional_allowed_domains,
     int* trigger_condition_check_interval_ms,
-    absl::optional<int>* timeout_ms) {
+    absl::optional<int>* timeout_ms,
+    absl::optional<std::unique_ptr<ScriptParameters>>* script_parameters) {
   DCHECK(trigger_scripts);
   DCHECK(additional_allowed_domains);
   DCHECK(trigger_condition_check_interval_ms);
   DCHECK(timeout_ms);
+  DCHECK(script_parameters);
 
   GetTriggerScriptsResponseProto response_proto;
   if (!response_proto.ParseFromString(response)) {
@@ -470,6 +473,14 @@ bool ProtocolUtils::ParseTriggerScripts(
       response_proto.trigger_condition_check_interval_ms();
   if (response_proto.has_timeout_ms()) {
     *timeout_ms = response_proto.timeout_ms();
+  }
+
+  if (!response_proto.script_parameters().empty()) {
+    std::map<std::string, std::string> parameters;
+    for (const auto& param : response_proto.script_parameters()) {
+      parameters.emplace(param.name(), param.value());
+    }
+    *script_parameters = std::make_unique<ScriptParameters>(parameters);
   }
   return true;
 }

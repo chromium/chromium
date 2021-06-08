@@ -69,6 +69,10 @@ class TriggerContext {
   // Returns a const reference to the script parameters.
   virtual const ScriptParameters& GetScriptParameters() const;
 
+  // Replaces the current script parameters with |script_parameters|.
+  virtual void SetScriptParameters(
+      std::unique_ptr<ScriptParameters> script_parameters);
+
   // Returns a comma-separated set of experiment ids.
   virtual std::string GetExperimentIds() const;
 

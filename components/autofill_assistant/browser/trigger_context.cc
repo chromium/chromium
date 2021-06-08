@@ -85,7 +85,13 @@ TriggerContext::TriggerContext(std::vector<const TriggerContext*> contexts)
 TriggerContext::~TriggerContext() = default;
 
 const ScriptParameters& TriggerContext::GetScriptParameters() const {
-  return *script_parameters_.get();
+  return *script_parameters_;
+}
+
+void TriggerContext::SetScriptParameters(
+    std::unique_ptr<ScriptParameters> script_parameters) {
+  DCHECK(script_parameters);
+  script_parameters_ = std::move(script_parameters);
 }
 
 std::string TriggerContext::GetExperimentIds() const {

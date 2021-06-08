@@ -573,6 +573,16 @@ message GetTriggerScriptsResponseProto {
   // The amount of time between consecutive checks of trigger conditions. Should
   // not be too small to limit performance impact.
   optional int32 trigger_condition_check_interval_ms = 4 [default = 1000];
+
+  // The list of script parameters for the client to use. This can be different
+  // from the list the client sent in the GetTriggerScriptsRequest.
+  //
+  // For some flows, the GetTriggerScripts RPC is the first and only
+  // communication with the backend prior to the start of the regular flow. As
+  // such, the backend needs to send any additional script parameters (such as
+  // appropriate overlay colors) back to the client such that the regular flows
+  // are guaranteed to have a full set of script parameters when/if they start.
+  repeated ScriptParameterProto script_parameters = 5;
 }
 
 // A trigger script contains the full specification for a trigger script that is
