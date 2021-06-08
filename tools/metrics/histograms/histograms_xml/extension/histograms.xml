@@ -78,6 +78,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionBubble.DevModeUserSelection"
     enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -88,6 +91,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionBubble.ExtensionsInDevModeCount"
     units="Developer Mode Extensions" expires_after="2021-04-01">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -99,6 +105,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionBubble.ExtensionWipeoutCount" units="Extensions"
     expires_after="2021-01-31">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -167,6 +176,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionOverrideBubble.NtpOverriddenUserSelection"
     enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <obsolete>
+    Code removed 2021/03.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -177,7 +189,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionHomePage"
-    enum="ExtensionBubbleAction" expires_after="2021-08-09">
+    enum="ExtensionBubbleAction" expires_after="2021-06-01">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -188,6 +203,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionSearchEngine"
     enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -199,6 +217,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionStartupPage"
     enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

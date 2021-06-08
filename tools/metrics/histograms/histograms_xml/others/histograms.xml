@@ -12633,6 +12633,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ProxyOverriddenBubble.UserSelection"
     units="ExtensionBubbleAction" expires_after="2020-12-31">
+  <obsolete>
+    Code removed 2021/06.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The action taken by the user when the &quot;proxy overridden&quot; extension

@@ -93,10 +93,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     // Returns true if only enabled extensions should be considered.
     virtual bool ShouldLimitToEnabledExtensions() const = 0;
 
-    // Record, through UMA, how many extensions were found.
-    virtual void LogExtensionCount(size_t count) = 0;
-    virtual void LogAction(BubbleAction action) = 0;
-
     // Returns true if the bubble is informing about a single extension that can
     // be policy-installed.
     // E.g. A proxy-type extension can be policy installed, but a developer-type

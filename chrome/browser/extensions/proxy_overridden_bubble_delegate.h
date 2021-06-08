@@ -41,8 +41,6 @@ class ProxyOverriddenBubbleDelegate
   void ClearProfileSetForTesting() override;
   bool ShouldShowExtensionList() const override;
   bool ShouldLimitToEnabledExtensions() const override;
-  void LogExtensionCount(size_t count) override;
-  void LogAction(ExtensionMessageBubbleController::BubbleAction) override;
   bool SupportsPolicyIndicator() override;
 
  private:

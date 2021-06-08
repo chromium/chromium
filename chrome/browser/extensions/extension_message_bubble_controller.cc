@@ -206,7 +206,6 @@ void ExtensionMessageBubbleController::OnBubbleAction() {
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_EXECUTE;
 
-  delegate_->LogAction(ACTION_EXECUTE);
   delegate_->PerformAction(*GetOrCreateExtensionList());
 
   OnClose();
@@ -226,8 +225,6 @@ void ExtensionMessageBubbleController::OnBubbleDismiss(
   user_action_ = closed_by_deactivation ? ACTION_DISMISS_DEACTIVATION
                                         : ACTION_DISMISS_USER_ACTION;
 
-  delegate_->LogAction(user_action_);
-
   OnClose();
 }
 
@@ -235,7 +232,6 @@ void ExtensionMessageBubbleController::OnLinkClicked() {
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_LEARN_MORE;
 
-  delegate_->LogAction(ACTION_LEARN_MORE);
   // Opening a new tab for the learn more link can cause the bubble to close, so
   // perform our cleanup here before opening the new tab.
   OnClose();
@@ -324,7 +320,6 @@ ExtensionIdList* ExtensionMessageBubbleController::GetOrCreateExtensionList() {
         extension_list_.push_back(extension->id());
     }
 
-    delegate_->LogExtensionCount(extension_list_.size());
     initialized_ = true;
   }
 

@@ -84,11 +84,6 @@ bool TestExtensionMessageBubbleDelegate::ShouldLimitToEnabledExtensions()
   return true;
 }
 
-void TestExtensionMessageBubbleDelegate::LogExtensionCount(size_t count) {}
-
-void TestExtensionMessageBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {}
-
 bool TestExtensionMessageBubbleDelegate::SupportsPolicyIndicator() {
   return true;
 }

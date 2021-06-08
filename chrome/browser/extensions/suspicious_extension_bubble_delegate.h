@@ -39,8 +39,6 @@ class SuspiciousExtensionBubbleDelegate
   void OnAction() override;
   void ClearProfileSetForTesting() override;
   bool ShouldLimitToEnabledExtensions() const override;
-  void LogExtensionCount(size_t count) override;
-  void LogAction(ExtensionMessageBubbleController::BubbleAction) override;
   bool SupportsPolicyIndicator() override;
 
  private:

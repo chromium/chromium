@@ -112,18 +112,6 @@ bool DevModeBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }
 
-void DevModeBubbleDelegate::LogExtensionCount(size_t count) {
-  UMA_HISTOGRAM_COUNTS_100(
-      "ExtensionBubble.ExtensionsInDevModeCount", count);
-}
-
-void DevModeBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "ExtensionBubble.DevModeUserSelection",
-      action, ExtensionMessageBubbleController::ACTION_BOUNDARY);
-}
-
 bool DevModeBubbleDelegate::SupportsPolicyIndicator() {
   return false;
 }

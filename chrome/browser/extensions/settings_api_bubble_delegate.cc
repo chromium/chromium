@@ -235,33 +235,6 @@ bool SettingsApiBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }
 
-void SettingsApiBubbleDelegate::LogExtensionCount(size_t count) {
-}
-
-void SettingsApiBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  switch (type_) {
-    case BUBBLE_TYPE_HOME_PAGE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionHomePage",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-    case BUBBLE_TYPE_STARTUP_PAGES:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionStartupPage",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-    case BUBBLE_TYPE_SEARCH_ENGINE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionSearchEngine",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-  }
-}
-
 const char* SettingsApiBubbleDelegate::GetKey() const {
   switch (type_) {
     case BUBBLE_TYPE_HOME_PAGE:

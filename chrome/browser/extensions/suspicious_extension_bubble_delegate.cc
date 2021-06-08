@@ -143,17 +143,6 @@ bool SuspiciousExtensionBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return false;
 }
 
-void SuspiciousExtensionBubbleDelegate::LogExtensionCount(
-    size_t count) {
-  UMA_HISTOGRAM_COUNTS_100("ExtensionBubble.ExtensionWipeoutCount", count);
-}
-
-void SuspiciousExtensionBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  // There are no significant actions for this bubble (the user just has to
-  // acknowledge it).
-}
-
 bool SuspiciousExtensionBubbleDelegate::SupportsPolicyIndicator() {
   return false;
 }
