@@ -101,6 +101,7 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevice {
   bool active = false;
   uint64_t plugged_time = 0;
   uint32_t max_supported_channels = 0;
+  uint32_t audio_effect = 0;
 };
 
 typedef std::vector<AudioDevice> AudioDeviceList;

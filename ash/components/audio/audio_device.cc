@@ -154,6 +154,7 @@ AudioDevice::AudioDevice(const chromeos::AudioNode& node) {
   active = node.active;
   plugged_time = node.plugged_time;
   max_supported_channels = node.max_supported_channels;
+  audio_effect = node.audio_effect;
 }
 
 AudioDevice::AudioDevice(const AudioDevice& other) = default;

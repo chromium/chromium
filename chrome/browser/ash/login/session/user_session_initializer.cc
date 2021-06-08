@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -86,6 +87,19 @@ void OnGetNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
   NetworkCertLoader::Get()->SetUserNSSDB(database);
 }
 
+void OnNoiseCancellationSupportedRetrieved(
+    absl::optional<bool> noise_cancellation_supported) {
+  DCHECK(features::IsInputNoiseCancellationUiEnabled());
+  if (noise_cancellation_supported.has_value() &&
+      noise_cancellation_supported.value()) {
+    PrefService* local_state = g_browser_process->local_state();
+    const bool noise_cancellation_enabled =
+        local_state->GetBoolean(prefs::kInputNoiseCancellationEnabled);
+    chromeos::CrasAudioClient::Get()->SetNoiseCancellationEnabled(
+        noise_cancellation_enabled);
+  }
+}
+
 }  // namespace
 
 UserSessionInitializer::UserSessionInitializer() {
@@ -142,9 +156,9 @@ void UserSessionInitializer::InitRlz(Profile* profile) {
   // if it is empty.  The latter is to correct a problem in older builds where
   // an empty brand code would be persisted if the first login after OOBE was
   // a guest session.
-  if (!g_browser_process->local_state()->HasPrefPath(prefs::kRLZBrand) ||
+  if (!g_browser_process->local_state()->HasPrefPath(::prefs::kRLZBrand) ||
       g_browser_process->local_state()
-          ->Get(prefs::kRLZBrand)
+          ->Get(::prefs::kRLZBrand)
           ->GetString()
           .empty()) {
     // Read brand code asynchronously from an OEM data and repost ourselves.
@@ -248,6 +262,11 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     // Pciguard is turned on.
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(
         pcie_tunneling_allowed);
+
+    if (features::IsInputNoiseCancellationUiEnabled()) {
+      chromeos::CrasAudioClient::Get()->GetNoiseCancellationSupported(
+          base::BindOnce(&OnNoiseCancellationSupportedRetrieved));
+    }
   }
 }
 
@@ -285,13 +304,14 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
     // Empty brand code means an organic install (no RLZ pings are sent).
     google_brand::chromeos::ClearBrandForCurrentSession();
   }
-  if (params.disabled != local_state->GetBoolean(prefs::kRLZDisabled)) {
+  if (params.disabled != local_state->GetBoolean(::prefs::kRLZDisabled)) {
     // When switching to RLZ enabled/disabled state, clear all recorded events.
     rlz::RLZTracker::ClearRlzState();
-    local_state->SetBoolean(prefs::kRLZDisabled, params.disabled);
+    local_state->SetBoolean(::prefs::kRLZDisabled, params.disabled);
   }
   // Init the RLZ library.
-  int ping_delay = profile->GetPrefs()->GetInteger(prefs::kRlzPingDelaySeconds);
+  int ping_delay =
+      profile->GetPrefs()->GetInteger(::prefs::kRlzPingDelaySeconds);
   // Negative ping delay means to send ping immediately after a first search is
   // recorded.
   bool send_ping_immediately = ping_delay < 0;

@@ -24,6 +24,7 @@
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 namespace {
@@ -448,6 +449,36 @@ CrasAudioHandler::GetNumberOfInputStreamsWithPermission() const {
 
 void CrasAudioHandler::GetDefaultOutputBufferSize(int32_t* buffer_size) const {
   *buffer_size = default_output_buffer_size_;
+}
+
+bool CrasAudioHandler::GetNoiseCancellationState() const {
+  return audio_pref_handler_->GetNoiseCancellationState();
+}
+
+void CrasAudioHandler::SetNoiseCancellationState(bool state) {
+  CrasAudioClient::Get()->SetNoiseCancellationEnabled(state);
+}
+
+void CrasAudioHandler::SetNoiseCancellationPrefState(bool state) {
+  audio_pref_handler_->SetNoiseCancellationState(state);
+}
+
+void CrasAudioHandler::RequestNoiseCancellationSupported(
+    OnNoiseCancellationSupportedCallback callback) {
+  CrasAudioClient::Get()->GetNoiseCancellationSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetNoiseCancellationSupported,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  std::move(callback).Run();
+}
+
+void CrasAudioHandler::HandleGetNoiseCancellationSupported(
+    absl::optional<bool> noise_cancellation_supported) {
+  if (!noise_cancellation_supported.has_value()) {
+    LOG(ERROR) << "Failed to retrieve noise cancellation supported";
+    return;
+  }
+  noise_cancellation_supported_ = noise_cancellation_supported.value();
 }
 
 void CrasAudioHandler::SetKeyboardMicActive(bool active) {
@@ -1646,6 +1677,19 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
     return;
 
   UpdateDevicesAndSwitchActive(node_list.value());
+
+  // Always set the input noise cancellation state on NodesChange event.
+  if (features::IsInputNoiseCancellationUiEnabled() &&
+      noise_cancellation_supported()) {
+    const AudioDevice* internal_mic =
+        GetDeviceByType(AudioDeviceType::kInternalMic);
+    if (internal_mic) {
+      SetNoiseCancellationState(
+          GetNoiseCancellationState() &&
+          (internal_mic->audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION));
+    }
+  }
+
   for (auto& observer : observers_)
     observer.OnAudioNodesChanged();
 }
@@ -1890,6 +1934,11 @@ void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
   }
 
   default_output_buffer_size_ = buffer_size.value();
+}
+
+bool CrasAudioHandler::noise_cancellation_supported() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return noise_cancellation_supported_;
 }
 
 bool CrasAudioHandler::system_aec_supported() const {
