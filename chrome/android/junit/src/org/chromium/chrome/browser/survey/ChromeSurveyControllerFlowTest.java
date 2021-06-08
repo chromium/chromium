@@ -205,12 +205,23 @@ public class ChromeSurveyControllerFlowTest {
 
     @Test
     public void testStartDownloadIfEligibleTask_ShowedBefore() {
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
         mSharedPreferencesManager.writeLong(mPrefKey, 1000L);
 
         initializeChromeSurveyController();
 
         Assert.assertEquals("Download should not trigger for user that has seen the survey prompt.",
                 0, mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+    }
+
+    @Test
+    public void testStartDownloadIfEligibleTask_ShowedBefore_ForceEnabled() {
+        mSharedPreferencesManager.writeLong(mPrefKey, 1000L);
+
+        initializeChromeSurveyController();
+
+        Assert.assertEquals("Download should be triggered.", 1,
+                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
     }
 
     @Test
@@ -222,6 +233,18 @@ public class ChromeSurveyControllerFlowTest {
         initializeChromeSurveyController();
 
         Assert.assertEquals("Download should not be triggered.", 0,
+                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+    }
+
+    @Test
+    public void testStartDownloadIfEligibleTask_UmaEnabled() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, true);
+
+        initializeChromeSurveyController();
+
+        Assert.assertEquals("Download should not be triggered.", 1,
                 mTestSurveyController.downloadIfApplicableCallback.getCallCount());
     }
 

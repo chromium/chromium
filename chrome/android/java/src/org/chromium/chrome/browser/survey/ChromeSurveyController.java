@@ -151,12 +151,6 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         surveyController.downloadSurvey(context, mTriggerId, onSuccessRunnable, onFailureRunnable);
     }
 
-    /** @return Whether the user qualifies for the survey. */
-    private boolean doesUserQualifyForSurvey() {
-        if (!isUMAEnabled() && !sForceUmaEnabledForTesting) return false;
-        return !hasInfoBarBeenDisplayed();
-    }
-
     /**
      * Called when the survey has finished downloading to show the survey info bar.
      * @param siteId The site id of the survey to display.
@@ -250,12 +244,6 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         tab.removeObserver(observer);
     }
 
-    /** @return Whether the user has consented to reporting usage metrics and crash dumps. */
-    private boolean isUMAEnabled() {
-        return PrivacyPreferencesManagerImpl.getInstance()
-                .isUsageAndCrashReportingPermittedByUser();
-    }
-
     /** @return If the survey info bar for this survey was logged as seen before. */
     @VisibleForTesting
     boolean hasInfoBarBeenDisplayed() {
@@ -298,7 +286,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /**
-     * Rolls a random number to see if the user was eligible for the survey
+     * Rolls a random number to see if the user was eligible for the survey.
      * @return Whether the user is eligible (i.e. the random number rolled was 0).
      */
     @VisibleForTesting
@@ -446,15 +434,15 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
         @Override
         protected Boolean doInBackground() {
-            if (!mController.doesUserQualifyForSurvey()) return false;
+            if (!isUMAEnabled()) return false;
 
-            boolean forceSurveyOn = false;
-            if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
-                forceSurveyOn = true;
+            if (isSurveyForceEnabled()) {
                 mController.recordSurveyFilteringResult(
                         FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT);
+                return true;
             }
-            return mController.isRandomlySelectedForSurvey() || forceSurveyOn;
+            return !mController.hasInfoBarBeenDisplayed()
+                    && mController.isRandomlySelectedForSurvey();
         }
 
         @Override
@@ -472,10 +460,20 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     /** @return If the survey is enabled by finch flag or commandline switch. */
     @VisibleForTesting
     static boolean isSurveyEnabled() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
-            return true;
-        }
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID);
+        return isSurveyForceEnabled()
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID);
+    }
+
+    /** @return Whether the user has consented to reporting usage metrics and crash dumps. */
+    private static boolean isUMAEnabled() {
+        return sForceUmaEnabledForTesting
+                || PrivacyPreferencesManagerImpl.getInstance()
+                           .isUsageAndCrashReportingPermittedByUser();
+    }
+
+    /** @return Whether survey is enabled by command line flag. */
+    public static boolean isSurveyForceEnabled() {
+        return CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
     }
 
     /** @return The trigger Id that used to download / display certain survey. */
