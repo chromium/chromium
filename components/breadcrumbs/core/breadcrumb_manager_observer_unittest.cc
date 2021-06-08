@@ -18,7 +18,7 @@ namespace {
 
 class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
  public:
-  FakeBreadcrumbManagerObserver() {}
+  FakeBreadcrumbManagerObserver() = default;
   ~FakeBreadcrumbManagerObserver() override = default;
 
   FakeBreadcrumbManagerObserver(const FakeBreadcrumbManagerObserver&) = delete;
@@ -65,7 +65,7 @@ TEST_F(BreadcrumbManagerObserverTest, EventAdded) {
   ASSERT_FALSE(observer_.event_added_last_received_manager_);
   ASSERT_TRUE(observer_.event_added_last_received_event_.empty());
 
-  std::string event = "event";
+  const std::string event = "event";
   manager_.AddEvent(event);
 
   EXPECT_EQ(&manager_, observer_.event_added_last_received_manager_);
@@ -79,7 +79,7 @@ TEST_F(BreadcrumbManagerObserverTest, EventAdded) {
 TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
   ASSERT_FALSE(observer_.old_events_removed_last_received_manager_);
 
-  std::string event = "event";
+  const std::string event = "event";
   manager_.AddEvent(event);
   task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
   manager_.AddEvent(event);

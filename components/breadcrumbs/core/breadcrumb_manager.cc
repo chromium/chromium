@@ -31,7 +31,7 @@ base::Time GetBucketTime(const base::Time& time) {
   exploded.second = 0;
 
   base::Time bucket_time;
-  bool converted = base::Time::FromLocalExploded(exploded, &bucket_time);
+  const bool converted = base::Time::FromLocalExploded(exploded, &bucket_time);
   DCHECK(converted);
   return bucket_time;
 }
@@ -72,8 +72,8 @@ const std::list<std::string> BreadcrumbManager::GetEvents(
 }
 
 void BreadcrumbManager::AddEvent(const std::string& event) {
-  base::Time time = base::Time::Now();
-  base::Time bucket_time = GetBucketTime(time);
+  const base::Time time = base::Time::Now();
+  const base::Time bucket_time = GetBucketTime(time);
 
   // If a bucket exists, it will be at the end of the list.
   if (event_buckets_.empty() || event_buckets_.back().time != bucket_time) {
@@ -82,9 +82,9 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
 
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
-  std::string timestamp =
+  const std::string timestamp =
       base::StringPrintf("%02d:%02d", exploded.minute, exploded.second);
-  std::string event_log =
+  const std::string event_log =
       base::StringPrintf("%s %s", timestamp.c_str(), event.c_str());
   event_buckets_.back().events.push_back(event_log);
 
@@ -100,10 +100,10 @@ void BreadcrumbManager::DropOldEvents() {
       base::TimeDelta::FromMinutes(20);
 
   bool old_buckets_dropped = false;
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
   // Drop buckets which are more than kMessageExpirationTime old.
   while (event_buckets_.size() > kMinEventsBuckets) {
-    base::Time oldest_bucket_time = event_buckets_.front().time;
+    const base::Time oldest_bucket_time = event_buckets_.front().time;
     if (now - oldest_bucket_time < kMessageExpirationTime) {
       break;
     }
@@ -115,7 +115,7 @@ void BreadcrumbManager::DropOldEvents() {
   unsigned long newer_event_count = 0;
   auto event_bucket_it = event_buckets_.rbegin();
   while (event_bucket_it != event_buckets_.rend()) {
-    std::list<std::string> bucket_events = event_bucket_it->events;
+    const std::list<std::string>& bucket_events = event_bucket_it->events;
     if (newer_event_count > kMaxUsefulBreadcrumbEvents) {
       event_buckets_.erase(event_buckets_.begin(), event_bucket_it.base());
       old_buckets_dropped = true;

@@ -18,7 +18,7 @@ TEST_F(BreadcrumbPersistentStorageUtilTest, UniqueTempStorage) {
   base::ScopedTempDir scoped_temp_directory;
   EXPECT_TRUE(scoped_temp_directory.CreateUniqueTempDir());
 
-  base::FilePath directory = scoped_temp_directory.GetPath();
+  const base::FilePath directory = scoped_temp_directory.GetPath();
   EXPECT_NE(breadcrumbs::GetBreadcrumbPersistentStorageFilePath(directory),
             breadcrumbs::GetBreadcrumbPersistentStorageTempFilePath(directory));
 }

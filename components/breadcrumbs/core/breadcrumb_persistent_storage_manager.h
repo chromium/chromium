@@ -107,10 +107,10 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   base::OneShotTimer write_timer_;
 
   // The path to the file for storing persisted breadcrumbs.
-  base::FilePath breadcrumbs_file_path_;
+  const base::FilePath breadcrumbs_file_path_;
 
   // The path to the temporary file for writing persisted breadcrumbs.
-  base::FilePath breadcrumbs_temp_file_path_;
+  const base::FilePath breadcrumbs_temp_file_path_;
 
   // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
   // NOTE: The optional will not have a value until the size of the existing

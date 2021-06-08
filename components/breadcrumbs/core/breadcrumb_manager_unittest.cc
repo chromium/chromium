@@ -26,9 +26,9 @@ class BreadcrumbManagerTest : public PlatformTest {
 
 // Tests that an event is logged and returned.
 TEST_F(BreadcrumbManagerTest, AddEvent) {
-  std::string event_message = "event";
+  const std::string event_message = "event";
   breadcrumb_manager_.AddEvent(event_message);
-  std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
+  const std::list<std::string>& events = breadcrumb_manager_.GetEvents(0);
   ASSERT_EQ(1ul, events.size());
   // Events returned from |GetEvents| will have a timestamp prepended.
   EXPECT_NE(std::string::npos, events.front().find(event_message));
@@ -85,7 +85,7 @@ TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
   task_env_.FastForwardBy(base::TimeDelta::FromHours(1));
   breadcrumb_manager_.AddEvent("event3");
 
-  std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
+  const std::list<std::string>& events = breadcrumb_manager_.GetEvents(0);
   EXPECT_EQ(2ul, events.size());
 }
 
