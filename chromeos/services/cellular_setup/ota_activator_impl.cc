@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
@@ -201,6 +202,8 @@ void OtaActivatorImpl::FinishActivationAttempt(
   network_state_handler_ = nullptr;
 
   NET_LOG(EVENT) << "Finished attempt with result " << activation_result << ".";
+  base::UmaHistogramEnumeration("Network.Cellular.PSim.OtaActivationResult",
+                                activation_result);
 
   if (activation_delegate_)
     activation_delegate_->OnActivationFinished(activation_result);

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/network/fake_network_activation_handler.h"
@@ -236,6 +237,10 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     ASSERT_EQ(1u, activation_results.size());
     EXPECT_EQ(activation_result, activation_results[0]);
 
+    histogram_tester_.ExpectBucketCount(
+        "Network.Cellular.PSim.OtaActivationResult", activation_result,
+        /*expected_count=*/1);
+
     EXPECT_TRUE(is_finished_);
   }
 
@@ -270,6 +275,7 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper test_helper_;
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<FakeActivationDelegate> fake_activation_delegate_;
   std::unique_ptr<FakeNetworkConnectionHandler>
