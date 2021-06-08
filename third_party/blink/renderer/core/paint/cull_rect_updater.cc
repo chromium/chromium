@@ -52,6 +52,12 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
 void CullRectUpdater::Update() {
   DCHECK(starting_layer_.IsRootLayer());
   UpdateInternal(CullRect::Infinite());
+#if DCHECK_IS_ON()
+  if (VLOG_IS_ON(2)) {
+    VLOG(2) << "PaintLayer tree after cull rect update:";
+    showLayerTree(&starting_layer_);
+  }
+#endif
 }
 
 void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
