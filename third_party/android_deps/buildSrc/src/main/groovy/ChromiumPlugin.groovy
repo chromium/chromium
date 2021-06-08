@@ -5,6 +5,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencyResolveDetails
+import org.gradle.api.attributes.Bundling
 
 /**
  * Plugin designed to define the configuration names to be used in the Gradle files to describe the dependencies that
@@ -47,6 +48,13 @@ class ChromiumPlugin implements Plugin<Project> {
                         details.useVersion version
                     }
                 }
+            }
+        }
+
+        project.configurations.buildCompile {
+            attributes {
+                // This attribute is used to resolve the caffeine error in: https://crbug.com/1216032#c3
+                attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
             }
         }
     }

@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/threeten/threeten-extra/1.5.0/threeten-extra-1.5.0.jar'
-_FILE_NAME = 'threeten-extra-1.5.0.jar'
-_FILE_VERSION = '1.5.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/io/github/java-diff-utils/java-diff-utils/4.0/java-diff-utils-4.0.jar'
+_FILE_NAME = 'java-diff-utils-4.0.jar'
+_FILE_VERSION = '4.0'
 
 
 def do_latest():

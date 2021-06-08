@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_check_api/2.7.1/error_prone_check_api-2.7.1.jar'
-_FILE_NAME = 'error_prone_check_api-2.7.1.jar'
-_FILE_VERSION = '2.7.1'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/eclipse/jgit/org.eclipse.jgit/4.4.1.201607150455-r/org.eclipse.jgit-4.4.1.201607150455-r.jar'
+_FILE_NAME = 'org.eclipse.jgit-4.4.1.201607150455-r.jar'
+_FILE_VERSION = '4.4.1.201607150455-r'
 
 
 def do_latest():

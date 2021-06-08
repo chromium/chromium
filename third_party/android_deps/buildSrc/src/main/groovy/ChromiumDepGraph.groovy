@@ -210,6 +210,10 @@ class ChromiumDepGraph {
             url: 'https://codehaus-plexus.github.io/',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
+        org_eclipse_jgit_org_eclipse_jgit: new PropertyOverride(
+            url: 'https://www.eclipse.org/jgit/',
+            licenseUrl: 'https://raw.githubusercontent.com/eclipse/jgit/master/LICENSE',
+            licenseName: 'BSD 3-Clause'),
         com_google_protobuf_protobuf_java: new PropertyOverride(
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',

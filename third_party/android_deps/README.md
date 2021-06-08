@@ -31,21 +31,24 @@ Full steps to add a new third party library or update existing libraries:
    will update, among other things, your top-level DEPS file.
 
 3. `git add` all the 3pp related changes and create a CL for review. Keep the
-   3pp/ and .gradle changes in the CL and revert the other files. The other
-   files will be committed in a follow up CL.
+   `3pp/`, `.gradle`, `OWNERS`, `.groovy` changes in the CL and revert the other
+   files. The other files should be committed in a follow up CL. Example git commands:
+   * `git add third_party/android_deps{*.gradle,*.groovy,*3pp*,*OWNERS,*README.md}`
+   * `git commit -m commit_message`
+   * `git restore third_party/android_deps DEPS`
+   * `git clean -id`
 
 4. Land the first CL in step 3 and wait for the corresponding 3pp packager to
    create the new CIPD packages. The 3pp packager runs every 6 hours. You can
-   see the latest runs
-   [here](https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager).
-   See [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works.
+   see the latest runs [here][3pp_bot]. See
+   [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works. Anyone on the
+   Clank build core team and any trooper can trigger the bot on demand for you.
 
-5. If your follow up cl takes more than a day please revert the original cl.
-  The bot runs 4 times a day and once it uploads to cipd there is no need to
-  keep the modified 3pp files. When you are ready to land the follow up cl, you
-  can land everything together since the cipd packages have already been
-  uploaded.
-
+5. If your follow up CL takes more than a day please revert the original CL.
+   Once the bot uploads to cipd there is no need to keep the modified 3pp files.
+   The bot runs 4 times a day. When you are ready to land the follow up CL, you
+   can land everything together since the cipd packages have already been
+   uploaded.
 
 6. Run `fetch_all.py` again. There should not be any 3pp related changes. Create
    a commit.
@@ -59,6 +62,7 @@ file that they use, explained in the [README.chromium][readme_chromium_link] is
 up-to-date with the one on android's [website][android_sdk_link], last updated
 date is at the bottom.
 
+[3pp_bot]: https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
 [cipd_and_3pp_doc]: ../../docs/cipd_and_3pp.md
 [owners_link]: http://go/android-deps-owners
 [docs_link]: ../../docs/adding_to_third_party.md

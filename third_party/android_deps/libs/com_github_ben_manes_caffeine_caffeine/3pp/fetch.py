@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/github/ben-manes/caffeine/caffeine/2.8.0/caffeine-2.8.0.jar'
-_FILE_NAME = 'caffeine-2.8.0.jar'
-_FILE_VERSION = '2.8.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/github/ben-manes/caffeine/caffeine/2.8.8/caffeine-2.8.8.jar'
+_FILE_NAME = 'caffeine-2.8.8.jar'
+_FILE_VERSION = '2.8.8'
 
 
 def do_latest():
