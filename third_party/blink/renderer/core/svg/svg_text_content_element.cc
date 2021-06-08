@@ -164,7 +164,7 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
   FloatPoint point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    // TODO(1179585): Implement this.
+    point = NGSvgTextQuery(*layout_object).StartPositionOfCharacter(charnum);
   } else {
     point = SVGTextQuery(layout_object).StartPositionOfCharacter(charnum);
   }
@@ -188,7 +188,7 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
   FloatPoint point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    // TODO(1179585): Implement this.
+    point = NGSvgTextQuery(*layout_object).EndPositionOfCharacter(charnum);
   } else {
     point = SVGTextQuery(layout_object).EndPositionOfCharacter(charnum);
   }

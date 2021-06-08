@@ -66,6 +66,22 @@ FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
   return std::tie(item_list, items);
 }
 
+const NGFragmentItem* FindFragmentItemForAddressableCharacterIndex(
+    const LayoutObject& query_root,
+    unsigned index) {
+  Vector<const NGFragmentItem*> item_list;
+  const NGFragmentItems* items;
+  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root);
+
+  unsigned character_index = 0;
+  for (const auto* item : item_list) {
+    if (character_index >= index)
+      return item;
+    character_index += CodePointLength(item->Text(*items));
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 unsigned NGSvgTextQuery::NumberOfCharacters() const {
@@ -101,6 +117,62 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
     character_index += CodePointLength(item->Text(*items));
   }
   return total_length;
+}
+
+FloatPoint NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
+  const NGFragmentItem* item =
+      FindFragmentItemForAddressableCharacterIndex(query_root_, index);
+  DCHECK(item);
+  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  if (item->IsHiddenForPaint())
+    return FloatPoint();
+  const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
+  const float ascent =
+      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
+          item->Style().GetFontBaseline());
+  const auto& item_rect = item->SvgFragmentData()->rect;
+  const bool is_ltr = item->Style().IsLeftToRightDirection();
+  FloatPoint point;
+  if (item->IsHorizontal()) {
+    point = is_ltr ? item_rect.Location() : item_rect.MaxXMinYCorner();
+    point.Move(0.0f, ascent);
+  } else {
+    point = is_ltr ? item_rect.MaxXMinYCorner() : item_rect.MaxXMaxYCorner();
+    point.Move(-ascent, 0.0f);
+  }
+  if (item->HasSvgTransformForBoundingBox())
+    point = item->BuildSvgTransformForBoundingBox().MapPoint(point);
+  const float scaling_factor = inline_text.ScalingFactor();
+  point.Scale(1 / scaling_factor, 1 / scaling_factor);
+  return point;
+}
+
+FloatPoint NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
+  const NGFragmentItem* item =
+      FindFragmentItemForAddressableCharacterIndex(query_root_, index);
+  DCHECK(item);
+  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  if (item->IsHiddenForPaint())
+    return FloatPoint();
+  const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
+  const float ascent =
+      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
+          item->Style().GetFontBaseline());
+  const auto& item_rect = item->SvgFragmentData()->rect;
+  const bool is_ltr = item->Style().IsLeftToRightDirection();
+  FloatPoint point;
+  if (item->IsHorizontal()) {
+    point = is_ltr ? item_rect.MaxXMinYCorner() : item_rect.Location();
+    point.Move(0.0f, ascent);
+  } else {
+    point = is_ltr ? item_rect.MaxXMaxYCorner() : item_rect.MaxXMinYCorner();
+    point.Move(-ascent, 0.0f);
+  }
+  if (item->HasSvgTransformForBoundingBox())
+    point = item->BuildSvgTransformForBoundingBox().MapPoint(point);
+  const float scaling_factor = inline_text.ScalingFactor();
+  point.Scale(1 / scaling_factor, 1 / scaling_factor);
+  return point;
 }
 
 }  // namespace blink
