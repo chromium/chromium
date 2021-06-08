@@ -33,6 +33,8 @@ class FakeLacrosWebAppsHost : public crosapi::mojom::AppController {
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void PauseApp(const std::string& app_id) override;
+  void UnpauseApp(const std::string& app_id) override;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 };

@@ -163,7 +163,7 @@ void WebAppsChromeOs::PauseApp(const std::string& app_id) {
 }
 
 void WebAppsChromeOs::UnpauseApps(const std::string& app_id) {
-  publisher_helper().UnpauseApps(app_id);
+  publisher_helper().UnpauseApp(app_id);
 }
 
 void WebAppsChromeOs::GetMenuModel(const std::string& app_id,

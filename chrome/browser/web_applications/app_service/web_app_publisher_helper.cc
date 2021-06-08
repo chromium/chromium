@@ -324,7 +324,7 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
   }
 }
 
-void WebAppPublisherHelper::UnpauseApps(const std::string& app_id) {
+void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeRemoveApp(app_id)) {
     SetIconEffect(app_id);
   }

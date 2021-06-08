@@ -109,7 +109,7 @@ class WebAppPublisherHelper : public content_settings::Observer {
 
   void PauseApp(const std::string& app_id);
 
-  void UnpauseApps(const std::string& app_id);
+  void UnpauseApp(const std::string& app_id);
 
   bool IsPaused(const std::string& app_id);
 

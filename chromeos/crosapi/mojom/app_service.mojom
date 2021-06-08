@@ -1,6 +1,8 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// Next MinVersion: 4
 
 module crosapi.mojom;
 
@@ -40,4 +42,22 @@ interface AppController {
       UninstallSource uninstall_source,
       bool clear_site_data,
       bool report_abuse);
+
+  // Pauses an app to stop the current running app, and apply the icon effect
+  // to indicate the app is paused.
+  // Pause a paused app will make the app stay paused, and pause an app
+  // that is not currently running will only change the icon to paused
+  // indication and make the app in pause state when the app is launched the
+  // next time.
+  [MinVersion=3]
+  PauseApp@2(string app_id);
+
+  // Unpauses an app, and recover the icon effect for the app to indicate
+  // the app is no longer paused.
+  // Unpause an unpaused app will make the app stay unpaused, and unpause
+  // an app that is not currently running will only change the icon back to
+  // normal state and make the app in normal state when the app is launched
+  // the next time.
+  [MinVersion=3]
+  UnpauseApp@3(string app_id);
 };

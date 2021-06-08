@@ -94,4 +94,12 @@ void FakeLacrosWebAppsHost::Uninstall(
   NOTIMPLEMENTED();
 }
 
+void FakeLacrosWebAppsHost::PauseApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
+void FakeLacrosWebAppsHost::UnpauseApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace apps

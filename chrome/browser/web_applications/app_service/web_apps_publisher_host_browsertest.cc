@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PauseUnpause) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
             apps::mojom::OptionalBool::kTrue);
 
-  web_apps_publisher_host.UnpauseApps(app_id);
+  web_apps_publisher_host.UnpauseApp(app_id);
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 5U);
 

@@ -106,8 +106,8 @@ void WebAppsPublisherHost::PauseApp(const std::string& app_id) {
   publisher_helper().PauseApp(app_id);
 }
 
-void WebAppsPublisherHost::UnpauseApps(const std::string& app_id) {
-  publisher_helper().UnpauseApps(app_id);
+void WebAppsPublisherHost::UnpauseApp(const std::string& app_id) {
+  publisher_helper().UnpauseApp(app_id);
 }
 
 void WebAppsPublisherHost::LoadIcon(const std::string& app_id,

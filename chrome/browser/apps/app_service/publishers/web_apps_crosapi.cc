@@ -123,6 +123,14 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
   std::move(callback).Run(std::move(menu_items));
 }
 
+void WebAppsCrosapi::PauseApp(const std::string& app_id) {
+  controller_->PauseApp(app_id);
+}
+
+void WebAppsCrosapi::UnpauseApps(const std::string& app_id) {
+  controller_->UnpauseApp(app_id);
+}
+
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;

@@ -64,8 +64,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
   // TODO(crbug.com/1194709): Add these to crosapi::mojom::AppController:
-  void PauseApp(const std::string& app_id);
-  void UnpauseApps(const std::string& app_id);
   void LoadIcon(const std::string& app_id,
                 apps::mojom::IconKeyPtr icon_key,
                 apps::mojom::IconType icon_type,
@@ -97,6 +95,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                      apps::mojom::WindowMode window_mode);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, PauseUnpause);
+
   void OnReady();
 
   // crosapi::mojom::AppController:
@@ -104,6 +104,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void PauseApp(const std::string& app_id) override;
+  void UnpauseApp(const std::string& app_id) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApp(apps::mojom::AppPtr app) override;
