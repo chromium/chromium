@@ -23,7 +23,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureData;
 import org.chromium.components.content_capture.ContentCaptureDataBase;
@@ -680,11 +679,12 @@ public class AwContentCaptureTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1126950")
     @Feature({"AndroidWebView"})
     public void testMultipleConsumers() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSecondConsumer = new TestAwContentCaptureConsumer(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSecondConsumer = new TestAwContentCaptureConsumer();
+            mOnscreenContentProvider.addConsumer(mSecondConsumer);
+        });
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
