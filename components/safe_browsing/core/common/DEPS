@@ -5,7 +5,6 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
-  "+content/public/test",
   "+crypto/sha2.h",
   "+ipc",
   "+third_party/opencv",

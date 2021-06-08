@@ -8,4 +8,6 @@ include_rules = [
   "+components/grit/components_scaled_resources.h",
   "+components/safe_browsing_db",
   "+components/sync",
+  "+content/public/browser",
+  "+content/public/test",
 ]

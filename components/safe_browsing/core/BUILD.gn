@@ -130,6 +130,7 @@ source_set("verdict_cache_manager_unittest") {
 }
 
 # safe_browsing/ pulls in content/, which doesn't work on iOS.
+# TODO(crbug.com/1216341): Move this out of core/.
 # TODO(thakis): This should be `safe_browsing_mode != 0`, but chromecast builds
 # set safe_browsing_mode to 0 and build chrome/, and chrome/ currently
 # unconditionally depends on things in this build file. Make these dependencies
