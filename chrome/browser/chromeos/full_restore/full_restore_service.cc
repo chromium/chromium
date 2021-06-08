@@ -55,15 +55,72 @@ FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
 
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
-      app_launch_handler_(std::make_unique<AppLaunchHandler>(profile_)),
+      app_launch_handler_(
+          std::make_unique<AppLaunchHandler>(profile_,
+                                             /*should_init_service=*/true)),
       restore_data_handler_(
-          std::make_unique<FullRestoreDataHandler>(profile_)) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FullRestoreService::Init,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
+          std::make_unique<FullRestoreDataHandler>(profile_)) {}
 
 FullRestoreService::~FullRestoreService() = default;
+
+void FullRestoreService::Init() {
+  PrefService* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      kRestoreAppsAndPagesPrefName,
+      base::BindRepeating(&FullRestoreService::OnPreferenceChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (user) {
+    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
+        user->GetAccountId(), CanPerformRestore(prefs));
+  }
+
+  // If the system crashed before reboot, show the restore notification.
+  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+    if (!HasRestorePref(prefs))
+      SetDefaultRestorePrefIfNecessary(prefs);
+
+    if (app_launch_handler_->HasRestoreData())
+      ShowRestoreNotification(kRestoreForCrashNotificationId);
+    return;
+  }
+
+  // If either OS pref setting nor Chrome pref setting exist, that means we
+  // don't have restore data, so we don't need to consider restoration, and call
+  // NewUserRestorePrefHandler to set OS pref setting.
+  if (!HasRestorePref(prefs) && !HasSessionStartupPref(prefs)) {
+    new_user_pref_handler_ =
+        std::make_unique<NewUserRestorePrefHandler>(profile_);
+    return;
+  }
+
+  // If it is the first time to migrate to the full restore release, we don't
+  // have other restore data, so we don't need to consider restoration.
+  if (!HasRestorePref(prefs)) {
+    SetDefaultRestorePrefIfNecessary(prefs);
+    return;
+  }
+
+  RestoreOption restore_pref = static_cast<RestoreOption>(
+      prefs->GetInteger(kRestoreAppsAndPagesPrefName));
+  base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
+  switch (restore_pref) {
+    case RestoreOption::kAlways:
+      Restore();
+      break;
+    case RestoreOption::kAskEveryTime:
+      if (app_launch_handler_->HasRestoreData())
+        ShowRestoreNotification(kRestoreNotificationId);
+      break;
+    case RestoreOption::kDoNotRestore:
+      return;
+  }
+}
 
 void FullRestoreService::LaunchBrowserWhenReady() {
   if (!g_restore_for_testing)
@@ -135,63 +192,6 @@ void FullRestoreService::RestoreForTesting() {
   // If there is no browser launch info, the browser won't be launched. So call
   // ForceLaunchBrowserForTesting to launch the browser for testing.
   app_launch_handler_->ForceLaunchBrowserForTesting();
-}
-
-void FullRestoreService::Init() {
-  PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
-
-  pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(
-      kRestoreAppsAndPagesPrefName,
-      base::BindRepeating(&FullRestoreService::OnPreferenceChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user) {
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
-        user->GetAccountId(), CanPerformRestore(prefs));
-  }
-
-  // If the system crashed before reboot, show the restore notification.
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    if (!HasRestorePref(prefs))
-      SetDefaultRestorePrefIfNecessary(prefs);
-
-    ShowRestoreNotification(kRestoreForCrashNotificationId);
-    return;
-  }
-
-  // If either OS pref setting nor Chrome pref setting exist, that means we
-  // don't have restore data, so we don't need to consider restoration, and call
-  // NewUserRestorePrefHandler to set OS pref setting.
-  if (!HasRestorePref(prefs) && !HasSessionStartupPref(prefs)) {
-    new_user_pref_handler_ =
-        std::make_unique<NewUserRestorePrefHandler>(profile_);
-    return;
-  }
-
-  // If it is the first time to migrate to the full restore release, we don't
-  // have other restore data, so we don't need to consider restoration.
-  if (!HasRestorePref(prefs)) {
-    SetDefaultRestorePrefIfNecessary(prefs);
-    return;
-  }
-
-  RestoreOption restore_pref = static_cast<RestoreOption>(
-      prefs->GetInteger(kRestoreAppsAndPagesPrefName));
-  base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
-  switch (restore_pref) {
-    case RestoreOption::kAlways:
-      Restore();
-      break;
-    case RestoreOption::kAskEveryTime:
-      ShowRestoreNotification(kRestoreNotificationId);
-      break;
-    case RestoreOption::kDoNotRestore:
-      return;
-  }
 }
 
 void FullRestoreService::Shutdown() {

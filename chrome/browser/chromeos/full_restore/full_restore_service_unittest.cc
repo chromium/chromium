@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
@@ -17,7 +18,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
@@ -33,16 +36,17 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
-
-// TODO(crbug.com/909794): Verify apps restoration.
 
 namespace chromeos {
 namespace full_restore {
 
 namespace {
+
+constexpr int32_t kWindowId = 100;
 
 syncer::SyncData CreatePrefSyncData(const std::string& name,
                                     const base::Value& value) {
@@ -191,9 +195,67 @@ class FullRestoreServiceTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
+// If the system is crash, and there is no FullRestore file, don't show the
+// crash notification, and don't restore.
+TEST_F(FullRestoreServiceTest, Crash) {
+  profile()->set_last_session_exited_cleanly(false);
+  CreateFullRestoreServiceForTesting();
+
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */,
+                     false /* has_set_restore_notification */);
+
+  EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+}
+
+// If the OS restore setting is 'Ask every time', and there is no FullRestore
+// file, after reboot, don't show the notification, and don't restore
+TEST_F(FullRestoreServiceTest, AskEveryTime) {
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */,
+                     false /* has_set_restore_notification */);
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
+}
+
+class FullRestoreServiceTestHavingFullRestoreFile
+    : public FullRestoreServiceTest {
+ protected:
+  // FullRestoreServiceTest:
+  void SetUp() override {
+    FullRestoreServiceTest::SetUp();
+    CreateRestoreData();
+  }
+
+  void CreateRestoreData() {
+    // Add app launch infos.
+    ::full_restore::SaveAppLaunchInfo(
+        profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+                                  extension_misc::kChromeAppId, kWindowId));
+
+    ::full_restore::FullRestoreSaveHandler* save_handler =
+        ::full_restore::FullRestoreSaveHandler::GetInstance();
+    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+    // Simulate timeout, and the launch info is saved.
+    timer->FireNow();
+
+    content::RunAllTasksUntilIdle();
+  }
+};
+
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the restore button.
-TEST_F(FullRestoreServiceTest, CrashAndRestore) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
   profile()->set_last_session_exited_cleanly(false);
   CreateFullRestoreServiceForTesting();
 
@@ -210,7 +272,7 @@ TEST_F(FullRestoreServiceTest, CrashAndRestore) {
 
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the cancel button.
-TEST_F(FullRestoreServiceTest, CrashAndCancel) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
   profile()->set_last_session_exited_cleanly(false);
   CreateFullRestoreServiceForTesting();
 
@@ -417,7 +479,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
 // notification, and verify the restore flag when click the restore button.
-TEST_F(FullRestoreServiceTest, AskEveryTimeAndRestore) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -440,8 +502,8 @@ TEST_F(FullRestoreServiceTest, AskEveryTimeAndRestore) {
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
-// notfication, and verify the restore flag when click the cancel button.
-TEST_F(FullRestoreServiceTest, AskEveryTimeAndCancel) {
+// notification, and verify the restore flag when click the cancel button.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -496,7 +558,8 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 
 // If the restore option has been selected 3 times, show the set restore
 // notification.
-TEST_F(FullRestoreServiceTest, SetRestorePrefNotification) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       SetRestorePrefNotification) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -531,7 +594,7 @@ TEST_F(FullRestoreServiceTest, SetRestorePrefNotification) {
 
 // When |kRestoreSelectedCountPrefName| = 3, if the restore option is selected
 // again, |kRestoreSelectedCountPrefName| should not change.
-TEST_F(FullRestoreServiceTest, RestoreSelectedCount) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, RestoreSelectedCount) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));

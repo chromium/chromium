@@ -62,6 +62,8 @@ class FullRestoreService : public KeyedService,
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
 
+  void Init();
+
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
   void LaunchBrowserWhenReady();
@@ -74,8 +76,6 @@ class FullRestoreService : public KeyedService,
   void RestoreForTesting();
 
  private:
-  void Init();
-
   // KeyedService overrides.
   void Shutdown() override;
 

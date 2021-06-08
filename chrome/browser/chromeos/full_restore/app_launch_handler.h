@@ -31,7 +31,7 @@ namespace full_restore {
 // 3. The app is ready.
 class AppLaunchHandler : public apps::AppRegistryCache::Observer {
  public:
-  explicit AppLaunchHandler(Profile* profile);
+  explicit AppLaunchHandler(Profile* profile, bool should_init_service = false);
   AppLaunchHandler(const AppLaunchHandler&) = delete;
   AppLaunchHandler& operator=(const AppLaunchHandler&) = delete;
   ~AppLaunchHandler() override;
@@ -40,6 +40,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  // Returns true if there are some restore data. Otherwise, returns false.
+  bool HasRestoreData();
 
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
@@ -85,6 +88,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   bool should_restore_ = false;
 
   bool should_launch_browser_ = false;
+
+  // Specifies whether init FullRestoreService.
+  bool should_init_service_ = false;
 
   std::unique_ptr<::full_restore::RestoreData> restore_data_;
 

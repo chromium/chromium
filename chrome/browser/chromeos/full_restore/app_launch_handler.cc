@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/full_restore/app_launch_info.h"
@@ -71,7 +72,8 @@ apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
 
 }  // namespace
 
-AppLaunchHandler::AppLaunchHandler(Profile* profile) : profile_(profile) {
+AppLaunchHandler::AppLaunchHandler(Profile* profile, bool should_init_service)
+    : profile_(profile), should_init_service_(should_init_service) {
   // FullRestoreReadHandler reads the full restore data from the full restore
   // data file on a background task runner.
   ::full_restore::FullRestoreReadHandler::GetInstance()->ReadFromFile(
@@ -109,6 +111,10 @@ void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
   apps::AppRegistryCache::Observer::Observe(nullptr);
 }
 
+bool AppLaunchHandler::HasRestoreData() {
+  return restore_data_ && !restore_data_->app_id_to_launch_list().empty();
+}
+
 void AppLaunchHandler::LaunchBrowserWhenReady() {
   if (g_launch_browser_for_testing) {
     ForceLaunchBrowserForTesting();
@@ -141,6 +147,12 @@ void AppLaunchHandler::ForceLaunchBrowserForTesting() {
 void AppLaunchHandler::OnGetRestoreData(
     std::unique_ptr<::full_restore::RestoreData> restore_data) {
   restore_data_ = std::move(restore_data);
+
+  // AppLaunchHandler could be created multiple times in browser tests, and used
+  // by the desk template. Only when it is created by FullRestoreService, we
+  // need to init FullRestoreService.
+  if (should_init_service_)
+    FullRestoreService::GetForProfile(profile_)->Init();
 
   if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
       user_manager::UserManager::Get()->GetPrimaryUser()) {
