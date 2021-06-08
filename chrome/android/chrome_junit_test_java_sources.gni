@@ -36,6 +36,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/PermissionUpdaterTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityPermissionManagerTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/trustedwebactivityui/controller/TrustedWebActivityBrowserControlsVisibilityManagerTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/CurrentPageVerifierTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/TestVerifier.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/ClientAppDataRecorderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityDisclosureControllerTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityOpenTimeRecorderTest.java",

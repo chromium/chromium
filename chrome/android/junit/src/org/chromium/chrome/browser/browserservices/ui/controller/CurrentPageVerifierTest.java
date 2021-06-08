@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
 
@@ -18,23 +22,19 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
@@ -44,9 +44,7 @@ import java.util.Collections;
 /**
  * Tests for {@link CurrentPageVerifier}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-@DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_POST_MESSAGE)
+@RunWith(BaseRobolectricTestRunner.class)
 public class CurrentPageVerifierTest {
     private static final Origin TRUSTED_ORIGIN = Origin.create("https://www.origin1.com/");
     private static final Origin OTHER_TRUSTED_ORIGIN = Origin.create("https://www.origin2.com/");
@@ -95,7 +93,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void verifiesOriginOfInitialPage() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -104,7 +101,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void statusIsPending_UntilVerificationFinished() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -113,7 +109,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void statusIsSuccess_WhenVerificationSucceeds() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -123,7 +118,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void statusIsFail_WhenVerificationFails() {
         setInitialUrl(UNTRUSTED_PAGE);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -133,7 +127,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void verifies_WhenNavigatingToOtherTrustedOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -145,7 +138,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void doesntUpdateState_IfVerificationFinishedAfterLeavingOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -157,7 +149,6 @@ public class CurrentPageVerifierTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void reverifiesOrigin_WhenReturningToIt_IfFirstVerificationDidntFinishInTime() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -169,23 +160,29 @@ public class CurrentPageVerifierTest {
     }
 
     private void assertStatus(@CurrentPageVerifier.VerificationStatus int status) {
-        CriteriaHelper.pollUiThreadNested(
-                () -> { return status == mCurrentPageVerifier.getState().status; });
+        shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(status, mCurrentPageVerifier.getState().status);
     }
 
     private void verifyStartsVerification(String url) {
         assertTrue(mVerifierDelegate.hasPendingVerification(Origin.create(url)));
     }
 
+    private static GURL createMockGurl(String url) {
+        GURL gurl = Mockito.mock(GURL.class);
+        when(gurl.getSpec()).thenReturn(url);
+        return gurl;
+    }
+
     private void setInitialUrl(String url) {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(url);
         // TODO(crbug/783819): Pass in GURL.
-        GURL gurl = new GURL(url);
+        GURL gurl = createMockGurl(url);
         when(mTab.getUrl()).thenReturn(gurl);
     }
 
     private void navigateToUrl(String url) {
-        GURL gurl = new GURL(url);
+        GURL gurl = createMockGurl(url);
         when(mTab.getUrl()).thenReturn(gurl);
         NavigationHandle navigation =
                 new NavigationHandle(0 /* navigationHandleProxy */, gurl, true /* isMainFrame */,
