@@ -129,7 +129,7 @@ Polymer({
             .map(section => {
               return {
                 title: this.getSectionTitleI18n_(section.title),
-                options: section.optionNames.map(makeOption),
+                options: section.optionNames.map(makeOption, false),
               };
             });
   },

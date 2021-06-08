@@ -16,6 +16,10 @@
       h2 {
         padding-inline-start: var(--cr-section-padding);
       }
+
+      .dependent {
+        padding-inline-start: var(--cr-section-indent-padding);
+      }
     </style>
 
     <div route-path="default">
@@ -55,7 +59,8 @@
             <template is="dom-repeat" items="[[option.dependentOptions]]"
                 as="dependant" id="dependent-settings">
               <div class="list-item" actionable>
-                <div class="start" id="option-label" aria-hidden="true">
+                <div class="dependent start"
+                  id="option-label" aria-hidden="true">
                   [[dependant.label]]
                 </div>
                 <template is="dom-if"
