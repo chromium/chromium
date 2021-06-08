@@ -127,7 +127,7 @@ class SpeechRecognitionServiceTest
 
   // media::mojom::SpeechRecognitionRecognizerClient
   void OnSpeechRecognitionRecognitionEvent(
-      media::mojom::SpeechRecognitionResultPtr result,
+      const media::SpeechRecognitionResult& result,
       OnSpeechRecognitionRecognitionEventCallback reply) override;
   void OnSpeechRecognitionError() override;
   void OnLanguageIdentificationEvent(
@@ -178,9 +178,9 @@ void SpeechRecognitionServiceTest::SetUp() {
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
-    media::mojom::SpeechRecognitionResultPtr result,
+    const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
-  recognition_results_.push_back(std::move(result->transcription));
+  recognition_results_.push_back(std::move(result.transcription));
   std::move(reply).Run(is_client_requesting_speech_recognition_);
 }
 
