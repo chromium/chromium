@@ -1654,10 +1654,6 @@ bool ListValue::Insert(size_t index, std::unique_ptr<Value> in_value) {
   return true;
 }
 
-ListValue::const_iterator ListValue::Find(const Value& value) const {
-  return ranges::find(GetList(), value);
-}
-
 void ListValue::Swap(ListValue* other) {
   CHECK(other->is_list());
   list().swap(other->list());

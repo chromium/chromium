@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -86,7 +87,7 @@ bool FindInListValue(const std::string& needle, const base::Value* haystack) {
   const base::ListValue* list;
   if (!haystack->GetAsList(&list))
     return false;
-  return list->GetList().end() != list->Find(base::Value(needle));
+  return base::Contains(list->GetList(), base::Value(needle));
 }
 
 }  // namespace

@@ -1425,7 +1425,6 @@ TEST(ValuesTest, List) {
   base::Value not_found_value(false);
 
   ASSERT_TRUE(Contains(mixed_list->GetList(), sought_value));
-  ASSERT_TRUE((*mixed_list->Find(sought_value)).GetAsInteger(&int_value));
   ASSERT_EQ(42, int_value);
   ASSERT_FALSE(Contains(mixed_list->GetList(), not_found_value));
 }

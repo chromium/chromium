@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -267,7 +268,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
       const std::vector<std::unique_ptr<base::Value>>& expected_printers) {
     ASSERT_EQ(expected_printers.size(), printers.GetSize());
     for (const auto& printer_value : expected_printers) {
-      EXPECT_TRUE(printers.Find(*printer_value) != printers.GetList().end())
+      EXPECT_TRUE(base::Contains(printers.GetList(), *printer_value))
           << "Unable to find " << *printer_value << " in " << printers;
     }
   }

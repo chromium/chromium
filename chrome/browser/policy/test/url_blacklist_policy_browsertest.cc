@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -343,8 +344,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
   FlushBlacklistPolicy();
 
   PrefService* prefs = browser()->profile()->GetPrefs();
-  const base::ListValue* list_url = prefs->GetList(policy_prefs::kUrlBlocklist);
-  EXPECT_EQ(list_url->Find(base::Value("file://*")), list_url->GetList().end());
+  EXPECT_FALSE(
+      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
+                     base::Value("file://*")));
 
   base::ListValue disabledscheme;
   disabledscheme.AppendString("file");
@@ -353,8 +355,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
   UpdateProviderPolicy(policies);
   FlushBlacklistPolicy();
 
-  list_url = prefs->GetList(policy_prefs::kUrlBlocklist);
-  EXPECT_NE(list_url->Find(base::Value("file://*")), list_url->GetList().end());
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
+                     base::Value("file://*")));
 
   // Whitelist one folder and blacklist an another just inside.
   base::ListValue whitelist;

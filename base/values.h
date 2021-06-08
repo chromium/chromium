@@ -916,12 +916,6 @@ class BASE_EXPORT ListValue : public Value {
   // DEPRECATED, use `Value::Insert()` instead.
   bool Insert(size_t index, std::unique_ptr<Value> in_value);
 
-  // Searches for the first instance of `value` in the list using the Equals
-  // method of the Value type.
-  // Returns a const_iterator to the found item or to end() if none exists.
-  // DEPRECATED, use `std::find()` instead.
-  const_iterator Find(const Value& value) const;
-
   // Swaps contents with the `other` list.
   // DEPRECATED, use `GetList()::swap()` instead.
   void Swap(ListValue* other);
