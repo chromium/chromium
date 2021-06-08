@@ -241,10 +241,6 @@ static_library("protobuf_full") {
     # Perfetto uses the full library for testing.
     "//third_party/perfetto/gn:protobuf_full",
 
-    # Some unittests need helpers from this target.
-    # Not included in production code.
-    "//chrome/test:unit_tests",
-
     # Some tests inside ChromeOS need reflection to parse golden files.
     # Not included in production code.
     "//chrome/test:usage_time_limit_unittests",
