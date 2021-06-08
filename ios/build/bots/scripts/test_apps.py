@@ -349,7 +349,7 @@ class EgtestsApp(GTestsApp):
     """
     xctestrun_data = super(EgtestsApp, self).fill_xctestrun_node()
     module_data = xctestrun_data[self.module_name + '_module']
-    module_data['TestBundlePath'] = '__TESTHOST__/%s' % self._xctest_path()
+    module_data['TestBundlePath'] = '__TESTHOST__%s' % self._xctest_path()
     module_data['TestingEnvironmentVariables'][
         'XCInjectBundleInto'] = '__TESTHOST__/%s' % self.module_name
 
@@ -447,7 +447,7 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     xctestrun_data = {
         'TestTargetName': {
             'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__/%s' % self._xctest_path(),
+            'TestBundlePath': '__TESTHOST__%s' % self._xctest_path(),
             'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
             'TestHostPath': '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {
@@ -563,7 +563,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     xctestrun_data = {
         'TestTargetName': {
             'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__/%s' % self._xctest_path(),
+            'TestBundlePath': '__TESTHOST__%s' % self._xctest_path(),
             'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
             'TestHostPath': '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {

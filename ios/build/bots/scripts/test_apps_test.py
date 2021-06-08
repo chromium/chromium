@@ -84,7 +84,7 @@ class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
                 '--gmock_verbose=error'
             ],
             'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__/%s' % _XCTEST_PATH,
+            'TestBundlePath': '__TESTHOST__%s' % _XCTEST_PATH,
             'TestHostBundleIdentifier': _BUNDLE_ID,
             'TestHostPath': '%s' % _TEST_APP_PATH,
             'TestingEnvironmentVariables': {
@@ -122,7 +122,7 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
                 '--gmock_verbose=error'
             ],
             'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__/%s' % _XCTEST_PATH,
+            'TestBundlePath': '__TESTHOST__%s' % _XCTEST_PATH,
             'TestHostBundleIdentifier': _BUNDLE_ID,
             'TestHostPath': '%s' % _TEST_APP_PATH,
             'TestingEnvironmentVariables': {
