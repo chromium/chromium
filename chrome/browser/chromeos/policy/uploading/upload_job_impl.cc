@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/upload_job_impl.h"
+#include "chrome/browser/chromeos/policy/uploading/upload_job_impl.h"
 
 #include <stddef.h>
 
@@ -50,14 +50,11 @@ const char kUploadJobSuccessHistogram[] = "Enterprise.UploadJobSuccess";
 
 }  // namespace
 
-UploadJobImpl::Delegate::~Delegate() {
-}
+UploadJobImpl::Delegate::~Delegate() {}
 
-UploadJobImpl::MimeBoundaryGenerator::~MimeBoundaryGenerator() {
-}
+UploadJobImpl::MimeBoundaryGenerator::~MimeBoundaryGenerator() {}
 
-UploadJobImpl::RandomMimeBoundaryGenerator::~RandomMimeBoundaryGenerator() {
-}
+UploadJobImpl::RandomMimeBoundaryGenerator::~RandomMimeBoundaryGenerator() {}
 
 // multipart/form-data POST request to upload the data. A DataSegment
 // corresponds to one "Content-Disposition" in the "multipart" request.

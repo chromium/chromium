@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/heartbeat_scheduler.h"
+#include "chrome/browser/chromeos/policy/uploading/heartbeat_scheduler.h"
 
 #include <memory>
 #include <vector>
@@ -133,7 +133,8 @@ void HeartbeatRegistrationHelper::AttemptRegistration() {
 }
 
 void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
-    const std::string& registration_id, gcm::GCMClient::Result result) {
+    const std::string& registration_id,
+    gcm::GCMClient::Result result) {
   DVLOG(1) << "Received Register() response: " << result;
   // TODO(atwilson): Track GCM errors via UMA (http://crbug.com/459238).
   switch (result) {
@@ -312,8 +313,8 @@ void HeartbeatScheduler::ScheduleNextHeartbeat() {
 
   heartbeat_callback_.Reset(base::BindOnce(&HeartbeatScheduler::SendHeartbeat,
                                            base::Unretained(this)));
-  task_runner_->PostDelayedTask(
-      FROM_HERE, heartbeat_callback_.callback(), delay);
+  task_runner_->PostDelayedTask(FROM_HERE, heartbeat_callback_.callback(),
+                                delay);
 }
 
 void HeartbeatScheduler::OnRegistrationComplete(
@@ -392,8 +393,8 @@ void HeartbeatScheduler::OnHeartbeatSent(const std::string& message_id,
   DVLOG(1) << "Monitoring heartbeat sent - result = " << result;
   // Don't care if the result was successful or not - just schedule the next
   // heartbeat.
-  DLOG_IF(ERROR, result != gcm::GCMClient::SUCCESS) <<
-      "Error sending monitoring heartbeat: " << result;
+  DLOG_IF(ERROR, result != gcm::GCMClient::SUCCESS)
+      << "Error sending monitoring heartbeat: " << result;
 
   last_heartbeat_ = base::Time::NowFromSystemTime();
   ScheduleNextHeartbeat();
@@ -436,8 +437,7 @@ void HeartbeatScheduler::OnMessage(const std::string& app_id,
   NOTREACHED() << "Received incoming message for " << app_id;
 }
 
-void HeartbeatScheduler::OnMessagesDeleted(const std::string& app_id) {
-}
+void HeartbeatScheduler::OnMessagesDeleted(const std::string& app_id) {}
 
 void HeartbeatScheduler::OnSendError(
     const std::string& app_id,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_UPLOAD_JOB_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_UPLOAD_JOB_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_H_
 
 #include <map>
 #include <memory>
@@ -30,9 +30,9 @@ class UploadJob {
   // If the upload fails, the Delegate's OnFailure() method is invoked with
   // one of these error codes.
   enum ErrorCode {
-    NETWORK_ERROR = 1,           // Network failure.
-    AUTHENTICATION_ERROR = 2,    // Authentication failure.
-    SERVER_ERROR = 3             // Server returned error or malformed reply.
+    NETWORK_ERROR = 1,         // Network failure.
+    AUTHENTICATION_ERROR = 2,  // Authentication failure.
+    SERVER_ERROR = 3           // Server returned error or malformed reply.
   };
 
   class Delegate {
@@ -75,4 +75,4 @@ class UploadJob {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_UPLOAD_JOB_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_H_

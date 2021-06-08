@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task_runner.h"
-#include "chrome/browser/chromeos/policy/upload_job.h"
+#include "chrome/browser/chromeos/policy/uploading/upload_job.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "ui/snapshot/snapshot.h"
 #include "url/gurl.h"

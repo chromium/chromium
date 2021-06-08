@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/system_log_uploader.h"
+#include "chrome/browser/chromeos/policy/uploading/system_log_uploader.h"
 
 #include <algorithm>
 #include <map>
@@ -25,7 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/policy_pref_names.h"
-#include "chrome/browser/chromeos/policy/upload_job_impl.h"
+#include "chrome/browser/chromeos/policy/uploading/upload_job_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
