@@ -415,17 +415,26 @@ DeviceManagementService::JobImpl::OnURLLoadComplete(
     // Using histogram functions which allows runtime histogram name.
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestFailed);
-    LOG(WARNING) << "Request failed, error: " << net_error << " Type: "
-                 << JobConfiguration::GetJobTypeAsString(config_->GetType());
+    LOG(WARNING) << "Request of type "
+                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                 << " failed (net_error = " << net_error << ").";
     config_->OnURLLoadComplete(this, net_error, response_code, std::string());
     return RetryMethod::NO_RETRY;
   }
 
   if (response_code != kSuccess) {
+    LOG(WARNING) << "Request of type "
+                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                 << " failed (response_code = " << response_code << ").";
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestError);
   } else {
     // Success with retries_count_ retries.
+    if (retries_count_) {
+      LOG(WARNING) << "Request of type "
+                   << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                   << " succeeded after " << retries_count_ << " retries.";
+    }
     base::UmaHistogramExactLinear(
         uma_name, retries_count_,
         static_cast<int>(DMServerRequestSuccess::kMaxValue) + 1);
@@ -609,8 +618,12 @@ void DeviceManagementService::OnURLLoaderCompleteInternal(
       job->OnURLLoadComplete(response_body, mime_type, net_error, response_code,
                              was_fetched_via_proxy, &delay);
   if (retry_method != Job::NO_RETRY) {
-    LOG(WARNING) << "Dmserver request failed, retrying in " << delay / 1000
-                 << "s.";
+    LOG(WARNING) << "Request of type "
+                 << JobConfiguration::GetJobTypeAsString(
+                        job->GetConfiguration()->GetType())
+                 << " failed (net_error = " << net_error
+                 << ", response_code = " << response_code << "), retrying in "
+                 << delay << "ms.";
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DeviceManagementService::StartJobAfterDelay,
