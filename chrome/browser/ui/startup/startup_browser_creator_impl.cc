@@ -273,6 +273,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
     // incomplete check on whether a user gesture created a window which looked
     // at the state of the MessageLoop.
     Browser::CreateParams params = Browser::CreateParams(profile_, false);
+    params.creation_source = Browser::CreationSource::kStartupCreator;
     browser = Browser::Create(params);
   }
 

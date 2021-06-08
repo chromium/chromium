@@ -823,7 +823,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_show_state = show_state;
     params.initial_workspace = workspace;
     params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
-    params.is_session_restore = true;
+    params.creation_source = Browser::CreationSource::kSessionRestore;
     return Browser::Create(params);
   }
 

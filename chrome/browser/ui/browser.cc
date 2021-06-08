@@ -465,7 +465,7 @@ Browser::Browser(const CreateParams& params)
       initial_workspace_(params.initial_workspace),
       initial_visible_on_all_workspaces_state_(
           params.initial_visible_on_all_workspaces_state),
-      is_session_restore_(params.is_session_restore),
+      creation_source_(params.creation_source),
       unload_controller_(this),
       content_setting_bubble_model_delegate_(
           new BrowserContentSettingBubbleModelDelegate(this)),

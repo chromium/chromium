@@ -132,6 +132,12 @@ bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
     return false;
   }
 
+  // If the browser is created by StartupBrowserCreator,
+  // StartupBrowserCreatorImpl::OpenTabsInBrowser can open tabs, so don't
+  // restore urls here.
+  if (browser->creation_source() == Browser::CreationSource::kStartupCreator)
+    return false;
+
   return true;
 }
 
