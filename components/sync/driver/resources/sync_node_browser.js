@@ -4,7 +4,7 @@
 
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {getAllNodes} from './chrome_sync.js';

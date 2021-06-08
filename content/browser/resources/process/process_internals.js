@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {FrameInfo, ProcessInternalsHandler, ProcessInternalsHandlerRemote, WebContentsInfo} from './process_internals.mojom-webui.js';

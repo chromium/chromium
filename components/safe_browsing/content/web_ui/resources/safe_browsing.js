@@ -4,7 +4,7 @@
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 decorate('tabbox', TabBox);

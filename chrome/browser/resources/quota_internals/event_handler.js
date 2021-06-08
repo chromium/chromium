@@ -4,8 +4,8 @@
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {requestInfo, triggerStoragePressure} from './message_dispatcher.js';

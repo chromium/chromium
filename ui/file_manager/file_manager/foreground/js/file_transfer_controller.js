@@ -20,7 +20,7 @@
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.m.js';
-// #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+// #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {util, strf} from '../../common/js/util.m.js';

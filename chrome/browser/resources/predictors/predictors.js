@@ -7,7 +7,7 @@ import './resource_prefetch_predictor.js';
 
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 
 if (isWindows) {
   document.documentElement.setAttribute('os', 'win');

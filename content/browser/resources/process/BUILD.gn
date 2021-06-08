@@ -20,6 +20,6 @@ js_library("process_internals") {
     "//content/browser/process_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tree.m",
+    "//ui/webui/resources/js/cr/ui:tree",
   ]
 }

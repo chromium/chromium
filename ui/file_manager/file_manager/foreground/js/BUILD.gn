@@ -1064,7 +1064,7 @@ js_library("file_transfer_controller.m") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:command.m",
     "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:tree.m",
+    "//ui/webui/resources/js/cr/ui:tree",
   ]
 
   extra_deps = [ ":modulize" ]

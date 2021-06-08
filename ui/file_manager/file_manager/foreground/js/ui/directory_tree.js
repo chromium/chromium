@@ -16,7 +16,7 @@
 // #import {FileType} from '../../../common/js/file_type.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {constants} from '../constants.m.js';
-// #import {TreeItem, Tree} from 'chrome://resources/js/cr/ui/tree.m.js';
+// #import {TreeItem, Tree} from 'chrome://resources/js/cr/ui/tree.js';
 // #import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';

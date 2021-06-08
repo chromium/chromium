@@ -23,7 +23,7 @@ js_library("predictors") {
   deps = [
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tabs.m",
+    "//ui/webui/resources/js/cr/ui:tabs",
   ]
 }
 

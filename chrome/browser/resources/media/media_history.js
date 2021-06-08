@@ -15,7 +15,7 @@ import './media_history_store.mojom-lite.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 

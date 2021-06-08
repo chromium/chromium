@@ -8,7 +8,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 
 import {DevicesPage} from './devices_page.js';
 import {UsbInternalsPageHandler} from './usb_internals.mojom-webui.js';

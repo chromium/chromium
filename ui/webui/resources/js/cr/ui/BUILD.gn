@@ -37,8 +37,11 @@ preprocess_if_expr("preprocess_src") {
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "drag_wrapper.js",
+    "focus_grid.js",
     "focus_outline_manager.js",
     "splitter.js",
+    "tabs.js",
+    "tree.js",
   ]
 
   if (is_chromeos_ash) {
@@ -47,7 +50,6 @@ preprocess_if_expr("preprocess_src") {
       "command.js",
       "context_menu_handler.js",
       "dialogs.js",
-      "focus_grid.js",
       "focus_manager.js",
       "focus_row.js",
       "focus_row_behavior.js",
@@ -65,8 +67,6 @@ preprocess_if_expr("preprocess_src") {
       "position_util.js",
       "store_client.js",
       "store.js",
-      "tabs.js",
-      "tree.js",
     ]
   }
 }
@@ -78,7 +78,6 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "array_data_model.m.js",
-    "focus_grid.m.js",
     "focus_outline_manager.m.js",
     "focus_row.m.js",
     "keyboard_shortcut_list.m.js",
@@ -88,8 +87,6 @@ preprocess_if_expr("preprocess_generated") {
     "list_selection_model.m.js",
     "store_client.m.js",
     "store.m.js",
-    "tabs.m.js",
-    "tree.m.js",
   ]
 
   if (!is_android) {
@@ -128,7 +125,6 @@ js_type_check("ui_resources") {
     ":command",
     ":context_menu_handler",
     ":dialogs",
-    ":focus_grid",
     ":focus_manager",
     ":focus_outline_manager",
     ":focus_row",
@@ -146,8 +142,6 @@ js_type_check("ui_resources") {
     ":position_util",
     ":store",
     ":store_client",
-    ":tabs",
-    ":tree",
   ]
 
   if (is_chromeos_ash) {
@@ -183,14 +177,6 @@ js_library("context_menu_handler") {
 
 js_library("dialogs") {
   deps = [ "../..:cr" ]
-}
-
-js_library("focus_grid") {
-  deps = [
-    ":focus_row",
-    "../..:assert",
-    "../..:cr",
-  ]
 }
 
 js_library("focus_manager") {
@@ -311,30 +297,12 @@ js_library("store_client") {
   ]
 }
 
-js_library("tabs") {
-  deps = [
-    ":focus_outline_manager",
-    "..:ui",
-    "../..:cr",
-    "../..:util",
-  ]
-}
-
-js_library("tree") {
-  deps = [
-    "..:ui",
-    "../..:cr",
-    "../..:util",
-  ]
-}
-
 js_modulizer("modulize") {
   input_files = [
     "array_data_model.js",
     "command.js",
     "context_menu_handler.js",
     "dialogs.js",
-    "focus_grid.js",
     "focus_outline_manager.js",
     "focus_row.js",
     "focus_row_behavior.js",
@@ -352,8 +320,6 @@ js_modulizer("modulize") {
     "position_util.js",
     "store.js",
     "store_client.js",
-    "tabs.js",
-    "tree.js",
   ]
   namespace_rewrites = cr_namespace_rewrites
 }
@@ -366,7 +332,7 @@ js_type_check("ui_resources_modules") {
     ":context_menu_handler.m",
     ":dialogs.m",
     ":drag_wrapper",
-    ":focus_grid.m",
+    ":focus_grid",
     ":focus_outline_manager.m",
     ":focus_row.m",
     ":focus_row_behavior.m",
@@ -385,8 +351,8 @@ js_type_check("ui_resources_modules") {
     ":splitter",
     ":store.m",
     ":store_client.m",
-    ":tabs.m",
-    ":tree.m",
+    ":tabs",
+    ":tree",
   ]
 }
 
@@ -439,13 +405,11 @@ js_library("dialogs.m") {
 js_library("drag_wrapper") {
 }
 
-js_library("focus_grid.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/focus_grid.m.js" ]
+js_library("focus_grid") {
   deps = [
     ":focus_row.m",
     "../..:assert.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("focus_outline_manager.m") {
@@ -617,23 +581,19 @@ js_library("store_client.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("tabs.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/tabs.m.js" ]
+js_library("tabs") {
   deps = [
     ":focus_outline_manager.m",
     "..:ui.m",
     "../..:cr.m",
     "../..:util.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("tree.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/tree.m.js" ]
+js_library("tree") {
   deps = [
     "../:ui.m",
     "../..:assert.m",
     "../..:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
