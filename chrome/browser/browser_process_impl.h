@@ -78,6 +78,11 @@ namespace webrtc_event_logging {
 class WebRtcEventLogManager;
 }  // namespace webrtc_event_logging
 
+namespace speech {
+class SodaInstallerImpl;
+class SodaInstallerImplChromeOS;
+}  // namespace speech
+
 // Real implementation of BrowserProcess that creates and returns the services.
 class BrowserProcessImpl : public BrowserProcess,
                            public KeepAliveStateObserver {
@@ -377,6 +382,19 @@ class BrowserProcessImpl : public BrowserProcess,
   // to concerns over integrity of data shared between profiles,
   // but some users of component updater only install per-user.
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Used to create a singleton instance of SodaInstallerImpl, which can be
+  // retrieved using speech::SodaInstaller::GetInstance().
+  // SodaInstallerImpl depends on ComponentUpdateService, so define it here
+  // to ensure that SodaInstallerImpl gets destructed first.
+  std::unique_ptr<speech::SodaInstallerImpl> soda_installer_impl_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Chrome OS has a different implementation of SodaInstaller.
+  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginsResourceService> plugins_resource_service_;

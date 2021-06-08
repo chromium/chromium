@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SODA_SODA_INSTALLER_H_
 #define COMPONENTS_SODA_SODA_INSTALLER_H_
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -16,7 +17,7 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API). This is a singleton because there
 // is only one installation of SODA per device.
-class SodaInstaller {
+class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
  public:
   // Observer of the SODA (Speech On-Device API) installation.
   class Observer : public base::CheckedObserver {

@@ -31,7 +31,7 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
 
   controller_->OnSpeechRecognitionAvailable(recognition_available);
   if (!recognition_available) {
-    observed_soda_installer_.Observe(speech::SodaInstaller::GetInstance());
+    speech::SodaInstaller::GetInstance()->AddObserver(this);
   }
 }
 

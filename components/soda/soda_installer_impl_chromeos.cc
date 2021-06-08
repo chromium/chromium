@@ -23,17 +23,6 @@ constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
 
 namespace speech {
 
-SodaInstaller* SodaInstaller::GetInstance() {
-  static base::NoDestructor<SodaInstallerImplChromeOS> instance;
-  return instance.get();
-}
-
-// static
-void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
-  SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
-}
-
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() = default;
 
 SodaInstallerImplChromeOS::~SodaInstallerImplChromeOS() = default;

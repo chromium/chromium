@@ -66,9 +66,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
-  base::ScopedObservation<speech::SodaInstaller,
-                          speech::SodaInstaller::Observer>
-      observed_soda_installer_{this};
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;
   chromeos::SelfieCamBubbleManager selfie_cam_bubble_manager_;
   base::WeakPtrFactory<ProjectorClientImpl> weak_ptr_factory_{this};

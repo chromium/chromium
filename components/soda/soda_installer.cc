@@ -25,9 +25,41 @@ constexpr int kSodaCleanUpDelayInDays = 30;
 
 namespace speech {
 
-SodaInstaller::SodaInstaller() = default;
+SodaInstaller* g_instance = nullptr;
 
-SodaInstaller::~SodaInstaller() = default;
+// static
+SodaInstaller* SodaInstaller::GetInstance() {
+  return g_instance;
+}
+
+SodaInstaller::SodaInstaller() {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+SodaInstaller::~SodaInstaller() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
+
+// static
+void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
+  SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Handle non-Chrome-OS logic here. We need to keep the implementation of this
+  // method in the parent class to avoid duplicate declaration build errors
+  // (specifically on Windows).
+  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
+
+  // Register language pack config path preferences.
+  for (const speech::SodaLanguagePackComponentConfig& config :
+       speech::kLanguageComponentConfigs) {
+    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 void SodaInstaller::Init(PrefService* profile_prefs,
                          PrefService* global_prefs) {

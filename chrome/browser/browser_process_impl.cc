@@ -36,6 +36,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/battery/battery_metrics.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -148,6 +149,10 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/message_center/message_center.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/soda/soda_installer_impl_chromeos.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -1177,6 +1182,15 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   // SecurityStateModel code is called.
   security_state::SetSecurityStateClient(new ChromeSecurityStateClient());
 #endif
+
+// Create the global SodaInstaller instance.
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void BrowserProcessImpl::CreateIconManager() {

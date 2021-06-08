@@ -54,27 +54,6 @@ int GetDownloadProgress(
 
 namespace speech {
 
-// static
-SodaInstaller* SodaInstaller::GetInstance() {
-  static base::NoDestructor<SodaInstallerImpl> instance;
-  return instance.get();
-}
-
-// static
-void speech::SodaInstaller::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
-  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
-
-  SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
-
-  // Register language pack config path preferences.
-  for (const speech::SodaLanguagePackComponentConfig& config :
-       speech::kLanguageComponentConfigs) {
-    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
-  }
-}
-
 SodaInstallerImpl::SodaInstallerImpl() = default;
 
 SodaInstallerImpl::~SodaInstallerImpl() {
