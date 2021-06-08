@@ -117,7 +117,6 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
                kChromeosResourcesSize, source);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  source->AddString("textDirection", webui::GetTextDirection());
   source->AddString("fontFamily", webui::GetFontFamily());
   source->AddString("fontSize", webui::GetFontSize());
 
