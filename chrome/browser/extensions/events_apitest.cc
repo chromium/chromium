@@ -36,8 +36,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
   constexpr char test_extension_name[] = "events_are_unregistered";
-  ASSERT_TRUE(
-      RunExtensionTest({.name = test_extension_name, .page_url = "page1.html"}))
+  ASSERT_TRUE(RunExtensionTest(test_extension_name, {.page_url = "page1.html"}))
       << message_;
 
   // Find the extension we just installed by looking for the path.
@@ -75,8 +74,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 // Test that listeners for webview-related events are not stored (even for lazy
 // contexts). See crbug.com/736381.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "events/webview_events", .launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest("events/webview_events",
+                               {.launch_as_platform_app = true}))
       << message_;
   EventRouter* event_router = EventRouter::Get(profile());
   // We should not register lazy listeners for any webview-related events.

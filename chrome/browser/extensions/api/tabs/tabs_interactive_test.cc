@@ -153,7 +153,7 @@ class NonPersistentExtensionTabsTest
 // param is ignored from Service Worker extension scripts.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/current_window"},
+      "tabs/current_window", {},
       {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
       << message_;
 }
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
                        MAYBE_TabGetLastFocusedWindow) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/last_focused_window"},
+      "tabs/last_focused_window", {},
       {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
       << message_;
 }

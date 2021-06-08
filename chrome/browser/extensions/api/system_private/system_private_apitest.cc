@@ -25,9 +25,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetIncognitoModeAvailability) {
   PrefService* pref_service = browser()->profile()->GetPrefs();
   pref_service->SetInteger(prefs::kIncognitoModeAvailability, 1);
 
-  EXPECT_TRUE(
-      RunExtensionTest({.name = "system/get_incognito_mode_availability"},
-                       {.load_as_component = true}))
+  EXPECT_TRUE(RunExtensionTest("system/get_incognito_mode_availability", {},
+                               {.load_as_component = true}))
       << message_;
 }
 
@@ -70,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {
   fake_update_engine_client_->PushLastStatus(status_updating);
   fake_update_engine_client_->PushLastStatus(status_boot_needed);
 
-  ASSERT_TRUE(RunExtensionTest({.name = "system/get_update_status"},
+  ASSERT_TRUE(RunExtensionTest("system/get_update_status", {},
                                {.load_as_component = true}))
       << message_;
 }

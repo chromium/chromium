@@ -647,8 +647,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_HitTestMultipleWindows) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
-                                .page_url = "hit_test_multiple_windows.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
+                               {.page_url = "hit_test_multiple_windows.html"}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

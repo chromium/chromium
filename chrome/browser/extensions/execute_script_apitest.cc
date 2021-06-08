@@ -32,7 +32,7 @@ class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
  protected:
   bool RunTest(const char* extension_name, bool allow_file_access = false) {
     return RunExtensionTest(
-        {.name = extension_name},
+        extension_name, {},
         {.allow_file_access = allow_file_access,
          .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
@@ -171,8 +171,8 @@ class DestructiveScriptTest : public ExecuteScriptApiTestBase,
         "test.html?" + test_host + "#bucketcount=" +
         base::NumberToString(kDestructiveScriptTestBucketCount) +
         "&bucketindex=" + base::NumberToString(GetParam());
-    return RunExtensionTest(
-        {.name = "executescript/destructive", .page_url = page_url.c_str()});
+    return RunExtensionTest("executescript/destructive",
+                            {.page_url = page_url.c_str()});
   }
 };
 

@@ -45,8 +45,8 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionTest, SpeechFromBackgroundPage) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kUseFakeUIForMediaStream);
-  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/speech/background_page",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest("platform_apps/speech/background_page",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -54,8 +54,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionTest,
                        SpeechFromBackgroundPageWithoutPermission) {
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseFakeUIForMediaStream));
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/speech/background_page_no_permission",
-       .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("platform_apps/speech/background_page_no_permission",
+                       {.launch_as_platform_app = true}))
       << message_;
 }

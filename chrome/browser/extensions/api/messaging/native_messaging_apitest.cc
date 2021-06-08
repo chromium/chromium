@@ -43,10 +43,10 @@ class NativeMessagingApiTest : public NativeMessagingApiTestBase,
  protected:
   bool RunTest(const char* extension_name) {
     if (GetParam() == ContextType::kPersistentBackground)
-      return RunExtensionTest({.name = extension_name});
+      return RunExtensionTest(extension_name);
     std::string lazy_exension_name = base::StrCat({extension_name, "/lazy"});
     return RunExtensionTest(
-        {.name = lazy_exension_name.c_str()},
+        lazy_exension_name.c_str(), {},
         {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };

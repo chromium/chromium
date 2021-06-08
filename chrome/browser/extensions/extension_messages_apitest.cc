@@ -171,16 +171,16 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
       shared_test_data_dir().AppendASCII("messaging").AppendASCII("receiver")));
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "messaging/connect_external", .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunExtensionTest("messaging/connect_external",
+                               {.use_extensions_root_dir = true}))
       << message_;
 }
 
 // Tests that a content script can exchange messages with a tab even if there is
 // no background page.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
-  ASSERT_TRUE(RunExtensionTest({.name = "messaging/connect_nobackground",
-                                .page_url = "page_in_main_frame.html"}))
+  ASSERT_TRUE(RunExtensionTest("messaging/connect_nobackground",
+                               {.page_url = "page_in_main_frame.html"}))
       << message_;
 }
 
