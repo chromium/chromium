@@ -249,7 +249,7 @@ def main():
 
   print('If you get authentication errors, follow:')
   print(
-      '  https://www.chromium.org/developers/testing/isolated-testing/for-swes#TOC-Login-on-the-services'
+      '  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/workflow/debugging-with-swarming.md#authenticating'
   )
 
   print('Uploading to isolate server, this can take a while...')
