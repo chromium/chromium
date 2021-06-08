@@ -44,6 +44,10 @@ class MockDlpController : public DataTransferDlpController {
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
 
+  MOCK_METHOD2(NotifyBlockedDrop,
+               void(const ui::DataTransferEndpoint* const data_src,
+                    const ui::DataTransferEndpoint* const data_dst));
+
   MOCK_METHOD2(WarnOnPaste,
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
@@ -307,7 +311,7 @@ TEST_P(DlpControllerTest, Block) {
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   if (do_notify)
-    EXPECT_CALL(dlp_controller_, NotifyBlockedPaste);
+    EXPECT_CALL(dlp_controller_, NotifyBlockedDrop);
 
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, dst_ptr,
                                                      /*is_drop=*/do_notify));
@@ -495,7 +499,7 @@ TEST_P(DlpControllerVMsTest, Block) {
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   if (do_notify)
-    EXPECT_CALL(dlp_controller_, NotifyBlockedPaste);
+    EXPECT_CALL(dlp_controller_, NotifyBlockedDrop);
 
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
                                                      /*is_drop=*/do_notify));
