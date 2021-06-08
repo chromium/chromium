@@ -510,10 +510,13 @@ def main():
                 os.path.join(llddir, 'bin'))
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-ar'),
                 os.path.join(llddir, 'bin'))
+    shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-objcopy'),
+                os.path.join(llddir, 'bin'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld.darwinnew'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'lld-link'))
+    os.symlink('llvm-objcopy', os.path.join(llddir, 'bin', 'llvm-strip'))
     with tarfile.open(llddir + '.tgz', 'w:gz') as tar:
       tar.add(os.path.join(llddir, 'bin'), arcname='bin',
               filter=PrintTarProgress)
