@@ -19,7 +19,7 @@
 #include "ui/android/window_android.h"
 
 // Default minimum file size in kilobyte to trigger download later feature.
-const int64_t kDownloadLaterDefaultMinFileSizeKb = 300 * 1024;
+const int64_t kDownloadLaterDefaultMinFileSizeKb = 204800;
 
 // -----------------------------------------------------------------------------
 // DownloadDialogResult
