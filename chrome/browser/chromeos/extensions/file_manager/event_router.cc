@@ -415,6 +415,14 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
                           histogram_value, event_name, std::move(event_args)));
   }
 
+  void BroadcastEvent(extensions::events::HistogramValue histogram_value,
+                      const std::string& event_name,
+                      std::vector<base::Value> event_args) override {
+    extensions::EventRouter::Get(profile_)->BroadcastEvent(
+        std::make_unique<extensions::Event>(histogram_value, event_name,
+                                            std::move(event_args)));
+  }
+
   Profile* const profile_;
   const std::map<base::FilePath, std::unique_ptr<FileWatcher>>* const
       file_watchers_;

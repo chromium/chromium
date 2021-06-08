@@ -212,8 +212,7 @@ void DriveFsEventRouter::OnFilesChanged(
                     CHANGE_TYPE_ADD_OR_UPDATE);
     }
     for (auto& event : events) {
-      DispatchOnDirectoryChangedEventToExtension(listener_url.host(),
-                                                 event.first, event.second);
+      BroadcastOnDirectoryChangedEvent(event.first, event.second);
     }
   }
 }
@@ -310,18 +309,15 @@ void DriveFsEventRouter::DispatchOnPinTransfersUpdatedEventToExtension(
       file_manager_private::OnPinTransfersUpdated::Create(status));
 }
 
-void DriveFsEventRouter::DispatchOnDirectoryChangedEventToExtension(
-    const std::string& extension_id,
+void DriveFsEventRouter::BroadcastOnDirectoryChangedEvent(
     const base::FilePath& directory,
     const extensions::api::file_manager_private::FileWatchEvent& event) {
   if (!IsPathWatched(directory)) {
     return;
   }
-  DispatchEventToExtension(
-      extension_id,
-      extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
-      file_manager_private::OnDirectoryChanged::kEventName,
-      file_manager_private::OnDirectoryChanged::Create(event));
+  BroadcastEvent(extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
+                 file_manager_private::OnDirectoryChanged::kEventName,
+                 file_manager_private::OnDirectoryChanged::Create(event));
 }
 
 }  // namespace file_manager

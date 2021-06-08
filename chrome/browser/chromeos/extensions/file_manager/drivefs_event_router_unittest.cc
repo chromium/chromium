@@ -87,11 +87,20 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
                                  base::Value(std::move(event_args)));
   }
 
+  void BroadcastEvent(extensions::events::HistogramValue histogram_value,
+                      const std::string& event_name,
+                      std::vector<base::Value> event_args) override {
+    BroadcastEventImpl(event_name, base::Value(std::move(event_args)));
+  }
+
   MOCK_METHOD(void,
               DispatchEventToExtensionImpl,
               (const std::string& extension_id,
                const std::string& name,
                const base::Value& event));
+  MOCK_METHOD(void,
+              BroadcastEventImpl,
+              (const std::string& name, const base::Value& event));
   MOCK_METHOD(bool, IsPathWatched, (const base::FilePath&));
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
@@ -695,10 +704,9 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(mock(), IsPathWatched(base::FilePath("/other")))
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(mock(),
-              DispatchEventToExtensionImpl(
-                  "ext", file_manager_private::OnDirectoryChanged::kEventName,
-                  MatchFileWatchEvent(event)));
+  EXPECT_CALL(mock(), BroadcastEventImpl(
+                          file_manager_private::OnDirectoryChanged::kEventName,
+                          MatchFileWatchEvent(event)));
 
   std::vector<drivefs::mojom::FileChange> changes;
   changes.emplace_back(base::FilePath("/root/a"),
@@ -727,10 +735,9 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
     changed_file.url = "ext:/root/a/file";
     changed_file.changes.push_back(file_manager_private::CHANGE_TYPE_DELETE);
   }
-  EXPECT_CALL(mock(),
-              DispatchEventToExtensionImpl(
-                  "ext", file_manager_private::OnDirectoryChanged::kEventName,
-                  MatchFileWatchEvent(event)));
+  EXPECT_CALL(mock(), BroadcastEventImpl(
+                          file_manager_private::OnDirectoryChanged::kEventName,
+                          MatchFileWatchEvent(event)));
 
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
   event.entry.additional_properties.SetString("fileSystemRoot", "ext:/");
@@ -746,10 +753,9 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
     changed_file.changes.push_back(
         file_manager_private::CHANGE_TYPE_ADD_OR_UPDATE);
   }
-  EXPECT_CALL(mock(),
-              DispatchEventToExtensionImpl(
-                  "ext", file_manager_private::OnDirectoryChanged::kEventName,
-                  MatchFileWatchEvent(event)));
+  EXPECT_CALL(mock(), BroadcastEventImpl(
+                          file_manager_private::OnDirectoryChanged::kEventName,
+                          MatchFileWatchEvent(event)));
 
   std::vector<drivefs::mojom::FileChange> changes;
   changes.emplace_back(base::FilePath("/root/a/file"),
