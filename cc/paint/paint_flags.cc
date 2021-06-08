@@ -150,7 +150,7 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     SkFilterQuality filter_quality) {
   switch (filter_quality) {
     case SkFilterQuality::kHigh_SkFilterQuality:
-      return SkSamplingOptions(SkCubicResampler::Mitchell());
+      return SkSamplingOptions(SkCubicResampler::CatmullRom());
     case SkFilterQuality::kMedium_SkFilterQuality:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
     case SkFilterQuality::kLow_SkFilterQuality:

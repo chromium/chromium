@@ -2982,7 +2982,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   testing::StrictMock<MockCanvas> canvas;
   testing::Sequence s;
 
-  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
+  SkSamplingOptions sampling({0, 1.0f / 2});
 
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
@@ -3028,7 +3028,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   testing::StrictMock<MockCanvas> canvas;
   testing::Sequence s;
 
-  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
+  SkSamplingOptions sampling({0, 1.0f / 2});
 
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
@@ -3077,7 +3077,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
   testing::StrictMock<MockCanvas> canvas;
   testing::Sequence s;
 
-  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
+  SkSamplingOptions sampling({0, 1.0f / 2});
 
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
@@ -3120,7 +3120,7 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   testing::StrictMock<MockCanvas> canvas;
   testing::Sequence s;
 
-  SkSamplingOptions sampling0({1.0f / 3, 1.0f / 3});
+  SkSamplingOptions sampling0({0, 1.0f / 2});
   SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
   // Save/scale/image/restore from DrawImageop.
