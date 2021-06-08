@@ -248,10 +248,6 @@ export class HistoryListElement extends HistoryListElementBase {
     });
 
     assert(this.selectedItems.size === 0);
-
-    IronA11yAnnouncer.requestAvailability();
-    this.fire_(
-        'iron-announce', {text: loadTimeData.getString('itemsUnselected')});
   }
 
   /** @return {number} */

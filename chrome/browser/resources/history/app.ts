@@ -23,6 +23,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -239,6 +240,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.eventTracker_.removeAll();
   }
 
+  private fire_(eventName: string, detail?: any) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
+
   private onFirstRender_() {
     setTimeout(() => {
       this.browserService_!.recordTime(
@@ -333,6 +339,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     if (e.key === 'Escape') {
       this.unselectAll();
+      IronA11yAnnouncer.requestAvailability();
+      this.fire_(
+          'iron-announce', {text: loadTimeData.getString('itemsUnselected')});
       e.preventDefault();
     }
   }
