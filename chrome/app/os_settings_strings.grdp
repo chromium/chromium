@@ -3273,7 +3273,7 @@ Press an assigned switch to remove assignment.
     Never
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE" desc="In Device Settings > Displays, the label of the option to set the automatic schedule of the Night Light feature to turn on at sunset and off at sunrise.">
-    Sunset to Sunrise
+    Sunset to sunrise
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_START_TIME" desc="In Device Settings > Displays, the label of the start time bubble.">
     Start time
