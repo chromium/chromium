@@ -54,9 +54,13 @@ public class ShareImageFileUtils {
      * TODO(crbug.com/1055886): consider changing the directory name.
      */
     private static final String SHARE_IMAGES_DIRECTORY_NAME = "screenshot";
-    private static final String JPEG_EXTENSION = ".jpg";
     private static final String FILE_NUMBER_FORMAT = " (%d)";
-    private static final String MIME_TYPE = "image/JPEG";
+
+    private static final String JPEG_EXTENSION = ".jpg";
+    private static final String PNG_EXTENSION = ".png";
+
+    private static final String JPEG_MIME_TYPE = "image/jpeg";
+    private static final String PNG_MIME_TYPE = "image/png";
 
     /**
      * Check if the file related to |fileUri| is in the |folder|.
@@ -175,7 +179,7 @@ public class ShareImageFileUtils {
         };
 
         saveImage(fileName, filePathProvider, listener, fileWriter, /*isTemporary=*/true,
-                JPEG_EXTENSION);
+                bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
     }
 
     /**
@@ -195,7 +199,10 @@ public class ShareImageFileUtils {
                         -> {
                     return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getPath();
                 },
-                listener, (fos) -> { writeBitmap(fos, bitmap); }, false, JPEG_EXTENSION);
+                listener,
+                (fos)
+                        -> { writeBitmap(fos, bitmap); },
+                false, bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
     }
 
     /**
@@ -357,7 +364,9 @@ public class ShareImageFileUtils {
      * @param bitmap The Bitmap to write.
      */
     private static void writeBitmap(FileOutputStream fos, Bitmap bitmap) throws IOException {
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        Bitmap.CompressFormat format =
+                bitmap.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
+        bitmap.compress(format, 100, fos);
     }
 
     /**
@@ -381,7 +390,7 @@ public class ShareImageFileUtils {
         long length = file.length();
 
         return DownloadUtils.addCompletedDownload(
-                title, title, MIME_TYPE, path, length, null, null);
+                title, title, getImageMimeType(file), path, length, null, null);
     }
 
     @TargetApi(29)
@@ -390,7 +399,7 @@ public class ShareImageFileUtils {
 
         final ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
-        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, MIME_TYPE);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, getImageMimeType(file));
         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
         ContentResolver database = ContextUtils.getApplicationContext().getContentResolver();
@@ -445,6 +454,40 @@ public class ShareImageFileUtils {
         } catch (IOException e) {
             Log.e(TAG, "Error getting content bitmap: ", e);
             callback.onResult(null);
+        }
+    }
+
+    /**
+     * Parses out the extension from a file's name.
+     * @param file The file from which to extract the extension.
+     * @return the file extension.
+     */
+    private static String getFileExtension(File file) {
+        if (file == null) {
+            return "";
+        }
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            // Empty extension.
+            return "";
+        }
+        return name.substring(lastIndexOf);
+    }
+
+    /**
+     * Attempts to retrieve the MIME type from a given image file. Currently
+     * only supports PNG and JPEG as the fallback.
+     * @param file The file to get the MIME type from.
+     * @return the MIME type.
+     */
+    private static String getImageMimeType(File file) {
+        String extension = getFileExtension(file);
+        switch (extension.toLowerCase(Locale.getDefault())) {
+            case "png":
+                return PNG_MIME_TYPE;
+            default:
+                return JPEG_MIME_TYPE;
         }
     }
 
