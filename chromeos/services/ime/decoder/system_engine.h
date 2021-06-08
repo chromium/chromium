@@ -7,6 +7,7 @@
 
 #include "base/scoped_native_library.h"
 #include "chromeos/services/ime/ime_decoder.h"
+#include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,7 +25,7 @@ void FakeDecoderEntryPointsForTesting(
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
-class SystemEngine : public mojom::InputChannel {
+class SystemEngine : public InputEngine, public mojom::InputChannel {
  public:
   explicit SystemEngine(ImeCrosPlatform* platform);
   SystemEngine(const SystemEngine&) = delete;

@@ -7,6 +7,7 @@
 
 #include "base/scoped_native_library.h"
 #include "chromeos/services/ime/ime_decoder.h"
+#include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,7 +22,7 @@ namespace ime {
 // An enhanced implementation of the basic InputEngine which allows the input
 // engine to call a customized transliteration library (aka decoder) to provide
 // a premium typing experience.
-class DecoderEngine : public mojom::InputChannel {
+class DecoderEngine : public InputEngine, public mojom::InputChannel {
  public:
   explicit DecoderEngine(ImeCrosPlatform* platform);
   ~DecoderEngine() override;

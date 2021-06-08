@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
 #define CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
 
+#include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,7 +22,7 @@ class Engine;
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
-class RuleBasedEngine : public mojom::InputChannel {
+class RuleBasedEngine : public InputEngine, public mojom::InputChannel {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
