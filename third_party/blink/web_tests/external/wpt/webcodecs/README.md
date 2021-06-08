@@ -14,6 +14,7 @@ any people can regenerate or update the file in the future.
   * Sample offsets can be copied from the "Sample View" tab after unchecking all but offset and size. Use a multi-line edit mode and clang-format to quickly format entries.
   * Description entries can be found under moov.trak.mdia.minf.stbl.stsd in box view.
     * avc1.avcC has an offset, size in the same view. Add 8 to offset and subtract 8 from the size to get the values the tests want.
+  * If you use ffprobe -show_packets to get sample offsets, you may need to add 4 to each `pos` value. You can tell if you need to by whether or not tests pass.
 
 ## List of Test Files
 
@@ -97,4 +98,19 @@ ffmpeg -i h264.mp4 -codec copy -bsf:v h264_mp4toannexb -f h264 h264.annexb
 ```
 sox -n -r 48000 sfx.wav synth 1 sine 480
 ffmpeg -i sfx.wav -frames:a 10 -acodec libopus -b:a 96K sfx-opus.ogg
+```
+
+### av1.mp4
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec libaom-av1 av1.mp4
+```
+
+### vp8.webm
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec vp8 vp8.webm
+```
+
+### vp9.mp4
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec vp9 vp9.mp4
 ```

@@ -20,6 +20,8 @@ include_rules = [
     "+media/renderers",
     "+media/video",
 
+    "+third_party/libaom",
+    "+third_party/libvpx",
     "+third_party/libyuv",
 
     "+ui/gfx/color_space.h",

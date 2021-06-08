@@ -3,7 +3,7 @@
 
 const invalidConfigs = [
   {
-    comment: 'Emtpy codec',
+    comment: 'Empty codec',
     config: {codec: ''},
   },
   {

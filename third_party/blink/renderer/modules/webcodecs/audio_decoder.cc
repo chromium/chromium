@@ -226,7 +226,7 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
 }
 
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
-AudioDecoder::MakeDecoderBuffer(const InputType& chunk) {
+AudioDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   auto decoder_buffer = media::DecoderBuffer::CopyFrom(
       static_cast<uint8_t*>(chunk.data()->Data()), chunk.data()->ByteLength());
   decoder_buffer->set_timestamp(

@@ -97,7 +97,8 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
                                   MediaConfigType* out_media_config,
                                   String* out_console_message) override;
   media::StatusOr<scoped_refptr<media::DecoderBuffer>> MakeDecoderBuffer(
-      const InputType& chunk) override;
+      const InputType& chunk,
+      bool verify_key_frame) override;
 };
 
 }  // namespace blink

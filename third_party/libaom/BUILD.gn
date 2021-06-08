@@ -247,5 +247,6 @@ if (enable_libaom) {
       deps += [ "//third_party/android_ndk:cpu_features" ]
     }
     public_configs = [ ":libaom_external_config" ]
+    public_deps = [ ":libaom_buildflags" ]
   }
 }

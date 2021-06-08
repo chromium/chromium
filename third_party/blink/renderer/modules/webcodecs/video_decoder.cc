@@ -41,13 +41,24 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/libaom/libaom_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+#include "third_party/libaom/source/libaom/aom/aom_decoder.h"
+#include "third_party/libaom/source/libaom/aom/aomdx.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+#include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
+#include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
+#endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/h264_to_annex_b_bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif
 
 namespace blink {
 
@@ -183,6 +194,37 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
     copy->setOptimizeForLatency(config.optimizeForLatency());
 
   return copy;
+}
+
+void ParseAv1KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+  aom_codec_stream_info_t stream_info = {0};
+  auto status = aom_codec_peek_stream_info(
+      &aom_codec_av1_dx_algo, buffer.data(), buffer.data_size(), &stream_info);
+  *is_key_frame = (status == AOM_CODEC_OK) && stream_info.is_kf;
+#endif
+}
+
+void ParseVpxKeyFrame(const media::DecoderBuffer& buffer,
+                      media::VideoCodec codec,
+                      bool* is_key_frame) {
+#if BUILDFLAG(ENABLE_LIBVPX)
+  vpx_codec_stream_info_t stream_info = {0};
+  stream_info.sz = sizeof(vpx_codec_stream_info_t);
+  auto status = vpx_codec_peek_stream_info(
+      codec == media::kCodecVP8 ? &vpx_codec_vp8_dx_algo
+                                : &vpx_codec_vp9_dx_algo,
+      buffer.data(), static_cast<uint32_t>(buffer.data_size()), &stream_info);
+  *is_key_frame = (status == VPX_CODEC_OK) && stream_info.is_kf;
+#endif
+}
+
+void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  auto result = media::mp4::AVC::AnalyzeAnnexB(
+      buffer.data(), buffer.data_size(), std::vector<media::SubsampleEntry>());
+  *is_key_frame = result.is_keyframe.value_or(false);
+#endif
 }
 
 }  // namespace
@@ -424,16 +466,19 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
                                               String* out_console_message) {
   DCHECK(out_media_config);
   DCHECK(out_console_message);
-  return MakeMediaVideoDecoderConfig(config, *out_media_config,
+  auto result = MakeMediaVideoDecoderConfig(config, *out_media_config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                     h264_converter_ /* out */,
-                                     h264_avcc_ /* out */,
+                                            h264_converter_ /* out */,
+                                            h264_avcc_ /* out */,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                     *out_console_message);
+                                            *out_console_message);
+  if (result == CodecConfigEval::kSupported)
+    current_codec_ = out_media_config->codec();
+  return result;
 }
 
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
-VideoDecoder::MakeDecoderBuffer(const InputType& chunk) {
+VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   uint8_t* src = static_cast<uint8_t*>(chunk.data()->Data());
   size_t src_size = chunk.data()->ByteLength();
 
@@ -473,7 +518,19 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk) {
                  std::numeric_limits<int64_t>::max() - 1)));
   }
 
-  decoder_buffer->set_is_key_frame(chunk.type() == "key");
+  bool is_key_frame = chunk.type() == "key";
+  if (verify_key_frame) {
+    if (current_codec_ == media::kCodecVP9 ||
+        current_codec_ == media::kCodecVP8) {
+      ParseVpxKeyFrame(*decoder_buffer, current_codec_, &is_key_frame);
+    } else if (current_codec_ == media::kCodecAV1) {
+      ParseAv1KeyFrame(*decoder_buffer, &is_key_frame);
+    } else if (current_codec_ == media::kCodecH264) {
+      ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
+    }
+  }
+
+  decoder_buffer->set_is_key_frame(is_key_frame);
 
   return decoder_buffer;
 }

@@ -99,8 +99,12 @@ class MODULES_EXPORT DecoderTemplate
   // |chunk|. If there is an error in the conversion process, the resulting
   // DecoderBuffer will be null, and |out_status| will contain a description of
   // the error.
+  //
+  // When |verify_key_frame| is true, clients are expected to verify and set the
+  // DecoderBuffer::is_key_frame() value. I.e., they must process the encoded
+  // data to ensure the value is actually what the chunk says it is.
   virtual media::StatusOr<scoped_refptr<media::DecoderBuffer>>
-  MakeDecoderBuffer(const InputType& chunk) = 0;
+  MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) = 0;
 
  private:
   struct Request final : public GarbageCollected<Request> {
@@ -215,6 +219,9 @@ class MODULES_EXPORT DecoderTemplate
   int trace_counter_id_;
 
   HeapHashMap<uint32_t, Member<Request>> pending_decodes_;
+
+  // Keyframes are required after configure(), flush(), and reset().
+  bool require_key_frame_ = true;
 };
 
 }  // namespace blink

@@ -315,8 +315,8 @@ void AudioEncoder::CallOutputCallback(
   ArrayBufferContents data(encoded_buffer.encoded_data.release(),
                            encoded_buffer.encoded_data_size, deleter);
   auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
-  auto* chunk =
-      MakeGarbageCollected<EncodedAudioChunk>(timestamp, false, dom_array);
+  auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(
+      timestamp, /*key_frame=*/true, dom_array);
 
   auto* metadata = MakeGarbageCollected<EncodedAudioChunkMetadata>();
   if (first_output_after_configure_ || codec_desc.has_value()) {

@@ -149,6 +149,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   }
 
   state_ = V8CodecState(V8CodecState::Enum::kConfigured);
+  require_key_frame_ = true;
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
@@ -173,10 +174,18 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kDecode;
   request->reset_generation = reset_generation_;
-  auto status_or_buffer = MakeDecoderBuffer(*chunk);
+  auto status_or_buffer =
+      MakeDecoderBuffer(*chunk, /*verify_key_frame=*/require_key_frame_);
 
   if (status_or_buffer.has_value()) {
     request->decoder_buffer = std::move(status_or_buffer).value();
+    if (require_key_frame_ && !request->decoder_buffer->is_key_frame()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "A key frame is required after configure() or flush().");
+      return;
+    }
+    require_key_frame_ = false;
   } else {
     request->status = std::move(status_or_buffer).error();
   }
@@ -194,6 +203,8 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
     return ScriptPromise();
+
+  require_key_frame_ = true;
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kFlush;
