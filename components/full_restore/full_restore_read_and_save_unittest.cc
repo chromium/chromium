@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/app_types.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,10 +22,12 @@
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "url/gurl.h"
 
 namespace full_restore {
 
@@ -43,6 +47,9 @@ constexpr int32_t kArcSessionId2 = kArcSessionIdOffsetForRestoredLaunching + 1;
 
 constexpr int32_t kArcTaskId1 = 666;
 constexpr int32_t kArcTaskId2 = 888;
+
+constexpr char kExampleUrl1[] = "https://www.example1.com";
+constexpr char kExampleUrl2[] = "https://www.example2.com";
 
 }  // namespace
 
@@ -190,6 +197,18 @@ class FullRestoreReadAndSaveTest : public testing::Test {
         file_path,
         std::make_unique<full_restore::AppLaunchInfo>(
             kAppId, /*event_flags=*/0, kArcSessionId1, /*display_id*/ 0));
+  }
+
+  void AddBrowserLaunchInfo(const base::FilePath& file_path,
+                            int32_t id,
+                            std::vector<GURL> urls,
+                            int32_t active_tab_index = 0) {
+    std::unique_ptr<full_restore::AppLaunchInfo> launch_info =
+        std::make_unique<full_restore::AppLaunchInfo>(
+            extension_misc::kChromeAppId, id);
+    launch_info->urls = urls;
+    launch_info->active_tab_index = active_tab_index;
+    full_restore::SaveAppLaunchInfo(file_path, std::move(launch_info));
   }
 
   void CreateWindowInfo(int32_t id,
@@ -538,6 +557,42 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   EXPECT_EQ(0, full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
   EXPECT_TRUE(read_test_api.GetArcTaskIdMap().empty());
   EXPECT_TRUE(read_test_api.GetArcWindowIdMap().empty());
+}
+
+TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
+  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add browser launch info.
+  std::vector<GURL> urls = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  const int active_tab_index = 1;
+  AddBrowserLaunchInfo(GetPath(), kId1, urls,
+                       /*active_tab_index=*/active_tab_index);
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Now read from the file.
+  ReadFromFile(GetPath());
+
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list.size());
+  const auto launch_list_it = launch_list.find(extension_misc::kChromeAppId);
+  EXPECT_TRUE(launch_list_it != launch_list.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+  const auto app_restore_data_it = launch_list_it->second.find(kId1);
+  EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
+
+  const auto& data = app_restore_data_it->second;
+  EXPECT_TRUE(data->urls.has_value());
+  EXPECT_EQ(data->urls.value().size(), 2u);
+  EXPECT_EQ(data->urls.value()[0], GURL(kExampleUrl1));
+  EXPECT_EQ(data->urls.value()[1], GURL(kExampleUrl2));
+
+  EXPECT_TRUE(data->active_tab_index.has_value());
+  EXPECT_EQ(data->active_tab_index.value(), active_tab_index);
 }
 
 }  // namespace full_restore

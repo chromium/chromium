@@ -59,7 +59,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   absl::optional<int32_t> disposition;
   absl::optional<int32_t> arc_session_id;
   absl::optional<int64_t> display_id;
-  absl::optional<GURL> url;
+  absl::optional<std::vector<GURL>> urls;
+  absl::optional<int32_t> active_tab_index;
   absl::optional<std::vector<base::FilePath>> file_paths;
   absl::optional<apps::mojom::IntentPtr> intent;
 };

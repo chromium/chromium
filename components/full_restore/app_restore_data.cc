@@ -20,7 +20,8 @@ constexpr char kEventFlagKey[] = "event_flag";
 constexpr char kContainerKey[] = "container";
 constexpr char kDispositionKey[] = "disposition";
 constexpr char kDisplayIdKey[] = "display_id";
-constexpr char kUrlKey[] = "url";
+constexpr char kUrlsKey[] = "urls";
+constexpr char kActiveTabIndexKey[] = "active_tab_index";
 constexpr char kIntentKey[] = "intent";
 constexpr char kFilePathsKey[] = "file_paths";
 constexpr char kActivationIndexKey[] = "index";
@@ -96,6 +97,31 @@ absl::optional<int64_t> GetDisplayIdFromDict(
   }
 
   return absl::nullopt;
+}
+
+// Gets urls from the dictionary value.
+absl::optional<std::vector<GURL>> GetUrlsFromDict(
+    const base::DictionaryValue& dict) {
+  if (!dict.HasKey(kUrlsKey))
+    return absl::nullopt;
+
+  const base::Value* urls_path_value = dict.FindListKey(kUrlsKey);
+  if (!urls_path_value || !urls_path_value->is_list() ||
+      urls_path_value->GetList().empty()) {
+    return absl::nullopt;
+  }
+
+  std::vector<GURL> url_paths;
+  for (const auto& item : urls_path_value->GetList()) {
+    if (item.GetString().empty())
+      continue;
+    GURL url(item.GetString());
+    if (!url.is_valid())
+      continue;
+    url_paths.push_back(url);
+  }
+
+  return url_paths;
 }
 
 // Gets std::vector<base::FilePath> from base::DictionaryValue, e.g.
@@ -189,7 +215,8 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   container = GetIntValueFromDict(*data_dict, kContainerKey);
   disposition = GetIntValueFromDict(*data_dict, kDispositionKey);
   display_id = GetDisplayIdFromDict(*data_dict);
-  url = apps_util::GetGurlValueFromDict(*data_dict, kUrlKey);
+  urls = GetUrlsFromDict(*data_dict);
+  active_tab_index = GetIntValueFromDict(*data_dict, kActiveTabIndexKey);
   file_paths = GetFilePathsFromDict(*data_dict);
   activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
@@ -216,7 +243,8 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   container = std::move(app_launch_info->container);
   disposition = std::move(app_launch_info->disposition);
   display_id = std::move(app_launch_info->display_id);
-  url = std::move(app_launch_info->url);
+  urls = std::move(app_launch_info->urls);
+  active_tab_index = std::move(app_launch_info->active_tab_index);
   file_paths = std::move(app_launch_info->file_paths);
   intent = std::move(app_launch_info->intent);
 }
@@ -238,8 +266,11 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (display_id.has_value())
     data->display_id = display_id.value();
 
-  if (url.has_value())
-    data->url = url.value();
+  if (urls.has_value())
+    data->urls = urls.value();
+
+  if (active_tab_index.has_value())
+    data->active_tab_index = active_tab_index.value();
 
   if (intent.has_value() && intent.value())
     data->intent = intent.value()->Clone();
@@ -294,8 +325,15 @@ base::Value AppRestoreData::ConvertToValue() const {
                                   base::NumberToString(display_id.value()));
   }
 
-  if (url.has_value())
-    launch_info_dict.SetStringKey(kUrlKey, url.value().spec());
+  if (urls.has_value() && !urls.value().empty()) {
+    base::Value urls_list(base::Value::Type::LIST);
+    for (auto& url : urls.value())
+      urls_list.Append(base::Value(url.spec()));
+    launch_info_dict.SetKey(kUrlsKey, std::move(urls_list));
+  }
+
+  if (active_tab_index.has_value())
+    launch_info_dict.SetIntKey(kActiveTabIndexKey, active_tab_index.value());
 
   if (intent.has_value() && intent.value()) {
     launch_info_dict.SetKey(kIntentKey,
