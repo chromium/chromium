@@ -17,6 +17,7 @@
 // Version 0: Initial
 // Version 1: Include HypothesisPart Info in Final result.
 // Version 2: Include enable formatting in request config.
+// Version 3: Include recognition mode in request config.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -27,6 +28,12 @@ enum OptionalBool {
   [Default] kUnknown = 0,
   kFalse,
   kTrue,
+};
+
+[Stable, Extensible]
+enum SodaRecognitionMode {
+  [Default] kCaption,
+  kIme,
 };
 
 // The configuration used to load Soda recognizer.
@@ -45,6 +52,8 @@ struct SodaConfig {
   // Whether to enable automated punctuation. Defaults to true as this
   // is the default in the underlying protocol buffer.
   [MinVersion=2] OptionalBool enable_formatting = kTrue;
+  // Which mode to execute in: IME or CAPTION. Default CAPTION.
+  [MinVersion=3] SodaRecognitionMode recognition_mode = kCaption;
 };
 
 // From the endpointer, What kind of endpointer event to record.
