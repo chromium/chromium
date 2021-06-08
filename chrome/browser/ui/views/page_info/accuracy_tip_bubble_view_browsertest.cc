@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -130,4 +133,20 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
       AccuracyTipUI::Interaction::kLearnMorePressed, 1);
+}
+
+// Render test for accuracy tip ui.
+class AccuracyTipBubbleViewDialogBrowserTest : public DialogBrowserTest {
+ public:
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    ShowAccuracyTipDialog(browser()->tab_strip_model()->GetActiveWebContents(),
+                          accuracy_tips::AccuracyTipStatus::kMisinformation,
+                          base::DoNothing());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewDialogBrowserTest,
+                       InvokeUi_default) {
+  ShowAndVerifyUi();
 }

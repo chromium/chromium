@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -19,13 +20,62 @@
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+namespace {
+
+// The icon size is actually 16, but the vector icons being used generally all
+// have additional internal padding. Account for this difference by asking for
+// the vectors in 18x18dip sizes.
+constexpr int kVectorIconSize = 18;
+
+std::unique_ptr<views::View> CreateRow(const std::u16string& text,
+                                       const gfx::VectorIcon& icon) {
+  auto line = std::make_unique<views::View>();
+  line->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  auto* provider = ChromeLayoutProvider::Get();
+  int icon_margin =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  auto icon_view = std::make_unique<NonAccessibleImageView>();
+  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize));
+  icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
+  icon_view->SetProperty(views::kCrossAxisAlignmentKey,
+                         views::LayoutAlignment::kStart);
+  line->AddChildView(std::move(icon_view));
+
+  auto text_view = std::make_unique<views::Label>(
+      text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+  text_view->SetMultiLine(true);
+  text_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  text_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
+          .WithWeight(1));
+  line->AddChildView(std::move(text_view));
+
+  return line;
+}
+
+}  // namespace
 
 AccuracyTipBubbleView::AccuracyTipBubbleView(
     views::View* anchor_view,
@@ -64,22 +114,29 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
       *bundle.GetImageSkiaNamed(IDR_SAFETY_TIP_ILLUSTRATION_DARK),
       base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
                           base::Unretained(GetBubbleFrameView())));
+  set_fixed_width(header_view->GetPreferredSize().width());
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 
   // Configure main content.
   auto* provider = ChromeLayoutProvider::Get();
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  int vertical_margin =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets(vertical_margin, 0))
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded,
+                                   /*adjust_height_for_width =*/true)
+              .WithWeight(1));
 
-  // TODO(crbug.com/1210891): Replace placeholder strings.
-  auto text = std::make_unique<views::Label>(std::u16string(),
-                                             views::style::CONTEXT_LABEL,
-                                             views::style::STYLE_SECONDARY);
-  text->SetMultiLine(true);
-  text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  text->SetText(u"Something seems wrong here...");
-  AddChildView(std::move(text));
+  // TODO(crbug.com/1210891): Replace placeholder strings and icons.
+  AddChildView(CreateRow(u"Verify the organizations's authority on the topic",
+                         vector_icons::kCertificateIcon));
+  AddChildView(
+      CreateRow(u"Check the source and evidence", vector_icons::kSettingsIcon));
 
   Layout();
   SizeToContents();
