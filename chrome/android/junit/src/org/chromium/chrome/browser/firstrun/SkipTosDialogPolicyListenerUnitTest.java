@@ -33,8 +33,8 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.policy.EnterpriseInfo;
-import org.chromium.chrome.browser.policy.EnterpriseInfo.OwnedState;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
 import org.chromium.components.policy.PolicyService;
 
 /**

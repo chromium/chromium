@@ -195,7 +195,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/password_manager/settings/ExportWarningDialogFragmentTest.java",
   "junit/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosureTest.java",
   "junit/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayerTest.java",
-  "junit/src/org/chromium/chrome/browser/policy/EnterpriseInfoTest.java",
   "junit/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
   "junit/src/org/chromium/chrome/browser/read_later/ReadingListUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerTest.java",
