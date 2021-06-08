@@ -159,7 +159,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
       .WillOnce(WithArgs<0, 1, 2>(Invoke(
           [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
               MockBluetoothSocket::SendCompletionCallback success_callback) {
-            ASSERT_EQ(buffer_size, int{bytes_read});
+            ASSERT_EQ(buffer_size, static_cast<int>(bytes_read));
             // EXPECT_EQ only does a shallow comparison, so it's necessary to
             // iterate through both objects and compare each character.
             for (int i = 0; i < buffer_size; i++) {
@@ -173,7 +173,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
 
   serial_port->StartWriting(std::move(consumer));
 
-  EXPECT_EQ(write_buffer->size(), int{bytes_read});
+  EXPECT_EQ(write_buffer->size(), static_cast<int>(bytes_read));
 
   base::RunLoop disconnect_loop;
   watcher->set_connection_error_handler(disconnect_loop.QuitClosure());
@@ -205,7 +205,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
 
   serial_port->StartReading(std::move(producer));
 
-  ASSERT_EQ(write_buffer->size(), int{bytes_read});
+  ASSERT_EQ(write_buffer->size(), static_cast<int>(bytes_read));
   int size = write_buffer->size();
   // EXPECT_EQ only does a shallow comparison, so it's necessary to iterate
   // through both objects and compare each character.
