@@ -108,24 +108,36 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   const std::string& make = info.manufacturer_id();
   const std::string& model = info.product_id();
 
-  gfx::Rect bounds = info.bounds_in_native();
+  // TODO(oshima): The current Wayland protocol currently has no way of
+  // informing a client about any overscan the display has, and what the safe
+  // area of the display might be. We may want to make a change to the
+  // aura-shell (zaura_output) protocol, or to upstream a change to the
+  // xdg-output (currently unstable) protocol to add that information.
 
   // |origin| is used in wayland service to identify the workspace
   // the pixel size will be applied.
-  gfx::Point origin = display.bounds().origin();
-  // Don't use ManagedDisplayInfo.bound_in_native() because it
-  // has raw information before overscan, rotation applied.
-  gfx::Size size_in_pixel = display.GetSizeInPixel();
+  const gfx::Point origin = display.bounds().origin();
+
+  // |physical_size_px| is the physical resolution of the display in pixels.
+  // The value should not include any overscan insets or display rotation,
+  // except for any panel orientation adjustment.
+  const gfx::Size physical_size_px = info.bounds_in_native().size();
+
+  // |physical_size_mm| is our best-effort approximation for the physical size
+  // of the display in millimeters, given the display resolution and DPI. The
+  // value should not include any overscan insets or display rotation, except
+  // for any panel orientation adjustment.
+  const gfx::Size physical_size_mm =
+      ScaleToRoundedSize(physical_size_px, kInchInMm / info.device_dpi());
 
   // Use panel_rotation otherwise some X apps will refuse to take events from
   // outside the "visible" region.
-  wl_output_send_geometry(
-      output_resource_, origin.x(), origin.y(),
-      static_cast<int>(kInchInMm * size_in_pixel.width() / info.device_dpi()),
-      static_cast<int>(kInchInMm * size_in_pixel.height() / info.device_dpi()),
-      WL_OUTPUT_SUBPIXEL_UNKNOWN, make.empty() ? kUnknown : make.c_str(),
-      model.empty() ? kUnknown : model.c_str(),
-      OutputTransform(display.panel_rotation()));
+  wl_output_send_geometry(output_resource_, origin.x(), origin.y(),
+                          physical_size_mm.width(), physical_size_mm.height(),
+                          WL_OUTPUT_SUBPIXEL_UNKNOWN,
+                          make.empty() ? kUnknown : make.c_str(),
+                          model.empty() ? kUnknown : model.c_str(),
+                          OutputTransform(display.panel_rotation()));
 
   if (wl_resource_get_version(output_resource_) >=
       WL_OUTPUT_SCALE_SINCE_VERSION) {
@@ -138,7 +150,8 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   // TODO(reveman): Send real list of modes.
   wl_output_send_mode(output_resource_,
                       WL_OUTPUT_MODE_CURRENT | WL_OUTPUT_MODE_PREFERRED,
-                      bounds.width(), bounds.height(), static_cast<int>(60000));
+                      physical_size_px.width(), physical_size_px.height(),
+                      static_cast<int>(60000));
 
   return true;
 }
