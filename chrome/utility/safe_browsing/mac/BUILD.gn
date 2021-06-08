@@ -27,7 +27,12 @@ config("dmg_public_config") {
 }
 
 source_set("dmg_common") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+
+    # Unit tests directly use some of the utilities in this target.
+    "//chrome/test:unit_tests",
+  ]
 
   sources = [
     "convert_big_endian.h",

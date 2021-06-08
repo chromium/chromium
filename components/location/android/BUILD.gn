@@ -54,11 +54,12 @@ source_set("settings") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "location_settings_dialog_context.h",
+    "location_settings_dialog_outcome.h",
     "mock_location_settings.cc",
     "mock_location_settings.h",
   ]
   deps = [
-    ":location_settings_dialog_enums_java",
     ":settings",
     "//base",
   ]

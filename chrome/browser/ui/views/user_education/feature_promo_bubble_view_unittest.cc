@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
-#include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/data/grit/chrome_test_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
