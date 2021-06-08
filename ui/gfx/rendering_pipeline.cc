@@ -4,6 +4,7 @@
 
 #include "ui/gfx/rendering_pipeline.h"
 
+#include "base/containers/flat_map.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/thread_annotations.h"

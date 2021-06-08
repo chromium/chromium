@@ -24,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/threading/threading_features.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,33 +32,13 @@
 namespace base {
 
 namespace {
+
 // Defines how much logging happens when the HangWatcher monitors the threads.
 // Logging levels are set per thread type through Finch. It's important that
 // the order of the enum members stay the and that their numerical
 // values be in increasing order. The implementation of
 // ThreadTypeLoggingLevelGreaterOrEqual() depends on it.
 enum class LoggingLevel { kNone = 0, kUmaOnly = 1, kUmaAndCrash = 2 };
-}  // namespace
-
-// static
-const base::Feature HangWatcher::kEnableHangWatcher{
-    "EnableHangWatcher", base::FEATURE_ENABLED_BY_DEFAULT};
-
-constexpr base::FeatureParam<int> kIOThreadLogLevel{
-    &HangWatcher::kEnableHangWatcher, "io_thread_log_level",
-    static_cast<int>(LoggingLevel::kUmaOnly)};
-constexpr base::FeatureParam<int> kUIThreadLogLevel{
-    &HangWatcher::kEnableHangWatcher, "ui_thread_log_level",
-    static_cast<int>(LoggingLevel::kUmaOnly)};
-constexpr base::FeatureParam<int> kThreadPoolLogLevel{
-    &HangWatcher::kEnableHangWatcher, "threadpool_log_level",
-    static_cast<int>(LoggingLevel::kNone)};
-
-// static
-const base::TimeDelta WatchHangsInScope::kDefaultHangWatchTime =
-    base::TimeDelta::FromSeconds(10);
-
-namespace {
 
 HangWatcher* g_instance = nullptr;
 std::atomic<bool> g_use_hang_watcher{false};
@@ -110,7 +91,27 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
              logging_level;
   }
 }
-}
+
+}  // namespace
+
+// Determines if the HangWatcher is activated. When false the HangWatcher
+// thread never started.
+const Feature kEnableHangWatcher{"EnableHangWatcher",
+                                 FEATURE_ENABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<int> kIOThreadLogLevel{
+    &kEnableHangWatcher, "io_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kUIThreadLogLevel{
+    &kEnableHangWatcher, "ui_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kThreadPoolLogLevel{
+    &kEnableHangWatcher, "threadpool_log_level",
+    static_cast<int>(LoggingLevel::kNone)};
+
+// static
+const base::TimeDelta WatchHangsInScope::kDefaultHangWatchTime =
+    base::TimeDelta::FromSeconds(10);
 
 constexpr const char* kThreadName = "HangWatcher";
 

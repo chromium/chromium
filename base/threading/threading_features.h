@@ -26,6 +26,8 @@ extern const BASE_EXPORT FeatureParam<double>
     kOptimizedRealtimeThreadingMacBusyLimit;
 #endif
 
+extern const BASE_EXPORT Feature kEnableHangWatcher;
+
 }  // namespace base
 
 #endif  // BASE_THREADING_THREADING_FEATURES_H_

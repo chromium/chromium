@@ -4,6 +4,7 @@
 
 #include "components/accuracy_tips/accuracy_web_contents_observer.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"

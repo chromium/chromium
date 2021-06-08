@@ -22,6 +22,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/threading_features.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -38,8 +39,8 @@ namespace {
 // Use with a FeatureList to activate crash dumping for threads marked as
 // threadpool threads.
 const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-    kFeatureAndParams{{base::HangWatcher::kEnableHangWatcher,
-                       {{"ui_thread_log_level", "2"}}}};
+    kFeatureAndParams{
+        {base::kEnableHangWatcher, {{"ui_thread_log_level", "2"}}}};
 
 // Use this value to mark things very far off in the future. Adding this
 // to TimeTicks::Now() gives a point that will never be reached during the

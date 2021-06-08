@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/notification_view_md.h"
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_BACK_FORWARD_CACHE_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_BACK_FORWARD_CACHE_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include "base/feature_list.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace internal {

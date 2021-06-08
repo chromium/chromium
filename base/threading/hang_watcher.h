@@ -18,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -145,10 +144,6 @@ class BASE_EXPORT IgnoreHangsInScope {
 // within a single process. This instance must outlive all monitored threads.
 class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
  public:
-  // Determines if the HangWatcher is activated. When false the HangWatcher
-  // thread never started.
-  static const base::Feature kEnableHangWatcher;
-
   // Describes the type of a thread for logging purposes.
   enum class ThreadType {
     kIOThread = 0,

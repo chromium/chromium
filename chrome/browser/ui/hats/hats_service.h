@@ -19,6 +19,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+struct Feature;
+}
+
 namespace content {
 class WebContents;
 }
