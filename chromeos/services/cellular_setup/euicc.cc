@@ -32,6 +32,11 @@ namespace chromeos {
 namespace cellular_setup {
 namespace {
 
+// Delay before pending profile refresh callback is called. This ensures that
+// eSIM profiles are updated before callback returns.
+constexpr base::TimeDelta kPendingProfileRefreshDelay =
+    base::TimeDelta::FromMilliseconds(150);
+
 // Prefix for EID when encoded in QR Code.
 const char kEidQrCodePrefix[] = "EID:";
 
@@ -407,9 +412,14 @@ void Euicc::OnRequestPendingProfilesResult(
   }
 
   RecordRequestPendingProfilesResult(metrics_result);
-  std::move(callback).Run(operation_result);
 
-  // |inhibit_lock| goes out of scope and will uninhibit automatically.
+  // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
+  // profile objects to be loaded.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), operation_result),
+      kPendingProfileRefreshDelay);
+
+  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
