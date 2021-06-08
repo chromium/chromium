@@ -14,7 +14,6 @@
 #include "ash/lock_screen_action/lock_screen_action_background_state.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"

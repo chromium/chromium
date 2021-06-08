@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-#include "ash/public/cpp/ash_constants.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/style/color_mode_observer.h"

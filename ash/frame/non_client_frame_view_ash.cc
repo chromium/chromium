@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/frame/header_view.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/move_to_desks_menu_delegate.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"

@@ -4,7 +4,6 @@
 
 #include "ash/shelf/shelf_control_button.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf_button_delegate.h"

@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/network_icon_image_source.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"

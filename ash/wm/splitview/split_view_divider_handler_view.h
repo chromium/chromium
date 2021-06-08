@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "base/macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"

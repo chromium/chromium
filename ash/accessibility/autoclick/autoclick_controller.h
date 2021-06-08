@@ -6,6 +6,7 @@
 #define ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "base/macros.h"
 #include "base/time/time.h"

@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_BUBBLE_CONTROLLER_H_
 #define ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_BUBBLE_CONTROLLER_H_
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/system/accessibility/autoclick_scroll_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ui/views/bubble/bubble_border.h"

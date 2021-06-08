@@ -14,7 +14,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/user_switch_flip_animation.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_forward.h"

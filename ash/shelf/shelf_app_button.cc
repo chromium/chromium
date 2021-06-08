@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/shelf.h"

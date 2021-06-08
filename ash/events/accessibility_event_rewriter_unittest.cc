@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"

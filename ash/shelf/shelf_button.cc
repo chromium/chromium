@@ -4,7 +4,7 @@
 
 #include "ash/shelf/shelf_button.h"
 
-#include "ash/public/cpp/ash_constants.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"

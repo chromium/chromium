@@ -19,6 +19,7 @@
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/audio/sounds.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/events/accessibility_event_rewriter.h"
 #include "ash/events/select_to_speak_event_handler.h"
 #include "ash/high_contrast/high_contrast_controller.h"

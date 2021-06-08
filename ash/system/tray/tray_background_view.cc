@@ -9,7 +9,6 @@
 
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"

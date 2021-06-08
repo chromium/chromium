@@ -9,10 +9,6 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 component("constants") {
   output_name = "ash_constants"
   defines = [ "IS_ASH_CONSTANTS_IMPL" ]
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-  ]
   sources = [
     "app_types.h",
     "ash_constants.cc",
@@ -28,4 +24,9 @@ component("constants") {
     "devicetype.cc",
     "devicetype.h",
   ]
+  public_deps = [
+    "//base",
+    "//skia",
+  ]
+  deps = [ "//build:branding_buildflags" ]
 }

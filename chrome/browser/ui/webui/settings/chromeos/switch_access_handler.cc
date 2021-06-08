@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"

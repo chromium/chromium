@@ -6,3 +6,9 @@ include_rules = [
   "+base",
   "+build",
 ]
+
+specific_include_rules = {
+  "ash_constants.h": [
+    "+third_party/skia/include/core/SkColor.h",
+  ],
+}

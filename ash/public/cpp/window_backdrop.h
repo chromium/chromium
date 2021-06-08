@@ -5,9 +5,9 @@
 #ifndef ASH_PUBLIC_CPP_WINDOW_BACKDROP_H_
 #define ASH_PUBLIC_CPP_WINDOW_BACKDROP_H_
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
 class Window;
