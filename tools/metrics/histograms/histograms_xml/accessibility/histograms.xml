@@ -1617,6 +1617,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TextToSpeech.Utterance.HasLang" enum="TextToSpeechHasLang"
     expires_after="M93">
+  <obsolete>
+    Obsolete as of M93 because data is not needed any longer.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1627,6 +1630,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TextToSpeech.Utterance.HasPitch" enum="TextToSpeechHasPitch"
     expires_after="M93">
+  <obsolete>
+    Obsolete as of M93 because data is not needed any longer.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1637,6 +1643,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TextToSpeech.Utterance.HasRate" enum="TextToSpeechHasRate"
     expires_after="M93">
+  <obsolete>
+    Obsolete as of M93 because data is not needed any longer.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1657,6 +1666,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TextToSpeech.Utterance.HasVolume" enum="TextToSpeechHasVolume"
     expires_after="M93">
+  <obsolete>
+    Obsolete as of M93 because data is not needed any longer.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>

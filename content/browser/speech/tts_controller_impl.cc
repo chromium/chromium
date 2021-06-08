@@ -498,14 +498,6 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
                         !utterance->GetSrcUrl().is_empty());
   UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasVoiceName",
                         !utterance->GetVoiceName().empty());
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasLang",
-                        !utterance->GetLang().empty());
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasRate",
-                        utterance->GetContinuousParameters().rate != 1.0);
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasPitch",
-                        utterance->GetContinuousParameters().pitch != 1.0);
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasVolume",
-                        utterance->GetContinuousParameters().volume != 1.0);
   UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.Native", voice.native);
 
   if (!voice.native) {
