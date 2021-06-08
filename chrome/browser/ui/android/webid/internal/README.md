@@ -55,10 +55,14 @@ parts:
 
 We use a simple `LinearLayout` as the top-level view for this component which
 contains the list view for sheet items. This view is them displayed inside the
-bottom sheet via `AccountSelectionBottomSheetContent`.
+bottom sheet via `AccountSelectionBottomSheetContent`. The rest of the logic is
+split in two parts:
 
-`AccountSelectionBottomSheetContent` is a simple container that implements
-`BottomSheetContent` interface and facilitates display of our view via the
-`BottomSheetController`. The bottom sheet controller instance itself is
-controlled by the mediator to create and modify the bottom sheet where accounts
-are displayed.
+ * **AccountSelectionViewBinder** which maps model changes to the view. This is
+   mainly used by `SimpleRecyclerViewAdapter` and is responsible to bind changes
+   to the items in the model list to the RecyclerView inside the bottom sheet.
+ * **AccountSelectionBottomSheetContent** This is a simple container that
+   implements `BottomSheetContent` interface and facilitates display of our view
+   inside the `BottomSheetController`. The bottom sheet controller instance
+   itself is controlled by the mediator to create and modify the bottom sheet
+   where accounts are displayed.

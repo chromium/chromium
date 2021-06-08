@@ -4,15 +4,23 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_URL;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SINGLE_ACCOUNT;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -54,7 +62,18 @@ class AccountSelectionMediator {
     }
 
     void showAccounts(String url, List<Account> accounts) {
-        // TODO (majidvp): Update mSheetItems and show the view.
+        mSheetItems.clear();
+
+        // We remove the HTTPS from URL since it is the only protocol that is
+        // allowed with WebID.
+        mSheetItems.add(new ListItem(AccountSelectionProperties.ItemType.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(SINGLE_ACCOUNT, accounts.size() == 1)
+                        .with(FORMATTED_URL,
+                                UrlFormatter.formatUrlForSecurityDisplay(
+                                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
+                        .build()));
+        // TODO(majidvp): Add accounts to the sheet items.
         showContent();
     }
 

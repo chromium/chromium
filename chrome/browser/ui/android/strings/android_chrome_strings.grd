@@ -4774,6 +4774,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- WebID Account Selection strings -->
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_SINGLE" desc="Header for Account Selection sheet where users only have a single account to select." translateable="false">
+        Create a <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph> account
+      </message>
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE" desc="Header for Account Selection sheet where users can pick an account to select." translateable="false">
+        Create a <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph> account…
+      </message>
       <message name="IDS_ACCOUNT_SELECTION_CONTENT_DESCRIPTION" desc="Accessibility string read when the Account Selection bottom sheet is opened. It describes the bottom sheet where a user can pick an account." translateable="false">
         List of accounts to be selected.
       </message>

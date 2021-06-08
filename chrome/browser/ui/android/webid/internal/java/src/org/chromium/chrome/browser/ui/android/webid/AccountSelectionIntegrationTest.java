@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -50,6 +51,7 @@ import java.util.Arrays;
  * Selection API end up rendering a View.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest {
     private static final String EXAMPLE_URL = "https://www.example.xyz";
@@ -61,7 +63,7 @@ public class AccountSelectionIntegrationTest {
     private static final Account BOB =
             new Account("Bob", "*****", "Bob", "", TEST_PROFILE_PIC, MOBILE_URL);
 
-    private final AccountSelectionComponent mAccountSelection = new AccountSelectionCoordinator();
+    private AccountSelectionComponent mAccountSelection;
 
     @Mock
     private AccountSelectionComponent.Delegate mMockBridge;
@@ -71,12 +73,10 @@ public class AccountSelectionIntegrationTest {
 
     private BottomSheetController mBottomSheetController;
 
-    public AccountSelectionIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Before
     public void setUp() throws InterruptedException {
+        MockitoAnnotations.initMocks(this);
+        mAccountSelection = new AccountSelectionCoordinator();
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
             mBottomSheetController = BottomSheetControllerProvider.from(

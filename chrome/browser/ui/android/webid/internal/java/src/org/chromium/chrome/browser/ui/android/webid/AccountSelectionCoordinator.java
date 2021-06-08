@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Px;
@@ -62,9 +63,17 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
 
         // Setup the recycler view to be updated as we update the sheet items.
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
+        adapter.registerType(AccountSelectionProperties.ItemType.HEADER,
+                AccountSelectionCoordinator::buildHeaderView,
+                AccountSelectionViewBinder::bindHeaderView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;
+    }
+
+    static View buildHeaderView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.account_selection_header_item, parent, false);
     }
 
     @Override
