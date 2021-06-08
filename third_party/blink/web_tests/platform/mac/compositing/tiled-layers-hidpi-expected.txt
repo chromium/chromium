@@ -2,21 +2,21 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1808, 585],
+      "bounds": [3616, 1170],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV id='composited'",
-      "bounds": [1800, 10],
+      "bounds": [3600, 20],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [0, 585],
-      "bounds": [800, 15],
+      "position": [0, 1170],
+      "bounds": [1600, 30],
       "contentsOpaque": true
     }
   ],
@@ -27,7 +27,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [16, 16, 0, 1]
       ]
     }
   ]
