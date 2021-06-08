@@ -109,14 +109,14 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   // |sink_id| via |socket|.
   void RequestAppAvailability(cast_channel::CastSocket* socket,
                               const std::string& app_id,
-                              const MediaSink::Id& sink_id);
+                              const MediaSinkInternal& sink);
 
   // Updates the availability result for |sink_id| and |app_id| with |result|,
   // and notifies callbacks with updated sink query results.
   // |start_time| is the time when the app availability request was made, and
   // is used for metrics.
   void UpdateAppAvailability(base::TimeTicks start_time,
-                             const MediaSink::Id& sink_id,
+                             const MediaSinkInternal& sink,
                              const std::string& app_id,
                              cast_channel::GetAppAvailabilityResult result);
 

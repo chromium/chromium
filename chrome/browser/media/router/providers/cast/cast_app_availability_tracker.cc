@@ -4,12 +4,13 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 #include "base/containers/contains.h"
+#include "components/media_router/common/providers/cast/cast_media_source.h"
 
 using cast_channel::GetAppAvailabilityResult;
 
 namespace media_router {
 
-CastAppAvailabilityTracker::CastAppAvailabilityTracker() {}
+CastAppAvailabilityTracker::CastAppAvailabilityTracker() = default;
 CastAppAvailabilityTracker::~CastAppAvailabilityTracker() = default;
 
 base::flat_set<std::string> CastAppAvailabilityTracker::RegisterSource(
@@ -46,10 +47,12 @@ void CastAppAvailabilityTracker::UnregisterSource(
 }
 
 std::vector<CastMediaSource> CastAppAvailabilityTracker::UpdateAppAvailability(
-    const MediaSink::Id& sink_id,
+    const MediaSinkInternal& sink,
     const std::string& app_id,
     CastAppAvailabilityTracker::AppAvailability availability) {
-  auto& availabilities = app_availabilities_[sink_id];
+  auto& availabilities =
+      (*capabilities_and_availabilities_.emplace(sink.id(), sink).first)
+          .second.availabilities;
   auto it = availabilities.find(app_id);
 
   GetAppAvailabilityResult old_availability =
@@ -77,19 +80,19 @@ std::vector<CastMediaSource> CastAppAvailabilityTracker::UpdateAppAvailability(
 std::vector<CastMediaSource> CastAppAvailabilityTracker::RemoveResultsForSink(
     const MediaSink::Id& sink_id) {
   auto affected_sources = GetSupportedSources(sink_id);
-  app_availabilities_.erase(sink_id);
+  capabilities_and_availabilities_.erase(sink_id);
   return affected_sources;
 }
 
 std::vector<CastMediaSource> CastAppAvailabilityTracker::GetSupportedSources(
     const MediaSink::Id& sink_id) const {
-  auto it = app_availabilities_.find(sink_id);
-  if (it == app_availabilities_.end())
+  auto it = capabilities_and_availabilities_.find(sink_id);
+  if (it == capabilities_and_availabilities_.end())
     return std::vector<CastMediaSource>();
 
   // Find all app IDs that are available on the sink.
   std::vector<std::string> supported_app_ids;
-  for (const auto& availability : it->second) {
+  for (const auto& availability : it->second.availabilities) {
     if (availability.second.first == GetAppAvailabilityResult::kAvailable)
       supported_app_ids.push_back(availability.first);
   }
@@ -106,11 +109,11 @@ std::vector<CastMediaSource> CastAppAvailabilityTracker::GetSupportedSources(
 CastAppAvailabilityTracker::AppAvailability
 CastAppAvailabilityTracker::GetAvailability(const MediaSink::Id& sink_id,
                                             const std::string& app_id) const {
-  auto availabilities_it = app_availabilities_.find(sink_id);
-  if (availabilities_it == app_availabilities_.end())
+  auto availabilities_it = capabilities_and_availabilities_.find(sink_id);
+  if (availabilities_it == capabilities_and_availabilities_.end())
     return {GetAppAvailabilityResult::kUnknown, base::TimeTicks()};
 
-  const auto& availability_map = availabilities_it->second;
+  const auto& availability_map = availabilities_it->second.availabilities;
   auto availability_it = availability_map.find(app_id);
   if (availability_it == availability_map.end())
     return {GetAppAvailabilityResult::kUnknown, base::TimeTicks()};
@@ -130,13 +133,15 @@ base::flat_set<MediaSink::Id> CastAppAvailabilityTracker::GetAvailableSinks(
     const CastMediaSource& source) const {
   base::flat_set<MediaSink::Id> sink_ids;
   // For each sink, check if there is at least one available app in |source|.
-  for (const auto& availabilities : app_availabilities_) {
+  for (const auto& availabilities : capabilities_and_availabilities_) {
     for (const auto& app_info : source.app_infos()) {
-      const auto& availabilities_map = availabilities.second;
+      const auto& availabilities_map = availabilities.second.availabilities;
       auto availability_it = availabilities_map.find(app_info.app_id);
       if (availability_it != availabilities_map.end() &&
           availability_it->second.first ==
-              GetAppAvailabilityResult::kAvailable) {
+              GetAppAvailabilityResult::kAvailable &&
+          availabilities.second.capabilities.HasAll(
+              app_info.required_capabilities)) {
         sink_ids.insert(availabilities.first);
         break;
       }
@@ -144,5 +149,17 @@ base::flat_set<MediaSink::Id> CastAppAvailabilityTracker::GetAvailableSinks(
   }
   return sink_ids;
 }
+
+CastAppAvailabilityTracker::CapabilitiesAndAvailabilityMap::
+    CapabilitiesAndAvailabilityMap(const MediaSinkInternal& sink)
+    : capabilities(BitwiseOr<cast_channel::CastDeviceCapability>::FromBits(
+          sink.cast_data().capabilities)) {}
+
+CastAppAvailabilityTracker::CapabilitiesAndAvailabilityMap::
+    CapabilitiesAndAvailabilityMap(const CapabilitiesAndAvailabilityMap&) =
+        default;
+
+CastAppAvailabilityTracker::CapabilitiesAndAvailabilityMap::
+    ~CapabilitiesAndAvailabilityMap() = default;
 
 }  // namespace media_router

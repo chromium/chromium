@@ -69,7 +69,7 @@ class CastAppAvailabilityTracker {
   // call |GetAvailableSinks| with the returned CastMediaSources to get the
   // updated lists.
   std::vector<CastMediaSource> UpdateAppAvailability(
-      const MediaSink::Id& sink_id,
+      const MediaSinkInternal& sink,
       const std::string& app_id,
       AppAvailability availability);
 
@@ -104,6 +104,16 @@ class CastAppAvailabilityTracker {
   // App ID to availability.
   using AppAvailabilityMap = base::flat_map<std::string, AppAvailability>;
 
+  struct CapabilitiesAndAvailabilityMap {
+   public:
+    explicit CapabilitiesAndAvailabilityMap(const MediaSinkInternal& sink);
+    CapabilitiesAndAvailabilityMap(const CapabilitiesAndAvailabilityMap&);
+    ~CapabilitiesAndAvailabilityMap();
+
+    BitwiseOr<cast_channel::CastDeviceCapability> capabilities;
+    AppAvailabilityMap availabilities;
+  };
+
   // Registered sources and corresponding CastMediaSource's.
   base::flat_map<MediaSource::Id, CastMediaSource> registered_sources_;
 
@@ -111,7 +121,8 @@ class CastAppAvailabilityTracker {
   base::flat_map<std::string, int> registration_count_by_app_id_;
 
   // IDs and app availabilities of known sinks.
-  base::flat_map<MediaSink::Id, AppAvailabilityMap> app_availabilities_;
+  base::flat_map<MediaSink::Id, CapabilitiesAndAvailabilityMap>
+      capabilities_and_availabilities_;
 
   DISALLOW_COPY_AND_ASSIGN(CastAppAvailabilityTracker);
 };
