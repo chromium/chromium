@@ -39,12 +39,12 @@ class SystemTokenCertDbStorageTest : public testing::Test {
 
  protected:
   void SetSystemSlotInStorage() {
-    auto fake_nss_cert_db = std::make_unique<net::NSSCertDatabase>(
+    test_cert_database_ = std::make_unique<net::NSSCertDatabase>(
         /*public_slot=*/crypto::ScopedPK11Slot(
             PK11_ReferenceSlot(test_nssdb_->slot())),
         /*private_slot=*/crypto::ScopedPK11Slot(
             PK11_ReferenceSlot(test_nssdb_->slot())));
-    SystemTokenCertDbStorage::Get()->SetDatabase(std::move(fake_nss_cert_db));
+    SystemTokenCertDbStorage::Get()->SetDatabase(test_cert_database_.get());
   }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
@@ -54,6 +54,7 @@ class SystemTokenCertDbStorageTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<crypto::ScopedTestNSSDB> test_nssdb_;
+  std::unique_ptr<net::NSSCertDatabase> test_cert_database_;
 };
 
 // Tests that the system token certificate database will be returned
@@ -147,6 +148,49 @@ TEST_F(SystemTokenCertDbStorageTest, GetDatabaseTimeoutMultipleRequests) {
   EXPECT_FALSE(
       get_system_token_cert_db_callback_wrapper_1.IsDbRetrievalSucceeded());
 
+  GetSystemTokenCertDbCallbackWrapper
+      get_system_token_cert_db_callback_wrapper_2;
+  SystemTokenCertDbStorage::Get()->GetDatabase(
+      get_system_token_cert_db_callback_wrapper_2.GetCallback());
+  EXPECT_TRUE(get_system_token_cert_db_callback_wrapper_2.IsCallbackCalled());
+  EXPECT_FALSE(
+      get_system_token_cert_db_callback_wrapper_2.IsDbRetrievalSucceeded());
+}
+
+// Tests that calling ResetDatabase notifies the observers.
+TEST_F(SystemTokenCertDbStorageTest, ResetDatabaseNotifiesObservers) {
+  // Successfully request the database.
+  GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
+  SystemTokenCertDbStorage::Get()->GetDatabase(
+      get_system_token_cert_db_callback_wrapper.GetCallback());
+  SetSystemSlotInStorage();
+  get_system_token_cert_db_callback_wrapper.Wait();
+  EXPECT_TRUE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  // When the database is reset, observers are notified about this.
+  FakeSystemTokenCertDbStorageObserver observer;
+  SystemTokenCertDbStorage::Get()->AddObserver(&observer);
+
+  SystemTokenCertDbStorage::Get()->ResetDatabase();
+
+  EXPECT_TRUE(observer.HasBeenNotified());
+  SystemTokenCertDbStorage::Get()->RemoveObserver(&observer);
+}
+
+// Tests that requesting a database after it has been reset fails.
+TEST_F(SystemTokenCertDbStorageTest, RequestingDatabaseFailsAfterReset) {
+  // Successfully request the database.
+  GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
+  SystemTokenCertDbStorage::Get()->GetDatabase(
+      get_system_token_cert_db_callback_wrapper.GetCallback());
+  SetSystemSlotInStorage();
+  get_system_token_cert_db_callback_wrapper.Wait();
+  EXPECT_TRUE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  // Now reset the database.
+  SystemTokenCertDbStorage::Get()->ResetDatabase();
+
+  // Requesting the database after that results in a failure.
   GetSystemTokenCertDbCallbackWrapper
       get_system_token_cert_db_callback_wrapper_2;
   SystemTokenCertDbStorage::Get()->GetDatabase(

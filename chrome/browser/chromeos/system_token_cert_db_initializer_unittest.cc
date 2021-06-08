@@ -42,6 +42,8 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
       const SystemTokenCertDbInitializerTest& other) = delete;
 
   ~SystemTokenCertDbInitializerTest() override {
+    system_token_cert_db_initializer_.reset();
+
     TpmManagerClient::Shutdown();
     NetworkCertLoader::Shutdown();
     SystemTokenCertDbStorage::Shutdown();

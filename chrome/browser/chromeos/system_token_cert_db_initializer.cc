@@ -120,17 +120,19 @@ SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
 
 SystemTokenCertDBInitializer::~SystemTokenCertDBInitializer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void SystemTokenCertDBInitializer::ShutDown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Note that the observer could potentially not be added yet, but
   // the operation is a no-op in that case.
   TpmManagerClient::Get()->RemoveObserver(this);
 
-  // Cancel any in-progress initialization sequence.
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Notify consumers of SystemTokenCertDbStorage that the database is not
+  // usable anymore.
+  SystemTokenCertDbStorage::Get()->ResetDatabase();
+
+  // Destroy the NSSCertDatabase on the IO thread because consumers could be
+  // accessing it there.
+  content::GetIOThreadTaskRunner({})->DeleteSoon(
+      FROM_HERE, std::move(system_token_cert_database_));
 }
 
 void SystemTokenCertDBInitializer::OnOwnershipTaken() {
@@ -243,10 +245,11 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
       /*public_slot=*/std::move(system_slot),
       /*private_slot=*/crypto::ScopedPK11Slot());
   database->SetSystemSlot(std::move(system_slot_copy));
+  system_token_cert_database_ = std::move(database);
 
   auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
   DCHECK(system_token_cert_db_storage);
-  system_token_cert_db_storage->SetDatabase(std::move(database));
+  system_token_cert_db_storage->SetDatabase(system_token_cert_database_.get());
 }
 
 }  // namespace chromeos

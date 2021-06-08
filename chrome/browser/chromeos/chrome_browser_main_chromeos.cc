@@ -1300,9 +1300,6 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   // Cleans up dbus services depending on ash.
   dbus_services_->PreAshShutdown();
 
-  // Destroy the SystemTokenCertDbStorage global instance.
-  SystemTokenCertDbStorage::Shutdown();
-
   // NOTE: Closes ash and destroys ash::Shell.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
 
@@ -1355,7 +1352,7 @@ void ChromeBrowserMainPartsChromeos::PostDestroyThreads() {
 
   // The cert database initializer must be shut down before DBus services are
   // destroyed.
-  system_token_certdb_initializer_->ShutDown();
+  system_token_certdb_initializer_.reset();
 
   // Destroy DBus services immediately after threads are stopped.
   dbus_services_.reset();
@@ -1366,9 +1363,9 @@ void ChromeBrowserMainPartsChromeos::PostDestroyThreads() {
 
   ShutdownDBus();
 
-  // Reset SystemTokenCertDBInitializer after DBus services because it should
-  // outlive NetworkCertLoader.
-  system_token_certdb_initializer_.reset();
+  // Destroy the SystemTokenCertDbStorage global instance which should outlive
+  // NetworkCertLoader and |system_token_certdb_initializer_|.
+  SystemTokenCertDbStorage::Shutdown();
 
   ChromeBrowserMainPartsLinux::PostDestroyThreads();
 

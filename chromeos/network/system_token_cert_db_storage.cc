@@ -4,9 +4,6 @@
 
 #include "chromeos/network/system_token_cert_db_storage.h"
 
-#include <memory>
-#include <utility>
-
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/check_op.h"
@@ -37,16 +34,6 @@ void SystemTokenCertDbStorage::Initialize() {
 
 // static
 void SystemTokenCertDbStorage::Shutdown() {
-  DCHECK(g_system_token_cert_db_storage);
-
-  // Notify observers that the SystemTokenCertDbStorage and the
-  // NSSCertDatabase it provides can not be used anymore.
-  for (auto& observer : g_system_token_cert_db_storage->observers_)
-    observer.OnSystemTokenCertDbDestroyed();
-
-  // Now it's safe to destroy the NSSCertDatabase.
-  g_system_token_cert_db_storage->system_token_cert_database_.reset();
-
   DCHECK_NE(g_system_token_cert_db_storage, nullptr);
   delete g_system_token_cert_db_storage;
   g_system_token_cert_db_storage = nullptr;
@@ -58,14 +45,27 @@ SystemTokenCertDbStorage* SystemTokenCertDbStorage::Get() {
 }
 
 void SystemTokenCertDbStorage::SetDatabase(
-    std::unique_ptr<net::NSSCertDatabase> system_token_cert_database) {
+    net::NSSCertDatabase* system_token_cert_database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(system_token_cert_database_, nullptr);
   system_token_cert_database_ = std::move(system_token_cert_database);
   system_token_cert_db_retrieval_timer_.Stop();
-  get_system_token_cert_db_callback_list_.Notify(
-      system_token_cert_database_.get());
+  get_system_token_cert_db_callback_list_.Notify(system_token_cert_database_);
+}
+
+void SystemTokenCertDbStorage::ResetDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  system_token_cert_database_ = nullptr;
+  // If any consumer asks for the database between now and when
+  // SystemTokenCertDbStorage is destroyed, respond with a failure.
+  system_token_cert_db_retrieval_failed_ = true;
+
+  // Notify observers that the SystemTokenCertDbStorage and the
+  // NSSCertDatabase it provides can not be used anymore.
+  for (auto& observer : g_system_token_cert_db_storage->observers_)
+    observer.OnSystemTokenCertDbDestroyed();
 }
 
 void SystemTokenCertDbStorage::GetDatabase(GetDatabaseCallback callback) {
@@ -74,7 +74,7 @@ void SystemTokenCertDbStorage::GetDatabase(GetDatabaseCallback callback) {
   DCHECK(callback);
 
   if (system_token_cert_database_) {
-    std::move(callback).Run(system_token_cert_database_.get());
+    std::move(callback).Run(system_token_cert_database_);
   } else if (system_token_cert_db_retrieval_failed_) {
     std::move(callback).Run(/*nss_cert_database=*/nullptr);
   } else {

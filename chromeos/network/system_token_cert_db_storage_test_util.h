@@ -49,6 +49,26 @@ class GetSystemTokenCertDbCallbackWrapper {
       this};
 };
 
+class FakeSystemTokenCertDbStorageObserver
+    : public SystemTokenCertDbStorage::Observer {
+ public:
+  FakeSystemTokenCertDbStorageObserver();
+  FakeSystemTokenCertDbStorageObserver(
+      const FakeSystemTokenCertDbStorageObserver& other) = delete;
+  FakeSystemTokenCertDbStorageObserver& operator=(
+      const FakeSystemTokenCertDbStorageObserver& other) = delete;
+  ~FakeSystemTokenCertDbStorageObserver() override;
+
+  // Waits until the observer has been notified with .
+  bool HasBeenNotified();
+
+ private:
+  // SystemTokenCertDbStorage::Obsever:
+  void OnSystemTokenCertDbDestroyed() override;
+
+  bool has_been_notified_ = false;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_

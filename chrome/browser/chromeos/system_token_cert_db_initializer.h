@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_
 #define CHROME_BROWSER_CHROMEOS_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -38,9 +40,6 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // SystemTokenCertDbStorage to retrieve the database.
   SystemTokenCertDBInitializer();
   ~SystemTokenCertDBInitializer() override;
-
-  // Stops making new requests to D-Bus services.
-  void ShutDown();
 
   // TpmManagerClient::Observer overrides.
   void OnOwnershipTaken() override;
@@ -88,6 +87,9 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
 
   // The flag that determines if the system slot can use software fallback.
   bool is_system_slot_software_fallback_allowed_;
+
+  // Global NSSCertDatabase which sees the system token.
+  std::unique_ptr<net::NSSCertDatabase> system_token_cert_database_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
