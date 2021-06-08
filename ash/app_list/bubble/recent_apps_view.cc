@@ -98,8 +98,7 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   // AppListItemView::GridDelegate:
   bool IsInFolder() const override { return false; }
   void SetSelectedView(AppListItemView* view) override {}
-  void ClearSelectedView(AppListItemView* view) override {}
-  void ClearAnySelectedView() override {}
+  void ClearSelectedView() override {}
   bool IsSelectedView(const AppListItemView* view) const override {
     return false;
   }

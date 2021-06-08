@@ -565,7 +565,7 @@ void AppListItemView::OnContextMenuModelReceived(
   menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
 
   if (!grid_delegate_->IsSelectedView(this))
-    grid_delegate_->ClearAnySelectedView();
+    grid_delegate_->ClearSelectedView();
 
   int run_types = views::MenuRunner::HAS_MNEMONICS |
                   views::MenuRunner::USE_TOUCHABLE_LAYOUT |
@@ -756,7 +756,7 @@ bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
   }
 
   if (!grid_delegate_->IsSelectedView(this))
-    grid_delegate_->ClearAnySelectedView();
+    grid_delegate_->ClearSelectedView();
 
   // Show dragging UI when it's confirmed without waiting for the timer.
   if (ui_state_ != UI_STATE_DRAGGING && grid_delegate_->IsDragging() &&
@@ -781,7 +781,8 @@ void AppListItemView::OnFocus() {
 
 void AppListItemView::OnBlur() {
   SchedulePaint();
-  grid_delegate_->ClearSelectedView(this);
+  if (grid_delegate_->IsSelectedView(this))
+    grid_delegate_->ClearSelectedView();
 }
 
 void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {

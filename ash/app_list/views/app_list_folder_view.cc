@@ -776,7 +776,7 @@ void AppListFolderView::HideViewImmediately() {
 void AppListFolderView::ResetItemsGridForClose() {
   if (items_grid_view()->IsDragging())
     items_grid_view()->EndDrag(true);
-  items_grid_view()->ClearAnySelectedView();
+  items_grid_view()->ClearSelectedView();
 }
 
 void AppListFolderView::CloseFolderPage() {

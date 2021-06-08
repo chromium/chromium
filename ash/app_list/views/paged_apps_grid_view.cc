@@ -574,7 +574,7 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
                               : (GetItemsNumOfPage(new_selected) - 1));
       GetViewAtIndex(new_index)->RequestFocus();
     } else {
-      ClearSelectedView(selected_view());
+      ClearSelectedView();
     }
     Layout();
   }

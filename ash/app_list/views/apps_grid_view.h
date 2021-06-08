@@ -137,8 +137,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // AppListItemView::GridDelegate:
   bool IsInFolder() const override;
   void SetSelectedView(AppListItemView* view) override;
-  void ClearSelectedView(AppListItemView* view) override;
-  void ClearAnySelectedView() override;
+  void ClearSelectedView() override;
   bool IsSelectedView(const AppListItemView* view) const override;
   void InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,

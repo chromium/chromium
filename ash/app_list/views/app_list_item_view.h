@@ -59,8 +59,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
     // Methods for keyboard selection.
     virtual void SetSelectedView(AppListItemView* view) = 0;
-    virtual void ClearSelectedView(AppListItemView* view) = 0;
-    virtual void ClearAnySelectedView() = 0;
+    virtual void ClearSelectedView() = 0;
     virtual bool IsSelectedView(const AppListItemView* view) const = 0;
 
     virtual void InitiateDrag(AppListItemView* view,
