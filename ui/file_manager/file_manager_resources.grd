@@ -17,7 +17,6 @@
 
       <!-- Common Scripts. -->
       <include name="IDR_FILE_MANAGER_BACKGROUND_COMMON_JS" file="file_manager/background/js/background_common_scripts.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_BACKGROUND_RUNTIME_LOADED_TEST_UTIL_JS" file="file_manager/background/js/runtime_loaded_test_util.js" type="BINDATA" />
 
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_ELEMENTS_BUNDLE_HTML" file="file_manager/foreground/elements/elements_bundle.html" type="BINDATA"/>

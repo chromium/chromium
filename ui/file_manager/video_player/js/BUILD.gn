@@ -38,6 +38,7 @@ js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
@@ -175,9 +176,16 @@ optimize_webui("build_background") {
   host = "video_player"
 
   input = preprocess_folder
-  js_module_in_files = [ "main_background.m.js" ]
+  js_module_in_files = [
+    "main_background.m.js",
+    "../../file_manager/background/js/runtime_loaded_test_util.js",
+  ]
 
-  js_out_files = [ "main_background.m.rollup.js" ]
+  js_out_files = [
+    "main_background.m.rollup.js",
+    "runtime_loaded_test_util.rollup.js",
+    "shared.m.rollup.js",
+  ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",

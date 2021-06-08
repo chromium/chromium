@@ -17,4 +17,4 @@ test.util.async.openAudioPlayer = function(urls, callback) {
 };
 
 // Register the test utils.
-test.util.registerRemoteTestUtils();
+test.util.registerRemoteTestUtils('/js/runtime_loaded_test_util.js');
