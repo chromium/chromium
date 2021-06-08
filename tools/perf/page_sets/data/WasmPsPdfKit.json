@@ -1,7 +1,7 @@
 {
     "archives": {
         "https://pspdfkit.com/webassembly-benchmark/": {
-            "DEFAULT": "WasmPsPdfKit_7b7b7c1f27.wprgo"
+            "DEFAULT": "WasmPsPdfKit_5fa3bd0cda.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
