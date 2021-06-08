@@ -78,6 +78,15 @@ void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
   }
 }
 
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
+    bool is_fullscreen) {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (live_caption_controller)
+    live_caption_controller->OnToggleFullscreen(this);
+}
+#endif
+
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   if (!frame_host_)
     return nullptr;

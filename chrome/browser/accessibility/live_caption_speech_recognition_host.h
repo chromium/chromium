@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,6 +58,13 @@ class LiveCaptionSpeechRecognitionHost
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+
+  // Mac and ChromeOS move the fullscreened window into a new workspace. When
+  // the WebContents associated with this RenderFrameHost goes fullscreen,
+  // ensure that the Live Caption bubble moves to the new workspace.
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+  void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override;
+#endif
 
  private:
   // Returns the LiveCaptionController for frame_host_. Returns nullptr if it
