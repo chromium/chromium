@@ -6,6 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
@@ -68,6 +69,10 @@ class FakeProfileSessionDurationsService
 
 InitStage GetMinimalInitStageThatAllowsLogging() {
   return static_cast<InitStage>(InitStageSafeMode + 1);
+}
+
+InitStage GetMaximalInitStageThatDontAllowLogging() {
+  return static_cast<InitStage>(InitStageSafeMode);
 }
 
 class AppMetricsAppStateAgentTest : public PlatformTest {
@@ -203,4 +208,65 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   scene.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_ended_count());
+}
+
+// Tests that -logStartupDuration: is called and only once for a regular
+// startup (no safe mode).
+TEST_F(AppMetricsAppStateAgentTest, logStartupDuration) {
+  id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
+
+  [[metricsMediator expect] logStartupDuration:nil connectionInformation:nil];
+
+  SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
+  SceneState* sceneB = [[SceneState alloc] initWithAppState:app_state_];
+  app_state_.connectedScenes = @[ sceneA, sceneB ];
+  [agent_ appState:app_state_ sceneConnected:sceneA];
+  [agent_ appState:app_state_ sceneConnected:sceneB];
+
+  // Simulate transitioning to the current app init stage before scenes going on
+  // the foreground.
+  [agent_ appState:app_state_
+      didTransitionFromInitStage:static_cast<InitStage>(app_state_.initStage -
+                                                        1)];
+
+  // Should not log startup duration until the scene is active.
+  sceneA.activationLevel = SceneActivationLevelForegroundInactive;
+  sceneB.activationLevel = SceneActivationLevelForegroundInactive;
+
+  // Should only log startup once when the first scene becomes active.
+  sceneA.activationLevel = SceneActivationLevelForegroundActive;
+  sceneB.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Should not log startup when scene becomes active again.
+  sceneA.activationLevel = SceneActivationLevelBackground;
+  sceneB.activationLevel = SceneActivationLevelBackground;
+  sceneA.activationLevel = SceneActivationLevelForegroundActive;
+  sceneB.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY(metricsMediator);
+}
+
+// Tests that -logStartupDuration: is not called when there is safe mode
+// during startup.
+TEST_F(AppMetricsAppStateAgentTest, logStartupDurationWhenSafeMode) {
+  id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
+
+  [[metricsMediator reject] logStartupDuration:nil connectionInformation:nil];
+
+  app_state_.initStageForTesting = GetMaximalInitStageThatDontAllowLogging();
+
+  SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
+  app_state_.connectedScenes = @[ sceneA ];
+  [agent_ appState:app_state_ sceneConnected:sceneA];
+
+  // Simulate transitioning to the current app init stage before scenes going on
+  // the foreground.
+  [agent_ appState:app_state_
+      didTransitionFromInitStage:static_cast<InitStage>(app_state_.initStage -
+                                                        1)];
+
+  // This would normally log startup information, but not when in safe mode.
+  sceneA.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY(metricsMediator);
 }

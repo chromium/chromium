@@ -419,9 +419,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   } else {
     [HandlerForProtocol(dispatcher, HelpCommands) showHelpBubbleIfEligible];
   }
-
-  [MetricsMediator logStartupDuration:self.startupInformation
-                connectionInformation:connectionInformation];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -732,13 +729,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level >= SceneActivationLevelForegroundActive) {
-    if (!self.firstSceneHasActivated) {
-      self.firstSceneHasActivated = YES;
-      if (self.initStage > InitStageSafeMode) {
-        [MetricsMediator logStartupDuration:self.startupInformation
-                      connectionInformation:sceneState.controller];
-      }
-    }
     sceneState.presentingModalOverlay =
         (self.uiBlockerTarget != nil) && (self.uiBlockerTarget != sceneState);
   }

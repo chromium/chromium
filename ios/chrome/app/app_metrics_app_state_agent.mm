@@ -7,8 +7,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,6 +21,10 @@
 
 // Observed app state.
 @property(nonatomic, weak) AppState* appState;
+
+// This flag is set when the first scene has activated since the startup, and
+// never reset during the app's lifetime.
+@property(nonatomic, assign) BOOL firstSceneHasActivated;
 
 @end
 
@@ -56,6 +62,14 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (self.appState.initStage <= InitStageSafeMode) {
     return;
+  }
+
+  if (level >= SceneActivationLevelForegroundActive) {
+    if (!self.firstSceneHasActivated) {
+      self.firstSceneHasActivated = YES;
+      [MetricsMediator logStartupDuration:self.appState.startupInformation
+                    connectionInformation:sceneState.controller];
+    }
   }
 
   if (level >= SceneActivationLevelForegroundInactive &&
