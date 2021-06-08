@@ -11,7 +11,7 @@ import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_rout
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -91,6 +91,16 @@ export function networkListTestSuite() {
    */
   function getNetworkCardElements() {
     return networkListElement.shadowRoot.querySelectorAll('network-card');
+  }
+
+  /**
+   * @param {string} guid
+   * @suppress {visibility} // access private member
+   * @return {!Promise}
+   */
+  function changeActiveGuid(guid) {
+    networkListElement.activeGuid_ = guid;
+    return flushTasks();
   }
 
   /**
@@ -189,5 +199,11 @@ export function networkListTestSuite() {
               getConnectivityCard().activeGuid,
               fakeNetworkGuidInfoList[1].activeGuid);
         });
+  });
+
+  test('ConnectivityCardHiddenWithNoActiveGuid', () => {
+    return initializeNetworkList(fakeNetworkGuidInfoList)
+        .then(() => changeActiveGuid(''))
+        .then(() => assertFalse(isVisible(getConnectivityCard())));
   });
 }
