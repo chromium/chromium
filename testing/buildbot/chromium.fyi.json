@@ -39210,21 +39210,6 @@
       }
     ]
   },
-  "ios13-beta-simulator": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "ios13-sdk-device": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "ios13-sdk-simulator": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "ios14-beta-simulator": {
     "additional_compile_targets": [
       "all"
@@ -52881,6 +52866,21 @@
         },
         "test_id_prefix": "ninja://url:url_unittests/"
       }
+    ]
+  },
+  "ios15-beta-simulator": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "ios15-sdk-device": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "ios15-sdk-simulator": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "lacros-amd64-generic-rel-fyi": {

@@ -2895,21 +2895,6 @@
           'isolated_scripts': 'ios_webkit_tot_tests',
         },
       },
-      'ios13-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ios13-sdk-device': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ios13-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       # ios14-beta-sim compiles with xcode version n-1, but
       # runs testers with xcode n during an xcode roll.
       'ios14-beta-simulator': {
@@ -2945,6 +2930,21 @@
         'test_suites': {
           'isolated_scripts': 'ios14_sdk_simulator_tests'
         },
+      },
+      'ios15-beta-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'ios15-sdk-device': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'ios15-sdk-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       'lacros-amd64-generic-rel-fyi': {
         'additional_compile_targets': [

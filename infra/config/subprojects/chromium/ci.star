@@ -4119,58 +4119,6 @@ ci.fyi_ios_builder(
 )
 
 ci.fyi_ios_builder(
-    name = "ios13-beta-simulator",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "iOS|iOS13",
-            short_name = "ios13",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|13",
-            short_name = "ios13",
-        ),
-    ],
-    schedule = "0 0,12 * * *",
-    triggered_by = [],
-)
-
-ci.fyi_ios_builder(
-    name = "ios13-sdk-device",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "iOS|iOS13",
-            short_name = "dev",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|13",
-            short_name = "dev",
-        ),
-    ],
-)
-
-ci.fyi_ios_builder(
-    name = "ios13-sdk-simulator",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "iOS|iOS13",
-            short_name = "sdk13",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|13",
-            short_name = "sim",
-        ),
-    ],
-    schedule = "0 6,18 * * *",
-    triggered_by = [],
-)
-
-ci.fyi_ios_builder(
     name = "ios14-beta-simulator",
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS14",
@@ -4187,6 +4135,61 @@ ci.fyi_ios_builder(
     ),
     os = os.MAC_11,
     xcode = xcode.x12e262,
+)
+
+ci.fyi_ios_builder(
+    name = "ios15-beta-simulator",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "iOS|iOS15",
+            short_name = "ios15",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|15",
+            short_name = "ios15",
+        ),
+    ],
+    os = os.MAC_11,
+    schedule = "0 0,12 * * *",
+    triggered_by = [],
+)
+
+ci.fyi_ios_builder(
+    name = "ios15-sdk-device",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "iOS|iOS15",
+            short_name = "dev",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|15",
+            short_name = "dev",
+        ),
+    ],
+    os = os.MAC_11,
+)
+
+ci.fyi_ios_builder(
+    name = "ios15-sdk-simulator",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "iOS|iOS15",
+            short_name = "sdk13",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|15",
+            short_name = "sim",
+        ),
+    ],
+    os = os.MAC_11,
+    schedule = "0 6,18 * * *",
+    triggered_by = [],
 )
 
 ci.fyi_mac_builder(

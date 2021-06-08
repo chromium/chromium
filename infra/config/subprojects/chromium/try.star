@@ -1691,14 +1691,6 @@ try_.chromium_mac_ios_builder(
 )
 
 try_.chromium_mac_ios_builder(
-    name = "ios13-beta-simulator",
-)
-
-try_.chromium_mac_ios_builder(
-    name = "ios13-sdk-simulator",
-)
-
-try_.chromium_mac_ios_builder(
     name = "ios14-beta-simulator",
     os = os.MAC_11,
 )
@@ -1717,6 +1709,14 @@ try_.chromium_updater_mac_builder(
             ".+/[+]/chrome/updater/.+",
         ],
     ),
+)
+
+try_.chromium_mac_ios_builder(
+    name = "ios15-beta-simulator",
+)
+
+try_.chromium_mac_ios_builder(
+    name = "ios15-sdk-simulator",
 )
 
 try_.chromium_updater_mac_builder(
