@@ -611,7 +611,7 @@ LRESULT CustomProgressBarCtrl::OnSetPos(UINT,
       current_position_ = kMinPosition;
     }
   } else {
-    current_position_ = std::min(int{new_position}, kMaxPosition);
+    current_position_ = std::min(static_cast<int>(new_position), kMaxPosition);
   }
 
   if (current_position_ < kMinPosition)
@@ -662,7 +662,7 @@ LRESULT CustomProgressBarCtrl::OnSetMarquee(UINT,
 
   if (is_set_marquee && !is_marquee_mode_) {
     current_position_ = kMinPosition;
-    SetTimer(kMarqueeTimerId, UINT{update_msec});
+    SetTimer(kMarqueeTimerId, static_cast<UINT>(update_msec));
     is_marquee_mode_ = true;
   } else if (!is_set_marquee && is_marquee_mode_) {
     KillTimer(kMarqueeTimerId);

@@ -18,7 +18,7 @@ LONG RegKey::ReadSZValue(const wchar_t* value_name,
                          wchar_t* value,
                          size_t value_size) const {
   DWORD type = 0;
-  DWORD byte_length = DWORD{value_size * sizeof(wchar_t)};
+  DWORD byte_length = static_cast<DWORD>(value_size * sizeof(wchar_t));
   LONG result = ::RegQueryValueEx(key_, value_name, nullptr, &type,
                                   reinterpret_cast<BYTE*>(value), &byte_length);
   if (result == ERROR_SUCCESS) {

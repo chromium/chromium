@@ -157,7 +157,7 @@ BinaryConstIt AdvanceIt(BinaryConstIt it, size_t distance, BinaryConstIt end) {
   if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end))
     return end;
 
-  return it + std::min(distance, size_t{dist_to_end});
+  return it + std::min(distance, static_cast<size_t>(dist_to_end));
 }
 
 bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
@@ -168,7 +168,7 @@ bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
   if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end))
     return false;
 
-  return size <= size_t{dist_to_end};
+  return size <= static_cast<size_t>(dist_to_end);
 }
 
 std::string ExtractTagFromBuffer(const std::vector<uint8_t>& binary,
@@ -209,8 +209,8 @@ std::string ExtractTagFromFile(const std::wstring& path, TagEncoding encoding) {
   std::vector<uint8_t> binary(file_size.QuadPart);
 
   DWORD bytes_read = 0;
-  if (!::ReadFile(file_handle, &binary[0], DWORD{binary.size()}, &bytes_read,
-                  nullptr)) {
+  if (!::ReadFile(file_handle, &binary[0], static_cast<DWORD>(binary.size()),
+                  &bytes_read, nullptr)) {
     ::CloseHandle(file_handle);
     return std::string();
   }

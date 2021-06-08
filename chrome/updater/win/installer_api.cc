@@ -91,8 +91,8 @@ int GetInstallerProgress(const std::string& app_id) {
 bool SetInstallerProgressForTesting(const std::string& app_id, int value) {
   absl::optional<base::win::RegKey> key =
       ClientStateAppKeyCreate(app_id, KEY_WRITE);
-  return key && key->WriteValue(kRegValueInstallerProgress, DWORD{value}) ==
-                    ERROR_SUCCESS;
+  return key && key->WriteValue(kRegValueInstallerProgress,
+                                static_cast<DWORD>(value)) == ERROR_SUCCESS;
 }
 
 bool DeleteInstallerProgress(const std::string& app_id) {
