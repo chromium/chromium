@@ -35,9 +35,9 @@
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
-#include "components/sync/driver/profile_sync_service_bundle.h"
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl_bundle.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_token_status.h"
@@ -124,12 +124,12 @@ class SyncServiceImplTest : public ::testing::Test {
     }
 
     std::unique_ptr<SyncClientMock> sync_client =
-        profile_sync_service_bundle_.CreateSyncClientMock();
+        sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateDataTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
-    auto init_params = profile_sync_service_bundle_.CreateBasicInitParams(
+    auto init_params = sync_service_impl_bundle_.CreateBasicInitParams(
         behavior, std::move(sync_client));
     init_params.policy_service = policy_service;
 
@@ -146,13 +146,13 @@ class SyncServiceImplTest : public ::testing::Test {
         DEVICE_INFO, /*enable_transport_only_modle=*/true));
 
     std::unique_ptr<SyncClientMock> sync_client =
-        profile_sync_service_bundle_.CreateSyncClientMock();
+        sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateDataTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
     SyncServiceImpl::InitParams init_params =
-        profile_sync_service_bundle_.CreateBasicInitParams(
+        sync_service_impl_bundle_.CreateBasicInitParams(
             SyncServiceImpl::AUTO_START, std::move(sync_client));
 
     prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
@@ -196,11 +196,11 @@ class SyncServiceImplTest : public ::testing::Test {
   }
 
   signin::IdentityManager* identity_manager() {
-    return profile_sync_service_bundle_.identity_manager();
+    return sync_service_impl_bundle_.identity_manager();
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
-    return profile_sync_service_bundle_.identity_test_env();
+    return sync_service_impl_bundle_.identity_test_env();
   }
 
   SyncServiceImpl* service() { return service_.get(); }
@@ -208,11 +208,11 @@ class SyncServiceImplTest : public ::testing::Test {
   SyncClientMock* sync_client() { return sync_client_; }
 
   TestingPrefServiceSimple* prefs() {
-    return profile_sync_service_bundle_.pref_service();
+    return sync_service_impl_bundle_.pref_service();
   }
 
   FakeSyncApiComponentFactory* component_factory() {
-    return profile_sync_service_bundle_.component_factory();
+    return sync_service_impl_bundle_.component_factory();
   }
 
   DataTypeManagerImpl* data_type_manager() {
@@ -224,7 +224,7 @@ class SyncServiceImplTest : public ::testing::Test {
   }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
-    return profile_sync_service_bundle_.sync_invalidations_service();
+    return sync_service_impl_bundle_.sync_invalidations_service();
   }
 
   FakeDataTypeController* get_controller(ModelType type) {
@@ -233,7 +233,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ProfileSyncServiceBundle profile_sync_service_bundle_;
+  SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   SyncClientMock* sync_client_;  // Owned by |service_|.
   // The controllers are owned by |service_|.

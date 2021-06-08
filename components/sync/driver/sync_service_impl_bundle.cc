@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/driver/profile_sync_service_bundle.h"
+#include "components/sync/driver/sync_service_impl_bundle.h"
 
 #include <string>
 #include <utility>
@@ -20,16 +20,15 @@ namespace syncer {
 
 using testing::Return;
 
-ProfileSyncServiceBundle::ProfileSyncServiceBundle()
+SyncServiceImplBundle::SyncServiceImplBundle()
     : identity_test_env_(&test_url_loader_factory_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 }
 
-ProfileSyncServiceBundle::~ProfileSyncServiceBundle() {}
+SyncServiceImplBundle::~SyncServiceImplBundle() {}
 
-std::unique_ptr<SyncClientMock>
-ProfileSyncServiceBundle::CreateSyncClientMock() {
+std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
   auto sync_client = std::make_unique<testing::NiceMock<SyncClientMock>>();
   ON_CALL(*sync_client, GetPrefService()).WillByDefault(Return(&pref_service_));
   ON_CALL(*sync_client, GetSyncApiComponentFactory())
@@ -39,7 +38,7 @@ ProfileSyncServiceBundle::CreateSyncClientMock() {
   return std::move(sync_client);
 }
 
-SyncServiceImpl::InitParams ProfileSyncServiceBundle::CreateBasicInitParams(
+SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
     SyncServiceImpl::StartBehavior start_behavior,
     std::unique_ptr<SyncClient> sync_client) {
   SyncServiceImpl::InitParams init_params;

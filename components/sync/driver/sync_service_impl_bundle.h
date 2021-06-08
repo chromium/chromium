@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_BUNDLE_H_
-#define COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_BUNDLE_H_
+#ifndef COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_BUNDLE_H_
+#define COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_BUNDLE_H_
 
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -24,11 +23,14 @@ namespace syncer {
 // Aggregate this class to get all necessary support for creating a
 // SyncServiceImpl in tests. The test still needs to have its own
 // MessageLoop, though.
-class ProfileSyncServiceBundle {
+class SyncServiceImplBundle {
  public:
-  ProfileSyncServiceBundle();
+  SyncServiceImplBundle();
 
-  ~ProfileSyncServiceBundle();
+  ~SyncServiceImplBundle();
+
+  SyncServiceImplBundle(const SyncServiceImplBundle&) = delete;
+  SyncServiceImplBundle& operator=(const SyncServiceImplBundle&) = delete;
 
   // Creates a mock sync client that leverages the dependencies in this bundle.
   std::unique_ptr<SyncClientMock> CreateSyncClientMock();
@@ -70,10 +72,8 @@ class ProfileSyncServiceBundle {
   signin::IdentityTestEnvironment identity_test_env_;
   FakeSyncApiComponentFactory component_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileSyncServiceBundle);
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_BUNDLE_H_
+#endif  // COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_BUNDLE_H_

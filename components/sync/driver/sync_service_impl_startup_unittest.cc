@@ -13,9 +13,9 @@
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
-#include "components/sync/driver/profile_sync_service_bundle.h"
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl_bundle.h"
 #include "components/sync/test/engine/fake_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,16 +39,16 @@ class MockSyncServiceObserver : public SyncServiceObserver {
 
 }  // namespace
 
-class ProfileSyncServiceStartupTest : public testing::Test {
+class SyncServiceImplStartupTest : public testing::Test {
  public:
-  ProfileSyncServiceStartupTest()
+  SyncServiceImplStartupTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        sync_prefs_(profile_sync_service_bundle_.pref_service()) {
-    profile_sync_service_bundle_.identity_test_env()
+        sync_prefs_(sync_service_impl_bundle_.pref_service()) {
+    sync_service_impl_bundle_.identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
   }
 
-  ~ProfileSyncServiceStartupTest() override { sync_service_->Shutdown(); }
+  ~SyncServiceImplStartupTest() override { sync_service_->Shutdown(); }
 
   void CreateSyncService(
       SyncServiceImpl::StartBehavior start_behavior,
@@ -62,45 +62,45 @@ class ProfileSyncServiceStartupTest : public testing::Test {
     }
 
     std::unique_ptr<SyncClientMock> sync_client =
-        profile_sync_service_bundle_.CreateSyncClientMock();
+        sync_service_impl_bundle_.CreateSyncClientMock();
     ON_CALL(*sync_client, CreateDataTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
     sync_service_ = std::make_unique<SyncServiceImpl>(
-        profile_sync_service_bundle_.CreateBasicInitParams(
+        sync_service_impl_bundle_.CreateBasicInitParams(
             start_behavior, std::move(sync_client)));
   }
 
   void SimulateTestUserSignin() {
-    profile_sync_service_bundle_.identity_test_env()
-        ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSync);
+    sync_service_impl_bundle_.identity_test_env()->MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSync);
   }
 
   void SimulateTestUserSigninWithoutRefreshToken() {
     // Set the primary account *without* providing an OAuth token.
-    profile_sync_service_bundle_.identity_test_env()->SetPrimaryAccount(
+    sync_service_impl_bundle_.identity_test_env()->SetPrimaryAccount(
         kEmail, signin::ConsentLevel::kSync);
   }
 
   void UpdateCredentials() {
-    profile_sync_service_bundle_.identity_test_env()
+    sync_service_impl_bundle_.identity_test_env()
         ->SetRefreshTokenForPrimaryAccount();
   }
 
   // Sets a special invalid refresh token. This is what happens when the primary
   // (and sync-consented) account signs out on the web.
   void SimulateWebSignout() {
-    profile_sync_service_bundle_.identity_test_env()
+    sync_service_impl_bundle_.identity_test_env()
         ->SetInvalidRefreshTokenForPrimaryAccount();
   }
 
   void DisableAutomaticIssueOfAccessTokens() {
-    profile_sync_service_bundle_.identity_test_env()
+    sync_service_impl_bundle_.identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(false);
   }
 
   void RespondToTokenRequest() {
-    profile_sync_service_bundle_.identity_test_env()
+    sync_service_impl_bundle_.identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
             "access_token", base::Time::Max());
   }
@@ -110,11 +110,11 @@ class ProfileSyncServiceStartupTest : public testing::Test {
   SyncServiceImpl* sync_service() { return sync_service_.get(); }
 
   PrefService* pref_service() {
-    return profile_sync_service_bundle_.pref_service();
+    return sync_service_impl_bundle_.pref_service();
   }
 
   FakeSyncApiComponentFactory* component_factory() {
-    return profile_sync_service_bundle_.component_factory();
+    return sync_service_impl_bundle_.component_factory();
   }
 
   DataTypeManagerImpl* data_type_manager() {
@@ -135,7 +135,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ProfileSyncServiceBundle profile_sync_service_bundle_;
+  SyncServiceImplBundle sync_service_impl_bundle_;
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
   // The controllers are owned by |sync_service_|.
@@ -144,7 +144,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
 // ChromeOS does not support sign-in after startup
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
+TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
@@ -217,7 +217,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(ProfileSyncServiceStartupTest, StartNoCredentials) {
+TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   // We're already signed in, but don't have a refresh token.
   SimulateTestUserSigninWithoutRefreshToken();
   sync_prefs()->SetFirstSetupComplete();
@@ -234,7 +234,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartNoCredentials) {
   // attempted, so no error.
 }
 
-TEST_F(ProfileSyncServiceStartupTest, WebSignoutBeforeInitialization) {
+TEST_F(SyncServiceImplStartupTest, WebSignoutBeforeInitialization) {
   // There is a primary account, but it's in a "web signout" aka sync-paused
   // state.
   SimulateTestUserSignin();
@@ -250,7 +250,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutBeforeInitialization) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
+TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   // There is a primary account. It is theoretically in the "web signout" aka
   // sync-paused error state, but the identity code hasn't detected that yet
   // (because auth errors are not persisted).
@@ -284,7 +284,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
   sync_service()->RemoveObserver(&observer);
 }
 
-TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
+TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
   // This test has to wait for the access token request to complete, so disable
   // automatic issuing of tokens.
   DisableAutomaticIssueOfAccessTokens();
@@ -320,7 +320,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
   sync_service()->RemoveObserver(&observer);
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StartInvalidCredentials) {
+TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   SimulateTestUserSignin();
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
@@ -344,7 +344,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartInvalidCredentials) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StartCrosNoCredentials) {
+TEST_F(SyncServiceImplStartupTest, StartCrosNoCredentials) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
@@ -366,7 +366,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartCrosNoCredentials) {
   EXPECT_TRUE(sync_service()->GetUserSettings()->IsFirstSetupComplete());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StartCrosFirstTime) {
+TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
   SimulateTestUserSigninWithoutRefreshToken();
@@ -382,7 +382,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartCrosFirstTime) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StartNormal) {
+TEST_F(SyncServiceImplStartupTest, StartNormal) {
   // We have previously completed the initial Sync setup, and the user is
   // already signed in.
   sync_prefs()->SetFirstSetupComplete();
@@ -401,7 +401,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartNormal) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StopSync) {
+TEST_F(SyncServiceImplStartupTest, StopSync) {
   sync_prefs()->SetFirstSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
@@ -423,7 +423,7 @@ TEST_F(ProfileSyncServiceStartupTest, StopSync) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, DisableSync) {
+TEST_F(SyncServiceImplStartupTest, DisableSync) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
   SimulateTestUserSignin();
@@ -457,7 +457,7 @@ TEST_F(ProfileSyncServiceStartupTest, DisableSync) {
 // Test that we can recover from a case where a bug in the code resulted in
 // OnUserChoseDatatypes not being properly called and datatype preferences
 // therefore being left unset.
-TEST_F(ProfileSyncServiceStartupTest, StartRecoverDatatypePrefs) {
+TEST_F(SyncServiceImplStartupTest, StartRecoverDatatypePrefs) {
   // Clear the datatype preference fields (simulating bug 154940).
   pref_service()->ClearPref(prefs::kSyncKeepEverythingSynced);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
@@ -475,7 +475,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartRecoverDatatypePrefs) {
 
 // Verify that the recovery of datatype preferences doesn't overwrite a valid
 // case where only bookmarks are enabled.
-TEST_F(ProfileSyncServiceStartupTest, StartDontRecoverDatatypePrefs) {
+TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
   // Explicitly set Keep Everything Synced to false and have only bookmarks
   // enabled.
   sync_prefs()->SetSelectedTypes(
@@ -492,7 +492,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartDontRecoverDatatypePrefs) {
   EXPECT_FALSE(sync_prefs()->HasKeepEverythingSynced());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, ManagedStartup) {
+TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // Sync was previously enabled, but a policy was set while Chrome wasn't
   // running.
   sync_prefs()->SetManagedForTest(true);
@@ -514,7 +514,7 @@ TEST_F(ProfileSyncServiceStartupTest, ManagedStartup) {
   EXPECT_FALSE(engine());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, SwitchManaged) {
+TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // Sync starts out fully set up and enabled.
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
@@ -568,7 +568,7 @@ TEST_F(ProfileSyncServiceStartupTest, SwitchManaged) {
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
 
-TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {
+TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
@@ -592,7 +592,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {
 
 // ChromeOS does not support sign-in after startup
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
+TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
@@ -675,7 +675,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceNthTime) {
+TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // The user is already signed in and has completed Sync setup before.
   SimulateTestUserSignin();
   sync_prefs()->SetFirstSetupComplete();
