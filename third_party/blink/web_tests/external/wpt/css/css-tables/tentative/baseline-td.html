@@ -5,7 +5,7 @@
 <meta name="flags" content="ahem">
 <title>TD baseline</title>
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
-<link rel="stylesheet" type="text/css" href="./support/tables-ng.css">
+<link rel="stylesheet" type="text/css" href="./support/table-tentative.css">
 <link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/" />
 <link rel="help" href="https://www.w3.org/TR/CSS2/visudet.html#propdef-vertical-align" />
@@ -104,6 +104,19 @@ If td is baseline aligned, and has a height, how tall should the td be?
     </td>
   </tr>
 </table>
+
+<p class="testdesc">Baseline of rowspanned cell
+rowspanned td's should contribute to baseline, but not to the row height.</p>
+<table class="ahem">
+  <tr data-expected-height=100>
+    <td style="vertical-align:baseline;height:100px;background-color:#DFD;">Xp</td>
+    <td style="vertical-align:baseline;font-size:40px;line-height:1.5" rowspan=2><div class="m">Xp</div><br>Xp<br>Xp</td>
+  </tr>
+  <tr data-expected-height=100>
+    <td style="vertical-align:baseline;height:100px">Xp</td>
+  </tr>
+</table>
+
 </main>
 <script>
   checkLayout("table, .display-table");
