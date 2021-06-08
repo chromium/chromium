@@ -45,6 +45,8 @@ const char kCapturedPageOther[] = "/webrtc/captured_page_other.html";
 const char* kArbitraryOrigin = "https://arbitrary-origin.com";
 const char* kNoCaptureHandle = "no-capture-handle";
 
+enum class BrowserType { kRegular, kIncognito };
+
 std::string StringifyPermittedOrigins(
     const std::vector<std::string>& permitted_origins) {
   if (permitted_origins.empty()) {
@@ -118,7 +120,7 @@ struct TabInfo {
     return script_result;
   }
 
-  void Navigate(Browser* browser, GURL url, bool expect_handle_reset = false) {
+  void Navigate(GURL url, bool expect_handle_reset = false) {
     std::string script_result;
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetMainFrame(),
@@ -144,14 +146,12 @@ struct TabInfo {
   std::string capture_handle;  // Expected value for those who may observe.
 };
 
-TabInfo MakeTabInfoFromActiveTab(Browser* browser,
-                                 bool expose_origin,
-                                 const std::string& handle) {
+TabInfo MakeTabInfoFromActiveTab(Browser* browser) {
   WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
+  // "POISON_VALUE" intentionally fails comparisons if unset when read.
   return TabInfo{browser, web_contents,
-                 browser->tab_strip_model()->active_index(),
-                 StringifyCaptureHandle(web_contents, expose_origin, handle)};
+                 browser->tab_strip_model()->active_index(), "POISON_VALUE"};
 }
 
 }  // namespace
@@ -194,22 +194,41 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Same as WebRtcTestBase::OpenTestPageInNewTab, but does not assume
   // a single embedded server is used for all pages.
-  WebContents* OpenTestPageInNewTab(const std::string& test_page,
+  WebContents* OpenTestPageInNewTab(Browser* browser,
+                                    const std::string& test_page,
                                     net::EmbeddedTestServer* server) const {
-    chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+    chrome::AddTabAt(browser, GURL(url::kAboutBlankURL), -1, true);
     GURL url = server->GetURL(test_page);
-    ui_test_utils::NavigateToURL(browser(), url);
-    WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+    ui_test_utils::NavigateToURL(browser, url);
+    WebContents* new_tab = browser->tab_strip_model()->GetActiveWebContents();
     permissions::PermissionRequestManager::FromWebContents(new_tab)
         ->set_auto_response_for_test(
             permissions::PermissionRequestManager::ACCEPT_ALL);
     return new_tab;
   }
 
-  TabInfo SetUpCapturingPage(bool start_capturing) {
-    OpenTestPageInNewTab(kCapturingPageMain, servers_[kCapturingServer].get());
+  Browser* GetBrowser(BrowserType browser_type) {
+    DCHECK(browser_type == BrowserType::kRegular ||
+           browser_type == BrowserType::kIncognito);
 
-    auto result = MakeTabInfoFromActiveTab(browser(), true, "capturing_page");
+    if (browser_type == BrowserType::kRegular) {
+      return browser();
+    }
+
+    if (!incognito_browser_) {
+      incognito_browser_ = CreateIncognitoBrowser();
+    }
+    return incognito_browser_;
+  }
+
+  TabInfo SetUpCapturingPage(bool start_capturing,
+                             BrowserType browser_type = BrowserType::kRegular) {
+    Browser* const browser = GetBrowser(browser_type);
+
+    OpenTestPageInNewTab(browser, kCapturingPageMain,
+                         servers_[kCapturingServer].get());
+
+    auto result = MakeTabInfoFromActiveTab(browser);
     if (start_capturing) {
       result.StartCapturing();
     }
@@ -222,14 +241,17 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
   TabInfo SetUpCapturedPage(bool expose_origin,
                             const std::string& handle,
                             const std::vector<std::string>& permitted_origins,
-                            bool self_capture = false) {
+                            bool self_capture = false,
+                            BrowserType browser_type = BrowserType::kRegular) {
     // Normally, the captured page has its own server (=origin) and own file.
     // But if self-capture is tested, use the origin and page of the capturer.
     const char* page = self_capture ? kCapturingPageMain : kCapturedPageMain;
     const int server_index = self_capture ? kCapturingServer : kCapturedServer;
 
+    Browser* const browser = GetBrowser(browser_type);
+
     auto* const web_contents =
-        OpenTestPageInNewTab(page, servers_[server_index].get());
+        OpenTestPageInNewTab(browser, page, servers_[server_index].get());
 
     // The target for getDisplayMedia is determined via the title. If we want
     // the capturing page to capture itself, then it has to change its title.
@@ -242,7 +264,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
       EXPECT_EQ(script_result, "title-changed");
     }
 
-    auto tab_info = MakeTabInfoFromActiveTab(browser(), expose_origin, handle);
+    auto tab_info = MakeTabInfoFromActiveTab(browser);
 
     tab_info.SetCaptureHandleConfig(expose_origin, handle, permitted_origins);
 
@@ -261,6 +283,10 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
   // capturer. Some tests will use one server for multiple pages so as to
   // make them same-origin.
   std::vector<std::unique_ptr<net::EmbeddedTestServer>> servers_;
+
+  // Incognito browser.
+  // Note: The regular one is accessible via browser().
+  Browser* incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -497,8 +523,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
             captured_tab.capture_handle);
 
   // Cross-document navigation clears the capture handle (config).
-  captured_tab.Navigate(browser(),
-                        servers_[kCapturedServer]->GetURL(kCapturedPageOther),
+  captured_tab.Navigate(servers_[kCapturedServer]->GetURL(kCapturedPageOther),
                         /*expect_handle_reset=*/true);
 
   // Navigation cleared the the capture handle, and that fired an event
@@ -525,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   // Cross-origin navigation clears the capture handle (config) and fires
   // an event with the empty CaptureHandle.
   captured_tab.Navigate(
-      browser(), servers_[kOtherCapturedServer]->GetURL(kCapturedPageOther),
+      servers_[kOtherCapturedServer]->GetURL(kCapturedPageOther),
       /*expect_handle_reset=*/true);
   EXPECT_EQ(capturing_tab.LastEvent(), "{}");
   EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
@@ -559,10 +584,79 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   // Correct initial value read.
   EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
 
-  // No events fired when self-capturing but not allowed to observe..
+  // No events fired when self-capturing but not allowed to observe.
   tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                              {kArbitraryOrigin});
   EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
+                       RegularTabCannotReadIncognitoTabCaptureHandle) {
+  TabInfo captured_tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
+                        /*self_capture=*/false, BrowserType::kIncognito);
+
+  TabInfo capturing_tab =
+      SetUpCapturingPage(/*start_capturing=*/true, BrowserType::kRegular);
+
+  // Can neither observe the value when capture starts, nor receive events when
+  // the capture handle changes.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
+                                      {"*"});
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
+                       IncognitoTabCannotReadRegularTabCaptureHandle) {
+  TabInfo captured_tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
+                        /*self_capture=*/false, BrowserType::kRegular);
+
+  TabInfo capturing_tab =
+      SetUpCapturingPage(/*start_capturing=*/true, BrowserType::kIncognito);
+
+  // Can neither observe the value when capture starts, nor receive events when
+  // the capture handle changes.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
+                                      {"*"});
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
+                       IncognitoTabCannotReadIncognitoTabCaptureHandle) {
+  TabInfo captured_tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
+                        /*self_capture=*/false, BrowserType::kIncognito);
+
+  TabInfo capturing_tab =
+      SetUpCapturingPage(/*start_capturing=*/true, BrowserType::kIncognito);
+
+  // Can neither observe the value when capture starts, nor receive events when
+  // the capture handle changes.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
+                                      {"*"});
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CaptureHandleBrowserTest,
+    IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture) {
+  TabInfo tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
+                        /*self_capture=*/true, BrowserType::kIncognito);
+
+  tab.StartCapturing();
+
+  // Can observe the value when capture starts.
+  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
+
+  // Receives event of changes to the capture handle.
+  tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle", {"*"});
+  EXPECT_EQ(tab.LastEvent(), tab.capture_handle);
+  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
