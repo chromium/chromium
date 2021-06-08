@@ -1063,7 +1063,8 @@
               "accessibility/virtual-node-build-parent-multiple.html",
               "accessibility/virtual-node-removed-from-document.html",
               "accessibility/virtual-node-repair-document.html",
-              "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html"],
+              "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html",
+              "external/wpt/accessibility/crashtests/included-descendant-dom-removal.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
