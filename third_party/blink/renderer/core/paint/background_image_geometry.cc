@@ -979,4 +979,14 @@ PhysicalOffset BackgroundImageGeometry::OffsetInBackground(
   return element_positioning_area_offset_;
 }
 
+PhysicalOffset BackgroundImageGeometry::ComputeDestPhase() const {
+  // Given the size that the whole image should draw at, and the input phase
+  // requested by the content, and the space between repeated tiles, compute a
+  // phase that is no more than one size + space in magnitude.
+  const PhysicalSize step_per_tile = tile_size_ + repeat_spacing_;
+  const PhysicalOffset phase = {IntMod(-phase_.left, step_per_tile.width),
+                                IntMod(-phase_.top, step_per_tile.height)};
+  return snapped_dest_rect_.offset + phase;
+}
+
 }  // namespace blink

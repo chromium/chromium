@@ -64,6 +64,9 @@ class BackgroundImageGeometry {
   const PhysicalRect& UnsnappedDestRect() const { return unsnapped_dest_rect_; }
   const PhysicalRect& SnappedDestRect() const { return snapped_dest_rect_; }
 
+  // Compute the phase relative to the (snapped) destination offset.
+  PhysicalOffset ComputeDestPhase() const;
+
   // Tile size is the area into which to draw one copy of the image. It
   // need not be the same as the intrinsic size of the image; if not,
   // the image will be resized (via an image filter) when painted into
