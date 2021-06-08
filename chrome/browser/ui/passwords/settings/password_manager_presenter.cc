@@ -207,7 +207,7 @@ PasswordManagerPresenter::MovePasswordToAccountStoreHelper::
       client_(client),
       done_callback_(std::move(done_callback)),
       form_fetcher_(password_manager::FormFetcherImpl::CreateFormFetcherImpl(
-          password_manager::PasswordStore::FormDigest(form),
+          password_manager::PasswordFormDigest(form),
           client,
           /*should_migrate_http_passwords=*/true)) {
   form_fetcher_->Fetch();

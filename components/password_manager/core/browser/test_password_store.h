@@ -85,7 +85,7 @@ class TestPasswordStore : public PasswordStore {
                                           UpdateLoginError* error) override;
   PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const FormDigest& form) override;
+      const PasswordFormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(

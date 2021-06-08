@@ -309,7 +309,7 @@ const PasswordForm* GetMatchForUpdating(
 }
 
 PasswordForm MakeNormalizedBlocklistedForm(
-    password_manager::PasswordStore::FormDigest digest) {
+    password_manager::PasswordFormDigest digest) {
   PasswordForm result;
   result.blocked_by_user = true;
   result.scheme = std::move(digest.scheme);

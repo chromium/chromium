@@ -41,7 +41,7 @@ bool IsFederatedPSLMatch(const std::string& form_signon_realm,
 
 // Returns what type of match applies to |form| and |form_digest|.
 MatchResult GetMatchResult(const PasswordForm& form,
-                           const PasswordStore::FormDigest& form_digest);
+                           const PasswordFormDigest& form_digest);
 
 // Two URLs are considered a Public Suffix Domain match if they have the same
 // scheme, ports, and their registry controlled domains are equal. If one or

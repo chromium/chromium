@@ -167,7 +167,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
             consumer->OnGetPasswordStoreResults(std::move(result));
           })));
 
-  password_manager::PasswordStore::FormDigest form_digest(
+  password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL(kFakeUrl));
   // Presave generated password. Form with empty username is presaved.
   EXPECT_CALL(*store(), GetLogins(form_digest, _));

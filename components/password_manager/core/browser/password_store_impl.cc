@@ -179,7 +179,7 @@ bool PasswordStoreImpl::RemoveStatisticsByOriginAndTimeImpl(
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreImpl::FillMatchingLogins(const FormDigest& form) {
+PasswordStoreImpl::FillMatchingLogins(const PasswordFormDigest& form) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   if (login_db_ && !login_db_->GetLogins(form, &matched_forms))
     return std::vector<std::unique_ptr<PasswordForm>>();

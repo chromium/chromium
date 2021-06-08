@@ -166,7 +166,7 @@ PasswordFormManager::PasswordFormManager(
 
 PasswordFormManager::PasswordFormManager(
     PasswordManagerClient* client,
-    PasswordStore::FormDigest observed_http_auth_digest,
+    PasswordFormDigest observed_http_auth_digest,
     FormFetcher* form_fetcher,
     std::unique_ptr<PasswordSaveManager> password_save_manager)
     : PasswordFormManager(client,
@@ -404,8 +404,7 @@ void PasswordFormManager::Blocklist() {
   newly_blocklisted_ = true;
 }
 
-PasswordStore::FormDigest PasswordFormManager::ConstructObservedFormDigest()
-    const {
+PasswordFormDigest PasswordFormManager::ConstructObservedFormDigest() const {
   std::string signon_realm;
   GURL url;
   if (observed_digest()) {
@@ -417,7 +416,7 @@ PasswordStore::FormDigest PasswordFormManager::ConstructObservedFormDigest()
     url = observed_form()->url;
     signon_realm = GetSignonRealm(observed_form()->url);
   }
-  return PasswordStore::FormDigest(GetScheme(), signon_realm, url);
+  return PasswordFormDigest(GetScheme(), signon_realm, url);
 }
 
 void PasswordFormManager::OnPasswordsRevealed() {
@@ -628,7 +627,7 @@ PasswordFormManager::PasswordFormManager(
     std::unique_ptr<FormFetcher> form_fetcher,
     std::unique_ptr<PasswordSaveManager> password_save_manager)
     : PasswordFormManager(client,
-                          PasswordStore::FormDigest(*saved_form),
+                          PasswordFormDigest(*saved_form),
                           form_fetcher.get(),
                           std::move(password_save_manager),
                           nullptr /* metrics_recorder */) {
@@ -736,7 +735,7 @@ bool PasswordFormManager::ProvisionallySaveHttpAuthForm(
     const PasswordForm& submitted_form) {
   if (!IsHttpAuth())
     return false;
-  if (*observed_digest() != PasswordStore::FormDigest(submitted_form))
+  if (*observed_digest() != PasswordFormDigest(submitted_form))
     return false;
 
   parsed_submitted_form_ = std::make_unique<PasswordForm>(submitted_form);
@@ -877,14 +876,14 @@ PasswordFormManager::PasswordFormManager(
     : client_(client),
       observed_form_or_digest_(std::move(observed_form_or_digest)),
       metrics_recorder_(metrics_recorder),
-      owned_form_fetcher_(
-          form_fetcher ? nullptr
-                       : FormFetcherImpl::CreateFormFetcherImpl(
-                             observed_digest()
-                                 ? *observed_digest()
-                                 : PasswordStore::FormDigest(*observed_form()),
-                             client_,
-                             true /* should_migrate_http_passwords */)),
+      owned_form_fetcher_(form_fetcher
+                              ? nullptr
+                              : FormFetcherImpl::CreateFormFetcherImpl(
+                                    observed_digest()
+                                        ? *observed_digest()
+                                        : PasswordFormDigest(*observed_form()),
+                                    client_,
+                                    true /* should_migrate_http_passwords */)),
       form_fetcher_(form_fetcher ? form_fetcher : owned_form_fetcher_.get()),
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly

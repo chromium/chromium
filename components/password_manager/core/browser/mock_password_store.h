@@ -23,10 +23,9 @@ class MockPasswordStore : public PasswordStore {
   MockPasswordStore();
 
   MOCK_METHOD1(RemoveLogin, void(const PasswordForm&));
-  MOCK_METHOD2(Unblocklist,
-               void(const PasswordStore::FormDigest&, base::OnceClosure));
+  MOCK_METHOD2(Unblocklist, void(const PasswordFormDigest&, base::OnceClosure));
   MOCK_METHOD2(GetLogins,
-               void(const PasswordStore::FormDigest&, PasswordStoreConsumer*));
+               void(const PasswordFormDigest&, PasswordStoreConsumer*));
   MOCK_METHOD1(AddLogin, void(const PasswordForm&));
   MOCK_METHOD1(UpdateLogin, void(const PasswordForm&));
   MOCK_METHOD2(UpdateLoginWithPrimaryKey,
@@ -56,7 +55,7 @@ class MockPasswordStore : public PasswordStore {
                PasswordStoreChangeList(
                    const base::RepeatingCallback<bool(const GURL&)>&));
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const PasswordStore::FormDigest& form) override {
+      const PasswordFormDigest& form) override {
     return std::vector<std::unique_ptr<PasswordForm>>();
   }
   MOCK_METHOD1(

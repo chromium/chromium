@@ -435,7 +435,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     return;
 
   const GURL origin_as_gurl = origin.GetURL();
-  password_manager::PasswordStore::FormDigest form_digest(
+  password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
   password_manager::PasswordStore* store =

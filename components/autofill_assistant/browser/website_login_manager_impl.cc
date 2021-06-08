@@ -44,7 +44,7 @@ class WebsiteLoginManagerImpl::PendingRequest
     : public password_manager::FormFetcher::Consumer {
  public:
   PendingRequest(
-      const password_manager::PasswordStore::FormDigest& form_digest,
+      const password_manager::PasswordFormDigest& form_digest,
       const password_manager::PasswordManagerClient* client,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
       : form_fetcher_(
@@ -97,7 +97,7 @@ class WebsiteLoginManagerImpl::PendingFetchLoginsRequest
     : public WebsiteLoginManagerImpl::PendingRequest {
  public:
   PendingFetchLoginsRequest(
-      const password_manager::PasswordStore::FormDigest& form_digest,
+      const password_manager::PasswordFormDigest& form_digest,
       const password_manager::PasswordManagerClient* client,
       base::OnceCallback<void(std::vector<Login>)> callback,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
@@ -127,7 +127,7 @@ class WebsiteLoginManagerImpl::PendingFetchPasswordRequest
     : public WebsiteLoginManagerImpl::PendingRequest {
  public:
   PendingFetchPasswordRequest(
-      const password_manager::PasswordStore::FormDigest& form_digest,
+      const password_manager::PasswordFormDigest& form_digest,
       const password_manager::PasswordManagerClient* client,
       const Login& login,
       base::OnceCallback<void(bool, std::string)> callback,
@@ -183,7 +183,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
         votes_uploader_(client, true /* is_possible_change_password_form */) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    password_manager::PasswordStore::FormDigest digest(
+    password_manager::PasswordFormDigest digest(
         password_manager::PasswordForm::Scheme::kHtml,
         password_form_.signon_realm, password_form_.url);
     form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
@@ -241,7 +241,7 @@ void WebsiteLoginManagerImpl::GetLoginsForUrl(
     const GURL& url,
     base::OnceCallback<void(std::vector<Login>)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  password_manager::PasswordStore::FormDigest digest(
+  password_manager::PasswordFormDigest digest(
       password_manager::PasswordForm::Scheme::kHtml, url.GetOrigin().spec(),
       GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchLoginsRequest>(
@@ -255,7 +255,7 @@ void WebsiteLoginManagerImpl::GetPasswordForLogin(
     const Login& login,
     base::OnceCallback<void(bool, std::string)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  password_manager::PasswordStore::FormDigest digest(
+  password_manager::PasswordFormDigest digest(
       password_manager::PasswordForm::Scheme::kHtml, login.origin.spec(),
       GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchPasswordRequest>(

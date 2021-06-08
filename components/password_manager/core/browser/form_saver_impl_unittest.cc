@@ -328,11 +328,10 @@ TEST_F(FormSaverImplTest, Blocklist) {
 
   PasswordForm blocklisted =
       password_manager_util::MakeNormalizedBlocklistedForm(
-          PasswordStore::FormDigest(observed));
+          PasswordFormDigest(observed));
 
   EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blocklisted)));
-  PasswordForm result =
-      form_saver_.Blocklist(PasswordStore::FormDigest(observed));
+  PasswordForm result = form_saver_.Blocklist(PasswordFormDigest(observed));
   EXPECT_THAT(result, FormWithSomeDate(blocklisted));
 }
 

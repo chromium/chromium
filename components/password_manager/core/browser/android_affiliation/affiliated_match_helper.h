@@ -64,7 +64,7 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // empty list. The |result_callback| will be invoked in both cases, on the
   // same thread.
   virtual void GetAffiliatedAndroidAndWebRealms(
-      const PasswordStore::FormDigest& observed_form,
+      const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
 
   // Retrieves realms of web sites affiliated with the Android application that
@@ -74,9 +74,8 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // API if affiliations of the Android application are not cached. However, as
   // long as the |android_form| is from the PasswordStore, this should rarely
   // happen as affiliation information for those applications are prefetched.
-  virtual void GetAffiliatedWebRealms(
-      const PasswordStore::FormDigest& android_form,
-      AffiliatedRealmsCallback result_callback);
+  virtual void GetAffiliatedWebRealms(const PasswordFormDigest& android_form,
+                                      AffiliatedRealmsCallback result_callback);
 
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
@@ -91,11 +90,11 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
       PasswordFormsCallback result_callback);
 
   // Returns whether or not |form| represents an Android credential.
-  static bool IsValidAndroidCredential(const PasswordStore::FormDigest& form);
+  static bool IsValidAndroidCredential(const PasswordFormDigest& form);
 
   // Returns whether or not |form| represents a valid Web credential for the
   // purposes of affiliation-based matching.
-  static bool IsValidWebCredential(const PasswordStore::FormDigest& form);
+  static bool IsValidWebCredential(const PasswordFormDigest& form);
 
   // I/O heavy initialization on start-up will be delayed by this long.
   // This should be high enough not to exacerbate start-up I/O contention too

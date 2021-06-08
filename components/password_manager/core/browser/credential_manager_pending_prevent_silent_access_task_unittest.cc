@@ -64,9 +64,9 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest, ProfileStoreOnly) {
 
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
 
-  task.AddOrigin(PasswordStore::FormDigest(PasswordForm::Scheme::kHtml,
-                                           /*signon_realm=*/"www.example.com",
-                                           GURL("www.example.com")));
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    /*signon_realm=*/"www.example.com",
+                                    GURL("www.example.com")));
 
   // We are expecting results from only one store, delegate should be called
   // upon getting a response from the store.
@@ -83,9 +83,9 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
 
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
 
-  task.AddOrigin(PasswordStore::FormDigest(PasswordForm::Scheme::kHtml,
-                                           /*signon_realm=*/"www.example.com",
-                                           GURL("www.example.com")));
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    /*signon_realm=*/"www.example.com",
+                                    GURL("www.example.com")));
 
   // We are expecting results from 2 stores, the delegate shouldn't be called
   // until both stores respond.

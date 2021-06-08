@@ -151,7 +151,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   ASSERT_EQ(1u, changes.size());
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordStore::FormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), &forms));
 
   ASSERT_EQ(1U, forms.size());
   EXPECT_STREQ("secret", UTF16ToUTF8(forms[0]->password_value).c_str());
@@ -170,7 +170,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   ignore_result(login_db_->RemoveLogin(form, /*changes=*/nullptr));
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordStore::FormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), &forms));
 
   ASSERT_EQ(0U, forms.size());
   ASSERT_EQ(0U, GetKeychainSize());
@@ -204,8 +204,8 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
                                         base::Time::FromDoubleT(250),
                                         /*changes=*/nullptr);
 
-  PasswordStore::FormDigest form = {PasswordForm::Scheme::kHtml,
-                                    "http://www.example.com", GURL()};
+  PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
+                             "http://www.example.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> logins;
   EXPECT_TRUE(login_db_->GetLogins(form, &logins));
 

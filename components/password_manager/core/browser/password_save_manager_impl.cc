@@ -252,14 +252,13 @@ void PasswordSaveManagerImpl::Update(
   SavePendingToStore(observed_form, parsed_submitted_form);
 }
 
-void PasswordSaveManagerImpl::Blocklist(
-    const PasswordStore::FormDigest& form_digest) {
+void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
   DCHECK(!client_->IsIncognito());
   form_saver_->Blocklist(form_digest);
 }
 
 void PasswordSaveManagerImpl::Unblocklist(
-    const PasswordStore::FormDigest& form_digest) {
+    const PasswordFormDigest& form_digest) {
   form_saver_->Unblocklist(form_digest);
 }
 

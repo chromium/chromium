@@ -261,7 +261,7 @@ TEST(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
   // Get all logins; autofillable logins; blocked logins.
   testing::StrictMock<MockPasswordStoreConsumer> mock_consumer;
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(IsEmpty()));
-  bad_store->GetLogins(PasswordStore::FormDigest(*form), &mock_consumer);
+  bad_store->GetLogins(PasswordFormDigest(*form), &mock_consumer);
   delegate.FinishAsyncProcessing();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(IsEmpty()));

@@ -25,6 +25,7 @@
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
@@ -32,10 +33,6 @@
 #include "components/password_manager/core/browser/password_store_sync.h"
 
 class PrefService;
-
-namespace autofill {
-struct FormData;
-}  // namespace autofill
 
 namespace syncer {
 class ModelTypeControllerDelegate;
@@ -124,26 +121,6 @@ class PasswordStore : protected PasswordStoreSync,
     virtual base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() = 0;
   };
 
-  // Represents a subset of PasswordForm needed for credential
-  // retrievals.
-  struct FormDigest {
-    FormDigest(PasswordForm::Scheme scheme,
-               const std::string& signon_realm,
-               const GURL& url);
-    explicit FormDigest(const PasswordForm& form);
-    explicit FormDigest(const autofill::FormData& form);
-    FormDigest(const FormDigest& other);
-    FormDigest(FormDigest&& other);
-    FormDigest& operator=(const FormDigest& other);
-    FormDigest& operator=(FormDigest&& other);
-    bool operator==(const FormDigest& other) const;
-    bool operator!=(const FormDigest& other) const;
-
-    PasswordForm::Scheme scheme;
-    std::string signon_realm;
-    GURL url;
-  };
-
   PasswordStore();
 
   // Always call this too on the UI thread.
@@ -226,12 +203,12 @@ class PasswordStore : protected PasswordStoreSync,
   // blocklisted entries. If |completion| is not null, it will be posted to the
   // |main_task_runner_| after deletions have been completed. Should be called
   // on the UI thread.
-  virtual void Unblocklist(const PasswordStore::FormDigest& form_digest,
+  virtual void Unblocklist(const PasswordFormDigest& form_digest,
                            base::OnceClosure completion);
 
   // Searches for a matching PasswordForm, and notifies |consumer| on
   // completion. The request will be cancelled if the consumer is destroyed.
-  virtual void GetLogins(const FormDigest& form,
+  virtual void GetLogins(const PasswordFormDigest& form,
                          PasswordStoreConsumer* consumer);
 
   // Searches for credentials with the specified |plain_text_password|, and
@@ -517,7 +494,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Finds and returns all PasswordForms with the same signon_realm as |form|,
   // or with a signon_realm that is a PSL-match to that of |form|.
   virtual std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const FormDigest& form) = 0;
+      const PasswordFormDigest& form) = 0;
 
   // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
@@ -728,7 +705,7 @@ class PasswordStore : protected PasswordStoreSync,
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
-  void UnblocklistInternal(const PasswordStore::FormDigest& form_digest,
+  void UnblocklistInternal(const PasswordFormDigest& form_digest,
                            base::OnceClosure completion);
   PasswordStoreChangeList RemoveCompromisedCredentialsByUrlAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
@@ -747,7 +724,7 @@ class PasswordStore : protected PasswordStoreSync,
   // the results when done.
   // Note: subclasses should implement FillMatchingLogins() instead.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsImpl(
-      const FormDigest& form);
+      const PasswordFormDigest& form);
 
   // Finds all credentials with the specified |plain_text_password|.
   // Note: subclasses should implement FillMatchingLoginsByPassword() instead.
@@ -771,7 +748,7 @@ class PasswordStore : protected PasswordStoreSync,
   //  * is one of those in |additional_affiliated_realms|,
   // and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsWithAffiliationsImpl(
-      const FormDigest& form,
+      const PasswordFormDigest& form,
       const std::vector<std::string>& additional_affiliated_realms);
 
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
@@ -792,7 +769,7 @@ class PasswordStore : protected PasswordStoreSync,
   // notified with the result.
   void ScheduleGetFilteredLoginsWithAffiliations(
       base::WeakPtr<PasswordStoreConsumer> consumer,
-      const PasswordStore::FormDigest& form,
+      const PasswordFormDigest& form,
       base::Time cutoff,
       const std::vector<std::string>& additional_affiliated_realms);
 
@@ -894,8 +871,8 @@ class PasswordStore : protected PasswordStoreSync,
 // For testing only.
 #if defined(UNIT_TEST)
 inline std::ostream& operator<<(std::ostream& os,
-                                const PasswordStore::FormDigest& digest) {
-  return os << "FormDigest(scheme: " << digest.scheme
+                                const PasswordFormDigest& digest) {
+  return os << "PasswordFormDigest(scheme: " << digest.scheme
             << ", signon_realm: " << digest.signon_realm
             << ", url: " << digest.url << ")";
 }

@@ -6,11 +6,11 @@
 
 namespace password_manager {
 
-PasswordForm StubFormSaver::Blocklist(PasswordStore::FormDigest digest) {
+PasswordForm StubFormSaver::Blocklist(PasswordFormDigest digest) {
   return PasswordForm();
 }
 
-void StubFormSaver::Unblocklist(const PasswordStore::FormDigest& digest) {}
+void StubFormSaver::Unblocklist(const PasswordFormDigest& digest) {}
 
 std::unique_ptr<FormSaver> StubFormSaver::Clone() {
   return nullptr;

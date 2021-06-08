@@ -125,7 +125,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   // Gets a list of credentials matching |form|, including blocklisted matches
   // and federated credentials.
-  bool GetLogins(const PasswordStore::FormDigest& form,
+  bool GetLogins(const PasswordFormDigest& form,
                  std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
@@ -324,10 +324,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // when encryption was available from the database. On success returns true.
   // |key_to_form_map| must not be null and will be used to return the results.
   // The key of the map is the DB primary key.
-  FormRetrievalResult StatementToForms(
-      sql::Statement* statement,
-      const PasswordStore::FormDigest* matched_form,
-      PrimaryKeyToFormMap* key_to_form_map) WARN_UNUSED_RESULT;
+  FormRetrievalResult StatementToForms(sql::Statement* statement,
+                                       const PasswordFormDigest* matched_form,
+                                       PrimaryKeyToFormMap* key_to_form_map)
+      WARN_UNUSED_RESULT;
 
   // Initializes all the *_statement_ data members with appropriate SQL
   // fragments based on |builder|.

@@ -210,7 +210,7 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginImpl(
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
-TestPasswordStore::FillMatchingLogins(const FormDigest& form) {
+TestPasswordStore::FillMatchingLogins(const PasswordFormDigest& form) {
   ++fill_matching_logins_calls_;
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {

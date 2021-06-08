@@ -139,7 +139,7 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 // components. In case this fails (e.g. for non-standard origins like Android
 // credentials), the original origin is kept.
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
-    password_manager::PasswordStore::FormDigest digest);
+    password_manager::PasswordFormDigest digest);
 
 }  // namespace password_manager_util
 

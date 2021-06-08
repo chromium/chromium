@@ -221,7 +221,7 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
 }
 
 void MultiStorePasswordSaveManager::Blocklist(
-    const PasswordStore::FormDigest& form_digest) {
+    const PasswordFormDigest& form_digest) {
   DCHECK(!client_->IsIncognito());
   if (IsOptedInForAccountStorage() && AccountStoreIsDefault()) {
     account_store_form_saver_->Blocklist(form_digest);
@@ -233,7 +233,7 @@ void MultiStorePasswordSaveManager::Blocklist(
 }
 
 void MultiStorePasswordSaveManager::Unblocklist(
-    const PasswordStore::FormDigest& form_digest) {
+    const PasswordFormDigest& form_digest) {
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
   form_saver_->Unblocklist(form_digest);

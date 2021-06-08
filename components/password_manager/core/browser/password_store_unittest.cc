@@ -300,22 +300,22 @@ TEST_F(PasswordStoreTest, IgnoreOldWwwGoogleLogins) {
   // Theoretically these should never actually exist since there are no longer
   // any login forms on www.google.com to save, but we technically allow them.
   // We should not get back the older saved password though.
-  const PasswordStore::FormDigest www_google = {
-      PasswordForm::Scheme::kHtml, "https://www.google.com", GURL()};
+  const PasswordFormDigest www_google = {PasswordForm::Scheme::kHtml,
+                                         "https://www.google.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> www_google_expected;
   www_google_expected.push_back(std::make_unique<PasswordForm>(*all_forms[2]));
 
   // We should still get the accounts.google.com login even though it's older
   // than our cutoff - this is the new location of all Google login forms.
-  const PasswordStore::FormDigest accounts_google = {
+  const PasswordFormDigest accounts_google = {
       PasswordForm::Scheme::kHtml, "https://accounts.google.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> accounts_google_expected;
   accounts_google_expected.push_back(
       std::make_unique<PasswordForm>(*all_forms[3]));
 
   // Same thing for a generic saved login.
-  const PasswordStore::FormDigest bar_example = {
-      PasswordForm::Scheme::kHtml, "http://bar.example.com", GURL()};
+  const PasswordFormDigest bar_example = {PasswordForm::Scheme::kHtml,
+                                          "http://bar.example.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> bar_example_expected;
   bar_example_expected.push_back(std::make_unique<PasswordForm>(*all_forms[4]));
 
@@ -671,8 +671,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
     store->AddLogin(*all_credentials.back());
   }
 
-  PasswordStore::FormDigest observed_form = {
-      PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
 
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
   expected_results.push_back(
@@ -771,8 +771,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
     store->AddLogin(*all_credentials.back());
   }
 
-  PasswordStore::FormDigest observed_form = {
-      PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
 
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
   expected_results.push_back(
@@ -962,7 +962,7 @@ TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
 
     auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
     mock_helper->ExpectCallToGetAffiliatedWebRealms(
-        PasswordStore::FormDigest(*expected_credentials_after_update[0]),
+        PasswordFormDigest(*expected_credentials_after_update[0]),
         affiliated_web_realms);
     store->SetAffiliatedMatchHelper(std::move(mock_helper));
 
@@ -1222,7 +1222,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   // Only the related non-PSL match should be deleted.
   EXPECT_CALL(mock_observer, OnLoginsChanged(testing::SizeIs(1u)));
   base::RunLoop run_loop;
-  PasswordStore::FormDigest observed_form_digest = {
+  PasswordFormDigest observed_form_digest = {
       PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};
 
   store->Unblocklist(observed_form_digest, run_loop.QuitClosure());
@@ -1635,8 +1635,8 @@ TEST_F(PasswordStoreTest, GetMatchingInsecureWithAffiliations) {
   for (const auto& credentials : {credential1, credential2, credential3})
     store->AddInsecureCredential(credentials);
 
-  PasswordStore::FormDigest observed_form = {
-      PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebRealm1)};
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebRealm1)};
   std::vector<std::string> affiliated_android_realms = {kTestAndroidRealm1};
   auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
   mock_helper->ExpectCallToGetAffiliatedAndroidRealms(

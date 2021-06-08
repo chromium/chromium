@@ -61,8 +61,8 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
     leak_delegate_.StartLeakCheck(*form);
 
   std::string signon_realm = origin.GetURL().spec();
-  PasswordStore::FormDigest observed_digest(PasswordForm::Scheme::kHtml,
-                                            signon_realm, origin.GetURL());
+  PasswordFormDigest observed_digest(PasswordForm::Scheme::kHtml, signon_realm,
+                                     origin.GetURL());
 
   // Create a custom form fetcher without HTTP->HTTPS migration as the API is
   // only available on HTTPS origins.
@@ -169,10 +169,9 @@ bool CredentialManagerImpl::IsZeroClickAllowed() const {
   return *auto_signin_enabled_ && !client_->IsIncognito();
 }
 
-PasswordStore::FormDigest CredentialManagerImpl::GetSynthesizedFormForOrigin()
-    const {
-  PasswordStore::FormDigest digest = {PasswordForm::Scheme::kHtml,
-                                      std::string(), GetOrigin().GetURL()};
+PasswordFormDigest CredentialManagerImpl::GetSynthesizedFormForOrigin() const {
+  PasswordFormDigest digest = {PasswordForm::Scheme::kHtml, std::string(),
+                               GetOrigin().GetURL()};
   digest.signon_realm = digest.url.spec();
   return digest;
 }

@@ -18,8 +18,8 @@ class StubFormSaver : public FormSaver {
   ~StubFormSaver() override = default;
 
   // FormSaver:
-  PasswordForm Blocklist(PasswordStore::FormDigest digest) override;
-  void Unblocklist(const PasswordStore::FormDigest& digest) override;
+  PasswordForm Blocklist(PasswordFormDigest digest) override;
+  void Unblocklist(const PasswordFormDigest& digest) override;
   void Save(PasswordForm pending,
             const std::vector<const PasswordForm*>& matches,
             const std::u16string& old_password) override {}

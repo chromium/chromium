@@ -860,7 +860,7 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsToggledUpdatesCache) {
 
 TEST_F(PasswordAccessoryControllerTest, SavePasswordsEnabledUpdatesStore) {
   CreateSheetController();
-  password_manager::PasswordStore::FormDigest form_digest(
+  password_manager::PasswordFormDigest form_digest(
       PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
   EXPECT_CALL(*mock_password_store_, Unblocklist(form_digest, _));
   controller()->OnToggleChanged(

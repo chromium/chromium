@@ -132,7 +132,7 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
 };
 
 void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
-  PasswordStore::FormDigest form_digest(CreateTestForm());
+  PasswordFormDigest form_digest(CreateTestForm());
   form_digest.url = form_digest.url.GetOrigin();
   EXPECT_CALL(store(), GetLogins(form_digest, _));
   EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
@@ -156,7 +156,7 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
 }
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
-  PasswordStore::FormDigest form_digest(CreateTestForm());
+  PasswordFormDigest form_digest(CreateTestForm());
   form_digest.url = form_digest.url.GetOrigin();
   EXPECT_CALL(store(), GetLogins(form_digest, _));
   EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))

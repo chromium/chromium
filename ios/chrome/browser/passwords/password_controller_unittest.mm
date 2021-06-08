@@ -1323,16 +1323,15 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   bool get_logins_called = false;
   bool* p_get_logins_called = &get_logins_called;
 
-  password_manager::PasswordStore::FormDigest expected_form_digest(
+  password_manager::PasswordFormDigest expected_form_digest(
       password_manager::PasswordForm::Scheme::kHtml, "https://chromium.test/",
       GURL("https://chromium.test/"));
   // TODO(crbug.com/949519): replace WillRepeatedly with WillOnce when the old
   // parser is gone.
   EXPECT_CALL(*store_, GetLogins(expected_form_digest, _))
       .WillRepeatedly(testing::Invoke(
-          [&get_logins_called](
-              const password_manager::PasswordStore::FormDigest&,
-              password_manager::PasswordStoreConsumer*) {
+          [&get_logins_called](const password_manager::PasswordFormDigest&,
+                               password_manager::PasswordStoreConsumer*) {
             get_logins_called = true;
           }));
 

@@ -1517,8 +1517,7 @@ TEST_P(CredentialManagerImplTest,
       std::make_unique<MockAffiliatedMatchHelper>());
 
   std::vector<std::string> affiliated_realms;
-  PasswordStore::FormDigest digest =
-      cm_service_impl_->GetSynthesizedFormForOrigin();
+  PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
   // First expect affiliations for the HTTPS domain.
   static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
       ->ExpectCallToGetAffiliatedAndroidRealms(digest, affiliated_realms);
@@ -1625,7 +1624,7 @@ TEST_P(CredentialManagerImplTest, MediationRequiredPreventsAutoSignIn) {
 }
 
 TEST_P(CredentialManagerImplTest, GetSynthesizedFormForOrigin) {
-  PasswordStore::FormDigest synthesized =
+  PasswordFormDigest synthesized =
       cm_service_impl_->GetSynthesizedFormForOrigin();
   EXPECT_EQ(kTestWebOrigin, synthesized.url.spec());
   EXPECT_EQ(kTestWebOrigin, synthesized.signon_realm);

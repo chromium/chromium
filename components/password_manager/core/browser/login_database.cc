@@ -1518,7 +1518,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
 }
 
 bool LoginDatabase::GetLogins(
-    const PasswordStore::FormDigest& form,
+    const PasswordFormDigest& form,
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetLogins");
   DCHECK(forms);
@@ -2024,7 +2024,7 @@ std::unique_ptr<sync_pb::ModelTypeState> LoginDatabase::GetModelTypeState() {
 
 FormRetrievalResult LoginDatabase::StatementToForms(
     sql::Statement* statement,
-    const PasswordStore::FormDigest* matched_form,
+    const PasswordFormDigest* matched_form,
     PrimaryKeyToFormMap* key_to_form_map) {
   std::vector<PasswordForm> forms_to_be_deleted;
 

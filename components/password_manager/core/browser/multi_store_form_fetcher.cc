@@ -18,7 +18,7 @@ using Logger = autofill::SavePasswordProgressLogger;
 namespace password_manager {
 
 MultiStoreFormFetcher::MultiStoreFormFetcher(
-    PasswordStore::FormDigest form_digest,
+    PasswordFormDigest form_digest,
     const PasswordManagerClient* client,
     bool should_migrate_http_passwords)
     : FormFetcherImpl(form_digest, client, should_migrate_http_passwords) {}

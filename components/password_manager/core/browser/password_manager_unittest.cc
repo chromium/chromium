@@ -862,7 +862,7 @@ TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {
   EXPECT_CALL(driver_, FillPasswordForm(_)).Times(2);
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
-  EXPECT_CALL(*store_, GetLogins(PasswordStore::FormDigest(form), _))
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(form), _))
       .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), existing_different)));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
@@ -1712,16 +1712,14 @@ TEST_P(PasswordManagerTest, FillPasswordOnManyFrames_SameId) {
   second_form.form_data.unique_renderer_id = FormRendererId(7654);
 
   // Observe the form in the first frame.
-  EXPECT_CALL(*store_,
-              GetLogins(PasswordStore::FormDigest(first_form.form_data), _))
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(first_form.form_data), _))
       .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), first_form)));
   EXPECT_CALL(driver_, FillPasswordForm(_));
   manager()->OnPasswordFormsParsed(&driver_, {first_form.form_data});
 
   // Observe the form in the second frame.
   MockPasswordManagerDriver driver_b;
-  EXPECT_CALL(*store_,
-              GetLogins(PasswordStore::FormDigest(second_form.form_data), _))
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(second_form.form_data), _))
       .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), second_form)));
   EXPECT_CALL(driver_b, FillPasswordForm(_));
   manager()->OnPasswordFormsParsed(&driver_b, {second_form.form_data});
@@ -2177,7 +2175,7 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
 
-  EXPECT_CALL(*store_, GetLogins(PasswordStore::FormDigest(form), _));
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(form), _));
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
 
   manager()->SetGenerationElementAndTypeForForm(

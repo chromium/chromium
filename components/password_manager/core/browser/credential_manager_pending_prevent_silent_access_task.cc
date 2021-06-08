@@ -17,7 +17,7 @@ CredentialManagerPendingPreventSilentAccessTask::
     ~CredentialManagerPendingPreventSilentAccessTask() = default;
 
 void CredentialManagerPendingPreventSilentAccessTask::AddOrigin(
-    const PasswordStore::FormDigest& form_digest) {
+    const PasswordFormDigest& form_digest) {
   delegate_->GetProfilePasswordStore()->GetLogins(form_digest, this);
   pending_requests_++;
   if (PasswordStore* account_store = delegate_->GetAccountPasswordStore()) {

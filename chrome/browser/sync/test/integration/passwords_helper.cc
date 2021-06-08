@@ -211,7 +211,7 @@ void UpdateLoginWithPrimaryKey(PasswordStore* store,
 
 std::vector<std::unique_ptr<PasswordForm>> GetLogins(PasswordStore* store) {
   EXPECT_TRUE(store);
-  password_manager::PasswordStore::FormDigest matcher_form = {
+  password_manager::PasswordFormDigest matcher_form = {
       PasswordForm::Scheme::kHtml, kFakeSignonRealm, GURL()};
   PasswordStoreConsumerHelper consumer;
   store->GetLogins(matcher_form, &consumer);

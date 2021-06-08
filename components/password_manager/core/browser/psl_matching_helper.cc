@@ -59,7 +59,7 @@ bool IsFederatedPSLMatch(const std::string& form_signon_realm,
 }
 
 MatchResult GetMatchResult(const PasswordForm& form,
-                           const PasswordStore::FormDigest& form_digest) {
+                           const PasswordFormDigest& form_digest) {
   if (form.signon_realm == form_digest.signon_realm)
     return MatchResult::EXACT_MATCH;
 

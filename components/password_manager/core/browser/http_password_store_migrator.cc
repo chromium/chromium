@@ -48,8 +48,8 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpScheme);
   GURL http_origin = https_origin.GetURL().ReplaceComponents(rep);
-  PasswordStore::FormDigest form(PasswordForm::Scheme::kHtml,
-                                 http_origin.GetOrigin().spec(), http_origin);
+  PasswordFormDigest form(PasswordForm::Scheme::kHtml,
+                          http_origin.GetOrigin().spec(), http_origin);
   http_origin_domain_ = url::Origin::Create(http_origin);
   store_->GetLogins(form, this);
 

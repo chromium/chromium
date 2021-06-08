@@ -42,7 +42,7 @@ void AffiliatedMatchHelper::Initialize() {
 }
 
 void AffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
-    const PasswordStore::FormDigest& observed_form,
+    const PasswordFormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
   if (IsValidWebCredential(observed_form)) {
     FacetURI facet_uri(
@@ -59,7 +59,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
 }
 
 void AffiliatedMatchHelper::GetAffiliatedWebRealms(
-    const PasswordStore::FormDigest& android_form,
+    const PasswordFormDigest& android_form,
     AffiliatedRealmsCallback result_callback) {
   if (IsValidAndroidCredential(android_form)) {
     affiliation_service_->GetAffiliationsAndBranding(
@@ -79,7 +79,7 @@ void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     PasswordFormsCallback result_callback) {
   std::vector<PasswordForm*> android_credentials;
   for (const auto& form : forms) {
-    if (IsValidAndroidCredential(PasswordStore::FormDigest(*form)))
+    if (IsValidAndroidCredential(PasswordFormDigest(*form)))
       android_credentials.push_back(form.get());
   }
   base::OnceClosure on_get_all_realms(
@@ -134,14 +134,14 @@ void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
 
 // static
 bool AffiliatedMatchHelper::IsValidAndroidCredential(
-    const PasswordStore::FormDigest& form) {
+    const PasswordFormDigest& form) {
   return form.scheme == PasswordForm::Scheme::kHtml &&
          IsValidAndroidFacetURI(form.signon_realm);
 }
 
 // static
 bool AffiliatedMatchHelper::IsValidWebCredential(
-    const PasswordStore::FormDigest& form) {
+    const PasswordFormDigest& form) {
   FacetURI facet_uri(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
   return form.scheme == PasswordForm::Scheme::kHtml &&
          facet_uri.IsValidWebFacetURI();

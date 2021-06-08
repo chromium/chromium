@@ -48,8 +48,8 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD1(Blocklist, PasswordForm(PasswordStore::FormDigest));
-  MOCK_METHOD1(Unblocklist, void(const PasswordStore::FormDigest&));
+  MOCK_METHOD1(Blocklist, PasswordForm(PasswordFormDigest));
+  MOCK_METHOD1(Unblocklist, void(const PasswordFormDigest&));
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
@@ -711,7 +711,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateVsPSLMatch) {
 
 TEST_F(MultiStorePasswordSaveManagerTest, UnblocklistInBothStores) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  const PasswordStore::FormDigest form_digest(saved_match_);
+  const PasswordFormDigest form_digest(saved_match_);
 
   EXPECT_CALL(*mock_profile_form_saver(), Unblocklist(form_digest));
   EXPECT_CALL(*mock_account_form_saver(), Unblocklist(form_digest));
@@ -722,7 +722,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, UnblocklistInBothStores) {
 TEST_F(MultiStorePasswordSaveManagerTest,
        BlocklistInAccountStoreWhenAccountStoreEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  const PasswordStore::FormDigest form_digest(saved_match_);
+  const PasswordFormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest)).Times(0);
@@ -733,7 +733,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 TEST_F(MultiStorePasswordSaveManagerTest,
        BlocklistInProfileStoreAlthoughAccountStoreEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  const PasswordStore::FormDigest form_digest(saved_match_);
+  const PasswordFormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
 
   EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
@@ -744,7 +744,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 TEST_F(MultiStorePasswordSaveManagerTest,
        BlocklistInProfileStoreWhenAccountStoreDisabled) {
   SetAccountStoreEnabled(/*is_enabled=*/false);
-  const PasswordStore::FormDigest form_digest(saved_match_);
+  const PasswordFormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));

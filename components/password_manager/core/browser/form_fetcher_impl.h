@@ -32,7 +32,7 @@ class FormFetcherImpl : public FormFetcher,
  public:
   // |form_digest| describes what credentials need to be retrieved and
   // |client| serves the PasswordStore, the logging information etc.
-  FormFetcherImpl(PasswordStore::FormDigest form_digest,
+  FormFetcherImpl(PasswordFormDigest form_digest,
                   const PasswordManagerClient* client,
                   bool should_migrate_http_passwords);
 
@@ -41,7 +41,7 @@ class FormFetcherImpl : public FormFetcher,
   // Returns a MultiStoreFormFetcher if  the password account storage feature is
   // enabled. Returns a FormFetcherImpl otherwise.
   static std::unique_ptr<FormFetcherImpl> CreateFormFetcherImpl(
-      PasswordStore::FormDigest form_digest,
+      PasswordFormDigest form_digest,
       const PasswordManagerClient* client,
       bool should_migrate_http_passwords);
 
@@ -79,7 +79,7 @@ class FormFetcherImpl : public FormFetcher,
   virtual void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
 
   // PasswordStore results will be fetched for this description.
-  const PasswordStore::FormDigest form_digest_;
+  const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
   const PasswordManagerClient* const client_;

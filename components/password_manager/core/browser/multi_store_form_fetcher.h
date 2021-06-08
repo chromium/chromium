@@ -16,7 +16,7 @@ namespace password_manager {
 // method accordingly.
 class MultiStoreFormFetcher : public FormFetcherImpl {
  public:
-  MultiStoreFormFetcher(PasswordStore::FormDigest form_digest,
+  MultiStoreFormFetcher(PasswordFormDigest form_digest,
                         const PasswordManagerClient* client,
                         bool should_migrate_http_passwords);
   ~MultiStoreFormFetcher() override;

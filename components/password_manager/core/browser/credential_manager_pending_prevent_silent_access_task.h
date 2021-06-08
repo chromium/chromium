@@ -34,7 +34,7 @@ class CredentialManagerPendingPreventSilentAccessTask
   ~CredentialManagerPendingPreventSilentAccessTask() override;
 
   // Adds an origin to require user mediation.
-  void AddOrigin(const PasswordStore::FormDigest& form_digest);
+  void AddOrigin(const PasswordFormDigest& form_digest);
 
   // PasswordStoreConsumer implementation.
   void OnGetPasswordStoreResults(

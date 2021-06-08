@@ -251,7 +251,7 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD1(Blocklist, PasswordForm(PasswordStore::FormDigest));
+  MOCK_METHOD1(Blocklist, PasswordForm(PasswordFormDigest));
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
@@ -476,11 +476,10 @@ class PasswordFormManagerTest : public testing::Test,
                              NiceMock<MockFormSaver>>())
                    : std::make_unique<PasswordSaveManagerImpl>(
                          std::make_unique<NiceMock<MockFormSaver>>());
-    fetcher_->set_scheme(
-        PasswordStore::FormDigest(base_auth_observed_form).scheme);
+    fetcher_->set_scheme(PasswordFormDigest(base_auth_observed_form).scheme);
     form_manager_ = std::make_unique<PasswordFormManager>(
-        &client_, PasswordStore::FormDigest(base_auth_observed_form),
-        fetcher_.get(), std::move(password_save_manager));
+        &client_, PasswordFormDigest(base_auth_observed_form), fetcher_.get(),
+        std::move(password_save_manager));
   }
 
   void SetNonFederatedAndNotifyFetchCompleted(
@@ -1286,8 +1285,8 @@ TEST_P(PasswordFormManagerTest, Blocklist) {
 
   PasswordForm actual_blocklisted_form =
       password_manager_util::MakeNormalizedBlocklistedForm(
-          PasswordStore::FormDigest(observed_form_));
-  EXPECT_CALL(form_saver, Blocklist(PasswordStore::FormDigest(observed_form_)))
+          PasswordFormDigest(observed_form_));
+  EXPECT_CALL(form_saver, Blocklist(PasswordFormDigest(observed_form_)))
       .WillOnce(Return(actual_blocklisted_form));
 
   form_manager_->Blocklist();
@@ -2014,7 +2013,7 @@ TEST_P(PasswordFormManagerTest, BlocklistHttpAuthCredentials) {
 
   // Simulate that the user clicks never.
   PasswordForm blocklisted_form;
-  EXPECT_CALL(form_saver, Blocklist(PasswordStore::FormDigest(http_auth_form)));
+  EXPECT_CALL(form_saver, Blocklist(PasswordFormDigest(http_auth_form)));
   form_manager_->OnNeverClicked();
 }
 
@@ -2460,8 +2459,8 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                void(const PasswordForm&,
                     const autofill::FormData*,
                     const PasswordForm&));
-  MOCK_METHOD1(Blocklist, void(const PasswordStore::FormDigest&));
-  MOCK_METHOD1(Unblocklist, void(const PasswordStore::FormDigest&));
+  MOCK_METHOD1(Blocklist, void(const PasswordFormDigest&));
+  MOCK_METHOD1(Unblocklist, void(const PasswordFormDigest&));
   MOCK_METHOD1(PresaveGeneratedPassword, void(PasswordForm));
   MOCK_METHOD2(GeneratedPasswordAccepted,
                void(PasswordForm, base::WeakPtr<PasswordManagerDriver>));
@@ -2505,15 +2504,14 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
   // |base_auth_observed_form|. Along the way a new |fetcher_| is created.
   void CreateFormManagerForNonWebForm(
       const PasswordForm& base_auth_observed_form) override {
-    fetcher_->set_scheme(
-        PasswordStore::FormDigest(base_auth_observed_form).scheme);
+    fetcher_->set_scheme(PasswordFormDigest(base_auth_observed_form).scheme);
     auto mock_password_save_manager =
         std::make_unique<NiceMock<MockPasswordSaveManager>>();
     mock_password_save_manager_ = mock_password_save_manager.get();
     EXPECT_CALL(*mock_password_save_manager_, Init(_, _, _, _));
     form_manager_ = std::make_unique<PasswordFormManager>(
-        &client_, PasswordStore::FormDigest(base_auth_observed_form),
-        fetcher_.get(), std::move(mock_password_save_manager));
+        &client_, PasswordFormDigest(base_auth_observed_form), fetcher_.get(),
+        std::move(mock_password_save_manager));
   }
 
  private:
@@ -2651,9 +2649,9 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, Blocklist) {
   fetcher_->NotifyFetchCompleted();
   PasswordForm actual_blocklisted_form =
       password_manager_util::MakeNormalizedBlocklistedForm(
-          PasswordStore::FormDigest(observed_form_));
+          PasswordFormDigest(observed_form_));
   EXPECT_CALL(*mock_password_save_manager(),
-              Blocklist(PasswordStore::FormDigest(observed_form_)));
+              Blocklist(PasswordFormDigest(observed_form_)));
   form_manager_->Blocklist();
   EXPECT_TRUE(form_manager_->IsBlocklisted());
 }

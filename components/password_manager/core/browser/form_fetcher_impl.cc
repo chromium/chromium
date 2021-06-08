@@ -55,7 +55,7 @@ std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
 
 // static
 std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
-    PasswordStore::FormDigest form_digest,
+    PasswordFormDigest form_digest,
     const PasswordManagerClient* client,
     bool should_migrate_http_passwords) {
   return base::FeatureList::IsEnabled(
@@ -67,7 +67,7 @@ std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
                                                  should_migrate_http_passwords);
 }
 
-FormFetcherImpl::FormFetcherImpl(PasswordStore::FormDigest form_digest,
+FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
                                  const PasswordManagerClient* client,
                                  bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),

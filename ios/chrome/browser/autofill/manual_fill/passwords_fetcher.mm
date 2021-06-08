@@ -100,7 +100,7 @@ class PasswordStoreObserverBridge
   if (_URL.is_empty()) {
     _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
   } else {
-    password_manager::PasswordStore::FormDigest digest = {
+    password_manager::PasswordFormDigest digest = {
         password_manager::PasswordForm::Scheme::kHtml, std::string(), _URL};
     digest.signon_realm = _URL.spec();
     _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());

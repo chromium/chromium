@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
@@ -59,7 +60,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Constructor for http authentication (aka basic authentication).
   PasswordFormManager(
       PasswordManagerClient* client,
-      PasswordStore::FormDigest observed_http_auth_digest,
+      PasswordFormDigest observed_http_auth_digest,
       FormFetcher* form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager);
 
@@ -255,8 +256,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void CreatePendingCredentials();
 
  private:
-  using FormOrDigest =
-      absl::variant<autofill::FormData, PasswordStore::FormDigest>;
+  using FormOrDigest = absl::variant<autofill::FormData, PasswordFormDigest>;
 
   // Delegating constructor.
   PasswordFormManager(
@@ -297,8 +297,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   }
 
   // Returns a pointer to the observed digest if possible or nullptr otherwise.
-  const PasswordStore::FormDigest* observed_digest() const {
-    return absl::get_if<PasswordStore::FormDigest>(&observed_form_or_digest_);
+  const PasswordFormDigest* observed_digest() const {
+    return absl::get_if<PasswordFormDigest>(&observed_form_or_digest_);
   }
 
   // Calculates FillingAssistance metric for |submitted_form|. The metric is
@@ -309,7 +309,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(bool update);
 
-  PasswordStore::FormDigest ConstructObservedFormDigest() const;
+  PasswordFormDigest ConstructObservedFormDigest() const;
 
   // Returns whether |possible_username| should be used for offering the
   // username to save on username first flow. The decision is based on server

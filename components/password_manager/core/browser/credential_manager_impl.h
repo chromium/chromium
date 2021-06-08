@@ -49,9 +49,9 @@ class CredentialManagerImpl
   // Exposed publicly for testing.
   bool IsZeroClickAllowed() const override;
 
-  // Returns FormDigest for the current URL.
+  // Returns PasswordFormDigest for the current URL.
   // Exposed publicly for testing.
-  PasswordStore::FormDigest GetSynthesizedFormForOrigin() const;
+  PasswordFormDigest GetSynthesizedFormForOrigin() const;
 
 #if defined(UNIT_TEST)
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {

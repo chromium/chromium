@@ -168,7 +168,7 @@ class MultiStoreFormFetcherTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
-  PasswordStore::FormDigest form_digest_;
+  PasswordFormDigest form_digest_;
   std::unique_ptr<MultiStoreFormFetcher> form_fetcher_;
   MockConsumer consumer_;
   scoped_refptr<MockPasswordStore> profile_mock_store_;

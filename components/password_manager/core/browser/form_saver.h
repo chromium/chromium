@@ -28,11 +28,11 @@ class FormSaver {
 
   // Blocklist the origin described by |digest|. Returns the PasswordForm pushed
   // to the store.
-  virtual PasswordForm Blocklist(PasswordStore::FormDigest digest) = 0;
+  virtual PasswordForm Blocklist(PasswordFormDigest digest) = 0;
 
   // Unblocklist the origin described by |digest| by deleting all corresponding
   // blocklisted entries.
-  virtual void Unblocklist(const PasswordStore::FormDigest& digest) = 0;
+  virtual void Unblocklist(const PasswordFormDigest& digest) = 0;
 
   // Saves the |pending| form.
   // |matches| are relevant credentials for the site. After saving |pending|,
