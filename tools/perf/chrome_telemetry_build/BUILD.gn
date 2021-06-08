@@ -95,7 +95,7 @@ group("telemetry_chrome_test") {
     ]
   }
 
-  if (is_win && (symbol_level == 1 || symbol_level == 2)) {
+  if (is_win) {
     data_deps += [
       "//build/win:copy_cdb_to_output",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
