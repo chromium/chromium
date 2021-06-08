@@ -30,6 +30,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/root_window_controller.h"
+#include "ash/services/recording/recording_service_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
@@ -41,6 +42,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -1800,27 +1802,31 @@ TEST_F(CaptureModeTest, VideoNotificationThumbnail) {
                                          CaptureModeType::kVideo);
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeTestApi().FlushRecordingServiceForTesting();
 
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
 
-  // Use a random bitmap as the fake thumbnail.
-  SkBitmap thumbnail;
-  thumbnail.allocN32Pixels(400, 300);
-  EXPECT_FALSE(thumbnail.drawsNothing());
-  test_delegate->SetVideoThumbnail(
-      gfx::ImageSkia::CreateFrom1xBitmap(thumbnail));
+  // Request and wait for a video frame so that the recording service can use it
+  // to create a video thumbnail.
+  test_delegate->RequestAndWaitForVideoFrame();
+  SkBitmap service_thumbnail =
+      gfx::Image(test_delegate->GetVideoThumbnail()).AsBitmap();
+  EXPECT_FALSE(service_thumbnail.drawsNothing());
 
   CaptureNotificationWaiter waiter;
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
   waiter.Wait();
 
+  // Verify that the service's thumbnail is the same image shown in the
+  // notification shown when recording ends.
   const message_center::Notification* notification = GetPreviewNotification();
   EXPECT_TRUE(notification);
   EXPECT_FALSE(notification->image().IsEmpty());
-  const SkBitmap actual_thumbnail = notification->image().AsBitmap();
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(actual_thumbnail, thumbnail));
+  const SkBitmap notification_thumbnail = notification->image().AsBitmap();
+  EXPECT_TRUE(
+      gfx::test::AreBitmapsEqual(notification_thumbnail, service_thumbnail));
 }
 
 TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
@@ -2085,6 +2091,48 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
   test_api.FlushRecordingServiceForTesting();
   EXPECT_EQ(gfx::Size(800, 600), test_delegate->GetCurrentFrameSinkSize());
   EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
+}
+
+// Tests that the video frames delivered to the service for recorded windows are
+// valid (i.e. they have the correct size, and suffer from no letterboxing, even
+// when the window gets resized).
+// TODO(https://crbug.com/1214023): This test is currently broken due to a
+// recent change in the Viz capturer. Re-enable the test once fixed.
+TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
+  auto window = CreateTestWindow(gfx::Rect(100, 50, 200, 200));
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+
+  auto verify_video_frame = [](const media::VideoFrame& frame,
+                               const gfx::Rect& content_rect) {
+    // TODO(afakhry): Add more checks here.
+    EXPECT_EQ(gfx::Point(), content_rect.origin());
+  };
+
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ASSERT_TRUE(test_delegate->recording_service());
+  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+      base::BindOnce(verify_video_frame));
+
+  // Even when the window is resized and the throttled size reaches the service,
+  // new video frames should still be valid.
+  window->SetBounds(gfx::Rect(120, 60, 600, 500));
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  recording_watcher->SendThrottledWindowSizeChangedNowForTesting();
+  test_api.FlushRecordingServiceForTesting();
+  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+      base::BindOnce(verify_video_frame));
+
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
 // Tests the behavior of screen recording with the presence of HDCP secure

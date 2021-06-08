@@ -20,3 +20,19 @@ source_set("recording") {
     "//services/audio/public/cpp",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "recording_service_test_api.cc",
+    "recording_service_test_api.h",
+  ]
+
+  deps = [
+    "//ash/services/recording",
+    "//ash/services/recording/public/mojom",
+    "//base",
+    "//media",
+  ]
+}

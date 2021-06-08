@@ -88,6 +88,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Called when a capture mode session starts or stops.
   virtual void OnSessionStateChanged(bool started) = 0;
+
+  // Called after the controller resets its |mojo::Remote| instance of the
+  // service.
+  virtual void OnServiceRemoteReset() = 0;
 };
 
 }  // namespace ash

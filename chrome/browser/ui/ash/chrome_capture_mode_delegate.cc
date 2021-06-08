@@ -173,3 +173,5 @@ void ChromeCaptureModeDelegate::BindAudioStreamFactory(
 void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
   is_session_active_ = started;
 }
+
+void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}

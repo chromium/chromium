@@ -51,6 +51,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;
   void OnSessionStateChanged(bool started) override;
+  void OnServiceRemoteReset() override;
 
  private:
   // Used to temporarily disable capture mode in certain cases for which neither
