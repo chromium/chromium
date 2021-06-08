@@ -274,6 +274,8 @@ void FullscreenController::WindowFullscreenStateChanged() {
     toggled_into_fullscreen_ = false;
     extension_caused_fullscreen_ = GURL();
     NotifyTabExclusiveAccessLost();
+  } else {
+    toggled_into_fullscreen_ = true;
   }
 }
 
