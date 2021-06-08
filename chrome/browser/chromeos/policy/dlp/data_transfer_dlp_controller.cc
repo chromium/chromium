@@ -260,7 +260,8 @@ bool DataTransferDlpController::IsDragDropAllowed(
     NotifyBlockedPaste(data_src, data_dst);
   }
 
-  const bool is_drop_allowed = level == DlpRulesManager::Level::kAllow;
+  const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
+                               (level == DlpRulesManager::Level::kReport);
   DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
   return is_drop_allowed;
 }
