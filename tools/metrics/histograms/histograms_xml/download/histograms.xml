@@ -989,7 +989,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Shelf.WebUI.LoadCompletedTime" units="ms"
-    expires_after="M93">
+    expires_after="M97">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -1002,7 +1002,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Shelf.WebUI.LoadDocumentTime" units="ms"
-    expires_after="M93">
+    expires_after="M97">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -1014,7 +1014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Shelf.{Framework}.FirstDownloadPaintTime" units="ms"
-    expires_after="M93">
+    expires_after="M97">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -1031,7 +1031,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Shelf.{Framework}.NotFirstDownloadPaintTime"
-    units="ms" expires_after="M93">
+    units="ms" expires_after="M97">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -1048,7 +1048,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Shelf.{Framework}.ShowContextMenuTime" units="ms"
-    expires_after="M93">
+    expires_after="M97">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
