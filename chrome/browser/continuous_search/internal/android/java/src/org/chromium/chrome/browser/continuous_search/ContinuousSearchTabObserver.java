@@ -60,6 +60,13 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
 
     @Override
     public void onDestroyed(Tab tab) {
+        // If the tab is destroyed the {@link UserDataHost} will also be destroyed. We need to stop
+        // {@link #onResult()} from running by resetting the producer and cancelling the request.
+        resetProducer();
+
+        // The tab's {@link UserDataHost} is destroyed after running observers so this is safe.
+        ContinuousNavigationUserDataImpl.getOrCreateForTab(tab).invalidateData();
+
         tab.removeObserver(this);
     }
 
@@ -68,6 +75,9 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     @Override
     public void onResult(ContinuousNavigationMetadata metadata) {
         assert metadata != null;
+
+        if (mProducer == null) return;
+
         reportStatus(mProducer.getSuccessStatus(), mProducer.getClass());
         mProducer = null;
 

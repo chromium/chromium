@@ -54,6 +54,7 @@ public class ContinuousSearchTabObserverTest {
     @Mock
     private SearchResultExtractorProducer.Natives mSearchResultExtractorProducerJniMock;
 
+    private boolean mNeedsTeardown;
     private GURL mSrpUrl;
     private GURL mNonSrpUrl;
     private ContinuousSearchTabObserver mObserver;
@@ -88,12 +89,15 @@ public class ContinuousSearchTabObserverTest {
 
         mObserver = new ContinuousSearchTabObserver(mTabMock);
         verify(mTabMock, times(1)).addObserver(eq(mObserver));
+        mNeedsTeardown = true;
     }
 
     @After
     public void tearDown() {
-        mObserver.onDestroyed(mTabMock);
-        verify(mTabMock, times(1)).removeObserver(mObserver);
+        if (mNeedsTeardown) {
+            mObserver.onDestroyed(mTabMock);
+            verify(mTabMock, times(1)).removeObserver(mObserver);
+        }
     }
 
     /**
@@ -167,6 +171,33 @@ public class ContinuousSearchTabObserverTest {
 
         mObserver.onCloseContents(mTabMock);
         inOrder.verify(mUserDataMock).invalidateData();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    /**
+     * Verifies that results are requested and handled when a SRP URL is loaded.
+     */
+    @Test
+    public void testLoadSrpUrlThenCloseTab() {
+        InOrder inOrder = inOrder(mUserDataMock, mProducerMock, mTabMock);
+
+        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
+
+        mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
+        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
+        inOrder.verify(mProducerMock).fetchResults(eq(mSrpUrl), eq(TEST_QUERY));
+
+        // Close the tab.
+        mNeedsTeardown = false;
+        mObserver.onDestroyed(mTabMock);
+        ContinuousNavigationUserDataImpl.setInstanceForTesting(null);
+
+        // Metadata will not be returned as the destruction of the tab will cancel the request.
+        inOrder.verify(mProducerMock).cancel();
+        inOrder.verify(mUserDataMock).invalidateData();
+        inOrder.verify(mTabMock).removeObserver(mObserver);
+
         inOrder.verifyNoMoreInteractions();
     }
 
