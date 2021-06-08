@@ -43,8 +43,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
 #endif
 
 namespace printing {
@@ -288,53 +294,18 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
+class TestLocalPrinter : public FakeLocalPrinter {
  public:
-  FakeLocalPrinter() : policies_(crosapi::mojom::Policies()) {}
-  FakeLocalPrinter(const FakeLocalPrinter&) = delete;
-  FakeLocalPrinter& operator=(const FakeLocalPrinter&) = delete;
-  ~FakeLocalPrinter() override = default;
+  TestLocalPrinter() : policies_(crosapi::mojom::Policies()) {}
+  TestLocalPrinter(const TestLocalPrinter&) = delete;
+  TestLocalPrinter& operator=(const TestLocalPrinter&) = delete;
+  ~TestLocalPrinter() override = default;
 
   void set_policies(const crosapi::mojom::Policies& policies) {
     policies_ = policies;
   }
 
-  // The only functions called are GetPolicies() and ShowSystemPrintSettings().
   // crosapi::mojom::LocalPrinter:
-  void GetPrinters(GetPrintersCallback callback) override { FAIL(); }
-  void GetCapability(const std::string& printer_id,
-                     GetCapabilityCallback callback) override {
-    FAIL();
-  }
-  void GetEulaUrl(const std::string& printer_id,
-                  GetEulaUrlCallback callback) override {
-    FAIL();
-  }
-  void GetStatus(const std::string& printer_id,
-                 GetStatusCallback callback) override {
-    FAIL();
-  }
-  void ShowSystemPrintSettings(
-      ShowSystemPrintSettingsCallback callback) override {
-    // Remove FAIL() if this function is used in the unit tests.
-    FAIL();
-  }
-  void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
-                      CreatePrintJobCallback callback) override {
-    FAIL();
-  }
-  void GetPrintServersConfig(GetPrintServersConfigCallback callback) override {
-    FAIL();
-  }
-  void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
-                          ChoosePrintServersCallback callback) override {
-    FAIL();
-  }
-  void AddObserver(
-      mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
-      AddObserverCallback callback) override {
-    FAIL();
-  }
   void GetPolicies(GetPoliciesCallback callback) override {
     ASSERT_TRUE(policies_);
     std::move(callback).Run(policies_->Clone());
@@ -425,11 +396,14 @@ class PrintPreviewHandlerTest : public testing::Test {
 
     auto preview_handler = std::make_unique<TestPrintPreviewHandler>(
         std::move(printer_handler), initiator);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    preview_handler->local_printer_ = &local_printer_;
-#endif
-    preview_handler->set_web_ui(web_ui());
     handler_ = preview_handler.get();
+    handler_->set_web_ui(web_ui());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    handler_->local_printer_ =
+        std::make_unique<TestLocalPrinterAsh>(profile_.get(), nullptr);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    handler_->local_printer_ = &local_printer_;
+#endif
 
     auto preview_ui = std::make_unique<FakePrintPreviewUI>(
         web_ui(), std::move(preview_handler));
@@ -442,7 +416,7 @@ class PrintPreviewHandlerTest : public testing::Test {
         ->PrintPreviewDone();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   void DisableAshChrome() { handler_->local_printer_ = nullptr; }
 #endif
 
@@ -701,7 +675,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   TestPrinterHandler* printer_handler_;
   TestPrintPreviewHandler* handler_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  FakeLocalPrinter local_printer_;
+  TestLocalPrinter local_printer_;
 #endif
 };
 
@@ -745,7 +719,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
                                      absl::nullopt);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
   DisableAshChrome();
   Initialize();

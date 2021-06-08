@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_
+#define CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_
+
+#include <string>
+#include <vector>
+
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
+// FakeLocalPrinter is an implementation of the LocalPrinter interface where
+// all methods FAIL(). Methods can be overridden for testing.
+class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
+ public:
+  void GetPrinters(GetPrintersCallback callback) override;
+  void GetCapability(const std::string& printer_id,
+                     GetCapabilityCallback callback) override;
+  void GetEulaUrl(const std::string& printer_id,
+                  GetEulaUrlCallback callback) override;
+  void GetStatus(const std::string& printer_id,
+                 GetStatusCallback callback) override;
+  void ShowSystemPrintSettings(
+      ShowSystemPrintSettingsCallback callback) override;
+  void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
+                      CreatePrintJobCallback callback) override;
+  void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
+  void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
+                          ChoosePrintServersCallback callback) override;
+  void AddObserver(
+      mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
+      AddObserverCallback callback) override;
+  void GetPolicies(GetPoliciesCallback callback) override;
+  void IsSendUsernameFilenameEnabled(
+      IsSendUsernameFilenameEnabledCallback callback) override;
+};
+
+#endif  // CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_

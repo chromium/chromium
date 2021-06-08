@@ -6,109 +6,33 @@
 
 #include <vector>
 
+#include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/printing_stubs.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#endif
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
 const char kSelectedPrintServerId[] = "selected-print-server-id";
 const char kSelectedPrintServerName[] = "Print Server Name";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class TestPrintServersManager : public chromeos::PrintServersManager {
+class TestLocalPrinter : public FakeLocalPrinter {
  public:
-  TestPrintServersManager() = default;
-  TestPrintServersManager(const TestPrintServersManager&) = delete;
-  TestPrintServersManager& operator=(const TestPrintServersManager&) = delete;
-  ~TestPrintServersManager() override { EXPECT_FALSE(observer_); }
-
-  virtual void ChangePrintServersConfig(
-      const chromeos::PrintServersConfig& config) {
-    print_servers_config_ = config;
-    observer_->OnPrintServersChanged(config);
-  }
-
-  virtual void ChangeServerPrinters(
-      const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers) {
-    ASSERT_TRUE(observer_);
-    observer_->OnServerPrintersChanged(printers);
-  }
-
-  virtual std::vector<std::string> TakePrintServerIds() {
-    std::vector<std::string> print_server_ids = std::move(*print_server_ids_);
-    print_server_ids_.reset();
-    return print_server_ids;
-  }
-
-  // chromeos::PrintServersManager::
-  void AddObserver(Observer* observer) override {
-    EXPECT_FALSE(observer_);
-    EXPECT_TRUE(observer);
-    observer_ = observer;
-  }
-
-  void RemoveObserver(Observer* observer) override {
-    EXPECT_TRUE(observer_);
-    observer_ = nullptr;
-  }
-
-  void ChoosePrintServer(
-      const std::vector<std::string>& print_server_ids) override {
-    EXPECT_FALSE(print_server_ids_);
-    print_server_ids_ = print_server_ids;
-  }
-
-  chromeos::PrintServersConfig GetPrintServersConfig() const override {
-    ADD_FAILURE();
-    return print_servers_config_;
-  }
-
- private:
-  Observer* observer_ = nullptr;
-  absl::optional<std::vector<std::string>> print_server_ids_;
-  chromeos::PrintServersConfig print_servers_config_;
-};
-
-class TestCupsPrintersManager : public chromeos::StubCupsPrintersManager {
- public:
-  explicit TestCupsPrintersManager(
-      chromeos::PrintServersManager* print_servers_manager)
-      : print_servers_manager_(print_servers_manager) {}
-  TestCupsPrintersManager(const TestCupsPrintersManager&) = delete;
-  TestCupsPrintersManager& operator=(const TestCupsPrintersManager&) = delete;
-  ~TestCupsPrintersManager() override = default;
-
-  chromeos::PrintServersManager* GetPrintServersManager() const override {
-    return print_servers_manager_;
-  }
-
- private:
-  chromeos::PrintServersManager* print_servers_manager_;
-};
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
- public:
-  FakeLocalPrinter() = default;
-  FakeLocalPrinter(const FakeLocalPrinter&) = delete;
-  FakeLocalPrinter& operator=(const FakeLocalPrinter&) = delete;
-  ~FakeLocalPrinter() override { EXPECT_FALSE(print_server_ids_); }
+  TestLocalPrinter() = default;
+  TestLocalPrinter(const TestLocalPrinter&) = delete;
+  TestLocalPrinter& operator=(const TestLocalPrinter&) = delete;
+  ~TestLocalPrinter() override { EXPECT_FALSE(print_server_ids_); }
 
   std::vector<std::string> TakePrintServerIds() {
     std::vector<std::string> print_server_ids = std::move(*print_server_ids_);
@@ -116,33 +40,7 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
     return print_server_ids;
   }
 
-  // The only functions called are AddObserver and ChoosePrintServers.
   // crosapi::mojom::LocalPrinter:
-  void GetPrinters(GetPrintersCallback callback) override { FAIL(); }
-  void GetCapability(const std::string& printer_id,
-                     GetCapabilityCallback callback) override {
-    FAIL();
-  }
-  void GetEulaUrl(const std::string& printer_id,
-                  GetEulaUrlCallback callback) override {
-    FAIL();
-  }
-  void GetStatus(const std::string& printer_id,
-                 GetStatusCallback callback) override {
-    FAIL();
-  }
-  void ShowSystemPrintSettings(
-      ShowSystemPrintSettingsCallback callback) override {
-    FAIL();
-  }
-  void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
-                      CreatePrintJobCallback callback) override {
-    FAIL();
-  }
-  void GetPrintServersConfig(GetPrintServersConfigCallback callback) override {
-    // Remove FAIL() if this function is used in the unit tests.
-    FAIL();
-  }
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override {
     EXPECT_FALSE(print_server_ids_);
@@ -157,10 +55,10 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
         mojo::Remote<crosapi::mojom::PrintServerObserver>(std::move(remote));
     std::move(callback).Run();
   }
-  void GetPolicies(GetPoliciesCallback callback) override { FAIL(); }
-  void IsSendUsernameFilenameEnabled(
-      IsSendUsernameFilenameEnabledCallback callback) override {
-    FAIL();
+  void GetPrintServersConfig(GetPrintServersConfigCallback callback) override {
+    ASSERT_TRUE(config_);
+    std::move(callback).Run(std::move(config_));
+    config_ = nullptr;
   }
 
  private:
@@ -168,8 +66,8 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
 
   mojo::Remote<crosapi::mojom::PrintServerObserver> remote_;
   absl::optional<std::vector<std::string>> print_server_ids_;
+  crosapi::mojom::PrintServersConfigPtr config_;
 };
-#endif
 
 class FakePrintPreviewUI : public PrintPreviewUI {
  public:
@@ -195,28 +93,21 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   void SetUp() override {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::CupsPrintersManagerFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile_.get(),
-            base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-              print_servers_manager_ =
-                  std::make_unique<TestPrintServersManager>();
-              return std::make_unique<TestCupsPrintersManager>(
-                  print_servers_manager_.get());
-            }));
-#endif
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_.get()));
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(preview_web_contents_.get());
 
     auto preview_handler = std::make_unique<PrintPreviewHandlerChromeOS>();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    preview_handler->local_printer_ = &local_printer_;
-#endif
     handler_ = preview_handler.get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    handler_->local_printer_ = std::make_unique<TestLocalPrinter>();
+    local_printer_ =
+        static_cast<TestLocalPrinter*>(handler_->local_printer_.get());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    local_printer_ = std::make_unique<TestLocalPrinter>();
+    handler_->local_printer_ = local_printer_.get();
+#endif
     web_ui()->AddMessageHandler(std::move(preview_handler));
     handler_->AllowJavascriptForTesting();
 
@@ -225,9 +116,10 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     web_ui()->SetController(std::move(preview_ui));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void DisableAshChrome() { handler_->local_printer_ = nullptr; }
-#endif
+  void DisableAshChrome() {
+    local_printer_ = nullptr;
+    handler_->local_printer_ = nullptr;
+  }
 
   void AssertWebUIEventFired(const content::TestWebUI::CallData& data,
                              const std::string& event_id) {
@@ -238,48 +130,31 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void ChangePrintServersConfig(const chromeos::PrintServersConfig& config) {
-    print_servers_manager_->ChangePrintServersConfig(config);
-  }
-  std::vector<std::string> TakePrintServerIds() {
-    return print_servers_manager_->TakePrintServerIds();
-  }
-  void ChangeServerPrinters(
-      const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers) {
-    print_servers_manager_->ChangeServerPrinters(printers);
-  }
-  void ChangeServerPrinters() {
-    print_servers_manager_->ChangeServerPrinters(
-        std::vector<chromeos::PrinterDetector::DetectedPrinter>{});
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   void ChangePrintServersConfig(crosapi::mojom::PrintServersConfigPtr config) {
-    EXPECT_TRUE(local_printer_.remote_);
+    EXPECT_TRUE(local_printer_->remote_);
+    local_printer_->config_ = config.Clone();
     // Call the callback directly instead of through the mojo remote
     // so that it is synchronous.
     handler_->OnPrintServersChanged(std::move(config));
   }
   std::vector<std::string> TakePrintServerIds() {
-    return local_printer_.TakePrintServerIds();
+    return local_printer_->TakePrintServerIds();
   }
   void ChangeServerPrinters() { handler_->OnServerPrintersChanged(); }
-#endif
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<TestPrintServersManager> print_servers_manager_;
+  TestLocalPrinter* local_printer_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  FakeLocalPrinter local_printer_;
+  std::unique_ptr<TestLocalPrinter> local_printer_;
 #endif
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   PrintPreviewHandlerChromeOS* handler_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServersNoAsh) {
   DisableAshChrome();
 
@@ -294,7 +169,18 @@ TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServersNoAsh) {
                         "server-printers-loading");
   EXPECT_EQ(web_ui()->call_data().back()->arg2()->GetBool(), true);
 }
-#endif
+
+TEST_F(PrintPreviewHandlerChromeOSTest, GetPrintServersConfigNoAsh) {
+  DisableAshChrome();
+  base::Value args(base::Value::Type::LIST);
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getPrintServersConfig",
+                                  &base::Value::AsListValue(args));
+  EXPECT_EQ("cr.webUIResponse", web_ui()->call_data().back()->function_name());
+  EXPECT_EQ(base::Value("callback_id"), *web_ui()->call_data().back()->arg1());
+  EXPECT_EQ(base::Value(true), *web_ui()->call_data().back()->arg2());
+  EXPECT_EQ(base::Value(), *web_ui()->call_data().back()->arg3());
+}
 
 TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServers) {
   base::Value selected_args(base::Value::Type::LIST);
@@ -319,15 +205,6 @@ TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServers) {
 }
 
 TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<chromeos::PrintServer> servers;
-  servers.emplace_back(kSelectedPrintServerId, GURL("http://print-server.com"),
-                       kSelectedPrintServerName);
-
-  chromeos::PrintServersConfig config;
-  config.print_servers = servers;
-  config.fetching_mode = chromeos::ServerPrintersFetchingMode::kStandard;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   std::vector<crosapi::mojom::PrintServerPtr> servers;
   servers.push_back(crosapi::mojom::PrintServer::New(
       kSelectedPrintServerId, GURL("http://print-server.com"),
@@ -337,7 +214,6 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
       crosapi::mojom::PrintServersConfig::New();
   config->print_servers = std::move(servers);
   config->fetching_mode = chromeos::ServerPrintersFetchingMode::kStandard;
-#endif
   ChangePrintServersConfig(std::move(config));
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");
@@ -351,6 +227,21 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   EXPECT_EQ(*first_printer.FindStringKey("id"), kSelectedPrintServerId);
   EXPECT_EQ(*first_printer.FindStringKey("name"), kSelectedPrintServerName);
   EXPECT_EQ(is_single_server_fetching_mode, false);
+
+  base::Value args(base::Value::Type::LIST);
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getPrintServersConfig",
+                                  &base::Value::AsListValue(args));
+  const base::Value kExpectedConfig = *base::JSONReader::Read(R"({
+    "isSingleServerFetchingMode": false,
+    "printServers": [ {
+      "id": "selected-print-server-id",
+      "name": "Print Server Name" } ]
+  })");
+  EXPECT_EQ("cr.webUIResponse", web_ui()->call_data().back()->function_name());
+  EXPECT_EQ(base::Value("callback_id"), *web_ui()->call_data().back()->arg1());
+  EXPECT_EQ(base::Value(true), *web_ui()->call_data().back()->arg2());
+  EXPECT_EQ(kExpectedConfig, *web_ui()->call_data().back()->arg3());
 }
 
 TEST_F(PrintPreviewHandlerChromeOSTest, OnServerPrintersUpdated) {

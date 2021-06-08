@@ -26,7 +26,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 namespace crosapi {
 namespace mojom {
 class DriveIntegrationService;
@@ -317,7 +317,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Used to transmit mojo interface method calls to the associated receiver.
   mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<crosapi::mojom::LocalPrinter> local_printer_;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Used to transmit mojo interface method calls to ash chrome.
   // Null if the interface is unavailable.
   // Note that this is not propagated to LocalPrinterHandlerLacros.

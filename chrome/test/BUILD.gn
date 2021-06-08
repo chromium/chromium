@@ -4705,6 +4705,13 @@ test("unit_tests") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "chromeos/printing/fake_local_printer_chromeos.cc",
+      "chromeos/printing/fake_local_printer_chromeos.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "../browser/notifications/notification_platform_bridge_chromeos_unittest.cc",

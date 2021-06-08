@@ -78,19 +78,17 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
 #if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -260,7 +258,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
   return UserActionBuckets::kPrintToPrinter;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 base::Value PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
   base::Value policies(base::Value::Type::DICTIONARY);
 
@@ -356,23 +354,16 @@ base::Value GetPolicies(const PrefService& prefs) {
   if (!paper_size_policy.DictEmpty())
     policies.SetKey(kMediaSize, std::move(paper_size_policy));
 
-#if defined(OS_CHROMEOS)
-  if (prefs.HasPrefPath(prefs::kPrintingMaxSheetsAllowed)) {
-    base::Value sheets_policy(base::Value::Type::DICTIONARY);
-    sheets_policy.SetIntKey(kValue,
-                            prefs.GetInteger(prefs::kPrintingMaxSheetsAllowed));
-    policies.SetKey(kSheets, std::move(sheets_policy));
-  }
-#endif  // defined(OS_CHROMEOS)
-
   return policies;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
 PrintPreviewHandler::PrintPreviewHandler() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl* service =
       chromeos::LacrosChromeServiceImpl::Get();
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
@@ -853,7 +844,7 @@ void PrintPreviewHandler::HandleGetInitialSettings(
   base::OnceCallback<void(base::Value, const std::string&)> cb =
       base::BindOnce(&PrintPreviewHandler::SendInitialSettings,
                      weak_factory_.GetWeakPtr(), callback_id);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   if (!local_printer_) {
     LOG(ERROR) << "Local printer not available";
     handler->GetDefaultPrinter(base::BindOnce(std::move(cb), base::Value()));
@@ -1233,11 +1224,7 @@ void PrintPreviewHandler::SendManipulateSettingsForTest(
 }
 
 void PrintPreviewHandler::HandleManagePrinters(const base::ListValue* args) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      Profile::FromWebUI(web_ui()),
-      chromeos::settings::mojom::kPrintingDetailsSubpagePath);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   if (!local_printer_) {
     LOG(ERROR) << "Local printer not available";
     return;
