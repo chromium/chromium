@@ -583,6 +583,11 @@ CodecType MediaCodecBridgeImpl::GetCodecType() const {
   return codec_type_;
 }
 
+size_t MediaCodecBridgeImpl::GetMaxInputSize() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_MediaCodecBridge_getMaxInputSize(env, j_bridge_);
+}
+
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,
                                            const uint8_t* data,
                                            size_t size) {

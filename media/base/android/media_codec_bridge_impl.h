@@ -148,6 +148,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   void SetVideoBitrate(int bps, int frame_rate) override;
   void RequestKeyFrameSoon() override;
   CodecType GetCodecType() const override;
+  size_t GetMaxInputSize() override;
 
  private:
   MediaCodecBridgeImpl(CodecType codec_type,

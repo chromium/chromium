@@ -221,13 +221,13 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersHaveTheCorrectSize) {
 
 TEST_F(CodecWrapperTest, OutputBufferReleaseCbIsCalledWhenRendering) {
   auto codec_buffer = DequeueCodecOutputBuffer();
-  EXPECT_CALL(output_buffer_release_cb_, Run(false)).Times(1);
+  EXPECT_CALL(output_buffer_release_cb_, Run(true)).Times(1);
   codec_buffer->ReleaseToSurface();
 }
 
 TEST_F(CodecWrapperTest, OutputBufferReleaseCbIsCalledWhenDestructing) {
   auto codec_buffer = DequeueCodecOutputBuffer();
-  EXPECT_CALL(output_buffer_release_cb_, Run(false)).Times(1);
+  EXPECT_CALL(output_buffer_release_cb_, Run(true)).Times(1);
 }
 
 TEST_F(CodecWrapperTest, OutputBufferReflectsDrainingOrDrainedStatus) {

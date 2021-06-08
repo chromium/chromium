@@ -112,6 +112,7 @@ class MediaFormatBuilder {
                 break;
             case MimeTypes.VIDEO_HEVC:
             case MimeTypes.VIDEO_VP9:
+            case MimeTypes.VIDEO_AV1:
                 maxPixels = maxWidth * maxHeight;
                 minCompressionRatio = 4;
                 break;

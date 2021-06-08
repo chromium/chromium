@@ -89,7 +89,7 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   // thread.
   //
   // OutputReleasedCB will be called with a bool indicating if CodecWrapper is
-  // currently draining or in the drained state.
+  // currently draining, is drained, or has run out of output buffers.
   //
   // If not null, then we will only release codec buffers without rendering
   // on |release_task_runner|, posting if needed.  This does not change where

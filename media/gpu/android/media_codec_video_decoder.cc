@@ -44,10 +44,10 @@ namespace {
 
 void OutputBufferReleased(bool using_async_api,
                           base::RepeatingClosure pump_cb,
-                          bool is_drained_or_draining) {
+                          bool has_work) {
   // The asynchronous API doesn't need pumping upon calls to ReleaseOutputBuffer
   // unless we're draining or drained.
-  if (using_async_api && !is_drained_or_draining)
+  if (using_async_api && !has_work)
     return;
   pump_cb.Run();
 }
@@ -194,7 +194,7 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
 // When re-initializing the codec changes the resolution to be more than
 // |kReallocateThreshold| times the old one, force a codec reallocation to
 // update the hints that we provide to MediaCodec.  crbug.com/989182 .
-constexpr static float kReallocateThreshold = 4;
+constexpr static float kReallocateThreshold = 3.9;
 
 // static
 PendingDecode PendingDecode::CreateEos() {
@@ -394,7 +394,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Do the rest of the initialization lazily on the first decode.
   BindToCurrentLoop(std::move(init_cb)).Run(OkStatus());
 
-  const int width = config.coded_size().width();
+  const int width = decoder_config_.coded_size().width();
   // On re-init, reallocate the codec if the size has changed too much.
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
@@ -704,6 +704,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     return;
   }
 
+  max_input_size_ = codec->GetMaxInputSize();
   codec_ = std::make_unique<CodecWrapper>(
       CodecSurfacePair(std::move(codec), std::move(surface_bundle)),
       base::BindRepeating(&OutputBufferReleased, using_async_api_,
@@ -864,6 +865,37 @@ bool MediaCodecVideoDecoder::QueueInput() {
     return false;
 
   PendingDecode& pending_decode = pending_decodes_.front();
+  if (!pending_decode.buffer->end_of_stream() &&
+      pending_decode.buffer->is_key_frame() &&
+      pending_decode.buffer->data_size() > max_input_size_) {
+    // If we we're already using the provided resolution, try to guess something
+    // larger based on the actual input size.
+    if (decoder_config_.coded_size().width() == last_width_) {
+      // See MediaFormatBuilder::addInputSizeInfoToFormat() for details.
+      const size_t compression_ratio = (decoder_config_.codec() == kCodecH264 ||
+                                        decoder_config_.codec() == kCodecVP8)
+                                           ? 2
+                                           : 4;
+      const size_t max_pixels =
+          (pending_decode.buffer->data_size() * compression_ratio * 2) / 3;
+      if (max_pixels > 8294400)  // 4K
+        decoder_config_.set_coded_size(gfx::Size(7680, 4320));
+      else if (max_pixels > 2088960)  // 1080p
+        decoder_config_.set_coded_size(gfx::Size(3840, 2160));
+      else
+        decoder_config_.set_coded_size(gfx::Size(1920, 1080));
+    }
+
+    // Flush and reallocate on the next call to QueueInput() if we changed size;
+    // otherwise just try queuing the buffer and hoping for the best.
+    if (decoder_config_.coded_size().width() != last_width_) {
+      deferred_flush_pending_ = true;
+      deferred_reallocation_pending_ = true;
+      last_width_ = decoder_config_.coded_size().width();
+      return true;
+    }
+  }
+
   auto status = codec_->QueueInputBuffer(*pending_decode.buffer);
   DVLOG((status == CodecWrapper::QueueStatus::kTryAgainLater ||
                  status == CodecWrapper::QueueStatus::kOk
@@ -963,6 +995,12 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
       static_cast<int>(
           SurfaceChooserHelper::FrameInformation::FRAME_INFORMATION_MAX) +
           1);  // PRESUBMIT_IGNORE_UMA_MAX
+
+  // If we're getting outputs larger than our configured size, we run the risk
+  // of exceeding MediaCodec's allowed input buffer size. Update the coded size
+  // as we go to ensure we can correctly reconfigure if needed later.
+  if (output_buffer->size().GetArea() > decoder_config_.coded_size().GetArea())
+    decoder_config_.set_coded_size(output_buffer->size());
 
   gfx::Rect visible_rect(output_buffer->size());
   std::unique_ptr<ScopedAsyncTrace> async_trace =

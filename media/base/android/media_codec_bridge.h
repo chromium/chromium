@@ -162,6 +162,9 @@ class MEDIA_EXPORT MediaCodecBridge {
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;
 
+  // Returns the max input size we configured the codec with.
+  virtual size_t GetMaxInputSize() = 0;
+
   DISALLOW_COPY_AND_ASSIGN(MediaCodecBridge);
 };
 

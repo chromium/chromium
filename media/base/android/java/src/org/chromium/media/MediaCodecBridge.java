@@ -58,6 +58,9 @@ class MediaCodecBridge {
     protected MediaCodec mMediaCodec;
     private @BitrateAdjuster.Type int mBitrateAdjuster;
 
+    // The maximum input size this codec was configured with.
+    private int mMaxInputSize;
+
     // To support both the synchronous and asynchronous version of MediaCodec
     // (since we need to work on <M devices), we implement async support as a
     // layer under synchronous API calls and provide a callback signal for when
@@ -670,7 +673,10 @@ class MediaCodecBridge {
     boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
         try {
             mMediaCodec.configure(format, surface, crypto, flags);
-            return true;
+            if (format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+                return true;
+            }
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot configure the video codec, wrong format or surface", e);
         } catch (IllegalStateException e) {
@@ -732,6 +738,11 @@ class MediaCodecBridge {
             default:
                 return AudioFormat.CHANNEL_OUT_DEFAULT;
         }
+    }
+
+    @CalledByNative
+    private int getMaxInputSize() {
+        return mMaxInputSize;
     }
 
     @CalledByNative
