@@ -92,6 +92,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
  protected:
   void DrawPattern(GraphicsContext&,
+                   const cc::PaintFlags&,
                    const FloatRect&,
                    const FloatSize&,
                    const FloatPoint&,

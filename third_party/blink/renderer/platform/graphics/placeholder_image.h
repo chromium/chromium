@@ -72,6 +72,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
   bool CurrentFrameKnownToBeOpaque() override;
 
   void DrawPattern(GraphicsContext&,
+                   const cc::PaintFlags&,
                    const FloatRect& src_rect,
                    const FloatSize& scale,
                    const FloatPoint& phase,

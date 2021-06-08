@@ -549,8 +549,8 @@ void DrawTiledBackground(GraphicsContext& context,
   // given repeat spacing. Note the phase is already scaled.
   context.DrawImageTiled(image, FloatRect(geometry.SnappedDestRect()),
                          tile_rect, scale, FloatPoint(dest_phase),
-                         FloatSize(geometry.SpaceSize()), op,
-                         respect_orientation);
+                         FloatSize(geometry.SpaceSize()), has_filter_property,
+                         op, respect_orientation);
 }
 
 // Returning false meaning that we cannot paint background color with

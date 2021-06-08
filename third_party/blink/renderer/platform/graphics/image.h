@@ -266,6 +266,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   Image(ImageObserver* = nullptr, bool is_multipart = false);
 
   virtual void DrawPattern(GraphicsContext&,
+                           const cc::PaintFlags&,
                            const FloatRect&,
                            const FloatSize&,
                            const FloatPoint& phase,

@@ -44,6 +44,7 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
 }
 
 void SVGImageForContainer::DrawPattern(GraphicsContext& context,
+                                       const cc::PaintFlags& flags,
                                        const FloatRect& src_rect,
                                        const FloatSize& scale,
                                        const FloatPoint& phase,

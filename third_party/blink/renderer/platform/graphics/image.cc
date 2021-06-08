@@ -219,6 +219,7 @@ SkTileMode ComputeTileMode(float left, float right, float min, float max) {
 }  // anonymous namespace
 
 void Image::DrawPattern(GraphicsContext& context,
+                        const cc::PaintFlags& base_flags,
                         const FloatRect& float_src_rect,
                         const FloatSize& scale_src_to_dest,
                         const FloatPoint& phase,
@@ -286,10 +287,10 @@ void Image::DrawPattern(GraphicsContext& context,
                 repeat_spacing.Height() / oriented_scale.Height()),
       tmx, tmy, subset_rect);
 
-  PaintFlags flags = context.FillFlags();
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
+  PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setBlendMode(composite_op);
   flags.setShader(std::move(tile_shader));

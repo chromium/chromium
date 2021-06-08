@@ -902,12 +902,22 @@ void GraphicsContext::DrawImageTiled(
     const FloatSize& scale_src_to_dest,
     const FloatPoint& phase,
     const FloatSize& repeat_spacing,
+    bool has_filter_property,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation) {
   if (!image)
     return;
-  image->DrawPattern(*this, src_rect, scale_src_to_dest, phase, op, dest_rect,
-                     repeat_spacing, respect_orientation);
+
+  PaintFlags image_flags = ImmutableState()->FillFlags();
+
+  // Do not classify the image if the element has any CSS filters.
+  if (!has_filter_property) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags,
+                                               src_rect, dest_rect);
+  }
+
+  image->DrawPattern(*this, image_flags, src_rect, scale_src_to_dest, phase, op,
+                     dest_rect, repeat_spacing, respect_orientation);
   paint_controller_.SetImagePainted();
 }
 

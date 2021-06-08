@@ -40,6 +40,7 @@ namespace blink {
 
 void GeneratedImage::DrawPattern(
     GraphicsContext& dest_context,
+    const cc::PaintFlags& base_flags,
     const FloatRect& src_rect,
     const FloatSize& scale,
     const FloatPoint& phase,
@@ -57,7 +58,7 @@ void GeneratedImage::DrawPattern(
   sk_sp<PaintShader> tile_shader =
       CreateShader(tile_rect, &pattern_matrix, src_rect, respect_orientation);
 
-  PaintFlags fill_flags = dest_context.FillFlags();
+  PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
   fill_flags.setBlendMode(composite_op);

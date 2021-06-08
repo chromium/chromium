@@ -356,6 +356,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
 
 void PlaceholderImage::DrawPattern(
     GraphicsContext& context,
+    const PaintFlags& base_flags,
     const FloatRect& src_rect,
     const FloatSize& scale,
     const FloatPoint& phase,
@@ -365,7 +366,7 @@ void PlaceholderImage::DrawPattern(
     RespectImageOrientationEnum respect_orientation) {
   DCHECK(context.Canvas());
 
-  PaintFlags flags = context.FillFlags();
+  PaintFlags flags(base_flags);
   flags.setBlendMode(mode);
 
   // Ignore the pattern specifications and just draw a single placeholder image

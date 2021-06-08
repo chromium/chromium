@@ -254,6 +254,7 @@ class PLATFORM_EXPORT GraphicsContext {
                       const FloatSize& scale_src_to_dest,
                       const FloatPoint& phase,
                       const FloatSize& repeat_spacing,
+                      bool has_filter_property = false,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation);
 
