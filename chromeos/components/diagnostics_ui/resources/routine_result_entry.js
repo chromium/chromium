@@ -21,14 +21,13 @@ import {BadgeType} from './text_badge.js';
  * @return {string}
  */
 export function getRoutineType(routineType) {
-  // TODO(michaelcheco): Replace unlocalized strings.
   switch (routineType) {
     case RoutineType.kBatteryCharge:
       return loadTimeData.getString('batteryChargeRoutineText');
     case RoutineType.kBatteryDischarge:
       return loadTimeData.getString('batteryDischargeRoutineText');
     case RoutineType.kCaptivePortal:
-      return 'Captive Portal';
+      return loadTimeData.getString('captivePortalRoutineText');
     case RoutineType.kCpuCache:
       return loadTimeData.getString('cpuCacheRoutineText');
     case RoutineType.kCpuStress:
@@ -38,27 +37,27 @@ export function getRoutineType(routineType) {
     case RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
     case RoutineType.kDnsLatency:
-      return 'DNS Latency';
+      return loadTimeData.getString('dnsLatencyRoutineText');
     case RoutineType.kDnsResolution:
-      return 'DNS Resolution';
+      return loadTimeData.getString('dnsResolutionRoutineText');
     case RoutineType.kDnsResolverPresent:
-      return 'DNS Resolver Present';
+      return loadTimeData.getString('dnsResolverPresentRoutineText');
     case RoutineType.kGatewayCanBePinged:
-      return 'Gateway can be Pinged';
+      return loadTimeData.getString('gatewayCanBePingedRoutineText');
     case RoutineType.kHasSecureWiFiConnection:
-      return 'Secure WiFi Connection';
+      return loadTimeData.getString('hasSecureWiFiConnectionRoutineText');
     case RoutineType.kHttpFirewall:
-      return 'HTTP Firewall';
+      return loadTimeData.getString('httpFirewallRoutineText');
     case RoutineType.kHttpsFirewall:
-      return 'HTTPS Firewall';
+      return loadTimeData.getString('httpsFirewallRoutineText');
     case RoutineType.kHttpsLatency:
-      return 'HTTPS Latency';
+      return loadTimeData.getString('httpsLatencyRoutineText');
     case RoutineType.kLanConnectivity:
-      return 'Lan Connectivity';
+      return loadTimeData.getString('lanConnectivityRoutineText');
     case RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
     case RoutineType.kSignalStrength:
-      return 'Signal Strength';
+      return loadTimeData.getString('signalStrengthRoutineText');
     default:
       // Values should always be found in the enum.
       assert(false);
