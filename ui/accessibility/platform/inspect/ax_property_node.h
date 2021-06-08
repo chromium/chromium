@@ -93,7 +93,6 @@ class AX_EXPORT AXPropertyNode final {
   // Returns a tree-like string representation of the node.
   std::string ToTreeString(const std::string& indent = "") const;
 
- private:
   using iterator = std::string::const_iterator;
 
   explicit AXPropertyNode(iterator key_begin,
@@ -105,11 +104,10 @@ class AX_EXPORT AXPropertyNode final {
                  iterator value_begin,
                  iterator value_end);
 
+ private:
   // Builds a property node struct for a string of NAME(ARG1, ..., ARGN) format,
   // where each ARG is a scalar value or a string of the same format.
   static iterator Parse(AXPropertyNode* node, iterator begin, iterator end);
-
-  friend class std::allocator<AXPropertyNode>;
 };
 
 }  // namespace ui
