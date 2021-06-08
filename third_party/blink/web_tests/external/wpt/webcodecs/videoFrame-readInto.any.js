@@ -17,11 +17,12 @@ function makeI420_4x2() {
       {data: vData, stride: 2},
   ];
   const init = {
+      format: 'I420',
       timestamp: 0,
       codedWidth: 4,
       codedHeight: 2,
   };
-  return new VideoFrame('I420', planes, init);
+  return new VideoFrame(planes, init);
 }
 
 function makeRGBA_2x2() {
@@ -33,12 +34,13 @@ function makeRGBA_2x2() {
       {data: rgbaData, stride: 8},
   ];
   const init = {
+      format: 'ABGR',
       timestamp: 0,
       codedWidth: 2,
       codedHeight: 2,
   };
   // TODO(sandersd): Should be RGBA but the IDL is reversed right now.
-  return new VideoFrame('ABGR', planes, init);
+  return new VideoFrame(planes, init);
 }
 
 function assert_buffer_equals(actual, expected) {

@@ -69,7 +69,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             ExceptionState&);
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static VideoFrame* Create(ScriptState*,
-                            const String& format,
                             const HeapVector<Member<PlaneInit>>&,
                             const VideoFramePlaneInit*,
                             ExceptionState&);

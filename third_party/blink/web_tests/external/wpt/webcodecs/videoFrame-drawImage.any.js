@@ -4,12 +4,13 @@
 function testDrawImageFromVideoFrame(
     width, height, expectedPixel, canvasOptions, imageBitmapOptions,
     imageSetting) {
-  let vfInit = {timestamp: 0, codedWidth: width, codedHeight: height};
+  let vfInit = {format: 'ABGR', timestamp: 0, codedWidth: width,
+                codedHeight: height};
   let u32_data = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
   u32_data.fill(0xFF966432); // 'rgb(50, 100, 150)';
   let argbPlaneData = new Uint8Array(u32_data.buffer);
   let argbPlane = {src: argbPlaneData, stride: width * 4};
-  let frame = new VideoFrame('ABGR', [argbPlane], vfInit);
+  let frame = new VideoFrame([argbPlane], vfInit);
   let canvas = new OffscreenCanvas(width, height);
   let ctx = canvas.getContext('2d', canvasOptions);
   ctx.drawImage(frame, 0, 0);

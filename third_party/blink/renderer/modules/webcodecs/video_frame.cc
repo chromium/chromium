@@ -440,14 +440,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 // TODO(crbug.com/1198324): Merge shared logic with VideoDecoderConfig.
 // static
 VideoFrame* VideoFrame::Create(ScriptState* script_state,
-                               const String& format,
                                const HeapVector<Member<PlaneInit>>& planes,
                                const VideoFramePlaneInit* init,
                                ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
   // Handle format; the string was validated by the V8 binding.
-  auto typed_fmt = V8VideoPixelFormat::Create(format);
+  auto typed_fmt = V8VideoPixelFormat::Create(init->format());
   auto media_fmt = ToMediaPixelFormat(typed_fmt->AsEnum());
 
   // There's no I420A pixel format, so treat I420 + 4 planes as I420A.
@@ -569,7 +568,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         DOMExceptionCode::kConstraintError,
         String::Format("Invalid number of planes for format %s; expected %zu, "
                        "received %u.",
-                       format.Ascii().c_str(),
+                       init->format().Ascii().c_str(),
                        media::VideoFrame::NumPlanes(media_fmt), planes.size()));
     return nullptr;
   }
