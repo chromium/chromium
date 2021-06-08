@@ -368,8 +368,6 @@ class IndexedDBBackingStoreTest : public testing::Test {
 
   void TearDown() override {
     DestroyFactoryAndBackingStore();
-    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-
     if (idb_context_ && !idb_context_->IsInMemoryContext()) {
       IndexedDBFactoryImpl* factory = idb_context_->GetIDBFactory();
 

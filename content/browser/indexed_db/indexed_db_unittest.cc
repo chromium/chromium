@@ -102,9 +102,7 @@ class IndexedDBTest : public testing::Test {
         kSessionOnlyOrigin, should_purge_on_shutdown));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
-  ~IndexedDBTest() override {
-    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-  }
+  ~IndexedDBTest() override = default;
 
   void RunPostedTasks() {
     base::RunLoop loop;
@@ -170,9 +168,6 @@ TEST_F(IndexedDBTest, ClearSessionOnlyDatabases) {
   session_only_path = GetFilePathForTesting(kSessionOnlyOrigin);
   ASSERT_TRUE(base::CreateDirectory(normal_path));
   ASSERT_TRUE(base::CreateDirectory(session_only_path));
-  base::RunLoop().RunUntilIdle();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-
   base::RunLoop().RunUntilIdle();
 
   context()->Shutdown();

@@ -177,14 +177,8 @@ class MockCacheStorageQuotaManagerProxy
     NOTREACHED();
   }
 
-  void SimulateQuotaManagerDestroyed() override {
-    registered_clients_.clear();
-  }
-
  private:
-  ~MockCacheStorageQuotaManagerProxy() override {
-    DCHECK(registered_clients_.empty());
-  }
+  ~MockCacheStorageQuotaManagerProxy() override = default;
 
   std::vector<mojo::Remote<storage::mojom::QuotaClient>> registered_clients_;
 };
@@ -397,9 +391,6 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   void DestroyStorageManager() {
-    if (quota_manager_proxy_)
-      quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-
     callback_cache_handle_ = CacheStorageCacheHandle();
     callback_bool_ = false;
     callback_cache_handle_response_ = nullptr;
@@ -1150,7 +1141,6 @@ TEST_F(CacheStorageManagerTest, DataPersists) {
   EXPECT_TRUE(Open(storage_key1_, "baz"));
   EXPECT_TRUE(Open(storage_key2_, "raz"));
   EXPECT_TRUE(Delete(storage_key1_, "bar"));
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
   EXPECT_EQ(2u, Keys(storage_key1_));
   std::vector<std::string> expected_keys;
@@ -1162,7 +1152,6 @@ TEST_F(CacheStorageManagerTest, DataPersists) {
 TEST_F(CacheStorageManagerMemoryOnlyTest, DataLostWhenMemoryOnly) {
   EXPECT_TRUE(Open(storage_key1_, "foo"));
   EXPECT_TRUE(Open(storage_key2_, "baz"));
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
   EXPECT_EQ(0u, Keys(storage_key1_));
 }
@@ -1484,7 +1473,6 @@ TEST_F(CacheStorageManagerTest, CacheSizePaddedAfterReopen) {
 
   // Create a new CacheStorageManager that hasn't yet loaded the key.
   CreateStorageManager();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
   EXPECT_TRUE(Open(storage_key1_, kCacheName));
 
@@ -1745,7 +1733,6 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
 
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
   CreateStorageManager();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
 
   // Create a second value (V2) in the cache.
@@ -1769,7 +1756,6 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   DestroyStorageManager();
 
   CreateStorageManager();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
 
   // Read the size from the index file.
@@ -1824,7 +1810,6 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
 
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
   CreateStorageManager();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
 
   // Reopen the cache and write a second value (V2).
@@ -1932,7 +1917,6 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
 
   // Create a new StorageManager so that the next time the cache is opened
   // the unreferenced directory can be deleted.
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
 
   // Verify that the referenced cache still works.
@@ -2528,7 +2512,6 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   run_loop.Run();
 
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
   quota_client_ = std::make_unique<CacheStorageQuotaClient>(
       cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);

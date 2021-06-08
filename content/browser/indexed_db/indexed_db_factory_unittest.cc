@@ -79,8 +79,6 @@ class IndexedDBFactoryTest : public testing::Test {
   }
 
   void TearDown() override {
-    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-
     if (context_ && !context_->IsInMemoryContext()) {
       IndexedDBFactoryImpl* factory = context_->GetIDBFactory();
 

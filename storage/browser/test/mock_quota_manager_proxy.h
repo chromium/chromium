@@ -37,14 +37,27 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
+
+  // TODO(crbug.com/1163009): Remove these methods after all QuotaClients have
+  //                          been mojofied.
   void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
-
-  // TODO(crbug.com/1163009): Remove this method after all QuotaClients have
-  //                          been mojofied.
-  virtual void SimulateQuotaManagerDestroyed();
+  // Breaks the reference cycle between MockQuotaManagerProxy and QuotaClients.
+  //
+  // Legacy QuotaClient API implementations (indirectly) hold a reference to
+  // QuotaManagerProxy. For example FileSystemQuotaClient holds a reference to
+  // FileSystemContext, which holds a reference to QuotaManagerProxy.
+  //
+  // When the QuotaManagerProxy is a MockQuotaManagerProxy, a reference cycle is
+  // created, because MockQuotaManagerProxy holds references to the legacy
+  // QuotaClient implementations.
+  //
+  // This is not a problem in production code, because the "real" QuotaManager
+  // holds references to legacy QuotaClients, and the "real" QuotaManagerProxy
+  // does not hold a reference to QuotaManager.
+  void ResetRegisteredLegacyClient();
 
   // We don't mock them.
   void NotifyOriginInUse(const url::Origin& origin) override;

@@ -71,10 +71,12 @@ class FileSystemOperationImplTest : public testing::Test {
 
   void TearDown() override {
     // Let the client go away before dropping a ref of the quota manager proxy.
-    quota_manager_proxy()->SimulateQuotaManagerDestroyed();
+    quota_manager_proxy()->ResetRegisteredLegacyClient();
+
     quota_manager_ = nullptr;
     quota_manager_proxy_ = nullptr;
     sandbox_file_system_.TearDown();
+    task_environment_.RunUntilIdle();
   }
 
   FileSystemOperationRunner* operation_runner() {

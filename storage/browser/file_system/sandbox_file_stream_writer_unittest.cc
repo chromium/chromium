@@ -64,8 +64,9 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   }
 
   void TearDown() override {
-    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-    quota_manager_.reset();
+    quota_manager_proxy_->ResetRegisteredLegacyClient();
+    quota_manager_proxy_ = nullptr;
+    quota_manager_ = nullptr;
     base::RunLoop().RunUntilIdle();
   }
 

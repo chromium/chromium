@@ -155,7 +155,6 @@ EmbeddedWorkerTestHelper::~EmbeddedWorkerTestHelper() {
   fake_loader_factory_wrapper_->Detach();
   if (wrapper_.get())
     wrapper_->Shutdown();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
 }
 
 ServiceWorkerContextCore* EmbeddedWorkerTestHelper::context() {

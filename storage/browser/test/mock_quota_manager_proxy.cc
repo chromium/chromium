@@ -38,16 +38,8 @@ void MockQuotaManagerProxy::RegisterLegacyClient(
   registered_legacy_client_ = std::move(client);
 }
 
-void MockQuotaManagerProxy::SimulateQuotaManagerDestroyed() {
-  if (registered_legacy_client_) {
-    // We cannot call this in the destructor as the client (indirectly)
-    // holds a refptr of the proxy.
-    registered_legacy_client_ = nullptr;
-  }
-
-  if (registered_client_) {
-    registered_client_.reset();
-  }
+void MockQuotaManagerProxy::ResetRegisteredLegacyClient() {
+  registered_legacy_client_ = nullptr;
 }
 
 void MockQuotaManagerProxy::GetUsageAndQuota(
@@ -101,9 +93,6 @@ bool MockQuotaManagerProxy::OriginInUse(const url::Origin& origin) const {
   return origins_in_use_.contains(origin);
 }
 
-MockQuotaManagerProxy::~MockQuotaManagerProxy() {
-  DCHECK(!registered_client_);
-  DCHECK(!registered_legacy_client_);
-}
+MockQuotaManagerProxy::~MockQuotaManagerProxy() = default;
 
 }  // namespace storage
