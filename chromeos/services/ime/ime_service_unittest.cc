@@ -167,6 +167,30 @@ TEST_F(ImeServiceTest,
   EXPECT_FALSE(remote_engine2.is_connected());
 }
 
+TEST_F(ImeServiceTest, ConnectWithEmptyExtraCanConnectIfDisconnected) {
+  bool success1, success2 = true;
+  MockInputChannel test_channel1, test_channel2;
+  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
+
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
+      test_channel1.CreatePendingRemote(), /*extra=*/{0},
+      base::BindOnce(&ConnectCallback, &success1));
+  remote_engine1.reset();
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
+      test_channel2.CreatePendingRemote(), /*extra=*/{},
+      base::BindOnce(&ConnectCallback, &success2));
+  remote_manager_.FlushForTesting();
+
+  // The second connection should have succeed since the first connection was
+  // disconnected.
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
+  EXPECT_FALSE(remote_engine1.is_bound());
+  EXPECT_TRUE(remote_engine2.is_connected());
+}
+
 TEST_F(ImeServiceTest, ConnectWithExtraCanOverrideExistingConnection) {
   bool success1, success2, success3 = true;
   MockInputChannel test_channel1, test_channel2, test_channel3;
