@@ -183,9 +183,15 @@ bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper) {
   container_wrapper_ = std::move(container_wrapper);
 
+  std::string original_url;
   std::string stream_url;
+  // TODO(https://crbug.com/1199558): Make a helper method to parse
+  // `initial_params_` without processing the results, and add a unit test for
+  // it.
   for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
-    if (initial_params_.attribute_names[i] == "stream-url") {
+    if (initial_params_.attribute_names[i] == "src") {
+      original_url = initial_params_.attribute_values[i].Utf8();
+    } else if (initial_params_.attribute_names[i] == "stream-url") {
       stream_url = initial_params_.attribute_values[i].Utf8();
     } else if (initial_params_.attribute_names[i] == "full-frame") {
       set_full_frame(true);
@@ -202,9 +208,16 @@ bool PdfViewWebPlugin::InitializeCommon(
   // Contents of `initial_params_` no longer needed.
   initial_params_ = {};
 
+  if (original_url.empty())
+    return false;
+
+  if (stream_url.empty())
+    stream_url = original_url;
+
   PerProcessInitializer::GetInstance().Acquire();
   InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
   LoadUrl(stream_url, /*is_print_preview=*/false);
+  set_url(original_url);
   post_message_sender_.set_container(Container());
   return true;
 }

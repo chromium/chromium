@@ -151,8 +151,13 @@ class PdfViewWebPluginTest : public testing::Test {
   ~PdfViewWebPluginTest() override = default;
 
   void SetUp() override {
+    // Set a dummy URL for initializing the plugin.
+    blink::WebPluginParams params;
+    params.attribute_names.push_back(blink::WebString("src"));
+    params.attribute_values.push_back(blink::WebString("dummy.pdf"));
+
     plugin_ = std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(
-        new PdfViewWebPlugin(blink::WebPluginParams()));
+        new PdfViewWebPlugin(params));
 
     auto wrapper = std::make_unique<FakeContainerWrapper>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
