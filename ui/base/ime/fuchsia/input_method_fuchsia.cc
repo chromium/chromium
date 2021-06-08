@@ -49,14 +49,15 @@ ui::EventDispatchDetails InputMethodFuchsia::DispatchKeyEvent(
   return dispatch_details;
 }
 
-void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {
-  // FIDL asynchronicity makes it impossible to know whether a recent
-  // visibility update might be in flight, so always call Dismiss.
-  virtual_keyboard_controller_.DismissVirtualKeyboard();
-}
+void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {}
 
 void InputMethodFuchsia::OnTextInputTypeChanged(const TextInputClient* client) {
   InputMethodBase::OnTextInputTypeChanged(client);
+
+  if (IsTextInputTypeNone()) {
+    virtual_keyboard_controller_.DismissVirtualKeyboard();
+    return;
+  }
 
   virtual_keyboard_controller_.UpdateTextType();
 }

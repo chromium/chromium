@@ -217,7 +217,6 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
       .WillOnce(testing::InvokeWithoutArgs(
           [&on_show_run_loop]() { on_show_run_loop.Quit(); }))
       .RetiresOnSaturation();
-  EXPECT_CALL(*controller_, RequestHide()).RetiresOnSaturation();
 
   // Numeric field click.
   base::RunLoop click_numeric_run_loop;
@@ -228,13 +227,10 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
   EXPECT_CALL(*controller_, RequestShow()).RetiresOnSaturation();
 
   // Input blur click.
-  EXPECT_CALL(*controller_, RequestHide()).RetiresOnSaturation();
-  base::RunLoop text_type_changed_run_loop;
-  EXPECT_CALL(*controller_,
-              SetTextType(virtualkeyboard::TextType::ALPHANUMERIC))
-      .WillOnce(testing::InvokeWithoutArgs([&text_type_changed_run_loop]() {
-        text_type_changed_run_loop.Quit();
-      }))
+  base::RunLoop on_hide_run_loop;
+  EXPECT_CALL(*controller_, RequestHide())
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&on_hide_run_loop]() { on_hide_run_loop.Quit(); }))
       .RetiresOnSaturation();
 
   // Give focus to an input field, which will result in RequestShow() being
@@ -256,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
 
   // Trigger input blur by clicking outside any input element.
   content::SimulateTapAt(web_contents_, kNoTarget);
-  text_type_changed_run_loop.Run();
+  on_hide_run_loop.Run();
 }
 
 // Gives focus to a sequence of HTML <input> nodes with different InputModes,

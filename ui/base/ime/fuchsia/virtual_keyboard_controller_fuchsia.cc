@@ -107,11 +107,15 @@ VirtualKeyboardControllerFuchsia::GetFocusedTextType() const {
       return fuchsia::input::virtualkeyboard::TextType::PHONE;
 
     case TEXT_INPUT_MODE_DEFAULT:
-    case TEXT_INPUT_MODE_NONE:
     case TEXT_INPUT_MODE_TEXT:
     case TEXT_INPUT_MODE_URL:
     case TEXT_INPUT_MODE_EMAIL:
     case TEXT_INPUT_MODE_SEARCH:
+      return fuchsia::input::virtualkeyboard::TextType::ALPHANUMERIC;
+
+    // Should be handled in InputMethodFuchsia.
+    case TEXT_INPUT_MODE_NONE:
+      NOTREACHED();
       return fuchsia::input::virtualkeyboard::TextType::ALPHANUMERIC;
   }
 }
