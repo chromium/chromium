@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -27,27 +28,6 @@ using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
-
-class MockAlternativeStateNameMapUpdater
-    : public AlternativeStateNameMapUpdater {
- public:
-  MockAlternativeStateNameMapUpdater(base::OnceClosure callback,
-                                     PrefService* local_state,
-                                     PersonalDataManager* personal_data_manager)
-      : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
-        callback_(std::move(callback)) {}
-
-  // PersonalDataManagerObserver:
-  void OnPersonalDataFinishedProfileTasks() override {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseAlternativeStateNameMap)) {
-      PopulateAlternativeStateNameMap(std::move(callback_));
-    }
-  }
-
- private:
-  base::OnceClosure callback_;
-};
 
 class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
  public:

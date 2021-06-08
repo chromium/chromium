@@ -4,13 +4,27 @@
 
 #include "components/autofill_assistant/browser/field_formatter.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-
+#include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_assistant {
 namespace field_formatter {
@@ -20,6 +34,109 @@ const char kFakeUrl[] = "https://www.example.com";
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsSupersetOf;
+
+class FieldFormatterStateMapTest : public ::testing::Test {
+ public:
+  FieldFormatterStateMapTest() = default;
+
+  void SetUp() override {
+    feature_.InitAndEnableFeature(
+        autofill::features::kAutofillUseAlternativeStateNameMap);
+
+    autofill_client_.SetPrefs(autofill::test::PrefServiceForTesting());
+    ASSERT_TRUE(data_install_dir_.CreateUniqueTempDir());
+    personal_data_manager_.Init(/*profile_database=*/database_,
+                                /*account_database=*/nullptr,
+                                /*pref_service=*/autofill_client_.GetPrefs(),
+                                /*local_state=*/autofill_client_.GetPrefs(),
+                                /*identity_manager=*/nullptr,
+                                /*client_profile_validator=*/nullptr,
+                                /*history_service=*/nullptr,
+                                /*strike_database=*/nullptr,
+                                /*is_off_the_record=*/false);
+    alternative_state_name_map_updater_ =
+        std::make_unique<autofill::AlternativeStateNameMapUpdater>(
+            autofill_client_.GetPrefs(), &personal_data_manager_);
+  }
+
+  const base::FilePath& GetPath() const { return data_install_dir_.GetPath(); }
+
+  void WritePathToPref(const base::FilePath& file_path) {
+    autofill_client_.GetPrefs()->SetFilePath(
+        autofill::prefs::kAutofillStatesDataDir, file_path);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  autofill::TestAutofillClient autofill_client_;
+  scoped_refptr<autofill::AutofillWebDataService> database_;
+  std::unique_ptr<autofill::AlternativeStateNameMapUpdater>
+      alternative_state_name_map_updater_;
+  base::ScopedTempDir data_install_dir_;
+  base::test::ScopedFeatureList feature_;
+  autofill::TestPersonalDataManager personal_data_manager_;
+};
+
+TEST_F(FieldFormatterStateMapTest, AlternativeStateNameMapTest) {
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  WritePathToPref(GetPath());
+  // Use non-US country for testing, because older state_names helper doesn't
+  // work for non-US.
+  base::WriteFile(GetPath().AppendASCII("DE"),
+                  autofill::test::CreateStatesProtoAsString());
+
+  autofill::AutofillProfile alternative_state_map_profile;
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_STATE,
+                                        u"Bavaria", "en-US");
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"DE",
+                                        "en-US");
+
+  base::RunLoop run_loop;
+  autofill::MockAlternativeStateNameMapUpdater
+      mock_alternative_state_name_updater(run_loop.QuitClosure(),
+                                          autofill_client_.GetPrefs(),
+                                          &personal_data_manager_);
+  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
+  personal_data_manager_.AddProfile(alternative_state_map_profile);
+  run_loop.Run();
+  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
+
+  EXPECT_FALSE(autofill::AlternativeStateNameMap::GetInstance()
+                   ->IsLocalisedStateNamesMapEmpty());
+
+  // State handling from abbreviation.
+  autofill::AutofillProfile state_abbr_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &state_abbr_profile, "John", "", "Doe", "editor@gmail.com", "",
+      "203 Barfield Lane", "", "Munich", "BY", "80337", "DE", "+49794522222");
+  EXPECT_EQ(*FormatString("${34}",
+                          CreateAutofillMappings(state_abbr_profile, "en-US")),
+            "BY");
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_abbr_profile, "en-US")),
+            "Bavaria");
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "Bavaria", "", "DE", "");
+  EXPECT_EQ(*FormatString("${34}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "BY");
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "Bavaria");
+
+  // State handling for invalid cases.
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "Invalid", "", "DE", "");
+  EXPECT_EQ(FormatString("${34}",
+                         CreateAutofillMappings(state_name_profile, "en-US")),
+            absl::nullopt);
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "Invalid");
+}
 
 TEST(FieldFormatterTest, FormatString) {
   std::map<std::string, std::string> mappings = {{"keyA", "valueA"},
