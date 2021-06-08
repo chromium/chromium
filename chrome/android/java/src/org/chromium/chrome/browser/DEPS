@@ -26,9 +26,6 @@ specific_include_rules = {
   "LaunchIntentDispatcher\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "TabbedModeTabDelegateFactory\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "ContextualSearchTabHelper\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
@@ -63,9 +60,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ProcessInitializationHandler\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "NativePageFactory\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "OfflineIndicatorController\.java": [

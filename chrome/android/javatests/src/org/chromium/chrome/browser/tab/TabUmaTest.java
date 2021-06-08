@@ -84,7 +84,10 @@ public class TabUmaTest {
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(), /* TabCreatorManager */ cta,
                 cta::getTabModelSelector, cta::getCompositorViewHolder,
-                cta.getModalDialogManagerSupplier());
+                cta.getModalDialogManagerSupplier(), cta::getSnackbarManager,
+                cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
+                cta.getLifecycleDispatcher(), cta.getWindowAndroid(),
+                cta::getLastUserInteractionTime, cta::hadWarmStart);
         // clang-format on
     }
 

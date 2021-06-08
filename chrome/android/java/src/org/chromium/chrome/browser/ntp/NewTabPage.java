@@ -28,7 +28,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -302,7 +301,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             boolean isTablet, NewTabPageUma uma, boolean isInNightMode,
             NativePageHost nativePageHost, Tab tab, String url,
             BottomSheetController bottomSheetController,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid) {
+            Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -417,8 +416,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             BottomSheetController bottomSheetController,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            TabModelSelector tabModelSelector, String url) {
+            Supplier<ShareDelegate> shareDelegateSupplier, TabModelSelector tabModelSelector,
+            String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
