@@ -99,8 +99,10 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
                         ? text_state_.text.length() - confirmed_length
                         : 0;
 
-    suggestion_state_ = LastKnownSuggestionState{.start_pos = start_pos,
-                                                 .text = suggestion_text};
+    suggestion_state_ =
+        LastKnownSuggestionState{.start_pos = start_pos,
+                                 .text = suggestion_text,
+                                 .suggestion_mode = suggestion.mode};
   }
 }
 
@@ -166,7 +168,15 @@ void MultiWordSuggester::DismissSuggestion() {
 }
 
 AssistiveType MultiWordSuggester::GetProposeActionType() {
-  return AssistiveType::kMultiWordCompletion;
+  if (!suggestion_state_)
+    return AssistiveType::kGenericAction;
+
+  AssistiveType multi_word_type =
+      suggestion_state_->suggestion_mode == TextSuggestionMode::kCompletion
+          ? AssistiveType::kMultiWordCompletion
+          : AssistiveType::kMultiWordPrediction;
+
+  return multi_word_type;
 }
 
 bool MultiWordSuggester::HasSuggestions() {

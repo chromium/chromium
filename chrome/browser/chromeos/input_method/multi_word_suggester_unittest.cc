@@ -262,4 +262,55 @@ TEST(MultiWordSuggesterTest,
   EXPECT_FALSE(suggester.Suggest(u"how yo", 6, 6));
 }
 
+TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionShown) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
+
+  EXPECT_EQ(suggester.GetProposeActionType(), AssistiveType::kGenericAction);
+}
+
+TEST(MultiWordSuggesterTest,
+     ReturnsCompletionActionIfCompletionSuggestionShown) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_EQ(suggester.GetProposeActionType(),
+            AssistiveType::kMultiWordCompletion);
+}
+
+TEST(MultiWordSuggesterTest,
+     ReturnsPredictionActionIfPredictionSuggestionShown) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"how", 3, 3);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_EQ(suggester.GetProposeActionType(),
+            AssistiveType::kMultiWordPrediction);
+}
+
 }  // namespace chromeos

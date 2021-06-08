@@ -21,6 +21,7 @@ struct LastKnownTextState {
 struct LastKnownSuggestionState {
   size_t start_pos;
   std::u16string text;
+  ime::TextSuggestionMode suggestion_mode;
 };
 
 // Integrates multi word suggestions produced by the system with the assistive
