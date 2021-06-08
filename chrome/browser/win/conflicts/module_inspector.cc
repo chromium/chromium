@@ -72,9 +72,6 @@ void WriteInspectionResultCacheOnBackgroundSequence(
 }  // namespace
 
 // static
-constexpr base::Feature ModuleInspector::kDisableBackgroundModuleInspection;
-
-// static
 constexpr base::Feature ModuleInspector::kWinOOPInspectModuleFeature;
 
 // static
@@ -99,9 +96,7 @@ ModuleInspector::ModuleInspector(
               &ModuleInspector::MaybeUpdateInspectionResultsCache,
               base::Unretained(this))),
       has_new_inspection_results_(false),
-      connection_error_retry_count_(kConnectionErrorRetryCount),
-      background_inspection_disabled_(
-          base::FeatureList::IsEnabled(kDisableBackgroundModuleInspection)) {
+      connection_error_retry_count_(kConnectionErrorRetryCount) {
   // Use BEST_EFFORT as those will only run after startup is finished.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
@@ -134,14 +129,6 @@ void ModuleInspector::IncreaseInspectionPriority() {
 
   // Assume startup is finished to immediately begin inspecting modules.
   OnStartupFinished();
-
-  // Special case where this instance could be ready to start inspecting but
-  // wasn't because background inspection was disabled.
-  if (background_inspection_disabled_ && inspection_results_cache_read_ &&
-      !queue_.empty()) {
-    background_inspection_disabled_ = false;
-    StartInspectingModule();
-  }
 }
 
 bool ModuleInspector::IsIdle() {
@@ -230,9 +217,6 @@ void ModuleInspector::StartInspectingModule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inspection_results_cache_read_);
   DCHECK(!queue_.empty());
-
-  if (background_inspection_disabled_)
-    return;
 
   const ModuleInfoKey& module_key = queue_.front();
 

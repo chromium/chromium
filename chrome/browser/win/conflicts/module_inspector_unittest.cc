@@ -129,34 +129,6 @@ TEST_F(ModuleInspectorTest, MultipleModules) {
   EXPECT_EQ(5u, inspected_modules().size());
 }
 
-TEST_F(ModuleInspectorTest, DisableBackgroundInspection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ModuleInspector::kDisableBackgroundModuleInspection);
-
-  ModuleInfoKey kTestCases[] = {
-      {base::FilePath(), 0, 0},
-      {base::FilePath(), 0, 0},
-  };
-
-  auto module_inspector = CreateModuleInspector();
-
-  for (const auto& module : kTestCases)
-    module_inspector->AddModule(module);
-
-  RunUntilIdle();
-
-  // No inspected modules yet.
-  EXPECT_EQ(0u, inspected_modules().size());
-
-  // Increasing inspection priority will start the background inspection
-  // process.
-  module_inspector->IncreaseInspectionPriority();
-  RunUntilIdle();
-
-  EXPECT_EQ(2u, inspected_modules().size());
-}
-
 TEST_F(ModuleInspectorTest, InspectionResultsCache) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);

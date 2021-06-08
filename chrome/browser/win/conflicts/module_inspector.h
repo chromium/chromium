@@ -39,13 +39,6 @@ class SequencedTaskRunner;
 // This class is not thread safe and it enforces safety via a SEQUENCE_CHECKER.
 class ModuleInspector : public ModuleDatabaseObserver {
  public:
-  // Temporary feature to control whether or not modules are inspected in a
-  // background sequence. It will be used to assess the impact of this work on
-  // Chrome's overall performance.
-  // TODO(pmonette): Remove when no longer needed. See https://crbug.com/928846.
-  static constexpr base::Feature kDisableBackgroundModuleInspection = {
-      "DisableBackgroundModuleInspection", base::FEATURE_DISABLED_BY_DEFAULT};
-
   // Controls whether or not module inspection is done out of process.
   static constexpr base::Feature kWinOOPInspectModuleFeature = {
       "WinOOPInspectModule", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -167,11 +160,6 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // connection error occurs. This is to prevent the degenerate case where the
   // service always fails to start and the restart cycle happens infinitely.
   int connection_error_retry_count_;
-
-  // Indicates if background inspection is disabled. Generally equal to the
-  // kDisableBackgroundModuleInspection feature state, but will be set
-  // unconditionally to false if IncreaseInspectionPriority() is called.
-  bool background_inspection_disabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
