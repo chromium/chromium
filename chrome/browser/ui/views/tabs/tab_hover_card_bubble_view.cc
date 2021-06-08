@@ -82,9 +82,9 @@ gfx::Size GetPreviewImageSize(gfx::Size preview_size,
   if (preview_size.IsEmpty())
     return preview_size;
   const float preview_aspect_ratio =
-      float{preview_size.width()} / preview_size.height();
+      static_cast<float>(preview_size.width()) / preview_size.height();
   const float preferred_aspect_ratio =
-      float{preferred_size.width()} / preferred_size.height();
+      static_cast<float>(preferred_size.width()) / preferred_size.height();
   const float ratio = preview_aspect_ratio / preferred_aspect_ratio;
   // Images between 2/3 and 3/2 of the target aspect ratio use the preferred
   // size, stretching the image. Only images outside this range get centered.

@@ -151,8 +151,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
 
   // Subtract back out the scroll bars if we decided there was enough canvas to
   // account for them and still have a decent preview image.
-  const float scale_ratio =
-      float{content_rect.width()} / float{capture_info_.copy_rect.width()};
+  const float scale_ratio = static_cast<float>(content_rect.width()) /
+                            capture_info_.copy_rect.width();
 
   const gfx::Insets original_scroll_insets = capture_info_.scrollbar_insets;
   const gfx::Insets scroll_insets(

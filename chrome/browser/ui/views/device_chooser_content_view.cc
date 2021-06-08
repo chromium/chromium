@@ -157,7 +157,8 @@ int DeviceChooserContentView::RowCount() {
 std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
   DCHECK_GE(row, 0);
   DCHECK_LT(row, RowCount());
-  std::u16string text = chooser_controller_->GetOption(size_t{row});
+  std::u16string text =
+      chooser_controller_->GetOption(static_cast<size_t>(row));
   return chooser_controller_->IsPaired(row)
              ? l10n_util::GetStringFUTF16(
                    IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT, text)
@@ -185,7 +186,8 @@ ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
       IDR_SIGNAL_0_BAR, IDR_SIGNAL_1_BAR, IDR_SIGNAL_2_BAR, IDR_SIGNAL_3_BAR,
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
-  DCHECK_LT(size_t{level}, base::size(kSignalStrengthLevelImageIds));
+  DCHECK_LT(static_cast<size_t>(level),
+            base::size(kSignalStrengthLevelImageIds));
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));

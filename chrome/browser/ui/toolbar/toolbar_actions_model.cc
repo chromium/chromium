@@ -309,8 +309,8 @@ void ToolbarActionsModel::InitializeActionList() {
   if (!profile_->IsOffTheRecord() && !action_ids_.empty()) {
     base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
                                 pinned_action_ids_.size());
-    double percentage_double =
-        double{pinned_action_ids_.size()} / double{action_ids_.size()} * 100.0;
+    double percentage_double = static_cast<double>(pinned_action_ids_.size()) /
+                               action_ids_.size() * 100.0;
     int percentage = int{percentage_double};
     base::UmaHistogramPercentageObsoleteDoNotUse(
         "Extensions.Toolbar.PinnedExtensionPercentage3", percentage);

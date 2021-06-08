@@ -494,9 +494,9 @@ void TabDragController::Init(TabDragContext* source_context,
       source_context_->AsView()->GetWidget()->GetNativeWindow());
 
   if (source_view->width() > 0) {
-    offset_to_width_ratio_ =
-        float{source_view->GetMirroredXInView(source_view_offset)} /
-        float{source_view->width()};
+    offset_to_width_ratio_ = static_cast<float>(source_view->GetMirroredXInView(
+                                 source_view_offset)) /
+                             source_view->width();
   }
   InitWindowCreatePoint();
   initial_selection_model_ = std::move(initial_selection_model);
@@ -807,8 +807,8 @@ bool TabDragController::CanStartDrag(const gfx::Point& point_in_screen) const {
   static const int kMinimumDragDistance = 10;
   int x_offset = abs(point_in_screen.x() - start_point_in_screen_.x());
   int y_offset = abs(point_in_screen.y() - start_point_in_screen_.y());
-  return sqrt(pow(float{x_offset}, 2) + pow(float{y_offset}, 2)) >
-         kMinimumDragDistance;
+  return sqrt(pow(static_cast<float>(x_offset), 2) +
+              pow(static_cast<float>(y_offset), 2)) > kMinimumDragDistance;
 }
 
 TabDragController::Liveness TabDragController::ContinueDragging(
@@ -964,7 +964,8 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
 
 void TabDragController::DragActiveTabStacked(
     const gfx::Point& point_in_screen) {
-  if (attached_context_->GetTabCount() != int{initial_tab_positions_.size()})
+  if (attached_context_->GetTabCount() !=
+      static_cast<int>(initial_tab_positions_.size()))
     return;  // TODO: should cancel drag if this happens.
 
   int delta = point_in_screen.x() - start_point_in_screen_.x();
@@ -2079,13 +2080,13 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
   // If the new tabstrip region is smaller than the old, resize the tabs.
   if (dragged_context_width < tab_area_width) {
     const float leading_ratio =
-        drag_bounds->front().x() / float{tab_area_width};
+        drag_bounds->front().x() / static_cast<float>(tab_area_width);
     *drag_bounds =
         attached_context_->CalculateBoundsForDraggedViews(attached_views_);
 
     if (drag_bounds->back().right() < dragged_context_width) {
       const int delta_x = std::min(
-          int{(leading_ratio * dragged_context_width)},
+          static_cast<int>(leading_ratio * dragged_context_width),
           dragged_context_width -
               (drag_bounds->back().right() - drag_bounds->front().x()));
       OffsetX(delta_x, drag_bounds);
@@ -2288,7 +2289,8 @@ absl::optional<tab_groups::TabGroupId>
 TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // Indices in {selected} are always ordered in ascending order and should all
   // be consecutive.
-  DCHECK_EQ(selected.back() - selected.front() + 1, int{selected.size()});
+  DCHECK_EQ(selected.back() - selected.front() + 1,
+            static_cast<int>(selected.size()));
   const TabStripModel* attached_model = attached_context_->GetTabStripModel();
 
   const int left_tab_index = selected.front() - 1;

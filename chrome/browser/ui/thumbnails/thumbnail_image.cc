@@ -255,9 +255,9 @@ gfx::ImageSkia ThumbnailImage::CropPreviewImage(
   DCHECK(!source_image.size().IsEmpty());
   DCHECK(!minimum_size.IsEmpty());
   const float desired_aspect =
-      float{minimum_size.width()} / minimum_size.height();
+      static_cast<float>(minimum_size.width()) / minimum_size.height();
   const float source_aspect =
-      float{source_image.width()} / float{source_image.height()};
+      static_cast<float>(source_image.width()) / source_image.height();
 
   if (source_aspect == desired_aspect ||
       source_image.width() < minimum_size.width() ||

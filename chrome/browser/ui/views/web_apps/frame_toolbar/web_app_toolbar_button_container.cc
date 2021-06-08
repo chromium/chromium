@@ -95,7 +95,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   // This is the point where we will be inserting page action icons.
-  page_action_insertion_point_ = int{children().size()};
+  page_action_insertion_point_ = static_cast<int>(children().size());
 
   // Insert the default page action icons.
   PageActionIconParams params;

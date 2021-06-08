@@ -58,9 +58,12 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
   }
 
   bool ColorsApproximatelyEqual(SkColor color1, SkColor color2) {
-    return abs(int{SkColorGetR(color1)} - int{SkColorGetR(color2)}) < 50 &&
-           abs(int{SkColorGetG(color1)} - int{SkColorGetG(color2)}) < 50 &&
-           abs(int{SkColorGetB(color1)} - int{SkColorGetB(color2)}) < 50;
+    return abs(static_cast<int>(SkColorGetR(color1)) -
+               static_cast<int>(SkColorGetR(color2))) < 50 &&
+           abs(static_cast<int>(SkColorGetG(color1)) -
+               static_cast<int>(SkColorGetG(color2))) < 50 &&
+           abs(static_cast<int>(SkColorGetB(color1)) -
+               static_cast<int>(SkColorGetB(color2))) < 50;
   }
 
   float CountPercentPixelsWithColor(const gfx::Image& image, SkColor color) {

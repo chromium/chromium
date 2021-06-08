@@ -88,7 +88,8 @@ void ExistingTabGroupSubMenuModel::ExecuteNewCommand(int event_flags) {
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int command_index) {
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
-  if (size_t{command_index} >= model()->group_model()->ListTabGroups().size())
+  if (static_cast<size_t>(command_index) >=
+      model()->group_model()->ListTabGroups().size())
     return;
   if (!model()->ContainsIndex(GetContextIndex()))
     return;

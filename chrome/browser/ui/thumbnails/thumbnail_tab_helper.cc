@@ -348,10 +348,11 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   // Calculate the target size to be the smallest size which meets the minimum
   // requirements but has the same aspect ratio as the source (with or without
   // scrollbars).
-  const float width_ratio =
-      float{capture_info.copy_rect.width()} / min_target_size.width();
+  const float width_ratio = static_cast<float>(capture_info.copy_rect.width()) /
+                            min_target_size.width();
   const float height_ratio =
-      float{capture_info.copy_rect.height()} / min_target_size.height();
+      static_cast<float>(capture_info.copy_rect.height()) /
+      min_target_size.height();
   const float scale_ratio = std::min(width_ratio, height_ratio);
   capture_info.target_size =
       scale_ratio <= 1.0f

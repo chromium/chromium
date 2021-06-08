@@ -608,7 +608,8 @@ MenuButton* BookmarkBarView::GetMenuButtonForNode(const BookmarkNode* node) {
   int index = model_->bookmark_bar_node()->GetIndexOf(node);
   if (index == -1 || !node->is_folder())
     return nullptr;
-  return static_cast<MenuButton*>(bookmark_buttons_[size_t{index}]);
+  return static_cast<MenuButton*>(
+      bookmark_buttons_[static_cast<size_t>(index)]);
 }
 
 void BookmarkBarView::GetAnchorPositionForButton(
@@ -1393,7 +1394,7 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     // clicked on, except for the apps page shortcut, which must behave as if
     // the user clicked on the bookmark bar background.
     size_t bookmark_button_index = GetIndexForButton(source);
-    DCHECK_NE(size_t{-1}, bookmark_button_index);
+    DCHECK_NE(static_cast<size_t>(-1), bookmark_button_index);
     DCHECK_LT(bookmark_button_index, bookmark_buttons_.size());
     const BookmarkNode* node =
         model_->bookmark_bar_node()->children()[bookmark_button_index].get();
@@ -1695,9 +1696,9 @@ void BookmarkBarView::BookmarkNodeChangedImpl(BookmarkModel* model,
   }
   int index = model->bookmark_bar_node()->GetIndexOf(node);
   DCHECK_NE(-1, index);
-  if (size_t{index} >= bookmark_buttons_.size())
+  if (static_cast<size_t>(index) >= bookmark_buttons_.size())
     return;  // Buttons are created as needed.
-  views::LabelButton* button = bookmark_buttons_[size_t{index}];
+  views::LabelButton* button = bookmark_buttons_[static_cast<size_t>(index)];
   const int old_pref_width = button->GetPreferredSize().width();
   ConfigureButton(node, button);
   if (old_pref_width != button->GetPreferredSize().width())
@@ -1892,7 +1893,7 @@ void BookmarkBarView::StartThrobbing(const BookmarkNode* node,
     parent_on_bb = parent;
   }
   if (parent_on_bb) {
-    size_t index = size_t{bbn->GetIndexOf(parent_on_bb)};
+    size_t index = static_cast<size_t>(bbn->GetIndexOf(parent_on_bb));
     if (index >= GetFirstHiddenNodeIndex()) {
       // Node is hidden, animate the overflow button.
       throbbing_view_ = overflow_button_;
@@ -1919,7 +1920,7 @@ views::Button* BookmarkBarView::DetermineViewToThrobFromRemove(
   while (old_node && old_node != bbn) {
     const BookmarkNode* parent = old_node->parent();
     if (parent == bbn) {
-      old_index_on_bb = size_t{bbn->GetIndexOf(old_node)};
+      old_index_on_bb = static_cast<size_t>(bbn->GetIndexOf(old_node));
       break;
     }
     old_node = parent;
@@ -2050,17 +2051,17 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
   DCHECK_EQ(*i++, overflow_button_);
   DCHECK_EQ(*i++, other_bookmarks_button_);
 #endif
-  AddChildViewAt(std::move(button),
-                 GetIndexOf(managed_bookmarks_button_) + 1 + int{index});
+  AddChildViewAt(std::move(button), GetIndexOf(managed_bookmarks_button_) + 1 +
+                                        static_cast<int>(index));
 }
 
 size_t BookmarkBarView::GetIndexForButton(views::View* button) {
   auto it =
       std::find(bookmark_buttons_.cbegin(), bookmark_buttons_.cend(), button);
   if (it == bookmark_buttons_.cend())
-    return size_t{-1};
+    return static_cast<size_t>(-1);
 
-  return size_t{it - bookmark_buttons_.cbegin()};
+  return static_cast<size_t>(it - bookmark_buttons_.cbegin());
 }
 
 base::RepeatingCallback<content::PageNavigator*()>
@@ -2108,7 +2109,7 @@ void BookmarkBarView::PerformDrop(const bookmarks::BookmarkNodeData data,
                                   ui::mojom::DragOperation& output_drag_op) {
   DCHECK(data.is_valid());
   DCHECK(parent_node);
-  DCHECK_NE(index, size_t{-1});
+  DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
   output_drag_op = chrome::DropBookmarks(browser_->profile(), data, parent_node,

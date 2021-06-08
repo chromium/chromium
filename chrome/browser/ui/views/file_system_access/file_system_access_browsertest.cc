@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SaveFile) {
          "indicator should be visible.";
 
   EXPECT_EQ(
-      int{file_contents.size()},
+      static_cast<int>(file_contents.size()),
       content::EvalJs(
           web_contents,
           content::JsReplace("(async () => {"
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   EXPECT_TRUE(IsUsageIndicatorVisible());
 
   EXPECT_EQ(
-      int{file_contents.size()},
+      static_cast<int>(file_contents.size()),
       content::EvalJs(
           web_contents,
           content::JsReplace("(async () => {"
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // Write should succeed. If a prompt shows up, it would be denied and we will
   // get a JavaScript error.
   EXPECT_EQ(
-      int{file_contents.size()},
+      static_cast<int>(file_contents.size()),
       content::EvalJs(
           web_contents,
           content::JsReplace("(async () => {"
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // Write should succeed. If a prompt shows up, it would be denied and we will
   // get a JavaScript error.
   EXPECT_EQ(
-      int{file_contents.size()},
+      static_cast<int>(file_contents.size()),
       content::EvalJs(
           web_contents,
           content::JsReplace("(async () => {"
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // And write to file from iframe.
   const std::string initial_file_contents = "file contents to write";
   EXPECT_EQ(
-      int{initial_file_contents.size()},
+      static_cast<int>(initial_file_contents.size()),
       content::EvalJs(
           third_party_iframe,
           content::JsReplace("(async () => {"

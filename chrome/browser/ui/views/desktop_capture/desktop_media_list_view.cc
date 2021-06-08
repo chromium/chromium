@@ -81,8 +81,9 @@ void DesktopMediaListView::OnSelectionChanged() {
 }
 
 gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
-  int total_rows = (int{children().size()} + active_style_->columns - 1) /
-                   active_style_->columns;
+  int total_rows =
+      (static_cast<int>(children().size()) + active_style_->columns - 1) /
+      active_style_->columns;
   return gfx::Size(active_style_->columns * active_style_->item_size.width(),
                    total_rows * active_style_->item_size.height());
 }
@@ -132,9 +133,9 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
   if (selected) {
     int index = GetIndexOf(selected);
     int new_index = base::ClampToRange(index + position_increment, 0,
-                                       int{children().size()} - 1);
+                                       static_cast<int>(children().size()) - 1);
     if (index != new_index)
-      new_selected = children()[size_t{new_index}];
+      new_selected = children()[static_cast<size_t>(new_index)];
   } else if (!children().empty()) {
     new_selected = children().front();
   }

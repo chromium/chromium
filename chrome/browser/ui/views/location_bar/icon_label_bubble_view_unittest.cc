@@ -71,7 +71,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
 
   State state() const {
     const double kOpenFraction = double{kOpenTimeMS} / kAnimationDurationMS;
-    double state = double{value_} / kNumberOfSteps;
+    double state = static_cast<double>(value_) / kNumberOfSteps;
     if (state < kOpenFraction)
       return GROWING;
     if (state > (1.0 - kOpenFraction))

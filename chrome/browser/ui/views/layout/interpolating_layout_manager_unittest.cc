@@ -267,7 +267,7 @@ TEST_F(InterpolatingLayoutManagerTest, GetPreferredHeightForWidth_Horizontal) {
             layout_manager()->GetPreferredHeightForWidth(host_view(), 5));
   EXPECT_EQ(other_height,
             layout_manager()->GetPreferredHeightForWidth(host_view(), 10));
-  EXPECT_EQ(int{default_height * 0.4f + other_height * 0.6f},
+  EXPECT_EQ(static_cast<int>(default_height * 0.4f + other_height * 0.6f),
             layout_manager()->GetPreferredHeightForWidth(host_view(), 8));
 }
 

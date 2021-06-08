@@ -155,7 +155,7 @@ gfx::Size TabCloseButton::CalculatePreferredSize() const {
 void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   constexpr float kStrokeWidth = 1.5f;
-  float touch_scale = float{GetGlyphSize()} / kGlyphSize;
+  float touch_scale = static_cast<float>(GetGlyphSize()) / kGlyphSize;
   float size = (kGlyphSize - 8) * touch_scale - kStrokeWidth;
   gfx::RectF glyph_bounds(GetContentsBounds());
   glyph_bounds.ClampToCenteredSize(gfx::SizeF(size, size));

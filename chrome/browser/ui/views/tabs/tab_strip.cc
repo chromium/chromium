@@ -583,7 +583,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     if (tab_strip_->touch_layout_)
       return kHorizontalMoveThreshold;
 
-    double ratio = double{tab_strip_->GetInactiveTabWidth()} /
+    double ratio = static_cast<double>(tab_strip_->GetInactiveTabWidth()) /
                    TabStyle::GetStandardWidth();
     return base::ClampRound(ratio * kHorizontalMoveThreshold);
   }
@@ -687,7 +687,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
   void DragActiveTabStacked(const std::vector<int>& initial_positions,
                             int delta) override {
-    DCHECK_EQ(GetTabCount(), int{initial_positions.size()});
+    DCHECK_EQ(GetTabCount(), static_cast<int>(initial_positions.size()));
     SetIdealBoundsFromPositions(initial_positions);
     tab_strip_->touch_layout_->DragActiveTab(delta);
     tab_strip_->CompleteAnimationAndLayout();

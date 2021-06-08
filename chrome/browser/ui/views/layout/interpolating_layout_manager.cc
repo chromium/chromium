@@ -75,7 +75,8 @@ InterpolatingLayoutManager::GetInterpolation(
         << " but there is no smaller layout to interpolate with.";
     result.second = (--match)->second;
     result.percent_second =
-        float{first_span.end() - bound.value()} / first_span.length();
+        static_cast<float>(first_span.end() - bound.value()) /
+        first_span.length();
   }
 
   return result;

@@ -249,7 +249,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
           : TabStripModel::kNoTab;
 
   int current_tab_model_index = 0;
-  for (int i = 0; i < int{bounds.size()}; ++i) {
+  for (int i = 0; i < static_cast<int>(bounds.size()); ++i) {
     const TabSlot& slot = slots_[i];
     switch (slot.type) {
       case ViewType::kTab:
@@ -315,7 +315,7 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
 
   TabLayoutConstants layout_constants = GetTabLayoutConstants();
   std::vector<TabWidthConstraints> tab_widths;
-  for (int i = 0; i < int{slots_.size()}; i++) {
+  for (int i = 0; i < static_cast<int>(slots_.size()); i++) {
     auto active =
         i == active_tab_slot_index ? TabActive::kActive : TabActive::kInactive;
     auto pinned = i <= last_pinned_tab_slot_index ? TabPinned::kPinned

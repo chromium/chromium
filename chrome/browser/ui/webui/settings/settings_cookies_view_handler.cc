@@ -460,7 +460,8 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
           FALLTHROUGH;
         case CookieTreeNode::DetailedInfo::TYPE_COOKIES:
           description += l10n_util::GetPluralStringFUTF16(
-              IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, int{item_count});
+              IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES,
+              static_cast<int>(item_count));
           break;
         default:
           int ids_value = GetCategoryLabelID(node_type);

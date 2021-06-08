@@ -254,7 +254,7 @@ int FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     int row,
     int column_id) {
-  if (size_t{row} < files_.size())
+  if (static_cast<size_t>(row) < files_.size())
     return files_[row].BaseName().LossyDisplayName();
   return directories_[row - files_.size()].BaseName().LossyDisplayName();
 }
@@ -262,14 +262,15 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
     int row) {
   return ui::ImageModel::FromVectorIcon(
-      size_t{row} < files_.size() ? vector_icons::kInsertDriveFileOutlineIcon
-                                  : vector_icons::kFolderOpenIcon,
+      static_cast<size_t>(row) < files_.size()
+          ? vector_icons::kInsertDriveFileOutlineIcon
+          : vector_icons::kFolderOpenIcon,
       ui::NativeTheme::kColorId_DefaultIconColor, kIconSize);
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
     int row) {
-  if (size_t{row} < files_.size())
+  if (static_cast<size_t>(row) < files_.size())
     return files_[row].LossyDisplayName();
   return directories_[row - files_.size()].LossyDisplayName();
 }

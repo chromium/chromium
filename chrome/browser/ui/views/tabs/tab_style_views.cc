@@ -675,7 +675,7 @@ float GM2TabStyle::GetHoverInterpolatedSeparatorOpacity(
     if (for_layout || !other_tab || other_tab->IsActive())
       return 0.0f;
     auto* tab_style = static_cast<const GM2TabStyle*>(other_tab->tab_style());
-    return float{tab_style->GetHoverAnimationValue()};
+    return static_cast<float>(tab_style->GetHoverAnimationValue());
   };
   const float hover_value = GetHoverAnimationValue();
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
@@ -692,7 +692,8 @@ float GM2TabStyle::GetBoundsInterpolatedSeparatorOpacity() const {
   const gfx::Rect target_bounds =
       tab_->controller()->GetTabAnimationTargetBounds(tab_);
   const int tab_width = std::max(tab_->width(), target_bounds.width());
-  return float{std::min(std::abs(tab_->x() - target_bounds.x()), tab_width)} /
+  return static_cast<float>(
+             std::min(std::abs(tab_->x() - target_bounds.x()), tab_width)) /
          tab_width;
 }
 
@@ -717,9 +718,9 @@ float GM2TabStyle::GetHoverOpacity() const {
   // Opacity boost varies on tab width.  The interpolation is nonlinear so
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
-  const float range_start = float{GetStandardWidth()};
-  const float range_end = float{GetMinimumInactiveWidth()};
-  const float value_in_range = float{tab_->width()};
+  const float range_start = static_cast<float>(GetStandardWidth());
+  const float range_end = static_cast<float>(GetMinimumInactiveWidth());
+  const float value_in_range = static_cast<float>(tab_->width());
   const float t = base::ClampToRange(
       (value_in_range - range_start) / (range_end - range_start), 0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);

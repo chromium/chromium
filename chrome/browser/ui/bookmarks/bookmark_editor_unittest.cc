@@ -30,8 +30,8 @@ TEST(BookmarkEditorTest, ApplyEditsWithNoFolderChange) {
     EXPECT_EQ(u"folder0", bookmarkbar->children()[1]->GetTitle());
   }
   {
-    BookmarkEditor::EditDetails detail(
-        BookmarkEditor::EditDetails::AddFolder(bookmarkbar, size_t{-1}));
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::AddFolder(
+        bookmarkbar, static_cast<size_t>(-1)));
     BookmarkEditor::ApplyEditsWithNoFolderChange(
         model.get(), bookmarkbar, detail, u"folder1", GURL(std::string()));
     EXPECT_EQ(u"folder1", bookmarkbar->children()[3]->GetTitle());
