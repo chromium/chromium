@@ -16,37 +16,37 @@ PASS lengthToString(svgText.getComputedTextLength()) is "200.0"
 
 
 Test getSubStringLength() API
-FAIL lengthToString(svgText.getSubStringLength(0, 1)) should be 61.5. Was 54.5.
-FAIL lengthToString(svgText.getSubStringLength(0, 2)) should be 117.9. Was 115.2.
-FAIL lengthToString(svgText.getSubStringLength(0, 3)) should be 169.2. Was 169.7.
+PASS lengthToString(svgText.getSubStringLength(0, 1)) is "50.0"
+PASS lengthToString(svgText.getSubStringLength(0, 2)) is "100.0"
+PASS lengthToString(svgText.getSubStringLength(0, 3)) is "150.0"
 PASS lengthToString(svgText.getSubStringLength(0, 4)) is "200.0"
-FAIL lengthToString(svgText.getSubStringLength(1, 1)) should be 56.4. Was 60.6.
-FAIL lengthToString(svgText.getSubStringLength(1, 2)) should be 107.7. Was 115.2.
-FAIL lengthToString(svgText.getSubStringLength(1, 3)) should be 138.5. Was 145.5.
-FAIL lengthToString(svgText.getSubStringLength(2, 1)) should be 51.3. Was 54.5.
-FAIL lengthToString(svgText.getSubStringLength(2, 2)) should be 82.1. Was 84.8.
-FAIL lengthToString(svgText.getSubStringLength(3, 1)) should be 30.8. Was 30.3.
+PASS lengthToString(svgText.getSubStringLength(1, 1)) is "50.0"
+PASS lengthToString(svgText.getSubStringLength(1, 2)) is "100.0"
+PASS lengthToString(svgText.getSubStringLength(1, 3)) is "150.0"
+PASS lengthToString(svgText.getSubStringLength(2, 1)) is "50.0"
+PASS lengthToString(svgText.getSubStringLength(2, 2)) is "100.0"
+PASS lengthToString(svgText.getSubStringLength(3, 1)) is "50.0"
 
 
 Test getStartPositionOfChar() API
 PASS pointToString(svgText.getStartPositionOfChar(0)) is "(10.0,20.0)"
-FAIL pointToString(svgText.getStartPositionOfChar(1)) should be (71.5,20.0). Was (64.5,20.0).
-FAIL pointToString(svgText.getStartPositionOfChar(2)) should be (127.9,20.0). Was (125.2,20.0).
-FAIL pointToString(svgText.getStartPositionOfChar(3)) should be (179.2,20.0). Was (179.7,20.0).
+PASS pointToString(svgText.getStartPositionOfChar(1)) is "(60.0,20.0)"
+PASS pointToString(svgText.getStartPositionOfChar(2)) is "(110.0,20.0)"
+PASS pointToString(svgText.getStartPositionOfChar(3)) is "(160.0,20.0)"
 
 
 Test getEndPositionOfChar() API
-FAIL pointToString(svgText.getEndPositionOfChar(0)) should be (71.5,20.0). Was (64.5,20.0).
-FAIL pointToString(svgText.getEndPositionOfChar(1)) should be (127.9,20.0). Was (125.2,20.0).
-FAIL pointToString(svgText.getEndPositionOfChar(2)) should be (179.2,20.0). Was (179.7,20.0).
+PASS pointToString(svgText.getEndPositionOfChar(0)) is "(60.0,20.0)"
+PASS pointToString(svgText.getEndPositionOfChar(1)) is "(110.0,20.0)"
+PASS pointToString(svgText.getEndPositionOfChar(2)) is "(160.0,20.0)"
 PASS pointToString(svgText.getEndPositionOfChar(3)) is "(210.0,20.0)"
 
 
 Test getExtentOfChar() API
-FAIL rectToString(svgText.getExtentOfChar(0)) should be (10.0,1.9)-(61.5x22.3). Was (10.0,2.0)-(54.5x22.0).
-FAIL rectToString(svgText.getExtentOfChar(1)) should be (71.5,1.9)-(56.4x22.3). Was (64.5,2.0)-(60.6x22.0).
-FAIL rectToString(svgText.getExtentOfChar(2)) should be (127.9,1.9)-(51.3x22.3). Was (125.2,2.0)-(54.5x22.0).
-FAIL rectToString(svgText.getExtentOfChar(3)) should be (179.2,1.9)-(30.8x22.3). Was (179.7,2.0)-(30.3x22.0).
+PASS rectToString(svgText.getExtentOfChar(0)) is "(10.0,4.0)-(50.0x20.0)"
+PASS rectToString(svgText.getExtentOfChar(1)) is "(60.0,4.0)-(50.0x20.0)"
+PASS rectToString(svgText.getExtentOfChar(2)) is "(110.0,4.0)-(50.0x20.0)"
+PASS rectToString(svgText.getExtentOfChar(3)) is "(160.0,4.0)-(50.0x20.0)"
 
 
 Test getRotationOfChar() API
@@ -63,18 +63,18 @@ PASS svgText.getCharNumAtPosition(point) is -1
 PASS svgText.getCharNumAtPosition(point) is -1
 > Testing point=(10.1,10.0)
 PASS svgText.getCharNumAtPosition(point) is 0
-> Testing point=(71.4,10.0)
-FAIL svgText.getCharNumAtPosition(point) should be 0. Was 1.
+> Testing point=(49.4,10.0)
+PASS svgText.getCharNumAtPosition(point) is 0
 > Testing point=(71.6,10.0)
 PASS svgText.getCharNumAtPosition(point) is 1
-> Testing point=(127.8,10.0)
-FAIL svgText.getCharNumAtPosition(point) should be 1. Was 2.
+> Testing point=(99.8,10.0)
+PASS svgText.getCharNumAtPosition(point) is 1
 > Testing point=(128.0,10.0)
 PASS svgText.getCharNumAtPosition(point) is 2
-> Testing point=(179.1,10.0)
+> Testing point=(149.1,10.0)
 PASS svgText.getCharNumAtPosition(point) is 2
 > Testing point=(179.3,10.0)
-FAIL svgText.getCharNumAtPosition(point) should be 3. Was 2.
+PASS svgText.getCharNumAtPosition(point) is 3
 > Testing point=(209.9,10.0)
 PASS svgText.getCharNumAtPosition(point) is 3
 > Testing point=(210.1,10.0)
