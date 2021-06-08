@@ -358,6 +358,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppListBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistantEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularActivationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();

@@ -152,7 +152,7 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "AssistiveMultiWord") == 0) {
-    return base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord);
+    return chromeos::features::IsAssistiveMultiWordEnabled();
   }
   if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
     return base::FeatureList::IsEnabled(

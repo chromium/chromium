@@ -165,7 +165,7 @@ bool IsAssistivePersonalInfoAllowed() {
 }
 
 bool IsPredictiveWritingAllowed() {
-  return base::FeatureList::IsEnabled(::chromeos::features::kAssistMultiWord);
+  return chromeos::features::IsAssistiveMultiWordEnabled();
 }
 
 // TODO(crbug/1113611): As Smart Inputs page is renamed to Suggestions.

@@ -167,4 +167,41 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
+TEST_F(AssistiveSuggesterTest,
+       MultiWordDisabledWhenFeatureFlagEnabledButImeServiceDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
+      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
+                             chromeos::features::kAssistPersonalInfo,
+                             chromeos::features::kImeMojoDecoder});
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       MultiWordDisabledWhenFeatureFlagAndImeServiceEnableButSystemPkDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistMultiWord,
+                            chromeos::features::kImeMojoDecoder},
+      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
+                             chromeos::features::kAssistPersonalInfo,
+                             chromeos::features::kSystemLatinPhysicalTyping});
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistMultiWord,
+                            chromeos::features::kImeMojoDecoder,
+                            chromeos::features::kSystemLatinPhysicalTyping},
+      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
+                             chromeos::features::kAssistPersonalInfo});
+
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
 }  // namespace chromeos

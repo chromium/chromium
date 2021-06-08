@@ -343,7 +343,7 @@ bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord) &&
+  return chromeos::features::IsAssistiveMultiWordEnabled() &&
          profile_->GetPrefs()->GetBoolean(
              prefs::kAssistPredictiveWritingEnabled);
 }
@@ -380,7 +380,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)) {
+  if (!chromeos::features::IsAssistiveMultiWordEnabled()) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(

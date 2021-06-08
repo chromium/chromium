@@ -807,6 +807,12 @@ bool IsAppListBubbleEnabled() {
   return base::FeatureList::IsEnabled(kAppListBubble);
 }
 
+bool IsAssistiveMultiWordEnabled() {
+  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
+         base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping) &&
+         base::FeatureList::IsEnabled(kAssistMultiWord);
+}
+
 bool IsCellularActivationUiEnabled() {
   return base::FeatureList::IsEnabled(kUpdatedCellularActivationUi);
 }

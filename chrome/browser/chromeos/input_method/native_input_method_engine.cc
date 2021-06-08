@@ -170,12 +170,12 @@ void NativeInputMethodEngine::Initialize(
   autocorrect_manager_ = autocorrect_manager.get();
 
   auto suggestions_service_client =
-      base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
+      chromeos::features::IsAssistiveMultiWordEnabled()
           ? std::make_unique<SuggestionsServiceClient>()
           : nullptr;
 
   auto suggestions_collector =
-      base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
+      chromeos::features::IsAssistiveMultiWordEnabled()
           ? std::make_unique<SuggestionsCollector>(
                 assistive_suggester_, std::move(suggestions_service_client))
           : nullptr;
