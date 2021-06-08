@@ -873,6 +873,7 @@ void V4Store::CollectStoreInfo(
   store_info->set_file_size_bytes(file_size_);
   store_info->set_update_status(static_cast<int>(last_apply_update_result_));
   store_info->set_checks_attempted(checks_attempted_);
+  store_info->set_state(state_);
   if (last_apply_update_time_millis_.ToJavaTime()) {
     store_info->set_last_apply_update_time_millis(
         last_apply_update_time_millis_.ToJavaTime());

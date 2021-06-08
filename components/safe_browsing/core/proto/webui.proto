@@ -54,6 +54,10 @@ message DatabaseManagerInfo {
 
       // The number of times the store has been queried for a prefix.
       optional uint32 checks_attempted = 5;
+
+      // The current state of the client for the requested store (the encrypted
+      // ClientState that was sent to the client from the previous request).
+      optional string state = 6;
     }
 
     // Information about each of the stores managed by the database.

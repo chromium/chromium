@@ -431,6 +431,12 @@ void AddStoreInfo(const DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info,
         base::UTF16ToUTF8(base::FormatNumber(store_info.checks_attempted())));
   }
 
+  if (store_info.has_state()) {
+    std::string state_base64;
+    base::Base64Encode(store_info.state(), &state_base64);
+    store_info_list.Append("State: " + state_base64);
+  }
+
   database_info_list->Append(std::move(store_info_list));
 }
 
