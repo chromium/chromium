@@ -19,7 +19,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package build.android.unused_resources;
+package build.android.gyp.resources_shrinker;
 
 import static com.android.ide.common.symbols.SymbolIo.readFromAapt;
 import static com.android.utils.SdkUtils.endsWithIgnoreCase;
@@ -44,7 +44,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
-import com.google.common.io.Files;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -55,6 +54,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -77,7 +77,7 @@ import javax.xml.parsers.ParserConfigurationException;
     - Reduce dependencies unless absolutely required.
 */
 
-public class UnusedResources {
+public class Shrinker {
     private static final String ANDROID_RES = "android_res/";
     private static final String DOT_DEX = ".dex";
     private static final String DOT_CLASS = ".class";
@@ -96,6 +96,9 @@ public class UnusedResources {
     private final File mReportFile;
     private final StringWriter mDebugOutput;
     private final PrintWriter mDebugPrinter;
+
+    /** Easy way to invoke more verbose output for debugging */
+    private boolean mDebug = false;
 
     /** The computed set of unused resources */
     private List<Resource> mUnused;
@@ -133,8 +136,8 @@ public class UnusedResources {
         }
     }
 
-    public UnusedResources(Iterable<File> rTxtFiles, Iterable<File> classes,
-            Iterable<File> manifests, File mapping, Iterable<File> resources, File reportFile) {
+    public Shrinker(Iterable<File> rTxtFiles, Iterable<File> classes, Iterable<File> manifests,
+            File mapping, Iterable<File> resources, File reportFile) {
         mRTxtFiles = rTxtFiles;
         mProguardMapping = mapping;
         mClasses = classes;
@@ -210,11 +213,13 @@ public class UnusedResources {
             throws IOException, SAXException, ParserConfigurationException {
         for (File resDir : resources) {
             File[] resourceFolders = resDir.listFiles();
-            assert resourceFolders != null : "Invalid resource directory " + resDir;
-            for (File folder : resourceFolders) {
-                ResourceFolderType folderType = ResourceFolderType.getFolderType(folder.getName());
-                if (folderType != null) {
-                    recordResources(folderType, folder);
+            if (resourceFolders != null) {
+                for (File folder : resourceFolders) {
+                    ResourceFolderType folderType =
+                            ResourceFolderType.getFolderType(folder.getName());
+                    if (folderType != null) {
+                        recordResources(folderType, folder);
+                    }
                 }
             }
         }
@@ -387,7 +392,7 @@ public class UnusedResources {
 
             @Override
             public void referencedInt(int value) {
-                UnusedResources.this.referencedInt("dex", value, file, name);
+                Shrinker.this.referencedInt("dex", value, file, name);
             }
 
             @Override
@@ -497,7 +502,8 @@ public class UnusedResources {
 
     private void referencedInt(String context, int value, File file, String currentClass) {
         Resource resource = mModel.getResource(value);
-        if (ResourceUsageModel.markReachable(resource) && mDebugPrinter != null) {
+        if (ResourceUsageModel.markReachable(resource) && mDebug) {
+            assert mDebugPrinter != null : "mDebug is true, but mDebugPrinter is null.";
             mDebugPrinter.println("Marking " + resource + " reachable: referenced from " + context
                     + " in " + file + ":" + currentClass);
         }
@@ -557,7 +563,7 @@ public class UnusedResources {
                                         .map(s -> new File(s))
                                         .collect(Collectors.toList());
                     break;
-                case "--dexes":
+                case "--dex":
                     classes = Arrays.stream(args[i + 1].split(":"))
                                       .map(s -> new File(s))
                                       .collect(Collectors.toList());
@@ -585,10 +591,9 @@ public class UnusedResources {
                     throw new IllegalArgumentException(args[i] + " is not a valid arg.");
             }
         }
-        UnusedResources unusedResources =
-                new UnusedResources(rTxtFiles, classes, manifests, mapping, resources, log);
-        unusedResources.analyze();
-        unusedResources.close();
-        unusedResources.emitConfig(configPath);
+        Shrinker shrinker = new Shrinker(rTxtFiles, classes, manifests, mapping, resources, log);
+        shrinker.analyze();
+        shrinker.close();
+        shrinker.emitConfig(configPath);
     }
 }
