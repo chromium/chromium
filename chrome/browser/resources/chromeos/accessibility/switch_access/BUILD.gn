@@ -108,6 +108,7 @@ js2gtest("switch_access_extjs_tests") {
   test_type = "extension"
   sources = [
     "auto_scan_manager_test.js",
+    "focus_ring_manager_test.js",
     "item_scan_manager_test.js",
     "nodes/basic_node_test.js",
     "nodes/desktop_node_test.js",

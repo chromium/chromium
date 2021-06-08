@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+GEN_INCLUDE(['switch_access_e2e_test_base.js']);
+
+/** Test fixture for the focus ring manager. */
+FocusRingManagerTest = class extends SwitchAccessE2ETest {
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async () => {
+      await importModule(
+          'FocusRingManager', '/switch_access/focus_ring_manager.js');
+      await importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
+      await importModule(
+          'SAConstants', '/switch_access/switch_access_constants.js');
+      runTest();
+    })();
+  }
+};
+
+TEST_F('FocusRingManagerTest', 'BackButtonFocus', function() {
+  this.runWithLoadedDesktop((desktop) => {
+    // Focus the back button.
+    Navigator.byItem.moveTo_(
+        desktop.find({role: chrome.automation.RoleType.TAB}));
+    Navigator.byItem.node_.doDefaultAction();
+    Navigator.byItem.moveForward();
+    BackButtonNode
+        .locationForTesting = {top: 10, left: 10, width: 10, height: 10};
+    Navigator.byItem.moveForward();
+    assertTrue(
+        Navigator.byItem.node_ instanceof BackButtonNode,
+        'Third node should be a BackButtonNode');
+    const rings = FocusRingManager.instance.rings_;
+    const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
+    const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+    assertEquals(SAConstants.Focus.ID.PRIMARY, primary.id);
+    assertEquals(SAConstants.Focus.ID.PREVIEW, preview.id);
+    assertEquals('solid', primary.type);
+    assertEquals('dashed', preview.type);
+    // Primary focus should be empty, preview focus should contain one element.
+    assertEquals(0, primary.rects.length);
+    assertEquals(1, preview.rects.length);
+  });
+});
