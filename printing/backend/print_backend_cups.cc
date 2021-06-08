@@ -168,15 +168,20 @@ mojom::ResultCode PrintBackendCUPS::GetDefaultPrinterName(
   cups_dest_t* dests;
   int num_dests = GetDests(&dests);
   cups_dest_t* dest = cupsGetDest(nullptr, nullptr, num_dests, dests);
-  if (!dest) {
+  mojom::ResultCode result = mojom::ResultCode::kSuccess;
+  if (dest) {
+    default_printer = std::string(dest->name);
+  } else if (cupsLastError() <= IPP_OK_EVENTS_COMPLETE) {
+    // No default printer found.
+    default_printer.clear();
+  } else {
     LOG(ERROR) << "CUPS: Error getting default printer: "
                << cupsLastErrorString();
-    return mojom::ResultCode::kFailed;
+    result = mojom::ResultCode::kFailed;
   }
 
-  default_printer = std::string(dest->name);
   cupsFreeDests(num_dests, dests);
-  return mojom::ResultCode::kSuccess;
+  return result;
 }
 
 mojom::ResultCode PrintBackendCUPS::GetPrinterBasicInfo(
