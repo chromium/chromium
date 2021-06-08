@@ -9,12 +9,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -83,6 +87,19 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
   auto site_instance = content::SiteInstance::Create(browser_context);
   return content::WebContentsTester::CreateTestWebContents(
       browser_context, std::move(site_instance));
+}
+
+DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
+  switch (endpoint_type) {
+    case ui::EndpointType::kArc:
+      return DlpRulesManager::Component::kArc;
+    case ui::EndpointType::kCrostini:
+      return DlpRulesManager::Component::kCrostini;
+    case ui::EndpointType::kPluginVm:
+      return DlpRulesManager::Component::kPluginVm;
+    default:
+      return DlpRulesManager::Component::kUnknownComponent;
+  }
 }
 
 }  // namespace
@@ -267,8 +284,11 @@ TEST_P(DlpControllerTest, Block) {
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
+  DlpReportingManager reporting_manager;
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(&reporting_manager, events);
   EXPECT_CALL(rules_manager_, GetReportingManager)
-      .WillRepeatedly(::testing::Return(nullptr));
+      .WillRepeatedly(::testing::Return(&reporting_manager));
 
   // IsClipboardReadAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
@@ -278,6 +298,10 @@ TEST_P(DlpControllerTest, Block) {
 
   EXPECT_EQ(false, dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", "", DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kBlock)));
 
   // IsDragDropAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
@@ -288,10 +312,53 @@ TEST_P(DlpControllerTest, Block) {
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, dst_ptr,
                                                      /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 2u);
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", "", DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kBlock)));
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+}
+
+TEST_P(DlpControllerTest, Report) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  absl::optional<ui::EndpointType> endpoint_type;
+  bool do_notify;
+  std::tie(endpoint_type, do_notify) = GetParam();
+  absl::optional<ui::DataTransferEndpoint> data_dst =
+      CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
+  auto* dst_ptr = base::OptionalOrNullptr(data_dst);
+
+  DlpReportingManager reporting_manager;
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(&reporting_manager, events);
+  EXPECT_CALL(rules_manager_, GetReportingManager)
+      .WillRepeatedly(::testing::Return(&reporting_manager));
+
+  // IsClipboardReadAllowed
+  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
+
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", "", DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kReport)));
+
+  // IsDragDropAllowed
+  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
+
+  EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(&data_src, dst_ptr,
+                                                    /*is_drop=*/do_notify));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 2u);
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", "", DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kReport)));
 }
 
 TEST_P(DlpControllerTest, Warn) {
@@ -403,8 +470,11 @@ TEST_P(DlpControllerVMsTest, Block) {
   ASSERT_TRUE(endpoint_type.has_value());
   ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
 
+  DlpReportingManager reporting_manager;
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(&reporting_manager, events);
   EXPECT_CALL(rules_manager_, GetReportingManager)
-      .WillRepeatedly(::testing::Return(nullptr));
+      .WillRepeatedly(::testing::Return(&reporting_manager));
 
   // IsClipboardReadAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
@@ -415,6 +485,11 @@ TEST_P(DlpControllerVMsTest, Block) {
   EXPECT_EQ(false,
             dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", GetComponent(endpoint_type.value()),
+                             DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kBlock)));
 
   // IsDragDropAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
@@ -425,10 +500,55 @@ TEST_P(DlpControllerVMsTest, Block) {
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
                                                      /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 2u);
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", GetComponent(endpoint_type.value()),
+                             DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kBlock)));
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+}
+
+TEST_P(DlpControllerVMsTest, Report) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  absl::optional<ui::EndpointType> endpoint_type;
+  bool do_notify;
+  std::tie(endpoint_type, do_notify) = GetParam();
+  ASSERT_TRUE(endpoint_type.has_value());
+  ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
+
+  DlpReportingManager reporting_manager;
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(&reporting_manager, events);
+  EXPECT_CALL(rules_manager_, GetReportingManager)
+      .WillRepeatedly(::testing::Return(&reporting_manager));
+
+  // IsClipboardReadAllowed
+  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
+
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", GetComponent(endpoint_type.value()),
+                             DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kReport)));
+
+  // IsDragDropAllowed
+  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
+
+  EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
+                                                    /*is_drop=*/do_notify));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  EXPECT_EQ(events.size(), 2u);
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             "", GetComponent(endpoint_type.value()),
+                             DlpRulesManager::Restriction::kClipboard,
+                             DlpRulesManager::Level::kReport)));
 }
 
 TEST_P(DlpControllerVMsTest, Warn) {

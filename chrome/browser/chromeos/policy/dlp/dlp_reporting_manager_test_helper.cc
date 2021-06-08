@@ -22,23 +22,37 @@ namespace policy {
 class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
  public:
   explicit DlpPolicyEventMatcher(const DlpPolicyEvent& event)
-      : destination_url_(event.destination().url()) {}
+      : source_url_(event.source().url()),
+        destination_url_(event.destination().url()),
+        destination_component_(event.destination().component()) {}
 
   bool MatchAndExplain(const DlpPolicyEvent& event,
                        MatchResultListener* listener) const override {
-    // Print job configuration
+    bool source_url_equals = event.source().url() == source_url_;
+    if (!source_url_equals) {
+      *listener << " |source_url| is " << event.source().url();
+    }
     bool destination_url_equals = event.destination().url() == destination_url_;
     if (!destination_url_equals) {
       *listener << " |destination_url| is " << event.destination().url();
     }
+    bool destination_component_equals =
+        event.destination().component() == destination_component_;
+    if (!destination_component_equals) {
+      *listener << " |destination_component| is "
+                << event.destination().component();
+    }
 
-    return destination_url_equals;
+    return source_url_equals && destination_url_equals &&
+           destination_component_equals;
   }
 
   void DescribeTo(::std::ostream* os) const override {}
 
  private:
+  const std::string source_url_;
   const std::string destination_url_;
+  const int destination_component_;
 };
 
 Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
