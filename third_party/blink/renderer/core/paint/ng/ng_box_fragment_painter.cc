@@ -561,6 +561,13 @@ void NGBoxFragmentPainter::PaintObject(
         }
       } else if (!fragment.IsInlineFormattingContext()) {
         PaintBlockChildren(paint_info, paint_offset);
+
+        if (is_visible && paint_info.phase == PaintPhase::kForeground &&
+            box_fragment_.IsTableNG()) {
+          NGTablePainter(box_fragment_)
+              .PaintCollapsedBorders(paint_info, paint_offset,
+                                     VisualRect(paint_offset));
+        }
       }
     }
 
@@ -709,12 +716,6 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
       // NGBoxFragmentPainter directly for NG objects.
       layout_object->Paint(paint_info_for_descendants);
     }
-  }
-  if (paint_info.phase == PaintPhase::kForeground &&
-      box_fragment_.IsTableNG()) {
-    NGTablePainter(box_fragment_)
-        .PaintCollapsedBorders(paint_info, paint_offset,
-                               VisualRect(paint_offset));
   }
 }
 
