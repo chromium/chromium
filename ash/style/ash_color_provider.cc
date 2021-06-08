@@ -65,12 +65,6 @@ constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
 // The spacing between a pill button's icon and label, if it has both.
 constexpr int kPillButtonImageLabelSpacingDp = 8;
 
-// AshColorProvider is kind of NativeTheme of ChromeOS. This will notify the
-// View::OnThemeChanged to live update the colors on color mode/theme changes.
-void NotifyThemeChanges() {
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
-}
-
 // Get the corresponding ColorName for |type|. ColorName is an enum in
 // cros_colors.h file that is generated from cros_colors.json5, which includes
 // the color IDs and colors that will be used by ChromeOS WebUI.
@@ -107,9 +101,11 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
   return cros_colors::ResolveColor(TypeToColorName(type), use_dark_color);
 }
 
-// Notify all the other components to update on the color mode changes. Only
-// Chrome browser is notified currently, will include WebUI, Arc etc later.
-void NotifyColorModeChanges(bool is_dark_mode_enabled) {
+// Notify all the other components besides the System UI to update on the color
+// mode or theme changes. E.g, Chrome browser, WebUI. And since AshColorProvider
+// is kind of NativeTheme of ChromeOS. This will notify the View::OnThemeChanged
+// to live update the colors on color mode or theme changes as well.
+void NotifyColorModeAndThemeChanges(bool is_dark_mode_enabled) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
   native_theme->NotifyOnNativeThemeUpdated();
@@ -183,7 +179,8 @@ void AshColorProvider::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (!features::IsDarkLightModeEnabled())
     return;
-  NotifyColorModeChanges(IsDarkModeEnabled());
+  NotifyDarkModeEnabledPrefChange();
+  NotifyColorModeThemedPrefChange();
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -357,7 +354,7 @@ void AshColorProvider::ToggleColorMode() {
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
-  NotifyColorModeChanges(IsDarkModeEnabled());
+  NotifyDarkModeEnabledPrefChange();
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
@@ -367,6 +364,7 @@ void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
   DCHECK(active_user_pref_service_);
   active_user_pref_service_->SetBoolean(prefs::kColorModeThemed, is_themed);
   active_user_pref_service_->CommitPendingWrite();
+  NotifyColorModeThemedPrefChange();
 }
 
 SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
@@ -517,7 +515,7 @@ void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
 
-  NotifyThemeChanges();
+  NotifyColorModeAndThemeChanges(IsDarkModeEnabled());
 }
 
 void AshColorProvider::NotifyColorModeThemedPrefChange() {
@@ -525,7 +523,7 @@ void AshColorProvider::NotifyColorModeThemedPrefChange() {
   for (auto& observer : observers_)
     observer.OnColorModeThemed(is_themed);
 
-  NotifyThemeChanges();
+  NotifyColorModeAndThemeChanges(IsDarkModeEnabled());
 }
 
 }  // namespace ash
