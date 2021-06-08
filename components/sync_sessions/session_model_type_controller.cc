@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -15,15 +16,13 @@ namespace sync_sessions {
 SessionModelTypeController::SessionModelTypeController(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate,
-    const std::string& history_disabled_pref_name)
+    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate)
     : ModelTypeController(syncer::SESSIONS, std::move(delegate)),
       sync_service_(sync_service),
-      pref_service_(pref_service),
-      history_disabled_pref_name_(history_disabled_pref_name) {
+      pref_service_(pref_service) {
   pref_registrar_.Init(pref_service);
   pref_registrar_.Add(
-      history_disabled_pref_name_,
+      prefs::kSavingBrowserHistoryDisabled,
       base::BindRepeating(
           &SessionModelTypeController::OnSavingBrowserHistoryPrefChanged,
           base::AsWeakPtr(this)));
@@ -34,7 +33,7 @@ SessionModelTypeController::~SessionModelTypeController() = default;
 syncer::DataTypeController::PreconditionState
 SessionModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return pref_service_->GetBoolean(history_disabled_pref_name_)
+  return pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled)
              ? PreconditionState::kMustStopAndKeepData
              : PreconditionState::kPreconditionsMet;
 }

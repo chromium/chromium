@@ -44,7 +44,6 @@ class ProfileSyncComponentsFactoryImpl
   ProfileSyncComponentsFactoryImpl(
       BrowserSyncClient* sync_client,
       version_info::Channel channel,
-      const char* history_disabled_pref,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& db_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -116,7 +115,6 @@ class ProfileSyncComponentsFactoryImpl
   // Client/platform specific members.
   BrowserSyncClient* const sync_client_;
   const version_info::Channel channel_;
-  const char* history_disabled_pref_;
   const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   const scoped_refptr<base::SequencedTaskRunner> db_thread_;
   const scoped_refptr<base::SequencedTaskRunner>

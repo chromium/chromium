@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_SESSIONS_SESSION_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,8 +25,7 @@ class SessionModelTypeController : public syncer::ModelTypeController {
   SessionModelTypeController(
       syncer::SyncService* sync_service,
       PrefService* pref_service,
-      std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate,
-      const std::string& history_disabled_pref_name);
+      std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate);
   ~SessionModelTypeController() override;
 
   // DataTypeController overrides.
@@ -38,9 +36,6 @@ class SessionModelTypeController : public syncer::ModelTypeController {
 
   syncer::SyncService* const sync_service_;
   PrefService* const pref_service_;
-
-  // Name of the pref that indicates whether saving history is disabled.
-  const std::string history_disabled_pref_name_;
 
   PrefChangeRegistrar pref_registrar_;
 

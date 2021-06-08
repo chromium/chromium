@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_client.h"
@@ -30,16 +31,14 @@ GetDelegateFromHistoryService(HistoryService* history_service) {
 
 TypedURLModelTypeController::TypedURLModelTypeController(
     HistoryService* history_service,
-    PrefService* pref_service,
-    const char* history_disabled_pref_name)
+    PrefService* pref_service)
     : ModelTypeController(syncer::TYPED_URLS,
                           GetDelegateFromHistoryService(history_service)),
       history_service_(history_service),
-      pref_service_(pref_service),
-      history_disabled_pref_name_(history_disabled_pref_name) {
+      pref_service_(pref_service) {
   pref_registrar_.Init(pref_service_);
   pref_registrar_.Add(
-      history_disabled_pref_name_,
+      prefs::kSavingBrowserHistoryDisabled,
       base::BindRepeating(
           &TypedURLModelTypeController::OnSavingBrowserHistoryDisabledChanged,
           base::AsWeakPtr(this)));
@@ -50,13 +49,13 @@ TypedURLModelTypeController::~TypedURLModelTypeController() {}
 syncer::DataTypeController::PreconditionState
 TypedURLModelTypeController::GetPreconditionState() const {
   return (history_service_ &&
-          !pref_service_->GetBoolean(history_disabled_pref_name_))
+          !pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled))
              ? PreconditionState::kPreconditionsMet
              : PreconditionState::kMustStopAndClearData;
 }
 
 void TypedURLModelTypeController::OnSavingBrowserHistoryDisabledChanged() {
-  if (pref_service_->GetBoolean(history_disabled_pref_name_)) {
+  if (pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
     // We've turned off history persistence, so if we are running,
     // generate an unrecoverable error. This can be fixed by restarting
     // Chrome (on restart, typed urls will not be a registered type).

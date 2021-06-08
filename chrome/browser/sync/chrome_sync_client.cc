@@ -216,10 +216,10 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ = std::make_unique<ProfileSyncComponentsFactoryImpl>(
-      this, chrome::GetChannel(), prefs::kSavingBrowserHistoryDisabled,
-      content::GetUIThreadTaskRunner({}), web_data_service_thread_,
-      profile_web_data_service_, account_web_data_service_,
-      profile_password_store_, account_password_store_,
+      this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
+      web_data_service_thread_, profile_web_data_service_,
+      account_web_data_service_, profile_password_store_,
+      account_password_store_,
       BookmarkSyncServiceFactory::GetForProfile(profile_));
 
 #if defined(OS_ANDROID)
