@@ -118,7 +118,7 @@
 
     <style name="Theme.Chromium.Settings.ManageSpace">
         <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193. -->
-        <item name="colorPrimary">@color/dark_action_bar_color</item>
+        <item name="colorSurface">@color/dark_action_bar_color</item>
         <!-- Status bar color -->
         <item name="colorPrimaryDark">@color/dark_status_bar_color</item>
         <item name="actionBarStyle">@style/ManageSpaceActionBarModern</item>
