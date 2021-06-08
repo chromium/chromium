@@ -14319,6 +14319,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileIncognitoBiometricAuthenticationRequested">
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    The user has started biometric authentication for incognito access. iOS
+    only.
+  </description>
+</action>
+
 <action name="MobileLocationBarTapped">
   <owner>stkhapugin@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
