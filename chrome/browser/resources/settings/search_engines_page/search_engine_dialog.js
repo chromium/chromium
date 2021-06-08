@@ -103,9 +103,10 @@ Polymer({
    */
   enginesChanged_(searchEnginesInfo) {
     if (this.model) {
-      const engineWasRemoved = ['defaults', 'others', 'extensions'].every(
-          engineType =>
-              searchEnginesInfo[engineType].every(e => e.id !== this.model.id));
+      const engineWasRemoved =
+          ['defaults', 'actives', 'others', 'extensions'].every(
+              engineType => searchEnginesInfo[engineType].every(
+                  e => e.id !== this.model.id));
       if (engineWasRemoved) {
         this.cancel_();
         return;

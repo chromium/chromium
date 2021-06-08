@@ -76,7 +76,12 @@ extern const base::Feature kWebUIOmniboxPopup;
 // popup).
 extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
+
+// Settings Page - these affect the appearance of the Search Engines settings
+// page
 extern const base::Feature kKeywordSpaceTriggeringSetting;
+extern const base::Feature kActiveSearchEngines;
+
 // Experiment to introduce new security indicators for HTTPS.
 extern const base::Feature kUpdatedConnectionSecurityIndicators;
 

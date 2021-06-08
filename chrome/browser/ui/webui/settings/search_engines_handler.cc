@@ -120,15 +120,28 @@ SearchEnginesHandler::GetSearchEnginesList() {
     defaults->Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the second list (other search engines).
+  // Build the second list (active search engines). This will not have any
+  // entries if the new Search Engines page is not enabled.
+  auto actives = std::make_unique<base::ListValue>();
+  int last_active_engine_index =
+      list_controller_.table_model()->last_active_engine_index();
+
+  CHECK_LE(last_default_engine_index, last_active_engine_index);
+  for (int i = std::max(last_default_engine_index, 0);
+       i < last_active_engine_index; ++i) {
+    // Third argument is false, as the engine is not from an extension.
+    actives->Append(CreateDictionaryForEngine(i, i == default_index));
+  }
+
+  // Build the third list (other search engines).
   auto others = std::make_unique<base::ListValue>();
   int last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
 
   // Sanity check for https://crbug.com/781703.
-  CHECK_LE(last_default_engine_index, last_other_engine_index);
+  CHECK_LE(last_active_engine_index, last_other_engine_index);
 
-  for (int i = std::max(last_default_engine_index, 0);
+  for (int i = std::max(last_active_engine_index, 0);
        i < last_other_engine_index; ++i) {
     others->Append(CreateDictionaryForEngine(i, i == default_index));
   }
@@ -146,6 +159,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   auto search_engines_info = std::make_unique<base::DictionaryValue>();
   search_engines_info->Set("defaults", std::move(defaults));
+  search_engines_info->Set("actives", std::move(actives));
   search_engines_info->Set("others", std::move(others));
   search_engines_info->Set("extensions", std::move(extensions));
   return search_engines_info;

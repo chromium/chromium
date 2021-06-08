@@ -45317,6 +45317,7 @@ from previous Chrome versions.
   <int value="-1847776781"
       label="enable-loading-ipc-optimization-for-small-resources"/>
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
+  <int value="-1846613349" label="OmniboxActiveSearchEngines:disabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1844754731" label="Mash:disabled"/>
@@ -46848,6 +46849,7 @@ from previous Chrome versions.
   <int value="-572012175" label="AssistantEnableStereoAudioInput:disabled"/>
   <int value="-571236436" label="AppManagement:disabled"/>
   <int value="-570889908" label="CCTModuleDexLoading:enabled"/>
+  <int value="-570572517" label="OmniboxActiveSearchEngines:enabled"/>
   <int value="-568448085" label="SharedClipboardReceiver:disabled"/>
   <int value="-567920515" label="disable-experimental-hotwording"/>
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>

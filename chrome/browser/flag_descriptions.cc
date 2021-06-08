@@ -1600,6 +1600,12 @@ const char kUpdateHoverAtBeginFrameDescription[] =
     "Recompute hover state at BeginFrame for layout and scroll based mouse "
     "moves, rather than old timing-based mechanism.";
 
+const char kOmniboxActiveSearchEnginesName[] =
+    "Active Search Engines section on settings page";
+const char kOmniboxActiveSearchEnginesDescription[] =
+    "Enables a 'Your Search Engines' section on "
+    "chrome://settings/searchEngines.";
+
 const char kOmniboxAdaptiveSuggestionsCountName[] =
     "Adaptive Omnibox Suggestions count";
 const char kOmniboxAdaptiveSuggestionsCountDescription[] =

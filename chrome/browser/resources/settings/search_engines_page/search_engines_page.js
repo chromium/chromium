@@ -50,6 +50,9 @@ Polymer({
     defaultEngines: Array,
 
     /** @type {!Array<!SearchEngine>} */
+    activeEngines: Array,
+
+    /** @type {!Array<!SearchEngine>} */
     otherEngines: Array,
 
     /** @type {!Array<!SearchEngine>} */
@@ -80,6 +83,12 @@ Polymer({
     matchingDefaultEngines_: {
       type: Array,
       computed: 'computeMatchingEngines_(defaultEngines, filter)',
+    },
+
+    /** @private {!Array<!SearchEngine>} */
+    matchingActiveEngines_: {
+      type: Array,
+      computed: 'computeMatchingEngines_(activeEngines, filter)',
     },
 
     /** @private {!Array<!SearchEngine>} */
@@ -122,6 +131,12 @@ Polymer({
     showKeywordTriggerSetting_: {
       type: Boolean,
       value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
+    },
+
+    /** @private */
+    showActiveSearchEngines_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('showActiveSearchEngines'),
     },
   },
 
@@ -191,7 +206,10 @@ Polymer({
   enginesChanged_(searchEnginesInfo) {
     this.defaultEngines = searchEnginesInfo.defaults;
 
-    // Sort |otherEngines| in alphabetical order.
+    // Sort |activeEngines| and |otherEngines| in alphabetical order.
+    this.activeEngines = searchEnginesInfo.actives.sort(
+        (a, b) => a.name.toLocaleLowerCase().localeCompare(
+            b.name.toLocaleLowerCase()));
     this.otherEngines = searchEnginesInfo.others.sort(
         (a, b) => a.name.toLocaleLowerCase().localeCompare(
             b.name.toLocaleLowerCase()));

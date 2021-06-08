@@ -36,6 +36,7 @@ export let SearchEngine;
 /**
  * @typedef {{
  *   defaults: !Array<!SearchEngine>,
+ *   actives: !Array<!SearchEngine>,
  *   others: !Array<!SearchEngine>,
  *   extensions: !Array<!SearchEngine>
  * }}

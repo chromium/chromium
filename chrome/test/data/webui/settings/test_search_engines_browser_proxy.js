@@ -28,7 +28,8 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
     ]);
 
     /** @private {!SearchEnginesInfo} */
-    this.searchEnginesInfo_ = {defaults: [], others: [], extensions: []};
+    this.searchEnginesInfo_ =
+        {defaults: [], actives: [], others: [], extensions: []};
   }
 
   /** @override */

@@ -44,10 +44,30 @@
       </settings-search-engine-dialog>
     </template>
 
+    <template is="dom-if" if="[[showActiveSearchEngines_]]">
+      <div class="cr-row first">
+        <h2 class="flex">$i18n{searchEnginesActive}</h2>
+        <cr-button class="secondary-button header-aligned-button"
+                   on-click="onAddSearchEngineTap_" id="addActiveSearchEngine">
+          $i18n{add}
+        </cr-button>
+      </div>
+      <div class="no-search-results list-frame"
+           hidden="[[matchingActiveEngines_.length]]">
+           $i18n{searchNoResults}
+      </div>
+      <settings-search-engines-list id="activeEngines"
+          hidden="[[!matchingActiveEngines_.length]]"
+          engines="[[matchingActiveEngines_]]"
+          scroll-target="[[subpageScrollTarget]]">
+      </settings-search-engines-list>
+    </template>
+
     <div class="cr-row first">
       <h2 class="flex">$i18n{searchEnginesOther}</h2>
       <cr-button class="secondary-button header-aligned-button"
-          on-click="onAddSearchEngineTap_" id="addSearchEngine">
+                 hidden="[[showActiveSearchEngines_]]"
+                 on-click="onAddSearchEngineTap_" id="addSearchEngine">
         $i18n{add}
       </cr-button>
     </div>

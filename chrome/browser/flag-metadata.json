@@ -3813,6 +3813,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "omnibox-active-search-engines",
+    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "omnibox-adaptive-suggestions-count",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
@@ -3881,11 +3886,6 @@
     "name": "omnibox-keyword-search-button",
     "owners": [ "jdonnelly", "yoangela", "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
-  },
-  {
-    "name": "omnibox-keyword-space-triggering",
-    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 99
   },
   {
     "name": "omnibox-keyword-space-triggering-setting",

@@ -145,6 +145,7 @@ suite('AddSearchEngineDialogTests', function() {
     dialog.set('model', createSampleSearchEngine(0, 'G', false, false, false));
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
+      actives: [],
       others: [createSampleSearchEngine(1, 'H', false, false, false)],
       extensions: [],
     });
@@ -156,6 +157,7 @@ suite('AddSearchEngineDialogTests', function() {
     dialog.set('keyword_', 'G');
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
+      actives: [],
       others: [createSampleSearchEngine(0, 'G', false, false, false)],
       extensions: [],
     });
@@ -290,6 +292,7 @@ suite('SearchEnginePageTests', function() {
   const searchEnginesInfo = {
     defaults:
         [createSampleSearchEngine(0, 'search_engine_G', false, false, false)],
+    actives: [],
     others: [
       createSampleSearchEngine(1, 'search_engine_B', false, false, false),
       createSampleSearchEngine(2, 'search_engine_A', false, false, false),
@@ -304,6 +307,7 @@ suite('SearchEnginePageTests', function() {
     // mutations on ground truth data.
     browserProxy.setSearchEnginesInfo({
       defaults: searchEnginesInfo.defaults.slice(),
+      actives: searchEnginesInfo.actives.slice(),
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
@@ -356,6 +360,7 @@ suite('SearchEnginePageTests', function() {
   test('NoOtherSearchEnginesMessage', function() {
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
+      actives: [],
       others: [],
       extensions: [],
     });
@@ -366,6 +371,7 @@ suite('SearchEnginePageTests', function() {
 
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
+      actives: [],
       others: [createSampleSearchEngine(0, 'G', false, false, false)],
       extensions: [],
     });

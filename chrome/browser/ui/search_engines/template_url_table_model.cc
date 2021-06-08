@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,24 +34,37 @@ void TemplateURLTableModel::Reload() {
   TemplateURL::TemplateURLVector urls =
       template_url_service_->GetTemplateURLs();
 
-  TemplateURL::TemplateURLVector default_entries, other_entries,
+  TemplateURL::TemplateURLVector default_entries, active_entries, other_entries,
       extension_entries;
   // Keywords that can be made the default first.
   for (auto* template_url : urls) {
-    if (template_url_service_->ShowInDefaultList(template_url))
+    if (template_url_service_->ShowInDefaultList(template_url)) {
       default_entries.push_back(template_url);
-    else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)
+    } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       extension_entries.push_back(template_url);
-    else
+    } else if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
+               (!template_url->safe_for_autoreplace() ||
+                template_url->usage_count() > 0)) {
+      // An entry is "active" if it has ever been used or manually
+      // added/modified. |safe_for_autoreplace| is false if the entry has been
+      // modified.
+      active_entries.push_back(template_url);
+    } else {
       other_entries.push_back(template_url);
+    }
   }
 
   last_search_engine_index_ = static_cast<int>(default_entries.size());
-  last_other_engine_index_ = last_search_engine_index_ +
-      static_cast<int>(other_entries.size());
+  last_active_engine_index_ =
+      last_search_engine_index_ + static_cast<int>(active_entries.size());
+  last_other_engine_index_ =
+      last_active_engine_index_ + static_cast<int>(other_entries.size());
 
   entries_.clear();
   std::move(default_entries.begin(), default_entries.end(),
+            std::back_inserter(entries_));
+
+  std::move(active_entries.begin(), active_entries.end(),
             std::back_inserter(entries_));
 
   std::move(other_entries.begin(), other_entries.end(),

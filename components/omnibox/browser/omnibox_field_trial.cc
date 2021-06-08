@@ -704,6 +704,10 @@ bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
 
+bool OmniboxFieldTrial::IsActiveSearchEnginesEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kActiveSearchEngines);
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
