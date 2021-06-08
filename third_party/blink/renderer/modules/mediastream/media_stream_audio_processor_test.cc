@@ -42,6 +42,9 @@ using ::testing::Return;
 
 using media::AudioParameters;
 
+using AnalogGainController =
+    webrtc::AudioProcessing::Config::GainController1::AnalogGainController;
+
 namespace blink {
 
 namespace {
@@ -168,6 +171,8 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level, config.noise_suppression.kHigh);
     EXPECT_FALSE(config.voice_detection.enabled);
+    EXPECT_FALSE(config.gain_controller1.analog_gain_controller
+                     .clipping_predictor.enabled);
 #if defined(OS_ANDROID)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
     EXPECT_EQ(config.gain_controller1.mode,
@@ -223,7 +228,7 @@ TEST_F(MediaStreamAudioProcessorTest, TurnOffDefaultConstraints) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device));
   EXPECT_FALSE(audio_processor->has_audio_processing());
   audio_processor->OnCaptureFormatChanged(params_);
@@ -303,7 +308,7 @@ TEST_F(MediaStreamAudioProcessorTest, StartStopAecDump) {
   {
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-            properties, /*use_multichannel_processing=*/true,
+            properties, /*use_capture_multi_channel_processing=*/true,
             webrtc_audio_device));
 
     // Start and stop recording.
@@ -456,7 +461,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableDefaultAgc1) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device));
 
   absl::optional<webrtc::AudioProcessing::Config> apm_config =
@@ -499,7 +504,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableExperimentalAgc1) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device.get()));
 
   absl::optional<webrtc::AudioProcessing::Config> apm_config =
@@ -550,7 +555,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device));
 
   absl::optional<webrtc::AudioProcessing::Config> apm_config =
@@ -613,7 +618,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcDryRun) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device.get()));
 
   absl::optional<webrtc::AudioProcessing::Config> apm_config =
@@ -669,7 +674,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device));
 
   absl::optional<webrtc::AudioProcessing::Config> apm_config =
@@ -681,6 +686,87 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
   EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.neon_allowed);
 }
 
+TEST_F(MediaStreamAudioProcessorTest,
+       TestAgcEnableClippingControlDefaultParams) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
+
+  blink::AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, /*use_capture_multi_channel_processing=*/true,
+          webrtc_audio_device));
+
+  absl::optional<webrtc::AudioProcessing::Config> apm_config =
+      audio_processor->GetAudioProcessingModuleConfig();
+  ASSERT_TRUE(apm_config);
+
+  const AnalogGainController& analog_agc =
+      apm_config->gain_controller1.analog_gain_controller;
+  EXPECT_TRUE(analog_agc.clipping_predictor.enabled);
+  EXPECT_EQ(
+      analog_agc.clipping_predictor.mode,
+      AnalogGainController::ClippingPredictor::Mode::kClippingEventPrediction);
+  EXPECT_EQ(analog_agc.clipping_predictor.window_length, 5);
+  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_length, 5);
+  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 5);
+  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, -1.0f);
+  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 3.0f);
+  EXPECT_EQ(analog_agc.clipped_level_step, 15);
+  EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.1f);
+  EXPECT_EQ(analog_agc.clipped_wait_frames, 300);
+}
+
+TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableClippingControl) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kWebRtcAnalogAgcClippingControl,
+      {{"mode", "2"},  // kFixedStepClippingPeakPrediction
+       {"window_length", "111"},
+       {"reference_window_length", "222"},
+       {"reference_window_delay", "333"},
+       {"clipping_threshold", "4.44"},
+       {"crest_factor_margin", ".555"},
+       {"clipped_level_step", "255"},
+       {"clipped_ratio_threshold", "0.77"},
+       {"clipped_wait_frames", "888"}});
+
+  blink::AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, /*use_capture_multi_channel_processing=*/true,
+          webrtc_audio_device));
+
+  absl::optional<webrtc::AudioProcessing::Config> apm_config =
+      audio_processor->GetAudioProcessingModuleConfig();
+  ASSERT_TRUE(apm_config);
+
+  const AnalogGainController& analog_agc =
+      apm_config->gain_controller1.analog_gain_controller;
+  EXPECT_TRUE(analog_agc.clipping_predictor.enabled);
+  EXPECT_EQ(analog_agc.clipping_predictor.mode,
+            AnalogGainController::ClippingPredictor::Mode::
+                kFixedStepClippingPeakPrediction);
+  EXPECT_EQ(analog_agc.clipping_predictor.window_length, 111);
+  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_length, 222);
+  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 333);
+  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, 4.44f);
+  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 0.555f);
+  EXPECT_EQ(analog_agc.clipped_level_step, 255);
+  EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.77f);
+  EXPECT_EQ(analog_agc.clipped_wait_frames, 888);
+}
+
 // Ensure that discrete channel layouts do not crash with audio processing
 // enabled.
 TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
@@ -689,7 +775,7 @@ TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_multichannel_processing=*/true,
+          properties, /*use_capture_multi_channel_processing=*/true,
           webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 

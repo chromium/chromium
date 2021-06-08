@@ -72,6 +72,21 @@ void GetExtraConfigFromJson(
   *noise_suppression_level = GetNoiseSuppressionLevel(*config);
 }
 
+using ClippingPredictor = webrtc::AudioProcessing::Config::GainController1::
+    AnalogGainController::ClippingPredictor;
+
+ClippingPredictor::Mode GetClippingPredictorMode(
+    int clipping_predictor_param_mode) {
+  switch (clipping_predictor_param_mode) {
+    case 1:
+      return ClippingPredictor::Mode::kAdaptiveStepClippingPeakPrediction;
+    case 2:
+      return ClippingPredictor::Mode::kFixedStepClippingPeakPrediction;
+    default:
+      return ClippingPredictor::Mode::kClippingEventPrediction;
+  }
+}
+
 }  // namespace
 
 void AudioProcessingProperties::DisableDefaultProperties() {
@@ -182,6 +197,8 @@ void StopEchoCancellationDump(AudioProcessing* audio_processing) {
 void ConfigAutomaticGainControl(
     const AudioProcessingProperties& properties,
     const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
+    const absl::optional<WebRtcAnalogAgcClippingControlParams>&
+        clipping_control_params,
     absl::optional<double> compression_gain_db,
     AudioProcessing::Config& apm_config) {
   // If system level gain control is activated, turn off all gain control
@@ -252,6 +269,39 @@ void ConfigAutomaticGainControl(
       // Enable AGC1 adaptive digital since AGC2 adaptive digital is disabled.
       apm_config.gain_controller1.analog_gain_controller
           .enable_digital_adaptive = true;
+    }
+
+    // When experimental AGC is enabled, we enable clipping control given that
+    // 1. `clipping_control_params` is not nullopt,
+    // 2. AGC1 is used,
+    // 3. AGC1 uses analog gain controller.
+    if (apm_config.gain_controller1.enabled &&
+        apm_config.gain_controller1.analog_gain_controller.enabled &&
+        clipping_control_params.has_value()) {
+      auto* const analog_gain_controller =
+          &apm_config.gain_controller1.analog_gain_controller;
+      analog_gain_controller->clipped_level_step =
+          clipping_control_params->clipped_level_step;
+      analog_gain_controller->clipped_ratio_threshold =
+          clipping_control_params->clipped_ratio_threshold;
+      analog_gain_controller->clipped_wait_frames =
+          clipping_control_params->clipped_wait_frames;
+
+      auto* const clipping_predictor =
+          &analog_gain_controller->clipping_predictor;
+      clipping_predictor->enabled = true;
+      clipping_predictor->mode =
+          GetClippingPredictorMode(clipping_control_params->mode);
+      clipping_predictor->window_length =
+          clipping_control_params->window_length;
+      clipping_predictor->reference_window_length =
+          clipping_control_params->reference_window_length;
+      clipping_predictor->reference_window_delay =
+          clipping_control_params->reference_window_delay;
+      clipping_predictor->clipping_threshold =
+          clipping_control_params->clipping_threshold;
+      clipping_predictor->crest_factor_margin =
+          clipping_control_params->crest_factor_margin;
     }
   } else if (use_fixed_digital_agc2) {
     // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2

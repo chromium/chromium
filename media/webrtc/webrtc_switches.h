@@ -30,6 +30,9 @@ extern const base::Feature kWebRtcAllow48kHzProcessingOnArm;
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcHybridAgc;
 
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const base::Feature kWebRtcAnalogAgcClippingControl;
+
 }  // namespace features
 
 #endif  // MEDIA_WEBRTC_WEBRTC_SWITCHES_H_
