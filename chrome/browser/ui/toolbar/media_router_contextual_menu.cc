@@ -12,8 +12,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/router/event_page_request_manager.h"
-#include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -178,24 +176,11 @@ void MediaRouterContextualMenu::ToggleMediaRemoting() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void MediaRouterContextualMenu::ReportIssue() {
-  if (base::FeatureList::IsEnabled(media_router::kCastFeedbackDialog)) {
-    ShowSingletonTab(
-        browser_,
-        GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));
+  if (!base::FeatureList::IsEnabled(media_router::kCastFeedbackDialog)) {
     return;
   }
-
-  // Opens feedback page loaded from the media router extension.
-  // This is temporary until feedback UI is redesigned.
-  media_router::EventPageRequestManager* request_manager =
-      media_router::EventPageRequestManagerFactory::GetApiForBrowserContext(
-          browser_->profile());
-  if (request_manager->media_route_provider_extension_id().empty())
-    return;
-  std::string feedback_url(
-      extensions::kExtensionScheme +
-      std::string(url::kStandardSchemeSeparator) +
-      request_manager->media_route_provider_extension_id() + "/feedback.html");
-  ShowSingletonTab(browser_, GURL(feedback_url));
+  ShowSingletonTab(
+      browser_,
+      GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));
 }
 #endif

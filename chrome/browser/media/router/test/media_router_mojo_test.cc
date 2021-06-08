@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "extensions/common/extension_builder.h"
 
 using testing::_;
@@ -87,28 +86,6 @@ void MockMediaRouteProvider::SetRouteToReturn(const MediaRoute& route) {
   route_ = route;
 }
 
-MockEventPageTracker::MockEventPageTracker() {}
-
-MockEventPageTracker::~MockEventPageTracker() {}
-
-// static
-std::unique_ptr<KeyedService> MockEventPageRequestManager::Create(
-    content::BrowserContext* context) {
-  return std::make_unique<MockEventPageRequestManager>(context);
-}
-
-MockEventPageRequestManager::MockEventPageRequestManager(
-    content::BrowserContext* context)
-    : EventPageRequestManager(context) {}
-
-MockEventPageRequestManager::~MockEventPageRequestManager() = default;
-
-void MockEventPageRequestManager::RunOrDefer(
-    base::OnceClosure request,
-    MediaRouteProviderWakeReason wake_reason) {
-  RunOrDeferInternal(request, wake_reason);
-}
-
 MockMediaStatusObserver::MockMediaStatusObserver(
     mojo::PendingReceiver<mojom::MediaStatusObserver> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -134,20 +111,9 @@ void MockMediaController::CloseReceiver() {
   receiver_.reset();
 }
 
-MediaRouterMojoTest::MediaRouterMojoTest() {
-  request_manager_ = static_cast<MockEventPageRequestManager*>(
-      EventPageRequestManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(),
-          base::BindRepeating(&MockEventPageRequestManager::Create)));
-  request_manager_->set_mojo_connections_ready_for_test(true);
-  ON_CALL(*request_manager_, RunOrDeferInternal(_, _))
-      .WillByDefault(Invoke([](base::OnceClosure& request,
-                               MediaRouteProviderWakeReason wake_reason) {
-        std::move(request).Run();
-      }));
-}
+MediaRouterMojoTest::MediaRouterMojoTest() = default;
 
-MediaRouterMojoTest::~MediaRouterMojoTest() {}
+MediaRouterMojoTest::~MediaRouterMojoTest() = default;
 
 void MediaRouterMojoTest::RegisterExtensionProvider() {
   RegisterMediaRouteProvider(&mock_extension_provider_,

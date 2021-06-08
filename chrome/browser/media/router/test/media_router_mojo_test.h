@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/media/router/event_page_request_manager.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
@@ -20,7 +19,6 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/event_page_tracker.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -167,37 +165,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   DISALLOW_COPY_AND_ASSIGN(MockMediaRouteProvider);
 };
 
-class MockEventPageTracker : public extensions::EventPageTracker {
- public:
-  MockEventPageTracker();
-  ~MockEventPageTracker();
-
-  MOCK_METHOD1(IsEventPageSuspended, bool(const std::string& extension_id));
-  MOCK_METHOD2(WakeEventPage,
-               bool(const std::string& extension_id,
-                    base::OnceCallback<void(bool)> callback));
-};
-
-class MockEventPageRequestManager : public EventPageRequestManager {
- public:
-  static std::unique_ptr<KeyedService> Create(content::BrowserContext* context);
-
-  explicit MockEventPageRequestManager(content::BrowserContext* context);
-  ~MockEventPageRequestManager() override;
-
-  MOCK_METHOD1(SetExtensionId, void(const std::string& extension_id));
-  void RunOrDefer(base::OnceClosure request,
-                  MediaRouteProviderWakeReason wake_reason) override;
-  MOCK_METHOD2(RunOrDeferInternal,
-               void(base::OnceClosure& request,
-                    MediaRouteProviderWakeReason wake_reason));
-  MOCK_METHOD0(OnMojoConnectionsReady, void());
-  MOCK_METHOD0(OnMojoConnectionError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventPageRequestManager);
-};
-
 class MockMediaStatusObserver : public mojom::MediaStatusObserver {
  public:
   explicit MockMediaStatusObserver(
@@ -276,7 +243,6 @@ class MediaRouterMojoTest : public ::testing::Test {
   // Mock objects.
   MockMediaRouteProvider mock_extension_provider_;
   MockMediaRouteProvider mock_wired_display_provider_;
-  MockEventPageRequestManager* request_manager_ = nullptr;
 
  private:
   // Helper method for RegisterExtensionProvider() and

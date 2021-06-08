@@ -16,7 +16,6 @@
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/android/media_router_dialog_controller_android.h"
 #else
-#include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #endif
 
@@ -56,11 +55,7 @@ void ChromeMediaRouterFactory::DoPlatformInit() {
 #endif
 }
 
-ChromeMediaRouterFactory::ChromeMediaRouterFactory() {
-#if !defined(OS_ANDROID)
-  DependsOn(EventPageRequestManagerFactory::GetInstance());
-#endif
-}
+ChromeMediaRouterFactory::ChromeMediaRouterFactory() = default;
 
 ChromeMediaRouterFactory::~ChromeMediaRouterFactory() = default;
 

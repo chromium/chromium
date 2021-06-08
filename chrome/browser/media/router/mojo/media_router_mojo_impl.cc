@@ -20,8 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
-#include "chrome/browser/media/router/event_page_request_manager.h"
-#include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_route_provider_util_win.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
@@ -941,33 +939,20 @@ void MediaRouterMojoImpl::GetMirroringServiceHostForDesktop(
     int32_t initiator_tab_id,
     const std::string& desktop_stream_id,
     mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver) {
-  if (CastMediaRouteProviderEnabled()) {
-    if (!pending_stream_request_ ||
-        pending_stream_request_->stream_id != desktop_stream_id) {
-      return;
-    }
-    const PendingStreamRequest& request = *pending_stream_request_;
-    const auto media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            request.stream_id, request.render_process_id,
-            request.render_frame_id, request.origin, nullptr,
-            content::kRegistryStreamTypeDesktop);
-    if (media_id.is_null()) {
-      return;
-    }
-    mirroring::CastMirroringServiceHost::GetForDesktop(media_id,
-                                                       std::move(receiver));
-  } else {
-    // This code path is taken when the mirroring service is enabled
-    // but the native Cast MRP is not.
-    //
-    // TODO(crbug.com/974335): Remove this code once we fully launch the native
-    // Cast Media Route Provider.
-    mirroring::CastMirroringServiceHost::GetForDesktop(
-        EventPageRequestManagerFactory::GetApiForBrowserContext(context_)
-            ->GetEventPageWebContents(),
-        desktop_stream_id, std::move(receiver));
+  if (!CastMediaRouteProviderEnabled() || !pending_stream_request_ ||
+      pending_stream_request_->stream_id != desktop_stream_id) {
+    return;
   }
+  const PendingStreamRequest& request = *pending_stream_request_;
+  const auto media_id =
+      content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
+          request.stream_id, request.render_process_id, request.render_frame_id,
+          request.origin, nullptr, content::kRegistryStreamTypeDesktop);
+  if (media_id.is_null()) {
+    return;
+  }
+  mirroring::CastMirroringServiceHost::GetForDesktop(media_id,
+                                                     std::move(receiver));
 }
 
 void MediaRouterMojoImpl::GetMirroringServiceHostForOffscreenTab(
