@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Network.Cellular.PrepareForConnection.OperationResult"
+<histogram name="Network.Cellular.PrepareCellularConnection.OperationResult"
     enum="NetworkCellularPrepareForConnectionResult" expires_after="2021-11-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
