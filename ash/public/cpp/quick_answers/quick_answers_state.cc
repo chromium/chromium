@@ -6,9 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -37,13 +39,17 @@ QuickAnswersState* QuickAnswersState::Get() {
 QuickAnswersState::QuickAnswersState() {
   DCHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
-  DCHECK(AssistantState::Get());
-  AssistantState::Get()->AddObserver(this);
+  if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+    DCHECK(AssistantState::Get());
+    AssistantState::Get()->AddObserver(this);
+  }
 }
 
 QuickAnswersState::~QuickAnswersState() {
-  if (AssistantState::Get())
+  if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
+      AssistantState::Get()) {
     AssistantState::Get()->RemoveObserver(this);
+  }
   DCHECK_EQ(g_quick_answers_state, this);
   g_quick_answers_state = nullptr;
 }
@@ -108,9 +114,26 @@ void QuickAnswersState::UpdateSettingsEnabled() {
   settings_enabled_ = settings_enabled;
   for (auto& observer : observers_)
     observer.OnSettingsEnabled(settings_enabled_);
+
+  UpdateEligibility();
 }
 
 void QuickAnswersState::UpdateEligibility() {
+  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+    if (!pref_change_registrar_)
+      return;
+
+    std::string locale = pref_change_registrar_->prefs()->GetString(
+        language::prefs::kApplicationLocale);
+    std::string resolved_locale;
+    l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+                                     /*perform_io=*/false);
+    is_eligible_ = settings_enabled_ &&
+                   IsQuickAnswersAllowedForLocale(
+                       resolved_locale, icu::Locale::getDefault().getName());
+    return;
+  }
+
   auto* assistant_state = AssistantState::Get();
   if (!assistant_state->settings_enabled().has_value() ||
       !assistant_state->locale().has_value() ||

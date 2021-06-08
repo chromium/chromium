@@ -70,9 +70,8 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   if (!quick_answers_controller_)
     return;
 
-  if (!ash::QuickAnswersState::Get()->is_eligible()) {
+  if (!ash::QuickAnswersState::Get()->is_eligible())
     return;
-  }
 
   // Skip password input field.
   if (params.input_field_type ==

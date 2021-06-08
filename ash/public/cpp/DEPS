@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/ui/base/chromeos_ui_constants.h",
   "+cc/metrics",
   "+components/prefs",
+  "+components/language/core/browser",
   "+services/data_decoder/public",
   "+services/device/public",
   "+skia/public/mojom",
