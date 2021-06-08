@@ -260,7 +260,6 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
         if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         } else {
-            saveAppLanguage();
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         }
     }
