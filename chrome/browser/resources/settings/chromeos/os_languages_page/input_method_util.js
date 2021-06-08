@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {inputMethodSettings, SettingsTypes} from './input_method_settings.js';
+import {inputMethodSettings, SettingsType} from './input_method_settings.js';
 
 /**
  * @fileoverview constants related to input method options.
@@ -153,18 +153,21 @@ cr.define('settings.input_method_util', function() {
   };
 
   const Settings = {
-    [SettingsTypes.LATIN_SETTINGS]: {
-      physicalKeyboard: [
-        OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-        OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
-        OptionType.ENABLE_PREDICTION
-      ],
+    [SettingsType.LATIN_SETTINGS]: {
+      physicalKeyboard: [{
+        name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+        dependentOptions: [
+          OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
+          OptionType.ENABLE_PREDICTION
+        ]
+      }],
       virtualKeyboard: [
-        OptionType.ENABLE_SOUND_ON_KEYPRESS,
-        OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-        OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
-        OptionType.ENABLE_DOUBLE_SPACE_PERIOD, OptionType.ENABLE_GESTURE_TYPING,
-        OptionType.EDIT_USER_DICT
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+        {name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL},
+        {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
+        {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
+        {name: OptionType.ENABLE_GESTURE_TYPING},
+        {name: OptionType.EDIT_USER_DICT}
       ],
       basic: [],
       advanced: [],
@@ -205,16 +208,19 @@ cr.define('settings.input_method_util', function() {
         {basic: [], advanced: [], physicalKeyboard: [], virtualKeyboard: []};
     if (engineId === EngineId.PINYIN_CHINESE_SIMPLIFIED) {
       options.basic.push(
-          OptionType.XKB_LAYOUT, OptionType.PINYIN_ENABLE_UPPER_PAGING,
-          OptionType.PINYIN_ENABLE_LOWER_PAGING,
-          OptionType.PINYIN_DEFAULT_CHINESE,
-          OptionType.PINYIN_FULL_WIDTH_CHARACTER,
-          OptionType.PINYIN_CHINESE_PUNCTUATION);
+          {name: OptionType.XKB_LAYOUT},
+          {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
+          {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
+          {name: OptionType.PINYIN_DEFAULT_CHINESE},
+          {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
+          {name: OptionType.PINYIN_CHINESE_PUNCTUATION});
       options.advanced.push(
-          OptionType.PINYIN_ENABLE_FUZZY, OptionType.EDIT_USER_DICT);
+          {name: OptionType.PINYIN_ENABLE_FUZZY},
+          {name: OptionType.EDIT_USER_DICT});
     } else {
-      if (inputMethodSettings[engineId]) {
-        inputMethodSettings[engineId].forEach((settingType) => {
+      const engineSettings = inputMethodSettings[engineId];
+      if (engineSettings) {
+        engineSettings.forEach((settingType) => {
           const settings = Settings[settingType];
           options.basic.push(...settings.basic);
           options.advanced.push(...settings.advanced);

@@ -103,7 +103,8 @@ Polymer({
     const prefix = this.getPrefsPrefix_();
     const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
 
-    const makeOption = (name) => {
+    const makeOption = (option) => {
+      const name = option.name;
       const uiType = settings.input_method_util.getOptionUiType(name);
       const value = name in currentSettings ?
           currentSettings[name] :
@@ -115,6 +116,9 @@ Polymer({
         label: this.i18n(settings.input_method_util.getOptionLabelName(name)),
         menuItems: this.getMenuItems(name, value),
         url: settings.input_method_util.getOptionUrl(name),
+        dependentOptions: option.dependentOptions ?
+            option.dependentOptions.map(t => makeOption({name: t})) :
+            []
       };
     };
 
@@ -149,6 +153,17 @@ Polymer({
   },
 
   /**
+   *
+   * @param {*} value
+   * @private
+   */
+  dependentOptionsDisabled_(value) {
+    // TODO(b/189909728): Sometimes the value comes as a string, other times as
+    // an integer, so handle both cases. Try to understand and fix this.
+    return value === '0' || value === 0;
+  },
+
+  /**
    * Handler for toggle button and dropdown change. Update the value of the
    * changing option in Cros prefs.
    * @param {!{model: !{option: Object}}} e
@@ -165,19 +180,21 @@ Polymer({
     if (!(prefix in updatedSettings)) {
       updatedSettings[prefix] = {};
     }
-
+    // e.model isn't correctly set for dependent options, due to nested
+    // dom-repeat, so figure out what option was actually set.
+    const option = e.model.dependant ? e.model.dependant : e.model.option;
     // The value of dropdown is not updated immediately when the event is fired.
     // Wait for the polymer state to update to make sure we write the latest
     // to Cros Prefs.
     Polymer.RenderStatus.afterNextRender(this, () => {
-      let newValue = e.model.option.value;
+      let newValue = option.value;
       // The value of dropdown in html is always string, but some of the prefs
       // values are used as integer or enum by IME, so we need to store numbers
       // for them to function correctly.
-      if (settings.input_method_util.isNumberValue(e.model.option.name)) {
+      if (settings.input_method_util.isNumberValue(option.name)) {
         newValue = parseInt(newValue, 10);
       }
-      updatedSettings[prefix][e.model.option.name] = newValue;
+      updatedSettings[prefix][option.name] = newValue;
       this.setPrefValue(this.PREFS_PATH, updatedSettings);
     });
   },
