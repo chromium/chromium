@@ -56,8 +56,9 @@ class EuiccTest : public ESimTestBase {
   }
 
   void TearDown() override {
-    HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
-        /*connected_after_enable=*/false);
+    HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
+        HermesProfileClient::TestInterface::EnableProfileBehavior::
+            kConnectableButNotConnected);
   }
 
   InstallResultPair InstallProfileFromActivationCode(
@@ -185,8 +186,9 @@ TEST_F(EuiccTest, InstallProfileAlreadyConnected) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
-  HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
-      /*connected_after_enable=*/true);
+  HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
+      HermesProfileClient::TestInterface::EnableProfileBehavior::
+          kConnectableAndConnected);
 
   InstallResultPair result_pair = InstallProfileFromActivationCode(
       euicc,

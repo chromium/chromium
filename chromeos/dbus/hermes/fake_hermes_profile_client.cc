@@ -61,9 +61,9 @@ void FakeHermesProfileClient::ClearProfile(
   properties_map_.erase(carrier_profile_path);
 }
 
-void FakeHermesProfileClient::SetConnectedAfterEnable(
-    bool connected_after_enable) {
-  connected_after_enable_ = connected_after_enable;
+void FakeHermesProfileClient::SetEnableProfileBehavior(
+    EnableProfileBehavior enable_profile_behavior) {
+  enable_profile_behavior_ = enable_profile_behavior;
 }
 
 void FakeHermesProfileClient::EnableCarrierProfile(
@@ -93,8 +93,11 @@ void FakeHermesProfileClient::EnableCarrierProfile(
   // Update cellular device properties to match this profile.
   UpdateCellularDevice(properties);
   // Update all cellular services to set their connection state and connectable
-  // properties. The newly enabled profile will have connectable set to true.
-  UpdateCellularServices(properties->iccid().value(), /*connectable=*/true);
+  // properties. The newly enabled profile will have connectable set to true
+  // if |enable_profile_behavior_| indicates that it should be.
+  bool connectable =
+      enable_profile_behavior_ != EnableProfileBehavior::kNotConnectable;
+  UpdateCellularServices(properties->iccid().value(), connectable);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -193,9 +196,12 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
     service_test->SetServiceProperty(service_path.GetString(),
                                      shill::kConnectableProperty,
                                      base::Value(service_connectable));
-    const char* service_state = is_current_service && connected_after_enable_
-                                    ? shill::kStateOnline
-                                    : shill::kStateIdle;
+    const char* service_state =
+        is_current_service &&
+                enable_profile_behavior_ ==
+                    EnableProfileBehavior::kConnectableAndConnected
+            ? shill::kStateOnline
+            : shill::kStateIdle;
     service_test->SetServiceProperty(service_path.GetString(),
                                      shill::kStateProperty,
                                      base::Value(service_state));
