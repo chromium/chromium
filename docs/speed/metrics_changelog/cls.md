@@ -3,7 +3,7 @@
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
 * Chrome 91
-  * Metric definiteion improvement: [Cumulative Layout Shift uses max session window](2021_06_cls.md)
+  * Metric definition improvement: [Cumulative Layout Shift uses max session window](2021_06_cls.md)
 * Chrome 90
   * Metric definition improvement: [Bug fixes involving changes to transform, effect, clip or position](2021_02_cls.md)
   * Metric definition improvement: [Consider transform change countering layout shift](2021_02_cls.md)
