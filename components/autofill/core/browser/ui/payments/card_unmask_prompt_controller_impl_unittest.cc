@@ -101,7 +101,10 @@ class CardUnmaskPromptControllerImplGenericTest {
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
-  void ShowPrompt() {
+  void ShowPrompt(bool should_unmask_virtual_card = false) {
+    card_.set_record_type(should_unmask_virtual_card
+                              ? CreditCard::VIRTUAL_CARD
+                              : CreditCard::MASKED_SERVER_CARD);
     controller_->ShowPrompt(
         base::BindOnce(
             &CardUnmaskPromptControllerImplGenericTest::GetCardUnmaskPromptView,
@@ -110,8 +113,9 @@ class CardUnmaskPromptControllerImplGenericTest {
   }
 
   void ShowPromptAndSimulateResponse(bool should_store_pan,
-                                     bool enable_fido_auth) {
-    ShowPrompt();
+                                     bool enable_fido_auth,
+                                     bool should_unmask_virtual_card = false) {
+    ShowPrompt(should_unmask_virtual_card);
     controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
                                         should_store_pan, enable_fido_auth);
     EXPECT_EQ(should_store_pan,
@@ -196,9 +200,9 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanResultSuccess) {
   base::HistogramTester histogram_tester;
   controller_->OnVerificationResult(AutofillClient::SUCCESS);
 
-  histogram_tester.ExpectBucketCount("Autofill.UnmaskPrompt.GetRealPanResult",
-                                     AutofillMetrics::PAYMENTS_RESULT_SUCCESS,
-                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+      AutofillMetrics::PAYMENTS_RESULT_SUCCESS, 1);
 }
 
 TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanTryAgainFailure) {
@@ -209,7 +213,7 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanTryAgainFailure) {
   controller_->OnVerificationResult(AutofillClient::TRY_AGAIN_FAILURE);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.GetRealPanResult",
+      "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
       AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
 }
 
@@ -223,7 +227,7 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogUnmaskingDurationResultSuccess) {
   histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.UnmaskingDuration",
                                     1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.UnmaskPrompt.UnmaskingDuration.Success", 1);
+      "Autofill.UnmaskPrompt.UnmaskingDuration.ServerCard.Success", 1);
 }
 
 TEST_F(CardUnmaskPromptControllerImplTest,
@@ -237,7 +241,24 @@ TEST_F(CardUnmaskPromptControllerImplTest,
   histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.UnmaskingDuration",
                                     1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.UnmaskPrompt.UnmaskingDuration.Failure", 1);
+      "Autofill.UnmaskPrompt.UnmaskingDuration.ServerCard.Failure", 1);
+}
+
+TEST_F(CardUnmaskPromptControllerImplTest,
+       LogUnmaskingDurationVcnRetrievalPermanentFailure) {
+  ShowPromptAndSimulateResponse(/*should_store_pan=*/false,
+                                /*enable_fido_auth=*/false,
+                                /*should_unmask_virtual_card=*/true);
+  base::HistogramTester histogram_tester;
+
+  controller_->OnVerificationResult(
+      AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE);
+
+  histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.UnmaskingDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.UnmaskPrompt.UnmaskingDuration.VirtualCard.VcnRetrievalFailure",
+      1);
 }
 
 // Ensures the card information is shown correctly in the instruction message on

@@ -123,6 +123,10 @@ void CvcUnmaskViewController::OnUnmaskVerificationResult(
       DisplayError(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK));
       break;
+    case autofill::AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case autofill::AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      NOTREACHED();
+      break;
   }
 
   dialog()->HideProcessingSpinner();

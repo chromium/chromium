@@ -134,6 +134,10 @@ class PaymentsClient {
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
+
+    // The type of the credit card the current request is fetching.
+    AutofillClient::PaymentsRpcCardType card_type =
+        AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE;
   };
 
   // Information required to either opt-in or opt-out a user for FIDO

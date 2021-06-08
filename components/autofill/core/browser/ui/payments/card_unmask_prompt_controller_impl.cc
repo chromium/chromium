@@ -86,15 +86,33 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
       break;
     }
 
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION);
+      break;
+    }
+
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION);
+      break;
+    }
+
     case AutofillClient::NONE:
       NOTREACHED();
       return;
   }
 
   unmasking_result_ = result;
-  AutofillMetrics::LogRealPanResult(result);
+  AutofillClient::PaymentsRpcCardType card_type =
+      card_.record_type() == CreditCard::VIRTUAL_CARD
+          ? AutofillClient::VIRTUAL_CARD
+          : AutofillClient::SERVER_CARD;
+
+  AutofillMetrics::LogRealPanResult(result, card_type);
   AutofillMetrics::LogUnmaskingDuration(
-      AutofillClock::Now() - verify_timestamp_, result);
+      AutofillClock::Now() - verify_timestamp_, result, card_type);
+
   card_unmask_view_->GotVerificationResult(error_message, AllowsRetry(result));
 }
 
@@ -154,6 +172,16 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
   // The iOS UI has less room for the title so it shows a shorter string.
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE);
 #else
+  // Set title for VCN retrieval errors first.
+  if (unmasking_result_ == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE);
+  } else if (unmasking_result_ ==
+             AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE);
+  }
+
   return l10n_util::GetStringFUTF16(
       ShouldRequestExpirationDate()
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE
@@ -287,7 +315,9 @@ CardUnmaskPromptControllerImpl::GetVerificationResult() const {
 bool CardUnmaskPromptControllerImpl::AllowsRetry(
     AutofillClient::PaymentsRpcResult result) {
   if (result == AutofillClient::NETWORK_ERROR ||
-      result == AutofillClient::PERMANENT_FAILURE) {
+      result == AutofillClient::PERMANENT_FAILURE ||
+      result == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE ||
+      result == AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE) {
     return false;
   }
   return true;

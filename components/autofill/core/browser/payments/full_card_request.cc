@@ -94,7 +94,8 @@ void FullCardRequest::GetFullCard(
   request_->reason = reason;
   should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||
                         (card.record_type() == CreditCard::FULL_SERVER_CARD &&
-                         card.ShouldUpdateExpiration(AutofillClock::Now()));
+                         card.ShouldUpdateExpiration(AutofillClock::Now())) ||
+                        card.record_type() == CreditCard::VIRTUAL_CARD;
   if (should_unmask_card_) {
     payments_client_->Prepare();
     request_->billing_customer_number =
@@ -200,12 +201,15 @@ void FullCardRequest::OnDidGetRealPan(
   // authentication. Exactly one of these fields must be populated.
   DCHECK_NE(!request_->user_response.cvc.empty(),
             request_->fido_assertion_info.has_value());
+  AutofillClient::PaymentsRpcCardType card_type = response_details.card_type;
   if (!request_->user_response.cvc.empty()) {
     AutofillMetrics::LogRealPanDuration(
-        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result);
+        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
+        card_type);
   } else if (request_->fido_assertion_info.has_value()) {
     AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
-        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result);
+        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
+        card_type);
   }
 
   if (ui_delegate_)
@@ -216,17 +220,28 @@ void FullCardRequest::OnDidGetRealPan(
     case AutofillClient::TRY_AGAIN_FAILURE:
       break;
 
-    // Neither PERMANENT_FAILURE nor NETWORK_ERROR allow retry.
-    case AutofillClient::PERMANENT_FAILURE:
+    // Neither PERMANENT_FAILURE, NETWORK_ERROR nor VCN retrieval errors allow
+    // retry.
+    case AutofillClient::PERMANENT_FAILURE: {
       if (result_delegate_) {
         result_delegate_->OnFullCardRequestFailed(
             FailureType::VERIFICATION_DECLINED);
       }
       Reset();
       break;
+    }
     case AutofillClient::NETWORK_ERROR: {
       if (result_delegate_)
         result_delegate_->OnFullCardRequestFailed(FailureType::GENERIC_FAILURE);
+      Reset();
+      break;
+    }
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE: {
+      if (result_delegate_) {
+        result_delegate_->OnFullCardRequestFailed(
+            FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE);
+      }
       Reset();
       break;
     }

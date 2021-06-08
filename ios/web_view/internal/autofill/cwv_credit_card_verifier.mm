@@ -30,6 +30,9 @@ CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
   switch (result) {
     case autofill::AutofillClient::NONE:
     case autofill::AutofillClient::SUCCESS:
+    // The following two errors are not expected on iOS.
+    case autofill::AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case autofill::AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
       NOTREACHED();
       return CWVCreditCardVerificationErrorNone;
     case autofill::AutofillClient::TRY_AGAIN_FAILURE:

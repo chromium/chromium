@@ -52,6 +52,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Reshows" summary="The bubble is re-shown."/>
 </variants>
 
+<variants name="Autofill.PaymentsRpcCardType">
+  <variant name="ServerCard" summary="The card is a server card."/>
+  <variant name="VirtualCard" summary="The card is a virtual card."/>
+</variants>
+
+<variants name="Autofill.PaymentsRpcResult">
+  <variant name="Failure"
+      summary="Request failed during the authentication process. This is not
+               related to virtual cards."/>
+  <variant name="NetworkError"
+      summary="Unable to connect to Payments servers. Prompt user to check
+               internet connection."/>
+  <variant name="Success" summary="Request succeeded."/>
+  <variant name="VcnRetrievalFailure"
+      summary="Request failed in retrieving the virtual card information."/>
+</variants>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="M100">
@@ -260,6 +277,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks the time it takes to fetch the full PAN of a credit card once user
     successfully authenticates using WebAuthn.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.BetterAuth.CardUnmaskDuration.Fido.{CardType}.{Result}"
+    units="ms" expires_after="2021-10-04">
+  <owner>jsaul@google.com</owner>
+  <owner>manasverma@google.com</owner>
+  <owner>autofill-auth-team@google.com</owner>
+  <summary>
+    Tracks the time it takes to fetch the full PAN of a credit card once user
+    successfully authenticates using WebAuthn.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
@@ -2067,7 +2098,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2021-08-09">
+    expires_after="2022-05-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -2077,8 +2108,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.UnmaskPrompt.GetRealPanDuration.{CardType}.{Result}"
+    units="ms" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Duration of the GetRealPan API call. This API call is triggered by the
+    unmasking prompt when the user types information to verify their ownership
+    of the card being fetched. Broken down by the type of the card being fetched
+    and the result.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
+</histogram>
+
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult"
-    enum="AutofillGetRealPanResult" expires_after="2021-08-09">
+    enum="AutofillGetRealPanResult" expires_after="2022-05-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -2086,6 +2131,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the unmasking prompt when the user types information to verify their
     ownership of the card being fetched.
   </summary>
+</histogram>
+
+<histogram name="Autofill.UnmaskPrompt.GetRealPanResult.{CardType}"
+    enum="AutofillGetRealPanResult" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the result of the GetRealPan API call. This API call is triggered by
+    the unmasking prompt when the user types information to verify their
+    ownership of the card being fetched. Broken down by type of the card being
+    fetched.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking" units="ms"
@@ -2102,7 +2160,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.UnmaskingDuration" units="ms"
-    expires_after="2021-08-09">
+    expires_after="2022-05-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -2110,6 +2168,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     prompt until we get a response back from the server. This prompt is
     triggered when a user selects a masked card in an autofill dropdown.
   </summary>
+</histogram>
+
+<histogram name="Autofill.UnmaskPrompt.UnmaskingDuration.{CardType}.{Result}"
+    units="ms" expires_after="2022-05-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <summary>
+    Duration between the user clicking the Verify button within the unmasking
+    prompt until we get a response back from the server. This prompt is
+    triggered when a user selects a masked card in an autofill dropdown. Broken
+    down by the type of the card being fetched and the result.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
 </histogram>
 
 <histogram name="Autofill.UnownedFieldsWereFiltered" enum="Boolean"

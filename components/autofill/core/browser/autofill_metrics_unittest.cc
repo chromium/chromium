@@ -365,7 +365,8 @@ class AutofillMetricsTest : public testing::Test {
 
   // Mocks a RPC response from payments.
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan);
+                       const std::string& real_pan,
+                       bool is_virtual_card = false);
 
   // Purge recorded UKM metrics for running more tests.
   void PurgeUKM();
@@ -509,7 +510,8 @@ void AutofillMetricsTest::SetFidoEligibility(bool is_verifiable) {
 
 void AutofillMetricsTest::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
-    const std::string& real_pan) {
+    const std::string& real_pan,
+    bool is_virtual_card) {
   payments::FullCardRequest* full_card_request =
       browser_autofill_manager_->credit_card_access_manager_
           ->GetOrCreateCVCAuthenticator()
@@ -522,6 +524,9 @@ void AutofillMetricsTest::OnDidGetRealPan(
   full_card_request->OnUnmaskPromptAccepted(details);
 
   payments::PaymentsClient::UnmaskResponseDetails response;
+  response.card_type = is_virtual_card
+                           ? AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD
+                           : AutofillClient::PaymentsRpcCardType::SERVER_CARD;
   full_card_request->OnDidGetRealPan(result, response.with_real_pan(real_pan));
 }
 
@@ -5248,7 +5253,7 @@ TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
 }
 
 // Test that we log submitted form events for credit cards.
-TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration) {
+TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   // Creating masked card
   RecreateCreditCards(false /* include_local_credit_card */,
                       true /* include_masked_server_credit_card */,
@@ -5290,7 +5295,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration) {
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
     histogram_tester.ExpectTotalCount(
-        "Autofill.UnmaskPrompt.GetRealPanDuration.Success", 1);
+        "Autofill.UnmaskPrompt.GetRealPanDuration.ServerCard.Success", 1);
   }
 
   // Reset the autofill manager state.
@@ -5313,7 +5318,88 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration) {
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
     histogram_tester.ExpectTotalCount(
-        "Autofill.UnmaskPrompt.GetRealPanDuration.Failure", 1);
+        "Autofill.UnmaskPrompt.GetRealPanDuration.ServerCard.Failure", 1);
+  }
+}
+
+TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogRealPanResult(AutofillClient::TRY_AGAIN_FAILURE,
+                                      AutofillClient::SERVER_CARD);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+        AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogRealPanResult(AutofillClient::PERMANENT_FAILURE,
+                                      AutofillClient::SERVER_CARD);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_PERMANENT_FAILURE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+        AutofillMetrics::PAYMENTS_RESULT_PERMANENT_FAILURE, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogRealPanResult(AutofillClient::SUCCESS,
+                                      AutofillClient::SERVER_CARD);
+
+    histogram_tester.ExpectBucketCount("Autofill.UnmaskPrompt.GetRealPanResult",
+                                       AutofillMetrics::PAYMENTS_RESULT_SUCCESS,
+                                       1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+        AutofillMetrics::PAYMENTS_RESULT_SUCCESS, 1);
+  }
+}
+
+TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
+  base::HistogramTester histogram_tester;
+  {
+    AutofillMetrics::LogRealPanResult(AutofillClient::TRY_AGAIN_FAILURE,
+                                      AutofillClient::VIRTUAL_CARD);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.VirtualCard",
+        AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
+  }
+
+  {
+    AutofillMetrics::LogRealPanResult(
+        AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE,
+        AutofillClient::VIRTUAL_CARD);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.VirtualCard",
+        AutofillMetrics::PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE, 1);
+  }
+
+  {
+    AutofillMetrics::LogRealPanResult(AutofillClient::SUCCESS,
+                                      AutofillClient::VIRTUAL_CARD);
+
+    histogram_tester.ExpectBucketCount("Autofill.UnmaskPrompt.GetRealPanResult",
+                                       AutofillMetrics::PAYMENTS_RESULT_SUCCESS,
+                                       1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.VirtualCard",
+        AutofillMetrics::PAYMENTS_RESULT_SUCCESS, 1);
   }
 }
 

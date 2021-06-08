@@ -259,7 +259,8 @@ class CreditCardAccessManagerTest : public testing::Test {
   bool GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult result,
                             const std::string& real_pan,
                             bool fido_opt_in = false,
-                            bool follow_with_fido_auth = false) {
+                            bool follow_with_fido_auth = false,
+                            bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         GetCVCAuthenticator()->full_card_request_.get();
 
@@ -278,6 +279,8 @@ class CreditCardAccessManagerTest : public testing::Test {
       response.fido_request_options = GetTestRequestOptions();
     }
 #endif
+    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
+                                         : AutofillClient::SERVER_CARD;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
     return true;
@@ -328,7 +331,8 @@ class CreditCardAccessManagerTest : public testing::Test {
   // Returns true if full card request was sent from FIDO auth.
   bool GetRealPanForFIDOAuth(AutofillClient::PaymentsRpcResult result,
                              const std::string& real_pan,
-                             const std::string& dcvv = std::string()) {
+                             const std::string& dcvv = std::string(),
+                             bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         GetFIDOAuthenticator()->full_card_request_.get();
 
@@ -336,6 +340,8 @@ class CreditCardAccessManagerTest : public testing::Test {
       return false;
 
     payments::PaymentsClient::UnmaskResponseDetails response;
+    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
+                                         : AutofillClient::SERVER_CARD;
     full_card_request->OnDidGetRealPan(
         result, response.with_real_pan(real_pan).with_dcvv(dcvv));
     return true;
@@ -715,7 +721,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
   histogram_tester.ExpectTotalCount(
       "Autofill.BetterAuth.CardUnmaskDuration.Fido", 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.BetterAuth.CardUnmaskDuration.Fido.Success", 1);
+      "Autofill.BetterAuth.CardUnmaskDuration.Fido.ServerCard.Success", 1);
   histogram_tester.ExpectBucketCount(
       flow_events_histogram_name,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
@@ -862,7 +868,7 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.BetterAuth.CardUnmaskDuration.Fido", 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.BetterAuth.CardUnmaskDuration.Fido.Failure", 1);
+      "Autofill.BetterAuth.CardUnmaskDuration.Fido.ServerCard.Failure", 1);
 }
 
 // Ensures WebAuthn call is not made if Request Options is missing a Credential

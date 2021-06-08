@@ -106,6 +106,22 @@ class AutofillClient : public RiskDataLoader {
     // Unable to connect to Payments servers. Prompt user to check internet
     // connection.
     NETWORK_ERROR,
+
+    // Request failed in retrieving virtual card information; try again.
+    VCN_RETRIEVAL_TRY_AGAIN_FAILURE,
+
+    // Request failed in retrieving virtual card information; don't try again.
+    VCN_RETRIEVAL_PERMANENT_FAILURE,
+  };
+
+  // The type of the credit card the Payments RPC fetches.
+  enum PaymentsRpcCardType {
+    // Unknown type.
+    UNKNOWN_TYPE = 0,
+    // Server card.
+    SERVER_CARD = 1,
+    // Virtual card.
+    VIRTUAL_CARD = 2,
   };
 
   enum SaveCardOfferUserDecision {

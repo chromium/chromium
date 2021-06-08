@@ -518,6 +518,26 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
     Virtual card
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card temporary error.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error.">
+    Virtual card not available
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error.">
+    Virtual card is not available right now, please try again later
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error.">
+    Virtual card is not available right now, please contact your bank
+  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
+      Your virtual card number is applied.
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
+      View virtual card
+    </message>
+  </if>
 
   <message name="IDS_AUTOFILL_SAVE_UPI_PROMPT_TITLE" desc="Title text for the prompt to save a UPI ID locally, which the user used in a page. UPI is an online payment method. A UPI ID is an email-like string.">
     Remember your UPI ID?
@@ -553,16 +573,6 @@
     </message>
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
       See details
-    </message>
-  </if>
-
-  <!-- Strings related to virtual card numbers -->
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
-      Your virtual card number is applied.
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
-      View virtual card
     </message>
   </if>
 </grit-part>

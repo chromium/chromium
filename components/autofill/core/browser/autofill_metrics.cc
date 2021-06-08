@@ -1248,27 +1248,44 @@ void AutofillMetrics::LogSaveCardWithFirstAndLastNameComplete(bool is_local) {
 // static
 void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result) {
-  std::string suffix;
+    AutofillClient::PaymentsRpcResult result,
+    AutofillClient::PaymentsRpcCardType card_type) {
+  std::string result_suffix;
+  std::string card_type_suffix;
+
   switch (result) {
     case AutofillClient::SUCCESS:
-      suffix = "Success";
+      result_suffix = "Success";
       break;
     case AutofillClient::TRY_AGAIN_FAILURE:
     case AutofillClient::PERMANENT_FAILURE:
-      suffix = "Failure";
+      result_suffix = "Failure";
       break;
     case AutofillClient::NETWORK_ERROR:
-      suffix = "NetworkError";
+      result_suffix = "NetworkError";
       break;
     case AutofillClient::NONE:
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
       NOTREACHED();
       return;
   }
+
+  switch (card_type) {
+    case AutofillClient::SERVER_CARD:
+      card_type_suffix = "ServerCard";
+      break;
+    case AutofillClient::VIRTUAL_CARD:
+    case AutofillClient::UNKNOWN_TYPE:
+      NOTREACHED();
+      return;
+  }
+
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);
-  base::UmaHistogramLongTimes(
-      "Autofill.BetterAuth.CardUnmaskDuration.Fido." + suffix, duration);
+  base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido." +
+                                  card_type_suffix + "." + result_suffix,
+                              duration);
 }
 
 // static
@@ -1462,7 +1479,8 @@ void AutofillMetrics::LogTimeBeforeAbandonUnmasking(
 
 // static
 void AutofillMetrics::LogRealPanResult(
-    AutofillClient::PaymentsRpcResult result) {
+    AutofillClient::PaymentsRpcResult result,
+    AutofillClient::PaymentsRpcCardType card_type) {
   PaymentsRpcResult metric_result;
   switch (result) {
     case AutofillClient::SUCCESS:
@@ -1477,64 +1495,133 @@ void AutofillMetrics::LogRealPanResult(
     case AutofillClient::NETWORK_ERROR:
       metric_result = PAYMENTS_RESULT_NETWORK_ERROR;
       break;
-    default:
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+      metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+      break;
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+      metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE;
+      break;
+    case AutofillClient::NONE:
       NOTREACHED();
       return;
   }
-  UMA_HISTOGRAM_ENUMERATION("Autofill.UnmaskPrompt.GetRealPanResult",
-                            metric_result, NUM_PAYMENTS_RESULTS);
+
+  std::string card_type_suffix;
+  switch (card_type) {
+    case AutofillClient::SERVER_CARD:
+      card_type_suffix = "ServerCard";
+      break;
+    case AutofillClient::VIRTUAL_CARD:
+      card_type_suffix = "VirtualCard";
+      break;
+    case AutofillClient::UNKNOWN_TYPE:
+      NOTREACHED();
+      return;
+  }
+
+  base::UmaHistogramEnumeration("Autofill.UnmaskPrompt.GetRealPanResult",
+                                metric_result);
+
+  base::UmaHistogramEnumeration(
+      "Autofill.UnmaskPrompt.GetRealPanResult." + card_type_suffix,
+      metric_result);
 }
 
 // static
 void AutofillMetrics::LogRealPanDuration(
     const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result) {
-  std::string suffix;
-  switch (result) {
-    case AutofillClient::SUCCESS:
-      suffix = "Success";
+    AutofillClient::PaymentsRpcResult result,
+    AutofillClient::PaymentsRpcCardType card_type) {
+  std::string result_suffix;
+  std::string card_type_suffix;
+
+  switch (card_type) {
+    case AutofillClient::SERVER_CARD:
+      card_type_suffix = "ServerCard";
       break;
-    case AutofillClient::TRY_AGAIN_FAILURE:
-    case AutofillClient::PERMANENT_FAILURE:
-      suffix = "Failure";
+    case AutofillClient::VIRTUAL_CARD:
+      card_type_suffix = "VirtualCard";
       break;
-    case AutofillClient::NETWORK_ERROR:
-      suffix = "NetworkError";
-      break;
-    default:
+    case AutofillClient::UNKNOWN_TYPE:
       NOTREACHED();
       return;
   }
+
+  switch (result) {
+    case AutofillClient::SUCCESS:
+      result_suffix = "Success";
+      break;
+    case AutofillClient::TRY_AGAIN_FAILURE:
+    case AutofillClient::PERMANENT_FAILURE:
+      result_suffix = "Failure";
+      break;
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+      result_suffix = "VcnRetrievalFailure";
+      break;
+    case AutofillClient::NETWORK_ERROR:
+      result_suffix = "NetworkError";
+      break;
+    case AutofillClient::NONE:
+      NOTREACHED();
+      return;
+  }
+
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.GetRealPanDuration",
                               duration);
-  base::UmaHistogramLongTimes(
-      "Autofill.UnmaskPrompt.GetRealPanDuration." + suffix, duration);
+  base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.GetRealPanDuration." +
+                                  card_type_suffix + "." + result_suffix,
+                              duration);
 }
 
 // static
 void AutofillMetrics::LogUnmaskingDuration(
     const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result) {
-  std::string suffix;
+    AutofillClient::PaymentsRpcResult result,
+    AutofillClient::PaymentsRpcCardType card_type) {
+  std::string result_suffix;
+  std::string card_type_suffix;
+
+  switch (card_type) {
+    case AutofillClient::SERVER_CARD:
+      card_type_suffix = "ServerCard";
+      break;
+    case AutofillClient::VIRTUAL_CARD:
+      card_type_suffix = "VirtualCard";
+      break;
+    case AutofillClient::UNKNOWN_TYPE:
+      NOTREACHED();
+      return;
+  }
+
   switch (result) {
     case AutofillClient::SUCCESS:
-      suffix = "Success";
+      result_suffix = "Success";
       break;
     case AutofillClient::TRY_AGAIN_FAILURE:
     case AutofillClient::PERMANENT_FAILURE:
-      suffix = "Failure";
+      result_suffix = "Failure";
+      break;
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+      result_suffix = "VcnRetrievalFailure";
       break;
     case AutofillClient::NETWORK_ERROR:
-      suffix = "NetworkError";
+      result_suffix = "NetworkError";
       break;
-    default:
+    case AutofillClient::NONE:
       NOTREACHED();
       return;
   }
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.UnmaskingDuration",
                               duration);
-  base::UmaHistogramLongTimes(
-      "Autofill.UnmaskPrompt.UnmaskingDuration." + suffix, duration);
+  base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.UnmaskingDuration." +
+                                  card_type_suffix + "." + result_suffix,
+                              duration);
 }
 
 // static

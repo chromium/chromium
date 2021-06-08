@@ -112,15 +112,21 @@ class FullCardRequestTest : public testing::Test {
   MockUIDelegate* ui_delegate() { return &ui_delegate_; }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan) {
+                       const std::string& real_pan,
+                       bool is_virtual_card = false) {
     payments::PaymentsClient::UnmaskResponseDetails response;
+    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
+                                         : AutofillClient::SERVER_CARD;
     request_->OnDidGetRealPan(result, response.with_real_pan(real_pan));
   }
 
   void OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult result,
                                const std::string& real_pan,
-                               const std::string& dcvv) {
+                               const std::string& dcvv,
+                               bool is_virtual_card = false) {
     payments::PaymentsClient::UnmaskResponseDetails response;
+    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
+                                         : AutofillClient::SERVER_CARD;
     request_->OnDidGetRealPan(result,
                               response.with_real_pan(real_pan).with_dcvv(dcvv));
   }
@@ -488,6 +494,58 @@ TEST_F(FullCardRequestTest, PermanentFailure) {
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PERMANENT_FAILURE, "");
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// If the server provides an empty PAN with VCN_RETRIEVAL_TRY_AGAIN_FAILURE
+// error, FullCardRequest::Delegate::OnFullCardRequestFailed() should be
+// invoked.
+TEST_F(FullCardRequestTest, VcnRetrievalTryAgainFailure) {
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(
+          FullCardRequest::FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*ui_delegate(),
+              OnUnmaskVerificationResult(
+                  AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE));
+
+  CreditCard card;
+  card.set_record_type(CreditCard::VIRTUAL_CARD);
+  request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
+                         result_delegate()->AsWeakPtr(),
+                         ui_delegate()->AsWeakPtr());
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = u"123";
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  OnDidGetRealPan(AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE, "",
+                  /*is_virtual_card=*/true);
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// If the server provides an empty PAN with VCN_RETRIEVAL_PERMANENT_FAILURE
+// error, FullCardRequest::Delegate::OnFullCardRequestFailed() should be
+// invoked.
+TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestFailed(
+          FullCardRequest::FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*ui_delegate(),
+              OnUnmaskVerificationResult(
+                  AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE));
+
+  CreditCard card;
+  card.set_record_type(CreditCard::VIRTUAL_CARD);
+  request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
+                         result_delegate()->AsWeakPtr(),
+                         ui_delegate()->AsWeakPtr());
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = u"123";
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  OnDidGetRealPan(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, "",
+                  /*is_virtual_card=*/true);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 

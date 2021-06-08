@@ -340,9 +340,7 @@ class UnmaskCardRequest : public PaymentsRequest {
       : request_details_(request_details),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {
-    DCHECK(
-        CreditCard::MASKED_SERVER_CARD == request_details.card.record_type() ||
-        CreditCard::FULL_SERVER_CARD == request_details.card.record_type());
+    DCHECK_NE(CreditCard::LOCAL_CARD, request_details.card.record_type());
   }
   ~UnmaskCardRequest() override {}
 
@@ -1269,19 +1267,33 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
     // Valid response.
     case net::HTTP_OK: {
       std::string error_code;
+      std::string error_api_error_reason;
       absl::optional<base::Value> message_value = base::JSONReader::Read(data);
       if (message_value && message_value->is_dict()) {
-        const auto* found = message_value->FindPathOfType(
+        const auto* found_error_code = message_value->FindPathOfType(
             {"error", "code"}, base::Value::Type::STRING);
-        if (found)
-          error_code = found->GetString();
+        if (found_error_code)
+          error_code = found_error_code->GetString();
+
+        const auto* found_error_reason = message_value->FindPathOfType(
+            {"error", "api_error_reason"}, base::Value::Type::STRING);
+        if (found_error_reason)
+          error_api_error_reason = found_error_reason->GetString();
+
         request_->ParseResponse(*message_value);
       }
 
-      if (base::LowerCaseEqualsASCII(error_code, "internal"))
+      if (base::LowerCaseEqualsASCII(error_api_error_reason,
+                                     "virtual_card_temporary_error")) {
+        result = AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+      } else if (base::LowerCaseEqualsASCII(error_api_error_reason,
+                                            "virtual_card_permanent_error")) {
+        result = AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE;
+      } else if (base::LowerCaseEqualsASCII(error_code, "internal")) {
         result = AutofillClient::TRY_AGAIN_FAILURE;
-      else if (!error_code.empty() || !request_->IsResponseComplete())
+      } else if (!error_code.empty() || !request_->IsResponseComplete()) {
         result = AutofillClient::PERMANENT_FAILURE;
+      }
 
       break;
     }

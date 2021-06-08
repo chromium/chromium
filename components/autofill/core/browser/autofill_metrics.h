@@ -786,12 +786,16 @@ class AutofillMetrics {
     // Request succeeded.
     PAYMENTS_RESULT_SUCCESS = 0,
     // Request failed; try again.
-    PAYMENTS_RESULT_TRY_AGAIN_FAILURE,
+    PAYMENTS_RESULT_TRY_AGAIN_FAILURE = 1,
     // Request failed; don't try again.
-    PAYMENTS_RESULT_PERMANENT_FAILURE,
+    PAYMENTS_RESULT_PERMANENT_FAILURE = 2,
     // Unable to connect to Payments servers.
-    PAYMENTS_RESULT_NETWORK_ERROR,
-    NUM_PAYMENTS_RESULTS,
+    PAYMENTS_RESULT_NETWORK_ERROR = 3,
+    // Request failed in virtual card information retrieval; try again.
+    PAYMENTS_RESULT_VCN_RETRIEVAL_TRY_AGAIN_FAILURE = 4,
+    // Request failed in virtual card information retrieval; don't try again.
+    PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE = 5,
+    kMaxValue = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE,
   };
 
   // For measuring the network request time of various Wallet API calls. See
@@ -1226,10 +1230,13 @@ class AutofillMetrics {
   static void LogUserHappinessByProfileFormType(UserHappinessMetric metric,
                                                 uint32_t profile_form_bitmask);
 
-  // Logs the card fetch latency after a WebAuthn prompt.
+  // Logs the card fetch latency |duration| after a WebAuthn prompt. |result|
+  // indicates whether the unmasking request was successful or not. |card_type|
+  // indicates the type of the credit card that the request fetched.
   static void LogCardUnmaskDurationAfterWebauthn(
       const base::TimeDelta& duration,
-      AutofillClient::PaymentsRpcResult result);
+      AutofillClient::PaymentsRpcResult result,
+      AutofillClient::PaymentsRpcCardType card_type);
 
   // Logs the count of calls to PaymentsClient::GetUnmaskDetails() (aka
   // GetDetailsForGetRealPan).
@@ -1310,16 +1317,23 @@ class AutofillMetrics {
   static void LogTimeBeforeAbandonUnmasking(const base::TimeDelta& duration,
                                             bool has_valid_nickname);
 
-  // Logs |result| to the get real pan result histogram.
-  static void LogRealPanResult(AutofillClient::PaymentsRpcResult result);
+  // Logs |result| to the get real pan result histogram. |card_type| indicates
+  // the type of the credit card that the request fetched.
+  static void LogRealPanResult(AutofillClient::PaymentsRpcResult result,
+                               AutofillClient::PaymentsRpcCardType card_type);
 
-  // Logs |result| to duration of the GetRealPan RPC.
+  // Logs |result| to duration of the GetRealPan RPC. |card_type| indicates the
+  // type of the credit card that the request fetched.
   static void LogRealPanDuration(const base::TimeDelta& duration,
-                                 AutofillClient::PaymentsRpcResult result);
+                                 AutofillClient::PaymentsRpcResult result,
+                                 AutofillClient::PaymentsRpcCardType card_type);
 
-  // Logs |result| to the get real pan result histogram.
-  static void LogUnmaskingDuration(const base::TimeDelta& duration,
-                                   AutofillClient::PaymentsRpcResult result);
+  // Logs |result| to the get real pan result histogram. |card_type| indicates
+  // the type of the credit card that the request fetched.
+  static void LogUnmaskingDuration(
+      const base::TimeDelta& duration,
+      AutofillClient::PaymentsRpcResult result,
+      AutofillClient::PaymentsRpcCardType card_type);
 
   // This should be called when a form that has been Autofilled is submitted.
   // |duration| should be the time elapsed between form load and submission.

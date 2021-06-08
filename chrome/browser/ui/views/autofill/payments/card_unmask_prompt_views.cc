@@ -175,6 +175,10 @@ void CardUnmaskPromptViews::GotVerificationResult(
       layout->StartRow(1.0, 0);
       layout->AddView(std::move(error_icon));
       layout->AddView(std::move(error_label));
+
+      // If it is a virtual card retrieval failure, we will need to update the
+      // window title.
+      GetWidget()->UpdateWindowTitle();
     }
     UpdateButtons();
     DialogModelChanged();

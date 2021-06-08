@@ -205,9 +205,12 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
 
   // Invokes GetRealPan callback.
   void GetRealPan(AutofillClient::PaymentsRpcResult result,
-                  const std::string& real_pan) {
+                  const std::string& real_pan,
+                  bool is_virtual_card = false) {
     DCHECK(fido_authenticator_->full_card_request_);
     payments::PaymentsClient::UnmaskResponseDetails response;
+    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
+                                         : AutofillClient::SERVER_CARD;
     fido_authenticator_->full_card_request_->OnDidGetRealPan(
         result, response.with_real_pan(real_pan));
   }

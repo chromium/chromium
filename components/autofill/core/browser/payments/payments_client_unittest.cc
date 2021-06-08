@@ -1000,6 +1000,24 @@ TEST_F(PaymentsClientTest, OtherError) {
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
+TEST_F(PaymentsClientTest, VcnRetrievalTryAgainFailure) {
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\" } }");
+  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, VcnRetrievalPermanentFailure) {
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+}
+
 // Tests for the local card migration flow. Desktop only.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {

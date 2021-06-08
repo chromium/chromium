@@ -44,6 +44,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
     // The card could not be looked up due to card auth declined or failed.
     VERIFICATION_DECLINED,
 
+    // The request failed when retrieving virtual card information.
+    VIRTUAL_CARD_RETRIEVAL_FAILURE,
+
     // The request failed for technical reasons, such as a closing page or lack
     // of network connection.
     GENERIC_FAILURE
