@@ -1,8 +1,8 @@
 # Account Selection Android Feature
 
-This folder contains the internal parts of the Account Selection component. Files,
-classes and methods defined in here are not meant to be used outside of this
-package.
+This folder contains the internal parts of the Account Selection component.
+Files, classes and methods defined in here are not meant to be used outside of
+this package.
 
 This document provides a brief overview of the architecture.
 
@@ -25,41 +25,40 @@ logic from representation:
  * The [view](#View) is the representation of the component. It enforces styles
    and is mostly called by a view binder to set mutable properties.
 
+
 ## Model
 
 The model holds state and event listeners connected to the view. An MCP
 automatically notifies listener about any change made to a property. To automate
-this Observer structure, the model is a `PropertyModel` as defined in
-`//src/ui/android/java/src/org/chromium/ui/modelutil/`. It is built by defining
-readable and writable properties and constructing a model with them. The
-properties (and a simple factory method for the model) are located in the static
-`AccountSelectionProperties` class.
+this Observer structure, the model is a `ListModel` as defined in
+`//src/ui/android/java/src/org/chromium/ui/modelutil/`.
 
-The model contains writable and readable properties. The readable properties are
-guaranteed to never change for the lifetime of the Account Selection component:
-
- * **DISMISS_HANDLER** which is the listener that reacts to the view being
-  dismissed. The mediator implements this.
-
-The writable properties change over the course of the components lifetime:
-
- * **VISIBLE** which will trigger the component to render the bottom sheet or
-   hide it, if it was visible.
-
+TODO(majidvp): Explain the type of items in the list once they are added.
 
 ## Controller
 
-The controller of this model implements the AccountSelectionComponent interface as
-defined in `public/` and contains all logic. The controller consists of two parts:
+The controller of this model implements the AccountSelectionComponent interface
+as defined in `public/` and contains all logic. The controller consists of two
+parts:
 
-  * **AccountSelectionCoordinator** which implements the public interface and creates all
-    parts of the component (model, mediator, view, etc.) and links them using
-    MCPs.
-  * **AccountSelectionMediator** which handles request to the component API and changes
-    the model accordingly. Interactions with the view are typically handled here
-    and either affect the model or notify callers of the component API.
+  * **AccountSelectionCoordinator** which implements the public interface and
+    creates all parts of the component (model, mediator, view, etc.) and links
+    them using MCPs.
+  * **AccountSelectionMediator** which handles request to the component API and
+    changes the model accordingly. Interactions with the view are typically
+    handled here and either affect the model or notify callers of the component
+    API. This is also responsible for observing the bottom sheet state and
+    notify callers on its dismissal.
 
 
 ## View
 
-This will be added in follow-up patches.
+We use a simple `LinearLayout` as the top-level view for this component which
+contains the list view for sheet items. This view is them displayed inside the
+bottom sheet via `AccountSelectionBottomSheetContent`.
+
+`AccountSelectionBottomSheetContent` is a simple container that implements
+`BottomSheetContent` interface and facilitates display of our view via the
+`BottomSheetController`. The bottom sheet controller instance itself is
+controlled by the mediator to create and modify the bottom sheet where accounts
+are displayed.

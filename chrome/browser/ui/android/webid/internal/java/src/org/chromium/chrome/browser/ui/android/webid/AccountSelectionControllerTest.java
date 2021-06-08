@@ -5,12 +5,11 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.VISIBLE;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.Arrays;
 
@@ -50,41 +49,41 @@ public class AccountSelectionControllerTest {
     @Mock
     private AccountSelectionComponent.Delegate mMockDelegate;
 
-    private final AccountSelectionMediator mMediator = new AccountSelectionMediator();
-    private final PropertyModel mModel =
-            AccountSelectionProperties.createDefaultModel(mMediator::onDismissed);
+    @Mock
+    private BottomSheetController mMockBottomSheetController;
+
+    private AccountSelectionMediator mMediator;
+    private final ModelList mSheetItems = new ModelList();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator.initialize(mMockDelegate, mModel);
-    }
-
-    @Test
-    public void testCreatesValidDefaultModel() {
-        assertNotNull(mModel.get(DISMISS_HANDLER));
-        assertThat(mModel.get(VISIBLE), is(false));
+        mMediator = new AccountSelectionMediator(
+                mMockDelegate, mSheetItems, mMockBottomSheetController, null);
     }
 
     @Test
     public void testShowAccountsSetsVisibile() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
-        assertThat(mModel.get(VISIBLE), is(true));
+        assertThat(mMediator.isVisible(), is(true));
     }
 
     @Test
     public void testCallsDelegateAndHidesOnDismiss() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         verify(mMockDelegate).onDismissed();
-        assertThat(mModel.get(VISIBLE), is(false));
+        assertThat(mMediator.isVisible(), is(false));
     }
 
     @Test
     public void testCallsDelegateAndHidesOnSelect() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
-        assertThat(mModel.get(VISIBLE), is(false));
+        assertThat(mMediator.isVisible(), is(false));
     }
 }

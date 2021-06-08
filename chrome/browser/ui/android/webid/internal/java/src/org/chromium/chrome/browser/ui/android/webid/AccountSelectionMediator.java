@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.VISIBLE;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -17,28 +21,77 @@ import java.util.List;
  * to events like clicks.
  */
 class AccountSelectionMediator {
-    private AccountSelectionComponent.Delegate mDelegate;
-    private PropertyModel mModel;
+    private boolean mVisible;
+    private final AccountSelectionComponent.Delegate mDelegate;
+    private final ModelList mSheetItems;
 
-    void initialize(AccountSelectionComponent.Delegate delegate, PropertyModel model) {
+    private final BottomSheetController mBottomSheetController;
+    private final BottomSheetContent mBottomSheetContent;
+    private final BottomSheetObserver mBottomSheetObserver;
+
+    AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, ModelList sheetItems,
+            BottomSheetController bottomSheetController, BottomSheetContent bottomSheetContent) {
         assert delegate != null;
+        mVisible = false;
         mDelegate = delegate;
-        mModel = model;
+        mSheetItems = sheetItems;
+        mBottomSheetController = bottomSheetController;
+        mBottomSheetContent = bottomSheetContent;
+
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
+            // TODO(majidvp): We should override #onSheetStateChanged() and react to HIDDEN state
+            // since closed is a legacy fixture that can get out of sync with the state is some
+            // situations. https://crbug.com/1215174
+            @Override
+            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                super.onSheetClosed(reason);
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+
+                if (!mVisible) return;
+                onDismissed(reason);
+            }
+        };
     }
 
     void showAccounts(String url, List<Account> accounts) {
-        mModel.set(VISIBLE, true);
-        // TODO (majidvp): Set the SHEET_ITEMS and show the view.
+        // TODO (majidvp): Update mSheetItems and show the view.
+        showContent();
+    }
+
+    /**
+     * Requests to show the bottom sheet. If it is not possible to immediately show the content
+     * (e.g., higher priority content is being shown) it removes the request from the bottom sheet
+     * controller queue and notifies the delegate of the dismissal.
+     */
+    @VisibleForTesting
+    void showContent() {
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
+            mVisible = true;
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+        } else {
+            onDismissed(BottomSheetController.StateChangeReason.NONE);
+        }
+    }
+
+    /**
+     * Requests to hide the bottom sheet.
+     */
+    void hideContent() {
+        mVisible = false;
+        mBottomSheetController.hideContent(mBottomSheetContent, true);
+    }
+
+    boolean isVisible() {
+        return mVisible;
     }
 
     void onAccountSelected(Account account) {
-        mModel.set(VISIBLE, false);
+        hideContent();
         mDelegate.onAccountSelected(account);
     }
 
     void onDismissed(@StateChangeReason int reason) {
-        if (!mModel.get(VISIBLE)) return;
-        mModel.set(VISIBLE, false);
+        hideContent();
         mDelegate.onDismissed();
     }
 }

@@ -8,7 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Properties defined here reflect the state of the AccountSelection-components.
+ * Properties defined here reflect the visible state of the AccountSelection-components.
  */
 class AccountSelectionProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =

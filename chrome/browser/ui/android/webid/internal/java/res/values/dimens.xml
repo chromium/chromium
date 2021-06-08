@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="account_selection_sheet_margin">16dp</dimen>
+
+    <!-- Below are the different Half-state peeking heights. The height is the
+         sum of all components. It varies depending on the suggestion count. The
+         base height is 298dp:
+         Bottom sheet shadows and padding (18dp)
+         + Handlebar (16dp)
+         + Title size and margin (48+16dp) -->
+    <dimen name="account_selection_sheet_height_single_account">98dp</dimen>
+
+</resources>

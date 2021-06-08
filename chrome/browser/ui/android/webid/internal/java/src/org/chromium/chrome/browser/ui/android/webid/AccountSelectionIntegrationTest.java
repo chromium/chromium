@@ -1,0 +1,190 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.android.webid;
+
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+
+import android.annotation.SuppressLint;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.test.espresso.Espresso;
+import androidx.test.filters.MediumTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+
+import java.util.Arrays;
+
+/**
+ * Integration tests for the Account Selection component check that the calls to the Account
+ * Selection API end up rendering a View.
+ */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+public class AccountSelectionIntegrationTest {
+    private static final String EXAMPLE_URL = "https://www.example.xyz";
+    private static final String MOBILE_URL = "https://m.example.xyz";
+    private static final String TEST_PROFILE_PIC = "https://www.example.xyz/profile_pic/1";
+
+    private static final Account ANA =
+            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, EXAMPLE_URL);
+    private static final Account BOB =
+            new Account("Bob", "*****", "Bob", "", TEST_PROFILE_PIC, MOBILE_URL);
+
+    private final AccountSelectionComponent mAccountSelection = new AccountSelectionCoordinator();
+
+    @Mock
+    private AccountSelectionComponent.Delegate mMockBridge;
+
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    private BottomSheetController mBottomSheetController;
+
+    public AccountSelectionIntegrationTest() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Before
+    public void setUp() throws InterruptedException {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        runOnUiThreadBlocking(() -> {
+            mBottomSheetController = BottomSheetControllerProvider.from(
+                    mActivityTestRule.getActivity().getWindowAndroid());
+            mAccountSelection.initialize(
+                    mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testBackDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(
+                () -> { mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB)); });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        Espresso.pressBack();
+
+        waitForEvent(mMockBridge).onDismissed();
+        verify(mMockBridge, never()).onAccountSelected(any());
+    }
+
+    @Test
+    @MediumTest
+    @SuppressLint("SetTextI18n")
+    public void testDismissedIfUnableToShow() throws Exception {
+        BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
+            TextView highPriorityBottomSheetContentView =
+                    new TextView(mActivityTestRule.getActivity());
+            highPriorityBottomSheetContentView.setText("Another bottom sheet content");
+            BottomSheetContent content =
+                    createTestBottomSheetContent(highPriorityBottomSheetContentView);
+            mBottomSheetController.requestShowContent(content, false);
+            return content;
+        });
+        pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
+        Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
+
+        runOnUiThreadBlocking(
+                () -> { mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB)); });
+        waitForEvent(mMockBridge).onDismissed();
+        verify(mMockBridge, never()).onAccountSelected(any());
+        Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
+
+        runOnUiThreadBlocking(
+                () -> { mBottomSheetController.hideContent(otherBottomSheetContent, false); });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+    }
+
+    public static <T> T waitForEvent(T mock) {
+        return verify(mock,
+                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+    }
+
+    private @SheetState int getBottomSheetState() {
+        return mBottomSheetController.getSheetState();
+    }
+
+    private BottomSheetContent createTestBottomSheetContent(View contentView) {
+        return new BottomSheetContent() {
+            @Override
+            public View getContentView() {
+                return contentView;
+            }
+
+            @Nullable
+            @Override
+            public View getToolbarView() {
+                return null;
+            }
+
+            @Override
+            public int getVerticalScrollOffset() {
+                return 0;
+            }
+
+            @Override
+            public void destroy() {}
+
+            @Override
+            public int getPriority() {
+                return ContentPriority.HIGH;
+            }
+
+            @Override
+            public boolean swipeToDismissEnabled() {
+                return false;
+            }
+
+            @Override
+            public int getSheetContentDescriptionStringId() {
+                return 0;
+            }
+
+            @Override
+            public int getSheetHalfHeightAccessibilityStringId() {
+                return 0;
+            }
+
+            @Override
+            public int getSheetFullHeightAccessibilityStringId() {
+                return 0;
+            }
+
+            @Override
+            public int getSheetClosedAccessibilityStringId() {
+                return 0;
+            }
+        };
+    }
+}

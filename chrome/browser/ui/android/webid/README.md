@@ -41,6 +41,18 @@ instantiate or verify Android Views. The public build and run target is
 ```
 
 
+#### javatests/
+
+Contains View and Integration tests. These instrumented unit tests need an
+emulator or a physical device which means that they run slowly but can test
+rendered Views. Native Calls should be used very sparingly to ensure access to
+all methods in the Dex path list. The public build and run target is
+`chrome_public_test_apk`. Run them with:
+
+``` bash
+./out/<OutDirectory>/bin/run_chrome_public_test_apk -f *AccountSelection*
+```
+
 ## Example usage
 
 ``` java
@@ -55,6 +67,6 @@ component.initialize(activity, activity.getBottomSheetController(), () -> {
 List<Account> accounts; // Add accounts to show!
 component.showAccounts("www.displayed-url.example", accounts, (account) -> {
   // The |account| that was clicked should be used to fill something now.
-})
+});
 
 ```
