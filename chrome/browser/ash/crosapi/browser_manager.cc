@@ -247,7 +247,7 @@ BrowserManager::~BrowserManager() {
 }
 
 bool BrowserManager::IsReady() const {
-  return state_ != State::NOT_INITIALIZED && state_ != State::LOADING &&
+  return state_ != State::NOT_INITIALIZED && state_ != State::MOUNTING &&
          state_ != State::UNAVAILABLE;
 }
 
@@ -720,7 +720,7 @@ void BrowserManager::OnSessionStateChanged() {
 
   // Must be checked after user session start because it depends on user type.
   if (browser_util::IsLacrosEnabled()) {
-    SetState(State::LOADING);
+    SetState(State::MOUNTING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
                                          weak_factory_.GetWeakPtr()));
   } else {
@@ -730,7 +730,7 @@ void BrowserManager::OnSessionStateChanged() {
 }
 
 void BrowserManager::OnLoadComplete(const base::FilePath& path) {
-  DCHECK_EQ(state_, State::LOADING);
+  DCHECK_EQ(state_, State::MOUNTING);
 
   lacros_path_ = path;
   SetState(path.empty() ? State::UNAVAILABLE : State::STOPPED);

@@ -203,11 +203,9 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckInstalledMayBlock, component_manager_),
-      base::BindOnce(&BrowserLoader::OnLoadSelection,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  OnLoadSelection(
+      std::move(callback),
+      !component_manager_->GetCompatiblePath(GetLacrosComponentName()).empty());
 }
 
 void BrowserLoader::OnLoadSelection(LoadCompletionCallback callback,

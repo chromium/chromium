@@ -161,9 +161,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // for user session.
     NOT_INITIALIZED,
 
-    // User session started, and now it's loading (downloading and installing)
-    // lacros-chrome.
-    LOADING,
+    // User session started, and now it's mounting lacros-chrome.
+    MOUNTING,
 
     // Lacros-chrome is unavailable. I.e., failed to load for some reason
     // or disabled.

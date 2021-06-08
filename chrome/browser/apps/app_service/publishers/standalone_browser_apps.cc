@@ -31,8 +31,7 @@ StandaloneBrowserApps::StandaloneBrowserApps(
 
 StandaloneBrowserApps::~StandaloneBrowserApps() = default;
 
-apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp(
-    bool is_ready) {
+apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp() {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kStandaloneBrowser, extension_misc::kLacrosAppId,
       apps::mojom::Readiness::kReady,
@@ -40,7 +39,7 @@ apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp(
       apps::mojom::InstallSource::kSystem);
   // Make Lacros searchable with the term "chrome", too.
   app->additional_search_terms.push_back("chrome");
-  app->icon_key = NewIconKey(is_ready ? State::kReady : State::kLoading);
+  app->icon_key = NewIconKey(State::kReady);
   app->searchable = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
@@ -53,9 +52,6 @@ apps::mojom::IconKeyPtr StandaloneBrowserApps::NewIconKey(State state) {
   // Show different icons based on download state.
   apps::IconEffects icon_effects;
   switch (state) {
-    case State::kLoading:
-      icon_effects = apps::IconEffects::kPaused;
-      break;
     case State::kError:
       icon_effects = apps::IconEffects::kBlocked;
       break;
@@ -78,15 +74,13 @@ void StandaloneBrowserApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   auto* browser_manager = crosapi::BrowserManager::Get();
-  bool is_ready = true;
   // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
   if (browser_manager && !browser_manager->IsReady()) {
-    is_ready = false;
     browser_manager->SetLoadCompleteCallback(base::BindOnce(
         &StandaloneBrowserApps::OnLoadComplete, weak_factory_.GetWeakPtr()));
   }
   std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(GetStandaloneBrowserApp(is_ready));
+  apps.push_back(GetStandaloneBrowserApp());
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));

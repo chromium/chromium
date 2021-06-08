@@ -33,10 +33,10 @@ class StandaloneBrowserApps : public apps::PublisherBase {
 
  private:
   // Returns the single lacros app.
-  apps::mojom::AppPtr GetStandaloneBrowserApp(bool is_ready);
+  apps::mojom::AppPtr GetStandaloneBrowserApp();
 
   // Returns an IconKey with appropriate effects for the binary ready state.
-  enum class State { kLoading, kError, kReady };
+  enum class State { kError, kReady };
   apps::mojom::IconKeyPtr NewIconKey(State state);
 
   // Callback when the binary download completes.
