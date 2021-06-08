@@ -28,7 +28,7 @@
      * Keyed by entry.toURL(), maps to list of VMs.
      * @private @dict {!Object<!Array<string>>}
      */
-    this.shared_paths_ = {};
+    this.sharedPaths_ = {};
 
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
@@ -95,16 +95,16 @@
     // These paths will still be shared as a result of a parent path being
     // shared, but if the parent is unshared in the future, these children
     // paths should not remain.
-    for (const [path, vms] of Object.entries(this.shared_paths_)) {
+    for (const [path, vms] of Object.entries(this.sharedPaths_)) {
       if (path.startsWith(url)) {
         this.unregisterSharedPath_(vmName, path);
       }
     }
-    const vms = this.shared_paths_[url];
-    if (this.shared_paths_[url]) {
-      this.shared_paths_[url].push(vmName);
+    const vms = this.sharedPaths_[url];
+    if (this.sharedPaths_[url]) {
+      this.sharedPaths_[url].push(vmName);
     } else {
-      this.shared_paths_[url] = [vmName];
+      this.sharedPaths_[url] = [vmName];
     }
   }
 
@@ -115,13 +115,13 @@
    * @private
    */
   unregisterSharedPath_(vmName, path) {
-    const vms = this.shared_paths_[path];
+    const vms = this.sharedPaths_[path];
     if (vms) {
       const newVms = vms.filter(vm => vm != vmName);
       if (newVms.length > 0) {
-        this.shared_paths_[path] = newVms;
+        this.sharedPaths_[path] = newVms;
       } else {
-        delete this.shared_paths_[path];
+        delete this.sharedPaths_[path];
       }
     }
   }
@@ -177,13 +177,13 @@
     }
 
     while (path.length > root.length) {
-      const vms = this.shared_paths_[path];
+      const vms = this.sharedPaths_[path];
       if (vms && vms.includes(vmName)) {
         return true;
       }
       path = path.substring(0, path.lastIndexOf('/'));
     }
-    const rootVms = this.shared_paths_[root];
+    const rootVms = this.sharedPaths_[root];
     return !!rootVms && rootVms.includes(vmName);
   }
 
