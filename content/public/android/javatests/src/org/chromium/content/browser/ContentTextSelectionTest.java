@@ -677,6 +677,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextSelection", "TextInput"})
+    @DisabledTest(message = "https://crbug.com/1217277")
     public void testCursorPositionAfterHidingActionMode() throws Exception {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
