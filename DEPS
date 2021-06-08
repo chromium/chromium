@@ -1567,6 +1567,12 @@ deps = {
       'condition': 'checkout_linux',
   },
 
+  # Additional Wayland protocols specific for KDE Plasma desktop environment.
+  'src/third_party/wayland-protocols/kde': {
+      'url': Var('chromium_git') + '/external/github.com/KDE/plasma-wayland-protocols.git',
+      'condition': 'checkout_linux',
+  },
+
   'src/third_party/webdriver/pylib':
     Var('chromium_git') + '/external/github.com/SeleniumHQ/selenium/py.git' + '@' + 'd0045ec570c1a77612db35d1e92f05e1d27b4d53',
 

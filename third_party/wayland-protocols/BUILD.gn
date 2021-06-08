@@ -142,5 +142,5 @@ wayland_protocol("weston_test") {
 }
 
 wayland_protocol("org_kde_kwin_idle") {
-  sources = [ "kde/idle/idle.xml" ]
+  sources = [ "kde/src/protocols/idle.xml" ]
 }

@@ -1,3 +1,7 @@
+This component wraps several external sources of Wayland protocol extensions.
+Descriptions of each source go below.
+
+--------------------------------------------------------------------------------
 Name: wayland-protocols
 URL: http://wayland.freedesktop.org/
 Version: 1.21
@@ -6,16 +10,33 @@ License File: src/COPYING
 Security Critical: yes
 
 Description:
-wayland-protocols/src contains Wayland protocols that add functionality not
-available in the Wayland core protocol.  Such protocols either add completely
-new functionality, or extend the functionality of some other protocol either in
-Wayland core, or some other protocol in wayland-protocols.
+wayland-protocols/src contains the official library of Wayland protocol
+extensions maintained by the developers of the Wayland project.
 
-This component is fetched from the external repository.  To upgrade it to a new
-version:
+To upgrade to a new version:
 - Find the commit hash of that version in the project's git repository, which is
-  gitlab.freedesktop.org:wayland/wayland-protocols.git.
+  https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
 - Update the DEPS entry to the commit found above with this command:
   $ roll-dep --roll-to=<commit> src/third_party/wayland-protocols/src
+- Run gclient sync to update the local working copy with the new version.
+- Update this README to reflect the new version number.
+
+--------------------------------------------------------------------------------
+Name: plasma-wayland-protocols
+URL: https://github.com/KDE/plasma-wayland-protocols
+Version: 1.3.0
+License: GNU LGPL 2.1
+License File: kde/COPYING.LIB
+Security Critical: yes
+
+Description:
+wayland-protocols/kde contains Wayland protocol extensions exposed by
+KWin Wayland compositor, which is used by KDE Plasma desktop environment.
+
+To upgrade to a new version:
+- Find the commit hash of that version in the project's git repository, which is
+  https://github.com/KDE/plasma-wayland-protocols.git.
+- Update the DEPS entry to the commit found above with this command:
+  $ roll-dep --roll-to=<commit> src/third_party/wayland-protocols/kde
 - Run gclient sync to update the local working copy with the new version.
 - Update this README to reflect the new version number.
