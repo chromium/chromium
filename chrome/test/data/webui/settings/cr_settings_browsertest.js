@@ -509,6 +509,10 @@ TEST_F(
       runMochaSuite('PrivacySandboxSettingsEnabled');
     });
 
+TEST_F('CrSettingsPrivacyPageV3Test', 'PrivacyReviewEnabled', function() {
+  runMochaSuite('PrivacyReviewEnabled');
+});
+
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
 TEST_F(
     'CrSettingsPrivacyPageV3Test', 'DISABLED_PrivacyPageSoundTests',

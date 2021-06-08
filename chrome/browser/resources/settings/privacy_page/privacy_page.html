@@ -29,8 +29,18 @@
     <settings-animated-pages id="pages" section="privacy"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
+        <template is="dom-if" if="[[enablePrivacyReview_]]">
+          <cr-link-row id="privacyReviewLinkRow"
+              start-icon="settings20:safety-check"
+              label="$i18n{privacyReviewLabel}"
+              sub-label="$i18n{privacyReviewSublabel}"
+              on-click="onPrivacyReviewClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
         <cr-link-row id="clearBrowsingData"
             start-icon="cr:delete"
+            class$="[[computeClearBrowsingDataClass_(enablePrivacyReview_)]]"
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>

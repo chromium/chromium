@@ -156,6 +156,12 @@ Polymer({
       value: () => loadTimeData.getBoolean('privacySandboxSettingsEnabled'),
     },
 
+    /** @private */
+    enablePrivacyReview_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('privacyReviewEnabled'),
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -314,6 +320,11 @@ Polymer({
   },
 
   /** @private */
+  onPrivacyReviewClick_() {
+    // TODO(crbug/1215630): Implement navigation and metrics.
+  },
+
+  /** @private */
   getProtectedContentLabel_(value) {
     return value ? this.i18n('siteSettingsProtectedContentAllowed') :
                    this.i18n('siteSettingsProtectedContentBlocked');
@@ -332,5 +343,13 @@ Polymer({
     return this.getPref('privacy_sandbox.apis_enabled').value ?
         this.i18n('privacySandboxTrialsEnabled') :
         this.i18n('privacySandboxTrialsDisabled');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeClearBrowsingDataClass_() {
+    return this.enablePrivacyReview_ ? 'hr' : '';
   },
 });

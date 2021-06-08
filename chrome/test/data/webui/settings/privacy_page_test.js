@@ -82,6 +82,7 @@ suite('PrivacyPage', function() {
     loadTimeData.overrideValues({
       enableContentSettingsRedesign: false,
       privacySandboxSettingsEnabled: false,
+      privacyReviewEnabled: false,
     });
   });
 
@@ -169,6 +170,14 @@ suite('PrivacyPage', function() {
   test('privacySandboxRowNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
   });
+
+  test('privacyReviewRowNotVisible', function() {
+    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+  });
+
+  test('clearBrowsingDataClass', function() {
+    assertFalse(!!page.$$('#clearBrowsingData').classList.contains('hr'));
+  });
 });
 
 suite('PrivacySandboxSettingsEnabled', function() {
@@ -223,6 +232,33 @@ suite('PrivacySandboxSettingsEnabled', function() {
     assertEquals(
         'Settings.PrivacySandbox.OpenedFromSettingsParent',
         await metricsBrowserProxy.whenCalled('recordAction'));
+  });
+});
+
+suite('PrivacyReviewEnabled', function() {
+  /** @type {!SettingsPrivacyPageElement} */
+  let page;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacyReviewEnabled: true,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('privacyReviewRowVisible', function() {
+    assertTrue(isChildVisible(page, '#privacyReviewLinkRow'));
+  });
+
+  test('clearBrowsingDataClass', function() {
+    assertTrue(!!page.$$('#clearBrowsingData').classList.contains('hr'));
   });
 });
 
