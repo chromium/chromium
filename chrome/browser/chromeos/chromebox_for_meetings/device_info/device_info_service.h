@@ -59,6 +59,12 @@ class DeviceInfoService : public CfmObserver,
   DeviceInfoService();
   ~DeviceInfoService() override;
 
+  // Populate mojom with information from PolicyInfo
+  void PopulatePolicyInfoFromProto(mojom::PolicyInfoPtr& policy_info);
+
+  // Populate mojom with information from ChromeDeviceSettingsProto
+  void PopulateChromeDeviceSettingsFromProto(mojom::PolicyInfoPtr& policy_info);
+
   // Cleanup the service on mojom connection loss.
   // Called after the DeviceInfo Service is no longer discoverable.
   void Reset();

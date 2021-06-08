@@ -44,6 +44,12 @@ struct PolicyInfo {
 
   // PolicyData::DeviceID
   string? cros_device_id@4;
+
+  // ChromeDeviceSettingsProto::AutoUpdateSettings::CohortHint
+  string? cohort_hint@5;
+
+  // ChromeDeviceSettingsProto::ReleaseChannel::ReleaseChannelDelegated
+  bool release_channel_delegated@6;
 };
 
 // Basic system information
