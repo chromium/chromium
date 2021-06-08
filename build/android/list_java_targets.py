@@ -59,7 +59,7 @@ _VALID_TYPES = (
 
 def _run_ninja(output_dir, args):
   cmd = [
-      _AUTO_NINJA_PATH,
+      _AUTONINJA_PATH,
       '-C',
       output_dir,
   ]
