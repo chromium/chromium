@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/google_keys.h"
 
-#include <base/logging.h>
-
 namespace enterprise_connectors {
 
 namespace {
@@ -29,6 +27,7 @@ constexpr char kDefaultVAEncryptionPublicKey[] =
     "eb08318611d44daf6044f8527687dc7ce5319b51eae6ab12bee6bd16e59c499e"
     "fa53d80232ae886c7ee9ad8bc1cbd6e4ac55cb8fa515671f7e7ad66e98769f52"
     "c3c309f98bf08a3b8fbb0166e97906151b46402217e65c5d01ddac8514340e8b";
+constexpr char kDefaultVAEncryptionPublicKeyID[] = "\x00\x4a\xe2\xdc\xae";
 
 // VA server instance for QA.
 // https://qa-dvproxy-server-gws.sandbox.google.com
@@ -50,6 +49,15 @@ constexpr char kTestVAEncryptionPublicKey[] =
     "698c20d83fb341a442fd69701fe0bdc41bdcf8056ccbc8d9b4275e8e43ec6b63"
     "c1ae70d52838dfa90a9cd9e7b6bd88ed3abf4fab444347104e30e635f4f296ac"
     "4c91939103e317d0eca5f36c48102e967f176a19a42220f3cf14634b6773be07";
+constexpr char kTestVAEncryptionPublicKeyID[] = "\x00\xef\x22\x0f\xb0";
+
+// Ignores the extra null-terminated element and converts only the effective
+// part to std::string.
+template <size_t size>
+std::string ZeroTerminatedCharArrayToString(
+    const char (&array)[size]) noexcept {
+  return std::string(std::begin(array), std::end(array) - 1);
+}
 
 }  // namespace
 
@@ -60,7 +68,11 @@ GoogleKeys ::GoogleKeys() {
 
   va_encryption_keys_[DEFAULT_VA].set_modulus_in_hex(
       kDefaultVAEncryptionPublicKey);
+  va_encryption_keys_[DEFAULT_VA].set_key_id(
+      ZeroTerminatedCharArrayToString(kDefaultVAEncryptionPublicKeyID));
   va_encryption_keys_[TEST_VA].set_modulus_in_hex(kTestVAEncryptionPublicKey);
+  va_encryption_keys_[TEST_VA].set_key_id(
+      ZeroTerminatedCharArrayToString(kTestVAEncryptionPublicKeyID));
 }
 
 GoogleKeys::GoogleKeys(const DefaultGoogleRsaPublicKeySet& default_key_set)

@@ -80,6 +80,15 @@ class AttestationService {
                                             AttestationCallback callback);
 
  private:
+  // The KeyInfo message encrypted using a public encryption key, with
+  // the following parameters:
+  //   Key encryption: RSA-OAEP with no custom parameters.
+  //   Data encryption: 256-bit key, AES-CBC with PKCS5 padding.
+  //   MAC: HMAC-SHA-512 using the AES key.
+  bool EncryptEnterpriseKeyInfo(VAType va_type,
+                                const KeyInfo& key_info,
+                                EncryptedData* encrypted_data);
+
   // Sign the challenge and return the challenge response in
   // `result.challenge_response`.
   void SignEnterpriseChallengeTask(
