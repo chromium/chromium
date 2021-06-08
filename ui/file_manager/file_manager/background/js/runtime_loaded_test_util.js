@@ -58,16 +58,6 @@ let KeyModifiers;
  */
 let MetadataStatsType;
 
-if (!assert) {
-  function assert(condition, opt_message) {
-    if (!condition) {
-      const message =
-          'Assertion error' + (opt_message ? ' ' + opt_message : '');
-      throw new Error(message);
-    }
-  }
-}
-
 /**
  * Extract the information of the given element.
  * @param {Element} element Element to be extracted.
@@ -1085,15 +1075,7 @@ test.util.executeTestMessage = (request, sendResponse) => {
 
   const args = request.args.slice();  // shallow copy
   if (request.appId) {
-    if (request.contentWindow) {
-      // request.contentWindow is present if this function was called via
-      // test.swaTestMessageListener, an alternative code path used by the test
-      // harness to send messages directly to Files SWA. Test code uses
-      // request.contentWindow only, thus by setting it, we avoid having to
-      // change the test.utils functions to check for contentWindow || window,
-      // just to support SWA files app.
-      args.unshift(request.contentWindow);
-    } else if (window.appWindows[request.appId]) {
+    if (window.appWindows[request.appId]) {
       args.unshift(window.appWindows[request.appId].contentWindow);
     } else if (window.background.dialogs[request.appId]) {
       args.unshift(window.background.dialogs[request.appId]);
