@@ -1241,7 +1241,7 @@ deps = {
     Var('chromium_git') + '/webm/libvpx.git' + '@' +  '61edec1efbea1c02d71857e2aff9426d9cd2df4e',
 
   'src/third_party/libwebm/source':
-    Var('chromium_git') + '/webm/libwebm.git' + '@' + '51ca718c3adf0ddedacd7df25fe45f67dc5a9ce1',
+    Var('chromium_git') + '/webm/libwebm.git' + '@' + 'e4fbea0c9751ae8aa86629b197a28d8276a2b0da',
 
   'src/third_party/libyuv':
     Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '49ebc996aa8c4bdf89c1b5ea461eb677234c61cc',
