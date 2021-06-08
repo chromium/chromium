@@ -125,8 +125,7 @@ class BASE_EXPORT PartitionAddressSpace {
   static uint16_t* ReservationOffsetTable() {
     // The reservation offset table is currently hardcoded to be allocated at
     // the end of the BRP pool, so that we can easily locate it.
-    return reinterpret_cast<uint16_t*>(BRPPoolEnd() -
-                                       kReservationOffsetTableSizeInMemory);
+    return reinterpret_cast<uint16_t*>(BRPPoolEnd() - kSuperPageSize);
   }
 
   static uint16_t* ReservationOffsetPointer(uintptr_t address) {
@@ -138,7 +137,7 @@ class BASE_EXPORT PartitionAddressSpace {
   static const uint16_t* EndOfReservationOffsetTable() {
     return reinterpret_cast<uint16_t*>(reinterpret_cast<uintptr_t>(
         ReservationOffsetTable() +
-        internal::PartitionAddressSpace::kReservationOffsetTableNeededSize));
+        internal::PartitionAddressSpace::kReservationOffsetTableSize));
   }
 
   static constexpr uint16_t kOffsetTagNotAllocated =
@@ -235,15 +234,12 @@ class BASE_EXPORT PartitionAddressSpace {
       kBRPPoolSize + kNonBRPPoolSize;
   static constexpr size_t kReservationOffsetTableLength =
       kReservationOffsetTableCoverage >> kSuperPageShift;
-  static constexpr size_t kReservationOffsetTableNeededSize =
+  static constexpr size_t kReservationOffsetTableSize =
       kReservationOffsetTableLength * sizeof(uint16_t);
-  static constexpr size_t kReservationOffsetTableSizeInMemory =
-      bits::AlignUp(kReservationOffsetTableNeededSize, kSuperPageSize);
 
-  static_assert(
-      kReservationOffsetTableSizeInMemory == kSuperPageSize,
-      "kReservationOffsetTableSizeInMemory should be equal to kSuperPageSize, "
-      "because the table should be as small as possible.");
+  static_assert(kReservationOffsetTableSize <= kSuperPageSize,
+                "kReservationOffsetTableSize should fit in kSuperPageSize, "
+                "because the table should be as small as possible.");
   static_assert(kReservationOffsetTableLength < kOffsetTagNotInDirectMap,
                 "Offsets should be smaller than kOffsetTagNotInDirectMap.");
 
