@@ -41,18 +41,20 @@ const char kTransactionAlreadyExists[] = "Transaction already exists";
 }  // namespace
 
 DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                           const url::Origin& origin,
+                           const blink::StorageKey& storage_key,
                            IndexedDBDispatcherHost* dispatcher_host,
                            scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : dispatcher_host_(dispatcher_host),
       indexed_db_context_(dispatcher_host->context()),
       connection_(std::move(connection)),
-      origin_(origin),
+      storage_key_(storage_key),
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection_);
-  indexed_db_context_->ConnectionOpened(origin_, connection_.get());
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  indexed_db_context_->ConnectionOpened(storage_key_.origin(),
+                                        connection_.get());
 }
 
 DatabaseImpl::~DatabaseImpl() {
@@ -62,10 +64,13 @@ DatabaseImpl::~DatabaseImpl() {
     status = connection_->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
   }
-  indexed_db_context_->ConnectionClosed(origin_, connection_.get());
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  indexed_db_context_->ConnectionClosed(storage_key_.origin(),
+                                        connection_.get());
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        origin_, status, "Error during rollbacks.");
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        storage_key_.origin(), status, "Error during rollbacks.");
   }
 }
 
@@ -125,7 +130,9 @@ void DatabaseImpl::CreateTransaction(
   connection_->database()->RegisterAndScheduleTransaction(transaction);
 
   dispatcher_host_->CreateAndBindTransactionImpl(
-      std::move(transaction_receiver), origin_, transaction->AsWeakPtr());
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      std::move(transaction_receiver), storage_key_.origin(),
+      transaction->AsWeakPtr());
 }
 
 void DatabaseImpl::Close() {
@@ -138,7 +145,8 @@ void DatabaseImpl::Close() {
 
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        origin_, status, "Error during rollbacks.");
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        storage_key_.origin(), status, "Error during rollbacks.");
   }
 }
 
@@ -351,10 +359,11 @@ void DatabaseImpl::OpenCursor(
       key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE;
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
-  transaction->ScheduleTask(
-      BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
-                        connection_->database()->AsWeakPtr(), std::move(params),
-                        origin_, dispatcher_host_->AsWeakPtr()));
+  transaction->ScheduleTask(BindWeakOperation(
+      &IndexedDBDatabase::OpenCursorOperation,
+      connection_->database()->AsWeakPtr(), std::move(params),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      storage_key_.origin(), dispatcher_host_->AsWeakPtr()));
 }
 
 void DatabaseImpl::Count(
@@ -366,8 +375,9 @@ void DatabaseImpl::Count(
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
-      idb_runner_);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      dispatcher_host_->AsWeakPtr(), storage_key_.origin(),
+      std::move(pending_callbacks), idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -391,8 +401,9 @@ void DatabaseImpl::DeleteRange(
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
-      idb_runner_);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      dispatcher_host_->AsWeakPtr(), storage_key_.origin(),
+      std::move(pending_callbacks), idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -414,8 +425,9 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
-      idb_runner_);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      dispatcher_host_->AsWeakPtr(), storage_key_.origin(),
+      std::move(pending_callbacks), idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -437,8 +449,9 @@ void DatabaseImpl::Clear(
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
-      idb_runner_);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      dispatcher_host_->AsWeakPtr(), storage_key_.origin(),
+      std::move(pending_callbacks), idb_runner_);
   if (!connection_->IsConnected())
     return;
 

@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -35,7 +35,7 @@ class IndexedDBDispatcherHost;
 class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
   explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                        const url::Origin& origin,
+                        const blink::StorageKey& storage_key,
                         IndexedDBDispatcherHost* dispatcher_host,
                         scoped_refptr<base::SequencedTaskRunner> idb_runner);
   ~DatabaseImpl() override;
@@ -125,7 +125,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   IndexedDBDispatcherHost* dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

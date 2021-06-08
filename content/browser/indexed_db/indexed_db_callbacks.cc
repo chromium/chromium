@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
@@ -175,9 +176,10 @@ void IndexedDBCallbacks::OnUpgradeNeeded(
     return;
   }
 
-  auto database =
-      std::make_unique<DatabaseImpl>(std::move(wrapper.connection_), origin_,
-                                     dispatcher_host_.get(), idb_runner_);
+  auto database = std::make_unique<DatabaseImpl>(
+      std::move(wrapper.connection_),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin_), dispatcher_host_.get(), idb_runner_);
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   dispatcher_host_->AddDatabaseBinding(
@@ -213,9 +215,10 @@ void IndexedDBCallbacks::OnSuccess(
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
-    auto database =
-        std::make_unique<DatabaseImpl>(std::move(wrapper.connection_), origin_,
-                                       dispatcher_host_.get(), idb_runner_);
+    auto database = std::make_unique<DatabaseImpl>(
+        std::move(wrapper.connection_),
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin_), dispatcher_host_.get(), idb_runner_);
     dispatcher_host_->AddDatabaseBinding(
         std::move(database),
         pending_remote.InitWithNewEndpointAndPassReceiver());
