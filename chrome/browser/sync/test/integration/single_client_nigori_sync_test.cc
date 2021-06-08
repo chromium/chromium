@@ -616,8 +616,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -657,8 +657,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -723,8 +723,8 @@ IN_PROC_BROWSER_TEST_F(
   TrustedVaultKeysChangedStateChecker keys_fetched_checker(GetSyncService(0));
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -785,8 +785,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -853,8 +853,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -936,8 +936,8 @@ IN_PROC_BROWSER_TEST_F(
   TrustedVaultKeysChangedStateChecker keys_fetched_checker(GetSyncService(0));
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1011,8 +1011,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiFromUntrustedOriginTest,
 
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            retrieval_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0),
+                                                               retrieval_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1094,10 +1094,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // second tab to be closeable via javascript.
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
-  // TODO(crbug.com/1081649): This should use a dedicated page, instead of the
-  // retrieval page.
-  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
-                                                            recoverability_url);
+  sync_ui_util::OpenTabForSyncTrustedVaultUserActionForTesting(
+      GetBrowser(0), recoverability_url);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1145,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
   run_loop.Run();
 
-  // TODO(crbug.com/1081649): This should verify that
+  // TODO(crbug.com/1201659): This should verify that
   // |kTestRecoveryMethodPublicKey| is now registered on the server.
   EXPECT_TRUE(
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());

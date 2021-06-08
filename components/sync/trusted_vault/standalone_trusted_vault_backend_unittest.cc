@@ -672,7 +672,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
-  // TODO(crbug.com/1081649): Implement proper test expectations when possible.
+  // TODO(crbug.com/1201659): Implement proper test expectations when possible.
   const std::vector<uint8_t> kPublicKey = {1, 2, 3, 4};
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kUnusedMethodTypeHint = 7;

@@ -176,7 +176,7 @@ void FocusWebContents(Browser* browser) {
     contents->Focus();
 }
 
-void OpenTabForSyncKeyRetrievalWithURL(Browser* browser, const GURL& url) {
+void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   DCHECK(browser);
   FocusWebContents(browser);
 
@@ -336,17 +336,29 @@ void OpenTabForSyncKeyRetrieval(
   RecordKeyRetrievalTrigger(key_retrieval_trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
-  GURL retrieval_url = GaiaUrls::GetInstance()->signin_chrome_sync_keys_url();
+  GURL retrieval_url =
+      GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url();
   if (continue_url.is_valid()) {
     retrieval_url = net::AppendQueryParameter(retrieval_url, "continue",
                                               continue_url.spec());
   }
-  OpenTabForSyncKeyRetrievalWithURL(browser, retrieval_url);
+  OpenTabForSyncTrustedVaultUserAction(browser, retrieval_url);
 }
 
-void OpenTabForSyncKeyRetrievalWithURLForTesting(Browser* browser,
-                                                 const GURL& url) {
-  OpenTabForSyncKeyRetrievalWithURL(browser, url);
+void OpenTabForSyncTrustedVaultUserActionForTesting(Browser* browser,
+                                                    const GURL& url) {
+  OpenTabForSyncTrustedVaultUserAction(browser, url);
+}
+
+void OpenTabForSyncKeyRecoverabilityDegraded(Browser* browser) {
+  const GURL continue_url =
+      GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
+  GURL url = GaiaUrls::GetInstance()
+                 ->signin_chrome_sync_keys_recoverability_degraded_url();
+  if (continue_url.is_valid()) {
+    url = net::AppendQueryParameter(url, "continue", continue_url.spec());
+  }
+  OpenTabForSyncTrustedVaultUserAction(browser, url);
 }
 
 }  // namespace sync_ui_util

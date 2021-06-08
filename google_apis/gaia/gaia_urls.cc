@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -47,14 +48,19 @@ const char kEmbeddedSetupWindowsUrlSuffix[] = "embedded/setup/windows";
 const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
 
 #if defined(OS_ANDROID)
-const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/android";
+const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/android";
 #elif defined(OS_IOS)
-const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/ios";
+const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/ios";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/chromeos";
+const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/chromeos";
 #else
-const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/desktop";
+const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/desktop";
 #endif
+// Parameter "kdi" is used to distinguish recoverability management from
+// retrieval. The value is a base64-encoded serialized protobuf, referred to
+// internally as ClientDecryptableKeyDataInputs.
+const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
+    "?kdi=CAIaDgoKY2hyb21lc3luYxAB";
 
 const char kServiceLoginAuthUrlSuffix[] = "ServiceLoginAuth";
 const char kServiceLogoutUrlSuffix[] = "Logout";
@@ -196,8 +202,13 @@ const GURL& GaiaUrls::signin_chrome_sync_dice() const {
   return signin_chrome_sync_dice_;
 }
 
-const GURL& GaiaUrls::signin_chrome_sync_keys_url() const {
-  return signin_chrome_sync_keys_url_;
+const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
+  return signin_chrome_sync_keys_retrieval_url_;
+}
+
+const GURL& GaiaUrls::signin_chrome_sync_keys_recoverability_degraded_url()
+    const {
+  return signin_chrome_sync_keys_recoverability_degraded_url_;
 }
 
 const GURL& GaiaUrls::service_login_auth_url() const {
@@ -370,8 +381,12 @@ void GaiaUrls::InitializeDefault() {
                       kEmbeddedReauthChromeOsUrlSuffix);
   ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url_,
                       kSigninChromeSyncDice);
-  ResolveURLIfInvalid(&signin_chrome_sync_keys_url_, gaia_url_,
-                      kSigninChromeSyncKeysUrl);
+  ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url_,
+                      kSigninChromeSyncKeysRetrievalUrl);
+  ResolveURLIfInvalid(
+      &signin_chrome_sync_keys_recoverability_degraded_url_, gaia_url_,
+      base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
+                    kSigninChromeSyncKeysRecoverabilityUrlSuffix}));
   ResolveURLIfInvalid(&service_login_auth_url_, gaia_url_,
                       kServiceLoginAuthUrlSuffix);
   ResolveURLIfInvalid(&service_logout_url_, gaia_url_, kServiceLogoutUrlSuffix);
@@ -450,7 +465,10 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_windows_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_reauth_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
-  config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_keys_url));
+  config->GetURLIfExists(
+      URL_KEY_AND_PTR(signin_chrome_sync_keys_retrieval_url));
+  config->GetURLIfExists(
+      URL_KEY_AND_PTR(signin_chrome_sync_keys_recoverability_degraded_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_login_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_logout_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(continue_url_for_logout));

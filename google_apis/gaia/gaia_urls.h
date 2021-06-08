@@ -31,7 +31,8 @@ class GaiaUrls {
   const GURL& embedded_setup_windows_url() const;
   const GURL& embedded_reauth_chromeos_url() const;
   const GURL& signin_chrome_sync_dice() const;
-  const GURL& signin_chrome_sync_keys_url() const;
+  const GURL& signin_chrome_sync_keys_retrieval_url() const;
+  const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
   const GURL& service_login_auth_url() const;
   const GURL& service_logout_url() const;
   const GURL& get_user_info_url() const;
@@ -92,7 +93,8 @@ class GaiaUrls {
   GURL embedded_setup_windows_url_;
   GURL embedded_reauth_chromeos_url_;
   GURL signin_chrome_sync_dice_;
-  GURL signin_chrome_sync_keys_url_;
+  GURL signin_chrome_sync_keys_retrieval_url_;
+  GURL signin_chrome_sync_keys_recoverability_degraded_url_;
   GURL service_login_auth_url_;
   GURL service_logout_url_;
   GURL continue_url_for_logout_;

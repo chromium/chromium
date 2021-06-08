@@ -45,8 +45,11 @@
     "signin_chrome_sync_dice": {
       "url": "https://accounts.example.com/signin/chrome/sync?ssp=1"
     },
-    "signin_chrome_sync_keys_url": {
+    "signin_chrome_sync_keys_retrieval_url": {
       "url": "https://accounts.example.com/encryption/unlock/example-platform"
+    },
+    "signin_chrome_sync_keys_recoverability_degraded_url": {
+      "url": "https://accounts.example.com/encryption/unlock/example-platform?kdi=CAIaDgoKY2hyb21lc3luYxAB"
     },
     "service_login_auth_url": {
       "url": "https://accounts.example.com/ServiceLoginAuth"

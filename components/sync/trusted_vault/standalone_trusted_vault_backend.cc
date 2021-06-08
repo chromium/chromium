@@ -234,7 +234,7 @@ bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
 void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/1081649): Implement logic.
+  // TODO(crbug.com/1201659): Implement logic.
   NOTIMPLEMENTED();
   std::move(cb).Run(is_recoverability_degraded_for_testing_);
 }
@@ -262,7 +262,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   DCHECK(!pending_trusted_recovery_method_.has_value());
 
   if (primary_account_->gaia == gaia_id) {
-    // TODO(crbug.com/1081649): Implement logic.
+    // TODO(crbug.com/1201659): Implement logic.
     NOTIMPLEMENTED();
     last_added_recovery_method_public_key_for_testing_ = public_key;
     is_recoverability_degraded_for_testing_ = false;

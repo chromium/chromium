@@ -124,15 +124,20 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* service);
 bool ShouldShowTrustedVaultDegradedRecoverabilityError(
     const syncer::SyncService* service);
 
-// Opens a tab to trigger a reauth to retrieve the trusted vault keys.
+// Opens a tab for the purpose of retrieving the trusted vault keys, which
+// usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
     syncer::KeyRetrievalTriggerForUMA key_retrieval_trigger);
 
-// Testing-only variant of the above which allows the caller to specify the
+// Opens a tab for the purpose of improving the recoverability of the trusted
+// vault keys, which usually requires a reauth.
+void OpenTabForSyncKeyRecoverabilityDegraded(Browser* browser);
+
+// Testing-only variant for the two above which allows the caller to specify the
 // URL.
-void OpenTabForSyncKeyRetrievalWithURLForTesting(Browser* browser,
-                                                 const GURL& url);
+void OpenTabForSyncTrustedVaultUserActionForTesting(Browser* browser,
+                                                    const GURL& url);
 
 }  // namespace sync_ui_util
 

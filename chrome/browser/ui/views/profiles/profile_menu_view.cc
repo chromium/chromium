@@ -354,9 +354,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
         TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
     case sync_ui_util::
         TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
-      // TODO(crbug.com/1081649): This should use a dedicated function.
-      sync_ui_util::OpenTabForSyncKeyRetrieval(
-          browser(), syncer::KeyRetrievalTriggerForUMA::kProfileMenu);
+      sync_ui_util::OpenTabForSyncKeyRecoverabilityDegraded(browser());
       break;
     case sync_ui_util::PASSPHRASE_ERROR:
     case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
