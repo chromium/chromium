@@ -11,7 +11,7 @@
  */
 /* #export */ class Crostini {
   /**
-   * Initialize enabled settings.
+   * Initialize enabled settings and register for any shared path changes.
    * Must be done after loadTimeData is available.
    */
   initEnabled() {}
@@ -21,11 +21,6 @@
    * @param {!VolumeManager} volumeManager
    */
   initVolumeManager(volumeManager) {}
-
-  /**
-   * Register for any shared path changes.
-   */
-  listen() {}
 
   /**
    * Set whether the specified VM is enabled.

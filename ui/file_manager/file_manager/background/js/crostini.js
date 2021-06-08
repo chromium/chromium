@@ -35,7 +35,7 @@
   }
 
   /**
-   * Initialize enabled settings.
+   * Initialize enabled settings and register for any shared path changes.
    * Must be done after loadTimeData is available.
    */
   initEnabled() {
@@ -43,6 +43,8 @@
         loadTimeData.getBoolean('CROSTINI_ENABLED');
     this.enabled_[CrostiniImpl.PLUGIN_VM] =
         loadTimeData.getBoolean('PLUGIN_VM_ENABLED');
+    chrome.fileManagerPrivate.onCrostiniChanged.addListener(
+        this.onCrostiniChanged_.bind(this));
   }
 
   /**
@@ -51,14 +53,6 @@
    */
   initVolumeManager(volumeManager) {
     this.volumeManager_ = volumeManager;
-  }
-
-  /**
-   * Register for any shared path changes.
-   */
-  listen() {
-    chrome.fileManagerPrivate.onCrostiniChanged.addListener(
-        this.onCrostiniChanged_.bind(this));
   }
 
   /**

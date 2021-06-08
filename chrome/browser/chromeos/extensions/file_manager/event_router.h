@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/chromeos/file_manager/file_watcher.h"
@@ -237,6 +238,9 @@ class EventRouter
       extensions::api::file_manager_private::CrostiniEventType pref_true,
       extensions::api::file_manager_private::CrostiniEventType pref_false);
 
+  // Called when Plugin VM enabled state may have changed.
+  void OnPluginVmChanged();
+
   void NotifyDriveConnectionStatusChanged();
 
   void DisplayDriveConfirmDialog(
@@ -246,6 +250,8 @@ class EventRouter
   base::Time last_copy_progress_event_;
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
+  std::unique_ptr<plugin_vm::PluginVmPolicySubscription>
+      plugin_vm_subscription_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   Profile* profile_;
 

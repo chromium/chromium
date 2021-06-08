@@ -6,7 +6,8 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
-import { MockDirectoryEntry, MockEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {installMockChrome} from '../../common/js/mock_chrome.m.js';
+import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {Crostini} from '../../externs/background/crostini.m.js';
 import {EntryLocation} from '../../externs/entry_location.m.js';
@@ -40,6 +41,16 @@ export function setUp() {
     return loadTimeData.data_[key];
   };
   loadTimeData.getString = id => id;
+
+  // Mock fileManagerPrivate.onCrostiniChanged.
+  const mockChrome = {
+    fileManagerPrivate: {
+      onCrostiniChanged: {
+        addListener: (callback) => {},
+      },
+    },
+  };
+  installMockChrome(mockChrome);
 
   // Create a fake volume manager that provides entry location info.
   volumeManager = /** @type {!VolumeManager} */ ({

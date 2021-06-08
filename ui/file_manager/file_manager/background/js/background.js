@@ -149,7 +149,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
             this.handleViewEvent_.bind(this));
 
         this.crostini.initVolumeManager(volumeManager);
-        this.crostini.listen();
       });
 
       this.fileOperationManager = new FileOperationManagerImpl();
