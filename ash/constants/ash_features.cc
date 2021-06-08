@@ -442,7 +442,7 @@ const base::Feature kHelpAppSearchServiceIntegration{
 
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable system emoji picker.
 const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
