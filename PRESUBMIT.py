@@ -4578,7 +4578,8 @@ def CheckForWindowsLineEndings(input_api, output_api):
 
   file_inclusion_pattern = (
     known_text_files,
-    r'.+%s' % _IMPLEMENTATION_EXTENSIONS
+    r'.+%s' % _IMPLEMENTATION_EXTENSIONS,
+    r'.+%s' % _HEADER_EXTENSIONS
   )
 
   problems = []
@@ -4586,7 +4587,7 @@ def CheckForWindowsLineEndings(input_api, output_api):
       f, files_to_check=file_inclusion_pattern, files_to_skip=None)
   for f in input_api.AffectedSourceFiles(source_file_filter):
     include_file = False
-    for _, line in f.ChangedContents():
+    for _, line in f.ChangedContents(True):
       if line.endswith('\r\n'):
         include_file = True
     if include_file:
