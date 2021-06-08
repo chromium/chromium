@@ -20,12 +20,31 @@
 #include "base/allocator/partition_allocator/starscan/object_bitmap.h"
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "build/build_config.h"
 
 namespace base {
 namespace internal {
 
 namespace {
+
+template <bool thread_safe>
+[[noreturn]] NOINLINE void PartitionOutOfMemoryMappingFailure(
+    PartitionRoot<thread_safe>* root,
+    size_t size) LOCKS_EXCLUDED(root->lock_) {
+  NO_CODE_FOLDING();
+  root->OutOfMemory(size);
+  IMMEDIATE_CRASH();  // Not required, kept as documentation.
+}
+
+template <bool thread_safe>
+[[noreturn]] NOINLINE void PartitionOutOfMemoryCommitFailure(
+    PartitionRoot<thread_safe>* root,
+    size_t size) LOCKS_EXCLUDED(root->lock_) {
+  NO_CODE_FOLDING();
+  root->OutOfMemory(size);
+  IMMEDIATE_CRASH();  // Not required, kept as documentation.
+}
 
 #if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
 // |start| has to be aligned to kSuperPageSize, but |end| doesn't. This means
@@ -162,7 +181,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // that's violating the contract of base::TerminateBecauseOutOfMemory().
     ScopedUnlockGuard<thread_safe> unlock{root->lock_};
     PartitionExcessiveAllocationSize(raw_size);
-    IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
   PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
@@ -217,12 +235,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       if (return_null)
         return nullptr;
 
-      // Crash handling is split on purpose in this function:
-      // - Crashing here likely means that Chrome is out of address space (on 32
-      //   bit platforms), or out of GigaCage space (on 64 bit ones).
-      // - Crashing below would likely mean out of commit charge.
-      root->OutOfMemory(raw_size);
-      IMMEDIATE_CRASH();  // Not required, kept as documentation.
+      PartitionOutOfMemoryMappingFailure(root, reserved_size);
     }
 
     root->total_size_of_direct_mapped_pages.fetch_add(
@@ -257,8 +270,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
                                                         PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
-        root->OutOfMemory(raw_size);
-        IMMEDIATE_CRASH();  // Not required, kept as documentation.
+        PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
 
       internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
