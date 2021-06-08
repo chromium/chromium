@@ -837,14 +837,15 @@ void AutomationInternalCustomBindings::AddRoutes() {
         else
           child_count = node->GetUnignoredChildCount();
 
-        result.Set(v8::Integer::New(isolate, int32_t{child_count}));
+        result.Set(
+            v8::Integer::New(isolate, static_cast<int32_t>(child_count)));
       });
   RouteNodeIDFunction(
       "GetIndexInParent",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         result.Set(v8::Integer::New(
-            isolate, int32_t{node->GetUnignoredIndexInParent()}));
+            isolate, static_cast<int32_t>(node->GetUnignoredIndexInParent())));
       });
   RouteNodeIDFunction(
       "GetRole", [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
@@ -2349,12 +2350,14 @@ void AutomationInternalCustomBindings::GetChildIDAtIndex(
   int child_id;
 
   // Check for a child tree, which is guaranteed to always be the only child.
-  if (index == 0 && GetRootOfChildTree(&node, &tree_wrapper))
+  if (index == 0 && GetRootOfChildTree(&node, &tree_wrapper)) {
     child_id = node->id();
-  else if (index < 0 || size_t{index} >= node->GetUnignoredChildCount())
+  } else if (index < 0 ||
+             static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
     return;
-  else
-    child_id = node->GetUnignoredChildAtIndex(size_t{index})->id();
+  } else {
+    child_id = node->GetUnignoredChildAtIndex(static_cast<size_t>(index))->id();
+  }
 
   gin::DataObjectBuilder response(GetIsolate());
   response.Set("treeId", tree_wrapper->GetTreeID().ToString());
