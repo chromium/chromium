@@ -14,8 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -156,9 +154,9 @@ class ExtensionPlatformKeysService : public KeyedService {
   // If the certificate request could be processed successfully, |matches| will
   // contain the list of matching certificates (maybe empty). If an error
   // occurred, |matches| will be null.
-  using SelectCertificatesCallback =
-      base::OnceCallback<void(std::unique_ptr<net::CertificateList> matches,
-                              platform_keys::Status status)>;
+  using SelectCertificatesCallback = base::OnceCallback<void(
+      std::unique_ptr<net::CertificateList> matches,
+      absl::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Returns a list of certificates matching |request|.
   // 1) all certificates that match the request (like being rooted in one of the
@@ -211,7 +209,6 @@ class ExtensionPlatformKeysService : public KeyedService {
                     platform_keys::Status status);
 
   content::BrowserContext* const browser_context_ = nullptr;
-  platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
   platform_keys::KeyPermissionsService* const key_permissions_service_ =
       nullptr;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;

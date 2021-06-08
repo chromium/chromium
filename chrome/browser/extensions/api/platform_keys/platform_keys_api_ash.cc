@@ -167,11 +167,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
   DCHECK(service);
 
   chromeos::platform_keys::ClientCertificateRequest request;
-  for (const std::vector<uint8_t>& cert_authority :
-       params->details.request.certificate_authorities) {
-    request.certificate_authorities.push_back(
-        std::string(cert_authority.begin(), cert_authority.end()));
-  }
+  request.certificate_authorities =
+      std::move(params->details.request.certificate_authorities);
+
   for (const api_pk::ClientCertificateType& cert_type :
        params->details.request.certificate_types) {
     switch (cert_type) {
@@ -233,14 +231,17 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 }
 
 void PlatformKeysInternalSelectClientCertificatesFunction::
-    OnSelectedCertificates(std::unique_ptr<net::CertificateList> matches,
-                           chromeos::platform_keys::Status status) {
+    OnSelectedCertificates(
+        std::unique_ptr<net::CertificateList> matches,
+        absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (status != chromeos::platform_keys::Status::kSuccess) {
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
+  if (error) {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
     return;
   }
+
   DCHECK(matches);
   std::vector<api_pk::Match> result_matches;
   for (const scoped_refptr<net::X509Certificate>& match : *matches) {

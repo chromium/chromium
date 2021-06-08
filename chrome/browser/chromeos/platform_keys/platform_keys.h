@@ -194,7 +194,7 @@ struct ClientCertificateRequest {
 
   // List of distinguished names of certificate authorities allowed by the
   // server. Each entry must be a DER-encoded X.509 DistinguishedName.
-  std::vector<std::string> certificate_authorities;
+  std::vector<std::vector<uint8_t>> certificate_authorities;
 };
 
 }  // namespace platform_keys

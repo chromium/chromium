@@ -22,8 +22,6 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
@@ -61,6 +59,8 @@ using crosapi::mojom::KeystoreECDSAParamsPtr;
 using crosapi::mojom::KeystoreError;
 using crosapi::mojom::KeystorePKCS115Params;
 using crosapi::mojom::KeystorePKCS115ParamsPtr;
+using crosapi::mojom::KeystoreSelectClientCertificatesResult;
+using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
 using crosapi::mojom::KeystoreService;
 using crosapi::mojom::KeystoreSigningAlgorithm;
 using crosapi::mojom::KeystoreSigningAlgorithmPtr;
@@ -666,7 +666,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // Retrieves all certificates matching |request_|. Will call back to
   // |GotMatchingCerts()|.
   void GetMatchingCerts() {
-    service_->platform_keys_service_->SelectClientCertificates(
+    service_->keystore_service_->SelectClientCertificates(
         request_.certificate_authorities,
         base::BindOnce(&SelectTask::GotMatchingCerts,
                        weak_factory_.GetWeakPtr()));
@@ -677,18 +677,24 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // occurred, |matches| will be null. Note that the order of |matches|, based
   // on the expiration/issuance date, is relevant and must be preserved in any
   // processing of the list.
-  void GotMatchingCerts(std::unique_ptr<net::CertificateList> matches,
-                        platform_keys::Status status) {
-    if (status != platform_keys::Status::kSuccess) {
+  void GotMatchingCerts(KeystoreSelectClientCertificatesResultPtr result) {
+    if (result->which() ==
+        KeystoreSelectClientCertificatesResult::Tag::kError) {
       next_step_ = Step::DONE;
-      std::move(callback_).Run(nullptr /* no certificates */, status);
+      std::move(callback_).Run(nullptr /* no certificates */,
+                               result->get_error());
       DoStep();
       return;
     }
 
-    for (scoped_refptr<net::X509Certificate>& certificate : *matches) {
-      // Filter the retrieved certificates returning only those whose type is
-      // equal to one of the entries in the type field of the certificate
+    for (const std::vector<uint8_t>& binary_cert : result->get_certificates()) {
+      scoped_refptr<net::X509Certificate> certificate =
+          net::X509Certificate::CreateFromBytes(
+              reinterpret_cast<const char*>(binary_cert.data()),
+              binary_cert.size());
+
+      // Filter the retrieved certificates returning only those whose type
+      // is equal to one of the entries in the type field of the certificate
       // request.
       // If the type field does not contain any entries, certificates of all
       // types shall be returned.
@@ -839,8 +845,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       selection->assign(matches_.begin(), matches_.end());
     }
 
-    std::move(callback_).Run(std::move(selection),
-                             platform_keys::Status::kSuccess);
+    std::move(callback_).Run(std::move(selection), /*error=*/absl::nullopt);
     DoStep();
   }
 
@@ -871,13 +876,9 @@ ExtensionPlatformKeysService::SelectDelegate::~SelectDelegate() {}
 ExtensionPlatformKeysService::ExtensionPlatformKeysService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      platform_keys_service_(
-          platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-              browser_context)),
       key_permissions_service_(
           chromeos::platform_keys::KeyPermissionsServiceFactory::
               GetForBrowserContext(browser_context)) {
-  DCHECK(platform_keys_service_);
   DCHECK(browser_context);
 
   BindKeystoreService(browser_context,

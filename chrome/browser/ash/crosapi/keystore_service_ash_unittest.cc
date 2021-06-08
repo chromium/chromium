@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
@@ -41,6 +42,7 @@ using crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
 using testing::_;
 using testing::DoAll;
 using testing::StrictMock;
+using testing::WithArg;
 
 constexpr char kData[] = "\1\2\3\4\5\6\7";
 
@@ -110,6 +112,15 @@ void AssertErrorEq(const mojom::KeystoreBinaryResultPtr& result,
   EXPECT_EQ(result->get_error(), expected_error);
 }
 
+void AssertErrorEq(
+    const mojom::KeystoreSelectClientCertificatesResultPtr& result,
+    mojom::KeystoreError expected_error) {
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->which(),
+            mojom::KeystoreSelectClientCertificatesResult::Tag::kError);
+  EXPECT_EQ(result->get_error(), expected_error);
+}
+
 class KeystoreServiceAshTest : public testing::Test {
  public:
   KeystoreServiceAshTest() : keystore_service_(&platform_keys_service_) {}
@@ -152,6 +163,22 @@ struct StatusCallbackObserver {
 
   bool result_is_error = false;
   mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
+};
+
+// A mock for observing SelectClientCertificates() results returned via a
+// callback.
+struct SelectCertsCallbackObserver {
+  MOCK_METHOD(void,
+              Callback,
+              (mojom::KeystoreSelectClientCertificatesResultPtr result));
+
+  auto GetCallback() {
+    EXPECT_CALL(*this, Callback).WillOnce(MoveArg<0>(&result));
+    return base::BindOnce(&SelectCertsCallbackObserver::Callback,
+                          base::Unretained(this));
+  }
+
+  mojom::KeystoreSelectClientCertificatesResultPtr result;
 };
 
 TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
@@ -270,6 +297,52 @@ TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
 
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kKeyNotFound);
+}
+
+TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
+  std::vector<std::vector<uint8_t>> cert_authorities_bin = {
+      {1, 2, 3}, {2, 3, 4}, {3, 4, 5}};
+  std::vector<std::string> cert_authorities_str = {"\1\2\3", "\2\3\4",
+                                                   "\3\4\5"};
+
+  EXPECT_CALL(platform_keys_service_,
+              SelectClientCertificates(cert_authorities_str,
+                                       /*callback=*/_))
+      .WillOnce(WithArg<1>([](auto callback) {
+        std::move(callback).Run(GetCertificateList(), Status::kSuccess);
+      }));
+
+  SelectCertsCallbackObserver observer;
+  keystore_service_.SelectClientCertificates(cert_authorities_bin,
+                                             observer.GetCallback());
+
+  ASSERT_TRUE(observer.result);
+  EXPECT_EQ(observer.result->which(),
+            mojom::KeystoreSelectClientCertificatesResult::Tag::kCertificates);
+  EXPECT_EQ(observer.result->get_certificates().size(), 1);
+
+  // Check that the cert can be converted back to the original one.
+  auto orig_cert_list = GetCertificateList();
+  const std::vector<uint8_t>& received_binary_cert =
+      observer.result->get_certificates()[0];
+  scoped_refptr<net::X509Certificate> received_cert =
+      net::X509Certificate::CreateFromBytes(
+          reinterpret_cast<const char*>(received_binary_cert.data()),
+          received_binary_cert.size());
+  EXPECT_TRUE(
+      orig_cert_list->front()->EqualsIncludingChain(received_cert.get()));
+}
+
+TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
+  EXPECT_CALL(platform_keys_service_, SelectClientCertificates)
+      .WillOnce(WithArg<1>([](auto callback) {
+        std::move(callback).Run({}, Status::kErrorInternal);
+      }));
+
+  SelectCertsCallbackObserver observer;
+  keystore_service_.SelectClientCertificates({}, observer.GetCallback());
+
+  AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
 }
 
 }  // namespace

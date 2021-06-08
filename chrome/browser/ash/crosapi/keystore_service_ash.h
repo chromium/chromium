@@ -62,6 +62,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       bool migrate,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
+  void SelectClientCertificates(
+      const std::vector<std::vector<uint8_t>>& certificate_authorities,
+      SelectClientCertificatesCallback callback) override;
   void GetCertificates(mojom::KeystoreType keystore,
                        GetCertificatesCallback callback) override;
   void AddCertificate(mojom::KeystoreType keystore,
@@ -113,6 +116,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       GetKeyStoresCallback callback,
       std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
           platform_keys_token_ids,
+      chromeos::platform_keys::Status status);
+  static void DidSelectClientCertificates(
+      SelectClientCertificatesCallback callback,
+      std::unique_ptr<net::CertificateList> matches,
       chromeos::platform_keys::Status status);
   static void DidGetCertificates(GetCertificatesCallback callback,
                                  std::unique_ptr<net::CertificateList> certs,

@@ -44,8 +44,9 @@ class PlatformKeysInternalSelectClientCertificatesFunction
 
   // Called when the certificates were selected. If an error occurred, |certs|
   // will be null.
-  void OnSelectedCertificates(std::unique_ptr<net::CertificateList> matches,
-                              chromeos::platform_keys::Status status);
+  void OnSelectedCertificates(
+      std::unique_ptr<net::CertificateList> matches,
+      absl::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
                              PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)

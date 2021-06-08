@@ -283,6 +283,53 @@ void KeystoreServiceAsh::DidGetKeyStores(
 
 //------------------------------------------------------------------------------
 
+void KeystoreServiceAsh::SelectClientCertificates(
+    const std::vector<std::vector<uint8_t>>& certificate_authorities,
+    SelectClientCertificatesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::vector<std::string> cert_authorities_str;
+  cert_authorities_str.reserve(certificate_authorities.size());
+  for (const std::vector<uint8_t>& ca : certificate_authorities) {
+    cert_authorities_str.push_back(std::string(ca.begin(), ca.end()));
+  }
+
+  GetPlatformKeys()->SelectClientCertificates(
+      std::move(cert_authorities_str),
+      base::BindOnce(&KeystoreServiceAsh::DidSelectClientCertificates,
+                     std::move(callback)));
+}
+
+// static
+void KeystoreServiceAsh::DidSelectClientCertificates(
+    SelectClientCertificatesCallback callback,
+    std::unique_ptr<net::CertificateList> matches,
+    chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojom::KeystoreSelectClientCertificatesResultPtr result_ptr =
+      mojom::KeystoreSelectClientCertificatesResult::New();
+
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::vector<std::vector<uint8_t>> output;
+    for (scoped_refptr<net::X509Certificate> cert : *matches) {
+      CRYPTO_BUFFER* der_buffer = cert->cert_buffer();
+      const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);
+      std::vector<uint8_t> der_x509_certificate(
+          data, data + CRYPTO_BUFFER_len(der_buffer));
+      output.push_back(std::move(der_x509_certificate));
+    }
+    result_ptr->set_certificates(std::move(output));
+  } else {
+    result_ptr->set_error(
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+
+  std::move(callback).Run(std::move(result_ptr));
+}
+
+//------------------------------------------------------------------------------
+
 void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
                                          GetCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
