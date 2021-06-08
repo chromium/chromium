@@ -5,53 +5,67 @@
 """Parsing logic to read files for the Web App testing framework.
 """
 
+from collections import defaultdict
 import logging
+import os
 import re
 from typing import Dict, List, Set, Tuple
 
-from classes import Action
-from classes import CoverageTest
-from classes import PartialCoverageAddition
+from models import Action
+from models import ActionsByName
+from models import TestIdsByPlatform
+from models import TestIdsByPlatformSet
+from models import TestPartitionDescription
+from models import ActionType
+from models import TestPlatform
+from models import CoverageTest
+
+MIN_COLUMNS_ACTIONS_FILE = 9
+MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE = 6
 
 
-def HumanFriendlyNameToCanonicalActionName(
+def human_friendly_name_to_canonical_action_name(
         human_friendly_action_name: str,
-        action_base_name_to_default_param: Dict[str, str]):
+        action_base_name_to_default_mode: Dict[str, str]):
     """
-    Converts a human-friendly action name and turns into the format compatible
-    with this testing framework. This does two things:
-    1) Resolving specified parameters, from "()" format into a "_". For example,
-       "action(with_parameter)" turns into "action_with_parameter".
-    2) Resolving parameterless actions (that have a default parameter) to
-       include the default parameter. For example, if
-       |action_base_name_to_default_param| contains an entry for
+    Converts a human-friendly action name (used in the spreadsheet) and turns
+    into the format compatible with this testing framework. This does two
+    things:
+    1) Resolving specified modes, from "()" format into a "_". For example,
+       "action(with_mode)" turns into "action_with_mode".
+    2) Resolving modeless actions (that have a default mode) to
+       include the default mode. For example, if
+       |action_base_name_to_default_mode| contains an entry for
        |human_friendly_action_name|, then that entry is appended to the action.
-       "action" and {"action": "default_param"} will respectively will return
-       "action_default_param".
+       "action" and {"action": "default_mode"} will respectively will return
+       "action_default_mode".
     If neither of those cases apply, then the |human_friendly_action_name| is
     returned.
     """
     human_friendly_action_name = human_friendly_action_name.strip()
-    if human_friendly_action_name in action_base_name_to_default_param:
-        # Handle default parameter.
-        human_friendly_action_name += "_" + action_base_name_to_default_param[
+    if human_friendly_action_name in action_base_name_to_default_mode:
+        # Handle default mode.
+        human_friendly_action_name += "_" + action_base_name_to_default_mode[
             human_friendly_action_name]
     elif '(' in human_friendly_action_name:
-        # Handle parameter being specified.
+        # Handle mode being specified.
         human_friendly_action_name = human_friendly_action_name.replace(
             "(", "_").rstrip(")")
     return human_friendly_action_name
 
 
-def ReadActionsFile(
-        actions_csv_file
-) -> Tuple[Dict[str, Action], Dict[str, str], Dict[str, Set[str]]]:
+def read_actions_file(actions_csv_file
+                      ) -> Tuple[ActionsByName, Dict[str, str]]:
     """Reads the actions comma-separated-values file.
 
-    If parameters are specified for an action in the file, then one action is
-    added to the results dictionary per action_base_name + parameter
-    combination. A parameter marked with a "*" is considered the default
-    parameter for that action.
+    If modes are specified for an action in the file, then one action is
+    added to the results dictionary per action_base_name + mode
+    parameterized. A mode marked with a "*" is considered the default
+    mode for that action.
+
+    If output actions are specified for an action, then it will be a
+    PARAMETERIZED action and the output actions will be resolved into the
+    `Action.output_actions` field.
 
     See the README.md for more information about actions and action templates.
 
@@ -60,71 +74,153 @@ def ReadActionsFile(
                           actions.
 
     Returns (actions_by_name,
-             action_base_name_to_default_param,
-             action_base_name_to_all_params):
+             action_base_name_to_default_mode):
         actions_by_name:
             Index of all actions by action name.
-        action_base_name_to_default_param:
-            Index of action base names to the default parameter. Only populated
-            for actions with default parameters.
-        action_base_name_to_all_params:
-            Index of action base names to all the parameters, if it has
-            parameters.
+        action_base_name_to_default_mode:
+            Index of action base names to the default mode. Only populated
+            for actions with default modes.
 
     Raises:
         ValueError: The input file is invalid.
     """
     actions_by_name = {}
-    action_base_name_to_default_param = {}
-    action_base_name_to_all_params = {}
+    action_base_name_to_default_mode = {}
+    action_base_names = set()
+    all_output_action_names = []
+    all_short_name = set()
+    column_offset_to_platform = {
+        0: TestPlatform.MAC,
+        1: TestPlatform.WINDOWS,
+        2: TestPlatform.LINUX,
+        3: TestPlatform.CHROME_OS
+    }
     for i, row in enumerate(actions_csv_file):
         if not row:
             continue
         if row[0].startswith("#"):
             continue
-        if len(row) < 3:
+        if len(row) < MIN_COLUMNS_ACTIONS_FILE:
             raise ValueError(f"Row {i!r} does not contain enough entries. "
-                             f"Got [{','.join(row)!r}].")
+                             f"Got {row}.")
+        if row[8] == "Abandoned":
+            continue
+
         action_base_name = row[0].strip()
-        if not re.fullmatch(r'\w+', action_base_name):
+        action_base_names.add(action_base_name)
+        if not re.fullmatch(r'[a-z_]+', action_base_name):
+            raise ValueError(f"Invald action base name {action_base_name} on "
+                             f"row {i!r}. Please use snake_case.")
+        short_name_base = row[3].strip()
+        if not short_name_base or short_name_base in all_short_name:
             raise ValueError(
-                f"Invald action base name {action_base_name!r} on "
-                f"row {i!r}.")
-        params = [param.strip() for param in row[1].split("| ")]
-        is_state_check_text = row[2].strip()
-        if is_state_check_text not in ("", "Y"):
-            raise ValueError(
-                f"Row {i!r} signifying if {action_base_name!r} is an "
-                f"state_check action must be either empty or 'Y'.")
-        is_state_check = is_state_check_text == "Y"
-        if not params:
-            params = [""]
-        action_base_name_to_all_params[action_base_name] = set()
-        for param in params:
-            if not re.fullmatch(r'(\w+\*?)|', param):
-                raise ValueError(f"Invald action param name {param!r}) on row "
-                                 f"{i!r}.")
-            if "*" in param:
-                action_base_name_to_default_param[
-                    action_base_name] = param.rstrip("*")
-            param = param.rstrip("*")
+                f"Short name '{short_name_base}' on line {i!r} is "
+                f"not populated or already used.")
+
+        fully_supported_platforms = set()
+        partially_supported_platforms = set()
+        for i, value in enumerate(row[4:8]):
+            value = value.strip()
+            if value == "🌕":
+                fully_supported_platforms.add(column_offset_to_platform[i])
+            if value == "🌓":
+                partially_supported_platforms.add(column_offset_to_platform[i])
+
+        type = ActionType.STATE_CHANGE
+        if action_base_name.startswith("check_"):
+            type = ActionType.STATE_CHECK
+
+        output_action_names = []
+        output_actions_str = row[2].strip()
+        if output_actions_str:
+            type = ActionType.PARAMETERIZED
+            # Output actions for parameterized actions can also specify (or
+            # assume default) action modes (e.g. `do_action(Mode1)`) if the
+            # parameterized action doesn't have a mode. However, they cannot be
+            # fully resolved yet without reading all actions. So the resolution
+            # must happen later.
+            output_action_names = [
+                output.strip() for output in output_actions_str.split("&")
+            ]
+
+        modes = [mode.strip() for mode in row[1].split("|")]
+        if not modes:
+            modes = [""]
+        for mode in modes:
+            if not re.fullmatch(r'([A-Z]\w*\*?)|', mode):
+                raise ValueError(f"Invald action mode name {mode!r}) on row "
+                                 f"{i!r}. Please use PascalCase.")
+            if "*" in mode:
+                action_base_name_to_default_mode[
+                    action_base_name] = mode.rstrip("*")
+            mode = mode.rstrip("*")
             name = action_base_name
-            if param != "":
-                action_base_name_to_all_params[action_base_name].add(param)
-                name += "_" + param
+            # Convert the `cpp_method` to Pascal-case
+            cpp_method = ''.join(word.title()
+                                 for word in action_base_name.split('_'))
+            output_action_names_with_mode: List[str] = []
+            short_name: str = ""
+            if mode != "":
+                # If the action has a real mode, then modify the name, short
+                # name, output actions, and cpp method.
+                name += "_" + mode
+                short_name = short_name_base + mode
+                output_action_names_with_mode = [
+                    action_name + "_" + mode
+                    for action_name in output_action_names
+                ]
+                cpp_method += "(\"" + mode + "\")"
+            else:
+                output_action_names_with_mode = output_action_names
+                short_name = short_name_base
+                cpp_method += "()"
             if name in actions_by_name:
-                raise ValueError(
-                    f"Cannot add duplicate action {name!r} on row "
-                    f"{i!r}")
-            action = Action(name, action_base_name, is_state_check)
+                raise ValueError(f"Cannot add duplicate action {name} on row "
+                                 f"{i!r}")
+
+            action = Action(name, action_base_name, short_name, cpp_method,
+                            type, fully_supported_platforms,
+                            partially_supported_platforms)
+            if output_action_names_with_mode:
+                action._output_action_names = output_action_names_with_mode
             actions_by_name[action.name] = action
-    return (actions_by_name, action_base_name_to_default_param,
-            action_base_name_to_all_params)
+
+    # Filter out empty strings from the output_action_base_names.
+    all_output_action_names = list(filter(len, all_output_action_names))
+    # Make sure all output actions are either resolvable or are base names.
+    for output_action_name in all_output_action_names:
+        if (output_action_name not in actions_by_name
+                and output_action_name not in action_base_names):
+            raise ValueError(f"Could not find action for "
+                             f"specified output action {output_action_name}.")
+    # Resolve the output actions
+    for action in actions_by_name.values():
+        if action.type is not ActionType.PARAMETERIZED:
+            continue
+        assert (action._output_action_names)
+        for output_action_name in action._output_action_names:
+            # Output actions can specify a mode or assume default action modes
+            # if the parameterized action doesn't have a mode.
+            canonical_name = human_friendly_name_to_canonical_action_name(
+                output_action_name, action_base_name_to_default_mode)
+            if canonical_name in actions_by_name:
+                action.output_actions.append(actions_by_name[canonical_name])
+            else:
+                # Having this lookup fail is a feature, it allows a
+                # parameterized action to reference output actions that might
+                # not all support every mode of the parameterized action. When
+                # that mode is specified in a test case, then that action would
+                # be excluded & one less test case would be generated.
+                logging.info(f"Output action {canonical_name} not found for "
+                             f"parameterized action {action.name}.")
+        assert (action.output_actions)
+    return (actions_by_name, action_base_name_to_default_mode)
 
 
-def ReadCoverageTestsFile(coverage_csv_file, actions: Dict[str, Action],
-                          action_base_name_to_default_param: Dict[str, str]
-                          ) -> List[CoverageTest]:
+def read_unprocessed_coverage_tests_file(
+        coverage_csv_file, actions_by_name: ActionsByName,
+        action_base_name_to_default_mode: Dict[str, str]
+) -> List[CoverageTest]:
     """Reads the coverage tests comma-separated-values file.
 
     The coverage tests file can have blank entries in the test row, and does not
@@ -133,9 +229,9 @@ def ReadCoverageTestsFile(coverage_csv_file, actions: Dict[str, Action],
     Args:
         coverage_csv_file: The comma-separated-values file with all coverage
                            tests.
-        actions: An index of action name to Action
-        action_base_name_to_default_param: An index of action base name to
-                                           default parameter, if there is one.
+        actions_by_name: An index of action name to Action
+        action_base_name_to_default_mode: An index of action base name to
+                                           default mode, if there is one.
 
     Returns:
         A list of CoverageTests read from the file.
@@ -148,263 +244,114 @@ def ReadCoverageTestsFile(coverage_csv_file, actions: Dict[str, Action],
     for i, row in enumerate(coverage_csv_file):
         if not row:
             continue
-        if row[0].startswith("#"):
+        if row[0].strip().startswith("#"):
             continue
-        if len(row) < 3:
-            raise ValueError(f"Row {i!r} does not have test actions.")
-        coverage_test = CoverageTest(str(i))
-        required_coverage_tests.append(coverage_test)
-        for action_name in row[2:]:
+        if len(row) < MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE:
+            raise ValueError(f"Row {i!r} does not have test actions: {row}")
+        platforms = TestPlatform.get_platforms_from_chars(row[0])
+        actions = []
+        for action_name in row[4:]:
             action_name = action_name.strip()
             if "," in action_name:
                 raise ValueError(f"Actions on row {i!r} cannot have "
-                                 f"multiple parameters: {action_name!r}")
+                                 f"multiple modes: {action_name}")
             if action_name == "":
                 continue
-            action_name = HumanFriendlyNameToCanonicalActionName(
-                action_name, action_base_name_to_default_param)
-            if action_name not in actions:
+            action_name = human_friendly_name_to_canonical_action_name(
+                action_name, action_base_name_to_default_mode)
+            if action_name not in actions_by_name:
                 missing_actions.append(action_name)
                 logging.error(f"Could not find action on row {i!r}: "
-                              f"{action_name!r}")
+                              f"{action_name}")
                 continue
-            coverage_test.actions.append(actions[action_name])
+            actions.append(actions_by_name[action_name])
+        coverage_test = CoverageTest(actions, platforms)
+        required_coverage_tests.append(coverage_test)
     if missing_actions:
         raise ValueError(f"Actions missing from actions dictionary: "
-                         f"{', '.join(missing_actions)!r}")
+                         f"{', '.join(missing_actions)}")
     return required_coverage_tests
 
 
-def ReadNamedTestsFile(tests_csv_file, actions: Dict[str, Action],
-                       action_base_name_to_default_param: Dict[str, str]
-                       ) -> List[CoverageTest]:
-    """Reads the tests comma-separated-values file.
-
-    Test rows are expected to begin with the test name. Tests rows with no
-    actions are ignored, and if a test has "N/A" as an action, then no more
-    actions are parsed for that test.
-
-    Args:
-        tests_csv_file: The comma-separated-values file with tests.
-        actions: An index of action name to Action.
-        action_base_name_to_default_param: An index of action base name to
-                                           default parameter, if there is one.
-    Returns:
-        A list of CoverageTests read from the file.
-
-    Raises:
-        ValueError: The input file is invalid.
+def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
     """
-    missing_actions = []
-    tests = []
-    # Create a test for each row, and populate all actions for that test.
-    for row in tests_csv_file:
-        if not row:
+    Returns a dictionary of all test ids found to the set of detected platforms
+    the test is enabled on.
+
+    For reference, this is what a disabled test by a sheriff typically looks
+    like:
+
+    TEST_F(WebAppIntegrationTestBase, DISABLED_NavSiteA_InstallIconShown) {
+        ...
+    }
+
+    In the above case, the test will be considered disabled on all platforms.
+    This is what a test disabled by a sheriff on a specific platform looks like:
+
+    #if defined(OS_WIN)
+    #define MAYBE_NavSiteA_InstallIconShown DISABLED_NavSiteA_InstallIconShown
+    #else
+    #define MAYBE_NavSiteA_InstallIconShown NavSiteA_InstallIconShown
+    #endif
+    TEST_F(WebAppIntegrationTestBase, MAYBE_NavSiteA_InstallIconShown) {
+        ...
+    }
+
+    In the above case, the test will be considered disabled on
+    `TestPlatform.WINDOWS` and thus enabled on {`TestPlatform.MAC`,
+    `TestPlatform.CHROME_OS`, and `TestPlatform.LINUX`}.
+    """
+    tests: Dict[str, Set[TestPlatform]] = {}
+    # Attempts to only match test test name in a test declaration, where the
+    # name contains the test id prefix. Purposefully allows any prefixes on
+    # the test name (like MAYBE_ or DISABLED_).
+    for match in re.finditer(fr'{CoverageTest.TEST_ID_PREFIX}(\w+)\)', file):
+        test_id = match.group(1)
+        tests[test_id] = set(TestPlatform)
+        test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_id}"
+        if f"DISABLED_{test_name}" not in file:
             continue
-        if row[0].startswith("#"):
-            continue
-        if len(row) < 2:
-            continue
-        test = CoverageTest(row[0])
-        for action_name in row[1:]:
-            action_name = action_name.strip()
-            if action_name == "" or action_name == "N/A":
-                break
-            action_name = HumanFriendlyNameToCanonicalActionName(
-                action_name, action_base_name_to_default_param)
-            if action_name not in actions:
-                missing_actions.append(action_name)
-                logging.error(f"Could not find action: {action_name!r}")
-                continue
-            test.actions.append(actions[action_name])
-        if test.actions:
-            tests.append(test)
-    if missing_actions:
-        raise ValueError(f"Actions missing from actions dictionary: "
-                         f"{', '.join(missing_actions)!r}")
+        enabled_platforms: Set[TestPlatform] = tests[test_id]
+        for platform in TestPlatform:
+            # Search for macro that specifies the given platform before
+            # the string "DISABLED_<test_name>".
+            macro_for_regex = re.escape(platform.macro)
+            # This pattern ensures that there aren't any '{' or '}' characters
+            # between the macro and the disabled test name, which ensures that
+            # the macro is applying to the correct test.
+            if re.search(fr"{macro_for_regex}[^{{}}]+DISABLED_{test_name}",
+                         file):
+                enabled_platforms.remove(platform)
     return tests
 
 
-def ValidatePartialPaths(partial_paths: List[PartialCoverageAddition]):
-    """Validates that all |partial_paths| are valid:
-    1) They contain actions, and
-    2) They don't share an initial non-state-check action. This means
-       that the first action in the input and output actions that is
-       not a "state check" action must not be the same.
+def find_existing_and_disabled_tests(
+        test_partitions: List[TestPartitionDescription]
+) -> Tuple[TestIdsByPlatformSet, TestIdsByPlatform]:
     """
-    for partial_path in partial_paths:
-        assert len(partial_path.input_actions) > 0
-        assert len(partial_path.output_actions) > 0
-
-        def FindFirstNonStateCheckAction(actions: List[Action]) -> Action:
-            for action in actions:
-                if not action.is_state_check:
-                    return action
-            return None
-
-        # Check that the paths don't both start with the same non-state_check
-        # action.
-        first_input_non_state_check_action = FindFirstNonStateCheckAction(
-            partial_path.input_actions)
-        first_output_non_state_check_action = FindFirstNonStateCheckAction(
-            partial_path.output_actions)
-        if (first_input_non_state_check_action is not None
-                and first_output_non_state_check_action is not None
-                and first_input_non_state_check_action is
-                first_output_non_state_check_action):
-            raise ValueError(
-                f"Partial path addition cannot share the same first "
-                f"non-state_check action in the input and output actions "
-                f"{first_input_non_state_check_action.name!r}.")
-
-
-def ReadPartialCoveragePathsFile(
-        partial_paths_csv_file, actions: Dict[str, Action],
-        action_base_name_to_all_params: Dict[str, Set[str]]
-) -> List[PartialCoverageAddition]:
-    """Reads the partial coverage paths file.
-
-    The file is expected to have 2 columns per row, each one a semicolon-
-    separated list of action names. Actions can be non-parameterized, in which
-    case a partial path for every parameter will be added. If multiple actions
-    have unspecified parameters (on input & output), then parameters are chosen
-    as an intersection of all parameter options. If no parameters are possible,
-    an exception is raised.
-
-    The paths cannot share initial non-state_check actions.
-
-    Args:
-        partial_paths_csv_file: The comma-separated-values file with all partial
-                                paths.
-        actions: An index of action name to Action.
-        action_base_name_to_all_params: An index of action base name to all
-                                        parameters.
-
-    Returns:
-        A list of PartialCoverageAddition objects.
-
-    Raises:
-        ValueError: The input file is invalid.
+    Returns a dictionary of platform set to test id, and a dictionary of
+    platform to disabled test ids.
     """
-    partial_paths: List[PartialCoverageAddition] = []
-    for row in partial_paths_csv_file:
-        if not row:
-            continue
-        if row[0].startswith("#"):
-            continue
-        if len(row) < 2:
-            continue
-        input_action_names = [name.strip() for name in row[0].split(';')]
-        output_action_names = [name.strip() for name in row[1].split(';')]
-
-        if not input_action_names or not output_action_names:
-            raise ValueError(f"Input and output actions must be populated: "
-                             f"[{'; '.join(row)!r}]")
-
-        # To support parameters, find all of the common parameters for all
-        # actions that have parameters, and output a separate partial path
-        # per parameter matching.
-        params_needed = False
-        all_params = None
-
-        for action_name in input_action_names + output_action_names:
-            if action_name in actions:
+    existing_tests: TestIdsByPlatformSet = defaultdict(lambda: set())
+    disabled_tests: TestIdsByPlatform = defaultdict(lambda: set())
+    for partition in test_partitions:
+        for file in os.listdir(partition.browsertest_dir):
+            if not file.startswith(partition.test_file_prefix):
                 continue
-            if action_name not in action_base_name_to_all_params:
-                raise ValueError(
-                    f"Could not find action or action base {action_name!r}")
-            params_needed = True
-            action_params = action_base_name_to_all_params[action_name]
-            assert isinstance(action_params, set)
-            all_params = (action_params if all_params == None else
-                          all_params.intersection(action_params))
-
-        if params_needed and not all_params:
-            raise ValueError(
-                f"Could not find common parameters in input actions "
-                f"[{', '.join(input_action_names)!r}] and output actions "
-                f"[{', '.join(output_action_names)!r}].")
-
-        if not params_needed:
-            partial = PartialCoverageAddition()
-            partial.input_actions = ([
-                actions[action_name] for action_name in input_action_names
-            ])
-            partial.output_actions = ([
-                actions[action_name] for action_name in output_action_names
-            ])
-            partial_paths.append(partial)
-            continue
-
-        assert isinstance(all_params, set)
-        for param in all_params:
-            input_action_names_with_param = []
-            output_action_names_with_param = []
-            for action_name in input_action_names:
-                if action_name not in actions:
-                    action_name = action_name + "_" + param
-                if action_name not in actions:
-                    raise ValueError(f"Could not find action {action_name!r}")
-                input_action_names_with_param.append(action_name)
-            for action_name in output_action_names:
-                if action_name not in actions:
-                    action_name = action_name + "_" + param
-                if action_name not in actions:
-                    raise ValueError(f"Could not find action {action_name!r}")
-                output_action_names_with_param.append(action_name)
-            partial = PartialCoverageAddition()
-            partial.input_actions = ([
-                actions[action_name]
-                for action_name in input_action_names_with_param
-            ])
-            partial.output_actions = ([
-                actions[action_name]
-                for action_name in output_action_names_with_param
-            ])
-            partial_paths.append(partial)
-    ValidatePartialPaths(partial_paths)
-    return partial_paths
-
-
-def ReadFrameworkActions(framework_actions_csv_file,
-                         actions: Dict[str, Action],
-                         action_base_name_to_default_param: Dict[str, str]
-                         ) -> Dict[str, Action]:
-    """Reads the supported framework actions file.
-
-    Ignores blank actions.
-
-    Args:
-        framework_actions_csv_file: The comma-separated-values file with all
-                                    supported framework actions.
-        actions: An index of action name to Action.
-        action_base_name_to_default_param: An index of action base name default
-                                           parameter.
-
-    Returns:
-        A dictionary of actions supported by the testing framework.
-
-    Raises:
-        ValueError: The input file is invalid.
-    """
-    missing_actions = []
-    framework_actions = {}
-    for row in framework_actions_csv_file:
-        if not row:
-            continue
-        if row[0].startswith("#"):
-            continue
-        action_name = row[0].strip()
-        if not action_name:
-            continue
-        action_name = HumanFriendlyNameToCanonicalActionName(
-            action_name, action_base_name_to_default_param)
-        if action_name not in actions:
-            missing_actions.append(action_name)
-            logging.error(f"Could not find action: {action_name!r}")
-            continue
-        framework_actions[action_name] = actions[action_name]
-    if missing_actions:
-        raise ValueError(f"Actions missing from actions dictionary: "
-                         f"{', '.join(missing_actions)!r}")
-    return framework_actions
+            platforms = frozenset(
+                TestPlatform.get_platforms_from_browsertest_filename(file))
+            filename = os.path.join(partition.browsertest_dir, file)
+            with open(filename) as f:
+                file = f.read()
+                tests = get_tests_in_browsertest(file)
+                for test_id in tests.keys():
+                    if test_id in existing_tests[platforms]:
+                        raise ValueError(f"Already found test {test_id}. "
+                                         f"Duplicate test in {filename}")
+                    existing_tests[platforms].add(test_id)
+                for platform in platforms:
+                    for test_id, enabled_platforms in tests.items():
+                        if platform not in enabled_platforms:
+                            disabled_tests[platform].add(test_id)
+                logging.info(f"Found tests in {filename}:\n{tests.keys()}")
+    return (existing_tests, disabled_tests)

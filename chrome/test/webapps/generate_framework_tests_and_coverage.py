@@ -9,35 +9,152 @@ Usage: python3 chrome/test/web_apps/generate_framework_tests_and_coverage.py
 """
 
 import argparse
+from io import TextIOWrapper
 import logging
 import os
+from typing import List, Optional
 import csv
 
-from graph_analysis import AddPartialPaths
-from graph_analysis import CreateFullCoverageActionGraph
-from graph_analysis import GenerateFrameworkTests
-from graph_analysis import GenerateGraphvizDotFile
-from graph_analysis import GenerateCoverageFileAndPercents
-from graph_analysis import TrimGraphToAllowedActions
-from classes import ActionCoverage
-from classes import Action
-from classes import ActionNode
-from classes import CoverageTest
-from classes import PartialCoverageAddition
-from file_reading import ReadActionsFile
-from file_reading import ReadCoverageTestsFile
-from file_reading import ReadFrameworkActions
-from file_reading import ReadPartialCoveragePathsFile
-from file_reading import ReadNamedTestsFile
+from models import ActionNode
+from models import CoverageTestsByPlatform
+from models import CoverageTestsByPlatformSet
+from models import TestPartitionDescription
+from models import TestPlatform
+from models import CoverageTest
+from graph_analysis import build_action_node_graph
+from graph_analysis import generate_coverage_file_and_percents
+from graph_analysis import trim_graph_to_platform_actions
+from graph_analysis import generate_framework_tests
+from graph_analysis import generage_graphviz_dot_file
+from file_reading import find_existing_and_disabled_tests
+from file_reading import read_actions_file
+from file_reading import read_unprocessed_coverage_tests_file
+from test_analysis import compare_and_print_tests_to_remove_and_add
+from test_analysis import expand_parameterized_tests
+from test_analysis import filter_coverage_tests_for_platform
+from test_analysis import partition_framework_tests_per_platform_combination
 
-# These actions, if detected, will add a test to a separate file.
-SYNC_ACTIONS = [
-    "switch_profile_clients_user_a_client_1",
-    "switch_profile_clients_user_a_client_2", "sync_turn_on", "sync_turn_off"
-]
 
-GENERATED_FILE_HEADER = ("# DO NOT EDIT - THIS IS A GENERATED FILE.\n" +
-                         "# See /chrome/test/web_app/README.md for more info.")
+def check_partition_prefixes(partition_a: TestPartitionDescription,
+                             partition_b: TestPartitionDescription):
+    if partition_a.test_file_prefix.startswith(partition_b.test_file_prefix):
+        raise ValueError(
+            f"Cannot have partition filenames intersect:"
+            f"{partition_a.test_file_prefix} and {partition_b.test_file_prefix}"
+        )
+
+
+def generate_framework_tests_and_coverage(
+        actions_file: TextIOWrapper, coverage_required_file: TextIOWrapper,
+        custom_partitions: List[TestPartitionDescription],
+        default_partition: TestPartitionDescription, coverage_output_dir: str,
+        graph_output_dir: Optional[str]):
+
+    for partition_a in custom_partitions:
+        check_partition_prefixes(partition_a, default_partition)
+        for partition_b in custom_partitions:
+            if partition_a == partition_b:
+                continue
+            check_partition_prefixes(partition_a, partition_b)
+    actions_csv = csv.reader(actions_file, delimiter=',')
+    (actions,
+     action_base_name_to_default_param) = read_actions_file(actions_csv)
+
+    coverage_csv = csv.reader(coverage_required_file, delimiter=',')
+    required_coverage_tests = read_unprocessed_coverage_tests_file(
+        coverage_csv, actions, action_base_name_to_default_param)
+
+    required_coverage_tests = expand_parameterized_tests(
+        required_coverage_tests)
+
+    if graph_output_dir:
+        coverage_root_node = ActionNode.CreateRootNode()
+        build_action_node_graph(coverage_root_node, required_coverage_tests)
+        graph_file = generage_graphviz_dot_file(coverage_root_node, None)
+        output_coverage_graph_file_name = os.path.join(
+            graph_output_dir, "coverage_required_graph.dot")
+        with open(output_coverage_graph_file_name, 'w') as coverage_graph_file:
+            coverage_graph_file.write("# This is a generated file.\n")
+            coverage_graph_file.write(graph_file)
+            coverage_graph_file.close()
+
+    # Each platform can have unique tests. Start by generating the required
+    # tests per platform, and the generated testes per platform.
+    required_coverage_by_platform: CoverageTestsByPlatform = {}
+    generated_tests_by_platform: CoverageTestsByPlatform = {}
+    for platform in TestPlatform:
+        platform_tests = filter_coverage_tests_for_platform(
+            required_coverage_tests.copy(), platform)
+        required_coverage_by_platform[platform] = platform_tests
+
+        generated_tests_root_node = ActionNode.CreateRootNode()
+        build_action_node_graph(generated_tests_root_node, platform_tests)
+        trim_graph_to_platform_actions(generated_tests_root_node, platform)
+        generated_tests_by_platform[platform] = generate_framework_tests(
+            generated_tests_root_node, platform)
+        if graph_output_dir:
+            graph_file = generage_graphviz_dot_file(generated_tests_root_node,
+                                                    platform)
+            output_coverage_graph_file_name = os.path.join(
+                graph_output_dir,
+                "generated_tests_graph" + platform.suffix + ".dot")
+            with open(output_coverage_graph_file_name,
+                      'w') as coverage_graph_file:
+                coverage_graph_file.write("# This is a generated file.\n")
+                coverage_graph_file.write(graph_file)
+
+    # A test can be required to run on on multiple platforms, and we group
+    # required tests by platform set to output minimal number of browser tests
+    # files. This allows the test to exist only in one place for ease of
+    # sheriffing. Example:
+    # Linux:    testA, testB
+    # Mac:      testA, testB
+    # Windows:  testA
+    # ChromeOS: testA, testC
+    # ->
+    # {Linux, Mac, Windows, ChromeOS} -> testA
+    # {Linux, Mac} -> testB
+    # {ChromeOS} -> testC
+    required_coverage_by_platform_set: CoverageTestsByPlatformSet = (
+        partition_framework_tests_per_platform_combination(
+            generated_tests_by_platform))
+
+    # Find all existing tests.
+    all_partitions = [default_partition]
+    all_partitions.extend(custom_partitions)
+    (existing_tests_ids_by_platform_set, disabled_test_ids_by_platform
+     ) = find_existing_and_disabled_tests(all_partitions)
+
+    # Print all diffs that are required.
+    compare_and_print_tests_to_remove_and_add(
+        existing_tests_ids_by_platform_set, required_coverage_by_platform_set,
+        custom_partitions, default_partition)
+
+    # To calculate coverage we need to incorporate any disabled tests.
+    # Remove any disabled tests from the generated tests per platform.
+    for platform, tests in generated_tests_by_platform.items():
+        disabled_tests = disabled_test_ids_by_platform.get(platform, [])
+        tests_minus_disabled: List[CoverageTest] = []
+        for test in tests:
+            if test.id not in disabled_tests:
+                tests_minus_disabled.append(test)
+            else:
+                logging.info("Removing disabled test from coverage: " +
+                             test.id)
+        generated_tests_root_node = ActionNode.CreateRootNode()
+        build_action_node_graph(generated_tests_root_node,
+                                tests_minus_disabled)
+        (coverage_file, full, partial) = generate_coverage_file_and_percents(
+            required_coverage_by_platform[platform], generated_tests_root_node,
+            platform)
+        coverage_filename = os.path.join(coverage_output_dir,
+                                         f"coverage{platform.suffix}.tsv")
+        with open(coverage_filename, 'w+') as file:
+            file.write("# This is a generated file.\n")
+            file.write(f"# Full coverage: {full:.0%}, "
+                       f"with partial coverage: {partial:.0%}\n")
+            file.write(coverage_file + "\n")
+    return
 
 
 def main():
@@ -53,143 +170,47 @@ def main():
                         action='store_true',
                         help='Output dot graphs from all steps.',
                         required=False)
-    parser.add_argument(
-        '--ignore_audited',
-        dest='ignore_audited',
-        action='store_true',
-        help='Ignore the audited manual and automated test data',
-        required=False)
     options = parser.parse_args()
     logging.basicConfig(level=logging.INFO if options.v else logging.WARN,
                         format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%H:%M:%S')
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    output_dir = script_dir + "/output"
-    actions_file = script_dir + "/data/actions.csv"
-    coverage_required_file = script_dir + "/data/coverage_required.csv"
-    partial_coverage_file = script_dir + "/data/partial_coverage_paths.csv"
-    audited_manual_tests_file = script_dir + "/data/manual_tests.csv"
-    audited_automated_tests_file = script_dir + "/data/automated_tests.csv"
-    partial_coverage_file = script_dir + "/data/partial_coverage_paths.csv"
-    framework_actions_file_base = script_dir + "/data/framework_actions_"
+    actions_filename = os.path.join(script_dir, "data", "actions.csv")
+    coverage_required_filename = os.path.join(script_dir, "data",
+                                              "coverage_required.csv")
+    coverage_output_dir = os.path.join(script_dir, "coverage")
 
-    actions_csv = csv.reader(open(actions_file), delimiter=',')
-    coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
-    partial_csv = csv.reader(open(partial_coverage_file), delimiter=',')
+    default_tests_location = os.path.join(script_dir, "..", "..", "browser",
+                                          "ui", "views", "web_apps")
+    sync_tests_location = os.path.join(script_dir, "..", "..", "browser",
+                                       "sync", "test", "integration")
 
-    (actions, action_base_name_to_default_param,
-     action_base_name_to_all_params) = ReadActionsFile(actions_csv)
-    required_coverage_tests = ReadCoverageTestsFile(
-        coverage_csv, actions, action_base_name_to_default_param)
-    partial_paths = ReadPartialCoveragePathsFile(
-        partial_csv, actions, action_base_name_to_all_params)
-    partial_csv = csv.reader(open(partial_coverage_file), delimiter=',')
-    reversed_partial_paths = ReadPartialCoveragePathsFile(
-        partial_csv, actions, action_base_name_to_all_params)
-    for path in reversed_partial_paths:
-        path.Reverse()
+    # These describe where existing browsertests are to be found, and where the
+    # script runner will be directed to write tests to.
+    custom_partitions = [
+        TestPartitionDescription(
+            action_name_prefixes={"switch_profile_clients", "sync_"},
+            browsertest_dir=sync_tests_location,
+            test_file_prefix="two_client_web_apps_integration_sync_test",
+            test_fixture="TwoClientWebAppsIntegrationSyncTest")
+    ]
+    default_partition = TestPartitionDescription(
+        action_name_prefixes=set(),
+        browsertest_dir=default_tests_location,
+        test_file_prefix="web_app_integration_browsertest",
+        test_fixture="WebAppIntegrationBrowserTest")
 
+    graph_output_dir = None
     if options.graphs:
-        coverage_root_node = ActionNode(Action("root", "root", False))
-        CreateFullCoverageActionGraph(coverage_root_node,
-                                      required_coverage_tests)
-        AddPartialPaths(coverage_root_node, partial_paths)
-        coverage_graph = GenerateGraphvizDotFile(coverage_root_node)
-        output_coverage_graph_file_name = (output_dir +
-                                           "/coverage_required_graph.dot")
-        coverage_graph_file = open(output_coverage_graph_file_name, 'w')
-        coverage_graph_file.write(GENERATED_FILE_HEADER + "\n")
-        coverage_graph_file.write(coverage_graph)
-        coverage_graph_file.close()
+        graph_output_dir = script_dir
 
-    for platform in ['linux', 'mac', 'cros', 'win']:
-        framework_actions_csv = csv.reader(open(framework_actions_file_base +
-                                                platform + ".csv"),
-                                           delimiter=',')
-        framework_actions = ReadFrameworkActions(
-            framework_actions_csv, actions, action_base_name_to_default_param)
-
-        # Create the coverage graph, then prune all unsupported actions for
-        # this platform.
-        coverage_root_node = ActionNode(Action("root", "root", False))
-        CreateFullCoverageActionGraph(coverage_root_node,
-                                      required_coverage_tests)
-        AddPartialPaths(coverage_root_node, partial_paths)
-        TrimGraphToAllowedActions(coverage_root_node, framework_actions)
-
-        if options.graphs:
-            graph = GenerateGraphvizDotFile(coverage_root_node)
-            output_graph_file_name = (output_dir + "/framework_test_graph_" +
-                                      platform + ".dot")
-            graph_file = open(output_graph_file_name, 'w')
-            graph_file.write(GENERATED_FILE_HEADER + "\n")
-            graph_file.write(graph)
-            graph_file.close()
-
-        # Write the framework tests. All tests that involve 'sync' actions must
-        # be in a separate file.
-        output_tests_file_name = (output_dir + "/framework_tests_" + platform +
-                                  ".csv")
-        output_tests_sync_file_name = (output_dir + "/framework_tests_sync_" +
-                                       platform + ".csv")
-        framework_file = open(output_tests_file_name, 'w')
-        framework_sync_file = open(output_tests_sync_file_name, 'w')
-        framework_file.write(GENERATED_FILE_HEADER + "\n")
-        framework_sync_file.write(GENERATED_FILE_HEADER + "\n")
-        paths = GenerateFrameworkTests(coverage_root_node,
-                                       required_coverage_tests)
-        for path in paths:
-            all_actions_in_path = []
-            for node in path[1:]:  # Skip the root node
-                all_actions_in_path.append(node.action)
-                all_actions_in_path.extend(node.state_check_actions.values())
-            action_names = [action.name for action in all_actions_in_path]
-            file = framework_file
-            for action_name in action_names:
-                if action_name in SYNC_ACTIONS:
-                    file = framework_sync_file
-                    break
-            file.write("," + ",".join(action_names) + "\n")
-        framework_file.close()
-        framework_sync_file.close()
-
-        # Analyze all tests to generate coverage
-        test_files = [output_tests_file_name, output_tests_sync_file_name]
-        if not options.ignore_audited:
-            test_files.extend(
-                [audited_automated_tests_file, audited_manual_tests_file])
-        tests = []
-        for tests_file in test_files:
-            tests_csv = csv.reader(open(tests_file), delimiter=',')
-            tests.extend(
-                ReadNamedTestsFile(tests_csv, actions,
-                                   action_base_name_to_default_param))
-        tests_root_node = ActionNode(Action("root", "root", False))
-        CreateFullCoverageActionGraph(tests_root_node, tests)
-        AddPartialPaths(tests_root_node, reversed_partial_paths)
-
-        (coverage_file_text, full_coverage,
-         partial_coverage) = GenerateCoverageFileAndPercents(
-             required_coverage_tests, tests_root_node)
-
-        coverage_table_file = output_dir + "/coverage_" + platform + ".tsv"
-        coverage_file = open(coverage_table_file, 'w')
-        coverage_file.write(GENERATED_FILE_HEADER + "\n")
-        coverage_file.write(
-            "# Full Coverage: {:.2f}, Partial Coverage: {:.2f}\n".format(
-                full_coverage, partial_coverage))
-        coverage_file.write(coverage_file_text)
-        coverage_file.close()
-
-        if options.graphs:
-            coverage_graph = GenerateGraphvizDotFile(tests_root_node)
-            coverage_graph_filename = (output_dir + "/coverage_graph_" +
-                                       platform + ".dot")
-            coverage_graph_file = open(coverage_graph_filename, 'w')
-            coverage_graph_file.write(GENERATED_FILE_HEADER + "\n")
-            for graph_line in coverage_graph:
-                coverage_graph_file.write(graph_line + "\n")
-            coverage_graph_file.close()
+    with open(actions_filename) as actions_file, open(
+            coverage_required_filename) as coverage_file:
+        generate_framework_tests_and_coverage(actions_file, coverage_file,
+                                              custom_partitions,
+                                              default_partition,
+                                              coverage_output_dir,
+                                              graph_output_dir)
 
 
 if __name__ == '__main__':
