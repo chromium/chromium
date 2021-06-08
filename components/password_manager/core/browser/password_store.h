@@ -765,12 +765,10 @@ class PasswordStore : protected PasswordStoreSync,
                                                LoginsResult forms);
 
   // Schedules GetLoginsWithAffiliationsImpl() to be run on the background
-  // sequence. Logins older than |cutoff| will be deleted before |consumer| is
-  // notified with the result.
+  // sequence.
   void ScheduleGetFilteredLoginsWithAffiliations(
       base::WeakPtr<PasswordStoreConsumer> consumer,
       const PasswordFormDigest& form,
-      base::Time cutoff,
       const std::vector<std::string>& additional_affiliated_realms);
 
   // Schedules GetInsecureCredentialsWithAffiliationsImpl() to be run on the
