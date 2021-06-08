@@ -1351,10 +1351,15 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         bounds_in_display.height(), reason);
     if (wl_resource_get_version(resource) >=
         ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGED_IN_OUTPUT_SINCE_VERSION) {
+      wl_resource* output = output_provider_.Run(display_id);
+      if (output == nullptr) {
+        LOG(WARNING) << "Failed to get wayland_output resource for display_id: "
+                     << display_id;
+        return;
+      }
       zcr_remote_surface_v1_send_bounds_changed_in_output(
-          resource, output_provider_.Run(display_id), bounds_in_display.x(),
-          bounds_in_display.y(), bounds_in_display.width(),
-          bounds_in_display.height(), reason);
+          resource, output, bounds_in_display.x(), bounds_in_display.y(),
+          bounds_in_display.width(), bounds_in_display.height(), reason);
     }
   }
 
