@@ -352,8 +352,7 @@ UIViewController* TopPresentedViewControllerFrom(
 
 UIViewController* TopPresentedViewController() {
   UIViewController* rootViewController =
-      [[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
-          .rootViewController;
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
   return TopPresentedViewControllerFrom(rootViewController);
 }
 

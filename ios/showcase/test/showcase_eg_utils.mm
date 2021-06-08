@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/showcase/test/showcase_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,7 +32,7 @@ id<GREYMatcher> HomeScreen() {
 UINavigationController* ShowcaseNavigationController() {
   UINavigationController* showcaseNavigationController =
       base::mac::ObjCCastStrict<UINavigationController>(
-          [[[UIApplication sharedApplication] keyWindow] rootViewController]);
+          [GetAnyKeyWindow() rootViewController]);
   return showcaseNavigationController;
 }
 

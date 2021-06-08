@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
+#import "ios/web/common/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -61,28 +62,24 @@ namespace ntp_home {
 
 UICollectionView* CollectionView() {
   return base::mac::ObjCCast<UICollectionView>(
-      SubviewWithAccessibilityIdentifier(
-          kNTPCollectionViewIdentifier,
-          [[UIApplication sharedApplication] keyWindow]));
+      SubviewWithAccessibilityIdentifier(kNTPCollectionViewIdentifier,
+                                         GetAnyKeyWindow()));
 }
 
 UICollectionView* ContentSuggestionsCollectionView() {
   return base::mac::ObjCCast<UICollectionView>(
       SubviewWithAccessibilityIdentifier(
-          kContentSuggestionsCollectionIdentifier,
-          [[UIApplication sharedApplication] keyWindow]));
+          kContentSuggestionsCollectionIdentifier, GetAnyKeyWindow()));
 }
 
 UIView* FakeOmnibox() {
-  return SubviewWithAccessibilityIdentifier(
-      FakeOmniboxAccessibilityID(),
-      [[UIApplication sharedApplication] keyWindow]);
+  return SubviewWithAccessibilityIdentifier(FakeOmniboxAccessibilityID(),
+                                            GetAnyKeyWindow());
 }
 
 UILabel* DiscoverHeaderLabel() {
   return base::mac::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
-      DiscoverHeaderTitleAccessibilityID(),
-      [[UIApplication sharedApplication] keyWindow]));
+      DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
 }
 
 }  // namespace ntp_home

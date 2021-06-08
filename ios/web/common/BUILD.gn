@@ -46,8 +46,6 @@ source_set("features") {
 }
 
 source_set("uikit") {
-  deps = [ "//base" ]
-
   sources = [
     "uikit_ui_util.h",
     "uikit_ui_util.mm",

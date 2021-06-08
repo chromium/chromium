@@ -15,7 +15,10 @@ source_set("eg2_test") {
     "showcase_test_case.h",
     "showcase_test_case.mm",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ios/web/common:uikit",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

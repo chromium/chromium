@@ -11,6 +11,7 @@ source_set("eg_app_support+eg2") {
     "//base/test:test_support",
     "//build/config/ios:xctest",
     "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/common:uikit",
     "//testing/gtest:gtest",
   ]
 

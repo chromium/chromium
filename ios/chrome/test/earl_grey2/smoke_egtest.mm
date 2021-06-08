@@ -313,9 +313,8 @@
 // Tests isCompactWidth method in chrome_earl_grey.h.
 - (void)testisCompactWidth {
   BOOL expectedIsCompactWidth =
-      [[[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
-          traitCollection] horizontalSizeClass] ==
-      UIUserInterfaceSizeClassCompact;
+      [[chrome_test_util::GetAnyKeyWindow() traitCollection]
+          horizontalSizeClass] == UIUserInterfaceSizeClassCompact;
   GREYAssertTrue([ChromeEarlGrey isCompactWidth] == expectedIsCompactWidth,
                  @"isCompactWidth should return %@",
                  expectedIsCompactWidth ? @"YES" : @"NO");

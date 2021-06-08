@@ -395,6 +395,7 @@ source_set("eg_app_support+eg2") {
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/common:uikit",
     "//testing/gmock",
     "//testing/gtest:gtest",
   ]

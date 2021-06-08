@@ -9,6 +9,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
+#import "ios/web/common/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,7 +69,7 @@ BOOL IsKeyboardDockedForLayout() {
     auto block = ^(NSNotification* note) {
       CGRect keyboardFrame =
           [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-      UIWindow* window = [UIApplication sharedApplication].keyWindow;
+      UIWindow* window = GetAnyKeyWindow();
       keyboardFrame = [window convertRect:keyboardFrame fromWindow:nil];
       CGRect windowFrame = window.frame;
       CGRect frameIntersection = CGRectIntersection(windowFrame, keyboardFrame);
@@ -153,7 +154,7 @@ BOOL IsKeyboardDockedForLayout() {
     CGRect rect = CGRectMake(0, 0, 300, 100);
     textField = [[UITextField alloc] initWithFrame:rect];
     textField.backgroundColor = [UIColor blueColor];
-    [[[UIApplication sharedApplication] keyWindow] addSubview:textField];
+    [GetAnyKeyWindow() addSubview:textField];
     [textField becomeFirstResponder];
   }
 

@@ -30,6 +30,10 @@ namespace chrome_test_util {
 // returned.
 id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 
+// Returns current keyWindow, from the list of all of the remote application
+// windows. Use only for single window tests.
+UIWindow* GetAnyKeyWindow();
+
 }  // namespace chrome_test_util
 
 #define ChromeEarlGrey \
