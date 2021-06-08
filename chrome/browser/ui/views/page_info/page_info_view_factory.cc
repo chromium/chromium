@@ -22,6 +22,10 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
+constexpr int PageInfoViewFactory::kVectorIconSize;
+constexpr int PageInfoViewFactory::kMinBubbleWidth;
+constexpr int PageInfoViewFactory::kMaxBubbleWidth;
+
 // static
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator() {
   // Distance for multi content list is used, but split in half, since there is

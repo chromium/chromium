@@ -247,6 +247,27 @@ base::Value ReadJson(base::StringPiece json) {
   return result.value ? std::move(*result.value) : base::Value();
 }
 
+const views::View::Views& GetChosenObjectChildren(
+    ChosenObjectView* object_view) {
+  views::View* row_view = object_view->children()[0];
+  return row_view->children();
+}
+
+views::Label* GetChosenObjectTitle(const views::View::Views& children) {
+  views::View* labels_container = children[1];
+  return static_cast<views::Label*>(labels_container->children()[0]);
+}
+
+views::Button* GetChosenObjectButton(const views::View::Views& children) {
+  return static_cast<views::Button*>(children[2]);
+}
+
+views::Label* GetChosenObjectDescriptionLabel(
+    const views::View::Views& children) {
+  views::View* labels_container = children[1];
+  return static_cast<views::Label*>(labels_container->children()[1]);
+}
+
 }  // namespace
 
 // Each permission selector row is like this: [icon] [label] [selector]
@@ -373,13 +394,13 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
 
   ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
       api_->permissions_view()->children()[kExpectedChildren]);
-  const auto& children = object_view->children();
-  EXPECT_EQ(4u, children.size());
+  const auto& children = GetChosenObjectChildren(object_view);
+  EXPECT_EQ(3u, children.size());
 
-  views::Label* label = static_cast<views::Label*>(children[1]);
+  views::Label* label = GetChosenObjectTitle(children);
   EXPECT_EQ(u"Gizmo", label->GetText());
 
-  views::Button* button = static_cast<views::Button*>(children[2]);
+  views::Button* button = GetChosenObjectButton(children);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
@@ -422,16 +443,16 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
 
   ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
       api_->permissions_view()->children()[kExpectedChildren]);
-  const auto& children = object_view->children();
-  EXPECT_EQ(4u, children.size());
+  const auto& children = GetChosenObjectChildren(object_view);
+  EXPECT_EQ(3u, children.size());
 
-  views::Label* label = static_cast<views::Label*>(children[1]);
+  views::Label* label = GetChosenObjectTitle(children);
   EXPECT_EQ(u"Unknown product 0x162E from Google Inc.", label->GetText());
 
-  views::Button* button = static_cast<views::Button*>(children[2]);
+  views::Button* button = GetChosenObjectButton(children);
   EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);
 
-  views::Label* desc_label = static_cast<views::Label*>(children[3]);
+  views::Label* desc_label = GetChosenObjectDescriptionLabel(children);
   EXPECT_EQ(u"USB device allowed by your administrator", desc_label->GetText());
 
   // Policy granted USB permissions should not be able to be deleted.
@@ -481,16 +502,16 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
   {
     ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
         api_->permissions_view()->children()[kExpectedChildren]);
-    const auto& children = object_view->children();
-    EXPECT_EQ(4u, children.size());
+    const auto& children = GetChosenObjectChildren(object_view);
+    EXPECT_EQ(3u, children.size());
 
-    views::Label* label = static_cast<views::Label*>(children[1]);
+    views::Label* label = GetChosenObjectTitle(children);
     EXPECT_EQ(u"Gizmo", label->GetText());
 
-    views::Button* button = static_cast<views::Button*>(children[2]);
+    views::Button* button = GetChosenObjectButton(children);
     EXPECT_NE(button->GetState(), views::Button::STATE_DISABLED);
 
-    views::Label* desc_label = static_cast<views::Label*>(children[3]);
+    views::Label* desc_label = GetChosenObjectDescriptionLabel(children);
     EXPECT_EQ(u"USB device", desc_label->GetText());
 
     views::test::ButtonTestApi(button).NotifyClick(event);
@@ -505,16 +526,16 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
   {
     ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
         api_->permissions_view()->children()[kExpectedChildren]);
-    const auto& children = object_view->children();
-    EXPECT_EQ(4u, children.size());
+    const auto& children = GetChosenObjectChildren(object_view);
+    EXPECT_EQ(3u, children.size());
 
-    views::Label* label = static_cast<views::Label*>(children[1]);
+    views::Label* label = GetChosenObjectTitle(children);
     EXPECT_EQ(u"Unknown product 0x162E from Google Inc.", label->GetText());
 
-    views::Button* button = static_cast<views::Button*>(children[2]);
+    views::Button* button = GetChosenObjectButton(children);
     EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);
 
-    views::Label* desc_label = static_cast<views::Label*>(children[3]);
+    views::Label* desc_label = GetChosenObjectDescriptionLabel(children);
     EXPECT_EQ(u"USB device allowed by your administrator",
               desc_label->GetText());
 
@@ -587,16 +608,16 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 
   ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
       api_->permissions_view()->children()[kExpectedChildren]);
-  const auto& children = object_view->children();
-  EXPECT_EQ(4u, children.size());
+  const auto& children = GetChosenObjectChildren(object_view);
+  EXPECT_EQ(3u, children.size());
 
-  views::Label* label = static_cast<views::Label*>(children[1]);
+  views::Label* label = GetChosenObjectTitle(children);
   EXPECT_EQ(u"USB device from Google Inc. (product 162E)", label->GetText());
 
-  views::Button* button = static_cast<views::Button*>(children[2]);
+  views::Button* button = GetChosenObjectButton(children);
   EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);
 
-  views::Label* desc_label = static_cast<views::Label*>(children[3]);
+  views::Label* desc_label = GetChosenObjectDescriptionLabel(children);
   EXPECT_EQ(u"Serial port allowed by your administrator",
             desc_label->GetText());
 

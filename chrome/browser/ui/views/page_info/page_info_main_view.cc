@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -22,6 +23,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -33,28 +36,6 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
-namespace {
-
-// The column set id of the permissions table for |permissions_view_|.
-constexpr int kPermissionColumnSetId = 0;
-// The column set id of the `ChosenObjectView` instances for |selector_rows_|.
-constexpr int kChosenObjectSectionId = 1;
-// The column set id for separators between and after permissions section.
-constexpr int kSeparatorSectionId = 2;
-
-int GetSideMargin() {
-  return ChromeLayoutProvider::Get()
-      ->GetInsetsMetric(views::INSETS_DIALOG)
-      .left();
-}
-
-int GetImageButtonRightPadding() {
-  return ChromeLayoutProvider::Get()
-      ->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
-      .right();
-}
-
-}  // namespace
 
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
@@ -182,92 +163,29 @@ void PageInfoMainView::SetPermissionInfo(
   if (permission_info_list.empty() && chosen_object_info_list.empty())
     return;
 
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int hover_list_spacing =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
+  permissions_view_->SetLayoutManager(std::make_unique<views::BoxLayout>())
+      ->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  views::GridLayout* layout = permissions_view_->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* separator_set = layout->AddColumnSet(kSeparatorSectionId);
-  separator_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                           1.0, views::GridLayout::ColumnSize::kUsePreferred,
-                           views::GridLayout::kFixedSize, 0);
-
-  layout->StartRowWithPadding(
-      views::GridLayout::kFixedSize, kSeparatorSectionId,
-      views::GridLayout::kFixedSize, hover_list_spacing);
-  layout->AddView(std::make_unique<views::Separator>());
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, hover_list_spacing);
-
-  LayoutPermissionsLikeUiRow(layout, kPermissionColumnSetId);
-
-  // |ChosenObjectView| will layout itself, so just add the missing padding
-  // here.
-  const int side_margin = GetSideMargin();
-  views::ColumnSet* chosen_object_set =
-      layout->AddColumnSet(kChosenObjectSectionId);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
-  chosen_object_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                               1.0,
-                               views::GridLayout::ColumnSize::kUsePreferred,
-                               views::GridLayout::kFixedSize, 0);
-  // Adjust right padding by the delete button's insets to align all icons on
-  // the right side.
-  chosen_object_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      side_margin - GetImageButtonRightPadding());
-  int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
-    std::unique_ptr<PermissionSelectorRow> selector =
-        std::make_unique<PermissionSelectorRow>(ui_delegate_, permission,
-                                                layout);
+    auto* selector = permissions_view_->AddChildView(
+        std::make_unique<PermissionToggleRowView>(ui_delegate_, permission));
     selector->AddObserver(this);
-    min_height_for_permission_rows = std::max(
-        min_height_for_permission_rows, selector->MinHeightForPermissionRow());
     selector_rows_.push_back(std::move(selector));
   }
 
-  // Ensure most comboboxes are the same width by setting them all to the widest
-  // combobox size, provided it does not exceed a maximum width.
-  // For selected options that are over the maximum width, allow them to assume
-  // their full width. If the combobox selection is changed, this may make the
-  // widths inconsistent again, but that is OK since the widths will be updated
-  // on the next time the bubble is opened.
-  const int maximum_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUTTON_MAX_LINKABLE_WIDTH);
-  int combobox_width = 0;
-  for (const auto& selector : selector_rows_) {
-    int curr_width = selector->GetComboboxWidth();
-    if (maximum_width >= curr_width)
-      combobox_width = std::max(combobox_width, curr_width);
-  }
-  for (const auto& selector : selector_rows_)
-    selector->SetMinComboboxWidth(combobox_width);
-
   for (auto& object : chosen_object_info_list) {
-    // Since chosen objects are presented after permissions in the same list,
-    // make sure its height is the same as the permissions row's minimum height
-    // plus padding.
-    layout->StartRow(1.0, kChosenObjectSectionId,
-                     min_height_for_permission_rows);
     // The view takes ownership of the object info.
     auto object_view = std::make_unique<ChosenObjectView>(
         std::move(object),
         presenter_->GetChooserContextFromUIInfo(object->ui_info)
             ->GetObjectDisplayName(object->chooser_object->value));
     object_view->AddObserver(this);
-    layout->AddView(std::move(object_view));
+    permissions_view_->AddChildView(std::move(object_view));
   }
 
-  layout->StartRowWithPadding(
-      views::GridLayout::kFixedSize, kSeparatorSectionId,
-      views::GridLayout::kFixedSize, hover_list_spacing);
-  layout->AddView(std::make_unique<views::Separator>());
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, hover_list_spacing);
+  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  layout->Layout(permissions_view_);
   PreferredSizeChanged();
 }
 
@@ -412,42 +330,6 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
     default:
       NOTREACHED();
   }
-}
-
-void PageInfoMainView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                                  int column_id) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int side_margin = GetSideMargin();
-  // A permissions row will have an icon, title, and combobox, with a padding
-  // column on either side to match the dialog insets. Note the combobox can be
-  // variable widths depending on the text inside.
-  // *----------------------------------------------*
-  // |++| Icon | Permission Title     | Combobox |++|
-  // *----------------------------------------------*
-  views::ColumnSet* permissions_set = layout->AddColumnSet(column_id);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-  permissions_set->AddColumn(
-      views::GridLayout::CENTER, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-      kIconColumnWidth, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::LEADING,
-                             views::GridLayout::CENTER, 1.0,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::TRAILING,
-                             views::GridLayout::FILL,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 }
 
 gfx::Size PageInfoMainView::CalculatePreferredSize() const {

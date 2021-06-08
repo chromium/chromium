@@ -14,14 +14,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
-namespace {
-
-// Bubble width constraints.
-constexpr int kMinBubbleWidth = 320;
-constexpr int kMaxBubbleWidth = 1000;
-
-}  // namespace
-
 PageInfoNewBubbleView::PageInfoNewBubbleView(
     views::View* anchor_view,
     const gfx::Rect& anchor_rect,
@@ -109,10 +101,10 @@ gfx::Size PageInfoNewBubbleView::CalculatePreferredSize() const {
     return views::View::CalculatePreferredSize();
   }
 
-  int width = kMinBubbleWidth;
+  int width = PageInfoViewFactory::kMinBubbleWidth;
   if (page_container_) {
     width = std::max(width, page_container_->GetPreferredSize().width());
-    width = std::min(width, kMaxBubbleWidth);
+    width = std::min(width, PageInfoViewFactory::kMaxBubbleWidth);
   }
   return gfx::Size(width, views::View::GetHeightForWidth(width));
 }

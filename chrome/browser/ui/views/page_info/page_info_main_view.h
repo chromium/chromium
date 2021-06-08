@@ -8,8 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
-#include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,9 +56,6 @@ class PageInfoMainView : public views::View,
                          ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
-
-  void LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                  int column_id);
 
   gfx::Size CalculatePreferredSize() const override;
 
@@ -126,7 +123,7 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<std::unique_ptr<PermissionSelectorRow>> selector_rows_;
+  std::vector<PermissionToggleRowView*> selector_rows_;
 
   views::Label* title_ = nullptr;
 

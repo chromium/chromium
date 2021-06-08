@@ -1,0 +1,47 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
+
+#include "ui/base/models/image_model.h"
+#include "ui/views/view.h"
+
+namespace views {
+class ImageView;
+class FlexLayout;
+class Label;
+}  // namespace views
+
+// A view that contains basic layout for rows in page info.
+// *-------------------------------------------------------------------------*
+// | Icon | Title                                | Controls (buttons, icons) |
+// |-------------------------------------------------------------------------|
+// |      | Secondary label                      |                           |
+// *-------------------------------------------------------------------------*
+class PageInfoRowView : public views::View {
+ public:
+  PageInfoRowView();
+
+  void SetIcon(const ui::ImageModel image);
+  void SetTitle(std::u16string title);
+  void AddSecondaryLabel(std::u16string text);
+  views::View* AddControl(std::unique_ptr<views::View> control_view);
+
+  int GetFirstLineHeight();
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+
+ private:
+  views::ImageView* icon_ = nullptr;
+  views::Label* title_ = nullptr;
+  views::View* labels_wrapper_ = nullptr;
+
+  // The sum of width of all control views in the right side of the row.
+  int controls_width_ = 0;
+  views::FlexLayout* layout_manager_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_

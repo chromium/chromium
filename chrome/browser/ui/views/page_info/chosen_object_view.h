@@ -11,12 +11,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace views {
-class ImageButton;
-class ImageView;
-}  // namespace views
 
 class ChosenObjectViewObserver;
+class PageInfoRowView;
 
 // A ChosenObjectView is a row in the Page Info bubble that shows an individual
 // object (e.g. a Bluetooth device, a USB device) that the current site has
@@ -37,8 +34,8 @@ class ChosenObjectView : public views::View {
 
   void ExecuteDeleteCommand();
 
-  views::ImageView* icon_;             // Owned by the views hierarchy.
-  views::ImageButton* delete_button_;  // Owned by the views hierarchy.
+  views::View* delete_button_ = nullptr;
+  PageInfoRowView* row_view_ = nullptr;
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;
