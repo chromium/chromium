@@ -427,7 +427,7 @@ int _itow_s(int value, char16_t* buffer, size_t size_in_chars, int radix) {
   }
 
   for (int i = 0; i < written; ++i) {
-    buffer[i] = char16_t{temp[i]};
+    buffer[i] = static_cast<char16_t>(temp[i]);
   }
   buffer[written] = '\0';
   return 0;
