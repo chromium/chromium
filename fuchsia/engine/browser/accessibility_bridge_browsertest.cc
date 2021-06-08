@@ -16,6 +16,7 @@
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/fake_semantics_manager.h"
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/test_data.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -125,17 +126,17 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    frame_ptr_ =
-        cr_fuchsia::WebEngineBrowserTest::CreateFrame(&navigation_listener_);
-    frame_impl_ = context_impl()->GetFrameImplForTest(&frame_ptr_);
+    frame_ = cr_fuchsia::FrameForTest::Create(context(), {});
+    base::RunLoop().RunUntilIdle();
+
+    frame_impl_ = context_impl()->GetFrameImplForTest(&frame_.ptr());
     frame_impl_->set_semantics_manager_for_test(&semantics_manager_);
-    frame_ptr_->EnableHeadlessRendering();
+    frame_->EnableHeadlessRendering();
 
     semantics_manager_.WaitUntilViewRegistered();
     ASSERT_TRUE(semantics_manager_.is_view_registered());
     ASSERT_TRUE(semantics_manager_.is_listener_valid());
 
-    frame_ptr_->GetNavigationController(navigation_controller_.NewRequest());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Change the accessibility mode on the Fuchsia side and check that it is
@@ -153,17 +154,16 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
   void LoadPage(base::StringPiece url, base::StringPiece page_title) {
     GURL page_url(embedded_test_server()->GetURL(std::string(url)));
     ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+        frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
         page_url.spec()));
-    navigation_listener_.RunUntilUrlAndTitleEquals(page_url, page_title);
+    frame_.navigation_listener().RunUntilUrlAndTitleEquals(page_url,
+                                                           page_title);
   }
 
  protected:
-  fuchsia::web::FramePtr frame_ptr_;
+  cr_fuchsia::FrameForTest frame_;
   FrameImpl* frame_impl_;
   FakeSemanticsManager semantics_manager_;
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-  fuchsia::web::NavigationControllerPtr navigation_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, CorrectDataSent) {
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, PerformUnsupportedAction) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Disconnect) {
   base::RunLoop run_loop;
-  frame_ptr_.set_error_handler([&run_loop](zx_status_t status) {
+  frame_.ptr().set_error_handler([&run_loop](zx_status_t status) {
     EXPECT_EQ(ZX_ERR_INTERNAL, status);
     run_loop.Quit();
   });
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
 
   // Before loading a page on the default embedded test server, set the iframe
   // src to be |out_of_process_url|.
-  frame_ptr_->AddBeforeLoadJavaScript(
+  frame_->AddBeforeLoadJavaScript(
       kBindingsId, {"*"},
       cr_fuchsia::MemBufferFromString(
           base::StringPrintf("iframeSrc = '%s'",
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
       base::StringPrintf("document.getElementById(\"iframeId\").src = '%s'",
                          out_of_process_url_2.spec().c_str());
 
-  frame_ptr_->ExecuteJavaScript(
+  frame_->ExecuteJavaScript(
       {"*"}, cr_fuchsia::MemBufferFromString(script, "test2"),
       [](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         CHECK(result.is_response());
