@@ -5,11 +5,13 @@
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
@@ -115,9 +117,14 @@ void CellularESimUninstallHandler::TransitionToUninstallState(
   state_ = next_state;
 }
 
-void CellularESimUninstallHandler::CompleteCurrentRequest(bool success) {
+void CellularESimUninstallHandler::CompleteCurrentRequest(
+    UninstallESimResult result) {
   DCHECK(state_ != UninstallState::kIdle);
 
+  base::UmaHistogramEnumeration(
+      "Network.Cellular.ESim.UninstallProfile.OperationResult", result);
+
+  const bool success = result == UninstallESimResult::kSuccess;
   NET_LOG(EVENT) << "Completed uninstall request for ICCID "
                  << GetIccidForCurrentRequest() << ". Success = " << success;
   std::move(uninstall_requests_.front()->callback).Run(success);
@@ -150,7 +157,7 @@ void CellularESimUninstallHandler::CheckNetworkState() {
   if (!network) {
     NET_LOG(ERROR) << "Unable to find eSIM network with ICCID "
                    << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kNetworkNotFound);
     return;
   }
 
@@ -200,7 +207,7 @@ void CellularESimUninstallHandler::OnDisconnectFailure(
 
   NET_LOG(ERROR) << "Failed disconnecting network with ICCID "
                  << GetIccidForCurrentRequest();
-  CompleteCurrentRequest(/*success=*/false);
+  CompleteCurrentRequest(UninstallESimResult::kDisconnectFailed);
 }
 
 void CellularESimUninstallHandler::AttemptShillInhibit() {
@@ -219,7 +226,7 @@ void CellularESimUninstallHandler::OnShillInhibit(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhbiting Shill during uninstall for ICCID "
                    << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kInhibitFailed);
     return;
   }
 
@@ -248,7 +255,7 @@ void CellularESimUninstallHandler::OnRefreshProfileListResult(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error refreshing profile list during uninstall for "
                    << "ICCID " << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kRefreshProfilesFailed);
     return;
   }
 
@@ -272,12 +279,14 @@ void CellularESimUninstallHandler::OnDisableProfile(
     HermesResponseStatus status) {
   DCHECK_EQ(state_, UninstallState::kDisablingProfile);
 
+  hermes_metrics::LogDisableProfileResult(status);
+
   bool success = status == HermesResponseStatus::kSuccess ||
                  status == HermesResponseStatus::kErrorAlreadyDisabled;
   if (!success) {
     NET_LOG(ERROR) << "Failed to disable profile for ICCID "
                    << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kDisableProfileFailed);
     return;
   }
 
@@ -299,10 +308,12 @@ void CellularESimUninstallHandler::OnUninstallProfile(
     HermesResponseStatus status) {
   DCHECK_EQ(state_, UninstallState::kUninstallingProfile);
 
+  hermes_metrics::LogUninstallProfileResult(status);
+
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Failed to uninstall profile for ICCID "
                    << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kUninstallProfileFailed);
     return;
   }
 
@@ -317,7 +328,7 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   if (!network) {
     NET_LOG(ERROR) << "Unable to find eSIM network with ICCID "
                    << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
+    CompleteCurrentRequest(UninstallESimResult::kRemoveServiceFailed);
     return;
   }
 
@@ -325,7 +336,7 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   // don't know the actual shill service path. This stub non-shill service will
   // be removed automatically when the eSIM profile list updates.
   if (network->IsNonShillCellularNetwork()) {
-    CompleteCurrentRequest(/*success=*/true);
+    CompleteCurrentRequest(UninstallESimResult::kSuccess);
     return;
   }
 
@@ -339,7 +350,7 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
 
 void CellularESimUninstallHandler::OnRemoveServiceSuccess() {
   DCHECK_EQ(state_, UninstallState::kRemovingShillService);
-  CompleteCurrentRequest(/*success=*/true);
+  CompleteCurrentRequest(UninstallESimResult::kSuccess);
 }
 
 void CellularESimUninstallHandler::OnRemoveServiceFailure(
@@ -348,7 +359,7 @@ void CellularESimUninstallHandler::OnRemoveServiceFailure(
   DCHECK_EQ(state_, UninstallState::kRemovingShillService);
   NET_LOG(ERROR) << "Error removing service with ICCID "
                  << GetIccidForCurrentRequest() << ". Error: " << error_name;
-  CompleteCurrentRequest(/*success=*/false);
+  CompleteCurrentRequest(UninstallESimResult::kRemoveServiceFailed);
 }
 
 void CellularESimUninstallHandler::CheckStaleESimServices() {

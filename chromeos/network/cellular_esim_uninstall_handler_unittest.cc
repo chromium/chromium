@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
@@ -179,9 +181,17 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         kDefaultEid, has_refreshed);
   }
 
+  void ExpectResult(CellularESimUninstallHandler::UninstallESimResult result,
+                    int expected_count = 1) {
+    histogram_tester_.ExpectBucketCount(
+        "Network.Cellular.ESim.UninstallProfile.OperationResult", result,
+        expected_count);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
@@ -214,6 +224,8 @@ TEST_F(CellularESimUninstallHandlerTest, Success) {
   EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(status);
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, Success_AlreadyDisabled) {
@@ -235,6 +247,8 @@ TEST_F(CellularESimUninstallHandlerTest, Success_AlreadyDisabled) {
   EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(status);
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, DisconnectFailure) {
@@ -248,6 +262,9 @@ TEST_F(CellularESimUninstallHandlerTest, DisconnectFailure) {
   run_loop.Run();
   EXPECT_FALSE(status);
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  ExpectResult(
+      CellularESimUninstallHandler::UninstallESimResult::kDisconnectFailed);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, HermesFailure) {
@@ -263,6 +280,9 @@ TEST_F(CellularESimUninstallHandlerTest, HermesFailure) {
   run_loop.Run();
   EXPECT_FALSE(status);
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::
+                   kRefreshProfilesFailed);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
@@ -296,6 +316,9 @@ TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
   EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
+               /*expected_count=*/2);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, StubCellularNetwork) {
@@ -313,6 +336,8 @@ TEST_F(CellularESimUninstallHandlerTest, StubCellularNetwork) {
   UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, success);
   run_loop.Run();
   EXPECT_TRUE(success);
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
 
 TEST_F(CellularESimUninstallHandlerTest, RemovesShillOnlyServices) {
@@ -346,6 +371,9 @@ TEST_F(CellularESimUninstallHandlerTest, RemovesShillOnlyServices) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
+               /*expected_count=*/2);
 }
 
 }  // namespace chromeos

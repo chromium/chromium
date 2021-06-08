@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
@@ -80,6 +81,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void DevicePropertiesUpdated(const DeviceState* device_state) override;
 
  private:
+  friend class CellularESimUninstallHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, Success);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
+                           Success_AlreadyDisabled);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, DisconnectFailure);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, HermesFailure);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, MultipleRequests);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
+                           StubCellularNetwork);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
+                           RemovesShillOnlyServices);
+
   enum class UninstallState {
     kIdle,
     kCheckingNetworkState,
@@ -92,6 +105,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const UninstallState& step);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class UninstallESimResult {
+    kSuccess = 0,
+    kNetworkNotFound = 1,
+    kDisconnectFailed = 2,
+    kInhibitFailed = 3,
+    kRefreshProfilesFailed = 4,
+    kDisableProfileFailed = 5,
+    kUninstallProfileFailed = 6,
+    kRemoveServiceFailed = 7,
+    kMaxValue = kRemoveServiceFailed
+  };
 
   // Represents ESim uninstallation request parameters. Requests are queued and
   // processed one at a time. |esim_profile_path| and |euicc_path| are nullopt
@@ -112,7 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   void ProcessPendingUninstallRequests();
   void TransitionToUninstallState(UninstallState next_state);
-  void CompleteCurrentRequest(bool success);
+  void CompleteCurrentRequest(UninstallESimResult result);
 
   const std::string& GetIccidForCurrentRequest() const;
   const NetworkState* GetNetworkStateForCurrentRequest() const;
