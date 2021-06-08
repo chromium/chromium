@@ -134,11 +134,6 @@ class USER_MANAGER_EXPORT KnownUser final {
   // to find known account_id on Chrome restart.
   void SaveKnownUser(const AccountId& account_id);
 
-  // Updates |gaia_id| for user with |account_id|.
-  // TODO(alemate): Update this once AccountId contains GAIA ID
-  // (crbug.com/548926).
-  void UpdateGaiaID(const AccountId& account_id, const std::string& gaia_id);
-
   // Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
   // |account_id.GetObjGuid()| for user with |account_id|.
   void UpdateId(const AccountId& account_id);
@@ -398,14 +393,6 @@ SetGaiaIdMigrationStatusDone(const AccountId& account_id,
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SaveKnownUser
 // instead.
 void USER_MANAGER_EXPORT SaveKnownUser(const AccountId& account_id);
-
-// Updates |gaia_id| for user with |account_id|.
-// TODO(alemate): Update this once AccountId contains GAIA ID
-// (crbug.com/548926).
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::UpdateGaiaID
-// instead.
-void USER_MANAGER_EXPORT UpdateGaiaID(const AccountId& account_id,
-                                      const std::string& gaia_id);
 
 // Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
 // |account_id.GetObjGuid()| for user with |account_id|.

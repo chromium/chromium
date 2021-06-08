@@ -487,13 +487,6 @@ void KnownUser::SetIsEphemeralUser(const AccountId& account_id,
   SetBooleanPref(account_id, kIsEphemeral, is_ephemeral);
 }
 
-void KnownUser::UpdateGaiaID(const AccountId& account_id,
-                             const std::string& gaia_id) {
-  SetStringPref(account_id, kGAIAIdKey, gaia_id);
-  SetStringPref(account_id, kAccountTypeKey,
-                AccountId::AccountTypeToString(AccountType::GOOGLE));
-}
-
 void KnownUser::UpdateId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE:
@@ -968,14 +961,6 @@ void SaveKnownUser(const AccountId& account_id) {
   if (!local_state)
     return;
   return KnownUser(local_state).SaveKnownUser(account_id);
-}
-
-void UpdateGaiaID(const AccountId& account_id, const std::string& gaia_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).UpdateGaiaID(account_id, gaia_id);
 }
 
 void UpdateId(const AccountId& account_id) {

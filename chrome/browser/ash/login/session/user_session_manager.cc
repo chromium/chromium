@@ -1481,23 +1481,6 @@ void UserSessionManager::InitProfilePreferences(
         base::FeatureList::IsEnabled(::features::kDMServerOAuthForChildUser)) {
       child_policy_observer_ = std::make_unique<ChildPolicyObserver>(profile);
     }
-    std::string tmp_gaia_id;
-    bool gaia_id_found = user_manager::known_user::FindGaiaID(
-        user_context.GetAccountId(), &tmp_gaia_id);
-    version_info::Channel channel = chrome::GetChannel();
-    if (channel == version_info::Channel::DEV ||
-        channel == version_info::Channel::BETA) {
-      if (!user_manager->IsUserNonCryptohomeDataEphemeral(
-              user_context.GetAccountId())) {
-        CHECK_EQ(tmp_gaia_id, gaia_id)
-            << "Gaia ID not found for account ID in non-ephemeral session.";
-      }
-    }
-    // Backfill GAIA ID in user prefs stored in Local State.
-    if (!gaia_id_found && !gaia_id.empty()) {
-      user_manager::known_user::UpdateGaiaID(user_context.GetAccountId(),
-                                             gaia_id);
-    }
   } else {
     // Active Directory (non-supervised, non-GAIA) accounts take this path.
   }
