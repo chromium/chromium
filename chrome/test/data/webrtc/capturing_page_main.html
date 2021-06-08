@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Capture Handle Test - Capturing Page</title>
+    <title>Capture Handle Test - Main Capturing Page</title>
     <link rel="icon" href="data:," />
     <script>
       "use strict";
@@ -19,6 +19,10 @@
         // Blocks until onCaptureHandleChange() unblocks.
       }
 
+      function readLastEmbeddedEvent() {
+        // Blocks until the embedded frame's onCaptureHandleChange() unblocks.
+      }
+
       function readCaptureHandleFromSettings() {
         if (!capturedVideoTrack) {
           window.domAutomationController.send("error-no-video-track");
@@ -34,6 +38,25 @@
         window.domAutomationController.send(
           JSON.stringify(settings.captureHandle)
         );
+      }
+
+      function startEmbeddingFrame(url) {
+        document.getElementById("embedded_frame").src = url;
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      function captureOtherTabFromEmbeddedFrame() {
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage("start-capture", "*");
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      function readCaptureHandleFromSettingsInEmbeddedFrame() {
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage("read-settings", "*");
+        // window.domAutomationController.send() called by embedded page.
       }
 
       function handleCaptureSuccess(stream) {
@@ -84,6 +107,8 @@
     </script>
   </head>
   <body>
-    <h1>Capture Handle Test - Capturing Page</h1>
+    <h1>Capture Handle Test - Main Capturing Page</h1>
+    <br/>
+    <iframe id="embedded_frame"></iframe>
   </body>
 </html>

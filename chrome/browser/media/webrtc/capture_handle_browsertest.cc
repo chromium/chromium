@@ -34,8 +34,10 @@ namespace {
 // The captured tab is identified by its title.
 const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
 
-// Capturing page.
+// Capturing page (top-level document).
 const char kCapturingPageMain[] = "/webrtc/capturing_page_main.html";
+// Capturing page (embedded document).
+const char kCapturingPageEmbedded[] = "/webrtc/capturing_page_embedded.html";
 // Captured page.
 const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
 // Similar contents to kCapturedPageMain, but on a different page, which can
@@ -44,6 +46,7 @@ const char kCapturedPageOther[] = "/webrtc/captured_page_other.html";
 
 const char* kArbitraryOrigin = "https://arbitrary-origin.com";
 const char* kNoCaptureHandle = "no-capture-handle";
+const char* kNoEmbeddedCaptureHandle = "no-embedded-capture-handle";
 
 enum class BrowserType { kRegular, kIncognito };
 
@@ -88,6 +91,14 @@ struct TabInfo {
     EXPECT_EQ(script_result, "capture-success");
   }
 
+  void StartCapturingFromEmbeddedFrame() {
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(), "captureOtherTabFromEmbeddedFrame();",
+        &script_result));
+    EXPECT_EQ(script_result, "embedded-capture-success");
+  }
+
   url::Origin GetOrigin() const {
     return url::Origin::Create(web_contents->GetLastCommittedURL());
   }
@@ -120,6 +131,14 @@ struct TabInfo {
     return script_result;
   }
 
+  std::string ReadCaptureHandleFromSettingsInEmbeddedFrame() {
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(),
+        "readCaptureHandleFromSettingsInEmbeddedFrame();", &script_result));
+    return script_result;
+  }
+
   void Navigate(GURL url, bool expect_handle_reset = false) {
     std::string script_result;
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -138,6 +157,23 @@ struct TabInfo {
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetMainFrame(), "readLastEvent();", &script_result));
     return script_result;
+  }
+
+  std::string LastEmbeddedEvent() {
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(), "readLastEmbeddedEvent();",
+        &script_result));
+    return script_result;
+  }
+
+  void StartEmbeddingFrame(const GURL& url) {
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(),
+        base::StringPrintf("startEmbeddingFrame('%s');", url.spec().c_str()),
+        &script_result));
+    EXPECT_EQ(script_result, "embedding-done");
   }
 
   Browser* browser;
@@ -168,7 +204,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
     base::FilePath test_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
 
-    for (size_t i = 0; i < 3; ++i) {
+    for (int i = 0; i < kServerCount; ++i) {
       servers_.emplace_back(std::make_unique<net::EmbeddedTestServer>());
       servers_[i]->ServeFilesFromDirectory(test_dir);
       ASSERT_TRUE(servers_[i]->Start());
@@ -271,9 +307,15 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
     return tab_info;
   }
 
-  static constexpr size_t kCapturedServer = 0;
-  static constexpr size_t kCapturingServer = 1;
-  static constexpr size_t kOtherCapturedServer = 2;
+  enum {
+    kCapturedServer,
+    kOtherCapturedServer,
+    kCapturingServer,          // Top-level document.
+    kEmbeddedCapturingServer,  // Embedded iframe.
+
+    // Must be last.
+    kServerCount
+  };
 
   // Checked for no unconsumed events.
   std::vector<WebContents*> event_sinks_;
@@ -326,6 +368,68 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 
   // The capture handle isn't observable by the capturer.
   EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CaptureHandleBrowserTest,
+    HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted) {
+  TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/false);
+
+  const url::Origin& top_level_capturer_origin =
+      url::Origin::Create(servers_[kCapturingServer]->base_url());
+  const url::Origin& embedded_capturer_origin =
+      url::Origin::Create(servers_[kEmbeddedCapturingServer]->base_url());
+  ASSERT_FALSE(
+      top_level_capturer_origin.IsSameOriginWith(embedded_capturer_origin));
+
+  TabInfo captured_tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle",
+                        {top_level_capturer_origin.Serialize()});
+
+  capturing_tab.StartEmbeddingFrame(
+      servers_[kEmbeddedCapturingServer]->GetURL(kCapturingPageEmbedded));
+  capturing_tab.StartCapturingFromEmbeddedFrame();
+
+  // The capture handle isn't observable by the capturer.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+            kNoEmbeddedCaptureHandle);
+
+  // Even when the capture handle changes - no events are fired and the
+  // capture handle remains unobservable via getSettings.
+  captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
+                                      {top_level_capturer_origin.Serialize()});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CaptureHandleBrowserTest,
+    HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted) {
+  TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/false);
+
+  const url::Origin& top_level_capturer_origin =
+      url::Origin::Create(servers_[kCapturingServer]->base_url());
+  const url::Origin& embedded_capturer_origin =
+      url::Origin::Create(servers_[kEmbeddedCapturingServer]->base_url());
+  ASSERT_FALSE(
+      top_level_capturer_origin.IsSameOriginWith(embedded_capturer_origin));
+
+  TabInfo captured_tab = SetUpCapturedPage(
+      /*expose_origin=*/true, "handle", {embedded_capturer_origin.Serialize()});
+
+  capturing_tab.StartEmbeddingFrame(
+      servers_[kEmbeddedCapturingServer]->GetURL(kCapturingPageEmbedded));
+  capturing_tab.StartCapturingFromEmbeddedFrame();
+
+  // The capture handle is observable by the capturer.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+            captured_tab.capture_handle);
+
+  // When the capture handle changes, events are fired and the
+  // capture handle remains observable via getSettings.
+  captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
+                                      {embedded_capturer_origin.Serialize()});
+  EXPECT_EQ(capturing_tab.LastEmbeddedEvent(), captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+            captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest, CanExposeOnlyHandle) {
