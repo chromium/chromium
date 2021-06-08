@@ -219,7 +219,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness"
-    units="%" expires_after="2021-06-15">
+    units="%" expires_after="2022-06-02">
 <!-- Name completed by histogram_suffixes
      name="EnterOrExitCardifiedState" -->
 
@@ -2185,7 +2185,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.ScrollableShelf.Drag.PresentationTime"
-    units="ms" expires_after="2021-01-10">
+    units="ms" expires_after="2022-06-02">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" and
      name="HomeLauncherVisibility"-->
@@ -2195,6 +2195,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Presentation time of the drag scroll in the scrollable shelf in
     milliseconds.
+
+    Warning: This histogram was expired from 2021-01-10 to 2022-06-02; data may
+    be missing.
   </summary>
 </histogram>
 
