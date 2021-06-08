@@ -17,17 +17,9 @@
 
     console.log('file_manager_swa_id: ' + swaAppId);
 
-    await repeatUntil(async () => {
-      const launched = await sendTestMessage({
-        name: 'hasSwaStarted',
-        swaAppId: swaAppId,
-      });
-
-      if (launched !== 'true') {
-        return pending(caller, 'Waiting for files app SWA launch');
-      }
-    });
-
+    const element = await remoteCall.waitForElement(swaAppId, 'body');
+    chrome.test.assertEq('Files', element.attributes['aria-label']);
+    chrome.test.assertEq('files-ng', element.attributes['class']);
     return IGNORE_APP_ERRORS;
   };
 })();

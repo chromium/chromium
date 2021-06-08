@@ -2269,6 +2269,7 @@ if (!is_android) {
 
       if (!is_official_build) {
         deps += [
+          "//ash/content/file_manager:constants",
           "//chromeos/components/demo_mode_app_ui",
           "//chromeos/components/sample_system_web_app_ui",
           "//chromeos/components/telemetry_extension_ui",

@@ -11,7 +11,14 @@
  */
 const FILE_MANAGER_EXTENSIONS_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 
-const remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
+/**
+ * Application ID (URL) for File Manager System Web App (SWA).
+ * @type {string}
+ * @const
+ */
+const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
+
+let remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
 
 /**
  * Extension ID of Audio Player.
@@ -273,16 +280,28 @@ const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN = BASIC_ANDROID_ENTRY_SET.concat([
  *     app.
  * @return {Promise} Promise to be fulfilled after window creating.
  */
-function openNewWindow(initialRoot, appState = {}) {
+async function openNewWindow(initialRoot, appState = {}) {
   // TODO(mtomasz): Migrate from full paths to a pair of a volumeId and a
   // relative path. To compose the URL communicate via messages with
   // file_manager_browser_test.cc.
   if (initialRoot) {
-    appState.currentDirectoryURL = 'filesystem:chrome-extension://' +
-        FILE_MANAGER_EXTENSIONS_ID + '/external' + initialRoot;
+    const tail = `external${initialRoot}`;
+    if (remoteCall.isSwaMode()) {
+      appState.currentDirectoryURL =
+          `filesystem:${FILE_MANAGER_SWA_ID}/${tail}`;
+    } else {
+      appState.currentDirectoryURL =
+          `filesystem:chrome-extension://${FILE_MANAGER_EXTENSIONS_ID}/${tail}`;
+    }
   }
 
-  return remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);
+  const appId = remoteCall.isSwaMode() ?
+      await sendTestMessage({
+        name: 'launchFileManagerSwa',
+        launchDir: appState.currentDirectoryURL,
+      }) :
+      await remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);
+  return appId;
 }
 
 /**
@@ -452,8 +471,15 @@ const testcase = {};
  */
 window.addEventListener('load', () => {
   const steps = [
-    // Request the guest mode state.
+    // Check if we are running in Files SWA mode.
     () => {
+      sendBrowserTestCommand({name: 'isFilesAppSwa'}, steps.shift());
+    },
+    // Request the guest mode state.
+    (swaMode) => {
+      if (swaMode === 'true') {
+        remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
+      }
       sendBrowserTestCommand({name: 'isInGuestMode'}, steps.shift());
     },
     // Request the root entry paths.

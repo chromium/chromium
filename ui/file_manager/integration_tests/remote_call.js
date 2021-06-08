@@ -24,10 +24,10 @@ function autoStep() {
  */
 class RemoteCall {
   /**
-   * @param {string} extensionId ID of extension to be manipulated.
+   * @param {string} origin ID of the app to be manipulated.
    */
-  constructor(extensionId) {
-    this.extensionId_ = extensionId;
+  constructor(origin) {
+    this.origin_ = origin;
 
     /**
      * Tristate holding the cached result of isStepByStepEnabled_().
@@ -49,6 +49,18 @@ class RemoteCall {
       });
     }
     return this.cachedStepByStepEnabled_;
+  }
+
+  /**
+   * Delivers the given message to the test code running in the File Manager.
+   * @param {!Object} message
+   * @return {!Promise<!Object>} A promise which when fulfilled returns the
+   *     result of executing test code with the given message.
+   */
+  sendMessage(message) {
+    return new Promise((onFulfilled) => {
+      chrome.runtime.sendMessage(this.origin_, message, {}, onFulfilled);
+    });
   }
 
   /**
@@ -91,11 +103,7 @@ class RemoteCall {
         console.info('Auto calling step() ...');
       }
     }
-    const response = await new Promise((onFulfilled) => {
-      chrome.runtime.sendMessage(
-          this.extensionId_, {func: func, appId: appId, args: args}, {},
-          onFulfilled);
-    });
+    const response = await this.sendMessage({func, appId, args});
 
     if (stepByStep) {
       console.info('Returned value:');
@@ -420,6 +428,34 @@ class RemoteCall {
  * Class to manipulate the window in the remote extension.
  */
 class RemoteCallFilesApp extends RemoteCall {
+  /**
+   * @return {boolean} Returns whether the code is running in SWA mode.
+   */
+  isSwaMode() {
+    return this.origin_.startsWith('chrome://');
+  }
+
+  /**
+   * @param {!Object} message
+   * @return {!Promise<!Object>}
+   * @override
+   */
+  sendMessage(message) {
+    if (this.isSwaMode()) {
+      return new Promise((fulfill) => {
+        const command = {
+          name: 'callSwaTestMessageListener',
+          appId: message.appId,
+          data: JSON.stringify(message),
+        };
+        chrome.test.sendMessage(JSON.stringify(command), (response) => {
+          fulfill(/** @type {!Object} */ (JSON.parse(response)));
+        });
+      });
+    }
+    return super.sendMessage(message);
+  }
+
   /**
    * Waits for the file list turns to the given contents.
    * @param {string} appId App window Id.

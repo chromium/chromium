@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/content/file_manager/url_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
@@ -63,8 +64,10 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -108,6 +111,7 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/test_util.h"
 #include "media/base/media_switches.h"
+#include "net/base/escape.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -149,6 +153,25 @@ class SelectFileDialogExtensionTestFactory
 
 namespace file_manager {
 namespace {
+
+// Specialization of the navigation observer that stores web content every time
+// the OnDidFinishNavigation is called.
+class WebContentCapturingObserver : public content::TestNavigationObserver {
+ public:
+  explicit WebContentCapturingObserver(const GURL& url)
+      : content::TestNavigationObserver(url) {}
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+  void OnDidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    web_contents_ = navigation_handle->GetWebContents();
+    content::TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
+  }
+
+ private:
+  content::WebContents* web_contents_;
+};
 
 // During test, the test extensions can send a list of entries (directories
 // or files) to add to a target volume using an AddEntriesMessage command.
@@ -585,6 +608,18 @@ class TestVolume {
 
   DISALLOW_COPY_AND_ASSIGN(TestVolume);
 };
+
+const std::string GetSourceFileContent(const std::string& file_name) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath source_dir;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
+  base::FilePath path =
+      source_dir.Append(base::FilePath::FromUTF8Unsafe(file_name));
+  std::string contents;
+  CHECK(base::ReadFileToString(path, &contents))
+      << "failed reading test data file " << file_name;
+  return contents;
+}
 
 base::Lock& GetLockForBlockingDefaultFileTaskRunner() {
   static base::NoDestructor<base::Lock> lock;
@@ -1887,8 +1922,6 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
   // Enable System Web Apps if needed.
   if (options.media_swa || options.files_swa) {
-    files_app_swa_id_ =
-        web_app::GenerateAppIdFromURL(GURL("chrome://file-manager"));
     auto& system_web_app_manager =
         web_app::WebAppProvider::Get(profile())->system_web_app_manager();
     system_web_app_manager.InstallSystemAppsForTesting();
@@ -2008,6 +2041,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
+  if (name == "isFilesAppSwa") {
+    // Return whether or not the test is run in Files SWA mode.
+    *output = options.files_swa ? "true" : "false";
+    return;
+  }
+
   if (name == "isInGuestMode") {
     // Obtain if the test runs in guest or incognito mode.
     LOG(INFO) << GetTestCaseName() << " is in " << options.guest_mode
@@ -2032,22 +2071,70 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "launchFileManagerSwa") {
-    apps::AppLaunchParams params(
-        files_app_swa_id_, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::mojom::AppLaunchSource::kSourceTest);
+    std::string launchDir;
+    std::string search;
+    if (value.GetString("launchDir", &launchDir)) {
+      base::DictionaryValue arg_value;
+      arg_value.SetString("currentDirectoryURL", launchDir);
+      std::string json_args;
+      base::JSONWriter::Write(arg_value, &json_args);
+      search = base::StrCat(
+          {"?", net::EscapeUrlEncodedData(json_args, /*use_plus=*/false)});
+    }
 
-    content::WebContents* web_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile())
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params));
-    CHECK(web_contents);
+    std::string baseURL = ash::file_manager::kChromeUIFileManagerURL;
+    GURL fileAppURL(base::StrCat({baseURL, search}));
+    web_app::SystemAppLaunchParams params;
+    params.url = fileAppURL;
+    params.launch_source = apps::mojom::LaunchSource::kFromTest;
 
-    content::WaitForLoadStop(web_contents);
-    LOG(INFO) << name << " url " << web_contents->GetLastCommittedURL();
-    files_app_web_contents_ = web_contents;
+    WebContentCapturingObserver observer(fileAppURL);
+    observer.StartWatchingNewWebContents();
+    web_app::LaunchSystemWebAppAsync(
+        profile(), web_app::SystemAppType::FILE_MANAGER, params);
+    observer.Wait();
+    ASSERT_TRUE(observer.last_navigation_succeeded());
+    CHECK(observer.web_contents());
+
+    // Load runtime and static test_utils.js. In Files.app test_utils.js is
+    // always loaded, while runtime_loaded_test_util.js is loaded on the first
+    // chrome.runtime.sendMessage is sent by the test extension. However, since
+    // we use callSwaTestMessageListener, rather than c.r.sendMessage to
+    // communicate with Files SWA, we need to explicitly load those files.
+    CHECK(content::ExecuteScript(
+        observer.web_contents(),
+        GetSourceFileContent(
+            "ui/file_manager/file_manager/background/js/test_util_swa.js")));
+    CHECK(content::ExecuteScript(
+        observer.web_contents(),
+        GetSourceFileContent("ui/file_manager/file_manager/background/js/"
+                             "runtime_loaded_test_util.js")));
+    CHECK(content::ExecuteScript(
+        observer.web_contents(),
+        GetSourceFileContent(
+            "ui/file_manager/file_manager/background/js/test_util.js")));
+    files_app_swa_id_ = base::StrCat({baseURL, launchDir});
+    files_app_web_contents_ = observer.web_contents();
 
     *output = files_app_swa_id_;
+    return;
+  }
+
+  if (name == "callSwaTestMessageListener") {
+    // Handles equivallent of remoteCall.callRemoteTestUtil for Files.app. By
+    // default Files SWA does not allow extenrnal callers to connect to it and
+    // send it messages via chrome.runtime.sendMessage. Rather than allowing
+    // this, which would potentially create a security vulnerability, we
+    // short-circuit sending messages by directly invoking dedicated function in
+    // Files SWA.
+    std::string data;
+    ASSERT_TRUE(value.GetString("data", &data));
+    // FIXME: determine WebContents based on |appId| from |value|. Currently we
+    // only launch one window so this works. Once muliple winows are enabled for
+    // SWAs, this code needs to map |appId| to specific SWA's WebContents.
+    CHECK(ExecuteScriptAndExtractString(
+        files_app_web_contents_,
+        base::StrCat({"test.swaTestMessageListener(", data, ")"}), output));
     return;
   }
 
