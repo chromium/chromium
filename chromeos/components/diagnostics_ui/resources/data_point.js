@@ -43,7 +43,17 @@ Polymer({
     warningState: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /**
+     * The alignment of the data point on the screen (vertical or horizontal).
+     *  @type {string}
+     */
+    orientation: {
+      type: String,
+      value: 'vertical',
+      reflectToAttribute: true,
+    },
   },
 
   /** @protected */

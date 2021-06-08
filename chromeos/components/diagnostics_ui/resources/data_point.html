@@ -1,8 +1,14 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  .data-point {
+  :host([orientation=vertical]) .data-point {
     display: flex;
     flex-direction: column;
     height: 40px;
+    justify-content: space-between;
+    margin: 12px 0;
+  }
+
+  :host([orientation=horizontal]) .data-point {
+    display: flex;
     justify-content: space-between;
     margin: 12px 0;
   }
