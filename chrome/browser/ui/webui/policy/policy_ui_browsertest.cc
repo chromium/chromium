@@ -385,6 +385,17 @@ void PolicyUITest::VerifyExportingPolicies(
   for (auto key_value : chrome_metadata_dict->DictItems())
     key_value.second = base::Value(key_value.second.type());
 
+  // Since policy management status can have variable information based on the
+  // test bot(e.g., AD joined bot can have updater domain information), it is
+  // difficult to test for exact values. Test instead that the same key,
+  // "status" exist and also that the type of it is a dictionary. The incoming
+  // |expected| value should already have a "status" key with an empty
+  // dictionary value.
+  base::Value* status =
+      actual_policies->FindKeyOfType("status", base::Value::Type::DICTIONARY);
+  EXPECT_NE(status, nullptr);
+  status->DictClear();
+
   // Check that this dictionary is the same as expected.
   EXPECT_EQ(expected, *actual_policies);
 }
