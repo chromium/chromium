@@ -382,22 +382,10 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     ink_overflow.Unite(decoration_rect);
   }
 
-  const WritingMode writing_mode = style.GetWritingMode();
-  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
-    LayoutUnit emphasis_mark_height =
-        LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
-    DCHECK_GE(emphasis_mark_height, LayoutUnit());
-    if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
-      ink_overflow.ShiftYEdgeTo(
-          std::min(ink_overflow.Y(), -emphasis_mark_height));
-    } else {
-      LayoutUnit logical_height =
-          IsHorizontalWritingMode(writing_mode) ? size.height : size.width;
-      ink_overflow.ShiftMaxYEdgeTo(
-          std::max(ink_overflow.MaxY(), logical_height + emphasis_mark_height));
-    }
-  }
+  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone)
+    ink_overflow = ComputeEmphasisMarkOverflow(style, size, ink_overflow);
 
+  const WritingMode writing_mode = style.GetWritingMode();
   if (ShadowList* text_shadow = style.TextShadow()) {
     LayoutRectOutsets text_shadow_logical_outsets =
         LineOrientationLayoutRectOutsets(
@@ -421,9 +409,35 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   return local_ink_overflow;
 }
 
+// static
+LayoutRect NGInkOverflow::ComputeEmphasisMarkOverflow(
+    const ComputedStyle& style,
+    const PhysicalSize& size,
+    const LayoutRect& ink_overflow_in) {
+  DCHECK(style.GetTextEmphasisMark() != TextEmphasisMark::kNone);
+
+  LayoutUnit emphasis_mark_height = LayoutUnit(
+      style.GetFont().EmphasisMarkHeight(style.TextEmphasisMarkString()));
+  DCHECK_GE(emphasis_mark_height, LayoutUnit());
+
+  LayoutRect ink_overflow = ink_overflow_in;
+  if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+    ink_overflow.ShiftYEdgeTo(
+        std::min(ink_overflow.Y(), -emphasis_mark_height));
+  } else {
+    LayoutUnit logical_height =
+        style.IsHorizontalWritingMode() ? size.height : size.width;
+    ink_overflow.ShiftMaxYEdgeTo(
+        std::max(ink_overflow.MaxY(), logical_height + emphasis_mark_height));
+  }
+  return ink_overflow;
+}
+
+// static
 LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const ComputedStyle& style,
     const LayoutRect& ink_overflow) {
+  DCHECK(!style.AppliedTextDecorations().IsEmpty());
   // TODO(https://crbug.com/1145160): Reduce code duplication between here and
   // TextPainterBase::PaintDecorations*.
 
