@@ -26,8 +26,6 @@ class BrowserServiceHostObserver;
 
 // Maintains the connection to the registered BrowserService. Currently
 // this is for supporting multiple Crosapi clients.
-// TODO(crbug.com/1172899): Make this actual Mojo service, and
-// let client call the registration API directly.
 class BrowserServiceHostAsh : public mojom::BrowserServiceHost {
  public:
   BrowserServiceHostAsh();
@@ -38,9 +36,6 @@ class BrowserServiceHostAsh : public mojom::BrowserServiceHost {
   void AddObserver(BrowserServiceHostObserver* observer);
   void RemoveObserver(BrowserServiceHostObserver* observer);
 
-  // Directly register Remote BrowserService.
-  void AddRemote(CrosapiId id, mojo::Remote<mojom::BrowserService> remote);
-
   void BindReceiver(CrosapiId id,
                     mojo::PendingReceiver<mojom::BrowserServiceHost> receiver);
 
@@ -49,6 +44,7 @@ class BrowserServiceHostAsh : public mojom::BrowserServiceHost {
       mojo::PendingRemote<mojom::BrowserService> remote) override;
 
  private:
+  void AddRemote(CrosapiId id, mojo::Remote<mojom::BrowserService> remote);
   void OnVersionReady(
       CrosapiId id,
       std::unique_ptr<mojo::Remote<mojom::BrowserService>> remote,

@@ -105,14 +105,6 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
     return;
   }
 
-  mojo::PlatformChannel legacy_channel;
-  CrosapiManager::Get()->SendLegacyInvitation(
-      legacy_channel.TakeLocalEndpoint(), base::BindOnce([]() {
-        // Called when the Mojo connection to lacros-chrome is disconnected.
-        // It may be "just a Mojo error" or "test is finished".
-        LOG(WARNING) << "Legacy Mojo to lacros-chrome is disconnected.";
-      }));
-
   mojo::PlatformChannel channel;
   CrosapiManager::Get()->SendInvitation(
       channel.TakeLocalEndpoint(), base::BindOnce([]() {
@@ -128,13 +120,11 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   }
 
   std::vector<base::ScopedFD> fds;
-  fds.push_back(
-      legacy_channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
   fds.push_back(std::move(startup_fd));
   fds.push_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
 
   // Version of protocol Chrome is using.
-  uint8_t protocol_version = 0;
+  uint8_t protocol_version = 1;
   struct iovec iov[] = {{&protocol_version, sizeof(protocol_version)}};
   ssize_t result = mojo::SendmsgWithHandles(connection_fd.get(), iov,
                                             sizeof(iov) / sizeof(iov[0]), fds);

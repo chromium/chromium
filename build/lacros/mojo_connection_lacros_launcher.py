@@ -88,11 +88,18 @@ def _ReceiveFDs(sock):
           'CMSG_LEN is unexpected: %d' % (len(cmsg_data), ))
       fds.frombytes(cmsg_data[:])
 
-  assert version == b'\x00', 'Expecting version code to be 0'
-  assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
-  legacy_mojo_fd = os.fdopen(fds[0])
-  startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
-  mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
+  if version == b'\x00':
+    assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
+    legacy_mojo_fd = os.fdopen(fds[0])
+    startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
+    mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
+  elif version == b'\x01':
+    assert len(fds) == 2, 'Expecting exactly 2 FDs'
+    legacy_mojo_fd = None
+    startup_fd = os.fdopen(fds[0])
+    mojo_fd = os.fdopen(fds[1])
+  else:
+    raise AssertionError('Unknown version: \\x%s' % version.encode('hex'))
   return legacy_mojo_fd, startup_fd, mojo_fd
 
 
@@ -133,6 +140,10 @@ def Main():
       cmd.append('--mojo-platform-channel-handle=%d' %
                  legacy_mojo_connection.fileno())
       pass_fds.append(legacy_mojo_connection.fileno())
+    else:
+      # TODO(crbug.com/1188020): This is for backward compatibility.
+      # We should remove this after M93 lacros is spread enough.
+      cmd.append('--mojo-platform-channel-handle=-1')
     if startup_connection:
       cmd.append('--cros-startup-data-fd=%d' % startup_connection.fileno())
       pass_fds.append(startup_connection.fileno())

@@ -591,14 +591,6 @@ void BrowserManager::StartWithLogFile(
                << command_line.GetCommandLineString();
 
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
-  mojo::PlatformChannel legacy_channel;
-  legacy_channel.PrepareToPassRemoteEndpoint(&options, &command_line);
-  DCHECK(!legacy_crosapi_id_.has_value());
-  legacy_crosapi_id_ = CrosapiManager::Get()->SendLegacyInvitation(
-      legacy_channel.TakeLocalEndpoint(), base::BindOnce([]() {
-        LOG(WARNING) << "Legacy Crosapi Channel disconnected";
-      }));
-
   mojo::PlatformChannel channel;
   std::string channel_flag_value;
   channel.PrepareToPassRemoteEndpoint(&options.fds_to_remap,
@@ -608,16 +600,14 @@ void BrowserManager::StartWithLogFile(
                                  channel_flag_value);
   DCHECK(!crosapi_id_.has_value());
   // Use new Crosapi mojo connection to detect process termination always.
-  // If lacros-chrome is old, the channel will be left and unused,
-  // but on process termination, the socket will be closed, so the
-  // disconnect_handler should be called. Note that, in that case, we should
-  // carefully NOT send any messages via new Crosapi intefaces and its sub
-  // interfaces, but instead, we should use the ones initiated by
-  // SendLegacyInvitation just above.
   crosapi_id_ = CrosapiManager::Get()->SendInvitation(
       channel.TakeLocalEndpoint(),
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()));
+
+  // Append a fake switch for backward compatibility.
+  // TODO(crbug.com/1188020): Remove this after M93 Lacros is spread enough.
+  command_line.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch, "-1");
 
   // Create the lacros-chrome subprocess.
   base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
@@ -632,7 +622,6 @@ void BrowserManager::StartWithLogFile(
   }
   SetState(State::STARTING);
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
-  legacy_channel.RemoteProcessLaunchAttempted();
   channel.RemoteProcessLaunchAttempted();
 }
 
