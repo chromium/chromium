@@ -66,7 +66,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kRendererProcessCrashed = 13,
     kRendererProcessKilled = 14,
     kDownload = 15,
-    kMaxValue = kDownload
+    kTriggerDestroyed = 16,
+    kMaxValue = kTriggerDestroyed
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

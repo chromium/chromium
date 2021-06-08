@@ -23,7 +23,6 @@ namespace content {
 
 class RenderFrameHostImpl;
 
-// Prerender2:
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created and
 // owned by WebContentsImpl.
@@ -31,13 +30,13 @@ class RenderFrameHostImpl;
 // The APIs of this class are categorized into two: APIs for triggers and APIs
 // for activators.
 //
-// - Triggers (e.g., PrerenderProcessor) can request to create a new prerender
-//   host by CreateAndStartHost() and cancel it by AbandonHost().
-//   Triggers cannot cancel the host after it's reserved by an activator.
+// - Triggers (e.g., PrerenderProcessor) start prerendering by
+//   CreateAndStartHost() and notify the registry of destruction of the trigger
+//   by OnTriggerDestroyed().
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
-//   activation start by ReserveHostToActivate() and activate it by
-//   ActivateReservedHost(). They can abandon the host by
-//   AbandonReservedHost().
+//   activation start by ReserveHostToActivate(), activate it by
+//   ActivateReservedHost(), and notify the registry of completion of the
+//   activation by OnActivationFinished().
 class CONTENT_EXPORT PrerenderHostRegistry {
  public:
   using PassKey = base::PassKey<PrerenderHostRegistry>;
@@ -70,21 +69,12 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
                          RenderFrameHostImpl& initiator_render_frame_host);
 
-  // Destroys the host registered for `frame_tree_node_id`. The host is
-  // immediately removed from the map of reservable hosts but asynchronously
-  // destroyed so that prerendered pages can cancel themselves without concern
-  // for self destruction.
-  //
-  // TODO(https://crbug.com/1169594): Distinguish two paths that cancel
-  // prerendering. A prerender can be canceled due to the following reasons:
-  // 1. Initiator was no longer interested. Since one prerender may have several
-  // initiators, PrerenderHostRegistry should not destroy a PrerenderHost
-  // instance if one of the initiators is still alive.
-  // 2. Prerendering page did something undesirable. The same behavior always
-  // happens regardless of which caller calls it. So PrerenderHostRegistry
-  // should destroy the PrerenderHost.
-  void AbandonHost(int frame_tree_node_id,
-                   PrerenderHost::FinalStatus final_status);
+  // Cancels the host registered for `frame_tree_node_id`. The host is
+  // immediately removed from the map of non-reserved or reserved hosts but
+  // asynchronously destroyed so that prerendered pages can cancel themselves
+  // without concern for self destruction.
+  void CancelHost(int frame_tree_node_id,
+                  PrerenderHost::FinalStatus final_status);
 
   // For activators.
   // Reserves the host to activate for a navigation for the given
@@ -92,8 +82,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // page, which can be used as the id of the host. Returns
   // RenderFrameHost::kNoFrameTreeNodeId if it's not found or not ready for
   // activation yet. The caller is responsible for calling
-  // ActivateReservedHost() or AbandonReservedHost() with the id to release the
-  // reserved host.
+  // OnActivationFinished() with the id to release the reserved host.
   int ReserveHostToActivate(NavigationRequest& navigation_request);
 
   // For activators.
@@ -107,9 +96,16 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   RenderFrameHostImpl* GetRenderFrameHostForReservedHost(
       int frame_tree_node_id);
 
+  // For triggers.
+  // Called from the triggers (e.g., PrerenderProcessor) when they are
+  // destroyed. `frame_tree_node_id` should be the id returned by
+  // CreateAndStartHost().
+  void OnTriggerDestroyed(int frame_tree_node_id);
+
   // For activators.
-  // Abandons the host reserved by ReserveHostToActivate().
-  void AbandonReservedHost(int frame_tree_node_id);
+  // Called from the destructor of NavigationRequest that reserved the host.
+  // `frame_tree_node_id` should be the id returned by ReserveHostToActivate().
+  void OnActivationFinished(int frame_tree_node_id);
 
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.
@@ -128,6 +124,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
  private:
+  void ScheduleToDeleteAbandonedHost(
+      std::unique_ptr<PrerenderHost> prerender_host,
+      PrerenderHost::FinalStatus final_status);
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);

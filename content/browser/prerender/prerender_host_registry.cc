@@ -8,8 +8,8 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -85,35 +85,38 @@ int PrerenderHostRegistry::CreateAndStartHost(
            ->StartPrerendering()) {
     // TODO(nhiroki): Pass a more suitable cancellation reason like
     // kStartFailed.
-    AbandonHost(frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
+    CancelHost(frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
   return frame_tree_node_id;
 }
 
-void PrerenderHostRegistry::AbandonHost(
+void PrerenderHostRegistry::CancelHost(
     int frame_tree_node_id,
     PrerenderHost::FinalStatus final_status) {
-  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHost",
+  TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHost",
                "frame_tree_node_id", frame_tree_node_id);
 
+  // Look up the id in the non-reserved host map and remove it from the map if
+  // it's found.
   auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (found == prerender_host_by_frame_tree_node_id_.end())
-    return;
+  if (found != prerender_host_by_frame_tree_node_id_.end()) {
+    DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
+                           frame_tree_node_id));
 
-  // Remove the prerender host from the host maps so that it's not used for
-  // activation during asynchronous deletion.
-  std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
-  prerender_host_by_frame_tree_node_id_.erase(found);
+    // Remove the prerender host from the host maps so that it's not used for
+    // activation during asynchronous deletion.
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
+    prerender_host_by_frame_tree_node_id_.erase(found);
 
-  prerender_host->RecordFinalStatus(PassKey(), final_status);
+    // Asynchronously delete the prerender host.
+    ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+  }
 
-  // Asynchronously delete the prerender host.
-  to_be_deleted_hosts_.push_back(std::move(prerender_host));
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&PrerenderHostRegistry::DeleteAbandonedHosts,
-                                weak_factory_.GetWeakPtr()));
+  // TODO(https://crbug.com/1195751): Look up the id in the reserved host map
+  // and remove it from the map if it's found. In addition to that, fallback
+  // ongoing activation to regular network navigation.
 }
 
 int PrerenderHostRegistry::ReserveHostToActivate(
@@ -196,8 +199,36 @@ PrerenderHostRegistry::ActivateReservedHost(
   return prerender_host->Activate(navigation_request);
 }
 
-void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {
-  // AbandonReservedHost() should not be called for non-reserved hosts.
+void PrerenderHostRegistry::OnTriggerDestroyed(int frame_tree_node_id) {
+  // TODO(https://crbug.com/1169594): Since one prerender may have several
+  // triggers, PrerenderHostRegistry should not destroy a PrerenderHost instance
+  // if one of the triggers is still alive.
+
+  // Look up the id in the non-reserved host map and remove it from the map if
+  // it's found.
+  auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (found != prerender_host_by_frame_tree_node_id_.end()) {
+    DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
+                           frame_tree_node_id));
+
+    // Remove the prerender host from the host maps so that it's not used for
+    // activation during asynchronous deletion.
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
+    prerender_host_by_frame_tree_node_id_.erase(found);
+
+    // Asynchronously delete the prerender host.
+    ScheduleToDeleteAbandonedHost(
+        std::move(prerender_host),
+        PrerenderHost::FinalStatus::kTriggerDestroyed);
+  }
+
+  // Don't remove the host from the reserved host map. Unlike use of the
+  // disallowed features in prerendered pages, the destruction of the trigger
+  // doesn't spoil prerendering, so let it keep ongoing.
+}
+
+void PrerenderHostRegistry::OnActivationFinished(int frame_tree_node_id) {
+  // OnActivationFinished() should not be called for non-reserved hosts.
   DCHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
                          frame_tree_node_id));
   reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
@@ -239,6 +270,18 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
       return iter.second.get();
   }
   return nullptr;
+}
+
+void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
+    std::unique_ptr<PrerenderHost> prerender_host,
+    PrerenderHost::FinalStatus final_status) {
+  prerender_host->RecordFinalStatus(PassKey(), final_status);
+
+  // Asynchronously delete the prerender host.
+  to_be_deleted_hosts_.push_back(std::move(prerender_host));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PrerenderHostRegistry::DeleteAbandonedHosts,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void PrerenderHostRegistry::DeleteAbandonedHosts() {

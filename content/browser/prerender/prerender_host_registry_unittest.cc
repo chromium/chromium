@@ -95,7 +95,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             prerender_frame_tree_node_id);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-  registry->AbandonReservedHost(prerender_frame_tree_node_id);
+  registry->OnActivationFinished(prerender_frame_tree_node_id);
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
@@ -135,7 +135,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             frame_tree_node_id1);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-  registry->AbandonReservedHost(frame_tree_node_id1);
+  registry->OnActivationFinished(frame_tree_node_id1);
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
@@ -190,8 +190,8 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
             frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  registry->AbandonReservedHost(frame_tree_node_id1);
-  registry->AbandonReservedHost(frame_tree_node_id2);
+  registry->OnActivationFinished(frame_tree_node_id1);
+  registry->OnActivationFinished(frame_tree_node_id2);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -233,7 +233,7 @@ TEST_F(PrerenderHostRegistryTest,
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
-TEST_F(PrerenderHostRegistryTest, AbandonHost) {
+TEST_F(PrerenderHostRegistryTest, CancelHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
@@ -248,8 +248,8 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
       registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  registry->AbandonHost(prerender_frame_tree_node_id,
-                        PrerenderHost::FinalStatus::kDestroyed);
+  registry->CancelHost(prerender_frame_tree_node_id,
+                       PrerenderHost::FinalStatus::kDestroyed);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

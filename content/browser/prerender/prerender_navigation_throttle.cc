@@ -96,7 +96,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // and cancel prerendering. Same document navigation is exceptionally
     // allowed but we do nothing here as throttles don't run against the same
     // document navigation. It should just work.
-    prerender_host_registry->AbandonHost(
+    prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         PrerenderHost::FinalStatus::kMainFrameNavigation);
     return CANCEL;
@@ -106,7 +106,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
-    prerender_host_registry->AbandonHost(
+    prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
                        : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
@@ -118,7 +118,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // prerendered page.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
   if (prerendering_origin != prerender_host->initiator_origin()) {
-    prerender_host_registry->AbandonHost(
+    prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
                        : PrerenderHost::FinalStatus::kCrossOriginNavigation);
@@ -142,8 +142,8 @@ PrerenderNavigationThrottle::WillProcessResponse() {
             ->delegate()
             ->GetPrerenderHostRegistry();
 
-    prerender_host_registry->AbandonHost(frame_tree_node->frame_tree_node_id(),
-                                         PrerenderHost::FinalStatus::kDownload);
+    prerender_host_registry->CancelHost(frame_tree_node->frame_tree_node_id(),
+                                        PrerenderHost::FinalStatus::kDownload);
     return CANCEL;
   }
   return PROCEED;

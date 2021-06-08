@@ -1456,7 +1456,7 @@ NavigationRequest::~NavigationRequest() {
 
     // Abandon the prerender host reserved for activation if it exists.
     if (IsPrerenderedPageActivation()) {
-      GetPrerenderHostRegistry().AbandonReservedHost(
+      GetPrerenderHostRegistry().OnActivationFinished(
           prerender_frame_tree_node_id_.value());
     }
 
@@ -3045,7 +3045,7 @@ void NavigationRequest::OnRequestFailedInternal(
     if (net_error_ == net::Error::ERR_BLOCKED_BY_CSP) {
       final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
     }
-    GetPrerenderHostRegistry().AbandonHost(GetFrameTreeNodeId(), final_status);
+    GetPrerenderHostRegistry().CancelHost(GetFrameTreeNodeId(), final_status);
     return;
   }
 

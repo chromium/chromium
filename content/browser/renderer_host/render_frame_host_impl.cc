@@ -8541,7 +8541,7 @@ void RenderFrameHostImpl::CancelPrerendering(
   // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
   // method when MojoInterface control, or IsInactiveAndDisallowActivation are
   // called.
-  delegate_->GetPrerenderHostRegistry()->AbandonHost(
+  delegate_->GetPrerenderHostRegistry()->CancelHost(
       frame_tree()->root()->frame_tree_node_id(), status);
 }
 
