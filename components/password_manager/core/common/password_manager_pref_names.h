@@ -55,6 +55,10 @@ extern const char kWasPhishedCredentialsUploadedToSync[];
 // Boolean that indicated if user interacted with the Chrome Sign in promo.
 extern const char kWasSignInPasswordPromoClicked[];
 
+// Boolean that indicated whether one time removal of old google.com logins was
+// performed.
+extern const char kWereOldGoogleLoginsRemoved[];
+
 // Number of times the Chrome Sign in promo popped up.
 extern const char kNumberSignInPasswordPromoShown[];
 

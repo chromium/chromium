@@ -31,6 +31,9 @@ const char kWasPhishedCredentialsUploadedToSync[] =
 const char kWasSignInPasswordPromoClicked[] =
     "profile.was_sign_in_password_promo_clicked";
 
+const char kWereOldGoogleLoginsRemoved[] =
+    "profile.were_old_google_logins_removed";
+
 const char kNumberSignInPasswordPromoShown[] =
     "profile.number_sign_in_password_promo_shown";
 

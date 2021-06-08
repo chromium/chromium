@@ -53,6 +53,8 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kWasPhishedCredentialsUploadedToSync, false);
+    prefs_.registry()->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved,
+                                           false);
   }
 
   ~StoreMetricsReporterTest() override = default;

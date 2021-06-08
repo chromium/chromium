@@ -211,6 +211,10 @@ class PasswordStoreTest : public testing::Test {
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
                                     features::kSyncingCompromisedCredentials},
                                    {});
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -234,8 +238,11 @@ class PasswordStoreTest : public testing::Test {
             password_manager::IsAccountStore(false)));
   }
 
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
  private:
   base::ScopedTempDir temp_dir_;
+  TestingPrefServiceSimple pref_service_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::test::ScopedFeatureList feature_list_;
@@ -1295,15 +1302,12 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
 TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
-                                     PrefRegistry::NO_REGISTRATION_FLAGS);
+  pref_service()->registry()->RegisterListPref(
+      prefs::kPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
   // Set the pref to true to simulate a user in steady state who went through
   // the one time upload already.
-  prefs.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
-  ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
-  store->Init(&prefs);
+  ASSERT_FALSE(pref_service()->HasPrefPath(prefs::kSyncPasswordHash));
+  store->Init(pref_service());
 
   const std::u16string sync_password = u"password";
   const std::u16string input = u"123password";
@@ -1312,9 +1316,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
       /*is_primary_account=*/true,
       metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
   WaitForPasswordStore();
-  EXPECT_TRUE(prefs.HasPrefPath(prefs::kPasswordHashDataList));
-  absl::optional<PasswordHashData> sync_password_hash =
-      GetPasswordFromPref("sync_username", /*is_gaia_password=*/true, &prefs);
+  EXPECT_TRUE(pref_service()->HasPrefPath(prefs::kPasswordHashDataList));
+  absl::optional<PasswordHashData> sync_password_hash = GetPasswordFromPref(
+      "sync_username", /*is_gaia_password=*/true, pref_service());
   ASSERT_TRUE(sync_password_hash.has_value());
 
   // Check that sync password reuse is found.
@@ -1332,7 +1336,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   absl::optional<PasswordHashData> gaia_password_hash = GetPasswordFromPref(
-      "other_gaia_username", /*is_gaia_password=*/true, &prefs);
+      "other_gaia_username", /*is_gaia_password=*/true, pref_service());
   ASSERT_TRUE(gaia_password_hash.has_value());
 
   // Check that Gaia password reuse is found.
@@ -1346,7 +1350,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // Check that no sync password reuse is found after clearing the password
   // hash.
   store->ClearGaiaPasswordHash("sync_username");
-  EXPECT_EQ(1u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(
+      1u,
+      pref_service()->GetList(prefs::kPasswordHashDataList)->GetList().size());
   EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, _, _, _, _)).Times(1);
   store->CheckReuse(input, "https://facebook.com", &mock_consumer);
   WaitForPasswordStore();
@@ -1355,7 +1361,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // Check that no Gaia password reuse is found after clearing all Gaia
   // password hash.
   store->ClearAllGaiaPasswordHash();
-  EXPECT_EQ(0u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(
+      0u,
+      pref_service()->GetList(prefs::kPasswordHashDataList)->GetList().size());
   EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
@@ -1366,7 +1374,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   store->SaveEnterprisePasswordHash("enterprise_username", enterprise_password);
   absl::optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
-                          &prefs);
+                          pref_service());
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that enterprise password reuse is found.
@@ -1380,7 +1388,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // Check that no enterprise password reuse is found after clearing the
   // password hash.
   store->ClearAllEnterprisePasswordHash();
-  EXPECT_EQ(0u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(
+      0u,
+      pref_service()->GetList(prefs::kPasswordHashDataList)->GetList().size());
   EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
@@ -1392,9 +1402,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   WaitForPasswordStore();
-  EXPECT_TRUE(prefs.HasPrefPath(prefs::kPasswordHashDataList));
+  EXPECT_TRUE(pref_service()->HasPrefPath(prefs::kPasswordHashDataList));
   absl::optional<PasswordHashData> gmail_password_hash = GetPasswordFromPref(
-      "username@gmail.com", /*is_gaia_password=*/true, &prefs);
+      "username@gmail.com", /*is_gaia_password=*/true, pref_service());
   ASSERT_TRUE(gmail_password_hash.has_value());
 
   // Check that gmail password reuse is found.
@@ -1413,14 +1423,18 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   absl::optional<PasswordHashData> non_sync_gaia_password_hash =
       GetPasswordFromPref("non_sync_gaia_password@gsuite.com",
-                          /*is_gaia_password=*/true, &prefs);
+                          /*is_gaia_password=*/true, pref_service());
   ASSERT_TRUE(non_sync_gaia_password_hash.has_value());
-  EXPECT_EQ(2u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(
+      2u,
+      pref_service()->GetList(prefs::kPasswordHashDataList)->GetList().size());
 
   // Check that no non-gmail password reuse is found after clearing the
   // password hash.
   store->ClearAllNonGmailPasswordHash();
-  EXPECT_EQ(1u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(
+      1u,
+      pref_service()->GetList(prefs::kPasswordHashDataList)->GetList().size());
   EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(non_sync_gaia_password, "https://example.com",
                     &mock_consumer);
@@ -1457,15 +1471,10 @@ TEST_F(PasswordStoreTest, SubscriptionAndUnsubscriptionFromSignInEvents) {
 TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
-                                     PrefRegistry::NO_REGISTRATION_FLAGS);
-  // Set the pref to true to simulate a user in steady state who went through
-  // the one time upload already.
-  prefs.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
-  ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
-  store->Init(&prefs);
+  pref_service()->registry()->RegisterListPref(
+      prefs::kPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
+  ASSERT_FALSE(pref_service()->HasPrefPath(prefs::kSyncPasswordHash));
+  store->Init(pref_service());
 
   // Hash does not exist yet.
   base::HistogramTester histogram_tester;
@@ -1495,15 +1504,10 @@ TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
 TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
-                                     PrefRegistry::NO_REGISTRATION_FLAGS);
-  // Set the pref to true to simulate a user in steady state who went through
-  // the one time upload already.
-  prefs.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
-  ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
-  store->Init(&prefs);
+  pref_service()->registry()->RegisterListPref(
+      prefs::kPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
+  ASSERT_FALSE(pref_service()->HasPrefPath(prefs::kSyncPasswordHash));
+  store->Init(pref_service());
 
   // Hash does not exist yet.
   base::HistogramTester histogram_tester;
@@ -1906,10 +1910,7 @@ TEST_F(PasswordStoreTest, TestSyncMetaDataDroppedToSyncPhishedCredentials) {
       CreatePasswordStoreWithMockedMetaData();
   EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
       .Times(1);
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
-  store->Init(&pref_service);
+  store->Init(pref_service());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1935,10 +1936,7 @@ TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenNoPhishedCredentials) {
       CreatePasswordStoreWithMockedMetaData();
   EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
       .Times(0);
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
-  store->Init(&pref_service);
+  store->Init(pref_service());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1962,11 +1960,8 @@ TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenAlreadyUploaded) {
       CreatePasswordStoreWithMockedMetaData();
   EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
       .Times(0);
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterBooleanPref(
-      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
-  pref_service.SetBoolean(prefs::kWasPhishedCredentialsUploadedToSync, true);
-  store->Init(&pref_service);
+  pref_service()->SetBoolean(prefs::kWasPhishedCredentialsUploadedToSync, true);
+  store->Init(pref_service());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -2017,6 +2012,94 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnPasswordUpdate) {
 
   test_form->password_value = u"new_password_2";
   store->UpdateLogin(*test_form);
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
+// Tests that all old google.com accounts are deleted.
+TEST_F(PasswordStoreTest, TestOldGooglePasswordsAreDeleted) {
+  {
+    auto db = std::make_unique<LoginDatabase>(
+        test_login_db_file_path(), password_manager::IsAccountStore(false));
+    db->Init();
+
+    std::vector<std::string> google_realms = {
+        "http://www.google.com",
+        "http://www.google.com/",
+        "https://www.google.com",
+        "https://www.google.com/",
+    };
+
+    for (const auto& realm : google_realms) {
+      const PasswordForm form = MakePasswordForm(realm);
+      ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
+    }
+    std::vector<std::unique_ptr<PasswordForm>> forms;
+    ASSERT_TRUE(db->GetAutofillableLogins(&forms));
+    ASSERT_EQ(google_realms.size(), forms.size());
+  }
+  // The LoginDatabase gets destroyed here, later it will be initialized with
+  // data.
+  WaitForPasswordStore();
+
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(pref_service());
+  WaitForPasswordStore();
+
+  // Verify that all the passwords were deleted.
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(IsEmpty()));
+  store->GetAllLogins(&mock_consumer);
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kWereOldGoogleLoginsRemoved));
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
+// Tests that only old google.com accounts are deleted.
+TEST_F(PasswordStoreTest, TestNewerGooglePasswordsAreNotDeleted) {
+  PasswordForm old_form = MakePasswordForm("http://www.google.com");
+  old_form.in_store = PasswordForm::Store::kProfileStore;
+  // Form created after cutoff.
+  PasswordForm new_form = MakePasswordForm("https://www.google.com");
+  new_form.in_store = PasswordForm::Store::kProfileStore;
+  const base::Time::Exploded time = {2012, 1, 0, 1,
+                                     0,    0, 0, 1};  // 00:01 Jan 1 2012
+  ASSERT_TRUE(base::Time::FromUTCExploded(time, &new_form.date_created));
+
+  PasswordForm different_form = MakePasswordForm(kTestWebRealm1);
+  different_form.in_store = PasswordForm::Store::kProfileStore;
+
+  {
+    auto db = std::make_unique<LoginDatabase>(
+        test_login_db_file_path(), password_manager::IsAccountStore(false));
+    db->Init();
+
+    ASSERT_EQ(AddChangeForForm(old_form), db->AddLogin(old_form, nullptr));
+    ASSERT_EQ(AddChangeForForm(new_form), db->AddLogin(new_form, nullptr));
+    ASSERT_EQ(AddChangeForForm(different_form),
+              db->AddLogin(different_form, nullptr));
+  }
+  // The LoginDatabase gets destroyed here, later it will be initialized with
+  // data.
+  WaitForPasswordStore();
+
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(pref_service());
+  WaitForPasswordStore();
+
+  // Verify that only old www.google passwords were deleted.
+  MockPasswordStoreConsumer mock_consumer;
+
+  std::vector<std::unique_ptr<PasswordForm>> expected;
+  expected.push_back(std::make_unique<PasswordForm>(new_form));
+  expected.push_back(std::make_unique<PasswordForm>(different_form));
+
+  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(
+                                 UnorderedPasswordFormElementsAre(&expected)));
+  store->GetAllLogins(&mock_consumer);
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kWereOldGoogleLoginsRemoved));
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();

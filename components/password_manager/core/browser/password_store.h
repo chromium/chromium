@@ -821,6 +821,16 @@ class PasswordStore : protected PasswordStoreSync,
   // WARNING: this method can be skipped on shutdown.
   void DestroyOnBackgroundSequence();
 
+  // Deletes all stored www.google.com passwords created before before 2012.
+  // TODO(crbug.com/450621): Remove this when enough number of clients switch
+  // to the new version of Chrome.
+  bool RemoveOldGoogleLogins();
+
+  // Changes pref value on successful removal of old www.google.com passwords.
+  // TODO(crbug.com/450621): Remove this when enough number of clients switch
+  // to the new version of Chrome.
+  void MarkOldGoogleLoginsRemoved(bool success);
+
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
