@@ -26,6 +26,9 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogUninstallProfileResult(HermesResponseStatus status);
 
+void COMPONENT_EXPORT(CHROMEOS_NETWORK)
+    LogRequestPendingProfilesResult(HermesResponseStatus status);
+
 }  // namespace hermes_metrics
 }  // namespace chromeos
 

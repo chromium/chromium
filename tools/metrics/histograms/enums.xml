@@ -56066,11 +56066,23 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Disconnected"/>
 </enum>
 
+<enum name="NetworkCellularESimInstallViaQrCodeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes install failed"/>
+</enum>
+
 <enum name="NetworkCellularESimProfileStatus">
   <int value="0" label="Active"/>
   <int value="1" label="ActiveWithPendingProfiles"/>
   <int value="2" label="PendingProfilesOnly"/>
   <int value="3" label="NoProfiles"/>
+</enum>
+
+<enum name="NetworkCellularESimRequestPendingProfilesResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes request failed"/>
 </enum>
 
 <enum name="NetworkCellularESimUninstallOperationResult">

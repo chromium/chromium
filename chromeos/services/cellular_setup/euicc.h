@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_CELLULAR_SETUP_EUICC_H_
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_EUICC_H_
 
+#include "base/gtest_prod_util.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -61,6 +62,31 @@ class Euicc : public mojom::Euicc {
   const mojom::EuiccPropertiesPtr& properties() { return properties_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest, InstallProfileFromActivationCode);
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest, RequestPendingProfiles);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InstallProfileViaQrCodeResult {
+    kSuccess = 0,
+    kInhibitFailed = 1,
+    kHermesInstallFailed = 2,
+    kMaxValue = kHermesInstallFailed
+  };
+  static void RecordInstallProfileViaQrCodeResult(
+      InstallProfileViaQrCodeResult result);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RequestPendingProfilesResult {
+    kSuccess = 0,
+    kInhibitFailed = 1,
+    kHermesRequestFailed = 2,
+    kMaxValue = kHermesRequestFailed
+  };
+  static void RecordRequestPendingProfilesResult(
+      RequestPendingProfilesResult result);
+
   // Type of callback for profile installation methods.
   using ProfileInstallResultCallback =
       base::OnceCallback<void(mojom::ProfileInstallResult)>;

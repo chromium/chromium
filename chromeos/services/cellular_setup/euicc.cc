@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -74,6 +75,20 @@ Euicc::RequestPendingProfilesCallback CreateTimedRequestPendingProfilesCallback(
       std::move(callback), base::Time::Now());
 }
 }  // namespace
+
+// static
+void Euicc::RecordInstallProfileViaQrCodeResult(
+    InstallProfileViaQrCodeResult result) {
+  base::UmaHistogramEnumeration(
+      "Network.Cellular.ESim.InstallViaQrCode.OperationResult", result);
+}
+
+// static
+void Euicc::RecordRequestPendingProfilesResult(
+    RequestPendingProfilesResult result) {
+  base::UmaHistogramEnumeration(
+      "Network.Cellular.ESim.RequestPendingProfiles.OperationResult", result);
+}
 
 Euicc::Euicc(const dbus::ObjectPath& path, ESimManager* esim_manager)
     : esim_manager_(esim_manager),
@@ -243,6 +258,8 @@ void Euicc::PerformInstallProfileFromActivationCode(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
+    RecordInstallProfileViaQrCodeResult(
+        InstallProfileViaQrCodeResult::kInhibitFailed);
     std::move(callback).Run(mojom::ProfileInstallResult::kFailure,
                             mojo::NullRemote());
     return;
@@ -265,10 +282,14 @@ void Euicc::OnProfileInstallResult(
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status="
                    << static_cast<int>(status);
+    RecordInstallProfileViaQrCodeResult(
+        InstallProfileViaQrCodeResult::kHermesInstallFailed);
     std::move(callback).Run(InstallResultFromStatus(status),
                             mojo::NullRemote());
     return;
   }
+
+  RecordInstallProfileViaQrCodeResult(InstallProfileViaQrCodeResult::kSuccess);
 
   install_calls_pending_connect_.emplace(*profile_path, std::move(callback));
   esim_manager_->cellular_connection_handler()
@@ -352,6 +373,8 @@ void Euicc::PerformRequestPendingProfiles(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error requesting installed profiles. Path: "
                    << path_.value();
+    RecordRequestPendingProfilesResult(
+        RequestPendingProfilesResult::kInhibitFailed);
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
   }
@@ -368,14 +391,25 @@ void Euicc::OnRequestPendingProfilesResult(
     RequestPendingProfilesCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
+  hermes_metrics::LogRequestPendingProfilesResult(status);
+
+  RequestPendingProfilesResult metrics_result;
+  mojom::ESimOperationResult operation_result;
+
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Request Pending events failed status="
                    << static_cast<int>(status);
+    metrics_result = RequestPendingProfilesResult::kHermesRequestFailed;
+    operation_result = mojom::ESimOperationResult::kFailure;
+  } else {
+    metrics_result = RequestPendingProfilesResult::kSuccess;
+    operation_result = mojom::ESimOperationResult::kSuccess;
   }
-  std::move(callback).Run(status == HermesResponseStatus::kSuccess
-                              ? mojom::ESimOperationResult::kSuccess
-                              : mojom::ESimOperationResult::kFailure);
-  // inhibit_lock goes out of scope and will uninhibit automatically.
+
+  RecordRequestPendingProfilesResult(metrics_result);
+  std::move(callback).Run(operation_result);
+
+  // |inhibit_lock| goes out of scope and will uninhibit automatically.
 }
 
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
