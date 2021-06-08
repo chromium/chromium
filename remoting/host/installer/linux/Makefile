@@ -16,6 +16,7 @@ SYSTEMD_UNIT_DIR = $(DESTDIR)/lib/systemd/system
 INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
+SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
 
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
@@ -40,6 +41,7 @@ install:
 	install -d "$(SYSTEMD_UNIT_DIR)"
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
+	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
@@ -91,8 +93,8 @@ install:
 	  "$(INSTALL_DIR)/remote-open-url"
 
 	install -m 0644 \
-	  "$(SRC_DIR)/remoting/host/linux/crd_url_forwarder.desktop" \
-	  "$(INSTALL_DIR)/crd-url-forwarder.desktop"
+	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \
+	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/crd-url-forwarder.desktop"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"

@@ -76,6 +76,7 @@ action("remoting_me2me_host_deb_installer") {
     "//remoting/host:remoting_start_host",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/linux:remoting_user_session",
+    "//remoting/host/linux:url_forwarder_desktop_entry",
     "//remoting/resources",
     "//third_party/icu:icudata",
   ]

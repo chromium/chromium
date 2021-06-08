@@ -31,41 +31,9 @@ HOST_SETTINGS_PATH = os.path.join(
     os.environ['HOME'],
     '.config/chrome-remote-desktop/host#{}.settings.json'.format(HOST_HASH))
 
-XDG_DATA_HOME = (os.environ['XDG_DATA_HOME']
-    if 'XDG_DATA_HOME' in os.environ
-    else os.path.join(os.environ['HOME'], '.local/share'))
-
-XDG_USER_APP_DIR = os.path.join(XDG_DATA_HOME, 'applications')
-
 X_SESSIONS_DIR = '/usr/share/xsessions/'
 
-SRC_URL_FORWARDER_DESKTOP_ENTRY_PATH = os.path.join(
-    SCRIPT_DIR, URL_FORWARDER_DESKTOP_ENTRY)
-
-DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH = os.path.join(
-    XDG_USER_APP_DIR, URL_FORWARDER_DESKTOP_ENTRY)
-
 XDG_SETTING_DEFAULT_WEB_BROWSER = 'default-web-browser'
-
-
-def install_url_forwarder_desktop_entry() -> None:
-  """Installs the URL forwarder desktop entry into the user's XDG app
-  directory."""
-
-  Path(XDG_USER_APP_DIR).mkdir(mode=0o755, parents=True, exist_ok=True)
-  shutil.copyfile(SRC_URL_FORWARDER_DESKTOP_ENTRY_PATH,
-                  DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH)
-
-
-def remove_url_forwarder_desktop_entry() -> None:
-  """Removes the URL forwarder desktop entry from the user's XDG app
-  directory."""
-
-  if not os.path.isfile(DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH):
-    print('File', DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH, 'doesn\'t exist.',
-          file=sys.stderr)
-    return
-  os.remove(DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH)
 
 
 def env_with_current_desktop(desktop_env: str) -> dict[str, str]:
@@ -176,10 +144,6 @@ def get_supported_desktop_envs_and_settings_key() -> dict[str, str]:
   return desktop_envs_and_settings_keys
 
 def setup_url_forwarder() -> None:
-  # TODO(yuweih): Remove. The desktop entry file will be installed during
-  # package installation.
-  install_url_forwarder_desktop_entry()
-
   settings = load_host_settings_file()
 
   desktop_envs_and_setting_keys = get_supported_desktop_envs_and_settings_key()
@@ -256,10 +220,6 @@ def restore_previous_settings() -> None:
   for desktop_env, setting_key in (
       get_supported_desktop_envs_and_settings_key().items()):
     restore_default_browser(desktop_env, settings, setting_key)
-
-  # TODO(yuweih): Remove. The desktop entry file will be removed during package
-  # removal.
-  remove_url_forwarder_desktop_entry()
 
 
 def check_default_browser_is_url_forwarder(desktop_env: str) -> None:

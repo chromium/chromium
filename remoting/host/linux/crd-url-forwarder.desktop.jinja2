@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 [Desktop Entry]
-Name=Chrome Remote Desktop URL Forwarder
+Name={{ gettext("URL_FORWARDER_NAME")|format(gettext("PRODUCT_NAME")) }}
 Exec=/opt/google/chrome-remote-desktop/remote-open-url %U
 Type=Application
 Terminal=false
-Comment=Helper application to open a URL on the Chrome Remote Desktop client
+Comment={{
+    gettext("URL_FORWARDER_DESCRIPTION")|format(gettext("PRODUCT_NAME")) }}
 MimeType=x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/mailto;
