@@ -55,7 +55,7 @@ class PredictionBasedPermissionUiSelector
       bool lookup_succesful,
       bool response_from_cache,
       std::unique_ptr<permissions::GeneratePredictionsResponse> response);
-  bool IsAllowedToUseAssistedPrompts();
+  bool IsAllowedToUseAssistedPrompts(permissions::RequestType request_type);
   static void FillInActionCounts(
       permissions::PredictionRequestFeatures::ActionCounts* counts,
       const std::vector<PermissionActionsHistory::Entry>& permission_actions);

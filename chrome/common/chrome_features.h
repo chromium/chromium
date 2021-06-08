@@ -499,6 +499,8 @@ extern const base::Feature kPermissionAuditing;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPermissionPredictions;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double> kPermissionPredictionsHoldbackChance;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)

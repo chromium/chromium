@@ -347,6 +347,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Permissions.PredictionService.Request" enum="BooleanSent"
+    expires_after="M96">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a request is eligible for Permissions predictions service.
+    Records whether the request was sent to the backend or if it was held back.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Prompt.Accepted" enum="PermissionRequestType"
     expires_after="2021-10-25">
   <owner>dominickn@chromium.org</owner>
