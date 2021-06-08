@@ -659,6 +659,10 @@ IN_PROC_BROWSER_TEST_F(
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
       1);
+  tester.ExpectBucketCount(
+      "Apps.AppListUsageByNewUsers",
+      static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
+      1);
 }
 
 // The duration between OOBE and the first launcher showing should not be
@@ -682,6 +686,10 @@ IN_PROC_BROWSER_TEST_F(
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
       0);
+  tester.ExpectBucketCount(
+      "Apps.AppListUsageByNewUsers",
+      static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
+      0);
 }
 
 // The duration between OOBE and the first launcher showing should not be
@@ -700,6 +708,10 @@ IN_PROC_BROWSER_TEST_F(
   ShowAppListAndVerify();
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
+      0);
+  tester.ExpectBucketCount(
+      "Apps.AppListUsageByNewUsers",
+      static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
       0);
 }
 
