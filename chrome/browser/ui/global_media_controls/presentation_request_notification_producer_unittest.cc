@@ -14,6 +14,8 @@
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,6 +133,17 @@ class PresentationRequestNotificationProducerTest
     notification_producer_->OnMediaRoutesChanged(routes);
   }
 
+  content::RenderFrameHost* CreateChildFrame() {
+    NavigateAndCommit(GURL("about:blank"));
+
+    content::RenderFrameHost* child_frame = main_rfh();
+    content::RenderFrameHostTester* rfh_tester =
+        content::RenderFrameHostTester::For(child_frame);
+    child_frame = rfh_tester->AppendChild("childframe");
+    content::MockNavigationHandle handle(GURL(), child_frame);
+    handle.set_has_committed(true);
+    return child_frame;
+  }
 
  protected:
   std::unique_ptr<MediaNotificationService> notification_service_;
@@ -187,5 +200,23 @@ TEST_F(PresentationRequestNotificationProducerTest,
   SimulateDialogOpenedAndWait(&delegate);
   EXPECT_TRUE(notification_producer_->GetNotificationItem());
   EXPECT_EQ(id, notification_producer_->GetNotificationItem()->id());
+  SimulateDialogClosedAndWait(&delegate);
+}
+
+TEST_F(PresentationRequestNotificationProducerTest, DeleteItem) {
+  content::RenderFrameHost* child_frame = CreateChildFrame();
+  MockMediaDialogDelegate delegate;
+  SimulateDialogOpenedAndWait(&delegate);
+  // Simulate a PresentationRequest from |child_frame|.
+  notification_producer_->OnStartPresentationContextCreated(
+      std::make_unique<media_router::StartPresentationContext>(
+          content::PresentationRequest(child_frame->GetGlobalFrameRoutingId(),
+                                       {GURL(), GURL()},
+                                       url::Origin::Create(GURL())),
+          base::DoNothing(), base::DoNothing()));
+
+  // Detach |child_frame|.
+  content::RenderFrameHostTester::For(child_frame)->Detach();
+
   SimulateDialogClosedAndWait(&delegate);
 }
