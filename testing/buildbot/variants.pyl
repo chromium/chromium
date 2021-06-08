@@ -127,6 +127,18 @@
       'ios_runtime_cache_14_5',
     ],
   },
+  'SIM_IPAD_AIR_2_15_0': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPad Air 2 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
   'SIM_IPAD_AIR_3RD_GEN_14_5': {
     'args': [
       '--platform',
@@ -213,6 +225,18 @@
       'ios_runtime_cache_14_5',
     ],
   },
+  'SIM_IPHONE_6S_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone 6s 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
   'SIM_IPHONE_6S_PLUS_13_6': {
     'args': [
       '--platform',
@@ -247,6 +271,18 @@
     'identifier': 'iPhone 6s Plus 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_6S_PLUS_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '15.0',
+    ],
+    'identifier': 'iPhone 6s Plus 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
     ],
   },
   'SIM_IPHONE_7_13_6': {
@@ -285,6 +321,18 @@
       'ios_runtime_cache_14_5',
     ],
   },
+  'SIM_IPHONE_7_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone 7 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
   'SIM_IPHONE_SE_1ST_GEN_13_6': {
     'args': [
       '--platform',
@@ -319,6 +367,18 @@
     'identifier': 'iPhone SE (1st generation) 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_SE_1ST_GEN_15_0': {
+    'args': [
+      '--platform',
+      'iPhone SE (1st generation)',
+      '--version',
+      '15.0',
+    ],
+    'identifier': 'iPhone SE (1st generation) 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
     ],
   },
   'SIM_IPHONE_X_12_4': {
@@ -379,6 +439,18 @@
     'identifier': 'iPhone X 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_X_15_0': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone X 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
     ],
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {

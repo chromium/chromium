@@ -1724,6 +1724,7 @@ try_.chromium_mac_ios_builder(
 
 try_.chromium_mac_ios_builder(
     name = "ios15-sdk-simulator",
+    xcode = xcode.x13latestbeta,
 )
 
 try_.chromium_updater_mac_builder(

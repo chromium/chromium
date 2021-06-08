@@ -2930,6 +2930,17 @@
         'additional_compile_targets': [
           'all',
         ],
+        'mixins': [
+          'enable_resultdb',
+          'mac_11_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_latest_beta',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios15_beta_simulator_tests'
+        },
       },
       'ios15-sdk-device': {
         'additional_compile_targets': [
@@ -2940,6 +2951,17 @@
         'additional_compile_targets': [
           'all',
         ],
+        'mixins': [
+          'enable_resultdb',
+          'mac_11_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_latest_beta',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios15_sdk_simulator_tests'
+        },
       },
       'lacros-amd64-generic-rel-fyi': {
         'additional_compile_targets': [

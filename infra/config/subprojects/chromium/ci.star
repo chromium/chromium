@@ -4126,6 +4126,7 @@ ci.fyi_ios_builder(
         short_name = "ios14",
     ),
     os = os.MAC_11,
+    schedule = "0 0,4,8,12,16,20 * * *",
 )
 
 ci.fyi_ios_builder(
@@ -4135,6 +4136,7 @@ ci.fyi_ios_builder(
         short_name = "sdk14",
     ),
     os = os.MAC_11,
+    schedule = "0 2,6,10,14,18,22 * * *",
     xcode = xcode.x12e262,
 )
 
@@ -4153,7 +4155,6 @@ ci.fyi_ios_builder(
         ),
     ],
     os = os.MAC_11,
-    schedule = "0 0,12 * * *",
     triggered_by = [],
 )
 
@@ -4172,6 +4173,7 @@ ci.fyi_ios_builder(
         ),
     ],
     os = os.MAC_11,
+    xcode = xcode.x13latestbeta,
 )
 
 ci.fyi_ios_builder(
@@ -4189,8 +4191,8 @@ ci.fyi_ios_builder(
         ),
     ],
     os = os.MAC_11,
-    schedule = "0 6,18 * * *",
     triggered_by = [],
+    xcode = xcode.x13latestbeta,
 )
 
 ci.fyi_mac_builder(
