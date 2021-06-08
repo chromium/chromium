@@ -1988,8 +1988,8 @@ const char kPointerLockOptionsDescription[] =
 
 const char kPrerender2Name[] = "Prerender2";
 const char kPrerender2Description[] =
-    "Enables the new prerenderer implementation for <link rel=prerender> "
-    "instead of NoStatePrefetch.";
+    "Enables the new prerenderer implementation for "
+    "<script type=speculationrules> that specifies prerender candidates.";
 
 const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =

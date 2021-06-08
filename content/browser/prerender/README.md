@@ -16,7 +16,7 @@ The Prerender2 is the new implementation of prerendering.
 # Terminology
 
 - **Trigger**: "Trigger" is an entry point to start prerendering. Currently,
-  `<link rel=prerender>` is the only trigger.
+  `<script type="speculationrules">` is the only trigger.
 - **Activate**: The Prerender2 runs navigation code twice: navigation for
   prerendering a page, and navigation for displaying the prerendered page.
   "Activate" indicates the latter navigation.
