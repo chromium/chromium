@@ -71,7 +71,6 @@ InputMethodChromeOS::PendingSetCompositionRange::~PendingSetCompositionRange() =
 
 ui::EventDispatchDetails InputMethodChromeOS::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  DCHECK(event->IsKeyEvent());
   DCHECK(!(event->flags() & ui::EF_IS_SYNTHESIZED));
 
   // For OS_CHROMEOS build of Chrome running on Linux, the IME keyboard cannot
