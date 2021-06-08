@@ -408,8 +408,6 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
 
     if save_outputs:
       input_srcjars_dir = os.path.join(options.generated_dir, 'input_srcjars')
-      annotation_processor_outputs_dir = os.path.join(
-          options.generated_dir, 'annotation_processor_outputs')
       # Delete any stale files in the generated directory. The purpose of
       # options.generated_dir is for codesearch.
       shutil.rmtree(options.generated_dir, True)
@@ -417,8 +415,6 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
                                            options.jar_info_exclude_globs)
     else:
       input_srcjars_dir = os.path.join(temp_dir, 'input_srcjars')
-      annotation_processor_outputs_dir = os.path.join(
-          temp_dir, 'annotation_processor_outputs')
 
     if options.java_srcjars:
       logging.info('Extracting srcjars to %s', input_srcjars_dir)
@@ -452,10 +448,6 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
       os.makedirs(classes_dir)
       cmd += ['-d', classes_dir]
 
-      if options.processors:
-        os.makedirs(annotation_processor_outputs_dir)
-        cmd += ['-s', annotation_processor_outputs_dir]
-
       if classpath:
         cmd += ['-classpath', ':'.join(classpath)]
 
@@ -480,12 +472,6 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
       logging.info('Java compilation took %ss', end)
 
     if save_outputs:
-      if options.processors:
-        annotation_processor_java_files = build_utils.FindInDirectory(
-            annotation_processor_outputs_dir)
-        if annotation_processor_java_files:
-          info_file_context.SubmitFiles(annotation_processor_java_files)
-
       _CreateJarFile(jar_path, service_provider_configuration,
                      options.additional_jar_files, classes_dir)
 
@@ -525,10 +511,6 @@ def _ParseOptions(argv):
       '--java-version',
       help='Java language version to use in -source and -target args to javac.')
   parser.add_option('--classpath', action='append', help='Classpath to use.')
-  parser.add_option(
-      '--processors',
-      action='append',
-      help='GN list of annotation processor main classes.')
   parser.add_option(
       '--processorpath',
       action='append',
@@ -588,7 +570,6 @@ def _ParseOptions(argv):
   options.bootclasspath = build_utils.ParseGnList(options.bootclasspath)
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.processorpath = build_utils.ParseGnList(options.processorpath)
-  options.processors = build_utils.ParseGnList(options.processors)
   options.java_srcjars = build_utils.ParseGnList(options.java_srcjars)
   options.jar_info_exclude_globs = build_utils.ParseGnList(
       options.jar_info_exclude_globs)
@@ -677,14 +658,11 @@ def main(argv):
     # Android's boot jar doesn't contain all java 8 classes.
     options.bootclasspath.append(build_utils.RT_JAR_PATH)
 
-  if options.processors:
-    javac_args.extend(['-processor', ','.join(options.processors)])
-  else:
-    # This effectively disables all annotation processors, even including
-    # annotation processors in service provider configuration files named
-    # META-INF/. See the following link for reference:
-    #     https://docs.oracle.com/en/java/javase/11/tools/javac.html
-    javac_args.extend(['-proc:none'])
+  # This effectively disables all annotation processors, even including
+  # annotation processors in service provider configuration files named
+  # META-INF/. See the following link for reference:
+  #     https://docs.oracle.com/en/java/javase/11/tools/javac.html
+  javac_args.extend(['-proc:none'])
 
   if options.bootclasspath:
     javac_args.extend(['-bootclasspath', ':'.join(options.bootclasspath)])

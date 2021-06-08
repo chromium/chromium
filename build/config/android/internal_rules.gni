@@ -3060,11 +3060,8 @@ if (enable_java_templates) {
     }
 
     # generated_jar_path is an output when use_turbine and an input otherwise.
-    if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
-      _annotation_processing = false
+    if (!invoker.use_turbine) {
       _java_srcjars += [ invoker.generated_jar_path ]
-    } else {
-      _annotation_processing = true
     }
 
     _javac_args = []
@@ -3134,7 +3131,7 @@ if (enable_java_templates) {
         args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)" ]
       }
 
-      if (_annotation_processing) {
+      if (invoker.use_turbine) {
         args += [
           "--processorpath=@FileArg($_rebased_build_config:javac:processor_classpath)",
           "--processors=@FileArg($_rebased_build_config:javac:processor_classes)",
