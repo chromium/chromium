@@ -633,6 +633,11 @@ base::Value SerializeChromeUserPopulation(
                            base::Value(population.is_incognito()));
   }
 
+  if (population.has_is_mbb_enabled()) {
+    population_dict.SetKey("is_mbb_enabled",
+                           base::Value(population.is_mbb_enabled()));
+  }
+
   if (population.has_user_agent()) {
     population_dict.SetKey("user_agent", base::Value(population.user_agent()));
   }
