@@ -326,12 +326,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
-  auto* const frame_view = GetBubbleFrameView();
-  frame_view->SetCornerRadius(
+  GetBubbleFrameView()->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(true);
-  SizeToContents();
 
   if (params.focus_on_create)
     widget->Show();
