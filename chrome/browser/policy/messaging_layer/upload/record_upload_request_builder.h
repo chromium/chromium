@@ -108,6 +108,7 @@ class EncryptedRecordDictionaryBuilder {
   static base::StringPiece GetUnsignedSequencingInformationKeyPath();
   static base::StringPiece GetSequencingInformationKeyPath();
   static base::StringPiece GetEncryptionInfoPath();
+  static base::StringPiece GetCompressionInformationPath();
 
  private:
   absl::optional<base::Value> result_;
@@ -142,6 +143,21 @@ class EncryptionInfoDictionaryBuilder {
 
   static base::StringPiece GetEncryptionKeyPath();
   static base::StringPiece GetPublicKeyIdPath();
+
+ private:
+  absl::optional<base::Value> result_;
+};
+
+// Builds a |base::Value| dictionary from a |CompressionInfo| proto.
+class CompressionInformationDictionaryBuilder {
+ public:
+  explicit CompressionInformationDictionaryBuilder(
+      const CompressionInformation& compression_info);
+  ~CompressionInformationDictionaryBuilder();
+
+  absl::optional<base::Value> Build();
+
+  static base::StringPiece GetCompressionAlgorithmPath();
 
  private:
   absl::optional<base::Value> result_;

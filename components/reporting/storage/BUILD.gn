@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors.All rights reserved.
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
@@ -38,6 +38,7 @@ static_library("storage_queue") {
     ":storage_configuration",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:verification",
     "//components/reporting/proto:record_constants",
@@ -63,6 +64,7 @@ static_library("storage") {
     ":storage_queue",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:primitives",
@@ -91,6 +93,7 @@ static_library("storage_module") {
     ":storage",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/proto:record_constants",
@@ -161,6 +164,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:decryption",
     "//components/reporting/encryption:encryption",
     "//components/reporting/encryption:encryption_module",

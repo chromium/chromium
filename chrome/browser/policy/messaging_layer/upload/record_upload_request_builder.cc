@@ -5,15 +5,36 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/containers/queue.h"
+#include "base/json/json_reader.h"
 #include "base/notreached.h"
+#include "base/sequenced_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
+#include "base/task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/reporting_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
+#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/task_runner_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -28,6 +49,7 @@ constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
 constexpr char kUnsignedSequencingInformationKey[] = "sequencingInformation";
 constexpr char kSequencingInformationKey[] = "sequenceInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
+constexpr char kCompressionInformationKey[] = "compressionInformation";
 
 // SequencingInformationDictionaryBuilder strings
 constexpr char kSequencingId[] = "sequencingId";
@@ -37,6 +59,9 @@ constexpr char kPriority[] = "priority";
 // EncryptionInfoDictionaryBuilder strings
 constexpr char kEncryptionKey[] = "encryptionKey";
 constexpr char kPublicKeyId[] = "publicKeyId";
+
+// CompressionInformationDictionaryBuilder strings
+constexpr char kCompressionAlgorithmKey[] = "compressionAlgorithm";
 
 }  // namespace
 
@@ -141,6 +166,21 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
                              std::move(encryption_info_result.value()));
   }
 
+  // TODO (b/189130411) Compression information can be missing until we set up
+  // compression as mandatory.
+  if (record.has_compression_information()) {
+    auto compression_information_result =
+        CompressionInformationDictionaryBuilder(
+            record.compression_information())
+            .Build();
+    if (!compression_information_result.has_value()) {
+      // Compression info has been corrupted or set improperly. Deny it.
+      return;
+    }
+    record_dictionary.SetKey(GetCompressionInformationPath(),
+                             std::move(compression_information_result.value()));
+  }
+
   // Gap records won't fill in this field, so it can be missing.
   if (record.has_encrypted_wrapped_record()) {
     std::string base64_encode;
@@ -180,6 +220,12 @@ EncryptedRecordDictionaryBuilder::GetSequencingInformationKeyPath() {
 // static
 base::StringPiece EncryptedRecordDictionaryBuilder::GetEncryptionInfoPath() {
   return kEncryptionInfoKey;
+}
+
+// static
+base::StringPiece
+EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
+  return kCompressionInformationKey;
 }
 
 SequencingInformationDictionaryBuilder::SequencingInformationDictionaryBuilder(
@@ -260,6 +306,36 @@ base::StringPiece EncryptionInfoDictionaryBuilder::GetEncryptionKeyPath() {
 // static
 base::StringPiece EncryptionInfoDictionaryBuilder::GetPublicKeyIdPath() {
   return kPublicKeyId;
+}
+
+CompressionInformationDictionaryBuilder::
+    CompressionInformationDictionaryBuilder(
+        const CompressionInformation& compression_information) {
+  base::Value compression_information_dictionary{base::Value::Type::DICTIONARY};
+
+  // Ensure that compression_algorithm is valid.
+  if (!CompressionInformation::CompressionAlgorithm_IsValid(
+          compression_information.compression_algorithm())) {
+    return;
+  }
+
+  compression_information_dictionary.SetIntKey(
+      GetCompressionAlgorithmPath(),
+      compression_information.compression_algorithm());
+  result_ = std::move(compression_information_dictionary);
+}
+
+CompressionInformationDictionaryBuilder::
+    ~CompressionInformationDictionaryBuilder() = default;
+
+absl::optional<base::Value> CompressionInformationDictionaryBuilder::Build() {
+  return std::move(result_);
+}
+
+// static
+base::StringPiece
+CompressionInformationDictionaryBuilder::GetCompressionAlgorithmPath() {
+  return kCompressionAlgorithmKey;
 }
 
 }  // namespace reporting

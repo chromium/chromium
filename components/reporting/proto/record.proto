@@ -88,7 +88,8 @@ message SequencingInformation {
   optional Priority priority = 3;
 }
 
-// |WrappedRecord| as it is stored on disc, and sent to the server.
+// Envelope for the |WrappedRecord| and associated metadata as it is stored on
+// disk and sent to the server.
 message EncryptedRecord {
   // Encrypted Wrapped Record
   // |WrappedRecord| encrypted with the |encryption_key| in |encryption_info|.
@@ -105,6 +106,22 @@ message EncryptedRecord {
   // Sequencing information (required). Must be present to allow
   // tracking and confirmation of the events by server.
   optional SequencingInformation sequencing_information = 3;
+
+  // Compression information (optional).
+  optional CompressionInformation compression_information = 4;
+}
+
+// Tracking information for what compression is used.
+message CompressionInformation {
+  // Compression algorithms available for use
+  enum CompressionAlgorithm {
+    COMPRESSION_NONE = 0;
+    COMPRESSION_SNAPPY = 1;
+  }
+
+  // Compression algorithm that is used if the record was
+  // compressed before being wrapped (optional).
+  optional CompressionAlgorithm compression_algorithm = 1;
 }
 
 // Encryption public key as delivered from the server and stored in Storage.

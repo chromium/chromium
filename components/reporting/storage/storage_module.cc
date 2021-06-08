@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
@@ -59,13 +60,14 @@ void StorageModule::Create(
     const StorageOptions& options,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     scoped_refptr<EncryptionModuleInterface> encryption_module,
+    scoped_refptr<CompressionModule> compression_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         callback) {
   scoped_refptr<StorageModule> instance =
       // Cannot base::MakeRefCounted, since constructor is protected.
       base::WrapRefCounted(new StorageModule());
   Storage::Create(
-      options, async_start_upload_cb, encryption_module,
+      options, async_start_upload_cb, encryption_module, compression_module,
       base::BindOnce(
           [](scoped_refptr<StorageModule> instance,
              base::OnceCallback<void(

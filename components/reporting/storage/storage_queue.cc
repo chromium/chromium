@@ -34,6 +34,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
+#include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
@@ -78,6 +79,7 @@ void StorageQueue::Create(
     const QueueOptions& options,
     AsyncStartUploaderCb async_start_upload_cb,
     scoped_refptr<EncryptionModuleInterface> encryption_module,
+    scoped_refptr<CompressionModule> compression_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
         completion_cb) {
   // Initialize StorageQueue object loading the data.
@@ -119,7 +121,8 @@ void StorageQueue::Create(
   // private.
   scoped_refptr<StorageQueue> storage_queue = base::WrapRefCounted(
       new StorageQueue(std::move(sequenced_task_runner), options,
-                       std::move(async_start_upload_cb), encryption_module));
+                       std::move(async_start_upload_cb), encryption_module,
+                       compression_module));
 
   // Asynchronously run initialization.
   Start<StorageQueueInitContext>(std::move(storage_queue),
@@ -130,11 +133,13 @@ StorageQueue::StorageQueue(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     const QueueOptions& options,
     AsyncStartUploaderCb async_start_upload_cb,
-    scoped_refptr<EncryptionModuleInterface> encryption_module)
+    scoped_refptr<EncryptionModuleInterface> encryption_module,
+    scoped_refptr<CompressionModule> compression_module)
     : base::RefCountedDeleteOnSequence<StorageQueue>(sequenced_task_runner),
       options_(options),
       async_start_upload_cb_(async_start_upload_cb),
       encryption_module_(encryption_module),
+      compression_module_(compression_module),
       sequenced_task_runner_(std::move(sequenced_task_runner)) {
   DETACH_FROM_SEQUENCE(storage_queue_sequence_checker_);
   DCHECK(write_contexts_queue_.empty());
@@ -1185,14 +1190,14 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     in_contexts_queue_ = storage_queue_->write_contexts_queue_.insert(
         storage_queue_->write_contexts_queue_.end(), this);
 
-    // Serialize and encrypt wrapped record on a thread pool.
+    // Serialize and compress wrapped record on a thread pool.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&WriteContext::SerializeAndEncryptWrappedRecord,
+        base::BindOnce(&WriteContext::ProcessWrappedRecord,
                        base::Unretained(this), std::move(wrapped_record)));
   }
 
-  void SerializeAndEncryptWrappedRecord(WrappedRecord wrapped_record) {
+  void ProcessWrappedRecord(WrappedRecord wrapped_record) {
     // Serialize wrapped record into a string.
     ScopedReservation scoped_reservation(wrapped_record.ByteSizeLong(),
                                          GetMemoryResource());
@@ -1211,20 +1216,46 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     }
     // Release wrapped record memory, so scoped reservation may act.
     wrapped_record.Clear();
+    CompressWrappedRecord(buffer);
+  }
 
-    // Encrypt the result.
+  void CompressWrappedRecord(std::string serialized_record) {
+    // Compress the string. TODO compress record need to return compression
+    // information as well as the compressed string
+    storage_queue_->compression_module_->CompressRecord(
+        serialized_record,
+        base::BindOnce(&WriteContext::OnCompressedRecordReady,
+                       base::Unretained(this))
+
+    );
+  }
+
+  void OnCompressedRecordReady(
+      std::string compressed_record_result,
+      absl::optional<CompressionInformation> compression_information) {
+    // Encrypt the result. The callback is partially bounded to include
+    // compression information.
     storage_queue_->encryption_module_->EncryptRecord(
-        buffer, base::BindOnce(&WriteContext::OnEncryptedRecordReady,
-                               base::Unretained(this)));
+        std::move(compressed_record_result),
+        base::BindOnce(&WriteContext::OnEncryptedRecordReady,
+                       base::Unretained(this),
+                       std::move(compression_information)));
   }
 
   void OnEncryptedRecordReady(
+      absl::optional<CompressionInformation> compression_information,
       StatusOr<EncryptedRecord> encrypted_record_result) {
     if (!encrypted_record_result.ok()) {
       // Failed to serialize or encrypt.
       Schedule(&ReadContext::Response, base::Unretained(this),
                encrypted_record_result.status());
       return;
+    }
+
+    // Add compression information to the encrypted record if it exists.
+    if (compression_information.has_value()) {
+      *encrypted_record_result.ValueOrDie().mutable_compression_information() =
+          compression_information.value();
     }
 
     // Serialize encrypted record.

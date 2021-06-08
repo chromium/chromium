@@ -1,0 +1,98 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#include "components/reporting/compression/compression_module.h"
+
+#include "base/feature_list.h"
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
+#include "base/task/thread_pool.h"
+#include "components/reporting/proto/record.pb.h"
+#include "third_party/snappy/src/snappy.h"
+
+namespace reporting {
+
+// TODO(b/189130411): Make this feature default enabled once it has been fully
+// tested and available for launch.
+const base::Feature kCompressReportingPipeline{
+    CompressionModule::kCompressReportingFeature,
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// static
+const char CompressionModule::kCompressReportingFeature[] =
+    "CompressReportingPipeline";
+
+// static
+scoped_refptr<CompressionModule> CompressionModule::Create(
+    uint64_t compression_threshold_,
+    CompressionInformation::CompressionAlgorithm compression_type_) {
+  return base::WrapRefCounted(
+      new CompressionModule(compression_threshold_, compression_type_));
+}
+
+void CompressionModule::CompressRecord(
+    std::string record,
+    base::OnceCallback<void(std::string,
+                            absl::optional<CompressionInformation>)> cb) const {
+  if (!is_enabled()) {
+    // Compression disabled, don't compress and don't return compression
+    // information.
+    std::move(cb).Run(std::move(record), absl::nullopt);
+    return;
+  }
+  if (record.length() < compression_threshold_) {
+    // Record size is smaller than threshold, don't compress.
+    CompressionInformation compression_information;
+    compression_information.set_compression_algorithm(
+        CompressionInformation::COMPRESSION_NONE);
+    std::move(cb).Run(std::move(record), std::move(compression_information));
+    return;
+  }
+  // Compress if file is larger than the compression threshold and compression
+  // enabled
+  switch (compression_type_) {
+    case CompressionInformation::COMPRESSION_NONE: {
+      // Don't compress, simply return serialized record
+      CompressionInformation compression_information;
+      compression_information.set_compression_algorithm(
+          CompressionInformation::COMPRESSION_NONE);
+      std::move(cb).Run(std::move(record), std::move(compression_information));
+      break;
+    }
+    case CompressionInformation::COMPRESSION_SNAPPY: {
+      CompressionModule::CompressRecordSnappy(std::move(record), std::move(cb));
+      break;
+    }
+  }
+}
+
+// static
+bool CompressionModule::is_enabled() {
+  return base::FeatureList::IsEnabled(kCompressReportingPipeline);
+}
+
+CompressionModule::CompressionModule(
+    uint64_t compression_threshold_,
+    CompressionInformation::CompressionAlgorithm compression_type_)
+    : compression_type_(compression_type_),
+      compression_threshold_(compression_threshold_) {}
+CompressionModule::~CompressionModule() = default;
+
+void CompressionModule::CompressRecordSnappy(
+    std::string record,
+    base::OnceCallback<void(std::string,
+                            absl::optional<CompressionInformation>)> cb) const {
+  // Compression is enabled and crosses the threshold,
+  std::string output;
+  snappy::Compress(record.data(), record.size(), &output);
+
+  // Return compressed string
+  CompressionInformation compression_information;
+  compression_information.set_compression_algorithm(
+      CompressionInformation::COMPRESSION_SNAPPY);
+  std::move(cb).Run(output, compression_information);
+}
+}  // namespace reporting

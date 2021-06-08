@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include "base/logging.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,13 +26,18 @@ constexpr Priority kPriority = Priority::IMMEDIATE;
 constexpr char kEncryptionKey[] = "abcdef";
 constexpr int64_t kPublicKeyId = 9876;
 
+// Default values for CompressionInformation.
+constexpr CompressionInformation::CompressionAlgorithm kCompressionAlgorithm =
+    CompressionInformation::COMPRESSION_SNAPPY;
+
 class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
  public:
   RecordUploadRequestBuilderTest() = default;
 
  protected:
   static EncryptedRecord GenerateEncryptedRecord(
-      const base::StringPiece encrypted_wrapped_record) {
+      const base::StringPiece encrypted_wrapped_record,
+      const bool set_compression = false) {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));
 
@@ -44,6 +50,12 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     auto* const encryption_info = record.mutable_encryption_info();
     encryption_info->set_encryption_key(kEncryptionKey);
     encryption_info->set_public_key_id(kPublicKeyId);
+
+    if (set_compression) {
+      auto* const compression_information =
+          record.mutable_compression_information();
+      compression_information->set_compression_algorithm(kCompressionAlgorithm);
+    }
 
     return record;
   }
@@ -145,6 +157,30 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   encryption_info->set_public_key_id(1234);
 
   EXPECT_TRUE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
+}
+
+TEST_P(RecordUploadRequestBuilderTest,
+       DontBuildCompressionRequestIfNoInformation) {
+  EncryptedRecord compressionless_record = GenerateEncryptedRecord("TEST_INFO");
+  EXPECT_FALSE(compressionless_record.has_compression_information());
+
+  absl::optional<base::Value> compressionless_payload =
+      EncryptedRecordDictionaryBuilder(compressionless_record).Build();
+  DCHECK(compressionless_payload.has_value());
+
+  EXPECT_FALSE(compressionless_payload.value().FindKey(
+      EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
+
+  EncryptedRecord compressed_record =
+      GenerateEncryptedRecord("TEST_INFO", true);
+  EXPECT_TRUE(compressed_record.has_compression_information());
+
+  absl::optional<base::Value> compressed_record_payload =
+      EncryptedRecordDictionaryBuilder(compressed_record).Build();
+  DCHECK(compressed_record_payload.has_value());
+
+  EXPECT_TRUE(compressed_record_payload.value().FindKey(
+      EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 }
 
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,

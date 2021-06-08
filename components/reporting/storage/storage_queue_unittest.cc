@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
@@ -45,6 +46,7 @@ namespace {
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
+constexpr int kCompressionThreshold = 512;
 
 class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
@@ -84,6 +86,13 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
     if (!generation_id_.has_value()) {
       generation_id_ = sequencing_information.generation_id();
+    }
+
+    // Verify compression information is enabled or disabled.
+    if (CompressionModule::is_enabled()) {
+      EXPECT_TRUE(encrypted_record.has_compression_information());
+    } else {
+      EXPECT_FALSE(encrypted_record.has_compression_information());
     }
 
     // Verify digest and its match.
@@ -265,6 +274,12 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         .set_single_file_size(GetParam());
   }
 
+  void EnableCompression() {
+    // TODO(b/189130411) Remove once server side has been updated.
+    scoped_feature_list_.InitFromCommandLine(
+        {CompressionModule::kCompressReportingFeature}, {});
+  }
+
   void TearDown() override {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
@@ -288,7 +303,10 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         options,
         base::BindRepeating(&StorageQueueTest::AsyncStartMockUploader,
                             base::Unretained(this)),
-        test_encryption_module_, storage_queue_create_event.cb());
+        test_encryption_module_,
+        CompressionModule::Create(kCompressionThreshold,
+                                  CompressionInformation::COMPRESSION_SNAPPY),
+        storage_queue_create_event.cb());
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
         storage_queue_create_event.result();
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
@@ -1110,6 +1128,28 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
   const Status result = WriteString("TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
+}
+
+TEST_P(StorageQueueTest, EnableCompression) {
+  EnableCompression();
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Set uploader expectations.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client, &waiter)
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
+      }))
+      .RetiresOnSaturation();
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 TEST_P(StorageQueueTest, ForceConfirm) {

@@ -1,5 +1,5 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2014 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
@@ -43,8 +43,8 @@ if (is_ios) {
 }
 
 # To add a unit test to this target, make a "unit_test" source_set in your
-# component (it's important to use a source_set instead of a static library or
-# no tests will run) and add a reference here. You can add more than one unit
+# component(it's important to use a source_set instead of a static library or
+# no tests will run) and add a reference here.You can add more than one unit
 # test target if convenient.
 test("components_unittests") {
   use_xvfb = use_xvfb_in_this_config
@@ -53,8 +53,8 @@ test("components_unittests") {
     data = [ "test/data/" ]
   }
 
-  # Add only ":unit_tests" dependencies here. If your tests have dependencies
-  # (this would at least include the component itself), they should be on the
+  # Add only ":unit_tests" dependencies here.If your tests have dependencies
+  #(this would at least include the component itself), they should be on the
   # test source set and not here.
 
   deps = [
@@ -134,6 +134,7 @@ test("components_unittests") {
     "//components/query_parser:unit_tests",
     "//components/reading_list/core:unit_tests",
     "//components/reporting/client:unit_tests",
+    "//components/reporting/compression:unit_tests",
     "//components/reporting/encryption:unit_tests",
     "//components/reporting/storage:unit_tests",
     "//components/reporting/util:unit_tests",
@@ -239,7 +240,7 @@ test("components_unittests") {
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
     ]
-  } else {  # !is_ios
+  } else {  #!is_ios
     deps += [
       "//components/accuracy_tips:unit_tests",
       "//components/autofill/content/browser:unit_tests",
@@ -305,7 +306,7 @@ test("components_unittests") {
       "//components/policy/content:unit_tests",
       "//components/query_tiles:unit_tests",
 
-      # TODO(chromium:1169835) components/reporting/storage/resources:unit_tests
+      # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.
       "//components/reporting/storage/resources:unit_tests",
       "//components/safe_browsing/content/password_protection:password_protection_unittest",
@@ -342,14 +343,14 @@ test("components_unittests") {
       "//components/webrtc_logging/common:unit_tests",
     ]
 
-    if (!is_win) {  # !iOS and !Windows
+    if (!is_win) {  #!iOS and!Windows
       deps += [
         "//components/cast:unit_tests",
         "//components/cast_streaming:unit_tests",
       ]
     }
 
-    if (!is_fuchsia) {  # !iOS and !Fuchsia
+    if (!is_fuchsia) {  #!iOS and!Fuchsia
       deps += [
         "//components/crash/content/browser:unit_tests",
         "//components/crash/core/app:unit_tests",
@@ -363,7 +364,7 @@ test("components_unittests") {
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",
     ]
-  }  # iOS/!iOS
+  }  # iOS / !iOS
 
   if (is_ios) {
     deps += [ ":components_tests_pak_bundle_data" ]
@@ -428,15 +429,15 @@ test("components_unittests") {
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:components_unittests_filters" ]
     }
-  } else {  # !is_android
+  } else {  #!is_android
     deps += [ "//components/keep_alive_registry:unit_tests" ]
   }
 
-  # Desktop-only deps.
+  # Desktop - only deps.
   if (!is_android && !is_ios) {
     deps += [
-      # See comment in components/guest_view/browser/BUILD.gn for why
-      # guest_view is currently non-mobile.
+      # See comment in components / guest_view / browser / BUILD.gn for why
+      # guest_view is currently non - mobile.
       "//components/guest_view/browser:unit_tests",
       "//components/storage_monitor:unit_tests",
       "//components/web_modal:unit_tests",
@@ -490,7 +491,7 @@ test("components_unittests") {
     deps += [ "//components/pwg_encoder:unit_tests" ]
   }
 
-  # TODO(crbug/1056278): Enable this on Fuchsia
+  # TODO(crbug / 1056278): Enable this on Fuchsia
   if (safe_browsing_mode != 0 && !is_fuchsia) {
     deps += [ "//components/safe_browsing/core:file_type_policies_unittest" ]
   }
@@ -524,7 +525,7 @@ test("components_unittests") {
     deps += [ "//components/pdf/renderer:unit_tests" ]
   }
 
-  # On LaCrOS, tests use ash-chrome as a window manager, thus the dependency.
+  # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.
   # On other platforms, no components should depend on Chrome.
   if (!is_chromeos_lacros) {
     assert_no_deps = [ "//chrome/*" ]
@@ -613,7 +614,7 @@ if (is_android) {
 }
 
 # TODO(https://crbug.com/961457): components_browsertests no-op build is not a
-# no-op under Fuchsia.
+# no - op under Fuchsia.
 if (!is_ios && !is_fuchsia) {
   test("components_browsertests") {
     use_xvfb = use_xvfb_in_this_config
@@ -770,7 +771,7 @@ if (!is_ios && !is_fuchsia) {
       ]
     }
 
-    # On LaCrOS, tests use ash-chrome as a window manager, thus the dependency.
+    # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.
     # On other platforms, no components should depend on Chrome.
     if (!is_chromeos_lacros) {
       assert_no_deps = [ "//chrome/*" ]

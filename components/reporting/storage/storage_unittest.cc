@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/encryption/encryption_module.h"
@@ -53,6 +54,8 @@ using ::testing::WithoutArgs;
 
 namespace reporting {
 namespace {
+
+constexpr int kCompressionThreshold = 512;
 
 // Context of single decryption. Self-destructs upon completion or failure.
 class SingleDecryptionContext {
@@ -537,13 +540,14 @@ class StorageTest
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
-      scoped_refptr<EncryptionModuleInterface> encryption_module) {
+      scoped_refptr<EncryptionModuleInterface> encryption_module,
+      scoped_refptr<CompressionModule> compression_module) {
     // Initialize Storage with no key.
     test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     Storage::Create(options,
                     base::BindRepeating(&StorageTest::AsyncStartMockUploader,
                                         base::Unretained(this)),
-                    encryption_module, e.cb());
+                    encryption_module, compression_module, e.cb());
     ASSIGN_OR_RETURN(auto storage, e.result());
 
     if (expect_to_need_key_) {
@@ -565,11 +569,14 @@ class StorageTest
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
-              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
-                  30))) {
+              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(30)),
+      scoped_refptr<CompressionModule> compression_module =
+          CompressionModule::Create(
+              kCompressionThreshold,
+              CompressionInformation::COMPRESSION_SNAPPY)) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
-        CreateTestStorage(options, encryption_module);
+        CreateTestStorage(options, encryption_module, compression_module);
     ASSERT_OK(storage_result)
         << "Failed to create StorageTest, error=" << storage_result.status();
     storage_ = std::move(storage_result.ValueOrDie());
@@ -590,15 +597,18 @@ class StorageTest
       size_t failures_count,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
-              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
-                  30))) {
+              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(30)),
+      scoped_refptr<CompressionModule> compression_module =
+          CompressionModule::Create(
+              kCompressionThreshold,
+              CompressionInformation::COMPRESSION_SNAPPY)) {
     // Initialize Storage with no key.
     test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     Storage::Create(
         options,
         base::BindRepeating(&StorageTest::AsyncStartMockUploaderFailing,
                             base::Unretained(this), failures_count),
-        encryption_module, e.cb());
+        encryption_module, compression_module, e.cb());
     ASSIGN_OR_RETURN(auto storage, e.result());
     return storage;
   }

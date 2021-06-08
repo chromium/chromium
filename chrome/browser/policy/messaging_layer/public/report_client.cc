@@ -267,6 +267,7 @@ void ReportingClient::ClientInitializingContext::OnCloudPolicyClientConfigured(
 void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
   StorageSelector::CreateStorageModule(
       client_->reporting_path_, client_->verification_key_,
+      CompressionInformation::COMPRESSION_SNAPPY,
       std::move(async_start_upload_cb_),
       base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
                      base::Unretained(this)));
