@@ -297,6 +297,19 @@ bool HasSeenWebRequestInBackgroundPage(const Extension* extension,
   return seen;
 }
 
+void WaitForExtraHeadersListener(base::WaitableEvent* event,
+                                 content::BrowserContext* browser_context) {
+  if (BrowserContextKeyedAPIFactory<WebRequestAPI>::Get(browser_context)
+          ->HasExtraHeadersListenerForTesting()) {
+    event->Signal();
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WaitForExtraHeadersListener, event, browser_context));
+}
+
 }  // namespace
 
 class ExtensionWebRequestApiTest : public ExtensionApiTest {
@@ -2396,6 +2409,87 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestMockedClockTest,
   EXPECT_TRUE(redirect_successful_listener.WaitUntilSatisfied());
   EXPECT_EQ(extension_id_1,
             redirect_successful_listener.extension_id_for_message());
+}
+
+// Regression test for http://crbug.com/1074282.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, StaleHeadersAfterRedirect) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Stale Headers Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"] },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+        window.locationCount = 0;
+        window.requestCount = 0;
+        chrome.test.sendMessage('ready', function(reply) {
+          chrome.webRequest.onResponseStarted.addListener(function(details) {
+              window.requestCount++;
+              var headers = details.responseHeaders;
+              for (var i = 0; i < headers.length; i++) {
+                if (headers[i].name === 'Location') {
+                  window.locationCount++;
+                }
+              }
+            },
+            {urls: ['<all_urls>'], types: ['xmlhttprequest']},
+            ['responseHeaders', 'extraHeaders']
+          );
+        });
+      )");
+
+  ExtensionTestMessageListener listener("ready", true);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  auto task_runner = base::SequencedTaskRunnerHandle::Get();
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/redirect-and-wait")
+          return nullptr;
+
+        // Wait for the listener to be installed before proceeding.
+        base::WaitableEvent unblock(
+            base::WaitableEvent::ResetPolicy::AUTOMATIC,
+            base::WaitableEvent::InitialState::NOT_SIGNALED);
+        // Post a task to the UI thread since the request handler runs on a
+        // background thread.
+        task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                listener.Reply("");
+                                WaitForExtraHeadersListener(
+                                    &unblock, browser()->profile());
+                              }));
+        unblock.Wait();
+
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+        http_response->AddCustomHeader(
+            "Location", embedded_test_server()->GetURL("/echo").spec());
+        return http_response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a basic page so XHR requests work.
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/echo"));
+
+  // Make a XHR request which redirects. The final response should not include
+  // the Location header.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PerformXhrInFrame(web_contents->GetMainFrame(),
+                    embedded_test_server()->host_port_pair().host(),
+                    embedded_test_server()->port(), "redirect-and-wait");
+  EXPECT_EQ(
+      GetCountFromBackgroundPage(extension, profile(), "window.requestCount"),
+      1);
+  EXPECT_EQ(
+      GetCountFromBackgroundPage(extension, profile(), "window.locationCount"),
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, ChangeHeaderUMAs) {

@@ -816,6 +816,11 @@ bool WebRequestAPI::MayHaveProxies() const {
   return web_request_extension_count_ > 0;
 }
 
+bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
+  return ExtensionWebRequestEventRouter::GetInstance()
+      ->HasAnyExtraHeadersListener(browser_context_);
+}
+
 void WebRequestAPI::UpdateMayHaveProxies() {
   bool may_have_proxies = MayHaveProxies();
   if (!may_have_proxies_ && may_have_proxies) {
