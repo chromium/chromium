@@ -48,7 +48,7 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
  public:
   EventListener(const EventListener&) = delete;
   EventListener& operator=(const EventListener&) = delete;
-  virtual ~EventListener() = default;
+  ~EventListener() override = default;
 
   // Invokes this event listener.
   virtual void Invoke(ExecutionContext*, Event*) = 0;

@@ -41,7 +41,7 @@ class MODULES_EXPORT CSSPaintDefinition final
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSSyntaxDefinition>& input_argument_types,
       const PaintRenderingContext2DSettings*);
-  virtual ~CSSPaintDefinition();
+  ~CSSPaintDefinition() final;
 
   // Invokes the javascript 'paint' callback on an instance of the javascript
   // class. The size given will be the size of the PaintRenderingContext2D

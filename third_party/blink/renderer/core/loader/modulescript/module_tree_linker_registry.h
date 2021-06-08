@@ -19,6 +19,7 @@ class CORE_EXPORT ModuleTreeLinkerRegistry final
       public NameClient {
  public:
   ModuleTreeLinkerRegistry() = default;
+  ~ModuleTreeLinkerRegistry() final = default;
 
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {

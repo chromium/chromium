@@ -16,7 +16,7 @@ class PLATFORM_EXPORT CustomWrappable
     : public GarbageCollected<CustomWrappable>,
       public NameClient {
  public:
-  virtual ~CustomWrappable() = default;
+  ~CustomWrappable() override = default;
   virtual void Trace(Visitor*) const {}
   const char* NameInHeapSnapshot() const override { return "CustomWrappable"; }
 

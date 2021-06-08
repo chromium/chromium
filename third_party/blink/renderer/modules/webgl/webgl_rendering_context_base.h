@@ -922,6 +922,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
    public:
     ExtensionTracker(ExtensionFlags flags, const char* const* prefixes)
         : draft_(flags & kDraftExtension), prefixes_(prefixes) {}
+    ~ExtensionTracker() override = default;
 
     bool Draft() const { return draft_; }
 

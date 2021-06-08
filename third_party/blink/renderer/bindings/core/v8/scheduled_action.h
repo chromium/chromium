@@ -58,7 +58,7 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
                   ExecutionContext* target,
                   const String& handler);
 
-  ~ScheduledAction();
+  ~ScheduledAction() override;
 
   void Dispose();
 

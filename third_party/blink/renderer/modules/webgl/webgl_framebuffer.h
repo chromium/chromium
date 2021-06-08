@@ -48,6 +48,8 @@ class WebGLFramebuffer final : public WebGLContextObject {
   class WebGLAttachment : public GarbageCollected<WebGLAttachment>,
                           public NameClient {
    public:
+    ~WebGLAttachment() override = default;
+
     virtual WebGLSharedObject* Object() const = 0;
     virtual bool IsSharedObject(WebGLSharedObject*) const = 0;
     virtual bool Valid() const = 0;

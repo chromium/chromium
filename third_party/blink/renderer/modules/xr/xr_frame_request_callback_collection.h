@@ -24,6 +24,7 @@ class XRFrameRequestCallbackCollection final
       public NameClient {
  public:
   explicit XRFrameRequestCallbackCollection(ExecutionContext*);
+  ~XRFrameRequestCallbackCollection() override = default;
 
   using CallbackId = int;
   CallbackId RegisterCallback(V8XRFrameRequestCallback*);

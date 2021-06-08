@@ -48,7 +48,7 @@ class PLATFORM_EXPORT NameClient {
   }
 
   NameClient() = default;
-  ~NameClient() = default;
+  virtual ~NameClient() = default;
 
   // Human-readable name of this object. The DevTools heap snapshot uses
   // this method to show the object.

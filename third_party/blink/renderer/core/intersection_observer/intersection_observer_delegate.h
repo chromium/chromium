@@ -19,7 +19,7 @@ class IntersectionObserverDelegate
     : public GarbageCollected<IntersectionObserverDelegate>,
       public NameClient {
  public:
-  virtual ~IntersectionObserverDelegate() = default;
+  ~IntersectionObserverDelegate() override = default;
 
   virtual LocalFrameUkmAggregator::MetricId GetUkmMetricId() const = 0;
   virtual IntersectionObserver::DeliveryBehavior GetDeliveryBehavior()

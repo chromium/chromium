@@ -23,7 +23,7 @@ class CORE_EXPORT FrameCallback : public GarbageCollected<FrameCallback>,
  public:
   virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override { return "FrameCallback"; }
-  virtual ~FrameCallback() = default;
+  ~FrameCallback() override = default;
   virtual void Invoke(double) = 0;
 
   int Id() const { return id_; }

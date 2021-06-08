@@ -37,7 +37,7 @@ class MODULES_EXPORT AudioWorkletProcessorDefinition final
       const String& name,
       V8BlinkAudioWorkletProcessorConstructor* constructor,
       V8BlinkAudioWorkletProcessCallback* process);
-  ~AudioWorkletProcessorDefinition();
+  ~AudioWorkletProcessorDefinition() final;
 
   const String& GetName() const { return name_; }
   V8BlinkAudioWorkletProcessorConstructor* ConstructorFunction() const {

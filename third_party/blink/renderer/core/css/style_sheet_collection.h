@@ -51,7 +51,7 @@ class CORE_EXPORT StyleSheetCollection
   StyleSheetCollection();
   StyleSheetCollection(const StyleSheetCollection&) = delete;
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
-  virtual ~StyleSheetCollection() = default;
+  ~StyleSheetCollection() override = default;
 
   const ActiveStyleSheetVector& ActiveStyleSheets() const {
     return active_style_sheets_;

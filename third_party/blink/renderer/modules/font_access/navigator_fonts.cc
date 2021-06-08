@@ -36,6 +36,7 @@ class NavigatorFontsImpl final : public GarbageCollected<NavigatorFontsImpl<T>>,
   }
 
   explicit NavigatorFontsImpl(T& navigator) : Supplement<T>(navigator) {}
+  ~NavigatorFontsImpl() final = default;
 
   FontManager* GetFontManager(ExecutionContext* context) const {
     if (!font_manager_) {

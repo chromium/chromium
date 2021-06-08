@@ -32,7 +32,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
     kSingleOperation,
   };
 
-  virtual ~CallbackInterfaceBase() = default;
+  ~CallbackInterfaceBase() override = default;
 
   virtual void Trace(Visitor*) const;
 

@@ -29,7 +29,7 @@ class IdleTask : public GarbageCollected<IdleTask>, public NameClient {
  public:
   virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override { return "IdleTask"; }
-  virtual ~IdleTask() = default;
+  ~IdleTask() override = default;
   virtual void invoke(IdleDeadline*) = 0;
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 

@@ -44,7 +44,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSPropertyID>& child_native_invalidation_properties,
       const Vector<AtomicString>& child_custom_invalidation_properties);
-  virtual ~CSSLayoutDefinition();
+  ~CSSLayoutDefinition() final;
 
   // This class represents an instance of the layout class defined by the
   // CSSLayoutDefinition.

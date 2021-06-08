@@ -24,7 +24,7 @@ class IntersectionObserverController
       public NameClient {
  public:
   explicit IntersectionObserverController(ExecutionContext*);
-  virtual ~IntersectionObserverController();
+  ~IntersectionObserverController() override;
 
   void ScheduleIntersectionObserverForDelivery(IntersectionObserver&);
 

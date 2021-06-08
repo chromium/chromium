@@ -21,6 +21,7 @@ class ClassWithoutName final {
 class ClassWithName final : public NameClient {
  public:
   explicit ClassWithName(const char* name) : name_(name) {}
+  ~ClassWithName() final = default;
 
   const char* NameInHeapSnapshot() const final { return name_; }
 

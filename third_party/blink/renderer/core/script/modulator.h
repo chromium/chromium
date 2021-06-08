@@ -47,7 +47,7 @@ class CORE_EXPORT SingleModuleClient
     : public GarbageCollected<SingleModuleClient>,
       public NameClient {
  public:
-  virtual ~SingleModuleClient() = default;
+  ~SingleModuleClient() override = default;
   virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override {
     return "SingleModuleClient";
@@ -61,7 +61,7 @@ class CORE_EXPORT SingleModuleClient
 class CORE_EXPORT ModuleTreeClient : public GarbageCollected<ModuleTreeClient>,
                                      public NameClient {
  public:
-  virtual ~ModuleTreeClient() = default;
+  ~ModuleTreeClient() override = default;
   virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override { return "ModuleTreeClient"; }
 
@@ -103,7 +103,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                               public NameClient {
  public:
   static Modulator* From(ScriptState*);
-  virtual ~Modulator();
+  ~Modulator() override;
 
   static void SetModulator(ScriptState*, Modulator*);
   static void ClearModulator(ScriptState*);

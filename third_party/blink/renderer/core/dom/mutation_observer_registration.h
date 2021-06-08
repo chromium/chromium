@@ -51,7 +51,7 @@ class CORE_EXPORT MutationObserverRegistration final
                                Node*,
                                MutationObserverOptions,
                                const HashSet<AtomicString>& attribute_filter);
-  ~MutationObserverRegistration();
+  ~MutationObserverRegistration() override;
 
   void ResetObservation(MutationObserverOptions,
                         const HashSet<AtomicString>& attribute_filter);

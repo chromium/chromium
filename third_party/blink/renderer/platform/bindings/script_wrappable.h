@@ -55,7 +55,7 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-  virtual ~ScriptWrappable() = default;
+  ~ScriptWrappable() override = default;
 
   // The following methods may override lifetime of ScriptWrappable objects when
   // needed. In particular if |HasPendingActivity| or |HasEventListeners|

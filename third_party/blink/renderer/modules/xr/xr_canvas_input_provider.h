@@ -23,7 +23,7 @@ class XRCanvasInputProvider : public GarbageCollected<XRCanvasInputProvider>,
                               public NameClient {
  public:
   XRCanvasInputProvider(XRSession*, HTMLCanvasElement*);
-  virtual ~XRCanvasInputProvider();
+  ~XRCanvasInputProvider() override;
 
   XRSession* session() const { return session_; }
   HTMLCanvasElement* canvas() const { return canvas_; }

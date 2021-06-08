@@ -47,6 +47,7 @@ class CORE_EXPORT ScriptRunner final
       public NameClient {
  public:
   explicit ScriptRunner(Document*);
+  ~ScriptRunner() override = default;
   ScriptRunner(const ScriptRunner&) = delete;
   ScriptRunner& operator=(const ScriptRunner&) = delete;
 

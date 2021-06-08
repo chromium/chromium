@@ -39,6 +39,7 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
                                 public NameClient {
  public:
   WebGLContextGroup();
+  ~WebGLContextGroup() final = default;
 
   void AddContext(WebGLRenderingContextBase*);
 

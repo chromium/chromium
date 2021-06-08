@@ -40,7 +40,7 @@ class CORE_EXPORT CustomElementDefinition
   // CustomElementRegistry that created it.
   using Id = uint32_t;
 
-  virtual ~CustomElementDefinition();
+  ~CustomElementDefinition() override;
 
   virtual void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {

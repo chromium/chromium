@@ -24,6 +24,7 @@ class MODULES_EXPORT VideoFrameRequestCallbackCollection final
       public NameClient {
  public:
   explicit VideoFrameRequestCallbackCollection(ExecutionContext*);
+  ~VideoFrameRequestCallbackCollection() final = default;
 
   using CallbackId = int;
 
@@ -36,7 +37,7 @@ class MODULES_EXPORT VideoFrameRequestCallbackCollection final
     const char* NameInHeapSnapshot() const override {
       return "VideoFrameCallback";
     }
-    virtual ~VideoFrameCallback() = default;
+    ~VideoFrameCallback() override = default;
 
     virtual void Invoke(double, const VideoFrameMetadata*) = 0;
 

@@ -32,7 +32,7 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
            WorkletAnimationOptions options,
            const Vector<absl::optional<base::TimeDelta>>& local_times,
            const Vector<Timing>& timings);
-  ~Animator();
+  ~Animator() final;
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "Animator"; }
 

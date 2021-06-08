@@ -81,7 +81,7 @@ class CORE_EXPORT MutationObserver final
   class CORE_EXPORT Delegate : public GarbageCollected<Delegate>,
                                public NameClient {
    public:
-    virtual ~Delegate() = default;
+    ~Delegate() override = default;
     virtual ExecutionContext* GetExecutionContext() const = 0;
     virtual void Deliver(const MutationRecordVector& records,
                          MutationObserver&) = 0;

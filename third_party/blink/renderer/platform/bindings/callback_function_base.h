@@ -26,7 +26,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
     : public GarbageCollected<CallbackFunctionBase>,
       public NameClient {
  public:
-  virtual ~CallbackFunctionBase() = default;
+  ~CallbackFunctionBase() override = default;
 
   virtual void Trace(Visitor* visitor) const;
 

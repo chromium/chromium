@@ -136,7 +136,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                              options, exception_state);
   }
 
-  virtual ~ImageBitmapFactories() = default;
+  ~ImageBitmapFactories() override = default;
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override {

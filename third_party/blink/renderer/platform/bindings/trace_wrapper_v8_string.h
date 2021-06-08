@@ -22,6 +22,7 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
 
  public:
   TraceWrapperV8String() = default;
+  ~TraceWrapperV8String() final = default;
 
   bool IsEmpty() const { return string_.IsEmpty(); }
   void Clear() { string_.Clear(); }

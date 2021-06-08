@@ -66,7 +66,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
  public:
   PendingScript(const PendingScript&) = delete;
   PendingScript& operator=(const PendingScript&) = delete;
-  virtual ~PendingScript();
+  ~PendingScript() override;
 
   TextPosition StartingPosition() const { return starting_position_; }
   void MarkParserBlockingLoadStartTime();

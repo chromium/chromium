@@ -22,6 +22,7 @@ class CORE_EXPORT CustomElementReactionStack final
       public NameClient {
  public:
   CustomElementReactionStack();
+  ~CustomElementReactionStack() override = default;
 
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {

@@ -26,7 +26,7 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
               V8PositionCallback*,
               V8PositionErrorCallback*,
               const PositionOptions*);
-  ~GeoNotifier() = default;
+  ~GeoNotifier() override = default;
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "GeoNotifier"; }
 

@@ -59,6 +59,7 @@ class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
   static const char kSupplementName[];
 
   explicit LocalFileSystem(ExecutionContext&);
+  ~LocalFileSystem() final = default;
 
   void ResolveURL(const KURL&,
                   std::unique_ptr<ResolveURICallbacks>,

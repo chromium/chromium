@@ -34,6 +34,7 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   ModuleMap(const ModuleMap&) = delete;
   ModuleMap& operator=(const ModuleMap&) = delete;
   explicit ModuleMap(Modulator*);
+  ~ModuleMap() override = default;
 
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "ModuleMap"; }
