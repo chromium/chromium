@@ -547,6 +547,8 @@ crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transf
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_lines.html [ Failure ]
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
+crbug.com/1217713 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
+crbug.com/1217713 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
 
 # ARM-based Mac DTKs
 crbug.com/1130112 [ mac apple-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
