@@ -16,9 +16,10 @@ namespace query_tiles {
 namespace {
 
 TEST(TileGroupTest, CompareOperators) {
+  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
   TileGroup lhs, rhs;
-  test::ResetTestGroup(&lhs);
-  test::ResetTestGroup(&rhs);
+  test::ResetTestGroup(&lhs, last_updated_ts);
+  test::ResetTestGroup(&rhs, last_updated_ts);
   EXPECT_EQ(lhs, rhs);
 
   rhs.id = "changed";
@@ -38,9 +39,10 @@ TEST(TileGroupTest, CompareOperators) {
 }
 
 TEST(TileGroupTest, DeepCompareOperators) {
+  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
   TileGroup lhs, rhs;
-  test::ResetTestGroup(&lhs);
-  test::ResetTestGroup(&rhs);
+  test::ResetTestGroup(&lhs, last_updated_ts);
+  test::ResetTestGroup(&rhs, last_updated_ts);
   EXPECT_TRUE(test::AreTileGroupsIdentical(lhs, rhs));
 
   // Verify the order of tiles does not matter.
@@ -62,10 +64,11 @@ TEST(TileGroupTest, CopyOperator) {
 
 TEST(TileGroupTest, MoveOperator) {
   TileGroup lhs;
-  test::ResetTestGroup(&lhs);
+  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
+  test::ResetTestGroup(&lhs, last_updated_ts);
   TileGroup rhs = std::move(lhs);
   TileGroup expected;
-  test::ResetTestGroup(&expected);
+  test::ResetTestGroup(&expected, last_updated_ts);
   EXPECT_TRUE(test::AreTileGroupsIdentical(expected, rhs));
 }
 

@@ -140,6 +140,27 @@ TEST(TileUtilsTest, SortWithNewTilesInTheMiddle) {
   EXPECT_EQ(tile_stats["guid-1-2"].last_clicked_time, group.last_updated_ts);
 }
 
+// Tiles that are not clicked recently should be placed to the end.
+TEST(TileUtilsTest, SortWithTilesNotClickedRecently) {
+  TileGroup group;
+  test::ResetTestGroup(&group);
+
+  base::Time past_time = base::Time::Now() - base::TimeDelta::FromDays(30);
+  std::map<std::string, TileStats> tile_stats;
+  tile_stats["guid-1-1"] = TileStats(group.last_updated_ts, 0.5);
+  tile_stats["guid-1-2"] = TileStats(past_time, 0.5);
+  tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.2);
+  tile_stats["guid-2-1"] = TileStats(past_time, 0.3);
+  tile_stats["guid-2-2"] = TileStats(group.last_updated_ts, 0.3);
+
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
+  EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
+  EXPECT_EQ(group.tiles[1]->id, "guid-1-3");
+  EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
+  EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-2");
+  EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-1");
+}
+
 // Test the case that stats for unused tiles are cleared.
 TEST(TileUtilsTest, UnusedTilesCleared) {
   TileGroup group;
@@ -168,6 +189,9 @@ TEST(TileUtilsTest, CalculateTileScore) {
   EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
                                now_time + base::TimeDelta::FromDays(1)),
             exp(-0.099));
+  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
+                               now_time + base::TimeDelta::FromDays(30)),
+            0);
 }
 
 TEST(TileUtilsTest, IsTrendingTile) {

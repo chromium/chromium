@@ -11,12 +11,6 @@
 namespace query_tiles {
 namespace test {
 
-namespace {
-
-const char kTimeStr[] = "03/18/20 01:00:00 AM";
-
-}  // namespace
-
 void ResetTestEntry(Tile* entry) {
   entry->id = "guid-1-1";
   entry->query_text = "test query str";
@@ -39,10 +33,17 @@ void ResetTestEntry(Tile* entry) {
 }
 
 void ResetTestGroup(TileGroup* group) {
+  ResetTestGroup(group, base::Time::Now() - base::TimeDelta::FromDays(7));
+}
+
+void ResetTestGroup(TileGroup* group, base::Time last_updated_ts) {
   group->id = "group_guid";
   group->locale = "en-US";
-  bool success = base::Time::FromString(kTimeStr, &group->last_updated_ts);
-  CHECK(success);
+  // Convert time due to precision we used in proto message conversion.
+  int64_t milliseconds =
+      last_updated_ts.ToDeltaSinceWindowsEpoch().InMilliseconds();
+  group->last_updated_ts = base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMilliseconds(milliseconds));
   group->tiles.clear();
   auto test_entry_1 = std::make_unique<Tile>();
   ResetTestEntry(test_entry_1.get());

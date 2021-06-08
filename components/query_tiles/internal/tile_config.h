@@ -63,6 +63,9 @@ extern const char kMaxTrendingTileImpressionsKey[];
 // Finch parameter key for the starting position to shuffle unclicked tiles.
 extern const char kTileShufflePositionKey[];
 
+// Finch parameter key for number of non-interacted days to reset tile score.
+extern const char kNumDaysToResetTileScore[];
+
 class TileConfig {
  public:
   // Gets the URL for the Query Tiles service. If
@@ -119,6 +122,9 @@ class TileConfig {
   // Get the starting position tp shuffle unclicked tiles. Tiles before this
   // position are not shuffled.
   static int GetTileShufflePosition();
+
+  // Get the number of non-interacted days to reset tile score.
+  static int GetNumDaysToResetTileScore();
 };
 
 }  // namespace query_tiles

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/time/clock.h"
 #include "components/query_tiles/internal/store.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/internal/tile_types.h"
@@ -30,7 +29,6 @@ class TileManager {
   // Creates the instance.
   static std::unique_ptr<TileManager> Create(
       std::unique_ptr<TileStore> tile_store,
-      base::Clock* clock,
       const std::string& accept_languages);
 
   // Initializes the query tile store, loading them into memory after

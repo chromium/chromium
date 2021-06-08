@@ -58,6 +58,10 @@ constexpr char kMaxTrendingTileImpressionsKey[] =
 
 constexpr char kTileShufflePositionKey[] = "tile_shuffle_position";
 
+// Finch parameter key for resetting tile scores after a number of days without
+// interaction.
+constexpr char kNumDaysToResetTileScoreKey[] = "num_days_to_reset_tile_score";
+
 // Default expire duration.
 constexpr int kDefaultExpireDurationInSeconds = 48 * 60 * 60;  // 2 days.
 
@@ -93,6 +97,9 @@ constexpr int kDefaultMaxTrendingTileImpressions = 2;
 
 // Default position to start shuffling unclicked tile.
 constexpr int kDefaultTileShufflePosition = 2;
+
+// Default number of non-interacted days to reset tile score.
+constexpr int kDefauktNumDaysToResetTileScore = 28;
 
 namespace {
 
@@ -252,6 +259,13 @@ int TileConfig::GetTileShufflePosition() {
   return base::GetFieldTrialParamByFeatureAsInt(features::kQueryTiles,
                                                 kTileShufflePositionKey,
                                                 kDefaultTileShufflePosition);
+}
+
+// static
+int TileConfig::GetNumDaysToResetTileScore() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kQueryTiles, kNumDaysToResetTileScoreKey,
+      kDefauktNumDaysToResetTileScore);
 }
 
 }  // namespace query_tiles

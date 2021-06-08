@@ -16,6 +16,10 @@ namespace test {
 // Build and reset the TileGroup for test usage.
 void ResetTestGroup(TileGroup* group);
 
+// Build and reset the TileGroup for test usage, set |last_updated_ts| member
+// variable.
+void ResetTestGroup(TileGroup* group, base::Time last_updated_ts);
+
 // TODO(hesen): Have a better builder with parameters to specify the structure
 // of tree.
 // Build and reset the Tile for test usage.

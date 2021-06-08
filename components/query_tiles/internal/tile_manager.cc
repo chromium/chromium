@@ -32,11 +32,9 @@ constexpr char kTileStatsGroup[] = "tile_stats";
 class TileManagerImpl : public TileManager {
  public:
   TileManagerImpl(std::unique_ptr<TileStore> store,
-                  base::Clock* clock,
                   const std::string& accept_languages)
       : initialized_(false),
         store_(std::move(store)),
-        clock_(clock),
         accept_languages_(accept_languages) {}
 
  private:
@@ -208,7 +206,7 @@ class TileManagerImpl : public TileManager {
 
   // Returns true if the group is expired.
   bool IsGroupExpired(const TileGroup* group) const {
-    if (clock_->Now() >=
+    if (base::Time::Now() >=
         group->last_updated_ts + TileConfig::GetExpireDuration()) {
       stats::RecordGroupPruned(stats::PrunedGroupReason::kExpired);
       return true;
@@ -325,9 +323,6 @@ class TileManagerImpl : public TileManager {
   // seems weird, probably do it through a separate store or use PrefService.
   std::unique_ptr<TileGroup> tile_stats_group_;
 
-  // Clock object.
-  base::Clock* clock_;
-
   // Accept languages from the PrefService. Used to check if tiles stored are of
   // the same language.
   std::string accept_languages_;
@@ -344,10 +339,8 @@ TileManager::TileManager() = default;
 
 std::unique_ptr<TileManager> TileManager::Create(
     std::unique_ptr<TileStore> tile_store,
-    base::Clock* clock,
     const std::string& locale) {
-  return std::make_unique<TileManagerImpl>(std::move(tile_store), clock,
-                                           locale);
+  return std::make_unique<TileManagerImpl>(std::move(tile_store), locale);
 }
 
 }  // namespace query_tiles

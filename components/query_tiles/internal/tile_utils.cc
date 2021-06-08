@@ -137,9 +137,13 @@ double CalculateTileScore(const TileStats& tile_stats,
                           base::Time current_time) {
   if (tile_stats.last_clicked_time >= current_time)
     return tile_stats.score;
-  return tile_stats.score *
-         exp(TileConfig::GetTileScoreDecayLambda() *
-             (current_time - tile_stats.last_clicked_time).InDaysFloored());
+  // Reset the score if the tile has not been clicked for a long time.
+  int days_passed_since_last_click =
+      (current_time - tile_stats.last_clicked_time).InDaysFloored();
+  if (days_passed_since_last_click >= TileConfig::GetNumDaysToResetTileScore())
+    return 0;
+  return tile_stats.score * exp(TileConfig::GetTileScoreDecayLambda() *
+                                days_passed_since_last_click);
 }
 
 bool IsTrendingTile(const std::string& tile_id) {
