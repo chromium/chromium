@@ -151,11 +151,11 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     index = parent->children().size();
   } else {
     if (*details.index < 0 ||
-        size_t{*details.index} > parent->children().size()) {
+        static_cast<size_t>(*details.index) > parent->children().size()) {
       *error = bookmark_api_constants::kInvalidIndexError;
       return nullptr;
     }
-    index = size_t{*details.index};
+    index = static_cast<size_t>(*details.index);
   }
 
   std::u16string title;  // Optional.
@@ -278,9 +278,9 @@ void BookmarkEventRouter::BookmarkNodeMoved(BookmarkModel* model,
   const BookmarkNode* node = new_parent->children()[new_index].get();
   api::bookmarks::OnMoved::MoveInfo move_info;
   move_info.parent_id = base::NumberToString(new_parent->id());
-  move_info.index = int{new_index};
+  move_info.index = static_cast<int>(new_index);
   move_info.old_parent_id = base::NumberToString(old_parent->id());
-  move_info.old_index = int{old_index};
+  move_info.old_index = static_cast<int>(old_index);
 
   DispatchEvent(events::BOOKMARKS_ON_MOVED, api::bookmarks::OnMoved::kEventName,
                 api::bookmarks::OnMoved::Create(
@@ -307,7 +307,7 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
     const std::set<GURL>& removed_urls) {
   api::bookmarks::OnRemoved::RemoveInfo remove_info;
   remove_info.parent_id = base::NumberToString(parent->id());
-  remove_info.index = int{index};
+  remove_info.index = static_cast<int>(index);
   bookmark_api_helpers::PopulateBookmarkTreeNode(managed_, node, true, false,
                                                  &remove_info.node);
 
@@ -647,10 +647,11 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
   size_t index;
   if (params->destination.index.get()) {  // Optional (defaults to end).
     if (*params->destination.index < 0 ||
-        size_t{*params->destination.index} > parent->children().size()) {
+        static_cast<size_t>(*params->destination.index) >
+            parent->children().size()) {
       return Error(bookmark_api_constants::kInvalidIndexError);
     }
-    index = size_t{*params->destination.index};
+    index = static_cast<size_t>(*params->destination.index);
   } else {
     index = parent->children().size();
   }

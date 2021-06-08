@@ -179,7 +179,7 @@ std::string BrowserDMTokenStorageWin::InitDMToken() {
       continue;
 
     DWORD dtype = REG_NONE;
-    DWORD size = DWORD{raw_value.size()};
+    DWORD size = static_cast<DWORD>(raw_value.size());
     auto result = key.ReadValue(dm_token_value_name.c_str(), raw_value.data(),
                                 &size, &dtype);
     if (result == ERROR_MORE_DATA && size <= installer::kMaxDMTokenLength) {

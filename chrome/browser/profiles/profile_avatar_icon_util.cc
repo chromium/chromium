@@ -773,9 +773,9 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
 
   // Resize the avatar image down to the desired badge size, maintaining aspect
   // ratio (but prefer more square than rectangular when rounding).
-  const int avatar_badge_height =
-      std::ceilf(avatar_badge_width * (float{source_bitmap.height()} /
-                                       float{source_bitmap.width()}));
+  const int avatar_badge_height = std::ceilf(
+      avatar_badge_width *
+      (static_cast<float>(source_bitmap.height()) / source_bitmap.width()));
   SkBitmap sk_icon = skia::ImageOperations::Resize(
       source_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
       avatar_badge_width, avatar_badge_height);

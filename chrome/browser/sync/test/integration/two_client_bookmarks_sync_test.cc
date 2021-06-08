@@ -2442,7 +2442,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   // Make changes on client 0.
   for (size_t i = 0; i < num_bookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
-    size_t rand_pos = size_t{base::RandInt(0, int{num_bookmarks} - 1)};
+    size_t rand_pos =
+        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);
@@ -2451,7 +2452,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   // Make changes on client 1.
   for (size_t i = 0; i < num_bookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
-    size_t rand_pos = size_t{base::RandInt(0, int{num_bookmarks} - 1)};
+    size_t rand_pos =
+        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
@@ -2462,7 +2464,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   // Now make changes to client 1 first.
   for (size_t i = 0; i < num_bookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
-    size_t rand_pos = size_t{base::RandInt(0, int{num_bookmarks} - 1)};
+    size_t rand_pos =
+        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
@@ -2471,7 +2474,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   // Make changes on client 0.
   for (size_t i = 0; i < num_bookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
-    size_t rand_pos = size_t{base::RandInt(0, int{num_bookmarks} - 1)};
+    size_t rand_pos =
+        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);

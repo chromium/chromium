@@ -142,7 +142,7 @@ void ClickToCallContextMenuObserver::ExecuteCommand(int command_id) {
 void ClickToCallContextMenuObserver::SendClickToCallMessage(
     int chosen_device_index) {
   DCHECK(entry_point_);
-  if (size_t{chosen_device_index} >= devices_.size())
+  if (static_cast<size_t>(chosen_device_index) >= devices_.size())
     return;
 
   LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),

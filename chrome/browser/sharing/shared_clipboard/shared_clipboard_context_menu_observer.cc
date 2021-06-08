@@ -139,7 +139,7 @@ void SharedClipboardContextMenuObserver::ExecuteCommand(int command_id) {
 
 void SharedClipboardContextMenuObserver::SendSharedClipboardMessage(
     int chosen_device_index) {
-  if (size_t{chosen_device_index} >= devices_.size())
+  if (static_cast<size_t>(chosen_device_index) >= devices_.size())
     return;
   LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),
                           nullptr /* No suffix */, chosen_device_index);

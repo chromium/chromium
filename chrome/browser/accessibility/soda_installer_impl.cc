@@ -47,7 +47,8 @@ int GetDownloadProgress(
 
   DCHECK_LE(downloaded_bytes, total_bytes);
   return 100 *
-         base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
+         base::ClampToRange(static_cast<double>(downloaded_bytes) / total_bytes,
+                            0.0, 1.0);
 }
 
 }  // namespace

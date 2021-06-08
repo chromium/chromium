@@ -382,7 +382,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   }
   size_t insertion_index = (highest_index == -1)
                                ? parent_node->children().size()
-                               : size_t{highest_index};
+                               : static_cast<size_t>(highest_index);
 
   bookmarks::PasteFromClipboard(model, parent_node, insertion_index);
   return NoArguments();
@@ -483,7 +483,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
 
   size_t drop_index;
   if (params->index)
-    drop_index = size_t{*params->index};
+    drop_index = static_cast<size_t>(*params->index);
   else
     drop_index = drop_parent->children().size();
 

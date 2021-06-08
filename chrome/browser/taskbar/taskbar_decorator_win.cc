@@ -67,9 +67,9 @@ void SetOverlayIcon(HWND hwnd,
 
     // Maintain aspect ratio on resize, but prefer more square.
     // (We used to round down here, but rounding up produces nicer results.)
-    const int resized_height =
-        std::ceilf(kOverlayIconSize * (float{bitmap.get()->height()} /
-                                       float{bitmap.get()->width()}));
+    const int resized_height = std::ceilf(
+        kOverlayIconSize *
+        (static_cast<float>(bitmap.get()->height()) / bitmap.get()->width()));
 
     DCHECK_GE(kOverlayIconSize, resized_height);
     // Since the target size is so small, we use our best resizer.
