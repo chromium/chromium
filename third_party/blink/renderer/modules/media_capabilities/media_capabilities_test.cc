@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_encoding_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -350,8 +351,8 @@ class MediaCapabilitiesTestContext {
   std::unique_ptr<MockLearningTaskControllerService> nnr_service_;
 };
 
-// |kContentType|, |kCodec|, and |kCodecProfile| must match.
-const char kContentType[] = "video/webm; codecs=\"vp09.00.10.08\"";
+// |kVideoContentType|, |kCodec|, and |kCodecProfile| must match.
+const char kVideoContentType[] = "video/webm; codecs=\"vp09.00.10.08\"";
 const char kAudioContentType[] = "audio/webm; codecs=\"opus\"";
 const media::VideoCodecProfile kCodecProfile = media::VP9PROFILE_PROFILE0;
 const media::VideoCodec kCodec = media::kCodecVP9;
@@ -359,15 +360,15 @@ const double kFramerate = 20.5;
 const int kWidth = 3840;
 const int kHeight = 2160;
 const int kBitrate = 2391000;
-const char kWebrtcContentType[] = "video/VP9; profile-id=\"0\"";
+const char kWebrtcVideoContentType[] = "video/VP9; profile-id=\"0\"";
 const char kWebrtcAudioContentType[] = "audio/opus";
 
 // Construct AudioConfig using the constants above.
-MediaDecodingConfiguration* CreateAudioDecodingConfig(const char content_type[],
-                                                      const char type[]) {
+template <class T>
+T* CreateAudioConfig(const char content_type[], const char type[]) {
   auto* audio_config = MakeGarbageCollected<AudioConfiguration>();
   audio_config->setContentType(content_type);
-  auto* decoding_config = MakeGarbageCollected<MediaDecodingConfiguration>();
+  auto* decoding_config = MakeGarbageCollected<T>();
   decoding_config->setType(type);
   decoding_config->setAudio(audio_config);
   return decoding_config;
@@ -375,24 +376,32 @@ MediaDecodingConfiguration* CreateAudioDecodingConfig(const char content_type[],
 
 // Construct media-source AudioConfig using the constants above.
 MediaDecodingConfiguration* CreateAudioDecodingConfig() {
-  return CreateAudioDecodingConfig(kAudioContentType, "media-source");
+  return CreateAudioConfig<MediaDecodingConfiguration>(kAudioContentType,
+                                                       "media-source");
 }
 
-// Construct webrtc AudioConfig using the constants above.
+// Construct webrtc decoding AudioConfig using the constants above.
 MediaDecodingConfiguration* CreateWebrtcAudioDecodingConfig() {
-  return CreateAudioDecodingConfig(kWebrtcAudioContentType, "webrtc");
+  return CreateAudioConfig<MediaDecodingConfiguration>(kWebrtcAudioContentType,
+                                                       "webrtc");
+}
+
+// Construct webrtc decoding AudioConfig using the constants above.
+MediaEncodingConfiguration* CreateWebrtcAudioEncodingConfig() {
+  return CreateAudioConfig<MediaEncodingConfiguration>(kWebrtcAudioContentType,
+                                                       "webrtc");
 }
 
 // Construct VideoConfig using the constants above.
-MediaDecodingConfiguration* CreateDecodingConfig(const char content_type[],
-                                                 const char type[]) {
+template <class T>
+T* CreateVideoConfig(const char content_type[], const char type[]) {
   auto* video_config = MakeGarbageCollected<VideoConfiguration>();
   video_config->setFramerate(kFramerate);
   video_config->setContentType(content_type);
   video_config->setWidth(kWidth);
   video_config->setHeight(kHeight);
   video_config->setBitrate(kBitrate);
-  auto* decoding_config = MakeGarbageCollected<MediaDecodingConfiguration>();
+  auto* decoding_config = MakeGarbageCollected<T>();
   decoding_config->setType(type);
   decoding_config->setVideo(video_config);
   return decoding_config;
@@ -400,12 +409,20 @@ MediaDecodingConfiguration* CreateDecodingConfig(const char content_type[],
 
 // Construct media-source VideoConfig using the constants above.
 MediaDecodingConfiguration* CreateDecodingConfig() {
-  return CreateDecodingConfig(kContentType, "media-source");
+  return CreateVideoConfig<MediaDecodingConfiguration>(kVideoContentType,
+                                                       "media-source");
 }
 
-// Construct webrtc VideoConfig using the constants above.
+// Construct webrtc decoding VideoConfig using the constants above.
 MediaDecodingConfiguration* CreateWebrtcDecodingConfig() {
-  return CreateDecodingConfig(kWebrtcContentType, "webrtc");
+  return CreateVideoConfig<MediaDecodingConfiguration>(kWebrtcVideoContentType,
+                                                       "webrtc");
+}
+
+// Construct webrtc encoding VideoConfig using the constants above.
+MediaEncodingConfiguration* CreateWebrtcEncodingConfig() {
+  return CreateVideoConfig<MediaEncodingConfiguration>(kWebrtcVideoContentType,
+                                                       "webrtc");
 }
 
 // Construct PredicitonFeatures matching the CreateDecodingConfig, using the
@@ -501,7 +518,7 @@ base::FieldTrialParams MakeMlParams(double bad_window_threshold,
   return params;
 }
 
-// Wrapping deocdingInfo() call for readability. Await resolution of the promise
+// Wrapping decodingInfo() call for readability. Await resolution of the promise
 // and return its info.
 MediaCapabilitiesInfo* DecodingInfo(
     const MediaDecodingConfiguration* decoding_config,
@@ -519,6 +536,23 @@ MediaCapabilitiesInfo* DecodingInfo(
       context->GetExceptionState());
 }
 
+// Wrapping encodingInfo() call for readability. Await resolution of the promise
+// and return its info.
+MediaCapabilitiesInfo* EncodingInfo(
+    const MediaEncodingConfiguration* encoding_config,
+    MediaCapabilitiesTestContext* context) {
+  ScriptPromise promise = context->GetMediaCapabilities()->encodingInfo(
+      context->GetScriptState(), encoding_config, context->GetExceptionState());
+
+  ScriptPromiseTester tester(context->GetScriptState(), promise);
+  tester.WaitUntilSettled();
+
+  CHECK(!tester.IsRejected()) << " Cant get info from rejected promise.";
+
+  return NativeValueTraits<MediaCapabilitiesInfo>::NativeValue(
+      context->GetIsolate(), tester.Value().V8Value(),
+      context->GetExceptionState());
+}
 }  // namespace
 
 TEST(MediaCapabilitiesTests, BasicAudio) {
@@ -1033,8 +1067,8 @@ TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
   } while (std::next_permutation(callback_order.begin(), callback_order.end()));
 }
 
-// WebRTC tests.
-TEST(MediaCapabilitiesTests, WebrtcBasicAudio) {
+// WebRTC decodingInfo tests.
+TEST(MediaCapabilitiesTests, WebrtcDecodingBasicAudio) {
   MediaCapabilitiesTestContext context;
   ON_CALL(context.GetMockPlatform(), GetGpuFactories())
       .WillByDefault(Return(nullptr));
@@ -1049,7 +1083,7 @@ TEST(MediaCapabilitiesTests, WebrtcBasicAudio) {
   EXPECT_TRUE(info->powerEfficient());
 }
 
-TEST(MediaCapabilitiesTests, WebrtcUnsupportedAudio) {
+TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedAudio) {
   MediaCapabilitiesTestContext context;
   ON_CALL(context.GetMockPlatform(), GetGpuFactories())
       .WillByDefault(Return(nullptr));
@@ -1057,14 +1091,14 @@ TEST(MediaCapabilitiesTests, WebrtcUnsupportedAudio) {
       .Times(testing::AtMost(1));
 
   const MediaDecodingConfiguration* kDecodingConfig =
-      CreateAudioDecodingConfig("audio/FooCodec", "webrtc");
+      CreateAudioConfig<MediaDecodingConfiguration>("audio/FooCodec", "webrtc");
   MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
   EXPECT_FALSE(info->supported());
   EXPECT_FALSE(info->smooth());
   EXPECT_FALSE(info->powerEfficient());
 }
 
-TEST(MediaCapabilitiesTests, WebrtcBasicVideo) {
+TEST(MediaCapabilitiesTests, WebrtcDecodingBasicVideo) {
   MediaCapabilitiesTestContext context;
   ON_CALL(context.GetMockPlatform(), GetGpuFactories())
       .WillByDefault(Return(nullptr));
@@ -1079,7 +1113,7 @@ TEST(MediaCapabilitiesTests, WebrtcBasicVideo) {
   EXPECT_FALSE(info->powerEfficient());
 }
 
-TEST(MediaCapabilitiesTests, WebrtcUnsupportedVideo) {
+TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
   MediaCapabilitiesTestContext context;
   ON_CALL(context.GetMockPlatform(), GetGpuFactories())
       .WillByDefault(Return(nullptr));
@@ -1087,9 +1121,71 @@ TEST(MediaCapabilitiesTests, WebrtcUnsupportedVideo) {
       .Times(testing::AtMost(1));
 
   const MediaDecodingConfiguration* kDecodingConfig =
-      CreateDecodingConfig("video/FooCodec", "webrtc");
+      CreateVideoConfig<MediaDecodingConfiguration>("video/FooCodec", "webrtc");
 
   MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+// WebRTC encodingInfo tests.
+TEST(MediaCapabilitiesTests, WebrtcEncodingBasicAudio) {
+  MediaCapabilitiesTestContext context;
+  ON_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateWebrtcAudioEncodingConfig();
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedAudio) {
+  MediaCapabilitiesTestContext context;
+  ON_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateAudioConfig<MediaEncodingConfiguration>("audio/FooCodec", "webrtc");
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingBasicVideo) {
+  MediaCapabilitiesTestContext context;
+  ON_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateWebrtcEncodingConfig();
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
+  MediaCapabilitiesTestContext context;
+  ON_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateVideoConfig<MediaEncodingConfiguration>("video/FooCodec", "webrtc");
+
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
   EXPECT_FALSE(info->supported());
   EXPECT_FALSE(info->smooth());
   EXPECT_FALSE(info->powerEfficient());

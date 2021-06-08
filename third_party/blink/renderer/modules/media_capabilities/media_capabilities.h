@@ -52,7 +52,9 @@ class MODULES_EXPORT MediaCapabilities final
   ScriptPromise decodingInfo(ScriptState*,
                              const MediaDecodingConfiguration*,
                              ExceptionState&);
-  ScriptPromise encodingInfo(ScriptState*, const MediaEncodingConfiguration*);
+  ScriptPromise encodingInfo(ScriptState*,
+                             const MediaEncodingConfiguration*,
+                             ExceptionState&);
 
  private:
   // Stores pending callback state from and intermediate prediction values while
@@ -145,7 +147,12 @@ class MODULES_EXPORT MediaCapabilities final
                                    bool is_supported,
                                    bool is_power_efficient);
 
+  void OnWebrtcEncodingInfoSupport(int callback_id,
+                                   bool is_supported,
+                                   bool is_power_efficient);
+
   void ResolveWebrtcDecodingCallbackIfReady(int callback_id);
+  void ResolveWebrtcEncodingCallbackIfReady(int callback_id);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.

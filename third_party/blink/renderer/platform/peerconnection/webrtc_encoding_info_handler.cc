@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
 
 #include <utility>
 #include <vector>
@@ -17,47 +17,44 @@
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
+#include "third_party/webrtc/api/audio_codecs/audio_encoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
-#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace blink {
-WebrtcDecodingInfoHandler* WebrtcDecodingInfoHandler::Instance() {
-  DEFINE_STATIC_LOCAL(WebrtcDecodingInfoHandler, instance, ());
+
+WebrtcEncodingInfoHandler* WebrtcEncodingInfoHandler::Instance() {
+  DEFINE_STATIC_LOCAL(WebrtcEncodingInfoHandler, instance, ());
   return &instance;
 }
 
-WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler()
-    : WebrtcDecodingInfoHandler(
-          blink::CreateWebrtcVideoDecoderFactory(
-              Platform::Current()->GetGpuFactories(),
-              Platform::Current()->GetMediaDecoderFactory(),
-              Platform::Current()->MediaThreadTaskRunner(),
-              Platform::Current()->GetRenderingColorSpace()),
-          blink::CreateWebrtcAudioDecoderFactory()) {}
+WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler()
+    : WebrtcEncodingInfoHandler(blink::CreateWebrtcVideoEncoderFactory(
+                                    Platform::Current()->GetGpuFactories()),
+                                blink::CreateWebrtcAudioEncoderFactory()) {}
 
-WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler(
-    std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
-    rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory)
-    : video_decoder_factory_(std::move(video_decoder_factory)),
-      audio_decoder_factory_(std::move(audio_decoder_factory)) {
+WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(
+    std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
+    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory)
+    : video_encoder_factory_(std::move(video_encoder_factory)),
+      audio_encoder_factory_(std::move(audio_encoder_factory)) {
   std::vector<webrtc::AudioCodecSpec> supported_audio_specs =
-      audio_decoder_factory_->GetSupportedDecoders();
+      audio_encoder_factory_->GetSupportedEncoders();
   for (const auto& audio_spec : supported_audio_specs) {
     supported_audio_codecs_.insert(
         String::FromUTF8(audio_spec.format.name).LowerASCII());
   }
 }
 
-WebrtcDecodingInfoHandler::~WebrtcDecodingInfoHandler() = default;
+WebrtcEncodingInfoHandler::~WebrtcEncodingInfoHandler() = default;
 
-void WebrtcDecodingInfoHandler::DecodingInfo(
+void WebrtcEncodingInfoHandler::EncodingInfo(
     const absl::optional<String> audio_mime_type,
     const absl::optional<String> video_mime_type,
     const absl::optional<String> video_scalability_mode,
-    OnMediaCapabilitiesDecodingInfoCallback callback) const {
+    OnMediaCapabilitiesEncodingInfoCallback callback) const {
   DCHECK(audio_mime_type || video_mime_type);
 
   // Set default values to true in case an audio configuration is not specified.
@@ -91,8 +88,8 @@ void WebrtcDecodingInfoHandler::DecodingInfo(
         video_scalability_mode
             ? absl::make_optional(video_scalability_mode->Utf8())
             : absl::nullopt;
-    webrtc::VideoDecoderFactory::CodecSupport support =
-        video_decoder_factory_->QueryCodecSupport(sdp_video_format,
+    webrtc::VideoEncoderFactory::CodecSupport support =
+        video_encoder_factory_->QueryCodecSupport(sdp_video_format,
                                                   scalability_mode);
 
     supported = support.is_supported;

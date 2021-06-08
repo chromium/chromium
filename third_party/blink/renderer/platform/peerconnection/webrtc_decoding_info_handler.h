@@ -35,7 +35,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   ~WebrtcDecodingInfoHandler();
 
   // Queries the capabilities of the given decoding configuration and passes
-  // WebMediaCapabilitiesInfo result via callbacks.
+  // the result via callbacks.
   // It implements WICG Media Capabilities decodingInfo() call for webrtc
   // encoding.
   // https://wicg.github.io/media-capabilities/#media-capabilities-interface

@@ -6,6 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/network/parsed_content_type.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace blink {
 
@@ -31,6 +34,11 @@ bool OptionalEquals(const OptionalT1& lhs, const OptionalT2& rhs) {
     return false;
   return *lhs == *rhs;
 }
+
+String WebrtcCodecNameFromMimeType(const String& mime_type, const char* prefix);
+
+webrtc::SdpVideoFormat::Parameters ConvertToSdpVideoFormatParameters(
+    const ParsedContentHeaderFieldParameters& parameters);
 
 }  // namespace blink
 
