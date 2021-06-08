@@ -7,7 +7,9 @@
 #include <set>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_types.h"
 #include "content/public/browser/storage_partition.h"
@@ -182,3 +184,53 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   EXPECT_FALSE(removal_data->origin_matcher.Run(
       url::Origin::Create(origin_b), nullptr /* special_storage_policy */));
 }
+
+#if defined(OS_ANDROID)
+
+TEST_F(BrowsingDataHistoryObserverServiceTest,
+       TimeRangeHistoryWithRestrictions_ClearCommerceDataCalled) {
+  base::HistogramTester histogram_tester;
+  TestingProfile profile;
+  BrowsingDataHistoryObserverService service(&profile);
+  RemovalDataTestStoragePartition partition;
+  service.OverrideStoragePartitionForTesting(&partition);
+
+  GURL origin_a = GURL("https://a.test");
+
+  std::set<GURL> restrict_urls = {origin_a};
+
+  base::Time begin = base::Time::Now();
+  base::Time end = begin + base::TimeDelta::FromDays(1);
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
+      {} /* deleted_rows */, {} /* favicon_urls */,
+      restrict_urls /* restrict_urls */);
+
+  service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "MerchantViewer.DataManager.DeleteMerchantViewerDataForTimeRange", 0, 1);
+}
+
+TEST_F(BrowsingDataHistoryObserverServiceTest,
+       OriginBasedCommerceDataCleared_EmptyList) {
+  base::HistogramTester histogram_tester;
+
+  TestingProfile profile;
+  BrowsingDataHistoryObserverService service(&profile);
+  RemovalDataTestStoragePartition partition;
+  service.OverrideStoragePartitionForTesting(&partition);
+
+  history::OriginCountAndLastVisitMap origin_map;
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {} /* deleted_rows */, {} /* favicon_urls */);
+  deletion_info.set_deleted_urls_origin_map(std::move(origin_map));
+
+  service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
+
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "MerchantViewer.DataManager.DeleteMerchantViewerDataForOrigins", 0, 1);
+}
+
+#endif
