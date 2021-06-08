@@ -12,9 +12,12 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -110,6 +113,12 @@ CartService::CartService(Profile* profile)
 
   if (IsCartDiscountEnabled()) {
     StartGettingDiscount();
+  }
+  optimization_guide_decider_ =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::SHOPPING_PAGE_PREDICTOR});
   }
 }
 
@@ -495,6 +504,17 @@ void CartService::DeleteRemovedCartsContent(
   }
 }
 
+bool CartService::ShouldSkip(const GURL& url) {
+  if (!optimization_guide_decider_) {
+    return false;
+  }
+  optimization_guide::OptimizationMetadata metadata;
+  auto decision = optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, &metadata);
+  DVLOG(1) << "SHOPPING_PAGE_PREDICTOR = " << static_cast<int>(decision);
+  return optimization_guide::OptimizationGuideDecision::kFalse == decision;
+}
+
 void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
@@ -502,19 +522,23 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
     std::move(callback).Run(success, {});
     return;
   }
-  std::set<std::string> expired_merchants;
+  std::set<std::string> merchants_to_erase;
   for (CartDB::KeyAndValue kv : proto_pairs) {
-    if (IsExpired(kv.second)) {
-      DeleteCart(kv.second.key());
-      expired_merchants.emplace(kv.second.key());
+    if (IsExpired(kv.second) ||
+        ShouldSkip(GURL(kv.second.merchant_cart_url()))) {
+      // Removed carts should remain removed.
+      if (!kv.second.is_removed()) {
+        DeleteCart(kv.second.key());
+      }
+      merchants_to_erase.emplace(kv.second.key());
     }
   }
   proto_pairs.erase(
       std::remove_if(proto_pairs.begin(), proto_pairs.end(),
-                     [expired_merchants](CartDB::KeyAndValue kv) {
+                     [merchants_to_erase](CartDB::KeyAndValue kv) {
                        return kv.second.is_hidden() || kv.second.is_removed() ||
-                              expired_merchants.find(kv.second.key()) !=
-                                  expired_merchants.end();
+                              merchants_to_erase.find(kv.second.key()) !=
+                                  merchants_to_erase.end();
                      }),
       proto_pairs.end());
   // Sort items in timestamp descending order.

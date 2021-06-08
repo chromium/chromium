@@ -16,6 +16,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -163,7 +164,8 @@ class CartService : public history::HistoryServiceObserver,
   // Set discount_link_fetcher_ for testing purpose.
   void SetCartDiscountLinkFetcherForTesting(
       std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);
-
+  // Returns whether a URL should be skipped based on server-side bloom filter.
+  bool ShouldSkip(const GURL& url);
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
   void CleanUpDiscounts(cart_db::ChromeCartContentProto proto);
 
@@ -176,6 +178,7 @@ class CartService : public history::HistoryServiceObserver,
   absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
+  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
