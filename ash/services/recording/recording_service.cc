@@ -365,7 +365,8 @@ void RecordingService::Capture(const media::AudioBus* audio_source,
 void RecordingService::OnCaptureError(
     media::AudioCapturerSource::ErrorCode code,
     const std::string& message) {
-  LOG(ERROR) << static_cast<uint32_t>(code) << ", " << message;
+  LOG(ERROR) << "AudioCaptureError: code=" << static_cast<uint32_t>(code)
+             << ", " << message;
 }
 
 void RecordingService::OnCaptureMuted(bool is_muted) {}
