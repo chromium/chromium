@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -52,12 +53,17 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
  public:
   // Command Id for recently closed items header or disabled item to which the
   // accelerator string will be appended.
-  static constexpr int kRecentlyClosedHeaderCommandId = 1140;
-  static constexpr int kDisabledRecentlyClosedHeaderCommandId = 1141;
+  static constexpr int kRecentlyClosedHeaderCommandId =
+      AppMenuModel::kMinRecentTabsCommandId;
+  static constexpr int kDisabledRecentlyClosedHeaderCommandId =
+      kRecentlyClosedHeaderCommandId + AppMenuModel::kNumUnboundedMenuTypes;
+  static constexpr int kFirstMenuEntryCommandId =
+      kDisabledRecentlyClosedHeaderCommandId +
+      AppMenuModel::kNumUnboundedMenuTypes;
 
   // Exposed for tests only: return the Command Id for the first entry in the
   // recently closed window items list.
-  static int GetFirstRecentTabsCommandId();
+  int GetFirstRecentTabsCommandId();
 
   RecentTabsSubMenuModel(ui::AcceleratorProvider* accelerator_provider,
                          Browser* browser);
@@ -78,11 +84,12 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
  private:
   struct TabNavigationItem;
-  using TabNavigationItems = std::vector<TabNavigationItem>;
-  using WindowItems = std::vector<SessionID>;
-  using GroupItems = std::vector<SessionID>;
+  using TabNavigationItems = std::map<int, TabNavigationItem>;
+  using WindowItems = std::map<int, SessionID>;
+  using GroupItems = std::map<int, SessionID>;
   struct SubMenuItem;
-  using SubMenuItems = std::vector<SubMenuItem>;
+  using SubMenuItems = std::map<int, SubMenuItem>;
+  using DeviceNameItems = base::flat_set<int>;
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.
@@ -158,10 +165,9 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Clears all tabs from other devices.
   void ClearTabsFromOtherDevices();
 
-  // Converts |command_id| of menu item to index in local or other devices'
-  // TabNavigationItems, and returns the corresponding local or other devices'
-  // TabNavigationItems in |tab_items|.
-  int CommandIdToTabVectorIndex(int command_id, TabNavigationItems** tab_items);
+  // Returns the corresponding local or other devices' TabNavigationItems in
+  // |tab_items|.
+  TabNavigationItems* GetTabVectorForCommandId(int command_id);
 
   // Convenience function to access OpenTabsUIDelegate provided by
   // SessionSyncService. Can return null if session sync is not running.
@@ -174,6 +180,34 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   void OnForeignSessionUpdated();
 
+  // Returns |next_menu_id_| and increments it by 2. This allows for 'sharing'
+  // command ids with the bookmarks menu, which also uses every other int as
+  // an id.
+  int GetAndIncrementNextMenuID();
+
+  // Returns true if the command id identifies a tab menu item, either local or
+  // from another device.
+  bool IsTabModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a local tab menu item.
+  bool IsLocalTabModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a tab menu item from another
+  // device.
+  bool IsOtherDeviceTabModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a window menu item.
+  bool IsWindowModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a group menu item.
+  bool IsGroupModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a sub menu item.
+  bool IsSubMenuModelCommandId(int command_id) const;
+
+  // Returns true if the command id identifies a device name item.
+  bool IsDeviceNameCommandId(int command_id) const;
+
   Browser* const browser_;  // Weak.
 
   sync_sessions::SessionSyncService* const session_sync_service_;  // Weak.
@@ -184,34 +218,35 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Accelerator for showing history.
   ui::Accelerator show_history_accelerator_;
 
-  // Navigation items for local recently closed tabs.  The |command_id| for
-  // these is set to |kFirstLocalTabCommandId| plus the index into the vector.
-  // Upon invocation of the menu, the navigation information is retrieved from
+  // ID of the next menu item.
+  int next_menu_id_;
+
+  // Navigation items for local recently closed tabs. Upon invocation of the
+  // menu, the navigation information is retrieved from
   // |local_tab_navigation_items_| and used to navigate to the item specified.
   TabNavigationItems local_tab_navigation_items_;
 
   // Similar to |local_tab_navigation_items_| except the tabs are opened tabs
-  // from other devices, and the first |command_id| is
-  // |kFirstOtherDevicesTabCommandId|.
+  // from other devices.
   TabNavigationItems other_devices_tab_navigation_items_;
 
-  // Window items for local recently closed windows.  The |command_id| for
-  // these is set to |kFirstLocalWindowCommandId| plus the index into the
-  // vector.  Upon invocation of the menu, information is retrieved from
-  // |local_window_items_| and used to create the specified window.
+  // Window items for local recently closed windows. Upon invocation of the
+  // menu, information is retrieved from |local_window_items_| and used to
+  // create the specified window.
   WindowItems local_window_items_;
 
-  // Group items for local recently closed groups.  The |command_id| for
-  // these is set to |kFirstLocalGroupCommandId| plus the index into the
-  // vector.  Upon invocation of the menu, information is retrieved from
-  // |local_group_items_| and used to create the specified group.
+  // Group items for local recently closed groups. Upon invocation of the menu,
+  // information is retrieved from |local_group_items_| and used to create the
+  // specified group.
   GroupItems local_group_items_;
 
-  // SubMenu items for submenu entry points representing local recently
-  // closed groups and windows.  The |command_id| for these is set to
-  // |kFirstLocalSubMenuCommandId| plus the index into the vector. These are
-  // not executable.
+  // Sub menu items for sub menu entry points representing local recently
+  // closed groups and windows. These are not executable.
   SubMenuItems local_sub_menu_items_;
+
+  // Device name items for names of non-local devices. These are not
+  // executable.
+  DeviceNameItems device_name_items_;
 
   // Index of the last local entry (recently closed tab or window or group) in
   // the menumodel.

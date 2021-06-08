@@ -446,11 +446,15 @@
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
 
-// Starting command id for menus showing bookmarks (such as the wrench menu).
-// While command ids passed to Windows functions must not be higher than 0xDFFF,
-// these IDs are not exposed to the native system and thus can be in this
-// otherwise-reserved range. No command used in a menu (such as the wrench menu)
-// should be higher than this, otherwise it'll conflict.
-#define IDC_FIRST_BOOKMARK_MENU 0xE000
+// Starting command id for menus showing an arbitrarily high (variable) number
+// of menu items. Currently, this includes the recent tabs and bookmarks menus.
+// While command ids passed to Windows functions must not be higher than
+// 0xDFFF, these IDs are not exposed to the native system and thus can be in
+// this otherwise-reserved range.
+// WARNING: No command used in a bounded menu should be higher than this,
+// otherwise it'll conflict. Unbounded menus must also avoid conflicting with
+// each other, by only using every Nth id (where N is the number of unbounded
+// menus).
+#define IDC_FIRST_UNBOUNDED_MENU 0xE000
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_

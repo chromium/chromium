@@ -162,7 +162,7 @@ ZoomMenuModel::ZoomMenuModel(ui::SimpleMenuModel::Delegate* delegate)
   Build();
 }
 
-ZoomMenuModel::~ZoomMenuModel() {}
+ZoomMenuModel::~ZoomMenuModel() = default;
 
 void ZoomMenuModel::Build() {
   AddItemWithStringId(IDC_ZOOM_PLUS, IDS_ZOOM_PLUS);
@@ -222,7 +222,7 @@ ToolsMenuModel::ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
   Build(browser);
 }
 
-ToolsMenuModel::~ToolsMenuModel() {}
+ToolsMenuModel::~ToolsMenuModel() = default;
 
 // More tools submenu is constructed as follows:
 // - Page specific actions overflow (save page, adding to desktop).
@@ -259,8 +259,7 @@ void ToolsMenuModel::Build(Browser* browser) {
 
 // static
 const int AppMenuModel::kMinRecentTabsCommandId;
-// static
-const int AppMenuModel::kMaxRecentTabsCommandId;
+const int AppMenuModel::kNumUnboundedMenuTypes;
 
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
                            Browser* browser,
@@ -981,8 +980,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
   const GlobalErrorService::GlobalErrorList& errors =
       GlobalErrorServiceFactory::GetForProfile(browser_->profile())->errors();
   bool menu_items_added = false;
-  for (auto it = errors.begin(); it != errors.end(); ++it) {
-    GlobalError* error = *it;
+  for (auto* error : errors) {
     DCHECK(error);
     if (error->HasMenuItem()) {
       AddItem(error->MenuItemCommandID(), error->MenuItemLabel());

@@ -69,9 +69,9 @@ const unsigned int kRecentlyClosedCount = 8;
 const size_t kMaximumMenuWidthInChars = 50;
 
 // Constants used in menu definitions.  The first non-Chrome command is at
-// IDC_FIRST_BOOKMARK_MENU.
+// IDC_FIRST_UNBOUNDED_MENU.
 enum ReservedCommandId {
-  kLastChromeCommand = IDC_FIRST_BOOKMARK_MENU - 1,
+  kLastChromeCommand = IDC_FIRST_UNBOUNDED_MENU - 1,
   kMenuEnd,
   kSeparator,
   kSubmenu,

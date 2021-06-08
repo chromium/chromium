@@ -12,6 +12,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -80,7 +81,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void NewAndInitDelegateForPermanent() {
     const BookmarkNode* node = model_->bookmark_bar_node();
     NewDelegate();
-    bookmark_menu_delegate_->Init(&test_delegate_, NULL, node, 0,
+    bookmark_menu_delegate_->Init(&test_delegate_, nullptr, node, 0,
                                   BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
                                   BOOKMARK_LAUNCH_LOCATION_NONE);
   }
@@ -163,7 +164,8 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   int next_id_before_load = next_menu_id();
   bookmark_menu_delegate_->WillShowMenu(f1_item);
   // f1 should have loaded its children.
-  EXPECT_EQ(next_id_before_load + 2, next_menu_id());
+  EXPECT_EQ(next_id_before_load + 2 * AppMenuModel::kNumUnboundedMenuTypes,
+            next_menu_id());
   ASSERT_EQ(2u, f1_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f1_node =
       model_->bookmark_bar_node()->children()[1].get();
@@ -183,7 +185,8 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   // problems.
   bookmark_menu_delegate_->WillShowMenu(f11_item);
   // F11 should have loaded its single child (f11a).
-  EXPECT_EQ(next_id_before_load + 1, next_menu_id());
+  EXPECT_EQ(next_id_before_load + AppMenuModel::kNumUnboundedMenuTypes,
+            next_menu_id());
 
   ASSERT_EQ(1u, f11_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f11_node = f1_node->children()[1].get();
@@ -197,7 +200,7 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, NULL, node, 0,
+  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
                                 BOOKMARK_LAUNCH_LOCATION_NONE);
   LoadAllMenus();
