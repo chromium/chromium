@@ -2431,18 +2431,6 @@ void AppsGridView::SetViewHidden(AppListItemView* view,
   view->layer()->SetOpacity(hide ? 0 : 1);
 }
 
-void AppsGridView::OnImplicitAnimationsCompleted() {
-  if (layer()->opacity() == 0.0f)
-    SetVisible(false);
-  // TODO(crbug.com/1211608): Refactor animation code so multiple animations
-  // don't share this method, then move code below to PagedAppsGridView.
-  if (cardified_state_) {
-    MaskContainerToBackgroundBounds();
-    return;
-  }
-  RemoveAllBackgroundCards();
-}
-
 void AppsGridView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 

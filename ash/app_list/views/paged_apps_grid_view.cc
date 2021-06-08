@@ -667,6 +667,19 @@ void PagedAppsGridView::ScrollEnded() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ui::ImplicitAnimationObserver:
+
+void PagedAppsGridView::OnImplicitAnimationsCompleted() {
+  if (layer()->opacity() == 0.0f)
+    SetVisible(false);
+  if (cardified_state_) {
+    MaskContainerToBackgroundBounds();
+    return;
+  }
+  RemoveAllBackgroundCards();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // private:
 
 bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {

@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -81,7 +80,6 @@ class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemView::GridDelegate,
                                 public AppListItemListObserver,
                                 public AppListModelObserver,
-                                public ui::ImplicitAnimationObserver,
                                 public views::BoundsAnimatorObserver {
  public:
   enum Pointer {
@@ -337,12 +335,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Ends the "cardified" state if the subclass supports it.
   virtual void MaybeEndCardifiedView() {}
 
-  // TODO(crbug.com/1211608): Remove these methods. They exist to allow this
-  // class to call into PagedAppsGridView from UpdateDrag() and
-  // OnImplicitAnimationsCompleted().
+  // TODO(crbug.com/1211608): Remove this method. It exists to allow this
+  // class to call into PagedAppsGridView from UpdateDrag().
   virtual void SetHighlightedBackgroundCard(int new_highlighted_page) {}
-  virtual void MaskContainerToBackgroundBounds() {}
-  virtual void RemoveAllBackgroundCards() {}
 
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
@@ -577,9 +572,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;
-
-  // ui::ImplicitAnimationObserver overrides:
-  void OnImplicitAnimationsCompleted() override;
 
   // Hide a given view temporarily without losing (mouse) events and / or
   // changing the size of it. If |immediate| is set the change will be
@@ -851,6 +843,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Target page to switch to when |page_flip_timer_| fires.
   int page_flip_target_ = -1;
 
+  // Used to animate individual icon positions.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
   // The most recent activated folder item view.

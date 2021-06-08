@@ -14,6 +14,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -33,9 +34,11 @@ class PaginationController;
 
 // An apps grid that shows the apps on a series of fixed-size pages.
 // Used for the peeking/fullscreen launcher, home launcher and folders.
-// Created by and is a child of AppsContainerView.
+// Created by and is a child of AppsContainerView. Observes layer animations
+// for the transition into and out of the "cardified" state.
 class ASH_EXPORT PagedAppsGridView : public AppsGridView,
-                                     public PaginationModelObserver {
+                                     public PaginationModelObserver,
+                                     public ui::ImplicitAnimationObserver {
  public:
   PagedAppsGridView(ContentsView* contents_view,
                     AppsGridViewFolderDelegate* folder_delegate);
@@ -82,6 +85,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void ScrollStarted() override;
   void ScrollEnded() override;
 
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override;
+
   bool cardified_state_for_testing() const { return cardified_state_; }
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
 
@@ -94,7 +100,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Creates a layer mask for gradient alpha when the feature is enabled. The
   // gradient appears at the top and bottom of the apps grid to create a
-  // "fade out" effect when
+  // "fade out" effect when dragging the whole page.
   void MaybeCreateGradientMask();
 
   // Helper functions to start the Apps Grid Cardified state.
@@ -118,11 +124,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Removes the background card at the end of |background_cards_|.
   void RemoveBackgroundCard();
   // Masks the apps grid container to background cards bounds.
-  // TODO(crbug.com/1211608): Remove "override" from these methods.
-  void MaskContainerToBackgroundBounds() override;
+  void MaskContainerToBackgroundBounds();
   // Removes all background cards from |background_cards_|.
-  void RemoveAllBackgroundCards() override;
+  void RemoveAllBackgroundCards();
   // Updates the highlighted background card. Used only for cardified state.
+  // TODO(crbug.com/1211608): Remove "override" from this method.
   void SetHighlightedBackgroundCard(int new_highlighted_page) override;
 
   // Update the padding of tile view based on the contents bounds.
