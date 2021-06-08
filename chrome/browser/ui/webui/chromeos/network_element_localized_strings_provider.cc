@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/chromeos/net/shill_error.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -20,6 +19,8 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/shill_error.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace chromeos {
 namespace network_element {
@@ -461,7 +462,8 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   for (const auto* error : shill_errors) {
     html_source->AddString(
-        error, base::UTF16ToUTF8(shill_error::GetShillErrorString(error, "")));
+        error,
+        base::UTF16ToUTF8(ui::shill_error::GetShillErrorString(error, "")));
   }
 }
 

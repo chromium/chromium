@@ -2517,8 +2517,6 @@ source_set("chromeos") {
     "net/network_pref_state_observer.h",
     "net/network_throttling_observer.cc",
     "net/network_throttling_observer.h",
-    "net/shill_error.cc",
-    "net/shill_error.h",
     "net/system_proxy_manager.cc",
     "net/system_proxy_manager.h",
     "network_change_manager_client.cc",

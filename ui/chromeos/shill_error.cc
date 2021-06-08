@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/net/shill_error.h"
+#include "ui/chromeos/shill_error.h"
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
-namespace chromeos {
+namespace ui {
 
 namespace {
 
-const NetworkState* GetNetworkState(const std::string& network_id) {
-  return NetworkHandler::Get()
+const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
+  return chromeos::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
 }
@@ -77,7 +77,7 @@ std::u16string GetShillErrorString(const std::string& error,
         IDS_CHROMEOS_NETWORK_ERROR_CERT_AUTH_FAILED);
   }
   if (error == shill::kErrorEapAuthenticationFailed) {
-    const NetworkState* network =
+    const chromeos::NetworkState* network =
         network_id.empty() ? nullptr : GetNetworkState(network_id);
     // TLS always requires a client certificate, so show a cert auth
     // failed message for TLS. Other EAP methods do not generally require
@@ -126,15 +126,6 @@ std::u16string GetShillErrorString(const std::string& error,
                                     base::UTF8ToUTF16(error));
 }
 
-bool IsConfigurationError(const std::string& error) {
-  if (error.empty())
-    return false;
-  return error == shill::kErrorPinMissing ||
-         error == shill::kErrorBadPassphrase ||
-         error == shill::kErrorResultInvalidPassphrase ||
-         error == shill::kErrorBadWEPKey;
-}
-
 }  // namespace shill_error
 
-}  // namespace chromeos
+}  // namespace ui

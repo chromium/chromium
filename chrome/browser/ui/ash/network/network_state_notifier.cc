@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/chromeos/net/shill_error.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
@@ -27,6 +26,8 @@
 #include "chromeos/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/shill_error.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace chromeos {
@@ -43,6 +44,16 @@ const char kNotifierNetworkError[] = "ash.network.error";
 bool ShillErrorIsIgnored(const std::string& shill_error) {
   return shill_error == shill::kErrorResultInProgress ||
          shill_error == shill::kErrorDisconnect;
+}
+
+// Returns true if |shill_error| is known to be a configuration error.
+bool IsConfigurationError(const std::string& shill_error) {
+  if (shill_error.empty())
+    return false;
+  return shill_error == shill::kErrorPinMissing ||
+         shill_error == shill::kErrorBadPassphrase ||
+         shill_error == shill::kErrorResultInvalidPassphrase ||
+         shill_error == shill::kErrorBadWEPKey;
 }
 
 std::string GetStringFromDictionary(const absl::optional<base::Value>& dict,
@@ -488,7 +499,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
                      << ": Ignoring error: " << error_name;
       return;
     }
-    error = shill_error::GetShillErrorString(shill_error, guid);
+    error = ui::shill_error::GetShillErrorString(shill_error, guid);
     if (error.empty()) {
       if (error_name == NetworkConnectionHandler::kErrorConnectFailed &&
           network && !network->connectable()) {
@@ -580,7 +591,7 @@ void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
   }
   if (!NetworkTypePattern::Primitive(network->type())
            .MatchesPattern(NetworkTypePattern::Mobile()) &&
-      shill_error::IsConfigurationError(error)) {
+      IsConfigurationError(error)) {
     system_tray_client_->ShowNetworkConfigure(network_id);
   } else {
     system_tray_client_->ShowNetworkSettings(network_id);

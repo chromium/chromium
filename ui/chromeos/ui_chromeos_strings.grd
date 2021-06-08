@@ -1200,6 +1200,94 @@
       <message name="IDS_IME_NAME_TRANSLITERATION_UR" desc="Input method name, shown in system tray menu, settings page, etc. following this template: “|language| (|variant|) |IME| with |layout| keyboard” which means “an input method that supports typing in the |variant| of |language|, using |IME| and a keyboard with |layout|. When a part in this template is unambiguous, it’s dropped for brevity. Translations should strive for similar consistency in structure among input method names. Note: On Chrome OS, an “input method” is a suite of all input functionalities. |IME| in the template refers to an optional aspect of an “input method” on Chrome OS, i.e. sophisticated transforms into text in |language| when using a keyboard layout not designed for |language|." meaning="Input method name">
         Urdu
       </message>
+
+      <!-- Network error strings -->
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN" desc="Network error details in notifications: UNKNOWN">
+        Unknown network error
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_OUT_OF_RANGE" desc="Network error details in notifications: OUT_OF_RANGE">
+        Out of range
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_PIN_MISSING" desc="Network error details in notifications: PIN_MISSING">
+        PIN missing
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_DHCP_FAILED" desc="Network error details in notifications: DHCP_FAILED">
+        DHCP lookup failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_CONNECT_FAILED" desc="Network error details in notifications: CONNECT_FAILED">
+        Connect failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_BAD_PASSPHRASE" desc="Network error details in notifications: BAD_PASSPHRASE. Error when a bad wifi password/passphrase is entered.">
+        Bad password
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_BAD_WEPKEY" desc="Network error details in notifications: BAD_WEPKEY">
+        Bad WEP key
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_ACTIVATION_FAILED" desc="Network error details in notifications: ACTIVATION_FAILED">
+        Activation failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_NEED_EVDO" desc="Network error details in notifications: NEED_EVDO">
+        Need EVDO
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_NEED_HOME_NETWORK" desc="Network error details in notifications: NEED_HOME_NETWORK">
+        Need home network
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_OTASP_FAILED" desc="Network error details in notifications: OTASP_FAILED">
+        OTASP failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_AAA_FAILED" desc="Network error details in notifications: AAA_FAILED">
+        AAA check failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_INTERNAL" desc="Network error details in notifications: INTERNAL">
+        Internal error
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_DNS_LOOKUP_FAILED" desc="Network error details in notifications: DNS_LOOKUP_FAILED">
+        DNS lookup failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_HTTP_GET_FAILED" desc="Network error details in notifications: HTTP_GET_FAILED">
+        HTTP get failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_IPSEC_PSK_AUTH_FAILED" desc="Network error details in notifications: IPSEC_PSK_AUTH_FAILED">
+        Incorrect password
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_CERT_AUTH_FAILED" desc="Network error details in notifications: IPSEC_CERT_AUTH_FAILED">
+        Authentication certificate rejected by network
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_LOCAL_TLS_FAILED" desc="Network error details in notifications: EAP_LOCAL_TLS_FAILED">
+        Authentication certificate rejected locally
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_REMOTE_TLS_FAILED" desc="Network error details in notifications: EAP_REMOTE_TLS_FAILED">
+        Authentication certificate rejected remotely
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_AUTH_FAILED" desc="Network error details in notifications: IPSEC_CERT_AUTH_FAILED">
+        Username/password incorrect or EAP-auth failed
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_PPP_AUTH_FAILED" desc="Network error details in notifications: PPP_AUTH_FAILED">
+        PPP authentication failed due to an incorrect username or password
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_ON_HOME_NETWORK" desc="Network error details in notifications when a user attempts to connect to a Cellular network while not on their home network.">
+        Home network is not available. Mobile data roaming must be enabled to connect.
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_CONFIGURE_FAILED" desc="Network error details in notifications: Configuration error">
+        Failed to configure network
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_CERTIFICATES_NOT_LOADED" desc="Network error details in notifications: Certificates not loaded">
+        Certificates not loaded
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not registered.">
+        Modem not registered
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is in a busy state.">
+        Device is busy
+      </message>
+      <message name="IDS_NETWORK_UNRECOGNIZED_ERROR" desc="Unrecognized Network error text">
+        Unrecognized error: <ph name="desc">$1<ex>ShillErrorString</ex></ph>
+      </message>
+
+      <!-- Strings for <network-list> -->
+      <message name="IDS_NETWORK_LIST_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked.">
+        SIM card is locked
+      </message>
     </messages>
   </release>
 </grit>

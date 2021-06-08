@@ -13,6 +13,8 @@ component("chromeos") {
   sources = [
     "devicetype_utils.cc",
     "devicetype_utils.h",
+    "shill_error.cc",
+    "shill_error.h",
     "user_activity_power_manager_notifier.cc",
     "user_activity_power_manager_notifier.h",
   ]
@@ -23,6 +25,7 @@ component("chromeos") {
     "//base/third_party/dynamic_annotations",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/network:network",
     "//components/device_event_log",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",

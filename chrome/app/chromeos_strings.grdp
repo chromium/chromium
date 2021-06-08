@@ -1506,84 +1506,6 @@
   </message>
 
   <!-- Network error strings -->
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN" desc="Network error details in notifications: UNKNOWN">
-    Unknown network error
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_OUT_OF_RANGE" desc="Network error details in notifications: OUT_OF_RANGE">
-    Out of range
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_PIN_MISSING" desc="Network error details in notifications: PIN_MISSING">
-    PIN missing
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_DHCP_FAILED" desc="Network error details in notifications: DHCP_FAILED">
-    DHCP lookup failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_CONNECT_FAILED" desc="Network error details in notifications: CONNECT_FAILED">
-    Connect failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_BAD_PASSPHRASE" desc="Network error details in notifications: BAD_PASSPHRASE. Error when a bad wifi password/passphrase is entered.">
-    Bad password
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_BAD_WEPKEY" desc="Network error details in notifications: BAD_WEPKEY">
-    Bad WEP key
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_ACTIVATION_FAILED" desc="Network error details in notifications: ACTIVATION_FAILED">
-    Activation failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_NEED_EVDO" desc="Network error details in notifications: NEED_EVDO">
-    Need EVDO
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_NEED_HOME_NETWORK" desc="Network error details in notifications: NEED_HOME_NETWORK">
-    Need home network
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_OTASP_FAILED" desc="Network error details in notifications: OTASP_FAILED">
-    OTASP failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_AAA_FAILED" desc="Network error details in notifications: AAA_FAILED">
-    AAA check failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_INTERNAL" desc="Network error details in notifications: INTERNAL">
-    Internal error
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_DNS_LOOKUP_FAILED" desc="Network error details in notifications: DNS_LOOKUP_FAILED">
-    DNS lookup failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_HTTP_GET_FAILED" desc="Network error details in notifications: HTTP_GET_FAILED">
-    HTTP get failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_IPSEC_PSK_AUTH_FAILED" desc="Network error details in notifications: IPSEC_PSK_AUTH_FAILED">
-    Incorrect password
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_CERT_AUTH_FAILED" desc="Network error details in notifications: IPSEC_CERT_AUTH_FAILED">
-    Authentication certificate rejected by network
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_LOCAL_TLS_FAILED" desc="Network error details in notifications: EAP_LOCAL_TLS_FAILED">
-    Authentication certificate rejected locally
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_REMOTE_TLS_FAILED" desc="Network error details in notifications: EAP_REMOTE_TLS_FAILED">
-    Authentication certificate rejected remotely
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_EAP_AUTH_FAILED" desc="Network error details in notifications: IPSEC_CERT_AUTH_FAILED">
-    Username/password incorrect or EAP-auth failed
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_PPP_AUTH_FAILED" desc="Network error details in notifications: PPP_AUTH_FAILED">
-    PPP authentication failed due to an incorrect username or password
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_ON_HOME_NETWORK" desc="Network error details in notifications when a user attempts to connect to a Cellular network while not on their home network.">
-    Home network is not available. Mobile data roaming must be enabled to connect.
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_CONFIGURE_FAILED" desc="Network error details in notifications: Configuration error">
-    Failed to configure network
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_CERTIFICATES_NOT_LOADED" desc="Network error details in notifications: Certificates not loaded">
-    Certificates not loaded
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not registered.">
-    Modem not registered
-  </message>
-  <message name="IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is in a busy state.">
-    Device is busy
-  </message>
   <message name="IDS_NETWORK_ERROR_CANNOT_CHANGE_SHARED_CONFIG" desc="Network error message shown when attempting to change a shared network configuration if the operation is not allowed">
     Changing shared network configurations is not allowed
   </message>
@@ -1629,9 +1551,6 @@
   </message>
   <message name="IDS_NETWORK_LIST_NOT_AVAILABLE" desc="Text in the network list element when a network is not available to be selected but is still present in the list (e.g., if cellular activation is not allowed in the current context, this message is displayed next to unactivated cellular networks).">
     Not available
-  </message>
-  <message name="IDS_NETWORK_LIST_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked.">
-    SIM card is locked
   </message>
   <message name="IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked. Used when updated cellular activation flag in on.">
     Locked
@@ -1791,9 +1710,6 @@
   </message>
   <message name="IDS_NETWORK_OUT_OF_CREDITS_BODY" desc="Message body for network out of data error notification">
     You may have used up your mobile data allowance. Visit the <ph name="name">$1<ex>GoogleGuest</ex></ph> activation portal to buy more data
-  </message>
-  <message name="IDS_NETWORK_UNRECOGNIZED_ERROR" desc="Unrecognized Network error text">
-    Unrecognized error: <ph name="desc">$1<ex>ShillErrorString</ex></ph>
   </message>
   <message name="IDS_NETWORK_CELLULAR_ACTIVATED_TITLE" desc="Title for cellular activated notification">
     Mobile data activated
