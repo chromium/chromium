@@ -3160,6 +3160,7 @@ ci.fyi_builder(
                         "nacl_irt_x86_64.nexe",
                         "resources.pak",
                         "snapshot_blob.bin",
+                        "test_ash_chrome",
                     ],
                     "dirs": ["locales", "swiftshader"],
                     "gcs_bucket": "ash-chromium-on-linux-prebuilts",
