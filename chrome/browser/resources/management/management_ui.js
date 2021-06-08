@@ -289,6 +289,8 @@ Polymer({
         return 'cr:extension';
       case DeviceReportingType.ANDROID_APPLICATION:
         return 'management:play-store';
+      case DeviceReportingType.LOGIN_LOGOUT:
+        return 'management:timelapse';
       default:
         return 'cr:computer';
     }

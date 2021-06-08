@@ -119,6 +119,9 @@
     <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message show the users of DLP reporting enabled devices that events are being reported.">
       Actions taken with data flagged as confidential
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
+      Device login/logout history, including timestamps and failed attempts
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
     </message>

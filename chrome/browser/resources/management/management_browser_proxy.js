@@ -83,6 +83,7 @@ export const DeviceReportingType = {
   USERNAME: 'username',
   EXTENSION: 'extension',
   ANDROID_APPLICATION: 'android application',
+  LOGIN_LOGOUT: 'login-logout',
 };
 
 
