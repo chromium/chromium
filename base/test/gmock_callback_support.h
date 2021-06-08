@@ -117,11 +117,7 @@ ACTION_P(RunClosure, closure) {
 // a CHECK failure.
 inline auto RunOnceClosure(base::OnceClosure cb) {
   // Mock actions need to be copyable, but OnceClosure is not. Wrap the closure
-  // in a base::RefCountedData<> to allow it to be copied. An alternative would
-  // be to use AdaptCallbackForRepeating(), but that allows the closure to be
-  // run more than once and silently ignores any invocation after the first.
-  // Since this is for use by tests, it's better to crash or CHECK-fail and
-  // surface the incorrect usage, rather than have a silent unexpected success.
+  // in a base::RefCountedData<> to allow it to be copied.
   using RefCountedOnceClosure = base::RefCountedData<base::OnceClosure>;
   scoped_refptr<RefCountedOnceClosure> copyable_cb =
       base::MakeRefCounted<RefCountedOnceClosure>(std::move(cb));

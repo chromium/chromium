@@ -76,12 +76,9 @@ TEST(CallbackHelpersTest, IsOnceCallback) {
   static_assert(!base::IsOnceCallback<const std::function<void()>&>::value, "");
   static_assert(!base::IsOnceCallback<std::function<void()>&&>::value, "");
 
-  // Check that the result of BindOnce is a OnceCallback, but not if it's
-  // wrapped in AdaptCallbackForRepeating.
+  // Check that the result of BindOnce is a OnceCallback.
   auto cb = base::BindOnce([](int* count) { ++*count; });
   static_assert(base::IsOnceCallback<decltype(cb)>::value, "");
-  auto wrapped = base::AdaptCallbackForRepeating(std::move(cb));
-  static_assert(!base::IsOnceCallback<decltype(wrapped)>::value, "");
 }
 
 void Increment(int* value) {
@@ -177,21 +174,6 @@ TEST(CallbackHelpersTest, ScopedClosureRunnerMoveAssignment) {
   }
   EXPECT_EQ(1, run_count_1);
   EXPECT_EQ(1, run_count_2);
-}
-
-TEST(CallbackHelpersTest, AdaptCallbackForRepeating) {
-  int count = 0;
-  base::OnceCallback<void(int*)> cb =
-      base::BindOnce([](int* count) { ++*count; });
-
-  base::RepeatingCallback<void(int*)> wrapped =
-      base::AdaptCallbackForRepeating(std::move(cb));
-
-  EXPECT_EQ(0, count);
-  wrapped.Run(&count);
-  EXPECT_EQ(1, count);
-  wrapped.Run(&count);
-  EXPECT_EQ(1, count);
 }
 
 TEST(CallbackHelpersTest, SplitOnceCallback_EmptyCallback) {
