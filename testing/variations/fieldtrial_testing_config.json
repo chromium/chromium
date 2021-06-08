@@ -1325,48 +1325,6 @@
             ]
         }
     ],
-    "BrowserVerifiedUserActivationKeyboardTrigger": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserVerifiedUserActivationKeyboard"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BrowserVerifiedUserActivationMouseTrigger": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserVerifiedUserActivationMouse"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowsingDataLifetimeManager": [
         {
             "platforms": [
