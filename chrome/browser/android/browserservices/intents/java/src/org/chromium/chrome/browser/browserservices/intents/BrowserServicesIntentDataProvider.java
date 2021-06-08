@@ -462,18 +462,4 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean shouldHideCctVisits() {
         return false;
     }
-
-    /**
-     * Returns true if 'open in chrome' should be shown in the tab context menu.
-     */
-    public boolean shouldShowOpenInChromeMenuItemInContextMenu() {
-        return true;
-    }
-
-    /**
-     * Returns true if 'open in chrome' should be shown in the app menu.
-     */
-    public boolean shouldShowOpenInChromeMenuItem() {
-        return true;
-    }
 }

@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -27,7 +26,6 @@ import androidx.annotation.IdRes;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -407,65 +405,5 @@ public class CustomTabActivityAppMenuTest {
                     Matchers.is(1));
         }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         activity.finish();
-    }
-
-    @Test
-    @SmallTest
-    public void testHideOpenInChromeMenuItem() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        intent.setData(Uri.parse(mTestPage));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, true);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(
-                token, "com.google.android.googlequicksearchbox");
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        final Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item =
-                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
-                            .findItem(R.id.open_in_browser_id);
-            // The menu item should be there, but hidden.
-            Assert.assertNotNull(item);
-            Assert.assertFalse(item.isVisible());
-        });
-    }
-
-    @Test
-    @SmallTest
-    public void testHideOpenInChromeMenuItemVisibleWithWrongPackage() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        intent.setData(Uri.parse(mTestPage));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, true);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        final Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item =
-                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
-                            .findItem(R.id.open_in_browser_id);
-            // As the package name doesn't match the expected package, the item should be visible.
-            Assert.assertNotNull(item);
-            Assert.assertTrue(item.isVisible());
-        });
     }
 }

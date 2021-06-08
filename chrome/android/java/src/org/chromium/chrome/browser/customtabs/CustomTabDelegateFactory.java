@@ -315,7 +315,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final ExternalAuthUtils mExternalAuthUtils;
     private final MultiWindowUtils mMultiWindowUtils;
     private final Verifier mVerifier;
-    private final boolean mShouldShowOpenInChromeMenuItemInContextMenu;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final FullscreenManager mFullscreenManager;
@@ -343,7 +342,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param verifier Decides how to handle navigation to a new URL.
      * @param ephemeralTabCoordinatorSupplier A provider of {@link EphemeralTabCoordinator} that
      *                                        shows preview tab.
-     * @param shouldShowOpenInChromeMenuItemInContextMenu Whether 'open in chrome' is shown.
      */
     private CustomTabDelegateFactory(ChromeActivity<?> activity, boolean shouldHideBrowserControls,
             boolean isOpenedByChrome, @Nullable String webApkScopeUrl,
@@ -351,7 +349,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             BrowserControlsVisibilityDelegate visibilityDelegate, ExternalAuthUtils authUtils,
             MultiWindowUtils multiWindowUtils, Verifier verifier,
             Lazy<EphemeralTabCoordinator> ephemeralTabCoordinator,
-            boolean shouldShowOpenInChromeMenuItemInContextMenu,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager, TabCreatorManager tabCreatorManager,
@@ -370,7 +367,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mMultiWindowUtils = multiWindowUtils;
         mVerifier = verifier;
         mEphemeralTabCoordinator = ephemeralTabCoordinator;
-        mShouldShowOpenInChromeMenuItemInContextMenu = shouldShowOpenInChromeMenuItemInContextMenu;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mFullscreenManager = fullscreenManager;
@@ -397,7 +393,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 getDisplayMode(intentDataProvider),
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(), visibilityDelegate,
                 authUtils, multiWindowUtils, verifier, ephemeralTabCoordinator,
-                intentDataProvider.shouldShowOpenInChromeMenuItemInContextMenu(),
                 chromeActivityNativeDelegate, browserControlsStateProvider, fullscreenManager,
                 tabCreatorManager, tabModelSelectorSupplier, compositorViewHolderSupplier,
                 modalDialogManagerSupplier);
@@ -410,7 +405,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     static CustomTabDelegateFactory createDummy() {
         return new CustomTabDelegateFactory(null, false, false, null, WebDisplayMode.BROWSER, false,
                 null, null, null, null,
-                () -> null, true, null, null, null, null, () -> null, () -> null, () -> null);
+                () -> null, null, null, null, null, () -> null, () -> null, () -> null);
     }
 
     @Override
@@ -459,28 +454,19 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         return new ExternalNavigationHandler(mNavigationDelegate);
     }
 
-    @VisibleForTesting
-    TabContextMenuItemDelegate createTabContextMenuItemDelegate(Tab tab) {
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        final boolean isIncognito = tab.isIncognito();
-        return new TabContextMenuItemDelegate(tab, tabModelSelector,
-                EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
-                        -> null,
-                () -> {}, mActivity == null ? null : mActivity::getSnackbarManager) {
-            @Override
-            public boolean supportsOpenInChromeFromCct() {
-                return mShouldShowOpenInChromeMenuItemInContextMenu && !isIncognito;
-            }
-        };
-    }
-
     @Override
     public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mActivityType);
         Supplier<ShareDelegate> shareDelegateSupplier =
                 mActivity == null ? null : mActivity.getShareDelegateSupplier();
-        return new ChromeContextMenuPopulatorFactory(createTabContextMenuItemDelegate(tab),
+        TabModelSelector tabModelSelector =
+                mActivity != null ? mActivity.getTabModelSelector() : null;
+        return new ChromeContextMenuPopulatorFactory(
+                new TabContextMenuItemDelegate(tab, tabModelSelector,
+                        EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
+                                -> null,
+                        () -> {}, mActivity == null ? null : mActivity::getSnackbarManager),
                 shareDelegateSupplier, contextMenuMode, ExternalAuthUtils.getInstance());
     }
 

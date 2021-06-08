@@ -598,8 +598,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                               .second;
             if (mMode == ContextMenuMode.WEB_APP) {
                 items.add(createListItem(Item.OPEN_IN_CHROME));
-            } else if (mMode == ContextMenuMode.CUSTOM_TAB
-                    && mItemDelegate.supportsOpenInChromeFromCct()) {
+            } else if (mMode == ContextMenuMode.CUSTOM_TAB && !mItemDelegate.isIncognito()) {
                 boolean addNewEntries = !UrlUtilities.isInternalScheme(mParams.getUrl())
                         && !isEmptyUrl(mParams.getUrl());
                 if (SharedPreferencesManager.getInstance().readBoolean(
