@@ -171,15 +171,6 @@ void UpdateServiceImpl::RegisterApp(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   persisted_data_->RegisterApp(request);
-  if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
-    RegistrationRequest updater_request;
-    updater_request.app_id = kUpdaterAppId;
-    updater_request.version = base::Version(kUpdaterVersion);
-    persisted_data_->RegisterApp(updater_request);
-    update_client_->SendRegistrationPing(
-        updater_request.app_id, updater_request.version, base::DoNothing());
-  }
-
   update_client_->SendRegistrationPing(request.app_id, request.version,
                                        base::DoNothing());
 
@@ -192,6 +183,16 @@ void UpdateServiceImpl::RegisterApp(
 
 void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The installer should make an updater registration, but in case it halts
+  // before it does, synthesize a registration if necessary here.
+  if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
+    RegistrationRequest updater_request;
+    updater_request.app_id = kUpdaterAppId;
+    updater_request.version = base::Version(kUpdaterVersion);
+    RegisterApp(updater_request, base::DoNothing());
+  }
+
   tasks_.push(base::MakeRefCounted<CheckForUpdatesTask>(
       config_,
       base::BindOnce(&UpdateServiceImpl::UpdateAll, this, base::DoNothing()),

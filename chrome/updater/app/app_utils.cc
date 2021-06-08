@@ -11,8 +11,7 @@ namespace updater {
 
 bool ShouldUninstall(const std::vector<std::string>& app_ids,
                      int server_starts) {
-  return (app_ids.size() == 1 && base::Contains(app_ids, kUpdaterAppId)) ||
-         (server_starts > kMaxServerStartsBeforeFirstReg && app_ids.empty());
+  return app_ids.size() <= 1 && server_starts > kMaxServerStartsBeforeFirstReg;
 }
 
 }  // namespace updater

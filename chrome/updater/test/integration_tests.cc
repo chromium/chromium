@@ -173,9 +173,9 @@ TEST_F(IntegrationTest, InstallUninstall) {
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
+  SleepFor(2);
   SetupFakeUpdaterHigherVersion();
   ExpectVersionNotActive(kUpdaterVersion);
-  SleepFor(2);
 
   RunWake(0);
 
@@ -263,6 +263,7 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
 TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
+  SleepFor(2);
   ExpectInstalled();
   SetServerStarts(24);
   RunWake(0);
@@ -272,16 +273,18 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
+  SleepFor(2);
+  ExpectInstalled();
+  SetServerStarts(24);
+  RunWake(0);
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
-
   SetExistenceCheckerPath(kTestAppId,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
-
   RunWake(0);
-
   SleepFor(13);
+  ExpectClean();
 }
 
 // Windows does not currently have a concept of app ownership, so this

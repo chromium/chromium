@@ -65,6 +65,8 @@ class AppInstall : public App {
 
   void WakeCandidateDone();
 
+  void RegisterUpdater();
+
   // Handles the --tag and --app-id command line arguments, and triggers
   // installing of the corresponding application if either argument is present.
   void MaybeInstallApp();

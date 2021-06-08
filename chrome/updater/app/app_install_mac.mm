@@ -20,7 +20,7 @@ void AppInstall::WakeCandidateDone() {
       LaunchctlPresence::kPresent,
       base::TimeDelta::FromSeconds(kWaitForLaunchctlUpdateSec),
       base::BindOnce([](scoped_refptr<AppInstall> installer,
-                        bool unused) { installer->MaybeInstallApp(); },
+                        bool unused) { installer->RegisterUpdater(); },
                      base::WrapRefCounted(this)));
 }
 

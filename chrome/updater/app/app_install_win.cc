@@ -7,7 +7,7 @@
 namespace updater {
 
 void AppInstall::WakeCandidateDone() {
-  MaybeInstallApp();
+  RegisterUpdater();
 }
 
 }  // namespace updater
