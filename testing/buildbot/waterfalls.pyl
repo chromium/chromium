@@ -2966,6 +2966,7 @@
       'linux-ash-chromium-builder-fyi-rel': {
         'additional_compile_targets': [
           'chrome',
+          'test_ash_chrome',
         ],
       },
       'linux-backuprefptr-x64-fyi-rel': {
