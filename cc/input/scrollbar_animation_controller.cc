@@ -160,7 +160,8 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now) {
 float ScrollbarAnimationController::AnimationProgressAtTime(
     base::TimeTicks now) {
   const base::TimeDelta delta = now - last_awaken_time_;
-  return base::ClampToRange(float{delta / fade_duration_}, 0.0f, 1.0f);
+  return base::ClampToRange(static_cast<float>(delta / fade_duration_), 0.0f,
+                            1.0f);
 }
 
 void ScrollbarAnimationController::RunAnimationFrame(float progress) {

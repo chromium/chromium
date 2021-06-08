@@ -99,7 +99,8 @@ float SingleScrollbarAnimationControllerThinning::AnimationProgressAtTime(
     return 1.0f;
 
   const base::TimeDelta delta = now - last_awaken_time_;
-  return base::ClampToRange(float{delta / thinning_duration_}, 0.0f, 1.0f);
+  return base::ClampToRange(static_cast<float>(delta / thinning_duration_),
+                            0.0f, 1.0f);
 }
 
 void SingleScrollbarAnimationControllerThinning::RunAnimationFrame(
