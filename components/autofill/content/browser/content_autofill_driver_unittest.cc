@@ -336,6 +336,12 @@ class TestContentAutofillDriver : public ContentAutofillDriver {
 
 class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
  public:
+  enum class NavigationType {
+    kNormal,
+    kSameDocument,
+    kServedFromBackForwardCache,
+    kPrerenderedPageActivation,
+  };
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     // This needed to keep the WebContentsObserverConsistencyChecker checks
@@ -361,11 +367,22 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void Navigate(bool same_document, bool from_bfcache = false) {
+  void Navigate(NavigationType type) {
     content::MockNavigationHandle navigation_handle(GURL(), main_rfh());
     navigation_handle.set_has_committed(true);
-    navigation_handle.set_is_same_document(same_document);
-    navigation_handle.set_is_served_from_bfcache(from_bfcache);
+    switch (type) {
+      case NavigationType::kNormal:
+        break;
+      case NavigationType::kSameDocument:
+        navigation_handle.set_is_same_document(true);
+        break;
+      case NavigationType::kServedFromBackForwardCache:
+        navigation_handle.set_is_served_from_bfcache(true);
+        break;
+      case NavigationType::kPrerenderedPageActivation:
+        navigation_handle.set_is_prerendered_page_activation(true);
+        break;
+    }
     driver_->DidNavigateFrame(&navigation_handle);
   }
 
@@ -378,17 +395,22 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset());
-  Navigate(/*same_document=*/false);
+  Navigate(NavigationType::kNormal);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
-  Navigate(/*same_document=*/true);
+  Navigate(NavigationType::kSameDocument);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
-  Navigate(/*same_document=*/false, /*from_bfcache=*/true);
+  Navigate(NavigationType::kServedFromBackForwardCache);
+}
+
+TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
+  EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
+  Navigate(NavigationType::kPrerenderedPageActivation);
 }
 
 TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {

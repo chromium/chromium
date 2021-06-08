@@ -416,11 +416,13 @@ void ContentAutofillDriver::DidNavigateFrame(
 
   ShowOfferNotificationIfApplicable(navigation_handle);
 
-  // When IsServedFromBackForwardCache, the form data is not parsed
-  // again. So, we should keep and use the autofill manager's
-  // form_structures from BFCache for form submit.
-  if (navigation_handle->IsServedFromBackForwardCache())
+  // When IsServedFromBackForwardCache or IsPrerendererdPageActivation, the form
+  // data is not parsed again. So, we should keep and use the autofill manager's
+  // form_structures from BFCache or prerendering page for form submit.
+  if (navigation_handle->IsServedFromBackForwardCache() ||
+      navigation_handle->IsPrerenderedPageActivation()) {
     return;
+  }
 
   submitted_forms_.clear();
   autofill_manager_->Reset();

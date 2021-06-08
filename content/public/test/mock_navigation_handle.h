@@ -53,7 +53,9 @@ class MockNavigationHandle : public NavigationHandle {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
   }
   MOCK_METHOD0(IsInPrimaryMainFrame, bool());
-  MOCK_METHOD0(IsPrerenderedPageActivation, bool());
+  bool IsPrerenderedPageActivation() override {
+    return is_prerendered_page_activation_;
+  }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
   bool IsSameOrigin() override {
@@ -192,6 +194,9 @@ class MockNavigationHandle : public NavigationHandle {
   void set_is_served_from_bfcache(bool is_served_from_bfcache) {
     is_served_from_bfcache_ = is_served_from_bfcache;
   }
+  void set_is_prerendered_page_activation(bool is_prerendered_page_activation) {
+    is_prerendered_page_activation_ = is_prerendered_page_activation;
+  }
   void set_is_renderer_initiated(bool is_renderer_initiated) {
     is_renderer_initiated_ = is_renderer_initiated;
   }
@@ -248,6 +253,7 @@ class MockNavigationHandle : public NavigationHandle {
   RenderFrameHost* render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;
+  bool is_prerendered_page_activation_ = false;
   bool is_renderer_initiated_ = true;
   std::vector<GURL> redirect_chain_;
   bool has_committed_ = false;
