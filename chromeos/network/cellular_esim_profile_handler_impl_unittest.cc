@@ -203,8 +203,15 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
                                              /*notify_changed=*/true);
   }
 
+  void FastForwardProfileRefreshDelay() {
+    const base::TimeDelta kProfileRefreshCallbackDelay =
+        base::TimeDelta::FromMilliseconds(150);
+    task_environment_.FastForwardBy(kProfileRefreshCallbackDelay);
+  }
+
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_;
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
@@ -462,6 +469,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
   EXPECT_FALSE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
 
+  FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
@@ -515,6 +523,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
 
   // Verify that EUICCs are refreshed after the cellular device is added.
   AddCellularDevice();
+  FastForwardProfileRefreshDelay();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
   EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
