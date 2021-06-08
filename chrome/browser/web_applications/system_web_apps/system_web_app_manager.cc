@@ -56,9 +56,9 @@
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/os_feedback_ui/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/content/os_feedback_ui/url_constants.h"
 #include "ash/content/shimless_rma/url_constants.h"
 #include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"

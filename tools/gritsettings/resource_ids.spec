@@ -622,7 +622,7 @@
   "ash/ash_strings.grd": {
     "messages": [3060],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/components/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/content/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3064],
   },

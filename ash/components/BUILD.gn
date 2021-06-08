@@ -21,9 +21,3 @@ source_set("unit_tests") {
     "//ui/resources:ui_test_pak_data",
   ]
 }
-
-group("closure_compile") {
-  testonly = true
-
-  deps = [ "//ash/components/os_feedback_ui:closure_compile" ]
-}

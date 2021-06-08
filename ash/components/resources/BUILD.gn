@@ -10,11 +10,11 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 grit("os_feedback_resources") {
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  os_feedback_gen_dir = "$root_gen_dir/ash/components/os_feedback_ui/resources"
+  os_feedback_gen_dir = "$root_gen_dir/ash/content/os_feedback_ui/resources"
   source = "$os_feedback_gen_dir/ash_os_feedback_resources.grd"
   deps = [
-    "//ash/components/os_feedback_ui/resources:build_grd",
-    "//ash/components/os_feedback_ui/resources:web_components",
+    "//ash/content/os_feedback_ui/resources:build_grd",
+    "//ash/content/os_feedback_ui/resources:web_components",
   ]
 
   outputs = [

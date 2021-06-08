@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/os_feedback_ui/url_constants.h"
+#include "ash/content/os_feedback_ui/url_constants.h"
 
 namespace ash {
 

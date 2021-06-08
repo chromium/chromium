@@ -2155,7 +2155,7 @@ if (!is_android) {
         "//ash/app_list:test_support",
         "//ash/app_list/model:app_list_model",
         "//ash/components/audio",
-        "//ash/components/os_feedback_ui:os_feedback_ui",
+        "//ash/content/os_feedback_ui:os_feedback_ui",
         "//ash/content/scanning",
         "//ash/content/shimless_rma",
         "//ash/content/shortcut_customization_ui",

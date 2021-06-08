@@ -148,10 +148,10 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/os_feedback_ui/os_feedback_ui.h"
-#include "ash/components/os_feedback_ui/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/content/os_feedback_ui/os_feedback_ui.h"
+#include "ash/content/os_feedback_ui/url_constants.h"
 #include "ash/content/scanning/scanning_ui.h"
 #include "ash/content/scanning/url_constants.h"
 #include "ash/content/shimless_rma/shimless_rma.h"

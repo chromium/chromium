@@ -114,8 +114,8 @@ source_set("web_applications") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/components/os_feedback_ui",
       "//ash/constants",
+      "//ash/content/os_feedback_ui",
       "//ash/content/shimless_rma",
       "//ash/content/shortcut_customization_ui",
       "//ash/public/cpp",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
-#define ASH_COMPONENTS_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
+#ifndef ASH_CONTENT_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
+#define ASH_CONTENT_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
 
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -23,4 +23,4 @@ class OSFeedbackUI : public ui::MojoWebUIController {
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
+#endif  // ASH_CONTENT_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
