@@ -114,8 +114,6 @@ class TabAndroid : public base::SupportsUserData {
     return should_add_api2_transition_to_future_navigations_;
   }
 
-  bool hide_future_navigations() const { return hide_future_navigations_; }
-
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.

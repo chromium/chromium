@@ -46,10 +46,6 @@ class SessionSyncServiceImpl : public SessionSyncService {
   // useful for tests.
   OpenTabsUIDelegate* GetUnderlyingOpenTabsUIDelegateForTest();
 
-  SyncSessionsClient* GetSessionsClientForTest() {
-    return sessions_client_.get();
-  }
-
  private:
   void NotifyForeignSessionUpdated();
 
