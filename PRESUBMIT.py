@@ -948,16 +948,6 @@ _BANNED_CPP_FUNCTIONS = (
       ),
     ),
     (
-      r'/\bScopedObserver',
-      (
-          'ScopedObserver is deprecated.',
-          'Please use base::ScopedObservation for observing a single source,',
-          'or base::ScopedMultiSourceObservation for observing multple sources',
-      ),
-      True,
-      (),
-    ),
-    (
       'RoInitialize',
       (
         'Improper use of [base::win]::RoInitialize() has been implicated in a ',

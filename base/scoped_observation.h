@@ -15,8 +15,7 @@ namespace base {
 // where an observer observes a single source only.
 //
 // Use base::ScopedMultiSourceObservation for objects that observe multiple
-// sources. This class and base::ScopedMultiSourceObservation replace
-// ScopedObserver.
+// sources.
 //
 // When ScopedObservation is destroyed, it removes the registered observation,
 // if any. Basic example (as a member variable):
