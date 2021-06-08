@@ -324,7 +324,7 @@ public class FeedSurfaceMediator
     /** Update the content based on supervised user or enterprise policy. */
     void updateContent() {
         mFeedEnabled = FeedFeatures.isFeedEnabled();
-        if ((mFeedEnabled && mCoordinator.getStream() != null)
+        if ((mFeedEnabled && !mTabToStreamMap.isEmpty())
                 || (!mFeedEnabled && mCoordinator.getScrollViewForPolicy() != null)) {
             return;
         }
@@ -579,6 +579,10 @@ public class FeedSurfaceMediator
         unbindStream();
     }
 
+    Stream getCurrentStream() {
+        return mCurrentStream;
+    }
+
     private void rebindStream() {
         // If a stream is already bound, then do nothing.
         if (mCurrentStream != null) return;
@@ -646,16 +650,12 @@ public class FeedSurfaceMediator
 
     /** Clear any dependencies related to the {@link Stream}. */
     private void destroyPropertiesForStream() {
-        Stream stream = mCoordinator.getStream();
-        if (stream == null) return;
+        if (mTabToStreamMap.isEmpty()) return;
 
         if (mStreamScrollListener != null) {
             mCoordinator.getRecyclerView().removeOnScrollListener(mStreamScrollListener);
             mStreamScrollListener = null;
         }
-
-        stream.removeOnContentChangedListener(mStreamContentChangedListener);
-        mStreamContentChangedListener = null;
 
         MemoryPressureListener.removeCallback(mMemoryPressureCallback);
         mMemoryPressureCallback = null;
@@ -667,9 +667,11 @@ public class FeedSurfaceMediator
 
         unbindStream();
         for (Stream s : mTabToStreamMap.values()) {
+            s.removeOnContentChangedListener(mStreamContentChangedListener);
             s.destroy();
         }
         mTabToStreamMap.clear();
+        mStreamContentChangedListener = null;
 
         mPrefChangeRegistrar.removeObserver(Pref.ARTICLES_LIST_VISIBLE);
         TemplateUrlServiceFactory.get().removeObserver(this);

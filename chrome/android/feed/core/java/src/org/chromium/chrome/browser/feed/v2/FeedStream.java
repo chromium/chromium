@@ -252,11 +252,6 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void processViewAction(byte[] data) {
-            FeedStreamJni.get().processViewAction(mNativeFeedStream, FeedStream.this, data);
-        }
-
-        @Override
         public void sendFeedback(Map<String, String> productSpecificDataMap) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOtherUserAction(
@@ -590,12 +585,6 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void toggledArticlesListVisible(boolean visible) {
-        FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
-                visible ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
-    }
-
-    @Override
     public void addOnContentChangedListener(ContentChangedListener listener) {
         mContentChangedListeners.addObserver(listener);
     }
@@ -607,6 +596,13 @@ public class FeedStream implements Stream {
 
     public void addInteractionListener(InteractionsListener listener) {
         mInteractionListeners.addObserver(listener);
+    }
+
+    // TODO(chili): extract these uma-record methods to somewhere else - FeedLogger.java?
+    @Override
+    public void toggledArticlesListVisible(boolean visible) {
+        FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                visible ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
     }
 
     @Override
@@ -630,28 +626,9 @@ public class FeedStream implements Stream {
                 mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_LEARN_MORE);
     }
 
-    // TODO(chili): Extract these methods from FeedStreamJni so SurfaceScopeDependencyProvider
-    // does not depend on FeedStream: isActivityLoggingEnabled, getExperimentIds,
-    // getSignedOutSessionId.
     @Override
     public boolean isActivityLoggingEnabled() {
         return FeedStreamJni.get().isActivityLoggingEnabled(mNativeFeedStream, this);
-    }
-
-    public void processViewAction(byte[] data) {
-        FeedStreamJni.get().processViewAction(mNativeFeedStream, this, data);
-    }
-
-    @Override
-    public int[] getExperimentIds() {
-        assert ThreadUtils.runningOnUiThread();
-        return FeedStreamJni.get().getExperimentIds();
-    }
-
-    @Override
-    public String getSignedOutSessionId() {
-        assert ThreadUtils.runningOnUiThread();
-        return FeedStreamJni.get().getSessionId(mNativeFeedStream, this);
     }
 
     @Override
@@ -1054,8 +1031,6 @@ public class FeedStream implements Stream {
     public interface Natives {
         long init(FeedStream caller, boolean isForYou);
         boolean isActivityLoggingEnabled(long nativeFeedStream, FeedStream caller);
-        int[] getExperimentIds();
-        String getSessionId(long nativeFeedStream, FeedStream caller);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);
@@ -1068,7 +1043,6 @@ public class FeedStream implements Stream {
         void reportStreamScrollStart(long nativeFeedStream, FeedStream caller);
         void loadMore(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void processThereAndBackAgain(long nativeFeedStream, FeedStream caller, byte[] data);
-        void processViewAction(long nativeFeedStream, FeedStream caller, byte[] data);
         int executeEphemeralChange(long nativeFeedStream, FeedStream caller, byte[] data);
         void commitEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);
         void discardEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);

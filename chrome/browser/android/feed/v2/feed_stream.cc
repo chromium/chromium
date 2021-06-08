@@ -37,16 +37,6 @@ static jlong JNI_FeedStream_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(new FeedStream(j_this, is_for_you_stream));
 }
 
-static base::android::ScopedJavaLocalRef<jintArray>
-JNI_FeedStream_GetExperimentIds(JNIEnv* env) {
-  auto* variations_ids_provider =
-      variations::VariationsIdsProvider::GetInstance();
-  DCHECK(variations_ids_provider != nullptr);
-
-  return base::android::ToJavaIntArray(
-      env, variations_ids_provider->GetVariationsVectorForWebPropertiesKeys());
-}
-
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jboolean is_for_you_stream)
     : ::feed::FeedStreamSurface(is_for_you_stream ? kForYouStream
@@ -114,17 +104,6 @@ void FeedStream::ProcessThereAndBackAgain(
   feed_stream_api_->ProcessThereAndBackAgain(data_string);
 }
 
-void FeedStream::ProcessViewAction(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jbyteArray>& data) {
-  if (!feed_stream_api_)
-    return;
-  std::string data_string;
-  base::android::JavaByteArrayToString(env, data, &data_string);
-  feed_stream_api_->ProcessViewAction(data_string);
-}
-
 int FeedStream::ExecuteEphemeralChange(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
                                        const JavaParamRef<jbyteArray>& data) {
@@ -173,13 +152,6 @@ bool FeedStream::IsActivityLoggingEnabled(JNIEnv* env,
                                           const JavaParamRef<jobject>& obj) {
   return feed_stream_api_ &&
          feed_stream_api_->IsActivityLoggingEnabled(GetStreamType());
-}
-
-base::android::ScopedJavaLocalRef<jstring> FeedStream::GetSessionId(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, feed_stream_api_ ? feed_stream_api_->GetSessionId() : std::string());
 }
 
 void FeedStream::ReportOpenAction(JNIEnv* env,

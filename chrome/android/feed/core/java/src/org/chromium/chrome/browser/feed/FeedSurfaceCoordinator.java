@@ -435,7 +435,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
             mSurfaceScope = processScope.obtainSurfaceScope(new FeedSurfaceScopeDependencyProvider(
-                    mActivity, context, mShowDarkBackground, mStream));
+                    mActivity, context, mShowDarkBackground, () -> {
+                        if (mMediator.getCurrentStream() == null) return false;
+                        return mMediator.getCurrentStream().isActivityLoggingEnabled();
+                    }));
         } else {
             mSurfaceScope = null;
         }
@@ -490,12 +493,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mScrollViewResizer.detach();
             mScrollViewResizer = null;
         }
+        mRecyclerView = setUpView();
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = createFeedStream(true);
-        mRecyclerView = setUpView();
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
-
         mRecyclerView.setBackgroundResource(R.color.default_bg_color);
 
         mRootView.addView(mRecyclerView);

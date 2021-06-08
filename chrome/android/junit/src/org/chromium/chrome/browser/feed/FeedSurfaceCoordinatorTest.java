@@ -138,6 +138,8 @@ public class FeedSurfaceCoordinatorTest {
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock
     private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock
+    private FeedSurfaceScopeDependencyProvider.Natives mSurfaceScopeJniMock;
 
     // Mocked xSurface setup.
     @Mock
@@ -182,6 +184,7 @@ public class FeedSurfaceCoordinatorTest {
         mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+        mocker.mock(FeedSurfaceScopeDependencyProviderJni.TEST_HOOKS, mSurfaceScopeJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead()).thenReturn(5);
 
@@ -241,7 +244,7 @@ public class FeedSurfaceCoordinatorTest {
     @Test
     public void testInactiveInitially() {
         assertEquals(false, mCoordinator.isActive());
-        assertEquals(false, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+        assertEquals(false, hasStreamBound());
     }
 
     @Test
@@ -250,7 +253,7 @@ public class FeedSurfaceCoordinatorTest {
 
         // Calling to open the surface should not work because startup is not called.
         assertEquals(false, mCoordinator.isActive());
-        assertEquals(false, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+        assertEquals(false, hasStreamBound());
     }
 
     @Test
@@ -259,7 +262,7 @@ public class FeedSurfaceCoordinatorTest {
 
         // Startup should activate the coordinator and bind the feed.
         assertEquals(true, mCoordinator.isActive());
-        assertEquals(true, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+        assertEquals(true, hasStreamBound());
     }
 
     @Test
@@ -269,7 +272,7 @@ public class FeedSurfaceCoordinatorTest {
 
         // Coordinator should be inactive because we closed the surface. Feed is unbound.
         assertEquals(false, mCoordinator.isActive());
-        assertEquals(false, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+        assertEquals(false, hasStreamBound());
     }
 
     @Test
@@ -280,7 +283,7 @@ public class FeedSurfaceCoordinatorTest {
 
         // After startup, coordinator should be active, but feed should not be bound.
         assertEquals(true, mCoordinator.isActive());
-        assertEquals(false, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+        assertEquals(false, hasStreamBound());
     }
 
     @Test
@@ -293,5 +296,13 @@ public class FeedSurfaceCoordinatorTest {
     public void testGetTabIdFromLaunchOrigin_unknown() {
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 mCoordinator.getTabIdFromLaunchOrigin(NewTabPageLaunchOrigin.UNKNOWN));
+    }
+
+    private boolean hasStreamBound() {
+        if (mCoordinator.getMediatorForTesting().getCurrentStream() == null) {
+            return false;
+        }
+        return ((FeedStream) mCoordinator.getMediatorForTesting().getCurrentStream())
+                .getBoundStatusForTest();
     }
 }

@@ -105,7 +105,7 @@ public class FeedSurfaceMediatorTest {
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
-        when(mFeedSurfaceCoordinator.getStream()).thenReturn(null, mStream);
+        when(mFeedSurfaceCoordinator.getStream()).thenReturn(mStream);
         when(mFeedSurfaceCoordinator.createFeedStream(anyBoolean())).thenReturn(mStream);
         ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
         hasUnreadContent.set(false);

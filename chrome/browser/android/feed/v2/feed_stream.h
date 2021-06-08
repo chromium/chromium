@@ -46,10 +46,6 @@ class FeedStream : public ::feed::FeedStreamSurface {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jbyteArray>& data);
 
-  void ProcessViewAction(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
-                         const base::android::JavaParamRef<jbyteArray>& data);
-
   int ExecuteEphemeralChange(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -71,11 +67,6 @@ class FeedStream : public ::feed::FeedStreamSurface {
 
   // Is activity logging enabled (ephemeral).
   bool IsActivityLoggingEnabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
-  // Get the signed-out session id, if any (ephemeral).
-  base::android::ScopedJavaLocalRef<jstring> GetSessionId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 

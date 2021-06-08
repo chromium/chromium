@@ -48,7 +48,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
-import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -61,7 +60,6 @@ import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
@@ -89,7 +87,6 @@ public class FeedStreamTest {
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
-    private SurfaceScopeDependencyProvider mDependencyProvider;
     private NtpListContentManager mContentManager;
 
     @Mock
@@ -149,8 +146,6 @@ public class FeedStreamTest {
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
                 mShareDelegateSupplier, /* isInterestFeed= */ true);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
-        mDependencyProvider =
-                new FeedSurfaceScopeDependencyProvider(mActivity, mActivity, false, mFeedStream);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
         mContentManager = new NtpListContentManager();

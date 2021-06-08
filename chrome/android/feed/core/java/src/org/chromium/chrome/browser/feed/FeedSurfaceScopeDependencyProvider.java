@@ -9,34 +9,37 @@ import android.content.Context;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
-import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoInitializationError;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoPlayError;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoPlayEvent;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /**
- * Provides activity and darkmode context for a single surface.
+ * Provides activity, darkmode and logging context for a single surface.
  */
-public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
+@JNINamespace("feed::android")
+class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
     private static final String TAG = "Feed";
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
-    private final FeedStream mFeedStream;
+    private final LoggingEnabledDelegate mLoggingEnabledDelegate;
 
-    public FeedSurfaceScopeDependencyProvider(
-            Activity activity, Context activityContext, boolean darkMode, FeedStream feedStream) {
+    public interface LoggingEnabledDelegate {
+        boolean isLoggingEnabledForCurrentStream();
+    }
+
+    public FeedSurfaceScopeDependencyProvider(Activity activity, Context activityContext,
+            boolean darkMode, LoggingEnabledDelegate loggingEnabledDelegate) {
         mActivityContext = FeedProcessScopeDependencyProvider.createFeedContext(activityContext);
         mDarkMode = darkMode;
-        mFeedStream = feedStream;
         mActivity = activity;
+        mLoggingEnabledDelegate = loggingEnabledDelegate;
     }
 
     @Override
@@ -101,17 +104,19 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
     @Override
     public int[] getExperimentIds() {
         assert ThreadUtils.runningOnUiThread();
-        return mFeedStream.getExperimentIds();
+        return FeedSurfaceScopeDependencyProviderJni.get().getExperimentIds();
     }
 
     @Override
     public boolean isActivityLoggingEnabled() {
-        return mFeedStream.isActivityLoggingEnabled();
+        assert ThreadUtils.runningOnUiThread();
+        return mLoggingEnabledDelegate.isLoggingEnabledForCurrentStream();
     }
 
     @Override
     public String getSignedOutSessionId() {
-        return mFeedStream.getSignedOutSessionId();
+        ThreadUtils.runningOnUiThread();
+        return FeedSurfaceScopeDependencyProviderJni.get().getSessionId();
     }
 
     /**
@@ -120,7 +125,7 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
      */
     @Override
     public void processViewAction(byte[] data) {
-        mFeedStream.processViewAction(data);
+        FeedSurfaceScopeDependencyProviderJni.get().processViewAction(data);
     }
 
     @Override
@@ -159,5 +164,12 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
         name += (isMutedAutoplay ? "AutoplayMutedVideo." : "NormalUnmutedVideo.");
         name += partName;
         return name;
+    }
+
+    @NativeMethods
+    interface Natives {
+        int[] getExperimentIds();
+        String getSessionId();
+        void processViewAction(byte[] data);
     }
 }

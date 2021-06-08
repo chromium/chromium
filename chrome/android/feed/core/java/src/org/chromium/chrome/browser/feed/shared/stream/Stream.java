@@ -87,19 +87,9 @@ public interface Stream {
     /** Record that user tapped Learn More. */
     default void recordActionLearnMore() {}
 
-    /** @returns Whether we should be logging user activity. */
+    /** Whether activity logging is enabled for this feed. */
     default boolean isActivityLoggingEnabled() {
         return false;
-    }
-
-    /** @returns Experiment IDs applicable to this feed. */
-    default int[] getExperimentIds() {
-        return new int[0];
-    }
-
-    /** @returns The session ID to use if user is signed out. */
-    default String getSignedOutSessionId() {
-        return "";
     }
 
     /** Whether the stream has unread content */
