@@ -126,8 +126,8 @@ void DeviceInfoService::UpdatePolicyInfo() {
     policy_info->timestamp_ms = policy_data->timestamp();
   }
 
-  if (policy_data->has_device_id()) {
-    policy_info->device_id = policy_data->device_id();
+  if (policy_data->has_directory_api_id()) {
+    policy_info->device_id = policy_data->directory_api_id();
   }
 
   if (policy_data->has_service_account_identity()) {
@@ -138,6 +138,10 @@ void DeviceInfoService::UpdatePolicyInfo() {
   if (policy_data->has_gaia_id()) {
     base::StringToInt64(policy_data->gaia_id(),
                         &policy_info->service_account_gaia_id);
+  }
+
+  if (policy_data->has_device_id()) {
+    policy_info->cros_device_id = policy_data->device_id();
   }
 
   if (current_policy_info_.Equals(policy_info)) {
