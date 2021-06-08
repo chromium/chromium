@@ -19,6 +19,8 @@ using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
 
+constexpr size_t kMaxNumberCharsSent = 100;
+
 machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
     TextSuggestionMode suggestion_mode) {
   switch (suggestion_mode) {
@@ -40,6 +42,13 @@ absl::optional<TextSuggestion> ToTextSuggestion(
   return TextSuggestion{.mode = suggestion_mode,
                         .type = TextSuggestionType::kMultiWord,
                         .text = candidate->get_multi_word()->text};
+}
+
+std::string TrimText(const std::string& text) {
+  size_t text_length = text.length();
+  return text_length > kMaxNumberCharsSent
+             ? text.substr(text_length - kMaxNumberCharsSent)
+             : text;
 }
 
 }  // namespace
@@ -72,7 +81,7 @@ void SuggestionsServiceClient::RequestSuggestions(
   }
 
   auto query = TextSuggesterQuery::New();
-  query->text = preceding_text;
+  query->text = TrimText(preceding_text);
   query->suggestion_mode = ToTextSuggestionModeMojom(suggestion_mode);
 
   for (const auto& candidate : completion_candidates) {
