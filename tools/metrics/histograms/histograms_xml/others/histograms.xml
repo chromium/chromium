@@ -510,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AnimatedImage.NumOfFramesSkipped" units="count"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
   <owner>khushalsagar@chromium.org</owner>
   <summary>
     If the frame rate for the image animation can not be reached, frames in the
