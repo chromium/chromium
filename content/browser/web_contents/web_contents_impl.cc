@@ -2464,8 +2464,7 @@ void WebContentsImpl::RecursivelyRegisterFrameSinkIds() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecursivelyRegisterFrameSinkIds");
   for (auto* view : GetRenderWidgetHostViewsInWebContentsTree()) {
-    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(view);
-    if (rwhvb->IsRenderWidgetHostViewChildFrame())
+    if (view->IsRenderWidgetHostViewChildFrame())
       static_cast<RenderWidgetHostViewChildFrame*>(view)->RegisterFrameSinkId();
   }
 }
@@ -2474,8 +2473,7 @@ void WebContentsImpl::RecursivelyUnregisterFrameSinkIds() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecursivelyUnregisterFrameSinkIds");
   for (auto* view : GetRenderWidgetHostViewsInWebContentsTree()) {
-    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(view);
-    if (rwhvb->IsRenderWidgetHostViewChildFrame()) {
+    if (view->IsRenderWidgetHostViewChildFrame()) {
       static_cast<RenderWidgetHostViewChildFrame*>(view)
           ->UnregisterFrameSinkId();
     }
@@ -3033,35 +3031,19 @@ void WebContentsImpl::RemoveObserver(WebContentsObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::set<RenderWidgetHostView*>
-WebContentsImpl::GetRenderWidgetHostViewsInTree() {
-  std::set<RenderWidgetHostView*> set;
-  for (RenderFrameHost* rfh : GetAllFrames()) {
-    if (RenderWidgetHostView* rwhv = static_cast<RenderFrameHostImpl*>(rfh)
-                                         ->frame_tree_node()
-                                         ->render_manager()
-                                         ->GetRenderWidgetHostView()) {
-      set.insert(rwhv);
-    }
-  }
-  return set;
-}
-
-std::set<RenderWidgetHostView*>
+std::set<RenderWidgetHostViewBase*>
 WebContentsImpl::GetRenderWidgetHostViewsInWebContentsTree() {
-  std::set<RenderWidgetHostView*> result;
-  GetRenderWidgetHostViewsInWebContentsTree(result);
+  std::set<RenderWidgetHostViewBase*> result;
+  GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](std::set<RenderWidgetHostViewBase*>& result,
+         RenderFrameHostImpl* rfh) {
+        if (auto* view =
+                static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
+          result.insert(view);
+        }
+      },
+      std::ref(result)));
   return result;
-}
-
-void WebContentsImpl::GetRenderWidgetHostViewsInWebContentsTree(
-    std::set<RenderWidgetHostView*>& result) {
-  std::set<RenderWidgetHostView*> views = GetRenderWidgetHostViewsInTree();
-  result.insert(views.begin(), views.end());
-  for (auto* inner_web_contents : GetInnerWebContents()) {
-    static_cast<WebContentsImpl*>(inner_web_contents)
-        ->GetRenderWidgetHostViewsInWebContentsTree(result);
-  }
 }
 
 void WebContentsImpl::Activate() {

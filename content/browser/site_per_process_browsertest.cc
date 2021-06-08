@@ -1049,8 +1049,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
   {
     // There should be only one RenderWidgetHost when there are no
     // cross-process iframes.
-    std::set<RenderWidgetHostView*> views_set =
-        web_contents()->GetRenderWidgetHostViewsInTree();
+    std::set<RenderWidgetHostViewBase*> views_set =
+        web_contents()->GetRenderWidgetHostViewsInWebContentsTree();
     EXPECT_EQ(1U, views_set.size());
   }
 
@@ -1086,8 +1086,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
   {
     // There should be now two RenderWidgetHosts, one for each process
     // rendering a frame.
-    std::set<RenderWidgetHostView*> views_set =
-        web_contents()->GetRenderWidgetHostViewsInTree();
+    std::set<RenderWidgetHostViewBase*> views_set =
+        web_contents()->GetRenderWidgetHostViewsInWebContentsTree();
     EXPECT_EQ(2U, views_set.size());
   }
   RenderFrameProxyHost* proxy_to_parent =
@@ -1137,8 +1137,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
             child->current_frame_host()->GetProcess());
   EXPECT_NE(rph, child->current_frame_host()->GetProcess());
   {
-    std::set<RenderWidgetHostView*> views_set =
-        web_contents()->GetRenderWidgetHostViewsInTree();
+    std::set<RenderWidgetHostViewBase*> views_set =
+        web_contents()->GetRenderWidgetHostViewsInWebContentsTree();
     EXPECT_EQ(2U, views_set.size());
   }
   EXPECT_EQ(proxy_to_parent, child->render_manager()->GetProxyToParent());
