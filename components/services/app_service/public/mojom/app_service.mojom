@@ -81,7 +81,7 @@ interface AppService {
       string app_id);
 
   // Unpauses an app, and recover the icon effect for the app.
-  UnpauseApps(
+  UnpauseApp(
       AppType app_type,
       string app_id);
 
@@ -199,7 +199,7 @@ interface Publisher {
       string app_id);
 
   // Unpauses an app, and recover the icon effect for the app.
-  UnpauseApps(
+  UnpauseApp(
       string app_id);
 
   // Stops the current running app for the given |app_id|.

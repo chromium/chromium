@@ -78,7 +78,7 @@ class WebAppsChromeOs : public WebAppsBase,
                  bool clear_site_data,
                  bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;
-  void UnpauseApps(const std::string& app_id) override;
+  void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,

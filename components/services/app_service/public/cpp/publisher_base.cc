@@ -130,7 +130,7 @@ void PublisherBase::PauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
-void PublisherBase::UnpauseApps(const std::string& app_id) {
+void PublisherBase::UnpauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 

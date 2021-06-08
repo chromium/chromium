@@ -220,7 +220,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   app_limit->PauseWebActivity(app_id);
 }
 
-void ExtensionAppsChromeOs::UnpauseApps(const std::string& app_id) {
+void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeRemoveApp(app_id)) {
     SetIconEffect(app_id);
   }

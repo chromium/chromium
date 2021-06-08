@@ -180,7 +180,7 @@ void AppServiceProxyChromeOs::UnpauseApps(
     }
 
     pending_pause_requests_.MaybeRemoveApp(app_id);
-    app_service_->UnpauseApps(app_type, app_id);
+    app_service_->UnpauseApp(app_type, app_id);
   }
 }
 

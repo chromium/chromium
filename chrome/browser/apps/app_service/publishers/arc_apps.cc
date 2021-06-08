@@ -895,7 +895,7 @@ void ArcApps::PauseApp(const std::string& app_id) {
   CloseTasks(app_id);
 }
 
-void ArcApps::UnpauseApps(const std::string& app_id) {
+void ArcApps::UnpauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeRemoveApp(app_id)) {
     SetIconEffect(app_id);
   }

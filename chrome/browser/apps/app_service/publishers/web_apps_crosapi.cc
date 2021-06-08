@@ -127,7 +127,7 @@ void WebAppsCrosapi::PauseApp(const std::string& app_id) {
   controller_->PauseApp(app_id);
 }
 
-void WebAppsCrosapi::UnpauseApps(const std::string& app_id) {
+void WebAppsCrosapi::UnpauseApp(const std::string& app_id) {
   controller_->UnpauseApp(app_id);
 }
 

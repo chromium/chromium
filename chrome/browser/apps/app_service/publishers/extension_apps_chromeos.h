@@ -83,7 +83,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info) override;
   void PauseApp(const std::string& app_id) override;
-  void UnpauseApps(const std::string& app_id) override;
+  void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
