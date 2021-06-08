@@ -160,7 +160,7 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
         uint16_t usage_page = usages[j].UsagePage;
         uint16_t usage = usages[j].Usage;
         if (usage_page == kButtonUsagePage && usage > 0) {
-          size_t button_index = size_t{usage - 1};
+          size_t button_index = static_cast<size_t>(usage - 1);
           if (button_index < Gamepad::kButtonsLengthCap)
             buttons_[button_index] = true;
         } else if (usage_page != kButtonUsagePage &&
@@ -416,8 +416,8 @@ void RawInputGamepadDeviceWin::QueryNormalButtonCapabilities(
     uint16_t usage_max = item.Range.UsageMax;
     if (usage_min == 0 || usage_max == 0)
       continue;
-    size_t button_index_min = size_t{usage_min - 1};
-    size_t button_index_max = size_t{usage_max - 1};
+    size_t button_index_min = static_cast<size_t>(usage_min - 1);
+    size_t button_index_max = static_cast<size_t>(usage_max - 1);
     if (item.UsagePage == kButtonUsagePage &&
         button_index_min < Gamepad::kButtonsLengthCap) {
       button_index_max =

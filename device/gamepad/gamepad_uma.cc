@@ -19,7 +19,7 @@ void RecordConnectedGamepad(GamepadId gamepad_id) {
   auto gamepad_id_as_underlying_type =
       static_cast<std::underlying_type<GamepadId>::type>(gamepad_id);
   base::UmaHistogramSparse("Gamepad.KnownGamepadConnectedWithId",
-                           int32_t{gamepad_id_as_underlying_type});
+                           static_cast<int32_t>(gamepad_id_as_underlying_type));
 }
 
 void RecordUnknownGamepad(GamepadSource source) {

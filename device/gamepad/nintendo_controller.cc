@@ -1554,7 +1554,7 @@ void NintendoController::SubCommand(uint8_t sub_command,
   // Serial subcommands also carry vibration data. Configure the vibration
   // portion of the report for a neutral vibration effect (zero amplitude).
   // https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/bluetooth_hid_notes.md#output-0x12
-  report_bytes[0] = uint8_t{output_report_counter_++ & 0xff};
+  report_bytes[0] = static_cast<uint8_t>(output_report_counter_++ & 0xff);
   report_bytes[1] = 0x00;
   report_bytes[2] = 0x01;
   report_bytes[3] = 0x40;
@@ -1608,7 +1608,7 @@ void NintendoController::RequestVibration(double left_frequency,
   FrequencyToHex(left_frequency, left_magnitude, &lhf, &llf, &lhfa, &llfa);
   FrequencyToHex(right_frequency, right_magnitude, &rhf, &rlf, &rhfa, &rlfa);
   std::vector<uint8_t> report_bytes(output_report_size_bytes_ - 1);
-  uint8_t counter = uint8_t{output_report_counter_++ & 0x0f};
+  uint8_t counter = static_cast<uint8_t>(output_report_counter_++ & 0x0f);
   report_bytes[0] = counter;
   report_bytes[1] = lhf & 0xff;
   report_bytes[2] = lhfa + ((lhf >> 8) & 0xff);
@@ -1698,8 +1698,8 @@ void NintendoController::ReadSpi(uint16_t address, size_t length) {
   length = std::min(length, output_report_size_bytes_ - kSpiDataOffset);
   uint8_t address_high = (address >> 8) & 0xff;
   uint8_t address_low = address & 0xff;
-  SubCommand(kSubCommandReadSpi,
-             {address_low, address_high, 0x00, 0x00, uint8_t{length}});
+  SubCommand(kSubCommandReadSpi, {address_low, address_high, 0x00, 0x00,
+                                  static_cast<uint8_t>(length)});
 }
 
 void NintendoController::RequestImuCalibration() {
