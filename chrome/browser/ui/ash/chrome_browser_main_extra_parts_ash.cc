@@ -273,6 +273,10 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   media_client_.reset();
   login_screen_client_.reset();
 
+  if (ash::features::IsMicMuteNotificationsEnabled()) {
+    microphone_mute_notification_delegate_.reset();
+  }
+
   // Initialized in PreProfileInit (which may not get called in some tests).
   system_tray_client_.reset();
   session_controller_client_.reset();

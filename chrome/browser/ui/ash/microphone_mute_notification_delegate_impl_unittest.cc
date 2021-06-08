@@ -7,15 +7,36 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "components/services/app_service/public/cpp/capability_access_update.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Gmock matchers and actions that are used below.
-using ::testing::AnyOf;
+class TestMicrophoneMuteNotificationDelegateImpl
+    : public MicrophoneMuteNotificationDelegateImpl {
+ public:
+  TestMicrophoneMuteNotificationDelegateImpl() = default;
+  TestMicrophoneMuteNotificationDelegateImpl(
+      const MicrophoneMuteNotificationDelegateImpl&) = delete;
+  TestMicrophoneMuteNotificationDelegateImpl& operator=(
+      const MicrophoneMuteNotificationDelegateImpl&) = delete;
+  ~TestMicrophoneMuteNotificationDelegateImpl() override = default;
+
+  void SetFakeActiveUserAccountId(AccountId id) {
+    user_account_id_ = id;
+    CheckActiveUserChanged();
+  }
+
+  AccountId GetActiveUserAccountId() override { return user_account_id_; }
+
+ private:
+  AccountId user_account_id_ = EmptyAccountId();
+};
 
 class MicrophoneMuteNotificationDelegateTest : public testing::Test {
  public:
@@ -27,23 +48,62 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
   ~MicrophoneMuteNotificationDelegateTest() override = default;
 
   void SetUp() override {
-    media_delegate_ =
-        std::make_unique<MicrophoneMuteNotificationDelegateImpl>();
+    testing::Test::SetUp();
 
-    registry_cache_.SetAccountId(account_id_);
-    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
-                                                             &registry_cache_);
-    capability_access_cache_.SetAccountId(account_id_);
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+    microphone_mute_notification_delegate_ =
+        std::make_unique<TestMicrophoneMuteNotificationDelegateImpl>();
+
+    SetupPrimaryUser();
+  }
+
+  void TearDown() override {
+    microphone_mute_notification_delegate_.reset();
+    testing::Test::TearDown();
+  }
+
+  void SetupPrimaryUser() {
+    registry_cache_primary_user_.SetAccountId(account_id_primary_user_);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
+        account_id_primary_user_, &registry_cache_primary_user_);
+    capability_access_cache_primary_user_.SetAccountId(
+        account_id_primary_user_);
     apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
-        account_id_, &capability_access_cache_);
+        account_id_primary_user_, &capability_access_cache_primary_user_);
+    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(
+        account_id_primary_user_);
+  }
+
+  void SetupSecondaryUser() {
+    registry_cache_secondary_user_.SetAccountId(account_id_secondary_user_);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
+        account_id_secondary_user_, &registry_cache_secondary_user_);
+    capability_access_cache_secondary_user_.SetAccountId(
+        account_id_secondary_user_);
+    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        account_id_secondary_user_, &capability_access_cache_secondary_user_);
+    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(
+        account_id_secondary_user_);
   }
 
   absl::optional<std::u16string> GetAppAccessingMicrophone() {
-    return media_delegate_->GetAppAccessingMicrophone(&capability_access_cache_,
-                                                      &registry_cache_);
+    apps::AppCapabilityAccessCache* cap_cache =
+        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
+         account_id_primary_user_)
+            ? &capability_access_cache_primary_user_
+            : &capability_access_cache_secondary_user_;
+    apps::AppRegistryCache* reg_cache =
+        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
+         account_id_primary_user_)
+            ? &registry_cache_primary_user_
+            : &registry_cache_secondary_user_;
+    return microphone_mute_notification_delegate_->GetAppAccessingMicrophone(
+        cap_cache, reg_cache);
   }
-
-  void TearDown() override { media_delegate_.reset(); }
 
   static apps::mojom::AppPtr MakeApp(const char* app_id, const char* name) {
     apps::mojom::AppPtr app = apps::mojom::App::New();
@@ -64,29 +124,53 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
     return access;
   }
 
-  void LaunchApp(const char* id,
-                 const char* name,
-                 apps::mojom::OptionalBool use_microphone) {
+  void LaunchAppUsingMicrophone(const char* id,
+                                const char* name,
+                                bool use_microphone) {
+    bool is_primary_user =
+        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
+         account_id_primary_user_);
+    apps::AppRegistryCache* reg_cache = is_primary_user
+                                            ? &registry_cache_primary_user_
+                                            : &registry_cache_secondary_user_;
+    apps::AppCapabilityAccessCache* cap_cache =
+        is_primary_user ? &capability_access_cache_primary_user_
+                        : &capability_access_cache_secondary_user_;
+
     std::vector<apps::mojom::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
-    registry_cache_.OnApps(std::move(registry_deltas),
-                           apps::mojom::AppType::kUnknown,
-                           /* should_notify_initialized = */ false);
+    reg_cache->OnApps(std::move(registry_deltas),
+                      apps::mojom::AppType::kUnknown,
+                      /*should_notify_initialized=*/false);
 
     std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
-    capability_access_deltas.push_back(
-        MakeCapabilityAccess(id, use_microphone));
-    capability_access_cache_.OnCapabilityAccesses(
-        std::move(capability_access_deltas));
+    capability_access_deltas.push_back(MakeCapabilityAccess(
+        id, use_microphone ? apps::mojom::OptionalBool::kTrue
+                           : apps::mojom::OptionalBool::kFalse));
+    cap_cache->OnCapabilityAccesses(std::move(capability_access_deltas));
+  }
+
+  void SetActiveUserAccountId(AccountId id) {
+    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(id);
   }
 
   const std::string kPrimaryProfileName = "primary_profile";
-  const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);
+  const AccountId account_id_primary_user_ =
+      AccountId::FromUserEmail(kPrimaryProfileName);
+  const std::string kSecondaryProfileName = "secondary_profile";
+  const AccountId account_id_secondary_user_ =
+      AccountId::FromUserEmail(kSecondaryProfileName);
 
-  std::unique_ptr<MicrophoneMuteNotificationDelegateImpl> media_delegate_;
+  std::unique_ptr<TestMicrophoneMuteNotificationDelegateImpl>
+      microphone_mute_notification_delegate_;
 
-  apps::AppRegistryCache registry_cache_;
-  apps::AppCapabilityAccessCache capability_access_cache_;
+  apps::AppRegistryCache registry_cache_primary_user_;
+  apps::AppCapabilityAccessCache capability_access_cache_primary_user_;
+  apps::AppRegistryCache registry_cache_secondary_user_;
+  apps::AppCapabilityAccessCache capability_access_cache_secondary_user_;
+
+  user_manager::FakeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(MicrophoneMuteNotificationDelegateTest, NoAppsLaunched) {
@@ -96,7 +180,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, NoAppsLaunched) {
 }
 
 TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedNotUsingMicrophone) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kFalse);
+  LaunchAppUsingMicrophone("id_rose", "name_rose", false);
 
   // Should return a completely value-free app_name.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
@@ -104,28 +188,137 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedNotUsingMicrophone) {
 }
 
 TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedUsingMicrophone) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
+  LaunchAppUsingMicrophone("id_rose", "name_rose", true);
 
   // Should return the name of our app.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
-  std::string app_name_utf8 = base::UTF16ToUTF8(app_name.value());
-  EXPECT_STREQ(app_name_utf8.c_str(), "name_rose");
+  EXPECT_EQ(app_name, u"name_rose");
 }
 
 TEST_F(MicrophoneMuteNotificationDelegateTest,
        MultipleAppsLaunchedUsingMicrophone) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_mars", "name_mars", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_zara", "name_zara", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_oscar", "name_oscar", apps::mojom::OptionalBool::kFalse);
+  LaunchAppUsingMicrophone("id_rose", "name_rose", true);
+  LaunchAppUsingMicrophone("id_mars", "name_mars", true);
+  LaunchAppUsingMicrophone("id_zara", "name_zara", true);
+  LaunchAppUsingMicrophone("id_oscar", "name_oscar", false);
 
-  // Because AppCapabilityAccessCache::GetAppsAccessingMicrophone (invoked by
-  // GetAppAccessingMicrophone) returns a set, we have no guarantee of
-  // which app will be found first.  So we verify that the app name is one of
-  // our microphone-users.
+  // Most recently launched mic-using app should be the one we use for the
+  // notification.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
-  std::string app_name_utf8 = base::UTF16ToUTF8(app_name.value());
-  EXPECT_THAT(app_name_utf8, AnyOf("name_rose", "name_mars", "name_zara"));
+  EXPECT_EQ(app_name, u"name_zara");
+
+  // Oscar starts using the mic, Oscar shows up in the notification.
+  LaunchAppUsingMicrophone("id_oscar", "name_oscar", true);
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_oscar");
+
+  // If we "kill" Oscar (set to no longer be using the mic or camera),
+  // the notification shows Zara again.
+  LaunchAppUsingMicrophone("id_oscar", "name_oscar", false);
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_zara");
+}
+
+TEST_F(MicrophoneMuteNotificationDelegateTest, MultipleUsers) {
+  // Prepare the secondary user.
+  SetupSecondaryUser();
+
+  // Primary user is the active user.
+  SetActiveUserAccountId(account_id_primary_user_);
+
+  // Primary user launches a mic-using app.
+  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", true);
+
+  // App we just launched should show up in the notification.
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_primary_user");
+
+  // Secondary user is now the primary user.
+  SetActiveUserAccountId(account_id_secondary_user_);
+
+  // Secondary user launches a mic-using app.
+  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", true);
+
+  // App we just launched should show up in the notification.
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_secondary_user");
+
+  // Switch back to the primary user and "kill" the app it was running, no app
+  // name to show.
+  SetActiveUserAccountId(account_id_primary_user_);
+  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", false);
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_FALSE(app_name.has_value());
+
+  // Now switch back to the secondary user, verify that the same app as before
+  // shows up in the notification.
+  SetActiveUserAccountId(account_id_secondary_user_);
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_secondary_user");
+
+  // Now "kill" our secondary user's app and verify that there's no name to
+  // show.
+  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", false);
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_FALSE(app_name.has_value());
+}
+
+TEST_F(MicrophoneMuteNotificationDelegateTest, MultipleUsersMultipleApps) {
+  // Prepare the secondary user.
+  SetupSecondaryUser();
+
+  // Primary user is the active user.
+  SetActiveUserAccountId(account_id_primary_user_);
+
+  // Primary user launches a mic-using app.
+  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", true);
+
+  // App we just launched should show up in the notification.
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_primary_user");
+
+  // Primary user launches a second mic-using app.
+  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user_another_app",
+                           true);
+
+  // App we just launched should show up in the notification.
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_primary_user_another_app");
+
+  // Secondary user is now the primary user.
+  SetActiveUserAccountId(account_id_secondary_user_);
+
+  // Secondary user launches a mic-using app.
+  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", true);
+
+  // App we just launched should show up in the notification.
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_secondary_user");
+
+  // Secondary user launches a second mic-using app.
+  LaunchAppUsingMicrophone("id_secondary_user",
+                           "name_secondary_user_another_app", true);
+
+  // App we just launched should show up in the notification.
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_secondary_user_another_app");
+
+  // Switch back to the primary user.
+  SetActiveUserAccountId(account_id_primary_user_);
+
+  // App we just launched should show up in the notification.
+  app_name = GetAppAccessingMicrophone();
+  EXPECT_TRUE(app_name.has_value());
+  EXPECT_EQ(app_name, u"name_primary_user_another_app");
 }
