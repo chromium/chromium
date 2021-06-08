@@ -80,6 +80,9 @@ static_library("safe_browsing") {
       ]
     }
     deps += [
+      # TODO(crbug.com/1216213): Adding ":ntp_background_proto" is a band-aid
+      # fix, figure out a better solution.
+      "//chrome/browser:ntp_background_proto",
       "//chrome/browser/profiles:profile",
       "//components/paint_preview/buildflags",
       "//extensions/browser",
