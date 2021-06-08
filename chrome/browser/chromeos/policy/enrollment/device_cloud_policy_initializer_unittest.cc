@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
+#include "chrome/browser/chromeos/policy/enrollment/device_cloud_policy_initializer.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"

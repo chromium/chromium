@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

@@ -64,7 +64,7 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/geolocation/geoposition.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

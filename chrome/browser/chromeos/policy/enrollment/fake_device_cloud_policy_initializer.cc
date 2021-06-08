@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/fake_device_cloud_policy_initializer.h"
+#include "chrome/browser/chromeos/policy/enrollment/fake_device_cloud_policy_initializer.h"
 
 #include <memory>
 
@@ -32,11 +32,9 @@ FakeDeviceCloudPolicyInitializer::FakeDeviceCloudPolicyInitializer()
 
 FakeDeviceCloudPolicyInitializer::~FakeDeviceCloudPolicyInitializer() = default;
 
-void FakeDeviceCloudPolicyInitializer::Init() {
-}
+void FakeDeviceCloudPolicyInitializer::Init() {}
 
-void FakeDeviceCloudPolicyInitializer::Shutdown() {
-}
+void FakeDeviceCloudPolicyInitializer::Shutdown() {}
 
 void FakeDeviceCloudPolicyInitializer::PrepareEnrollment(
     DeviceManagementService* device_management_service,

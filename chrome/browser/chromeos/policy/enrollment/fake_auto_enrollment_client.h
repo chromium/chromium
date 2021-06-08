@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AUTO_ENROLLMENT_CLIENT_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AUTO_ENROLLMENT_CLIENT_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_FAKE_AUTO_ENROLLMENT_CLIENT_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_FAKE_AUTO_ENROLLMENT_CLIENT_H_
 
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/policy/auto_enrollment_client.h"
+#include "chrome/browser/chromeos/policy/enrollment/auto_enrollment_client.h"
 
 class PrefService;
 
@@ -84,4 +84,4 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AUTO_ENROLLMENT_CLIENT_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_FAKE_AUTO_ENROLLMENT_CLIENT_H_

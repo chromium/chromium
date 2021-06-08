@@ -13,7 +13,7 @@
 #include "base/macros.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/chromeos/policy/active_directory/active_directory_join_delegate.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
+#include "chrome/browser/chromeos/policy/enrollment/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;

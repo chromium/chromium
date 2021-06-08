@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_UMA_H_
 #define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_UMA_H_
 
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 
 namespace ash {

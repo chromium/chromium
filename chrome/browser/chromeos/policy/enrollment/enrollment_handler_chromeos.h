@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_
 
 #include <memory>
 #include <string>
@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
+#include "chrome/browser/chromeos/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -259,4 +259,4 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_

@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

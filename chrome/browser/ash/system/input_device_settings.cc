@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/system/input_device_settings.h"
 
-#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_requisition_manager.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 

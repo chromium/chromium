@@ -22,7 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
+#include "chrome/browser/chromeos/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #endif  // BUILDFLAG(PLATFORM_CFM)
