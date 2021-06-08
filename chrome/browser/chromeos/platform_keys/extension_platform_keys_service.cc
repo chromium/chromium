@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -71,6 +72,14 @@ namespace chromeos {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(miersh): minimize the use of these functions.
+std::vector<uint8_t> StrToBlob(const std::string& str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+std::string BlobToStr(const std::vector<uint8_t>& blob) {
+  return std::string(blob.begin(), blob.end());
+}
 
 // Verify the allowlisted kKeyPermissionsInLoginScreen feature behaviors.
 bool IsExtensionAllowlisted(const extensions::Extension* extension) {
@@ -237,8 +246,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
                                  result->get_error());
         break;
       case Tag::BLOB:
-        const std::vector<uint8_t>& blob = result->get_blob();
-        public_key_spki_der_ = std::string(blob.begin(), blob.end());
+        public_key_spki_der_ = BlobToStr(result->get_blob());
         break;
     }
     DoStep();
@@ -264,8 +272,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     LOG(ERROR) << "Corporate key registration failed: "
                << platform_keys::StatusToString(status);
 
-    service_->platform_keys_service_->RemoveKey(
-        token_id_, public_key_spki_der_,
+    service_->keystore_service_->RemoveKey(
+        KeystoreTypeFromTokenId(token_id_), StrToBlob(public_key_spki_der_),
         base::BindOnce(&GenerateKeyTask::RemoveKeyCallback,
                        base::Unretained(this),
                        /*corporate_key_registration_error_status=*/status));
@@ -273,11 +281,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   void RemoveKeyCallback(
       platform_keys::Status corporate_key_registration_error_status,
-      platform_keys::Status remove_key_status) {
-    if (remove_key_status != platform_keys::Status::kSuccess) {
+      bool is_remove_error,
+      KeystoreError remove_error) {
+    if (is_remove_error) {
       LOG(ERROR)
           << "Failed to remove a dangling key with error: "
-          << platform_keys::StatusToString(remove_key_status)
+          << platform_keys::KeystoreErrorToString(remove_error)
           << ", after failing to register key for corporate usage with error: "
           << platform_keys::StatusToString(
                  corporate_key_registration_error_status);
@@ -391,7 +400,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
            SignCallback callback,
            ExtensionPlatformKeysService* service)
       : token_id_(token_id),
-        data_(data.begin(), data.end()),
+        data_(StrToBlob(data)),
         public_key_spki_der_(public_key_spki_der),
         extension_id_(extension_id),
         callback_(std::move(callback)),
@@ -512,12 +521,11 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       is_keystore_provided = true;
       keystore = KeystoreTypeFromTokenId(token_id_.value());
     }
-    std::vector<uint8_t> public_key(public_key_spki_der_.begin(),
-                                    public_key_spki_der_.end());
 
     service_->keystore_service_->Sign(
-        is_keystore_provided, keystore, std::move(public_key), signing_scheme_,
-        data_, base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+        is_keystore_provided, keystore, StrToBlob(public_key_spki_der_),
+        signing_scheme_, data_,
+        base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
   }
 
   void DidSign(KeystoreBinaryResultPtr result) {
@@ -529,7 +537,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       case KeystoreBinaryResult::Tag::BLOB:
         const std::vector<uint8_t>& blob = result->get_blob();
         std::move(callback_).Run(
-            /*signature=*/std::string(blob.begin(), blob.end()),
+            /*signature=*/BlobToStr(blob),
             /*error=*/absl::nullopt);
         break;
     }

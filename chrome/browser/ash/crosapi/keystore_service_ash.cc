@@ -662,6 +662,38 @@ void KeystoreServiceAsh::DidGenerateKey(
 
 //------------------------------------------------------------------------------
 
+void KeystoreServiceAsh::RemoveKey(KeystoreType keystore,
+                                   const std::vector<uint8_t>& public_key,
+                                   RemoveKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  absl::optional<TokenId> token_id = KeystoreToToken(keystore);
+  if (!token_id) {
+    std::move(callback).Run(/*is_error=*/true,
+                            mojom::KeystoreError::kUnsupportedKeystoreType);
+    return;
+  }
+
+  GetPlatformKeys()->RemoveKey(
+      token_id.value(), std::string(public_key.begin(), public_key.end()),
+      base::BindOnce(&KeystoreServiceAsh::DidRemoveKey, std::move(callback)));
+}
+
+// static
+void KeystoreServiceAsh::DidRemoveKey(RemoveKeyCallback callback,
+                                      chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+  } else {
+    std::move(callback).Run(
+        /*is_error=*/true,
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+}
+
+//------------------------------------------------------------------------------
+
 void KeystoreServiceAsh::Sign(bool is_keystore_provided,
                               KeystoreType keystore,
                               const std::vector<uint8_t>& public_key,

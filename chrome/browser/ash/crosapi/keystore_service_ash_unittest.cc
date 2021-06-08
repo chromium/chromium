@@ -20,6 +20,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock-actions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The tests in this file mostly focus on verifying that KeystoreService can
@@ -38,6 +39,7 @@ using chromeos::platform_keys::TokenId;
 using crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
 using crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
 using testing::_;
+using testing::DoAll;
 using testing::StrictMock;
 
 constexpr char kData[] = "\1\2\3\4\5\6\7";
@@ -136,6 +138,22 @@ struct BinaryCallbackObserver {
   mojom::KeystoreBinaryResultPtr result;
 };
 
+// A mock for observing status results returned via a callback.
+struct StatusCallbackObserver {
+  MOCK_METHOD(void, Callback, (bool is_error, mojom::KeystoreError error));
+
+  auto GetCallback() {
+    EXPECT_CALL(*this, Callback)
+        .WillOnce(
+            DoAll(MoveArg<0>(&result_is_error), MoveArg<1>(&result_error)));
+    return base::BindOnce(&StatusCallbackObserver::Callback,
+                          base::Unretained(this));
+  }
+
+  bool result_is_error = false;
+  mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
+};
+
 TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
   const unsigned int modulus_length = 2048;
 
@@ -227,6 +245,31 @@ TEST_F(KeystoreServiceAshTest, SignFail) {
 
   AssertErrorEq(observer.result,
                 mojom::KeystoreError::kKeyNotAllowedForSigning);
+}
+
+TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              RemoveKey(TokenId::kSystem, GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<2>(Status::kSuccess));
+
+  StatusCallbackObserver observer;
+  keystore_service_.RemoveKey(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                              observer.GetCallback());
+
+  EXPECT_EQ(observer.result_is_error, false);
+}
+
+TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
+  EXPECT_CALL(platform_keys_service_,
+              RemoveKey(TokenId::kSystem, GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<2>(Status::kErrorKeyNotFound));
+
+  StatusCallbackObserver observer;
+  keystore_service_.RemoveKey(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                              observer.GetCallback());
+
+  EXPECT_EQ(observer.result_is_error, true);
+  EXPECT_EQ(observer.result_error, mojom::KeystoreError::kKeyNotFound);
 }
 
 }  // namespace

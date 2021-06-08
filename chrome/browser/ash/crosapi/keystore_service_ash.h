@@ -86,6 +86,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreSigningAlgorithmPtr algorithm,
                    GenerateKeyCallback callback) override;
+  void RemoveKey(KeystoreType keystore,
+                 const std::vector<uint8_t>& public_key,
+                 RemoveKeyCallback callback) override;
   void Sign(bool is_keystore_provided,
             KeystoreType keystore,
             const std::vector<uint8_t>& public_key,
@@ -128,6 +131,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   static void DidGenerateKey(GenerateKeyCallback callback,
                              const std::string& public_key,
                              chromeos::platform_keys::Status status);
+  static void DidRemoveKey(RemoveKeyCallback callback,
+                           chromeos::platform_keys::Status status);
   static void DidSign(SignCallback callback,
                       const std::string& signature,
                       chromeos::platform_keys::Status status);
