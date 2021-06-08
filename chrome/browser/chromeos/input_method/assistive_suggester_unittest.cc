@@ -33,6 +33,8 @@ class AssistiveSuggesterTest : public testing::Test {
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
     histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
                                          true, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "InputMethod.Assistive.UserPref.MultiWord", true, 1);
     ui::IMEBridge::Initialize();
   }
 

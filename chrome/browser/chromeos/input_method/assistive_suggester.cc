@@ -185,6 +185,10 @@ void RecordAssistiveUserPrefForEmoji(bool value) {
   base::UmaHistogramBoolean("InputMethod.Assistive.UserPref.Emoji", value);
 }
 
+void RecordAssistiveUserPrefForMultiWord(bool value) {
+  base::UmaHistogramBoolean("InputMethod.Assistive.UserPref.MultiWord", value);
+}
+
 void RecordAssistiveNotAllowed(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.NotAllowed", type);
 }
@@ -315,6 +319,8 @@ AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
       profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled));
+  RecordAssistiveUserPrefForMultiWord(
+      profile_->GetPrefs()->GetBoolean(prefs::kAssistPredictiveWritingEnabled));
 }
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
