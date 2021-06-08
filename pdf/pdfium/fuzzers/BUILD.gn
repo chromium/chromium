@@ -17,6 +17,9 @@ template("pdfium_fuzzer_test") {
 
     sources = []
     deps = [ "//third_party/pdfium/testing/fuzzers:${target_name}_src" ]
+    if (is_component_build) {
+      deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_impl" ]
+    }
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
