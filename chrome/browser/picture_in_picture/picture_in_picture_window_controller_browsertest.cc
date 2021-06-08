@@ -1692,14 +1692,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that the Play/Pause button is displayed appropriately in the
 // Picture-in-Picture window.
-// TODO(crbug.com/1213355): Test is flaky on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_PlayPauseButtonVisibility DISABLED_PlayPauseButtonVisibility
-#else
-#define MAYBE_PlayPauseButtonVisibility PlayPauseButtonVisibility
-#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       MAYBE_PlayPauseButtonVisibility) {
+                       PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -1865,7 +1859,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 // window when Media Session actions "play" and "pause" are handled by the
 // website even if video is a media stream.
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       MAYBE_PlayPauseButtonVisibility) {
+                       PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -2002,14 +1996,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Play/Pause button in the Picture-in-Picture window
 // calls the Media Session actions "play" and "pause" handler functions.
-// TODO(crbug.com/1213355): Test is flaky on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_PlayPauseHandlersCalled DISABLED_PlayPauseHandlersCalled
-#else
-#define MAYBE_PlayPauseHandlersCalled PlayPauseHandlersCalled
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       MAYBE_PlayPauseHandlersCalled) {
+                       PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =

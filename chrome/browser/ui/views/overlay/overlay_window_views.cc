@@ -294,15 +294,18 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
   const gfx::Rect bounds = native_widget() ? GetBounds() : gfx::Rect();
 
   gfx::Size window_size = bounds.size();
-  if (!has_been_shown_) {
+  if (!has_been_shown_)
     window_size = gfx::Size(work_area.width() / 5, work_area.height() / 5);
-    window_size.SetToMin(max_size_);
-    window_size.SetToMax(min_size_);
-  }
 
-  // Determine the window size by fitting |natural_size_| within
-  // |window_size|, keeping to |natural_size_|'s aspect ratio.
-  if (!window_size.IsEmpty() && !natural_size_.IsEmpty()) {
+  // Even though we define the minimum and maximum sizes for our views::Widget,
+  // it's possible for the current size to be outside of those bounds
+  // transiently on some platforms, so we need to cap it.
+  window_size.SetToMin(max_size_);
+  window_size.SetToMax(min_size_);
+
+  // Determine the window size by fitting |natural_size_| within |window_size|,
+  // keeping to |natural_size_|'s aspect ratio.
+  if (!natural_size_.IsEmpty()) {
     float aspect_ratio = (float)natural_size_.width() / natural_size_.height();
 
     WindowQuadrant quadrant = GetCurrentWindowQuadrant(bounds, controller_);
