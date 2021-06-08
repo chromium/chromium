@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_install_finalizer.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
@@ -181,7 +180,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
           Profile* profile = Profile::FromBrowserContext(context);
           auto provider =
               std::make_unique<web_app::TestWebAppProvider>(profile);
-          auto app_registrar = std::make_unique<web_app::TestAppRegistrar>();
+          auto app_registrar =
+              std::make_unique<web_app::WebAppRegistrarMutable>(profile);
           auto system_web_app_manager =
               std::make_unique<web_app::TestSystemWebAppManager>(profile);
 
@@ -217,7 +217,25 @@ class AppInfoGeneratorTest : public ::testing::Test {
     return generator;
   }
 
-  web_app::TestAppRegistrar* web_app_registrar() { return app_registrar_; }
+  std::unique_ptr<web_app::WebApp> CreateWebApp() {
+    const GURL app_url = GURL("http://app.com/app/path");
+    const web_app::AppId app_id = "c";
+
+    auto web_app = std::make_unique<web_app::WebApp>(app_id);
+    web_app->AddSource(web_app::Source::kDefault);
+    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetName("Name");
+    web_app->SetStartUrl(app_url);
+
+    return web_app;
+  }
+
+  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+    web_app::AppId app_id = web_app->app_id();
+    DCHECK(!app_registrar_->GetAppById(app_id));
+    app_registrar_->registry().emplace(std::move(app_id), std::move(web_app));
+  }
 
   Profile* profile() { return profile_.get(); }
 
@@ -248,7 +266,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
       scoped_omit_plugin_vm_apps_for_testing_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  web_app::TestAppRegistrar* app_registrar_;
+  web_app::WebAppRegistrarMutable* app_registrar_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   TestingPrefServiceSimple pref_service_;
 
@@ -282,10 +300,8 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   auto generator = GetReadyGenerator();
   PushApp("c", "App", apps::mojom::Readiness::kUninstalledByUser, "",
           apps::mojom::AppType::kWeb);
-  web_app::TestAppRegistrar::AppInfo app = {
-      GURL::EmptyGURL(), web_app::ExternalInstallSource::kExternalDefault,
-      GURL("http://app.com/app")};
-  web_app_registrar()->AddExternalApp("c", app);
+  auto web_app = CreateWebApp();
+  RegisterApp(std::move(web_app));
   Instance app_instance("c");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
