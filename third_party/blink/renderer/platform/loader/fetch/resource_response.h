@@ -171,6 +171,12 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool IsNull() const { return is_null_; }
   bool IsHTTP() const;
 
+  // When serving resources from a WebBundle, we might have resources whose
+  // source isn't a URL (like urn:uuid), but we still need to create and
+  // populate ResourceTiming entries for them, so we need to check that either
+  // response has a proper request URL or a WebBundleURL.
+  bool ShouldPopulateResourceTiming() const;
+
   // The current request URL for this resource (the URL after redirects).
   // Corresponds to:
   // https://fetch.spec.whatwg.org/#concept-request-current-url

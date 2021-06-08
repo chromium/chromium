@@ -97,6 +97,10 @@ bool ResourceResponse::IsHTTP() const {
   return current_request_url_.ProtocolIsInHTTPFamily();
 }
 
+bool ResourceResponse::ShouldPopulateResourceTiming() const {
+  return IsHTTP() || WebBundleURL().IsValid();
+}
+
 const KURL& ResourceResponse::CurrentRequestUrl() const {
   return current_request_url_;
 }

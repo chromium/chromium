@@ -1869,7 +1869,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
 
   if (scoped_refptr<ResourceTimingInfo> info =
           resource_timing_info_map_.Take(resource)) {
-    if (resource->GetResponse().IsHTTP()) {
+    if (resource->GetResponse().ShouldPopulateResourceTiming()) {
       PopulateAndAddResourceTimingInfo(resource, info, response_end);
       auto receiver = Context().TakePendingWorkerTimingReceiver(
           resource->GetResponse().RequestId());

@@ -941,7 +941,8 @@ void DocumentLoader::BodyLoadingFinished(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
         completion_time, total_encoded_data_length, total_decoded_body_length,
         should_report_corb_blocking);
-    if (response_.IsHTTP() || is_error_page_for_failed_navigation_) {
+    if (response_.ShouldPopulateResourceTiming() ||
+        is_error_page_for_failed_navigation_) {
       // The response is being copied here to pass the Encoded and Decoded
       // sizes.
       // TODO(yoav): copy the sizes info directly.
