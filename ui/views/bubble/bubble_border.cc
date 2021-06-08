@@ -275,7 +275,7 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
     // With NO_SHADOW, there should be further insets, but the same logic is
     // used to position the bubble origin according to |anchor_rect|.
     DCHECK((shadow_ != NO_SHADOW && shadow_ != NO_SHADOW_LEGACY) ||
-           insets_.has_value() || shadow_insets.IsEmpty());
+           insets_.has_value() || shadow_insets.IsEmpty() || visible_arrow_);
     if (!avoid_shadow_overlap_)
       contents_bounds.Inset(-shadow_insets);
 
@@ -416,34 +416,36 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 }
 
 void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  if (shadow_ == NO_SHADOW)
-    return PaintNoShadow(view, canvas);
+  if (shadow_ == NO_SHADOW) {
+    PaintNoShadow(view, canvas);
+    return;
+  }
 
-  if (shadow_ == NO_SHADOW_LEGACY)
-    return PaintNoShadowLegacy(view, canvas);
-
-  gfx::ScopedCanvas scoped(canvas);
-
-  SkRRect r_rect = GetClientRect(view);
-  canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference,
-                                 true /*doAntiAlias*/);
-
-  DrawBorderAndShadow(r_rect, &cc::PaintCanvas::drawRRect, canvas,
-                      view.GetNativeTheme(), md_shadow_elevation_);
+  if (shadow_ == NO_SHADOW_LEGACY) {
+    PaintNoShadowLegacy(view, canvas);
+  } else {
+    gfx::ScopedCanvas scoped(canvas);
+    SkRRect r_rect = GetClientRect(view);
+    canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference,
+                                   true /*doAntiAlias*/);
+    DrawBorderAndShadow(r_rect, &cc::PaintCanvas::drawRRect, canvas,
+                        view.GetNativeTheme(), md_shadow_elevation_);
+  }
 
   if (visible_arrow_)
     PaintVisibleArrow(view, canvas);
 }
 
 gfx::Insets BubbleBorder::GetInsets() const {
-  DCHECK((!insets_ && shadow_ == STANDARD_SHADOW) || !visible_arrow_);
+  // Visible arrow is not compatible with OS-drawn shadow or with manual insets.
+  DCHECK((!insets_ && shadow_ != NO_SHADOW) || !visible_arrow_);
   if (insets_.has_value())
     return insets_.value();
-  if (shadow_ == NO_SHADOW)
-    return gfx::Insets();
+  gfx::Insets insets;
   if (shadow_ == NO_SHADOW_LEGACY)
-    return gfx::Insets(kBorderThicknessDip);
-  gfx::Insets insets = GetBorderAndShadowInsets(md_shadow_elevation_);
+    insets = gfx::Insets(kBorderThicknessDip);
+  else if (shadow_ == STANDARD_SHADOW)
+    insets = GetBorderAndShadowInsets(md_shadow_elevation_);
   if (visible_arrow_) {
     const gfx::Insets arrow_insets = GetVisibleArrowInsets(arrow_, false);
     insets = gfx::Insets(std::max(insets.top(), arrow_insets.top()),
