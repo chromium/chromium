@@ -38,8 +38,8 @@ class CodegenTest(unittest.TestCase):
   def test_event_name_hash(self):
     # This was generated using the function in Chromium's
     # //base/metrics/metrics_hashes.cc for the string
-    # cros::TestProjectOne::TestEventOne
-    event_name_hash = 16542188217976373364
+    # chrome::TestProjectOne::TestEventOne
+    event_name_hash = 13593049295042080097
     project_name = 'TestProjectOne'
     event_name = 'TestEventOne'
     self.assertEqual(Util.event_name_hash(project_name, event_name),
