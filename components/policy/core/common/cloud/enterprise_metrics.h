@@ -274,10 +274,12 @@ POLICY_EXPORT extern const char kUMAHashDanceBucketDownloadTime[];
 POLICY_EXPORT extern const char kUMAHashDanceExtraTime[];
 POLICY_EXPORT extern const char kUMAHashDanceRequestStatus[];
 POLICY_EXPORT extern const char kUMAHashDanceNetworkErrorCode[];
+
+// The following UMA suffixes are used by Hash dance and PSM protocols.
 // Suffix for initial enrollment.
-POLICY_EXPORT extern const char kUMAHashDanceSuffixInitialEnrollment[];
+POLICY_EXPORT extern const char kUMASuffixInitialEnrollment[];
 // Suffix for Forced Re-Enrollment.
-POLICY_EXPORT extern const char kUMAHashDanceSuffixFRE[];
+POLICY_EXPORT extern const char kUMASuffixFRE[];
 
 }  // namespace policy
 

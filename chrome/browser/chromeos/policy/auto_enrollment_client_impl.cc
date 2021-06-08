@@ -586,7 +586,7 @@ class PsmHelper {
 
   // The UMA histogram suffix. It's set only to ".InitialEnrollment" for an
   // |AutoEnrollmentClient| until PSM will support FRE.
-  const std::string uma_suffix_ = kUMAHashDanceSuffixInitialEnrollment;
+  const std::string uma_suffix_ = kUMASuffixInitialEnrollment;
 
   // A sequence checker to prevent the race condition of having the possibility
   // of the destructor being called and any of the callbacks.
@@ -819,7 +819,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
       std::make_unique<StateDownloadMessageProcessorFRE>(
           server_backed_state_key),
       power_initial, power_limit,
-      /*power_outdated_server_detect=*/absl::nullopt, kUMAHashDanceSuffixFRE,
+      /*power_outdated_server_detect=*/absl::nullopt, kUMASuffixFRE,
       /*private_set_membership_helper=*/nullptr));
 }
 
@@ -843,7 +843,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
       absl::make_optional(power_outdated_server_detect),
-      kUMAHashDanceSuffixInitialEnrollment,
+      kUMASuffixInitialEnrollment,
       ash::AutoEnrollmentController::IsPsmEnabled()
           ? std::make_unique<PsmHelper>(
                 device_management_service, url_loader_factory, local_state,

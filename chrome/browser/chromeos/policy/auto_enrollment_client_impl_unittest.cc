@@ -168,8 +168,8 @@ class AutoEnrollmentClientImplTest
   std::string GetAutoEnrollmentProtocolUmaSuffix() const {
     return GetAutoEnrollmentProtocol() ==
                    AutoEnrollmentProtocol::kInitialEnrollment
-               ? kUMAHashDanceSuffixInitialEnrollment
-               : kUMAHashDanceSuffixFRE;
+               ? kUMASuffixInitialEnrollment
+               : kUMASuffixFRE;
   }
 
   void CreateClient(int power_initial, int power_limit) {
@@ -510,10 +510,10 @@ class AutoEnrollmentClientImplTest
       base::TimeDelta expected_time_recorded,
       bool success_time_recorded) const {
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceProtocolTimeStr + kUMAHashDanceSuffixInitialEnrollment,
+        kUMAHashDanceProtocolTimeStr + kUMASuffixInitialEnrollment,
         expected_time_recorded, /*expected_count=*/1);
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceSuccessTimeStr + kUMAHashDanceSuffixInitialEnrollment,
+        kUMAHashDanceSuccessTimeStr + kUMASuffixInitialEnrollment,
         expected_time_recorded, success_time_recorded ? 1 : 0);
   }
 

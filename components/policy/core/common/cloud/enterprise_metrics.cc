@@ -206,7 +206,8 @@ const char kUMAHashDanceRequestStatus[] =
     "Enterprise.AutoEnrollmentRequestStatus";
 const char kUMAHashDanceNetworkErrorCode[] =
     "Enterprise.AutoEnrollmentRequestNetworkErrorCode";
-const char kUMAHashDanceSuffixInitialEnrollment[] = ".InitialEnrollment";
-const char kUMAHashDanceSuffixFRE[] = ".ForcedReenrollment";
+
+const char kUMASuffixInitialEnrollment[] = ".InitialEnrollment";
+const char kUMASuffixFRE[] = ".ForcedReenrollment";
 
 }  // namespace policy
