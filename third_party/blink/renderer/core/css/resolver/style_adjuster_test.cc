@@ -279,17 +279,21 @@ TEST_F(StyleAdjusterTest, OverflowClipUseCount) {
 TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
   SetBodyInnerHTML(R"HTML(
 <style>
-.class1 { dominant-baseline: no-change; }
+.class1 { dominant-baseline: hanging; }
 </style>
 <svg>
 <tref>
-<tspan id="svgvar00005" />
+<text id="text5" style="dominant-baseline: no-change;"/>
 </svg>
 <svg>
-<use xlink:href="#svgvar00005" class="class1" />
+<use id="use1" xlink:href="#text5" class="class1" />
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  // Pass if we had no null pointer dereferences.
+  Element* text =
+      GetDocument().getElementById("use1")->GetShadowRoot()->getElementById(
+          "text5");
+  EXPECT_EQ(EDominantBaseline::kHanging,
+            text->GetComputedStyle()->CssDominantBaseline());
 }
 
 }  // namespace blink
