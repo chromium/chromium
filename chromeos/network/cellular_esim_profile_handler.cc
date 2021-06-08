@@ -4,9 +4,18 @@
 
 #include "chromeos/network/cellular_esim_profile_handler.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/network/cellular_esim_profile.h"
 
 namespace chromeos {
+namespace {
+
+// Delay before profile refresh callback is called. This ensures that eSIM
+// profiles are updated before callback returns.
+constexpr base::TimeDelta kProfileRefreshCallbackDelay =
+    base::TimeDelta::FromMilliseconds(150);
+
+}  // namespace
 
 CellularESimProfileHandler::CellularESimProfileHandler() = default;
 
@@ -123,7 +132,11 @@ void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
     OnHermesPropertiesUpdated();
   }
 
-  std::move(callback_).Run(std::move(inhibit_lock_));
+  // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
+  // profile objects to be loaded.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), std::move(inhibit_lock_)),
+      kProfileRefreshCallbackDelay);
 }
 
 }  // namespace chromeos

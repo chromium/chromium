@@ -173,6 +173,8 @@ class ESimProfileTest : public ESimTestBase {
               run_loop.Quit();
             }));
 
+    FastForwardProfileRefreshDelay();
+
     if (wait_for_connect) {
       base::RunLoop().RunUntilIdle();
       EXPECT_LE(1u, network_connection_handler()->connect_calls().size());

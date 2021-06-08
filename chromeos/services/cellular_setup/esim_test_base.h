@@ -11,12 +11,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
-class SingleThreadTaskEnvironment;
-}  // namespace test
-}  // namespace base
-
 namespace chromeos {
 
 class CellularInhibitor;
@@ -55,6 +49,8 @@ class ESimTestBase : public testing::Test {
   ESimTestBase();
   ~ESimTestBase() override;
 
+  void FastForwardProfileRefreshDelay();
+
   ESimManager* esim_manager() { return esim_manager_.get(); }
   ESimManagerTestObserver* observer() { return observer_.get(); }
 
@@ -79,7 +75,8 @@ class ESimTestBase : public testing::Test {
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ESimManager> esim_manager_;
   std::unique_ptr<ESimManagerTestObserver> observer_;
 };

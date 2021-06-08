@@ -255,6 +255,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
   void Connect(const std::string& service_path) {
+    const base::TimeDelta kProfileRefreshCallbackDelay =
+        base::TimeDelta::FromMilliseconds(150);
     network_connection_handler_->ConnectToNetwork(
         service_path,
         base::BindOnce(&NetworkConnectionHandlerImplTest::SuccessCallback,
@@ -262,6 +264,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         base::BindOnce(&NetworkConnectionHandlerImplTest::ErrorCallback,
                        base::Unretained(this)),
         true /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
+
+    // Connect can result in two profile refresh calls before and after
+    // enabling profile. Fast forward by delay after refresh.
+    task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
     task_environment_.RunUntilIdle();
   }
 

@@ -122,5 +122,14 @@ mojo::Remote<mojom::Euicc> ESimTestBase::GetEuiccForEid(
   return mojo::Remote<mojom::Euicc>();
 }
 
+void ESimTestBase::FastForwardProfileRefreshDelay() {
+  const base::TimeDelta kProfileRefreshCallbackDelay =
+      base::TimeDelta::FromMilliseconds(150);
+
+  // Connect can result in two profile refresh calls before and after
+  // enabling profile. Fast forward by delay after refresh.
+  task_environment()->FastForwardBy(2 * kProfileRefreshCallbackDelay);
+}
+
 }  // namespace cellular_setup
 }  // namespace chromeos
