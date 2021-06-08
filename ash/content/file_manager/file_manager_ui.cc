@@ -73,6 +73,7 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
                        kFileManagerGenResourcesSize);
 
   // Load time data: add files app strings and feature flags.
+  source->EnableReplaceI18nInJS();
   delegate_->PopulateLoadTimeData(source);
   source->UseStringsJs();
 
