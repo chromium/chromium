@@ -22,6 +22,11 @@ template("cros_toolchain") {
     if (use_goma && toolchain_args.needs_gomacc_path_arg) {
       extra_cppflags += " --gomacc-path $goma_dir/gomacc"
     }
+    if (use_rbe && toolchain_args.needs_gomacc_path_arg) {
+      wrapper_file = "$root_out_dir/rewrapper_cros"
+      wrapper_path = rebase_path(wrapper_file)
+      extra_cppflags += " --gomacc-path $wrapper_path"
+    }
 
     # Relativize path if compiler is specified such that not to lookup from $PATH
     # and cc/cxx does not contain additional flags.

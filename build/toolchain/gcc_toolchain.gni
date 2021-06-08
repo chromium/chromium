@@ -190,7 +190,9 @@ template("gcc_toolchain") {
     # wrapper will have picked up gomacc via cmd-line arg. So need to prepend
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
-    if (toolchain_uses_rbe) {
+    if (toolchain_uses_rbe &&
+        (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
+         !invoker_toolchain_args.needs_gomacc_path_arg)) {
       if (defined(toolchain_args.rbe_cc_cfg_file)) {
         toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
       } else {
