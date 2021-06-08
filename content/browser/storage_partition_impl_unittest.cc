@@ -210,8 +210,8 @@ class RemoveInterestGroupTester {
   // InterestGroupStorage.
   bool ContainsInterestGroupOwner(const url::Origin& origin) {
     get_interest_group_success_ = false;
-    EXPECT_TRUE(storage_partition_->GetInterestGroupStorage());
-    storage_partition_->GetInterestGroupStorage()->GetInterestGroupsForOwner(
+    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
+    storage_partition_->GetInterestGroupManager()->GetInterestGroupsForOwner(
         origin,
         base::BindOnce(&RemoveInterestGroupTester::GetInterestGroupsCallback,
                        base::Unretained(this)));
@@ -220,12 +220,12 @@ class RemoveInterestGroupTester {
   }
 
   void AddInterestGroup(const url::Origin& origin) {
-    EXPECT_TRUE(storage_partition_->GetInterestGroupStorage());
+    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
     blink::mojom::InterestGroupPtr group = blink::mojom::InterestGroup::New();
     group->owner = origin;
     group->name = "Name";
     group->expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
-    storage_partition_->GetInterestGroupStorage()->JoinInterestGroup(
+    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
         std::move(group));
   }
 

@@ -1606,7 +1606,7 @@ FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
   return font_access_manager_.get();
 }
 
-InterestGroupManager* StoragePartitionImpl::GetInterestGroupStorage() {
+InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
   DCHECK(initialized_);
   return interest_group_manager_.get();
 }

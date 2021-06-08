@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/interest_group_service_impl.h"
+#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -39,16 +40,16 @@ bool IsUrlAllowed(const GURL& url, const blink::mojom::InterestGroup& group) {
 
 }  // namespace
 
-InterestGroupServiceImpl::InterestGroupServiceImpl(
+RestrictedInterestGroupStoreImpl::RestrictedInterestGroupStoreImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore> receiver)
     : DocumentServiceBase(render_frame_host, std::move(receiver)),
       interest_group_manager_(*static_cast<StoragePartitionImpl*>(
                                    render_frame_host->GetStoragePartition())
-                                   ->GetInterestGroupStorage()) {}
+                                   ->GetInterestGroupManager()) {}
 
 // static
-void InterestGroupServiceImpl::CreateMojoService(
+void RestrictedInterestGroupStoreImpl::CreateMojoService(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore>
         receiver) {
@@ -56,10 +57,10 @@ void InterestGroupServiceImpl::CreateMojoService(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentServiceBase for details.
-  new InterestGroupServiceImpl(render_frame_host, std::move(receiver));
+  new RestrictedInterestGroupStoreImpl(render_frame_host, std::move(receiver));
 }
 
-void InterestGroupServiceImpl::JoinInterestGroup(
+void RestrictedInterestGroupStoreImpl::JoinInterestGroup(
     blink::mojom::InterestGroupPtr group) {
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
@@ -105,8 +106,9 @@ void InterestGroupServiceImpl::JoinInterestGroup(
   interest_group_manager_.JoinInterestGroup(std::move(group));
 }
 
-void InterestGroupServiceImpl::LeaveInterestGroup(const url::Origin& owner,
-                                                  const std::string& name) {
+void RestrictedInterestGroupStoreImpl::LeaveInterestGroup(
+    const url::Origin& owner,
+    const std::string& name) {
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
           render_frame_host()->GetBrowserContext(), origin(), owner.GetURL())) {
@@ -122,6 +124,6 @@ void InterestGroupServiceImpl::LeaveInterestGroup(const url::Origin& owner,
   interest_group_manager_.LeaveInterestGroup(owner, name);
 }
 
-InterestGroupServiceImpl::~InterestGroupServiceImpl() = default;
+RestrictedInterestGroupStoreImpl::~RestrictedInterestGroupStoreImpl() = default;
 
 }  // namespace content

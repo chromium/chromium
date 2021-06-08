@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/interest_group_service_impl.h"
+#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 
 #include <memory>
 #include <string>
@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
@@ -69,7 +70,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
 
     manager_ = (static_cast<StoragePartitionImpl*>(
                     browser_context()->GetDefaultStoragePartition()))
-                   ->GetInterestGroupStorage();
+                   ->GetInterestGroupManager();
   }
 
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
@@ -99,18 +100,19 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
     return 0;
   }
 
-  // Create a new InterestGroupServiceImpl and use it to try and join
+  // Create a new RestrictedInterestGroupStoreImpl and use it to try and join
   // `interest_group`. Flushes the Mojo pipe to force the Mojo message to be
   // handled before returning.
   //
-  // Creates a new InterestGroupServiceImpl with each call so the RFH can be
-  // navigated between different sites. And InterestGroupServiceImpl only
-  // handles one site (cross site navs use different InterestGroupServiceImpls,
-  // and generally use different RFHs as well).
+  // Creates a new RestrictedInterestGroupStoreImpl with each call so the RFH
+  // can be navigated between different sites. And
+  // RestrictedInterestGroupStoreImpl only handles one site (cross site navs use
+  // different RestrictedInterestGroupStoreImpls, and generally use different
+  // RFHs as well).
   void JoinInterestGroupAndFlush(
       blink::mojom::InterestGroupPtr interest_group) {
     mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    InterestGroupServiceImpl::CreateMojoService(
+    RestrictedInterestGroupStoreImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 
@@ -123,7 +125,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
   void LeaveInterestGroupAndFlush(const url::Origin& owner,
                                   const std::string& name) {
     mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    InterestGroupServiceImpl::CreateMojoService(
+    RestrictedInterestGroupStoreImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 

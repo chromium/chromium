@@ -228,7 +228,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   QuotaContext* GetQuotaContext();
   ConversionManagerImpl* GetConversionManager();
   FontAccessManagerImpl* GetFontAccessManager();
-  InterestGroupManager* GetInterestGroupStorage();
+  InterestGroupManager* GetInterestGroupManager();
   ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
 

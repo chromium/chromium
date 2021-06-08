@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_SERVICE_IMPL_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_SERVICE_IMPL_H_
+#ifndef CONTENT_BROWSER_INTEREST_GROUP_RESTRICTED_INTEREST_GROUP_STORE_IMPL_H_
+#define CONTENT_BROWSER_INTEREST_GROUP_RESTRICTED_INTEREST_GROUP_STORE_IMPL_H_
 
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
@@ -16,7 +16,7 @@ namespace content {
 class RenderFrameHost;
 
 // Implements the RestrictedInterestGroupStore service called by Blink code.
-class CONTENT_EXPORT InterestGroupServiceImpl final
+class CONTENT_EXPORT RestrictedInterestGroupStoreImpl final
     : public DocumentServiceBase<blink::mojom::RestrictedInterestGroupStore> {
  public:
   // Factory method for creating an instance of this interface that is bound
@@ -34,17 +34,17 @@ class CONTENT_EXPORT InterestGroupServiceImpl final
  private:
   // `render_frame_host` must not be null, and DocumentServiceBase guarantees
   // `this` will not outlive the `render_frame_host`.
-  InterestGroupServiceImpl(
+  RestrictedInterestGroupStoreImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore>
           receiver);
 
   // `this` can only be destroyed by DocumentServiceBase.
-  ~InterestGroupServiceImpl() override;
+  ~RestrictedInterestGroupStoreImpl() override;
 
   InterestGroupManager& interest_group_manager_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_SERVICE_IMPL_H_
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_RESTRICTED_INTEREST_GROUP_STORE_IMPL_H_

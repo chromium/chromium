@@ -19,7 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/interest_group_manager.h"
-#include "content/browser/interest_group/interest_group_service_impl.h"
+#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -109,7 +109,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                                                ->web_contents()
                                                ->GetBrowserContext()
                                                ->GetDefaultStoragePartition())
-            ->GetInterestGroupStorage();
+            ->GetInterestGroupManager();
     content_browser_client_.SetAllowList(
         {url::Origin::Create(https_server_->GetURL("a.test", "/")),
          url::Origin::Create(https_server_->GetURL("b.test", "/")),
@@ -1755,7 +1755,7 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
     ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
 
     mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    InterestGroupServiceImpl::CreateMojoService(
+    RestrictedInterestGroupStoreImpl::CreateMojoService(
         shell()->web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 

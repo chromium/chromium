@@ -186,7 +186,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
       this,
       static_cast<StoragePartitionImpl*>(
           render_frame_host()->GetStoragePartition())
-          ->GetInterestGroupStorage(),
+          ->GetInterestGroupManager(),
       std::move(config), std::move(filtered_buyers), std::move(browser_signals),
       frame_origin,
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
