@@ -18,6 +18,8 @@ void DisplayObserver::OnDisplayAdded(const Display& new_display) {}
 
 void DisplayObserver::OnDisplayRemoved(const Display& old_display) {}
 
+void DisplayObserver::OnDidRemoveDisplays() {}
+
 void DisplayObserver::OnDisplayMetricsChanged(const Display& display,
                                               uint32_t changed_metrics) {}
 

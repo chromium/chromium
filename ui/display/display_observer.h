@@ -42,7 +42,14 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   virtual void OnDisplayAdded(const Display& new_display);
 
   // Called when |old_display| has been removed.
+  // In Ash, this is called *before* the display has been removed.
+  // Everywhere else, this is called *after* the display has been removed.
   virtual void OnDisplayRemoved(const Display& old_display);
+
+  // Called *after* any displays have been removed.  Not called per display.
+  // TODO(enne): resolve the Ash inconsistency for OnDisplayRemoved and
+  // remove this function.
+  virtual void OnDidRemoveDisplays();
 
   // Called when the metrics of a display change.
   // |changed_metrics| is a bitmask of DisplayMatric types indicating which
