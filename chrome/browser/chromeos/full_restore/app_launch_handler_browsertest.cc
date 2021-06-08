@@ -283,6 +283,7 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
+    set_launch_browser_for_testing(nullptr);
   }
   ~AppLaunchHandlerBrowserTest() override = default;
 
@@ -330,6 +331,10 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
   ui::ScopedAnimationDurationScaleMode faster_animations_;
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
 };
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NoBrowserOnLaunch) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotLaunchBrowser) {
   // Add app launch info.
@@ -616,7 +621,12 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
 class AppLaunchHandlerChromeAppBrowserTest
     : public AppLaunchHandlerBrowserTest {
  public:
-  AppLaunchHandlerChromeAppBrowserTest() { ResetRestoreForTesting(); }
+  AppLaunchHandlerChromeAppBrowserTest() {
+    ResetRestoreForTesting();
+    set_launch_browser_for_testing(
+        std::make_unique<
+            chromeos::full_restore::ScopedLaunchBrowserForTesting>());
+  }
   ~AppLaunchHandlerChromeAppBrowserTest() override = default;
 };
 
@@ -1541,25 +1551,6 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
       test_full_restore_info_observer());
   StopInstance();
-}
-
-class AppLaunchHandlerNoBrowserBrowserTest
-    : public AppLaunchHandlerBrowserTest {
- public:
-  AppLaunchHandlerNoBrowserBrowserTest() = default;
-  ~AppLaunchHandlerNoBrowserBrowserTest() override = default;
-
-  // BrowserTestBase:
-  void PreRunTestOnMainThread() override {
-    set_skip_initial_restore(true);
-
-    AppLaunchHandlerBrowserTest::PreRunTestOnMainThread();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerNoBrowserBrowserTest,
-                       NoBrowserOnLaunch) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
 class AppLaunchHandlerSystemWebAppsBrowserTest

@@ -73,8 +73,6 @@ class FullRestoreService : public KeyedService,
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
-  void RestoreForTesting();
-
  private:
   // KeyedService overrides.
   void Shutdown() override;

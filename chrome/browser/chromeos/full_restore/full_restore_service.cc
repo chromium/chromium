@@ -185,15 +185,6 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
   Restore();
 }
 
-void FullRestoreService::RestoreForTesting() {
-  if (!g_restore_for_testing)
-    return;
-
-  // If there is no browser launch info, the browser won't be launched. So call
-  // ForceLaunchBrowserForTesting to launch the browser for testing.
-  app_launch_handler_->ForceLaunchBrowserForTesting();
-}
-
 void FullRestoreService::Shutdown() {
   is_shut_down_ = true;
 }

@@ -24,6 +24,10 @@
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace base {
 
 class CommandLine;
@@ -286,7 +290,11 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void set_skip_initial_restore(bool value) { skip_initial_restore_ = value; }
+  void set_launch_browser_for_testing(
+      std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+          launch_browser_for_testing) {
+    launch_browser_for_testing_ = std::move(launch_browser_for_testing);
+  }
 #endif
 
   // Runs scheduled layouts on all Widgets using
@@ -348,9 +356,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // False to create a browser by default before tests code run for browser
-  // tests. To run or test the full restore logic, sets the value as true.
-  bool skip_initial_restore_ = false;
+  // ChromeOS does not create a browser by default when the full restore feature
+  // is enabled. However almost all existing browser tests assume a browser is
+  // created. Add ScopedLaunchBrowserForTesting to force creating a browser for
+  // testing, when the full restore feature is enabled.
+  std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+      launch_browser_for_testing_;
 #endif
 };
 
