@@ -61,7 +61,8 @@ public class AttributionIntentHandlerImplTest {
                 ApiCompatibilityUtils.getBytesUtf8(mPackageName));
     }
 
-    private Intent makeValidAttributionIntent() {
+    private Intent makeValidAttributionIntent(
+            String eventId, String destination, String reportTo, long expiry) {
         Intent intent = new Intent(AttributionConstants.ACTION_APP_ATTRIBUTION);
         byte packageMac[] = AttributionIntentHandlerImpl.sHasher.doFinal(
                 ApiCompatibilityUtils.getBytesUtf8(mPackageName));
@@ -69,8 +70,12 @@ public class AttributionIntentHandlerImplTest {
         intent.putExtra(AttributionIntentHandlerImpl.EXTRA_PACKAGE_MAC, packageMac);
         intent.putExtra(AttributionIntentHandlerImpl.EXTRA_ORIGINAL_INTENT, new Intent());
 
-        intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_SOURCE_EVENT_ID, "1234");
-        intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_DESTINATION, "https://example.com");
+        intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_SOURCE_EVENT_ID, eventId);
+        intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_DESTINATION, destination);
+        intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO, reportTo);
+        if (expiry != 0) {
+            intent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY, expiry);
+        }
         intent.putExtra(AttributionConstants.EXTRA_INPUT_EVENT, mInputEvent);
         return intent;
     }
@@ -122,46 +127,60 @@ public class AttributionIntentHandlerImplTest {
 
     @Test
     public void testIsValidAttributionIntent_valid() {
-        Assert.assertTrue(mAttributionIntentHandlerImpl.isValidAttributionIntent(mPackageName,
-                mPackageMac, new Intent(), "event", "https://example.com", mInputEvent));
+        Assert.assertTrue(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(mPackageName, "event", "https://example.com", null, 0),
+                mPackageMac, new Intent(), mInputEvent));
+    }
+
+    @Test
+    public void testIsValidAttributionIntent_noPacakgeName() {
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(null, "event", "https://example.com", null, 0),
+                mPackageMac, null, mInputEvent));
     }
 
     @Test
     public void testIsValidAttributionIntent_wrongMac() {
         mPackageMac[mPackageMac.length - 1] = (byte) ~mPackageMac[mPackageMac.length - 1];
-        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(mPackageName,
-                mPackageMac, new Intent(), "event", "https://example.com", mInputEvent));
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(mPackageName, "event", "https://example.com", null, 0),
+                mPackageMac, new Intent(), mInputEvent));
     }
 
     @Test
     public void testIsValidAttributionIntent_noIntent() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
-                mPackageName, mPackageMac, null, "event", "https://example.com", mInputEvent));
+                new AttributionParameters(mPackageName, "event", "https://example.com", null, 0),
+                mPackageMac, null, mInputEvent));
     }
 
     @Test
     public void testIsValidAttributionIntent_noEventId() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
-                mPackageName, mPackageMac, new Intent(), null, "https://example.com", mInputEvent));
+                new AttributionParameters(mPackageName, null, "https://example.com", null, 0),
+                mPackageMac, new Intent(), mInputEvent));
     }
 
     @Test
     public void testIsValidAttributionIntent_noAttributionDestitation() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
-                mPackageName, mPackageMac, new Intent(), "event", null, mInputEvent));
+                new AttributionParameters(mPackageName, "event", null, null, 0), mPackageMac,
+                new Intent(), mInputEvent));
     }
 
     @Test
     public void testIsValidAttributionIntent_noInputEvent() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
-                mPackageName, mPackageMac, new Intent(), "event", "https://example.com", null));
+                new AttributionParameters(mPackageName, "event", "https://example.com", null, 0),
+                mPackageMac, new Intent(), null));
     }
 
     @Test
     public void testIsValidAttributionIntent_invalidInputEvent() {
         mInputEventValid = false;
-        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(mPackageName,
-                mPackageMac, new Intent(), "event", "https://example.com", mInputEvent));
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(mPackageName, "event", "https://example.com", null, 0),
+                mPackageMac, new Intent(), mInputEvent));
     }
 
     @Test
@@ -169,12 +188,39 @@ public class AttributionIntentHandlerImplTest {
         Intent originalIntent = new Intent(Intent.ACTION_VIEW);
         originalIntent.setData(Uri.parse("https://www.example.com"));
         originalIntent.putExtra("testKey", "testValue");
-        Intent intent = makeValidAttributionIntent();
+        String eventId = "1234";
+        String destination = "https://example.com";
+        String reportTo = "reportTo";
+        long expiry = 5678;
+        Intent intent = makeValidAttributionIntent(eventId, destination, reportTo, expiry);
         intent.putExtra(AttributionIntentHandlerImpl.EXTRA_ORIGINAL_INTENT, originalIntent);
 
         Intent result = mAttributionIntentHandlerImpl.handleInnerAttributionIntent(intent);
 
+        AttributionParameters params =
+                mAttributionIntentHandlerImpl.getAndClearPendingAttributionParameters(result);
+
+        Assert.assertEquals(mPackageName, params.getSourcePackageName());
+        Assert.assertEquals(eventId, params.getSourceEventId());
+        Assert.assertEquals(destination, params.getDestination());
+        Assert.assertEquals(reportTo, params.getReportTo());
+        Assert.assertEquals(expiry, params.getExpiry());
+        result.removeExtra(AttributionIntentHandlerImpl.EXTRA_PENDING_PARAMETERS_TOKEN);
         Assert.assertEquals(result.toUri(0), originalIntent.toUri(0));
+    }
+
+    @Test
+    public void testHandleInnerAttributionIntent_wrongToken() {
+        Intent originalIntent = new Intent(Intent.ACTION_VIEW);
+        originalIntent.setData(Uri.parse("https://www.example.com"));
+        Intent intent = makeValidAttributionIntent("1234", "https://example.com", "reportTo", 5678);
+        intent.putExtra(AttributionIntentHandlerImpl.EXTRA_ORIGINAL_INTENT, originalIntent);
+
+        Intent result = mAttributionIntentHandlerImpl.handleInnerAttributionIntent(intent);
+        byte[] token = new byte[32];
+        result.putExtra(AttributionIntentHandlerImpl.EXTRA_PENDING_PARAMETERS_TOKEN, token);
+        Assert.assertNull(
+                mAttributionIntentHandlerImpl.getAndClearPendingAttributionParameters(result));
     }
 
     @Test
@@ -182,19 +228,21 @@ public class AttributionIntentHandlerImplTest {
         Intent originalIntent = new Intent(Intent.ACTION_VIEW);
         originalIntent.setData(Uri.parse("https://www.example.com"));
         originalIntent.putExtra("testKey", "testValue");
-        Intent intent = makeValidAttributionIntent();
+        Intent intent = makeValidAttributionIntent("1234", "https://example.com", "reportTo", 5678);
         intent.putExtra(AttributionIntentHandlerImpl.EXTRA_ORIGINAL_INTENT, originalIntent);
         intent.putExtra(AttributionIntentHandlerImpl.EXTRA_PACKAGE_NAME, "wrongPackage");
 
         // Even for an invalid attribution intent, we should still un-wrap to the original intent.
         Intent result = mAttributionIntentHandlerImpl.handleInnerAttributionIntent(intent);
 
+        Assert.assertNull(
+                mAttributionIntentHandlerImpl.getAndClearPendingAttributionParameters(result));
         Assert.assertEquals(result.toUri(0), originalIntent.toUri(0));
     }
 
     @Test
     public void testHandleInnerAttributionIntent_noAttributionAction() {
-        Intent intent = makeValidAttributionIntent();
+        Intent intent = makeValidAttributionIntent("1234", "https://example.com", "reportTo", 5678);
         // Replace the attribution action with a VIEW action.
         intent.setAction(Intent.ACTION_VIEW);
         Assert.assertNull(mAttributionIntentHandlerImpl.handleInnerAttributionIntent(intent));

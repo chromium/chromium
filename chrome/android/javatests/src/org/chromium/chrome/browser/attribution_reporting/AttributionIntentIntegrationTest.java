@@ -68,12 +68,14 @@ public class AttributionIntentIntegrationTest {
     }
 
     private Intent makeValidAttributionIntent(
-            String eventId, String destination, String reportTo, String expiry) {
+            String eventId, String destination, String reportTo, long expiry) {
         Intent innerIntent = new Intent(AttributionConstants.ACTION_APP_ATTRIBUTION);
         innerIntent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_SOURCE_EVENT_ID, eventId);
         innerIntent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_DESTINATION, destination);
         innerIntent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO, reportTo);
-        innerIntent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY, expiry);
+        if (expiry != 0) {
+            innerIntent.putExtra(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY, expiry);
+        }
         innerIntent.putExtra(AttributionConstants.EXTRA_INPUT_EVENT,
                 new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
         innerIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
@@ -93,7 +95,7 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testConversionIntentEnabled() {
-        Intent outerIntent = makeValidAttributionIntent("1234", "about:blank", "reportTo", null);
+        Intent outerIntent = makeValidAttributionIntent("1234", "about:blank", "reportTo", 0);
         mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
         Assert.assertNotNull(mAttributionIntentReceived);
         Assert.assertEquals("1234",
@@ -105,8 +107,8 @@ public class AttributionIntentIntegrationTest {
         Assert.assertEquals("reportTo",
                 mAttributionIntentReceived.getStringExtra(
                         AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO));
-        Assert.assertNull(mAttributionIntentReceived.getStringExtra(
-                AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY));
+        Assert.assertFalse(
+                mAttributionIntentReceived.hasExtra(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY));
     }
 
     @Test
@@ -114,7 +116,7 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.DisableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testConversionIntentDisabled() {
-        Intent outerIntent = makeValidAttributionIntent("1234", "about:blank", "reportTo", null);
+        Intent outerIntent = makeValidAttributionIntent("1234", "about:blank", "reportTo", 0);
         mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
         Assert.assertNull(mAttributionIntentReceived);
     }
@@ -124,7 +126,7 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testInvalidConversionIntent() {
-        Intent outerIntent = makeValidAttributionIntent(null, null, null, null);
+        Intent outerIntent = makeValidAttributionIntent(null, null, null, 0);
         // Tests that even an invalid Attribution intent processes the original VIEW intent.
         mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
         Assert.assertNotNull(mAttributionIntentReceived);

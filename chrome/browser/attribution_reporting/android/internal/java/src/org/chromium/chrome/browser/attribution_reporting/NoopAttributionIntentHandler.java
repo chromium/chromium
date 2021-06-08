@@ -17,4 +17,9 @@ public class NoopAttributionIntentHandler implements AttributionIntentHandler {
     public Intent handleInnerAttributionIntent(Intent intent) {
         return null;
     }
+
+    @Override
+    public AttributionParameters getAndClearPendingAttributionParameters(Intent intent) {
+        return null;
+    }
 }

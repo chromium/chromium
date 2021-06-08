@@ -48,6 +48,9 @@ import javax.crypto.spec.SecretKeySpec;
 public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
     private static final String TAG = "AppAttribution";
 
+    // Static to avoid repeated initialization overhead.
+    private static final SecureRandom sRandom = new SecureRandom();
+
     // Mac that is valid for the life of the process (and no longer).
     @VisibleForTesting
     /* protected */ static final Mac sHasher;
@@ -58,11 +61,12 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
             "com.android.chrome.original_intent";
     /* protected */ static final String EXTRA_PACKAGE_NAME = "com.android.chrome.package_name";
     /* protected */ static final String EXTRA_PACKAGE_MAC = "com.android.chrome.package_mac";
+    /* protected */ static final String EXTRA_PENDING_PARAMETERS_TOKEN = "pendingAttributionToken";
 
     static {
         try {
             byte secret[] = new byte[SECRET_KEY_NUM_BYTES];
-            new SecureRandom().nextBytes(secret);
+            sRandom.nextBytes(secret);
             Key key = new SecretKeySpec(secret, MAC_ALGORITHM);
             sHasher = Mac.getInstance(MAC_ALGORITHM);
             sHasher.init(key);
@@ -73,6 +77,9 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
     }
 
     private Predicate<InputEvent> mInputEventValidator;
+
+    private AttributionParameters mPendingAttributionParameters;
+    private byte[] mPendingAttributionToken;
 
     public AttributionIntentHandlerImpl(Predicate<InputEvent> inputEventValidator) {
         mInputEventValidator = inputEventValidator;
@@ -123,33 +130,39 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
                 intent, AttributionConstants.EXTRA_ATTRIBUTION_DESTINATION);
         String reportTo = IntentUtils.safeGetStringExtra(
                 intent, AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO);
-        String expiry = IntentUtils.safeGetStringExtra(
-                intent, AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY);
+        long expiry = IntentUtils.safeGetLongExtra(
+                intent, AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY, 0);
         InputEvent inputEvent =
                 IntentUtils.safeGetParcelableExtra(intent, AttributionConstants.EXTRA_INPUT_EVENT);
-        if (!isValidAttributionIntent(senderPackage, packageMac, originalIntent, sourceEventId,
-                    attributionDestination, inputEvent)) {
+
+        AttributionParameters params = new AttributionParameters(
+                senderPackage, sourceEventId, attributionDestination, reportTo, expiry);
+        if (!isValidAttributionIntent(params, packageMac, originalIntent, inputEvent)) {
             Log.w(TAG, "Invalid APP_ATTRIBUTION intent: " + intent.toUri(0));
             // Even if the attribution intent was invalid, we can still handle the original view
             // intent, which shouldn't be null unless the sending app is intentionally removing it.
             return originalIntent;
         }
-        // TODO(https://crbug.com/1198308): Use the attribution info.
+        mPendingAttributionToken = new byte[32];
+        sRandom.nextBytes(mPendingAttributionToken);
+        mPendingAttributionParameters = params;
+
+        originalIntent.putExtra(EXTRA_PENDING_PARAMETERS_TOKEN, mPendingAttributionToken);
         return originalIntent;
     }
 
     @VisibleForTesting
-    public boolean isValidAttributionIntent(String senderPackage, byte[] packageMac,
-            Intent originalIntent, String sourceEventId, String attributionDestination,
-            InputEvent inputEvent) {
-        if (senderPackage == null || packageMac == null || originalIntent == null
-                || sourceEventId == null || attributionDestination == null || inputEvent == null) {
+    public boolean isValidAttributionIntent(AttributionParameters params, byte[] packageMac,
+            Intent originalIntent, InputEvent inputEvent) {
+        if (params.getSourcePackageName() == null || packageMac == null || originalIntent == null
+                || params.getSourceEventId() == null || params.getDestination() == null
+                || inputEvent == null) {
             Log.d(TAG, "Attribution intent missing attributes.");
             return false;
         }
 
         byte correctPackageMac[] =
-                sHasher.doFinal(ApiCompatibilityUtils.getBytesUtf8(senderPackage));
+                sHasher.doFinal(ApiCompatibilityUtils.getBytesUtf8(params.getSourcePackageName()));
         if (!Arrays.equals(correctPackageMac, packageMac)) {
             Log.d(TAG, "Attribution intent package MAC incorrect.");
             return false;
@@ -161,5 +174,16 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
         }
 
         return true;
+    }
+
+    @Override
+    public AttributionParameters getAndClearPendingAttributionParameters(Intent intent) {
+        if (!intent.hasExtra(EXTRA_PENDING_PARAMETERS_TOKEN)) return null;
+        byte[] token = IntentUtils.safeGetByteArrayExtra(intent, EXTRA_PENDING_PARAMETERS_TOKEN);
+        if (!Arrays.equals(token, mPendingAttributionToken)) return null;
+        AttributionParameters params = mPendingAttributionParameters;
+        mPendingAttributionParameters = null;
+        mPendingAttributionToken = null;
+        return params;
     }
 }

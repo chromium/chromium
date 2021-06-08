@@ -5,6 +5,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionConstants.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandler.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionParameters.java",
   ]
 }
 
