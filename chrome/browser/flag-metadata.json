@@ -5267,7 +5267,7 @@
   {
     "name": "wallpaper-webui",
     "owners": [ "cowmoo@google.com", "croissant-eng@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "web-apps-crosapi",
