@@ -15,9 +15,13 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api_observer.h"
@@ -122,6 +126,9 @@ class GetPrintersRequest {
 class PendingGetPrintersRequests {
  public:
   PendingGetPrintersRequests();
+  PendingGetPrintersRequests(const PendingGetPrintersRequests&) = delete;
+  PendingGetPrintersRequests& operator=(const PendingGetPrintersRequests&) =
+      delete;
   ~PendingGetPrintersRequests();
 
   // Adds a new request to the set of pending requests. Returns the id
@@ -146,14 +153,15 @@ class PendingGetPrintersRequests {
  private:
   int last_request_id_;
   std::map<int, GetPrintersRequest> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingGetPrintersRequests);
 };
 
 // Keeps track of pending chrome.printerProvider.onGetCapabilityRequested
 // requests for an extension.
 class PendingGetCapabilityRequests {
  public:
+  static constexpr base::TimeDelta kGetCapabilityTimeout =
+      base::TimeDelta::FromSeconds(20);
+
   PendingGetCapabilityRequests();
   ~PendingGetCapabilityRequests();
 
@@ -163,7 +171,7 @@ class PendingGetCapabilityRequests {
 
   // Completes the request with the provided request id. It runs the request
   // callback and removes the request from the set.
-  bool Complete(int request_id, const base::DictionaryValue& result);
+  void Complete(int request_id, const base::DictionaryValue& result);
 
   // Runs all pending callbacks with empty capability value and clears the
   // set of pending requests.
@@ -172,7 +180,10 @@ class PendingGetCapabilityRequests {
  private:
   int last_request_id_;
   std::map<int, PrinterProviderAPI::GetCapabilityCallback> pending_requests_;
+  base::WeakPtrFactory<PendingGetCapabilityRequests> weak_factory_{this};
 };
+
+constexpr base::TimeDelta PendingGetCapabilityRequests::kGetCapabilityTimeout;
 
 // Keeps track of pending chrome.printerProvider.onPrintRequested requests
 // for an extension.
@@ -238,6 +249,8 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
                                public ExtensionRegistryObserver {
  public:
   explicit PrinterProviderAPIImpl(content::BrowserContext* browser_context);
+  PrinterProviderAPIImpl(const PrinterProviderAPIImpl&) = delete;
+  PrinterProviderAPIImpl& operator=(const PrinterProviderAPIImpl&) = delete;
   ~PrinterProviderAPIImpl() override;
 
  private:
@@ -307,8 +320,6 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderAPIImpl);
 };
 
 GetPrintersRequest::GetPrintersRequest(
@@ -393,21 +404,27 @@ PendingGetCapabilityRequests::~PendingGetCapabilityRequests() {
 int PendingGetCapabilityRequests::Add(
     PrinterProviderAPI::GetCapabilityCallback callback) {
   pending_requests_[++last_request_id_] = std::move(callback);
+  // Abort the request after the timeout is exceeded.
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PendingGetCapabilityRequests::Complete,
+                     weak_factory_.GetWeakPtr(), last_request_id_,
+                     base::DictionaryValue()),
+      kGetCapabilityTimeout);
   return last_request_id_;
 }
 
-bool PendingGetCapabilityRequests::Complete(
+void PendingGetCapabilityRequests::Complete(
     int request_id,
     const base::DictionaryValue& response) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
-    return false;
+    return;
 
   PrinterProviderAPI::GetCapabilityCallback callback = std::move(it->second);
   pending_requests_.erase(it);
 
   std::move(callback).Run(response);
-  return true;
 }
 
 void PendingGetCapabilityRequests::FailAll() {
