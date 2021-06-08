@@ -525,6 +525,9 @@ const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
   DCHECK(owner_box);
   if (UNLIKELY(IsColumnBox())) {
+    // Adjust the owner for column boxes. Column box fragment's |layout_object_|
+    // is its multicol container, but |LayoutFlowThread::layout_results_|
+    // has the column box fragments.
     owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
     DCHECK(owner_box && owner_box->IsLayoutFlowThread());
   }
