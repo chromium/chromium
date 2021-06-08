@@ -104,7 +104,7 @@ public class SafeModeTest {
         try (ServiceConnectionHelper helper =
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(TEST_WEBVIEW_PACKAGE_NAME, Arrays.asList("some_action_name"));
+            service.setSafeMode(Arrays.asList("some_action_name"));
         }
 
         Assert.assertTrue("SafeMode should be enabled",
@@ -119,7 +119,7 @@ public class SafeModeTest {
         try (ServiceConnectionHelper helper =
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(TEST_WEBVIEW_PACKAGE_NAME, Arrays.asList("some_action_name"));
+            service.setSafeMode(Arrays.asList("some_action_name"));
         }
 
         Assert.assertTrue("SafeMode should be enabled",
@@ -128,31 +128,10 @@ public class SafeModeTest {
         try (ServiceConnectionHelper helper =
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(TEST_WEBVIEW_PACKAGE_NAME, Arrays.asList());
+            service.setSafeMode(Arrays.asList());
         }
 
         Assert.assertFalse("SafeMode should be re-disabled",
-                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    public void testSafeModeState_mustBeTrustedApp() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            try {
-                service.setSafeMode("fake.package.name", Arrays.asList("some_action_name"));
-                Assert.fail(
-                        "SafeModeService should have thrown an exception for wrong package name");
-            } catch (SecurityException e) {
-                // Expected
-            }
-        }
-
-        Assert.assertFalse("SafeMode should stay disabled because package name is wrong",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
