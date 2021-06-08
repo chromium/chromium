@@ -1148,8 +1148,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
 }
 
-#pragma mark - First Run
-
 // Sets a LocalState pref marking the TOS EULA as accepted.
 // If this function is called, the EULA flag is not set but the FRE was not
 // displayed.
@@ -1171,18 +1169,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Presents the sign-in upgrade promo if is relevant and possible.
 // Returns YES if the promo is shown.
 - (BOOL)presentSigninUpgradePromoIfPossible {
+  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+    return NO;
+  }
+
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.appState.mainBrowserState,
           version_info::GetVersion())) {
     return NO;
-  }
-  // Don't show promos if first run is shown in any scene.  (Note:  This flag
-  // is only YES while the first run UI is visible.  However, as this function
-  // is called immediately after the UI is shown, it's a safe check.)
-  for (SceneState* sceneState in self.sceneState.appState.connectedScenes) {
-    if (sceneState.presentingFirstRunUI) {
-      return NO;
-    }
   }
   // Don't show the promo if there is a blocking task in process.
   if (self.sceneState.appState.currentUIBlocker)
@@ -2967,8 +2961,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.mainCoordinator.incognitoThumbStripSupporting =
       self.incognitoInterface.bvc;
 }
-
-#pragma mark - Test hooks
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
 

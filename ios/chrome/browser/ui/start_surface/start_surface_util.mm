@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,6 +43,12 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
     return NO;
   }
 
+  if (sceneState.appState.initStage <= InitStageFirstRun) {
+    // NO if the app is not yet ready to present normal UI that is required by
+    // Start Surface.
+    return NO;
+  }
+
   NSDate* timestamp = (NSDate*)[sceneState
       sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
   if (timestamp == nil || [[NSDate date] timeIntervalSinceDate:timestamp] <
@@ -48,7 +56,7 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
     return NO;
   }
 
-  if (sceneState.presentingFirstRunUI || sceneState.presentingModalOverlay ||
+  if (sceneState.presentingModalOverlay ||
       sceneState.startupHadExternalIntent || sceneState.pendingUserActivity ||
       sceneState.incognitoContentVisible) {
     return NO;

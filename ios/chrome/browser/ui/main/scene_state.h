@@ -80,10 +80,6 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // of -[UISceneSession persistentIdentifier].
 @property(nonatomic, readonly) NSString* sceneSessionID;
 
-// True if First Run UI (terms of service & sync sign-in) is being presented
-// in a modal dialog.
-@property(nonatomic, assign) BOOL presentingFirstRunUI;
-
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;
 

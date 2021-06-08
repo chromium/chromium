@@ -196,8 +196,6 @@ enum class LocationPermissionsUI {
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
-  // Register for the first run dismissal notification to reset
-  // |sceneState.presentingFirstRunUI| flag;
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(handleFirstRunUIWillFinish)
@@ -229,7 +227,6 @@ enum class LocationPermissionsUI {
   navController.modalPresentationStyle = UIModalPresentationFullScreen;
   CGRect appFrame = [[UIScreen mainScreen] bounds];
   [[navController view] setFrame:appFrame];
-  self.presentingSceneState.presentingFirstRunUI = YES;
   [self.presentingSceneState.interfaceProvider.currentInterface.viewController
       presentViewController:navController
                    animated:NO
@@ -253,7 +250,6 @@ enum class LocationPermissionsUI {
                                      .mainInterface.bvc
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
-  self.presentingSceneState.presentingFirstRunUI = YES;
   [self.firstRunCoordinator start];
 }
 
@@ -261,9 +257,7 @@ enum class LocationPermissionsUI {
   if (![self ignoreFirstRunStageForTesting]) {
     DCHECK(self.appState.initStage == InitStageFirstRun);
   }
-  DCHECK(self.presentingSceneState.presentingFirstRunUI);
   _firstRunUIBlocker.reset();
-  self.presentingSceneState.presentingFirstRunUI = NO;
   [self tearDownPolicyWatcher];
   [[NSNotificationCenter defaultCenter]
       removeObserver:self
