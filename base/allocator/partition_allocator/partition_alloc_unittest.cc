@@ -16,6 +16,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -3035,65 +3036,53 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 TEST_F(PartitionAllocTest, ReservationOffset) {
-  // For normal buckets, offsets should be kNotInDirectMap.
+  // For normal buckets, offset should be kOffsetTagNotInDirectMap.
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-  EXPECT_EQ(internal::NotInDirectMapOffsetTag(),
-            *internal::ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(NotInDirectMapOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr));
   allocator.root()->Free(ptr);
+
+  // For not yet allocated memory, offset should be kOffsetTagNotAllocated.
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
 
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
   ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-  EXPECT_EQ(0U, *internal::ReservationOffsetPointer(ptr_as_uintptr));
-  EXPECT_EQ(
-      1U, *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
-  EXPECT_EQ(2U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 2));
-  EXPECT_EQ(3U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 3));
-  EXPECT_EQ(4U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 4));
-  EXPECT_EQ(5U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 5));
+  EXPECT_EQ(0U, *ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(1U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(2U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
+  EXPECT_EQ(3U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
+  EXPECT_EQ(4U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
+  EXPECT_EQ(5U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
 
   // In-place realloc doesn't affect the offsets.
   void* new_ptr = allocator.root()->Realloc(ptr, large_size * .8, type_name);
   EXPECT_EQ(new_ptr, ptr);
-  EXPECT_EQ(0U, *internal::ReservationOffsetPointer(ptr_as_uintptr));
-  EXPECT_EQ(
-      1U, *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
-  EXPECT_EQ(2U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 2));
-  EXPECT_EQ(3U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 3));
-  EXPECT_EQ(4U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 4));
-  EXPECT_EQ(5U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
-                                                    kSuperPageSize * 5));
+  EXPECT_EQ(0U, *ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(1U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(2U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
+  EXPECT_EQ(3U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
+  EXPECT_EQ(4U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
+  EXPECT_EQ(5U, *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
 
   allocator.root()->Free(ptr);
-  // After free, the offsets must be 0.
-  EXPECT_EQ(internal::NotInDirectMapOffsetTag(),
-            *internal::ReservationOffsetPointer(ptr_as_uintptr));
-  EXPECT_EQ(
-      internal::NotInDirectMapOffsetTag(),
-      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
-  EXPECT_EQ(
-      internal::NotInDirectMapOffsetTag(),
-      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
-  EXPECT_EQ(
-      internal::NotInDirectMapOffsetTag(),
-      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
-  EXPECT_EQ(
-      internal::NotInDirectMapOffsetTag(),
-      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
-  EXPECT_EQ(
-      internal::NotInDirectMapOffsetTag(),
-      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
+  // After free, the offsets must be kOffsetTagNotAllocated.
+  EXPECT_EQ(NotAllocatedOffsetTag(), *ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
+  EXPECT_EQ(NotAllocatedOffsetTag(),
+            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
 }
 
 TEST_F(PartitionAllocTest, GetReservationStart) {
@@ -3115,6 +3104,59 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
                                    GetDirectMapReservationStart(slot_start)));
 
   allocator.root()->Free(ptr);
+}
+
+TEST_F(PartitionAllocTest, CheckReservationType) {
+  char* ptr = reinterpret_cast<char*>(
+      allocator.root()->Alloc(kTestAllocSize, type_name));
+  EXPECT_TRUE(ptr);
+  EXPECT_FALSE(IsReservationStart(ptr));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr));
+  EXPECT_FALSE(IsReservationStart(ptr + kTestAllocSize - 1));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr + kTestAllocSize - 1));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr + kTestAllocSize - 1));
+  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
+  EXPECT_TRUE(IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)));
+  EXPECT_FALSE(IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)));
+  allocator.root()->Free(ptr);
+  // Freeing keeps a normal-bucket super page in memory.
+  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
+#if DCHECK_IS_ON()
+  // Expect to DCHECK on unallocated region.
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsReservationStart(bits::AlignUp(ptr, kSuperPageSize)), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsManagedByNormalBuckets(bits::AlignUp(ptr, kSuperPageSize)), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsManagedByDirectMap(bits::AlignUp(ptr, kSuperPageSize)), "");
+#endif
+
+  size_t large_size = 2 * kSuperPageSize;
+  ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
+  EXPECT_TRUE(ptr);
+  EXPECT_FALSE(IsReservationStart(ptr));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr));
+  EXPECT_FALSE(IsReservationStart(bits::AlignUp(ptr, kSuperPageSize)));
+  EXPECT_FALSE(IsManagedByNormalBuckets(bits::AlignUp(ptr, kSuperPageSize)));
+  EXPECT_TRUE(IsManagedByDirectMap(bits::AlignUp(ptr, kSuperPageSize)));
+  EXPECT_FALSE(IsReservationStart(ptr + large_size - 1));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr + large_size - 1));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr + large_size - 1));
+  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
+  EXPECT_FALSE(IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)));
+  EXPECT_TRUE(IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)));
+  allocator.root()->Free(ptr);
+#if DCHECK_IS_ON()
+  // Freeing releases direct-map super pages. Expect to DCHECK.
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)), "");
+#endif
 }
 
 // Test for crash http://crbug.com/1169003.

@@ -247,7 +247,7 @@ void DeferredUnmap::Unmap() {
   while (ptr_as_uintptr < ptr_end) {
     PA_DCHECK(offset_ptr < EndOfReservationOffsetTable());
     PA_DCHECK(*offset_ptr == i++);
-    *offset_ptr++ = NotInDirectMapOffsetTag();
+    *offset_ptr++ = NotAllocatedOffsetTag();
     ptr_as_uintptr += kSuperPageSize;
   }
 

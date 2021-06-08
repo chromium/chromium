@@ -97,6 +97,14 @@ void PartitionAddressSpace::Init() {
   RecommitSystemPages(actual_reservation_offset_table_address,
                       kReservationOffsetTableSizeInMemory, PageReadWrite,
                       PageUpdatePermissions);
+  // Mark all super pages in the reservation offset table as "not allocated".
+  // It is ok to keep PCScan card table and the reservation offset table that
+  // are carved out above as "not allocated", because these are internal
+  // structures, so won't be queried for belonging to direct map/normal buckets.
+  auto* reservation_offset_table = ReservationOffsetTable();
+  PA_CHECK(actual_reservation_offset_table_address == reservation_offset_table);
+  for (size_t i = 0; i < kReservationOffsetTableLength; ++i)
+    reservation_offset_table[i] = kOffsetTagNotAllocated;
 
   PA_DCHECK(reserved_base_address_ + properties.size == current);
 }

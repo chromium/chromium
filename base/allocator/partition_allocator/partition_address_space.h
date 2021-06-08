@@ -141,8 +141,10 @@ class BASE_EXPORT PartitionAddressSpace {
         internal::PartitionAddressSpace::kReservationOffsetTableNeededSize));
   }
 
-  static constexpr uint16_t kNotInDirectMap =
+  static constexpr uint16_t kOffsetTagNotAllocated =
       std::numeric_limits<uint16_t>::max();
+  static constexpr uint16_t kOffsetTagNotInDirectMap =
+      std::numeric_limits<uint16_t>::max() - 1;
 
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
@@ -216,7 +218,9 @@ class BASE_EXPORT PartitionAddressSpace {
   // +----------+----------+--------------------+-----------+
   // |     0    |    1     |         ...        |      K    |
   // +----------+----------+--------------------+-----------+
-  // 65535 is used as a special number: "not used for direct-map allocation".
+  // kOffsetTagNotAllocated is a special tag denoting that the super page isn't
+  // allocated by PartitionAlloc and kOffsetTagNotInDirectMap denotes that it is
+  // used for a normal-bucket allocation, not for a direct-map allocation.
   //
   // So when we have an address Z, ((Z >> SuperPageShift) - (the entry for Z))
   // << SuperPageShift is the reservation start when allocating an address space
@@ -240,8 +244,8 @@ class BASE_EXPORT PartitionAddressSpace {
       kReservationOffsetTableSizeInMemory == kSuperPageSize,
       "kReservationOffsetTableSizeInMemory should be equal to kSuperPageSize, "
       "because the table should be as small as possible.");
-  static_assert(kReservationOffsetTableLength < kNotInDirectMap,
-                "Offsets should be smaller than kNotInDirectMap.");
+  static_assert(kReservationOffsetTableLength < kOffsetTagNotInDirectMap,
+                "Offsets should be smaller than kOffsetTagNotInDirectMap.");
 
   // Masks used to easy determine belonging to a pool.
   static constexpr uintptr_t kNonBRPPoolOffsetMask =
@@ -268,8 +272,12 @@ ALWAYS_INLINE pool_handle GetBRPPool() {
   return PartitionAddressSpace::GetBRPPool();
 }
 
+ALWAYS_INLINE constexpr uint16_t NotAllocatedOffsetTag() {
+  return PartitionAddressSpace::kOffsetTagNotAllocated;
+}
+
 ALWAYS_INLINE constexpr uint16_t NotInDirectMapOffsetTag() {
-  return PartitionAddressSpace::kNotInDirectMap;
+  return PartitionAddressSpace::kOffsetTagNotInDirectMap;
 }
 
 ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
@@ -290,6 +298,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr =
       PartitionAddressSpace::ReservationOffsetPointer(ptr_as_uintptr);
+  PA_DCHECK(*offset_ptr != NotAllocatedOffsetTag());
   if (*offset_ptr == NotInDirectMapOffsetTag())
     return 0;
   uintptr_t reservation_start =
@@ -314,29 +323,33 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
 // Returns true if |address| is the beginning of the first super page of a
 // reservation, i.e. either a normal bucket super page, or the first super page
 // of direct map.
+// |address| must belong to an allocated super page.
 ALWAYS_INLINE bool IsReservationStart(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr =
       PartitionAddressSpace::ReservationOffsetPointer(address_as_uintptr);
+  PA_DCHECK(*offset_ptr != NotAllocatedOffsetTag());
   return ((*offset_ptr == NotInDirectMapOffsetTag()) || (*offset_ptr == 0)) &&
          (address_as_uintptr % kSuperPageSize == 0);
 }
 
 // Returns true if |address| belongs to a normal bucket super page.
+// |address| must belong to an allocated super page.
 ALWAYS_INLINE bool IsManagedByNormalBuckets(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr =
       PartitionAddressSpace::ReservationOffsetPointer(address_as_uintptr);
-  // TODO(bartekn): DCHECK if super page isn't allocated at all.
+  PA_DCHECK(*offset_ptr != NotAllocatedOffsetTag());
   return *offset_ptr == NotInDirectMapOffsetTag();
 }
 
 // Returns true if |address| belongs to a direct map region.
+// |address| must belong to an allocated super page.
 ALWAYS_INLINE bool IsManagedByDirectMap(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr =
       PartitionAddressSpace::ReservationOffsetPointer(address_as_uintptr);
-  // TODO(bartekn): DCHECK if super page isn't allocated at all.
+  PA_DCHECK(*offset_ptr != NotAllocatedOffsetTag());
   return *offset_ptr != NotInDirectMapOffsetTag();
 }
 

@@ -88,7 +88,7 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
                                 size_t requested_size) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(requested_address) % kSuperPageSize));
 
-  char* ptr = internal::AddressPoolManager::GetInstance()->Reserve(
+  char* ptr = AddressPoolManager::GetInstance()->Reserve(
       pool, requested_address, requested_size);
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
@@ -273,8 +273,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
 
-      internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          pool, ptr, reserved_size);
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool, ptr,
+                                                              reserved_size);
       return nullptr;
     }
 
@@ -285,11 +285,11 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // function returns.
     uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
     uintptr_t ptr_end = ptr_start + reserved_size;
-    auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
+    auto* offset_ptr = ReservationOffsetPointer(ptr_start);
     int offset = 0;
     while (ptr_start < ptr_end) {
-      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
-      PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
+      PA_DCHECK(offset_ptr < EndOfReservationOffsetTable());
+      PA_DCHECK(offset < NotInDirectMapOffsetTag());
       *offset_ptr++ = offset++;
       ptr_start += kSuperPageSize;
     }
@@ -535,12 +535,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   if (UNLIKELY(!super_page))
     return nullptr;
 
-  // The reservation offset table is used to see whether the given SuperPage
-  // is DirectMap allocated or not by comparing the table entry with
-  // NotInDirectMapOffsetTag (!=0). Since the SuperPage is not DirectMap
-  // allocated, the table entry must be NotInDirectMapOffsetTag.
-  *base::internal::ReservationOffsetPointer(reinterpret_cast<uintptr_t>(
-      super_page)) = base::internal::NotInDirectMapOffsetTag();
+  // Set the reservation offset table entry to NotInDirectMapOffsetTag, to
+  // indicate that it isn't direct-map allocated.
+  *ReservationOffsetPointer(reinterpret_cast<uintptr_t>(super_page)) =
+      NotInDirectMapOffsetTag();
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);
