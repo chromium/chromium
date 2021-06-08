@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "components/google/core/common/google_util.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "ios/chrome/browser/application_context.h"
@@ -62,6 +63,8 @@ using signin_metrics::PromoAction;
 @property(nonatomic, assign, readonly) AuthenticationService* authService;
 // Manages the authentication flow for a given identity.
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
+// Manages user's Google identities.
+@property(nonatomic, assign, readonly) signin::IdentityManager* identityManager;
 // View controller presented by this coordinator.
 @property(nonatomic, strong, readonly)
     GoogleServicesSettingsViewController* googleServicesSettingsViewController;
@@ -173,6 +176,11 @@ using signin_metrics::PromoAction;
 - (GoogleServicesSettingsViewController*)googleServicesSettingsViewController {
   return base::mac::ObjCCast<GoogleServicesSettingsViewController>(
       self.viewController);
+}
+
+- (signin::IdentityManager*)identityManager {
+  return IdentityManagerFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 }
 
 #pragma mark - SyncSettingsViewState
@@ -292,24 +300,26 @@ using signin_metrics::PromoAction;
                          message:message
                             rect:self.viewController.view.frame
                             view:self.viewController.view];
+
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   [self.signOutCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)
                 action:^{
-                  weakSelf.dataRetentionStrategyCoordinator =
-                      [[SignoutActionSheetCoordinator alloc]
-                          initWithBaseViewController:weakSelf.viewController
-                                             browser:weakSelf.browser
-                                                rect:weakSelf.viewController
-                                                         .view.frame
-                                                view:weakSelf.viewController
-                                                         .view];
-                  weakSelf.dataRetentionStrategyCoordinator.completion =
-                      completion;
-                  [weakSelf.dataRetentionStrategyCoordinator start];
+                  if (!weakSelf) {
+                    return;
+                  }
+                  // Provide additional data retention options if the user is
+                  // syncing their data.
+                  if (weakSelf.identityManager->HasPrimaryAccount(
+                          signin::ConsentLevel::kSync)) {
+                    [weakSelf showDataRetentionOptions:completion];
+                    return;
+                  }
+                  [weakSelf signOutWithCompletion:completion];
                 }
                  style:UIAlertActionStyleDestructive];
+
   [self.signOutCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
@@ -318,6 +328,39 @@ using signin_metrics::PromoAction;
                 }
                  style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
+}
+
+// Displays the option to keep or clear data for a syncing user.
+- (void)showDataRetentionOptions:(signin_ui::CompletionCallback)completion {
+  DCHECK(completion);
+  self.dataRetentionStrategyCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            rect:self.viewController.view.frame
+                            view:self.viewController.view];
+  __weak GoogleServicesSettingsCoordinator* weakSelf = self;
+  self.dataRetentionStrategyCoordinator.completion = ^(BOOL success) {
+    completion(success);
+    [weakSelf.dataRetentionStrategyCoordinator stop];
+    weakSelf.dataRetentionStrategyCoordinator = nil;
+  };
+  [self.dataRetentionStrategyCoordinator start];
+}
+
+// Signs the user out of Chrome, only clears data for managed accounts.
+- (void)signOutWithCompletion:(signin_ui::CompletionCallback)completion {
+  DCHECK(completion);
+  [self.baseViewController.view setUserInteractionEnabled:NO];
+  __weak GoogleServicesSettingsCoordinator* weakSelf = self;
+  self.authService->SignOut(
+      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+      /*force_clear_browsing_data=*/NO, ^{
+        if (!weakSelf) {
+          return;
+        }
+        weakSelf.baseViewController.view.userInteractionEnabled = YES;
+        completion(YES);
+      });
 }
 
 - (void)signinFinishedWithSuccess:(BOOL)success {

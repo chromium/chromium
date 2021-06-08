@@ -26,6 +26,7 @@
 using l10n_util::GetNSString;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PrimarySignInButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 
@@ -64,9 +65,62 @@ void DismissSignOut() {
   return config;
 }
 
-// Tests that disabling the "Allow Chrome sign-in" option blocks the user
-// from signing in to Chrome through the promo sign-in until it is re-enabled.
+// Tests that disabling the "Allow Chrome sign-in" > "Sign out" option blocks
+// the user from signing in to Chrome through the promo sign-in until it is
+// re-enabled.
 - (void)testToggleAllowChromeSigninWithPromoSignin {
+  // User is signed-in only
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Turn off "Allow Chrome Sign-in" with sign out option.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+
+  // Verify that sign-in is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify signed out.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Turn on "Allow Chrome Sign-in" feature.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/NO,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Verify that the user is signed out and sign-in is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that disabling the "Allow Chrome sign-in" > "Clear Data" option blocks
+// the user from signing in to Chrome through the promo sign-in until it is
+// re-enabled.
+- (void)testToggleAllowChromeSigninWithPromoSigninClearData {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
