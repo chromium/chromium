@@ -201,6 +201,10 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // before the CookieMap typedef.
   static std::string GetKey(base::StringPiece domain);
 
+  // Exposes the comparison function used when sorting cookies.
+  static bool CookieSorter(const CanonicalCookie* cc1,
+                           const CanonicalCookie* cc2);
+
   // Triggers immediate recording of stats that are typically reported
   // periodically.
   bool DoRecordPeriodicStatsForTesting() { return DoRecordPeriodicStats(); }

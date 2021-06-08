@@ -26,6 +26,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/cert/ct_policy_status.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
@@ -65,7 +66,9 @@ namespace net {
 
 namespace {
 
+using ::testing::_;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 const char kSimpleGetMockWrite[] =
     "GET / HTTP/1.1\r\n"
@@ -1773,6 +1776,134 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   histograms.ExpectBucketCount(
       test_histogram,
       URLRequestHttpJob::CookieRequestScheme::kNonsecureSetSecureRequest, 1);
+}
+
+// Test that cookies are annotated with the appropriate exclusion reason when
+// privacy mode is enabled.
+TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  FilteringTestNetworkDelegate network_delegate;
+  CookieMonster cm(nullptr, nullptr);
+  TestURLRequestContext context(true);
+  context.set_cookie_store(&cm);
+  context.set_network_delegate(&network_delegate);
+  context.Init();
+
+  // Set cookies.
+  {
+    TestDelegate d;
+    GURL test_url = test_server.GetURL(
+        "/set-cookie?one=1&"
+        "two=2&"
+        "three=3");
+    std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+        test_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->Start();
+    d.RunUntilComplete();
+  }
+
+  // Get cookies.
+  network_delegate.ResetAnnotateCookiesCalledCount();
+  ASSERT_EQ(0, network_delegate.annotate_cookies_called_count());
+  // We want to fetch cookies from the cookie store, so we use the
+  // NetworkDelegate to override the privacy mode (rather than setting it via
+  // `allow_credentials`, since that skips querying the cookie store).
+  network_delegate.set_force_privacy_mode(true);
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ("None", d.data_received());
+  EXPECT_THAT(
+      req->maybe_sent_cookies(),
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("one"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<CookieInclusionStatus::ExclusionReason>{
+                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("two"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<CookieInclusionStatus::ExclusionReason>{
+                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("three"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<CookieInclusionStatus::ExclusionReason>{
+                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                  _, _, _))));
+
+  EXPECT_EQ(0, network_delegate.annotate_cookies_called_count());
+}
+
+// Test that cookies are allowed to be selectively blocked by the network
+// delegate.
+TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  FilteringTestNetworkDelegate network_delegate;
+  network_delegate.set_block_get_cookies_by_name(true);
+  network_delegate.SetCookieFilter("blocked_");
+  CookieMonster cm(nullptr, nullptr);
+  TestURLRequestContext context(true);
+  context.set_cookie_store(&cm);
+  context.set_network_delegate(&network_delegate);
+  context.Init();
+
+  // Set cookies.
+  {
+    TestDelegate d;
+    GURL test_url = test_server.GetURL(
+        "/set-cookie?blocked_one=1;SameSite=Lax;Secure&"
+        "blocked_two=1;SameSite=Lax;Secure&"
+        "allowed=1;SameSite=Lax;Secure");
+    std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+        test_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->Start();
+    d.RunUntilComplete();
+  }
+
+  // Get cookies.
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ("allowed=1", d.data_received());
+  EXPECT_THAT(
+      req->maybe_sent_cookies(),
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("blocked_one"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<CookieInclusionStatus::ExclusionReason>{
+                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("blocked_two"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<CookieInclusionStatus::ExclusionReason>{
+                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              MatchesCookieWithName("allowed"),
+              MatchesCookieAccessResult(IsInclude(), _, _, _))));
 }
 
 }  // namespace net

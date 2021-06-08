@@ -4012,7 +4012,8 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
           *request, *cookie, nullptr, true));
 }
 
-TEST_F(NetworkContextTest, CanGetCookiesFalseIfCookiesBlocked) {
+TEST_F(NetworkContextTest,
+       AnnotateAndMoveUserBlockedCookies_FalseIfCookiesBlocked) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateContextParams());
   net::URLRequestContext context;
@@ -4020,27 +4021,36 @@ TEST_F(NetworkContextTest, CanGetCookiesFalseIfCookiesBlocked) {
       context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  EXPECT_TRUE(
-      network_context->url_request_context()->network_delegate()->CanGetCookies(
-          *request, true));
+  net::CookieAccessResultList included;
+  net::CookieAccessResultList excluded;
+
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->network_delegate()
+                  ->AnnotateAndMoveUserBlockedCookies(*request, included,
+                                                      excluded, true));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
-  EXPECT_FALSE(
-      network_context->url_request_context()->network_delegate()->CanGetCookies(
-          *request, true));
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->network_delegate()
+                   ->AnnotateAndMoveUserBlockedCookies(*request, included,
+                                                       excluded, true));
 }
 
-TEST_F(NetworkContextTest, CanGetCookiesTrueIfCookiesAllowed) {
+TEST_F(NetworkContextTest,
+       AnnotateAndMoveUserBlockedCookies_TrueIfCookiesAllowed) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateContextParams());
   net::URLRequestContext context;
   std::unique_ptr<net::URLRequest> request =
       context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+  net::CookieAccessResultList included;
+  net::CookieAccessResultList excluded;
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
-  EXPECT_TRUE(
-      network_context->url_request_context()->network_delegate()->CanGetCookies(
-          *request, true));
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->network_delegate()
+                  ->AnnotateAndMoveUserBlockedCookies(*request, included,
+                                                      excluded, true));
 }
 
 // Gets notified by the EmbeddedTestServer on incoming connections being

@@ -64,8 +64,11 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   void OnPACScriptError(int line_number, const std::u16string& error) override;
 
-  bool OnCanGetCookies(const URLRequest& request,
-                       bool allowed_from_caller) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,

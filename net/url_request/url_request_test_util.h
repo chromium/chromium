@@ -37,6 +37,9 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/ssl/ssl_config_service_defaults.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -323,7 +326,9 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int destroyed_requests() const { return destroyed_requests_; }
   int completed_requests() const { return completed_requests_; }
   int canceled_requests() const { return canceled_requests_; }
-  int blocked_get_cookies_count() const { return blocked_get_cookies_count_; }
+  int blocked_annotate_cookies_count() const {
+    return blocked_annotate_cookies_count_;
+  }
   int blocked_set_cookie_count() const { return blocked_set_cookie_count_; }
   int set_cookie_count() const { return set_cookie_count_; }
 
@@ -360,8 +365,15 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   void OnResponseStarted(URLRequest* request, int net_error) override;
   void OnCompleted(URLRequest* request, bool started, int net_error) override;
   void OnURLRequestDestroyed(URLRequest* request) override;
-  bool OnCanGetCookies(const URLRequest& request,
-                       bool allowed_from_caller) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       CookieOptions* options,
@@ -389,7 +401,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int completed_requests_;
   int canceled_requests_;
   int cookie_options_bit_mask_;
-  int blocked_get_cookies_count_;
+  int blocked_annotate_cookies_count_;
   int blocked_set_cookie_count_;
   int set_cookie_count_;
   int before_start_transaction_count_;
@@ -414,6 +426,89 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int next_request_id_;
 };
 
+// ----------------------------------------------------------------------------
+
+class FilteringTestNetworkDelegate : public TestNetworkDelegate {
+ public:
+  FilteringTestNetworkDelegate();
+  ~FilteringTestNetworkDelegate() override;
+
+  bool OnCanSetCookie(const URLRequest& request,
+                      const net::CanonicalCookie& cookie,
+                      CookieOptions* options,
+                      bool allowed_from_caller) override;
+
+  void SetCookieFilter(std::string filter) {
+    cookie_name_filter_ = std::move(filter);
+  }
+
+  int set_cookie_called_count() { return set_cookie_called_count_; }
+
+  int blocked_set_cookie_count() { return blocked_set_cookie_count_; }
+
+  void ResetSetCookieCalledCount() { set_cookie_called_count_ = 0; }
+
+  void ResetBlockedSetCookieCount() { blocked_set_cookie_count_ = 0; }
+
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
+
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const override;
+
+  void set_block_annotate_cookies() { block_annotate_cookies_ = true; }
+
+  void unset_block_annotate_cookies() { block_annotate_cookies_ = false; }
+
+  int annotate_cookies_called_count() const {
+    return annotate_cookies_called_count_;
+  }
+
+  int blocked_annotate_cookies_count() const {
+    return blocked_annotate_cookies_count_;
+  }
+
+  void ResetAnnotateCookiesCalledCount() { annotate_cookies_called_count_ = 0; }
+
+  void ResetBlockedAnnotateCookiesCount() {
+    blocked_annotate_cookies_count_ = 0;
+  }
+
+  void set_block_get_cookies_by_name(bool block) {
+    block_get_cookies_by_name_ = block;
+  }
+
+  void set_force_privacy_mode(bool enabled) { force_privacy_mode_ = enabled; }
+
+ private:
+  std::string cookie_name_filter_ = "";
+  int set_cookie_called_count_ = 0;
+  int blocked_set_cookie_count_ = 0;
+
+  bool block_annotate_cookies_ = false;
+  int annotate_cookies_called_count_ = 0;
+  int blocked_annotate_cookies_count_ = 0;
+  bool block_get_cookies_by_name_ = false;
+
+  bool force_privacy_mode_ = false;
+};
+
+// ----------------------------------------------------------------------------
+
+// Less verbose way of running a simple testserver.
+class HttpTestServer : public EmbeddedTestServer {
+ public:
+  explicit HttpTestServer(const base::FilePath& document_root) {
+    AddDefaultHandlers(document_root);
+  }
+
+  HttpTestServer() { RegisterDefaultHandlers(this); }
+};
 //-----------------------------------------------------------------------------
 
 class TestScopedURLInterceptor {

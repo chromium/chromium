@@ -47,8 +47,14 @@ void NetworkDelegateImpl::OnURLRequestDestroyed(URLRequest* request) {
 void NetworkDelegateImpl::OnPACScriptError(int line_number,
                                            const std::u16string& error) {}
 
-bool NetworkDelegateImpl::OnCanGetCookies(const URLRequest& request,
-                                          bool allowed_from_caller) {
+bool NetworkDelegateImpl::OnAnnotateAndMoveUserBlockedCookies(
+    const URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
+    bool allowed_from_caller) {
+  if (!allowed_from_caller)
+    ExcludeAllCookies(CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
   return allowed_from_caller;
 }
 

@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_http_job.h"
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -607,80 +608,85 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieAccessResultList& excluded_list) {
   DCHECK(request_->maybe_sent_cookies().empty());
 
-  bool can_get_cookies =
-      (request_info_.privacy_mode == PRIVACY_MODE_DISABLED && CanGetCookies());
-  if (!cookies_with_access_result_list.empty() && can_get_cookies) {
-    std::string cookie_line =
-        CanonicalCookie::BuildCookieLine(cookies_with_access_result_list);
-    UMA_HISTOGRAM_COUNTS_10000("Cookie.HeaderLength", cookie_line.length());
-    request_info_.extra_headers.SetHeader(HttpRequestHeaders::kCookie,
-                                          cookie_line);
+  CookieAccessResultList maybe_included_cookies =
+      cookies_with_access_result_list;
+  CookieAccessResultList excluded_cookies = excluded_list;
 
-    // TODO(crbug.com/1031664): Reduce the number of times the cookie list is
-    // iterated over. Get metrics for every cookie which is included.
-    for (const auto& c : cookies_with_access_result_list) {
-      bool request_is_secure = request_->url().SchemeIsCryptographic();
-      net::CookieSourceScheme cookie_scheme = c.cookie.SourceScheme();
-      CookieRequestScheme cookie_request_schemes;
+  if (request_info_.privacy_mode != PRIVACY_MODE_DISABLED) {
+    // If cookies are blocked (without our needing to consult the delegate), we
+    // move them to `excluded_cookies` and ensure that they have the correct
+    // exclusion reason.
+    excluded_cookies.insert(
+        excluded_cookies.end(),
+        std::make_move_iterator(maybe_included_cookies.begin()),
+        std::make_move_iterator(maybe_included_cookies.end()));
+    maybe_included_cookies.clear();
+    for (auto& cookie : excluded_cookies) {
+      cookie.access_result.status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    }
+  } else {
+    AnnotateAndMoveUserBlockedCookies(maybe_included_cookies, excluded_cookies);
+    if (!maybe_included_cookies.empty()) {
+      std::string cookie_line =
+          CanonicalCookie::BuildCookieLine(maybe_included_cookies);
+      UMA_HISTOGRAM_COUNTS_10000("Cookie.HeaderLength", cookie_line.length());
+      request_info_.extra_headers.SetHeader(HttpRequestHeaders::kCookie,
+                                            cookie_line);
 
-      switch (cookie_scheme) {
-        case net::CookieSourceScheme::kSecure:
-          cookie_request_schemes =
-              request_is_secure
-                  ? CookieRequestScheme::kSecureSetSecureRequest
-                  : CookieRequestScheme::kSecureSetNonsecureRequest;
-          break;
+      // TODO(crbug.com/1031664): Reduce the number of times the cookie list
+      // is iterated over. Get metrics for every cookie which is included.
+      for (const auto& c : maybe_included_cookies) {
+        bool request_is_secure = request_->url().SchemeIsCryptographic();
+        net::CookieSourceScheme cookie_scheme = c.cookie.SourceScheme();
+        CookieRequestScheme cookie_request_schemes;
 
-        case net::CookieSourceScheme::kNonSecure:
-          cookie_request_schemes =
-              request_is_secure
-                  ? CookieRequestScheme::kNonsecureSetSecureRequest
-                  : CookieRequestScheme::kNonsecureSetNonsecureRequest;
-          break;
+        switch (cookie_scheme) {
+          case net::CookieSourceScheme::kSecure:
+            cookie_request_schemes =
+                request_is_secure
+                    ? CookieRequestScheme::kSecureSetSecureRequest
+                    : CookieRequestScheme::kSecureSetNonsecureRequest;
+            break;
 
-        case net::CookieSourceScheme::kUnset:
-          cookie_request_schemes = CookieRequestScheme::kUnsetCookieScheme;
-          break;
+          case net::CookieSourceScheme::kNonSecure:
+            cookie_request_schemes =
+                request_is_secure
+                    ? CookieRequestScheme::kNonsecureSetSecureRequest
+                    : CookieRequestScheme::kNonsecureSetNonsecureRequest;
+            break;
+
+          case net::CookieSourceScheme::kUnset:
+            cookie_request_schemes = CookieRequestScheme::kUnsetCookieScheme;
+            break;
+        }
+
+        UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSchemeRequestScheme",
+                                  cookie_request_schemes);
       }
-
-      UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSchemeRequestScheme",
-                                cookie_request_schemes);
     }
   }
 
-  // Report status for things in |excluded_list| and
-  // |cookies_with_access_result_list|
-  // after the delegate got a chance to block them.
-  CookieAccessResultList maybe_sent_cookies = excluded_list;
+  CookieAccessResultList maybe_sent_cookies = std::move(excluded_cookies);
+  maybe_sent_cookies.insert(
+      maybe_sent_cookies.end(),
+      std::make_move_iterator(maybe_included_cookies.begin()),
+      std::make_move_iterator(maybe_included_cookies.end()));
+  maybe_included_cookies.clear();
 
   // If the cookie was excluded due to the fix for crbug.com/1166211, this
   // applies a warning to the status that will show up in the netlog.
   // TODO(crbug.com/1166211): Remove once no longer needed.
   if (options.same_site_cookie_context().AffectedByBugfix1166211()) {
     for (auto& cookie_with_access_result : maybe_sent_cookies) {
-      options.same_site_cookie_context()
-          .MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
-              cookie_with_access_result.access_result.status);
+      if (!cookie_with_access_result.access_result.status
+               .HasOnlyExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                           EXCLUDE_USER_PREFERENCES)) {
+        options.same_site_cookie_context()
+            .MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
+                cookie_with_access_result.access_result.status);
+      }
     }
-  }
-
-  if (!can_get_cookies) {
-    for (CookieAccessResultList::iterator it = maybe_sent_cookies.begin();
-         it != maybe_sent_cookies.end(); ++it) {
-      it->access_result.status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-    }
-  }
-
-  for (const auto& cookie_with_access_result :
-       cookies_with_access_result_list) {
-    CookieAccessResult access_result = cookie_with_access_result.access_result;
-    if (!can_get_cookies) {
-      access_result.status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-    }
-    maybe_sent_cookies.push_back(
-        {cookie_with_access_result.cookie, access_result});
   }
 
   if (request_->net_log().IsCapturing()) {

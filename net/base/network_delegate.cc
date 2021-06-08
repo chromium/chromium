@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/cookies/cookie_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/url_request/url_request.h"
 
@@ -100,11 +102,18 @@ void NetworkDelegate::NotifyPACScriptError(int line_number,
   OnPACScriptError(line_number, error);
 }
 
-bool NetworkDelegate::CanGetCookies(const URLRequest& request,
-                                    bool allowed_from_caller) {
+bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
+    const URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
+    bool allowed_from_caller) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(PrivacyMode::PRIVACY_MODE_DISABLED, request.privacy_mode());
-  return OnCanGetCookies(request, allowed_from_caller);
+  bool allowed = OnAnnotateAndMoveUserBlockedCookies(
+      request, maybe_included_cookies, excluded_cookies, allowed_from_caller);
+  cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
+                                                    excluded_cookies);
+  return allowed;
 }
 
 bool NetworkDelegate::CanSetCookie(const URLRequest& request,
@@ -158,4 +167,33 @@ bool NetworkDelegate::CanUseReportingClient(const url::Origin& origin,
   return OnCanUseReportingClient(origin, endpoint);
 }
 
+// static
+void NetworkDelegate::ExcludeAllCookies(
+    net::CookieInclusionStatus::ExclusionReason reason,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies) {
+  excluded_cookies.insert(
+      excluded_cookies.end(),
+      std::make_move_iterator(maybe_included_cookies.begin()),
+      std::make_move_iterator(maybe_included_cookies.end()));
+  maybe_included_cookies.clear();
+  // Add the ExclusionReason for all cookies.
+  for (net::CookieWithAccessResult& cookie : excluded_cookies) {
+    cookie.access_result.status.AddExclusionReason(reason);
+  }
+}
+
+// static
+void NetworkDelegate::MoveExcludedCookies(
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies) {
+  const auto to_be_moved = base::ranges::stable_partition(
+      maybe_included_cookies, [](const CookieWithAccessResult& cookie) {
+        return cookie.access_result.status.IsInclude();
+      });
+  excluded_cookies.insert(
+      excluded_cookies.end(), std::make_move_iterator(to_be_moved),
+      std::make_move_iterator(maybe_included_cookies.end()));
+  maybe_included_cookies.erase(to_be_moved, maybe_included_cookies.end());
+}
 }  // namespace net

@@ -184,29 +184,47 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
   proxy_error_client_->OnPACScriptError(line_number, base::UTF16ToUTF8(error));
 }
 
-bool NetworkServiceNetworkDelegate::OnCanGetCookies(
+bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
     bool allowed_from_caller) {
-  bool allowed =
-      allowed_from_caller &&
-      network_context_->cookie_manager()
-          ->cookie_settings()
-          .IsCookieAccessAllowed(request.url(),
-                                 request.site_for_cookies().RepresentativeUrl(),
-                                 request.isolation_info().top_frame_origin());
-
-  if (!allowed)
+  if (!allowed_from_caller) {
+    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
     return false;
+  }
 
+  if (!network_context_->cookie_manager()
+           ->cookie_settings()
+           .AnnotateAndMoveUserBlockedCookies(
+               request.url(), request.site_for_cookies().RepresentativeUrl(),
+               request.isolation_info().top_frame_origin().has_value()
+                   ? &request.isolation_info().top_frame_origin().value()
+                   : nullptr,
+               maybe_included_cookies, excluded_cookies)) {
+    // CookieSettings has already moved and annotated the cookies.
+    return false;
+  }
+
+  bool allowed = true;
   URLLoader* url_loader = URLLoader::ForRequest(request);
-  if (url_loader)
-    return url_loader->AllowCookies(request.url(), request.site_for_cookies());
+  if (url_loader) {
+    allowed =
+        url_loader->AllowCookies(request.url(), request.site_for_cookies());
 #if !defined(OS_IOS)
-  WebSocket* web_socket = WebSocket::ForRequest(request);
-  if (web_socket)
-    return web_socket->AllowCookies(request.url());
+  } else {
+    WebSocket* web_socket = WebSocket::ForRequest(request);
+    if (web_socket) {
+      allowed = web_socket->AllowCookies(request.url());
+    }
 #endif  // !defined(OS_IOS)
-  return true;
+  }
+  if (!allowed)
+    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
+
+  return allowed;
 }
 
 bool NetworkServiceNetworkDelegate::OnCanSetCookie(

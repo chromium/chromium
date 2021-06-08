@@ -487,6 +487,18 @@ inline void PrintTo(const CookieWithAccessResult& cwar, std::ostream* os) {
   PrintTo(cwar.access_result, os);
   *os << " }";
 }
+inline void PrintTo(const CookieAndLineWithAccessResult& calwar,
+                    std::ostream* os) {
+  *os << "{ ";
+  if (calwar.cookie) {
+    PrintTo(*calwar.cookie, os);
+  } else {
+    *os << "nullopt";
+  }
+  *os << ", " << calwar.cookie_string << ", ";
+  PrintTo(calwar.access_result, os);
+  *os << " }";
+}
 
 }  // namespace net
 

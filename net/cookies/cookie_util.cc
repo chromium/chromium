@@ -27,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_monster.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -191,6 +192,11 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
     same_site_context.set_schemeful_context(ContextType::SAME_SITE_LAX);
 
   return same_site_context;
+}
+
+bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
+                                  const CookieWithAccessResult& b) {
+  return CookieMonster::CookieSorter(&a.cookie, &b.cookie);
 }
 
 }  // namespace
@@ -791,6 +797,25 @@ NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.Port.OmniboxURLNavigation.RemoteHost",
                               ReducePortRangeForCookieHistogram(port));
   }
+}
+
+NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
+    const CookieAccessResultList& included_cookies,
+    const CookieAccessResultList& excluded_cookies) {
+  // Check that all elements of `included_cookies` really should be included,
+  // and that all elements of `excluded_cookies` really should be excluded.
+  DCHECK(base::ranges::all_of(included_cookies,
+                              [](const net::CookieWithAccessResult& cookie) {
+                                return cookie.access_result.status.IsInclude();
+                              }));
+  DCHECK(base::ranges::none_of(excluded_cookies,
+                               [](const net::CookieWithAccessResult& cookie) {
+                                 return cookie.access_result.status.IsInclude();
+                               }));
+
+  // Check that the included cookies are still in the correct order.
+  DCHECK(
+      base::ranges::is_sorted(included_cookies, CookieWithAccessResultSorter));
 }
 
 }  // namespace cookie_util

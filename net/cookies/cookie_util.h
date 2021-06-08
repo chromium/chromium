@@ -286,6 +286,15 @@ StripAccessResults(const CookieAccessResultList& cookie_access_result_list);
 // Records port related metrics from Omnibox navigations.
 NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url);
 
+// Checks invariants that should be upheld w.r.t. the included and excluded
+// cookies. Namely: the included cookies should be elements of
+// `included_cookies`; excluded cookies should be elements of
+// `excluded_cookies`; and included cookies should be in the correct sorted
+// order.
+NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
+    const CookieAccessResultList& included_cookies,
+    const CookieAccessResultList& excluded_cookies);
+
 }  // namespace cookie_util
 
 }  // namespace net

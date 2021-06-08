@@ -124,6 +124,23 @@ MATCHER_P4(MatchesCookieAccessResult,
                                      result_listener);
 }
 
+MATCHER_P3(MatchesCookieAndLineWithAccessResult,
+           cookie,
+           line,
+           access_result,
+           "") {
+  const CookieAndLineWithAccessResult& cookie_and_line_with_access_result = arg;
+  return testing::ExplainMatchResult(cookie,
+                                     cookie_and_line_with_access_result.cookie,
+                                     result_listener) &&
+         testing::ExplainMatchResult(
+             line, cookie_and_line_with_access_result.cookie_string,
+             result_listener) &&
+         testing::ExplainMatchResult(
+             access_result, cookie_and_line_with_access_result.access_result,
+             result_listener);
+}
+
 }  // namespace net
 
 #endif  // NET_COOKIES_CANONICAL_COOKIE_TEST_HELPERS_H_

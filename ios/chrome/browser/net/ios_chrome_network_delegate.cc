@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 
 #include <stdlib.h>
+#include <iterator>
 
 #include "base/base_paths.h"
 #include "base/debug/alias.h"
@@ -14,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -68,16 +70,27 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
   return net::OK;
 }
 
-bool IOSChromeNetworkDelegate::OnCanGetCookies(
+bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
     bool allowed_from_caller) {
-  // Null during tests, or when we're running in the system context.
-  if (!cookie_settings_)
-    return allowed_from_caller;
+  // `cookie_settings_` is null during tests, or when we're running in the
+  // system context.
+  bool allowed = allowed_from_caller;
+  if (cookie_settings_) {
+    allowed = allowed && cookie_settings_->IsFullCookieAccessAllowed(
+                             request.url(),
+                             request.site_for_cookies().RepresentativeUrl());
+  }
 
-  return allowed_from_caller &&
-         cookie_settings_->IsFullCookieAccessAllowed(
-             request.url(), request.site_for_cookies().RepresentativeUrl());
+  if (!allowed) {
+    ExcludeAllCookies(
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
+  }
+
+  return allowed;
 }
 
 bool IOSChromeNetworkDelegate::OnCanSetCookie(

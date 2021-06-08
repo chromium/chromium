@@ -5,6 +5,7 @@
 #include "services/network/cookie_settings.h"
 
 #include <functional>
+#include <iterator>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -12,8 +13,11 @@
 #include "base/ranges/algorithm.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace network {
 namespace {
@@ -188,6 +192,39 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
   }
 
   return cookie_setting;
+}
+
+bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
+    const GURL& url,
+    const GURL& site_for_cookies,
+    const url::Origin* top_frame_origin,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies) const {
+  const GURL& first_party_url =
+      top_frame_origin ? top_frame_origin->GetURL() : site_for_cookies;
+
+  ContentSetting content_setting = GetCookieSettingInternal(
+      url, first_party_url, IsThirdPartyRequest(url, site_for_cookies),
+      nullptr);
+
+  bool is_allowed = IsAllowed(content_setting);
+
+  if (!is_allowed) {
+    excluded_cookies.insert(
+        excluded_cookies.end(),
+        std::make_move_iterator(maybe_included_cookies.begin()),
+        std::make_move_iterator(maybe_included_cookies.end()));
+    maybe_included_cookies.clear();
+    for (net::CookieWithAccessResult& cookie : excluded_cookies) {
+      cookie.access_result.status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    }
+  }
+
+  net::cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
+                                                         excluded_cookies);
+
+  return is_allowed;
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {

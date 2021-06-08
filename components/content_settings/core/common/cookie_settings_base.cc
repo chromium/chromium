@@ -17,14 +17,15 @@
 #include "url/gurl.h"
 
 namespace content_settings {
-namespace {
-bool IsThirdPartyRequest(const GURL& url, const GURL& site_for_cookies) {
+
+// static
+bool CookieSettingsBase::IsThirdPartyRequest(const GURL& url,
+                                             const GURL& site_for_cookies) {
   net::StaticCookiePolicy policy(
       net::StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES);
   return policy.CanAccessCookies(
              url, net::SiteForCookies::FromUrl(site_for_cookies)) != net::OK;
 }
-}  // namespace
 
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const ContentSettingsForOneType& cookie_settings,
@@ -68,13 +69,6 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
       url, first_party_url, IsThirdPartyRequest(url, first_party_url), source);
 }
 
-bool CookieSettingsBase::IsCookieAccessAllowed(
-    const GURL& url,
-    const GURL& first_party_url) const {
-  // TODO(https://crbug.com/1203706): remove this after migrating all callers.
-  return IsFullCookieAccessAllowed(url, first_party_url);
-}
-
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const GURL& first_party_url) const {
@@ -84,14 +78,6 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
   DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;
 #endif
   return IsAllowed(GetCookieSetting(url, first_party_url, nullptr));
-}
-
-bool CookieSettingsBase::IsCookieAccessAllowed(
-    const GURL& url,
-    const GURL& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
-  // TODO(https://crbug.com/1203706): remove after migrating all callers.
-  return IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin);
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(

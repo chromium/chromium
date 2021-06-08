@@ -55,8 +55,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                    bool started,
                    int net_error) override;
   void OnPACScriptError(int line_number, const std::u16string& error) override;
-  bool OnCanGetCookies(const net::URLRequest& request,
-                       bool allowed_from_caller) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const net::URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       net::CookieOptions* options,

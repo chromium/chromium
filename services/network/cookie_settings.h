@@ -10,8 +10,13 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace network {
 
@@ -95,6 +100,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) const;
+
+  // Annotates `maybe_included_cookies` and `excluded_cookies` with
+  // ExclusionReasons if needed, per user's cookie blocking settings, and
+  // ensures that all excluded cookies from `maybe_included_cookies` are moved
+  // to `excluded_cookies`.  Returns false if the CookieSettings blocks access
+  // to all cookies; true otherwise. Does not change the relative ordering of
+  // the cookies in `maybe_included_cookies`, since this order is important when
+  // building the cookie line.
+  bool AnnotateAndMoveUserBlockedCookies(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const url::Origin* top_frame_origin,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies) const;
 
  private:
   // Returns whether third-party cookie blocking should be bypassed (i.e. always

@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/features.h"
@@ -15,6 +16,10 @@
 
 namespace network {
 namespace {
+
+using testing::_;
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests";
@@ -523,6 +528,82 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
   // First-party requests.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(GURL(kURL), GURL(kURL),
                                             url::Origin::Create(GURL(kURL))));
+}
+
+TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+
+  net::CookieAccessResultList maybe_included_cookies = {
+      (net::CookieWithAccessResult){
+          *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+              "third_party", "1", kOtherURL, "/" /* path */,
+              base::Time() /* creation */, base::Time() /* expiration */,
+              base::Time() /* last_access */, true /* secure */,
+              false /* httponly */, net::CookieSameSite::UNSPECIFIED,
+              net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+              false /* same_party */),
+          {}},
+      (net::CookieWithAccessResult){
+          *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+              "first_party", "1", kURL, "/" /* path */,
+              base::Time() /* creation */, base::Time() /* expiration */,
+              base::Time() /* last_access */, true /* secure */,
+              false /* httponly */, net::CookieSameSite::UNSPECIFIED,
+              net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+              true /* same_party */),
+          {}},
+  };
+
+  net::CookieAccessResultList excluded_cookies = {
+      (net::CookieWithAccessResult){
+          *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+              "excluded_other", "1", kURL, "/" /* path */,
+              base::Time() /* creation */, base::Time() /* expiration */,
+              base::Time() /* last_access */, true /* secure */,
+              false /* httponly */, net::CookieSameSite::UNSPECIFIED,
+              net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+              false /* same_party */),
+          // The ExclusionReason below is irrelevant, as long as there is
+          // one.
+          net::CookieAccessResult(net::CookieInclusionStatus(
+              net::CookieInclusionStatus::ExclusionReason::
+                  EXCLUDE_SECURE_ONLY))},
+  };
+  url::Origin origin = url::Origin::Create(GURL(kURL));
+  EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), GURL(), &origin, maybe_included_cookies, excluded_cookies));
+
+  EXPECT_THAT(maybe_included_cookies, IsEmpty());
+  EXPECT_THAT(
+      excluded_cookies,
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("first_party"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("excluded_other"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_SECURE_ONLY,
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("third_party"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
+                  _, _, _))));
 }
 
 }  // namespace

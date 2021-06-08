@@ -183,15 +183,6 @@ struct OrderByCreationTimeDesc {
   }
 };
 
-// Mozilla sorts on the path length (longest first), and then it
-// sorts by creation time (oldest first).
-// The RFC says the sort order for the domain attribute is undefined.
-bool CookieSorter(CanonicalCookie* cc1, CanonicalCookie* cc2) {
-  if (cc1->Path().length() == cc2->Path().length())
-    return cc1->CreationDate() < cc2->CreationDate();
-  return cc1->Path().length() > cc2->Path().length();
-}
-
 bool LRACookieSorter(const CookieMonster::CookieMap::iterator& it1,
                      const CookieMonster::CookieMap::iterator& it2) {
   if (it1->second->LastAccessDate() != it2->second->LastAccessDate())
@@ -563,6 +554,17 @@ void CookieMonster::DumpMemoryStats(
 CookieMonster::~CookieMonster() {
   DCHECK(thread_checker_.CalledOnValidThread());
   net_log_.EndEvent(NetLogEventType::COOKIE_STORE_ALIVE);
+}
+
+// static
+bool CookieMonster::CookieSorter(const CanonicalCookie* cc1,
+                                 const CanonicalCookie* cc2) {
+  // Mozilla sorts on the path length (longest first), and then it sorts by
+  // creation time (oldest first).  The RFC says the sort order for the domain
+  // attribute is undefined.
+  if (cc1->Path().length() == cc2->Path().length())
+    return cc1->CreationDate() < cc2->CreationDate();
+  return cc1->Path().length() > cc2->Path().length();
 }
 
 void CookieMonster::GetAllCookies(GetAllCookiesCallback callback) {

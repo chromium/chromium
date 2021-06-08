@@ -16,6 +16,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,8 +72,11 @@ class NET_EXPORT NetworkDelegate {
   void NotifyCompleted(URLRequest* request, bool started, int net_error);
   void NotifyURLRequestDestroyed(URLRequest* request);
   void NotifyPACScriptError(int line_number, const std::u16string& error);
-  bool CanGetCookies(const URLRequest& request,
-                     bool allowed_from_caller);
+  bool AnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      CookieAccessResultList& maybe_included_cookies,
+      CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller);
   bool CanSetCookie(const URLRequest& request,
                     const net::CanonicalCookie& cookie,
                     CookieOptions* options,
@@ -97,9 +101,25 @@ class NET_EXPORT NetworkDelegate {
                              const GURL& endpoint) const;
 
  protected:
+  // Adds the given ExclusionReason to all cookies in
+  // `mayble_included_cookies`, and moves the contents of
+  // `maybe_included_cookies` to `excluded_cookies`.
+  static void ExcludeAllCookies(
+      net::CookieInclusionStatus::ExclusionReason reason,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies);
+
+  // Moves any cookie in `maybe_included_cookies` that has an ExclusionReason
+  // into `excluded_cookies`.
+  static void MoveExcludedCookies(
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies);
+
   THREAD_CHECKER(thread_checker_);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NetworkDelegateTest, ExcludeAllCookies);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDelegateTest, MoveExcludedCookies);
   // This is the interface for subclasses of NetworkDelegate to implement. These
   // member functions will be called by the respective public notification
   // member function, which will perform basic sanity checking.
@@ -198,13 +218,17 @@ class NET_EXPORT NetworkDelegate {
                                 const std::u16string& error) = 0;
 
   // Called when reading cookies to allow the network delegate to block access
-  // to the cookie. This method will never be invoked when
-  // LOAD_DO_NOT_SEND_COOKIES is specified.
-  // The |allowed_from_caller| param is used to pass whether this operation is
-  // allowed from any higher level delegates (for example, in a
-  // LayeredNetworkDelegate). Any custom logic should be ANDed with this bool.
-  virtual bool OnCanGetCookies(const URLRequest& request,
-                               bool allowed_from_caller) = 0;
+  // to individual cookies, by adding the appropriate ExclusionReason and moving
+  // them to the `excluded_cookies` list.  This method will never be invoked
+  // when LOAD_DO_NOT_SEND_COOKIES is specified.
+  //
+  // Returns false if the delegate has blocked access to all cookies; true
+  // otherwise.
+  virtual bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) = 0;
 
   // Called when a cookie is set to allow the network delegate to block access
   // to the cookie. This method will never be invoked when

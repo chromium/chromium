@@ -317,11 +317,14 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     mojom::CookieManagerGetOptionsPtr options,
     GetAllForUrlCallback callback,
     const net::CookieAccessResultList& cookie_list,
-    const net::CookieAccessResultList& excluded_cookies) {
+    const net::CookieAccessResultList& excluded_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool blocked = !cookie_settings_->IsCookieAccessAllowed(
-      url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
+  net::CookieAccessResultList maybe_included_cookies = cookie_list;
+  net::CookieAccessResultList excluded_cookies = excluded_list;
+  cookie_settings()->AnnotateAndMoveUserBlockedCookies(
+      url, site_for_cookies.RepresentativeUrl(), &top_frame_origin,
+      maybe_included_cookies, excluded_cookies);
 
   std::vector<net::CookieWithAccessResult> result;
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
@@ -338,12 +341,12 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     }
   }
 
-  if (!blocked)
-    result.reserve(cookie_list.size());
+  if (!maybe_included_cookies.empty())
+    result.reserve(maybe_included_cookies.size());
   mojom::CookieMatchType match_type = options->match_type;
   const std::string& match_name = options->name;
-  // TODO(https://crbug.com/993843): Use the statuses passed in |cookie_list|.
-  for (const net::CookieWithAccessResult& cookie_item : cookie_list) {
+  for (const net::CookieWithAccessResult& cookie_item :
+       maybe_included_cookies) {
     const net::CanonicalCookie& cookie = cookie_item.cookie;
     net::CookieAccessResult access_result = cookie_item.access_result;
     const std::string& cookie_name = cookie.Name();
@@ -360,15 +363,21 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       NOTREACHED();
     }
 
-    if (blocked) {
-      access_result.status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-    } else {
+    if (access_result.status.IsInclude()) {
       result.push_back(cookie_item);
     }
     on_cookies_accessed_result.push_back(
         mojom::CookieOrLineWithAccessResult::New(
             mojom::CookieOrLine::NewCookie(cookie), access_result));
+  }
+
+  for (const net::CookieWithAccessResult& c : excluded_cookies) {
+    if (c.access_result.status.HasOnlyExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
+      on_cookies_accessed_result.push_back(
+          mojom::CookieOrLineWithAccessResult::New(
+              mojom::CookieOrLine::NewCookie(c.cookie), c.access_result));
+    }
   }
 
   if (cookie_observer_) {
@@ -377,7 +386,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
         std::move(on_cookies_accessed_result), absl::nullopt));
   }
 
-  if (blocked) {
+  if (maybe_included_cookies.empty()) {
     DCHECK(result.empty());
     std::move(callback).Run({});
     return;
