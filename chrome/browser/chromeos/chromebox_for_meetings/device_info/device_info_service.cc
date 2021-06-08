@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -228,20 +229,56 @@ void DeviceInfoService::GetSysInfo(GetSysInfoCallback callback) {
   std::move(callback).Run(std::move(sys_info));
 }
 
+void DeviceInfoService::GetMachineStatisticsInfo(
+    GetMachineStatisticsInfoCallback callback) {
+  if (!on_machine_statistics_loaded_) {
+    return std::move(callback).Run(nullptr);
+  }
+
+  auto stat_info = mojom::MachineStatisticsInfo::New();
+
+  std::string value;
+  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kHardwareClassKey, &value)) {
+    stat_info->hwid = std::move(value);
+  }
+
+  std::move(callback).Run(std::move(stat_info));
+}
+
 // Private methods
 
 DeviceInfoService::DeviceInfoService()
     : service_adaptor_(mojom::MeetDevicesInfo::Name_, this),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      on_machine_statistics_loaded_(false) {
   CfmHotlineClient::Get()->AddObserver(this);
   current_policy_info_.reset();
   // Device settings update may not be triggered in some cases
   DeviceSettingsUpdated();
+  // Wait for machine statistics to be loaded
+  ScheduleOnMachineStatisticsLoaded();
 }
 
 DeviceInfoService::~DeviceInfoService() {
   CfmHotlineClient::Get()->RemoveObserver(this);
   Reset();
+}
+
+void DeviceInfoService::ScheduleOnMachineStatisticsLoaded() {
+  // GetMachineStatistic() will block if called before statistics have been
+  // loaded. To avoid this we gate collection until this callback occurs.
+
+  on_machine_statistics_loaded_ = false;
+
+  chromeos::system::StatisticsProvider::GetInstance()
+      ->ScheduleOnMachineStatisticsLoaded(
+          base::BindOnce(&DeviceInfoService::SetOnMachineStatisticsLoaded,
+                         weak_ptr_factory_.GetWeakPtr(), true));
+}
+
+void DeviceInfoService::SetOnMachineStatisticsLoaded(bool loaded) {
+  on_machine_statistics_loaded_ = loaded;
 }
 
 void DeviceInfoService::Reset() {

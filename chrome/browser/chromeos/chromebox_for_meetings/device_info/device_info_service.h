@@ -51,6 +51,8 @@ class DeviceInfoService : public CfmObserver,
       ::mojo::PendingRemote<mojom::PolicyInfoObserver> observer) override;
   void GetPolicyInfo(GetPolicyInfoCallback callback) override;
   void GetSysInfo(GetSysInfoCallback callback) override;
+  void GetMachineStatisticsInfo(
+      GetMachineStatisticsInfoCallback callback) override;
 
   // Query data policy information and notify observers if there is a change.
   void UpdatePolicyInfo();
@@ -65,6 +67,11 @@ class DeviceInfoService : public CfmObserver,
   // Populate mojom with information from ChromeDeviceSettingsProto
   void PopulateChromeDeviceSettingsFromProto(mojom::PolicyInfoPtr& policy_info);
 
+  // Update boolean indicating if Machine Statistics have loaded.
+  void ScheduleOnMachineStatisticsLoaded();
+
+  void SetOnMachineStatisticsLoaded(bool loaded);
+
   // Cleanup the service on mojom connection loss.
   // Called after the DeviceInfo Service is no longer discoverable.
   void Reset();
@@ -76,6 +83,8 @@ class DeviceInfoService : public CfmObserver,
   mojom::PolicyInfoPtr current_policy_info_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  bool on_machine_statistics_loaded_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
