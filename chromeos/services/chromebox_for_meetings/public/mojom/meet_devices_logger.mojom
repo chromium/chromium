@@ -19,11 +19,21 @@ enum EnqueuePriority {
   kLow = 2,
 };
 
-// Indicates the current state of the |MeetDevicesLogger| service
+// Provides information regarding the logger error status.
+struct LoggerStatus {
+  // A error code that matches values defined in google/rpc/code.proto
+  int32 code@0;
+
+  // A debug message with more information about the error. This string is not
+  // intended to be shown to the user.
+  string message@1;
+};
+
+// Indicates the current state of the |MeetDevicesLogger| service.
 [Extensible]
 enum LoggerState {
-  // |kFailed| state indicates the previous request failed. Only for Enqueue
-  kFailed = 0,
+  // |kDisabled| state indicates the service has been disabled
+  kDisabled = 0,
   // |kReadyForRequests| state indicates the service can enqueue records.
   kReadyForRequests = 1,
   // |kUninitialized| state indicates the service has yet to be fully configured
@@ -41,7 +51,7 @@ interface LoggerStateObserver {
 interface MeetDevicesLogger {
   // Allows a user to |Enqueue| a serialised message for delivery, using the,
   // report handler specified by |Destination::MEET_DEVICE_TELEMETRY|.
-  Enqueue@0(string record, EnqueuePriority priority)=>(LoggerState success);
+  Enqueue@0(string record, EnqueuePriority priority)=>(LoggerStatus status);
 
   // Adds a |LoggerStateObserver| to monitor |MeetDevicesLogger|'s state.
   AddStateObserver@1(pending_remote<LoggerStateObserver> pending_observer);

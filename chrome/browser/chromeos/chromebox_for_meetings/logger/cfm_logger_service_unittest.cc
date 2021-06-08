@@ -24,6 +24,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
+#include "components/reporting/util/status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -45,7 +46,7 @@ class FakeCfmLoggerServiceDelegate : public CfmLoggerService::Delegate {
     enqueue_count_++;
     enqueue_record_ = record;
     enqueue_priority_ = std::move(priority);
-    std::move(callback).Run(mojom::LoggerState::kReadyForRequests);
+    std::move(callback).Run(mojom::LoggerStatus::New(0, "Debug Message."));
   }
 
   int init_count_ = 0;
@@ -53,6 +54,23 @@ class FakeCfmLoggerServiceDelegate : public CfmLoggerService::Delegate {
   int enqueue_count_ = 0;
   std::string enqueue_record_;
   mojom::EnqueuePriority enqueue_priority_;
+};
+
+class FakeLoggerStateObserver : public mojom::LoggerStateObserver {
+ public:
+  using OnNotifyStateCallback =
+      base::RepeatingCallback<void(mojom::LoggerState)>;
+
+  void OnNotifyState(mojom::LoggerState state) override {
+    if (!on_notify_state_callback_.is_null()) {
+      on_notify_state_callback_.Run(std::move(state));
+    }
+    on_notify_state_count_++;
+  }
+
+  int on_notify_state_count_ = 0;
+  OnNotifyStateCallback on_notify_state_callback_;
+  mojo::Receiver<mojom::LoggerStateObserver> receiver_{this};
 };
 
 class CfmLoggerServiceTest : public testing::Test {
@@ -71,7 +89,6 @@ class CfmLoggerServiceTest : public testing::Test {
     CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
-    CfmLoggerService::InitializeForTesting(&logger_delegate_);
   }
 
   void TearDown() override {
@@ -84,6 +101,10 @@ class CfmLoggerServiceTest : public testing::Test {
   }
 
   mojo::Remote<mojom::MeetDevicesLogger> GetLoggerRemote() {
+    if (!CfmLoggerService::IsInitialized()) {
+      CfmLoggerService::InitializeForTesting(&logger_delegate_);
+    }
+
     base::RunLoop run_loop;
 
     auto* interface_name = mojom::MeetDevicesLogger::Name_;
@@ -139,16 +160,8 @@ class CfmLoggerServiceTest : public testing::Test {
 // This test ensures that the CfmBrowserService is discoverable by its mojom
 // name by sending a signal received by CfmHotlineClient.
 TEST_F(CfmLoggerServiceTest, CfmLoggerServiceAvailable) {
+  GetLoggerRemote();
   ASSERT_TRUE(GetClient()->FakeEmitSignal(mojom::MeetDevicesLogger::Name_));
-}
-
-// This test ensures that the CfmBrowserService discoverability is correctly
-// controlled by the feature flag
-TEST_F(CfmLoggerServiceTest, CfmLoggerServiceNotAvailable) {
-  DisableLoggerFeature();
-  auto* interface_name = mojom::MeetDevicesLogger::Name_;
-  bool test_success = GetClient()->FakeEmitSignal(interface_name);
-  ASSERT_FALSE(test_success);
 }
 
 // This test ensures that the CfmBrowserService correctly registers itself for
@@ -160,6 +173,72 @@ TEST_F(CfmLoggerServiceTest, GetLoggerRemote) {
   ASSERT_EQ(logger_delegate_.init_count_, 1);
   run_loop.RunUntilIdle();
   EXPECT_EQ(logger_delegate_.reset_count_, 1);
+}
+
+// This test default behavior of the state observer when enabled.
+TEST_F(CfmLoggerServiceTest, CfmLoggerServiceStateObserver) {
+  auto remote = GetLoggerRemote();
+
+  base::RunLoop observer_loop;
+  FakeLoggerStateObserver observer;
+  observer.on_notify_state_callback_ =
+      base::BindLambdaForTesting([&](mojom::LoggerState state) {
+        EXPECT_EQ(state, mojom::LoggerState::kUninitialized);
+        observer_loop.Quit();
+      });
+  remote->AddStateObserver(observer.receiver_.BindNewPipeAndPassRemote());
+  observer_loop.Run();
+
+  EXPECT_EQ(observer.on_notify_state_count_, 1);
+}
+
+// This test functionality of the state observer when disabled.
+TEST_F(CfmLoggerServiceTest, CfmLoggerServiceDisabledStateObserver) {
+  DisableLoggerFeature();
+  auto remote = GetLoggerRemote();
+
+  base::RunLoop observer_loop;
+  FakeLoggerStateObserver observer;
+  observer.on_notify_state_callback_ =
+      base::BindLambdaForTesting([&](mojom::LoggerState state) {
+        EXPECT_EQ(state, mojom::LoggerState::kDisabled);
+        observer_loop.Quit();
+      });
+  remote->AddStateObserver(observer.receiver_.BindNewPipeAndPassRemote());
+  observer_loop.Run();
+
+  EXPECT_EQ(observer.on_notify_state_count_, 1);
+}
+
+// This test functionality of enqueue.
+TEST_F(CfmLoggerServiceTest, CfmLoggerServiceEnqueue) {
+  auto remote = GetLoggerRemote();
+
+  base::RunLoop enqueue_loop;
+  remote->Enqueue(
+      "foo", mojom::EnqueuePriority::kHigh,
+      base::BindLambdaForTesting([&](mojom::LoggerStatusPtr status) {
+        ASSERT_EQ(0, status->code);
+        enqueue_loop.Quit();
+      }));
+  enqueue_loop.Run();
+}
+
+// This test functionality of enqueue when disabled.
+TEST_F(CfmLoggerServiceTest, CfmLoggerServiceDisabledEnqueue) {
+  DisableLoggerFeature();
+  constexpr int kUnimplemented = 12;
+
+  auto remote = GetLoggerRemote();
+
+  base::RunLoop enqueue_loop;
+  remote->Enqueue(
+      "foo", mojom::EnqueuePriority::kHigh,
+      base::BindLambdaForTesting([&](mojom::LoggerStatusPtr status) {
+        ASSERT_EQ(kUnimplemented, status->code);
+        enqueue_loop.Quit();
+      }));
+  enqueue_loop.Run();
 }
 
 }  // namespace
