@@ -72,7 +72,7 @@ class PresentationRequestNotificationProducer final
   content::WebContents* GetWebContents();
   base::WeakPtr<PresentationRequestNotificationItem> GetNotificationItem();
 
-  void SetPresentationManagerForTesting(
+  void SetTestPresentationManager(
       base::WeakPtr<media_router::WebContentsPresentationManager>
           presentation_manager);
 
@@ -108,7 +108,9 @@ class PresentationRequestNotificationProducer final
 
   // Returns true if there is an item, and the item is for a non-default
   // presentation request.
-  bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
+  bool HasItemForNonDefaultRequest() const {
+    return item_ && !item_->is_default_presentation_request();
+  }
 
   // Queries |notification_service_| for active sessions associated with the
   // WebContents that |this| manages and stores the value in |should_hide_|.
@@ -122,7 +124,10 @@ class PresentationRequestNotificationProducer final
   // dialog is closed.
   // It is used to remove |this| from |presentation_manager_|'s observers.
   base::WeakPtr<media_router::WebContentsPresentationManager>
-      presentation_manager_ = nullptr;
+      presentation_manager_;
+  //  A copy of the WebContentsPresentationManager used for testing.
+  base::WeakPtr<media_router::WebContentsPresentationManager>
+      test_presentation_manager_;
 
   // The notification managed by this producer, if there is one.
   absl::optional<PresentationRequestNotificationItem> item_;

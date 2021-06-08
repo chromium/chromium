@@ -456,7 +456,7 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
     EXPECT_TRUE(item);
     auto* pr_item =
         static_cast<PresentationRequestNotificationItem*>(item.get());
-    EXPECT_EQ(pr_item->context()->presentation_request(), presentation_request);
+    EXPECT_EQ(pr_item->request(), presentation_request);
     return notification_id;
   }
 

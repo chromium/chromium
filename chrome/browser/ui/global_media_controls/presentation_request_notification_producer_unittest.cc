@@ -8,6 +8,7 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -19,6 +20,44 @@
 using testing::_;
 
 namespace {
+class MockWebContentsPresentationManager
+    : public media_router::WebContentsPresentationManager {
+ public:
+  bool HasDefaultPresentationRequest() const override {
+    return default_presentation_request_.has_value();
+  }
+
+  const content::PresentationRequest& GetDefaultPresentationRequest()
+      const override {
+    return *default_presentation_request_;
+  }
+
+  void SetDefaultPresentationRequest(
+      const content::PresentationRequest& request) {
+    default_presentation_request_ = request;
+  }
+
+  MOCK_METHOD1(
+      AddObserver,
+      void(media_router::WebContentsPresentationManager::Observer* observer));
+  MOCK_METHOD1(
+      RemoveObserver,
+      void(media_router::WebContentsPresentationManager::Observer* observer));
+  MOCK_METHOD3(OnPresentationResponse,
+               void(const content::PresentationRequest&,
+                    media_router::mojom::RoutePresentationConnectionPtr,
+                    const media_router::RouteRequestResult&));
+  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
+
+  base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  absl::optional<content::PresentationRequest> default_presentation_request_;
+  base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
+};
+
 media_router::MediaRoute CreateMediaRoute(
     media_router::MediaRoute::Id route_id) {
   media_router::MediaRoute media_route(route_id,
@@ -50,25 +89,39 @@ class PresentationRequestNotificationProducerTest
     notification_producer_ =
         notification_service_->presentation_request_notification_producer_
             .get();
+
+    presentation_manager_ =
+        std::make_unique<MockWebContentsPresentationManager>();
+    notification_producer_->SetTestPresentationManager(
+        presentation_manager_->GetWeakPtr());
   }
 
   void TearDown() override {
     notification_service_.reset();
+    media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void SimulateDialogOpenedAndWait(MockMediaDialogDelegate* delegate) {
+    delegate->Open(notification_service_.get());
+    task_environment()->RunUntilIdle();
+  }
+
+  void SimulateDialogClosedAndWait(MockMediaDialogDelegate* delegate) {
+    delegate->Close();
+    task_environment()->RunUntilIdle();
+  }
+
+  content::PresentationRequest CreatePresentationRequest() {
+    return content::PresentationRequest(
+        main_rfh()->GetGlobalFrameRoutingId(),
+        {GURL("http://example.com"), GURL("http://example2.com")},
+        url::Origin::Create(GURL("http://google.com")));
   }
 
   void SimulateStartPresentationContextCreated() {
     auto context = std::make_unique<media_router::StartPresentationContext>(
-        content::PresentationRequest(
-            main_rfh()->GetGlobalFrameRoutingId(),
-            {GURL("http://example.com"), GURL("http://example2.com")},
-            url::Origin::Create(GURL("http://google.com"))),
-        base::BindOnce(
-            &PresentationRequestNotificationProducerTest::RequestSuccess,
-            base::Unretained(this)),
-        base::BindOnce(
-            &PresentationRequestNotificationProducerTest::RequestError,
-            base::Unretained(this)));
+        CreatePresentationRequest(), base::DoNothing(), base::DoNothing());
     notification_producer_->OnStartPresentationContextCreated(
         std::move(context));
   }
@@ -78,16 +131,11 @@ class PresentationRequestNotificationProducerTest
     notification_producer_->OnMediaRoutesChanged(routes);
   }
 
-  MOCK_METHOD3(RequestSuccess,
-               void(const blink::mojom::PresentationInfo&,
-                    media_router::mojom::RoutePresentationConnectionPtr,
-                    const media_router::MediaRoute&));
-  MOCK_METHOD1(RequestError,
-               void(const blink::mojom::PresentationError& error));
 
  protected:
   std::unique_ptr<MediaNotificationService> notification_service_;
   PresentationRequestNotificationProducer* notification_producer_ = nullptr;
+  std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -106,4 +154,38 @@ TEST_F(PresentationRequestNotificationProducerTest, DismissNotification) {
 
   notification_producer_->OnContainerDismissed(item->id());
   EXPECT_FALSE(notification_producer_->GetNotificationItem());
+}
+
+TEST_F(PresentationRequestNotificationProducerTest, OnMediaDialogOpened) {
+  MockMediaDialogDelegate delegate;
+  // Open the dialog on a page without a default presentation request.
+  SimulateDialogOpenedAndWait(&delegate);
+  EXPECT_FALSE(notification_producer_->GetNotificationItem());
+  SimulateDialogClosedAndWait(&delegate);
+
+  // Open the dialog on a page with default presentation request and there does
+  // not exist a notification for non-default presentation request. A dummy
+  // notification should be created.
+  presentation_manager_->SetDefaultPresentationRequest(
+      CreatePresentationRequest());
+  SimulateDialogOpenedAndWait(&delegate);
+  EXPECT_TRUE(notification_producer_->GetNotificationItem());
+  SimulateDialogClosedAndWait(&delegate);
+}
+
+TEST_F(PresentationRequestNotificationProducerTest,
+       OnMediaDialogOpenedWithExistingItem) {
+  MockMediaDialogDelegate delegate;
+
+  // Open the dialog on a page with default presentation request and there
+  // exists a notification for non-default presentation request. The existing
+  // notification should not be replaced.
+  SimulateStartPresentationContextCreated();
+  auto id = notification_producer_->GetNotificationItem()->id();
+  presentation_manager_->SetDefaultPresentationRequest(
+      CreatePresentationRequest());
+  SimulateDialogOpenedAndWait(&delegate);
+  EXPECT_TRUE(notification_producer_->GetNotificationItem());
+  EXPECT_EQ(id, notification_producer_->GetNotificationItem()->id());
+  SimulateDialogClosedAndWait(&delegate);
 }
