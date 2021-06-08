@@ -59,7 +59,6 @@ async function change_encoding_params_test(codec, acc) {
   for (let i = 0; i < frames_to_encode; i++) {
     var frame = await createFrame(original_w, original_h, next_ts++);
     encoder.encode(frame, {});
-    await delay(1);
   }
 
   params.width = new_w;
@@ -73,7 +72,6 @@ async function change_encoding_params_test(codec, acc) {
   for (let i = 0; i < frames_to_encode; i++) {
     var frame = await createFrame(new_w, new_h, next_ts++);
     encoder.encode(frame, {});
-    await delay(1);
   }
 
   await encoder.flush();

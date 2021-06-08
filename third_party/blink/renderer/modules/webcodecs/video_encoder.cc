@@ -80,6 +80,7 @@ namespace blink {
 namespace {
 
 constexpr const char kCategory[] = "media";
+constexpr int kMaxActiveEncodes = 5;
 
 // Use this function in cases when we can't immediately delete |ptr| because
 // there might be its methods on the call stack.
@@ -508,6 +509,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
+  active_encodes_++;
+  if (active_encodes_ == kMaxActiveEncodes)
+    stall_request_processing_ = true;
 
   request->StartTracingVideoEncode(keyframe);
 
@@ -518,6 +522,12 @@ void VideoEncoder::ProcessEncode(Request* request) {
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+
+    if (self->active_encodes_ == kMaxActiveEncodes)
+      self->stall_request_processing_ = false;
+
+    self->active_encodes_--;
+
     if (!status.is_ok()) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
@@ -721,6 +731,11 @@ void VideoEncoder::CallOutputCallback(
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
 
   TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
+}
+
+void VideoEncoder::ResetInternal() {
+  Base::ResetInternal();
+  active_encodes_ = 0;
 }
 
 static void isConfigSupportedWithSoftwareOnly(

@@ -87,6 +87,7 @@ class MODULES_EXPORT VideoEncoder final
   void ProcessEncode(Request* request) override;
   void ProcessConfigure(Request* request) override;
   void ProcessReconfigure(Request* request) override;
+  void ResetInternal() override;
 
   void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
 
@@ -107,6 +108,10 @@ class MODULES_EXPORT VideoEncoder final
       scoped_refptr<media::VideoFrame> txt_frame);
 
   media::VideoFramePool readback_frame_pool_;
+
+  // The number of encoding requests currently handled by |media_encoder_|
+  // Should not exceed |kMaxActiveEncodes|.
+  int active_encodes_ = 0;
 };
 
 }  // namespace blink
