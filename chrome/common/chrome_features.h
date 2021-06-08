@@ -520,6 +520,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacyAdvisor;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrivacyReview;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPushMessagingBackgroundMode;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

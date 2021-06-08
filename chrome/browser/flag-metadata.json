@@ -4255,6 +4255,15 @@
     "expiry_milestone": 94
   },
   {
+    "name": "privacy-review",
+    "owners": [
+      "rainhard",
+      "andzaytsev",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "privacy-sandbox-settings",
     "owners": [
       "harrisonsean",

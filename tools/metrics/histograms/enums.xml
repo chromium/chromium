@@ -47830,6 +47830,7 @@ from previous Chrome versions.
   <int value="331770879" label="CrostiniAppSearch:disabled"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
+  <int value="333019109" label="PrivacyReview:enabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
@@ -49858,6 +49859,7 @@ from previous Chrome versions.
   <int value="2051403297" label="ShowBluetoothDeviceBattery:disabled"/>
   <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
   <int value="2052194225" label="ChromeOSSharingHub:disabled"/>
+  <int value="2055386526" label="PrivacyReview:disabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>

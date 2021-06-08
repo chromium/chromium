@@ -1145,6 +1145,9 @@ extern const char kPrerender2Description[];
 extern const char kPrivacyAdvisorName[];
 extern const char kPrivacyAdvisorDescription[];
 
+extern const char kPrivacyReviewName[];
+extern const char kPrivacyReviewDescription[];
+
 extern const char kPrivacySandboxSettingsName[];
 extern const char kPrivacySandboxSettingsDescription[];
 

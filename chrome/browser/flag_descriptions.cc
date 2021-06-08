@@ -1995,6 +1995,11 @@ const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
 
+const char kPrivacyReviewName[] = "Privacy Review";
+const char kPrivacyReviewDescription[] =
+    "Shows a new subpage in Settings that helps the user to review various "
+    "privacy settings.";
+
 const char kPrivacySandboxSettingsName[] = "Privacy Sandbox Settings";
 const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "

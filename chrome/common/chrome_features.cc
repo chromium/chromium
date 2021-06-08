@@ -776,6 +776,9 @@ const base::Feature kPrerenderFallbackToPreconnect{
 const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPrivacyReview{"PrivacyReview",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the privacy sandbox settings page.
 const base::Feature kPrivacySandboxSettings{"PrivacySandboxSettings",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
