@@ -3,6 +3,7 @@ include_rules = [
   "+components/url_formatter",
   "+components/variations",
   "+ios/testing",
+  "+ios/web/common/uikit_ui_util.h",
   "+ios/web_view/public",
   "+mojo/core/embedder",
   "+net",

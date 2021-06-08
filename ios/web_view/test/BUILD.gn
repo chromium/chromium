@@ -32,6 +32,7 @@ source_set("inttests") {
     "//components/variations",
     "//components/variations:test_support",
     "//ios/third_party/webkit",
+    "//ios/web/common:uikit",
     "//ios/web_view:web_view+link",
     "//net",
     "//net:test_support",

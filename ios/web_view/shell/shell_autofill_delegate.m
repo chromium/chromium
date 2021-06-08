@@ -61,8 +61,8 @@
                          message:nil
                   preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.sourceView =
-        UIApplication.sharedApplication.keyWindow;
-    CGRect bounds = UIApplication.sharedApplication.keyWindow.bounds;
+        [self anyKeyWindow];
+    CGRect bounds = [self anyKeyWindow].bounds;
     alertController.popoverPresentationController.sourceRect =
         CGRectMake(CGRectGetWidth(bounds) / 2, 60, 1, 1);
     UIAlertAction* cancelAction =
@@ -74,7 +74,7 @@
       [alertController addAction:[self actionForSuggestion:suggestion]];
     }
 
-    [UIApplication.sharedApplication.keyWindow.rootViewController
+    [[self anyKeyWindow].rootViewController
         presentViewController:alertController
                      animated:YES
                    completion:nil];
@@ -181,10 +181,9 @@
         textField.keyboardType = UIKeyboardTypeNumberPad;
       }];
 
-  [UIApplication.sharedApplication.keyWindow.rootViewController
-      presentViewController:alertController
-                   animated:YES
-                 completion:nil];
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
@@ -220,10 +219,9 @@
                              }];
   [alertController addAction:yesAction];
 
-  [UIApplication.sharedApplication.keyWindow.rootViewController
-      presentViewController:alertController
-                   animated:YES
-                 completion:nil];
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
@@ -251,15 +249,14 @@
                              }];
   [alertController addAction:yesAction];
 
-  [UIApplication.sharedApplication.keyWindow.rootViewController
-      presentViewController:alertController
-                   animated:YES
-                 completion:nil];
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
     verifyCreditCardWithVerifier:(CWVCreditCardVerifier*)verifier {
-  [UIApplication.sharedApplication.keyWindow endEditing:YES];
+  [[self anyKeyWindow] endEditing:YES];
 
   UIAlertController* alertController =
       [UIAlertController alertControllerWithTitle:@"Verify Card"
@@ -301,10 +298,9 @@
         textField.keyboardType = UIKeyboardTypeNumberPad;
       }];
 
-  [UIApplication.sharedApplication.keyWindow.rootViewController
-      presentViewController:alertController
-                   animated:YES
-                 completion:nil];
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
@@ -337,8 +333,23 @@
                 }
                 [strongSelf.autofillController acceptSuggestion:suggestion
                                               completionHandler:nil];
-                [UIApplication.sharedApplication.keyWindow endEditing:YES];
+                [[self anyKeyWindow] endEditing:YES];
               }];
+}
+
+#pragma mark - Private
+
+- (UIWindow*)anyKeyWindow {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  return [UIApplication sharedApplication].keyWindow;
+#else
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    if (window.isKeyWindow)
+      return window;
+  }
+  return nil;
+#endif
 }
 
 @end

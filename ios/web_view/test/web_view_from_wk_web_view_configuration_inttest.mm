@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/ios/wait_util.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -31,8 +32,7 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
   void SetWebView(CWVWebView* webView) {
     [web_view_ removeFromSuperview];
     web_view_ = webView;
-    UIViewController* view_controller =
-        [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    UIViewController* view_controller = [GetAnyKeyWindow() rootViewController];
     [view_controller.view addSubview:web_view_];
   }
 
@@ -135,8 +135,7 @@ TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
 
   NavigationFinishedObserver* observer =
       [[NavigationFinishedObserver alloc] init];
-  UIViewController* view_controller =
-      [[[UIApplication sharedApplication] keyWindow] rootViewController];
+  UIViewController* view_controller = [GetAnyKeyWindow() rootViewController];
   [view_controller.view addSubview:wk_web_view];
 
   // Loads a page in wk_web_view and waits for its completion
