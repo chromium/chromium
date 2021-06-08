@@ -216,10 +216,9 @@ std::string ConstructDataFrameForVersion(base::StringPiece body,
   if (!version.HasIetfQuicFrames()) {
     return std::string(body);
   }
-  std::unique_ptr<char[]> buffer;
-  auto header_length =
-      quic::HttpEncoder::SerializeDataFrameHeader(body.size(), &buffer);
-  return base::StrCat({base::StringPiece(buffer.get(), header_length), body});
+  quic::QuicBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
+      body.size(), quic::SimpleBufferAllocator::Get());
+  return base::StrCat({base::StringPiece(buffer.data(), buffer.size()), body});
 }
 
 }  // namespace
