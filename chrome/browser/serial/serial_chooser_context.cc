@@ -358,12 +358,12 @@ bool SerialChooserContext::HasPortPermission(
     return false;
   }
 
-  std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
-      object_list = GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<Object>> object_list =
+      ObjectPermissionContextBase::GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
 
-    // This check guarantees that the keys referenced below will be found.
+    // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device));
 
 #if defined(OS_WIN)

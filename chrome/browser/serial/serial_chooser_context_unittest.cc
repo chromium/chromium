@@ -142,18 +142,22 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
-  auto port = device::mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
+  auto port_1 = device::mojom::SerialPortInfo::New();
+  port_1->token = base::UnguessableToken::Create();
 
-  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  auto port_2 = CreatePersistentPort("Persistent Port", "ABC123");
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
-  context()->GrantPortPermission(origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
 
   std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
       context()->GetGrantedObjects(origin);
@@ -175,7 +179,8 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
   context()->RevokeObjectPermission(origin, objects[0]->value);
-  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
   origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   objects = context()->GetAllGrantedObjects();
@@ -191,18 +196,23 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
 
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
-  device::mojom::SerialPortInfoPtr port =
+  device::mojom::SerialPortInfoPtr port_1 =
       CreatePersistentPort("Persistent Port", "ABC123");
 
-  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  auto port_2 = device::mojom::SerialPortInfo::New();
+  port_2->token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
-  context()->GrantPortPermission(origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
 
   std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
       context()->GetGrantedObjects(origin);
@@ -224,7 +234,8 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
   context()->RevokeObjectPermission(origin, objects[0]->value);
-  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
   origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   objects = context()->GetAllGrantedObjects();
