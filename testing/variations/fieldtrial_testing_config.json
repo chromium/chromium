@@ -6304,7 +6304,6 @@
                 "android",
                 "chromeos",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
