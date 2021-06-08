@@ -23,17 +23,6 @@ namespace ui {
 
 namespace {
 
-bool HasFocusableChild(const AXNode* node) {
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    if (child->data().HasState(ax::mojom::State::kFocusable) ||
-        HasFocusableChild(child)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // TODO(muyuanli): share with BrowserAccessibility.
 bool IsTextField(const AXNode* node, uint32_t state) {
   return node->data().IsTextField();

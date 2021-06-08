@@ -52,10 +52,10 @@ HRESULT CheckPathInfoForInternal(const PCWSTR device_name);
 bool IsInternalVideoOutput(
     const DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY video_output_tech_type);
 
-static double PlatformToCaptureValue(long value) {
+static inline double PlatformToCaptureValue(long value) {
   return value;
 }
-static double PlatformToCaptureStep(long step, double min, double max) {
+static inline double PlatformToCaptureStep(long step, double min, double max) {
   return step;
 }
 

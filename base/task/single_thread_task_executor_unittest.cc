@@ -296,13 +296,6 @@ void QuitFunc(TaskList* order, int cookie) {
   order->RecordEnd(QUITMESSAGELOOP, cookie);
 }
 
-void PostNTasks(int posts_remaining) {
-  if (posts_remaining > 1) {
-    ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, BindOnce(&PostNTasks, posts_remaining - 1));
-  }
-}
-
 #if defined(OS_WIN)
 
 void SubPumpFunc(OnceClosure on_done) {

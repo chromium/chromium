@@ -130,6 +130,11 @@ class ProfileProtoDB : public KeyedService {
   // Returns true if the database failed to initialize.
   bool FailedToInit() const;
 
+  static bool DatabasePrefixFilter(const std::string& key_prefix,
+                                   const std::string& key) {
+    return base::StartsWith(key, key_prefix, base::CompareCase::SENSITIVE);
+  }
+
   // Browser context associated with ProfileProtoDB (ProfileProtoDB are per
   // profile).
   content::BrowserContext* browser_context_;
@@ -146,21 +151,6 @@ class ProfileProtoDB : public KeyedService {
 
   base::WeakPtrFactory<ProfileProtoDB> weak_ptr_factory_{this};
 };
-
-namespace {
-
-leveldb::ReadOptions CreateReadOptions() {
-  leveldb::ReadOptions opts;
-  opts.fill_cache = false;
-  return opts;
-}
-
-bool DatabasePrefixFilter(const std::string& key_prefix,
-                          const std::string& key) {
-  return base::StartsWith(key, key_prefix, base::CompareCase::SENSITIVE);
-}
-
-}  // namespace
 
 template <typename T>
 ProfileProtoDB<T>::~ProfileProtoDB() = default;
@@ -215,7 +205,7 @@ void ProfileProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
   } else {
     storage_database_->LoadEntriesWithFilter(
         base::BindRepeating(&DatabasePrefixFilter, key_prefix),
-        CreateReadOptions(),
+        {.fill_cache = false},
         /* target_prefix */ "",
         base::BindOnce(&ProfileProtoDB::OnLoadContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
