@@ -73,6 +73,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabNavigationBarControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabNightModeStateControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabStatusBarColorProviderTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/LaunchesWithColorSchemeTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/NavigationInfoCaptureTriggerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/RequestThrottlerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityContentTestEnvironment.java",

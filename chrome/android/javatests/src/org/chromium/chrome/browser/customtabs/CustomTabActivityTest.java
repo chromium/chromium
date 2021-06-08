@@ -1607,46 +1607,6 @@ public class CustomTabActivityTest {
         ApplicationStatus.unregisterActivityStateListener(listener);
     }
 
-    @Test
-    @SmallTest
-    public void testLaunchCustomTabWithColorSchemeDark() {
-        Intent intent = createMinimalCustomTabIntent();
-        addColorSchemeToIntent(intent, CustomTabsIntent.COLOR_SCHEME_DARK);
-
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        final CustomTabActivity cctActivity = mCustomTabActivityTestRule.getActivity();
-
-        Assert.assertNotNull(cctActivity.getNightModeStateProviderForTesting());
-
-        Assert.assertTrue("Night mode should be enabled on K+ with dark color scheme set.",
-                cctActivity.getNightModeStateProviderForTesting().isInNightMode());
-
-        MenuButton menuButtonView = cctActivity.findViewById(R.id.menu_button_wrapper);
-        assertTrue(menuButtonView.getUseLightDrawablesForTesting());
-    }
-
-    @Test
-    @SmallTest
-    public void testLaunchCustomTabWithColorSchemeLight() {
-        Intent intent = createMinimalCustomTabIntent();
-        addColorSchemeToIntent(intent, CustomTabsIntent.COLOR_SCHEME_LIGHT);
-
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        final CustomTabActivity cctActivity = mCustomTabActivityTestRule.getActivity();
-
-        Assert.assertNotNull(cctActivity.getNightModeStateProviderForTesting());
-        Assert.assertFalse(cctActivity.getNightModeStateProviderForTesting().isInNightMode());
-
-        MenuButton menuButtonView = cctActivity.findViewById(R.id.menu_button_wrapper);
-        assertFalse(menuButtonView.getUseLightDrawablesForTesting());
-    }
-
-    private void addColorSchemeToIntent(Intent intent, int colorScheme) {
-        intent.putExtra(CustomTabsIntent.EXTRA_COLOR_SCHEME, colorScheme);
-    }
-
     /** Maybe prerenders a URL with a referrer, then launch it with another one. */
     private void maybeSpeculateAndLaunchWithReferrers(String url, boolean useHiddenTab,
             String speculationReferrer, String launchReferrer) throws Exception {
