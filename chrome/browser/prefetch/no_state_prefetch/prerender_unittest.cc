@@ -485,6 +485,12 @@ class PrerenderTest : public testing::Test {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+ protected:
+  // This needs to be initialized before any tasks running on other threads
+  // access the feature list, and destroyed after |task_environment_|, to avoid
+  // data races.
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   // Needed to pass NoStatePrefetchManager's DCHECKs.
   content::BrowserTaskEnvironment task_environment_;
@@ -506,20 +512,23 @@ TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
       "Prerender.FinalStatus", FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES, 1);
 }
 
-TEST_F(PrerenderTest, GWSPrefetchHoldbackNonGWSSReferrer) {
+class PrerenderGWSPrefetchHoldbackTest : public PrerenderTest {
+ public:
+  PrerenderGWSPrefetchHoldbackTest() {
+    feature_list_.InitAndEnableFeature(kGWSPrefetchHoldback);
+  }
+};
+
+TEST_F(PrerenderGWSPrefetchHoldbackTest, GWSPrefetchHoldbackNonGWSSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kGWSPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
 
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
+TEST_F(PrerenderGWSPrefetchHoldbackTest, GWSPrefetchHoldbackGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kGWSPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
       FINAL_STATUS_PROFILE_DESTROYED);
@@ -527,20 +536,24 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
   EXPECT_FALSE(AddSimpleGWSLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, GWSPrefetchHoldbackOffNonGWSReferrer) {
+class PrerenderGWSPrefetchHoldbackOffTest : public PrerenderTest {
+ public:
+  PrerenderGWSPrefetchHoldbackOffTest() {
+    feature_list_.InitAndDisableFeature(kGWSPrefetchHoldback);
+  }
+};
+
+TEST_F(PrerenderGWSPrefetchHoldbackOffTest,
+       GWSPrefetchHoldbackOffNonGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kGWSPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
 
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
+TEST_F(PrerenderGWSPrefetchHoldbackOffTest, GWSPrefetchHoldbackOffGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kGWSPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
       FINAL_STATUS_PROFILE_DESTROYED);
@@ -548,11 +561,17 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
   EXPECT_TRUE(AddSimpleGWSLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
+class PrerendererNavigationPredictorPrefetchHoldbackTest
+    : public PrerenderTest {
+ public:
+  PrerendererNavigationPredictorPrefetchHoldbackTest() {
+    feature_list_.InitAndEnableFeature(kNavigationPredictorPrefetchHoldback);
+  }
+};
+
+TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
+       PredictorPrefetchHoldbackNonPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kNavigationPredictorPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, url::Origin::Create(GURL("www.notgoogle.com")),
       ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
@@ -560,11 +579,9 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, PredictorPrefetchHoldbackPredictorReferrer) {
+TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
+       PredictorPrefetchHoldbackPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kNavigationPredictorPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
       FINAL_STATUS_PROFILE_DESTROYED);
@@ -588,11 +605,17 @@ TEST_F(PrerenderTest, LinkRelNextWithNSPDisabled) {
       "Prerender.FinalStatus", FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED, 1);
 }
 
-TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
+class PrerendererNavigationPredictorPrefetchHoldbackDisabledTest
+    : public PrerenderTest {
+ public:
+  PrerendererNavigationPredictorPrefetchHoldbackDisabledTest() {
+    feature_list_.InitAndDisableFeature(kNavigationPredictorPrefetchHoldback);
+  }
+};
+
+TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
+       PredictorPrefetchHoldbackOffNonPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kNavigationPredictorPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, url::Origin::Create(GURL("www.notgoogle.com")),
       ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
@@ -600,11 +623,9 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
-TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffPredictorReferrer) {
+TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
+       PredictorPrefetchHoldbackOffPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kNavigationPredictorPrefetchHoldback);
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
       FINAL_STATUS_PROFILE_DESTROYED);
@@ -1119,13 +1140,19 @@ TEST_F(PrerenderTest, OmniboxAllowedWhenNotDisabled) {
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 }
 
+class PrerenderFallbackToPreconnectDisabledTest : public PrerenderTest {
+ public:
+  PrerenderFallbackToPreconnectDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kPrerenderFallbackToPreconnect);
+  }
+};
+
 // Test that when prerender fails and the
 // kPrerenderFallbackToPreconnect experiment is not enabled,
 // a prerender initiated by omnibox does not result in a preconnect.
-TEST_F(PrerenderTest, OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPrerenderFallbackToPreconnect);
+TEST_F(PrerenderFallbackToPreconnectDisabledTest,
+       OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
   const GURL kURL(GURL("http://www.example.com"));
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -1143,14 +1170,20 @@ TEST_F(PrerenderTest, OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
   EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
 }
 
+class PrerenderFallbackToPreconnectEnabledTest : public PrerenderTest {
+ public:
+  PrerenderFallbackToPreconnectEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPrerenderFallbackToPreconnect);
+  }
+};
+
 // Test that when prerender fails and the
 // kPrerenderFallbackToPreconnect experiment is enabled, a
 // prerender initiated by omnibox actually results in preconnect.
-TEST_F(PrerenderTest, Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
+TEST_F(PrerenderFallbackToPreconnectEnabledTest,
+       Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
   const GURL kURL(GURL("http://www.example.com"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrerenderFallbackToPreconnect);
 
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -1176,12 +1209,9 @@ TEST_F(PrerenderTest, Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
 // Test that when prerender fails and the
 // kPrerenderFallbackToPreconnect experiment is enabled, a
 // prerender initiated by an external request actually results in preconnect.
-TEST_F(PrerenderTest,
+TEST_F(PrerenderFallbackToPreconnectEnabledTest,
        ExternalRequest_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
   const GURL kURL(GURL("http://www.example.com"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrerenderFallbackToPreconnect);
 
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -1207,11 +1237,9 @@ TEST_F(PrerenderTest,
 // Test that when prerender fails and the
 // kPrerenderFallbackToPreconnect experiment is enabled, a
 // prerender initiated by isolated prerender does not trigger a preconnect.
-TEST_F(PrerenderTest, IsolatedPrerenderDoesNotPreconnect) {
+TEST_F(PrerenderFallbackToPreconnectEnabledTest,
+       IsolatedPrerenderDoesNotPreconnect) {
   const GURL kURL(GURL("http://www.example.com"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrerenderFallbackToPreconnect);
 
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -1336,15 +1364,20 @@ TEST_F(PrerenderTest, PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
 
+class PrerenderPrefetchingAllowedOnAllTest : public PrerenderTest {
+ public:
+  PrerenderPrefetchingAllowedOnAllTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPredictivePrefetchingAllowedOnAllConnectionTypes);
+  }
+};
+
 // Verify that the external prerender requests are allowed on cellular
 // connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
 // enabled.
 TEST_F(
-    PrerenderTest,
+    PrerenderPrefetchingAllowedOnAllTest,
     PrerenderAllowedOnCellularWithExternalOrigin_PredictivePrefetchingAllowedOnAllConnectionTypes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPredictivePrefetchingAllowedOnAllConnectionTypes);
   EnablePrerender();
   std::unique_ptr<net::NetworkChangeNotifier> mock(
       new MockNetworkChangeNotifier4GMetered);
