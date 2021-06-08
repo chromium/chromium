@@ -50,6 +50,10 @@ void BlinkLeakDetector::PerformLeakDetection(
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
 
+  // Issue a memory pressure notification to instruct V8 to drop its
+  // non-essential internal caches.
+  isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
+
   // For example, calling isValidEmailAddress in EmailInputType.cpp with a
   // non-empty string creates a static ScriptRegexp value which holds a
   // V8PerContextData indirectly. This affects the number of V8PerContextData.
