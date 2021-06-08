@@ -503,7 +503,6 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
   const LayoutUnit initial_position =
       FlexLayoutAlgorithm::InitialContentPositionOffset(
           style, available_free_space, justify_content, line_items_.size());
-  sum_justify_adjustments_ += initial_position;
   LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
 
   bool should_flip_main_axis;
@@ -571,9 +570,6 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
           FlexLayoutAlgorithm::ContentDistributionSpaceBetweenChildren(
               available_free_space, justify_content, line_items_.size());
       main_axis_offset += space_between + algorithm_->gap_between_items_;
-      // The gap is included in the intrinsic content block size, so don't add
-      // it to sum_justify_adjustments.
-      sum_justify_adjustments_ += space_between;
     }
   }
 
