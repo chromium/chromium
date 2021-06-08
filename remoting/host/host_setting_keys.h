@@ -14,8 +14,14 @@ namespace remoting {
 // more information.
 constexpr HostSettingKey kMacAudioCaptureDeviceUid = "audio_capture_device_uid";
 
-constexpr HostSettingKey kLinuxPreviousDefaultWebBrowser =
-    "previous_default_web_browser";
+constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserXfce =
+    "previous_default_browser_xfce";
+
+constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserCinnamon =
+    "previous_default_browser_cinnamon";
+
+constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserGeneric =
+    "previous_default_browser_generic";
 
 }  // namespace remoting
 

@@ -38,6 +38,8 @@ class RemoteOpenUrlClient final {
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
   void OnRequestTimeout();
 
+  void OpenOnFallbackBrowserInternal(const GURL& url = GURL());
+
   base::OneShotTimer timeout_timer_;
 
   std::unique_ptr<base::Environment> environment_;

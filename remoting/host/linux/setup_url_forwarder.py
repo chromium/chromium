@@ -22,6 +22,11 @@ HOST_HASH = hashlib.md5(socket.gethostname().encode()).hexdigest()
 
 URL_FORWARDER_DESKTOP_ENTRY = 'crd-url-forwarder.desktop'
 
+# XFCE4's default settings app changes default browser setting on Cinnamon/GNOME
+# to xfce4-web-browser, which redirects GNOME apps to use the XFCE default
+# browser setting.
+XFCE4_WEB_BROWSER_DESKTOP_ENTRY = 'xfce4-web-browser.desktop'
+
 HOST_SETTINGS_PATH = os.path.join(
     os.environ['HOME'],
     '.config/chrome-remote-desktop/host#{}.settings.json'.format(HOST_HASH))
@@ -32,21 +37,15 @@ XDG_DATA_HOME = (os.environ['XDG_DATA_HOME']
 
 XDG_USER_APP_DIR = os.path.join(XDG_DATA_HOME, 'applications')
 
+X_SESSIONS_DIR = '/usr/share/xsessions/'
+
 SRC_URL_FORWARDER_DESKTOP_ENTRY_PATH = os.path.join(
     SCRIPT_DIR, URL_FORWARDER_DESKTOP_ENTRY)
 
 DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH = os.path.join(
     XDG_USER_APP_DIR, URL_FORWARDER_DESKTOP_ENTRY)
 
-X_SCHEME_HANDLER_HTTP = 'x-scheme-handler/http'
-X_SCHEME_HANDLER_HTTPS = 'x-scheme-handler/https'
-X_SCHEME_HANDLER_MAILTO = 'x-scheme-handler/mailto'
 XDG_SETTING_DEFAULT_WEB_BROWSER = 'default-web-browser'
-
-HOST_SETTING_KEY_PREVIOUS_DEFAULT_WEB_BROWSER = 'previous_default_web_browser'
-HOST_SETTING_KEY_PREVIOUS_HTTP_HANDLER = 'previous_http_handler'
-HOST_SETTING_KEY_PREVIOUS_HTTPS_HANDLER = 'previous_https_handler'
-HOST_SETTING_KEY_PREVIOUS_MAILTO_HANDLER = 'previous_mailto_handler'
 
 
 def install_url_forwarder_desktop_entry() -> None:
@@ -69,91 +68,73 @@ def remove_url_forwarder_desktop_entry() -> None:
   os.remove(DEST_URL_FORWARDER_DESKTOP_ENTRY_PATH)
 
 
-def get_output_or_empty_string(args: list[str]) -> str:
-  """Executes |args| and returns the output. Returns an empty string if the
-  command fails to execute."""
+def env_with_current_desktop(desktop_env: str) -> dict[str, str]:
+  """Returns an environment variable dictionary with XDG_CURRENT_DESKTOP set to
+  |desktop_env|."""
+
+  env = os.environ.copy()
+  env['XDG_CURRENT_DESKTOP'] = desktop_env
+  return env
+
+
+def get_default_browser(desktop_env: str) -> str:
+  """Returns the XDG default-web-browser setting for the given desktop
+  environment."""
+
+  args = ['xdg-settings', 'get', XDG_SETTING_DEFAULT_WEB_BROWSER]
+  env = env_with_current_desktop(desktop_env)
 
   try:
-    return subprocess.check_output(args).decode('utf-8').strip()
+    return subprocess.check_output(args, env=env).decode('utf-8').strip()
   except CalledProcessError as e:
     print('Failed to execute', args, ':', e, file=sys.stderr)
     return ''
 
 
-def get_default_browser(unused_entry_name: str) -> str:
-  """Returns the XDG default-web-browser setting."""
+def set_default_browser(desktop_env: str, desktop_entry: str) -> None:
+  """Sets the XDG default-web-browser setting for the given desktop
+  environment."""
 
-  return get_output_or_empty_string(
-      ['xdg-settings', 'get', XDG_SETTING_DEFAULT_WEB_BROWSER])
+  args = [
+      'xdg-settings', 'set', XDG_SETTING_DEFAULT_WEB_BROWSER, desktop_entry]
+  env = env_with_current_desktop(desktop_env)
 
-
-def set_default_browser(unused_entry_name: str, desktop_entry: str) -> None:
-  """Sets the XDG default-web-browser setting."""
-
-  subprocess.run([
-      'xdg-settings', 'set', XDG_SETTING_DEFAULT_WEB_BROWSER, desktop_entry])
+  subprocess.run(args, env=env)
 
 
-def get_mime_default(mime: str) -> str:
-  """Gets the default desktop entry for |mime|."""
-
-  return get_output_or_empty_string(['xdg-mime', 'query', 'default', mime])
-
-
-def set_mime_default(mime: str, desktop_entry: str) -> None:
-  """Sets the default desktop entry for |mime|."""
-
-  subprocess.run(['xdg-mime', 'default', desktop_entry, mime])
-
-
-def set_entry_to_url_forwarder(
-    entry_name: str,
-    entry_getter: Callable[[str], str],
-    entry_setter: Callable[[str, str], None],
+def set_default_browser_to_url_forwarder(
+    desktop_env: str,
     backup_dict: dict[str, str],
     backup_key: str) -> None:
-  """Sets an XDG entry to the remote URL forwarder.
+  """Sets default browser on the given desktop environment to the remote URL
+  forwarder and backs up the previous default browser.
 
   Args:
-    entry_name: The name of the XDG entry.
-    entry_getter: Called with |entry_name| to get back the current configured
-      XDG entry.
-    entry_setter: Called with |entry_name| and the new desktop entry value to
-      set an XDG entry.
-    backup_dict: The dictionary to backup the previous desktop entry.
-    backup_key: The key that the previous desktop entry will be stored in
+    desktop_env: The desktop environment to be configured.
+    backup_dict: The dictionary to backup the previous default browser.
+    backup_key: The key that the previous default browser will be stored in
       backup_dict with.
   """
 
-  current_entry = entry_getter(entry_name)
+  current_entry = get_default_browser(desktop_env)
   if not current_entry:
-    print('No value is associated with', entry_name, file=sys.stderr)
+    print('Cannot get default browser for', desktop_env, file=sys.stderr)
     return
   if current_entry == URL_FORWARDER_DESKTOP_ENTRY:
-    print(entry_name, 'is already', URL_FORWARDER_DESKTOP_ENTRY,
-          file=sys.stderr)
+    print('Default browser for', desktop_env, 'is already',
+          URL_FORWARDER_DESKTOP_ENTRY, file=sys.stderr)
     return
   backup_dict[backup_key] = current_entry
-  entry_setter(entry_name, URL_FORWARDER_DESKTOP_ENTRY)
-
-
-def set_default_browser_to_url_forwarder(backup_dict: dict[str, str],
-                                         backup_key: str) -> None:
-  """Sets the XDG default browser to the remote URL forwarder and back up the
-  previous default browser."""
-
-  set_entry_to_url_forwarder(XDG_SETTING_DEFAULT_WEB_BROWSER,
-                             get_default_browser, set_default_browser,
-                             backup_dict, backup_key)
-
-
-def set_mime_default_to_url_forwarder(
-    mime: str, backup_dict: dict[str, str], backup_key: str) -> None:
-  """Sets the XDG MIME default to the remote URL forwarder and back up the
-  previous MIME default."""
-
-  set_entry_to_url_forwarder(mime, get_mime_default, set_mime_default,
-                             backup_dict, backup_key)
+  if current_entry == XFCE4_WEB_BROWSER_DESKTOP_ENTRY:
+    print('Default browser for', desktop_env, 'has been set to',
+          XFCE4_WEB_BROWSER_DESKTOP_ENTRY, ', which effectively forces',
+          desktop_env, 'to use XFCE\'s default browser setting.')
+    # We can't back up XFCE's default browser here for local fallback, since it
+    # might have been changed to the URL forwarder already.
+    return
+  set_default_browser(desktop_env, URL_FORWARDER_DESKTOP_ENTRY)
+  print('Default browser for', desktop_env, 'has been successfully set to',
+        URL_FORWARDER_DESKTOP_ENTRY)
 
 
 def load_host_settings_file() -> dict[str, str]:
@@ -176,28 +157,50 @@ def save_host_settings_file(settings: dict[str, str]) -> None:
     json.dump(settings, settings_file)
 
 
-def setup() -> None:
+def get_supported_desktop_envs_and_settings_key() -> dict[str, str]:
+  desktop_envs_and_settings_keys = dict()
+
+  for x_session_desktop_path in Path(X_SESSIONS_DIR).glob('*.desktop'):
+    desktop_name = os.path.basename(x_session_desktop_path)
+    if desktop_name.startswith('xfce'):
+      desktop_envs_and_settings_keys['XFCE'] = 'previous_default_browser_xfce'
+    elif desktop_name.startswith('cinnamon'):
+      desktop_envs_and_settings_keys['X-Cinnamon'] = \
+          'previous_default_browser_cinnamon'
+
+  if not desktop_envs_and_settings_keys:
+    # Add X-Generic for generic fallback.
+    desktop_envs_and_settings_keys['X-Generic'] = \
+        'previous_default_browser_generic'
+
+  return desktop_envs_and_settings_keys
+
+def setup_url_forwarder() -> None:
+  # TODO(yuweih): Remove. The desktop entry file will be installed during
+  # package installation.
   install_url_forwarder_desktop_entry()
+
   settings = load_host_settings_file()
 
-  # Apps that use xdg-open to open the URL obey the default browser settings.
-  # Example: IntelliJ
-  set_default_browser_to_url_forwarder(
-      settings, HOST_SETTING_KEY_PREVIOUS_DEFAULT_WEB_BROWSER)
+  desktop_envs_and_setting_keys = get_supported_desktop_envs_and_settings_key()
 
-  # Apps that use gvfs-open will always look at the URL scheme handler settings.
-  # Example: GNOME Terminal
-  # Note: In most desktop environments (an exception would be XFCE), setting
-  # default-web-browser is equivalent to setting the HTTP and HTTPS scheme
-  # handlers. This is still fine as the calls below will be no-op if the desktop
-  # entry is already the URL forwarder.
-  set_mime_default_to_url_forwarder(
-      X_SCHEME_HANDLER_HTTP, settings, HOST_SETTING_KEY_PREVIOUS_HTTP_HANDLER)
-  set_mime_default_to_url_forwarder(
-      X_SCHEME_HANDLER_HTTPS, settings, HOST_SETTING_KEY_PREVIOUS_HTTPS_HANDLER)
-  set_mime_default_to_url_forwarder(
-      X_SCHEME_HANDLER_MAILTO, settings,
-      HOST_SETTING_KEY_PREVIOUS_MAILTO_HANDLER)
+  for desktop_env, setting_key in desktop_envs_and_setting_keys.items():
+    set_default_browser_to_url_forwarder(desktop_env, settings, setting_key)
+
+  # For previous default browsers that have been set to the XFCE4 web browser,
+  # replace them with the actual previous default browser configured for XFCE4
+  # so that the URL forwarder doesn't launch itself recursively in case of local
+  # fallback.
+  for desktop_env, setting_key in desktop_envs_and_setting_keys.items():
+    if (setting_key in settings and
+        settings[setting_key] == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
+      if 'XFCE' not in desktop_envs_and_setting_keys:
+        print('Default browser for', desktop_env, 'is set to',
+              XFCE4_WEB_BROWSER_DESKTOP_ENTRY, 'but XFCE is not found',
+              file=sys.stderr)
+        break
+      settings[setting_key] = settings[desktop_envs_and_setting_keys['XFCE']]
+
   save_host_settings_file(settings)
 
   # There are also x-www-browser and gnome-www-browser in the Debian Alternative
@@ -210,20 +213,15 @@ def setup() -> None:
   # back to the parent process anyway, so we don't change it here.
 
 
-def restore_entry(
-    entry_name: str,
-    entry_getter: Callable[[str], str],
-    entry_setter: Callable[[str, str], None],
+def restore_default_browser(
+    desktop_env: str,
     backup_dict: dict[str, str],
     backup_key: str) -> None:
-  """Restores an XDG entry back to the previous configuration.
+  """Restores XDG default-web-browser to backup_dict[backup_key] on the given
+  desktop environment.
 
   Args:
-    entry_name: The name of the XDG entry.
-    entry_getter: Called with |entry_name| to get back the current configured
-      XDG entry.
-    entry_setter: Called with |entry_name| and the new desktop entry value to
-      set an XDG entry.
+    desktop_env: The desktop environment to be configured.
     backup_dict: The dictionary where the previous configuration can be found.
     backup_key: The dictionary key to find the previous configuration.
   """
@@ -232,64 +230,60 @@ def restore_entry(
     print("No setting to restore from", backup_key, file=sys.stderr)
     return
   previous_setting = backup_dict[backup_key]
-  if previous_setting == URL_FORWARDER_DESKTOP_ENTRY:
-    print('Setting to restore from', backup_key, 'is',
-          URL_FORWARDER_DESKTOP_ENTRY, '. Ignored.', file=sys.stderr)
+  if (previous_setting == URL_FORWARDER_DESKTOP_ENTRY or
+      previous_setting == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
+    print('Setting to restore from', backup_key, 'is', previous_setting,
+          '. Ignored.', file=sys.stderr)
     return
-  current_entry = entry_getter(entry_name)
+  current_entry = get_default_browser(desktop_env)
+  if current_entry == XFCE4_WEB_BROWSER_DESKTOP_ENTRY:
+    print('Default browser for', desktop_env, 'is',
+          XFCE4_WEB_BROWSER_DESKTOP_ENTRY, '. Ignored.', file=sys.stderr)
+    return
   if current_entry != URL_FORWARDER_DESKTOP_ENTRY:
-    print(entry_name, 'is no longer', URL_FORWARDER_DESKTOP_ENTRY,
+    print('Default browser for', desktop_env, 'is no longer',
+          URL_FORWARDER_DESKTOP_ENTRY,
           '. Previously stored setting will not be restored.', file=sys.stderr)
     return
-  entry_setter(entry_name, previous_setting)
+  set_default_browser(desktop_env, previous_setting)
+  print('Default browser for', desktop_env, 'has been successfully restored to',
+        previous_setting)
 
 
-def restore_default_browser(backup_dict: dict[str, str],
-                            backup_key: str) -> None:
-  """Restores XDG default-web-browser to backup_dict[backup_key]."""
-
-  restore_entry(XDG_SETTING_DEFAULT_WEB_BROWSER, get_default_browser,
-                set_default_browser, backup_dict, backup_key)
-
-
-def restore_mime_default(
-    mime: str, backup_dict: dict[str, str], backup_key: str) -> None:
-  """Restores an XDG mime default to backup_dict[backup_key]."""
-
-  restore_entry(mime, get_mime_default, set_mime_default, backup_dict,
-                backup_key)
-
-
-def restore() -> None:
+def restore_previous_settings() -> None:
   settings = load_host_settings_file()
-  restore_default_browser(
-      settings, HOST_SETTING_KEY_PREVIOUS_DEFAULT_WEB_BROWSER)
-  restore_mime_default(
-      X_SCHEME_HANDLER_HTTP, settings, HOST_SETTING_KEY_PREVIOUS_HTTP_HANDLER)
-  restore_mime_default(
-      X_SCHEME_HANDLER_HTTPS, settings, HOST_SETTING_KEY_PREVIOUS_HTTPS_HANDLER)
-  restore_mime_default(
-      X_SCHEME_HANDLER_MAILTO, settings,
-      HOST_SETTING_KEY_PREVIOUS_MAILTO_HANDLER)
+
+  for desktop_env, setting_key in (
+      get_supported_desktop_envs_and_settings_key().items()):
+    restore_default_browser(desktop_env, settings, setting_key)
+
+  # TODO(yuweih): Remove. The desktop entry file will be removed during package
+  # removal.
   remove_url_forwarder_desktop_entry()
 
 
-def check_entry_is_url_forwarder(
-    entry_name: str, entry_getter: Callable[[str], str]) -> None:
-  """Checks if an XDG entry is set to the remote URL forwarder. Exists with 1 if
-  it's not the case."""
+def check_default_browser_is_url_forwarder(desktop_env: str) -> None:
+  """Checks if the default browser is set to the remote URL forwarder on the
+  given desktop environment. Exits with 1 if it's not the case."""
 
-  if entry_getter(entry_name) != URL_FORWARDER_DESKTOP_ENTRY:
-    print(entry_name, 'is not', URL_FORWARDER_DESKTOP_ENTRY)
+  if (desktop_env != 'XFCE' and
+      get_default_browser(desktop_env) == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
+    print('Default browser for', desktop_env, 'is',
+          XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
+          '. Checking default browser for XFCE instead...')
+    check_default_browser_is_url_forwarder('XFCE')
+    return
+  if get_default_browser(desktop_env) != URL_FORWARDER_DESKTOP_ENTRY:
+    print('Default browser for', desktop_env, 'is not',
+          URL_FORWARDER_DESKTOP_ENTRY)
     sys.exit(1)
 
 
-def check_setup() -> None:
-  check_entry_is_url_forwarder(XDG_SETTING_DEFAULT_WEB_BROWSER,
-                               get_default_browser)
-  check_entry_is_url_forwarder(X_SCHEME_HANDLER_HTTP, get_mime_default)
-  check_entry_is_url_forwarder(X_SCHEME_HANDLER_HTTPS, get_mime_default)
-  check_entry_is_url_forwarder(X_SCHEME_HANDLER_MAILTO, get_mime_default)
+def check_url_forwarder_setup() -> None:
+  for desktop_env in get_supported_desktop_envs_and_settings_key().keys():
+    check_default_browser_is_url_forwarder(desktop_env)
+
+  print('Chrome Remote Desktop URL forwarder is properly set up.')
   sys.exit(0)
 
 
@@ -312,11 +306,11 @@ def main() -> None:
                       'up, or 1 otherwise.')
   options = parser.parse_args()
   if options.setup:
-    setup()
+    setup_url_forwarder()
   elif options.restore:
-    restore()
+    restore_previous_settings()
   elif options.check_setup:
-    check_setup()
+    check_url_forwarder_setup()
   else:
     parser.print_usage()
 

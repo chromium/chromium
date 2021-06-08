@@ -25,23 +25,9 @@ namespace {
 constexpr char kChromeRemoteDesktopSessionEnvVar[] =
     "CHROME_REMOTE_DESKTOP_SESSION";
 
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(5);
+constexpr char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
 
-void OpenOnFallbackBrowserInternal(const GURL& url = GURL()) {
-  std::string previous_default_browser =
-      HostSettings::GetInstance()->GetString(kLinuxPreviousDefaultWebBrowser);
-  if (previous_default_browser.empty()) {
-    LOG(ERROR) << "The previous default web browser is unknown.";
-    return;
-  }
-  // gtk-launch DESKTOP_ENTRY [URL...]
-  base::CommandLine gtk_launch_command(
-      {"gtk-launch", previous_default_browser});
-  if (!url.is_empty()) {
-    gtk_launch_command.AppendArg(url.spec());
-  }
-  base::LaunchProcess(gtk_launch_command, base::LaunchOptions());
-}
+constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(5);
 
 }  // namespace
 
@@ -131,6 +117,36 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
 void RemoteOpenUrlClient::OnRequestTimeout() {
   LOG(ERROR) << "Timed out waiting for OpenUrl response.";
   OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
+}
+
+void RemoteOpenUrlClient::OpenOnFallbackBrowserInternal(const GURL& url) {
+  std::string current_desktop;
+  environment_->GetVar(kXdgCurrentDesktopEnvVar, &current_desktop);
+
+  std::string previous_default_browser;
+  if (current_desktop.find("Cinnamon") != std::string::npos) {
+    previous_default_browser = HostSettings::GetInstance()->GetString(
+        kLinuxPreviousDefaultWebBrowserCinnamon);
+  } else if (current_desktop.find("XFCE") != std::string::npos) {
+    previous_default_browser = HostSettings::GetInstance()->GetString(
+        kLinuxPreviousDefaultWebBrowserXfce);
+  } else {
+    LOG(WARNING) << "Unknown desktop environment. X-Generic will be used.";
+    previous_default_browser = HostSettings::GetInstance()->GetString(
+        kLinuxPreviousDefaultWebBrowserGeneric);
+  }
+
+  if (previous_default_browser.empty()) {
+    LOG(ERROR) << "The previous default web browser is unknown.";
+    return;
+  }
+  // gtk-launch DESKTOP_ENTRY [URL...]
+  base::CommandLine gtk_launch_command(
+      {"gtk-launch", previous_default_browser});
+  if (!url.is_empty()) {
+    gtk_launch_command.AppendArg(url.spec());
+  }
+  base::LaunchProcess(gtk_launch_command, base::LaunchOptions());
 }
 
 }  // namespace remoting

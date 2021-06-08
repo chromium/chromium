@@ -12,7 +12,7 @@ Homepage: https://chrome.google.com/remotedesktop
 
 Package: chrome-remote-desktop
 Architecture: any
-Depends: adduser, xvfb, policykit-1, xbase-clients, psmisc, python3 (>= 3.3), python3-psutil, ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
+Depends: adduser, xvfb, policykit-1, xbase-clients, psmisc, python3 (>= 3.5), python3-psutil, ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
 Suggests: google-chrome-stable | google-chrome-beta | google-chrome-unstable
 Description: Chrome Remote Desktop Beta
  Chrome Remote Desktop allows you to securely access your computer over the
