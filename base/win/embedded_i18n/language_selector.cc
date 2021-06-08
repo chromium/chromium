@@ -268,7 +268,7 @@ void SelectLanguageMatchingCandidate(
   DCHECK(matched_candidate);
   DCHECK(selected_language);
   DCHECK(!languages_to_offset.empty());
-  DCHECK_EQ(size_t{*selected_offset}, languages_to_offset.size());
+  DCHECK_EQ(static_cast<size_t>(*selected_offset), languages_to_offset.size());
   DCHECK(matched_candidate->empty());
   DCHECK(selected_language->empty());
   // Note: While DCHECK_IS_ON() seems redundant here, this is required to avoid

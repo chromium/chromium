@@ -261,7 +261,7 @@ TEST(JSONValueSerializerTest, Roundtrip) {
 TEST(JSONValueSerializerTest, StringEscape) {
   std::u16string all_chars;
   for (int i = 1; i < 256; ++i) {
-    all_chars += char16_t{i};
+    all_chars += static_cast<char16_t>(i);
   }
   // Generated in in Firefox using the following js (with an extra backslash for
   // double quote):

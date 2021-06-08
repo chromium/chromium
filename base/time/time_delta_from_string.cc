@@ -149,7 +149,9 @@ absl::optional<TimeDelta> TimeDeltaFromString(StringPiece duration_string) {
     if (number.int_part != 0)
       delta += sign * number.int_part * unit;
     if (number.frac_part != 0)
-      delta += (double{sign} * number.frac_part / number.frac_scale) * unit;
+      delta +=
+          (static_cast<double>(sign) * number.frac_part / number.frac_scale) *
+          unit;
   }
   return delta;
 }

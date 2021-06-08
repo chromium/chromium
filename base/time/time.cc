@@ -63,7 +63,7 @@ int TimeDelta::InDaysFloored() const {
 
 double TimeDelta::InMillisecondsF() const {
   if (!is_inf())
-    return double{delta_} / Time::kMicrosecondsPerMillisecond;
+    return static_cast<double>(delta_) / Time::kMicrosecondsPerMillisecond;
   return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
                       : std::numeric_limits<double>::infinity();
 }
@@ -87,7 +87,7 @@ int64_t TimeDelta::InMillisecondsRoundedUp() const {
 
 double TimeDelta::InMicrosecondsF() const {
   if (!is_inf())
-    return double{delta_};
+    return static_cast<double>(delta_);
   return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
                       : std::numeric_limits<double>::infinity();
 }
@@ -188,7 +188,8 @@ double Time::ToDoubleT() const {
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 // static
 Time Time::FromTimeSpec(const timespec& ts) {
-  return FromDoubleT(ts.tv_sec + double{ts.tv_nsec} / kNanosecondsPerSecond);
+  return FromDoubleT(ts.tv_sec +
+                     static_cast<double>(ts.tv_nsec) / kNanosecondsPerSecond);
 }
 #endif
 
