@@ -199,6 +199,12 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
+  // Software adapters are not currently supported.
+  if (options->forceSoftware() == true) {
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    return promise;
+  }
+
   // For now we choose kHighPerformance by default.
   gpu::webgpu::PowerPreference power_preference =
       gpu::webgpu::PowerPreference::kHighPerformance;
