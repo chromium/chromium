@@ -47,6 +47,17 @@ namespace blink {
 namespace {
 constexpr double kScrollVelocityZeroingTimeout = 0.10f;
 constexpr double kRubberbandMinimumRequiredDeltaBeforeStretch = 10;
+
+#if defined(OS_ANDROID)
+// On android, overscroll should not occur if the scroller is not scrollable in
+// the overscrolled direction.
+constexpr bool kOverscrollNonScrollableDirection = false;
+#else   // defined(OS_ANDROID)
+// On other platforms, overscroll can occur even if the scroller is not
+// scrollable.
+constexpr bool kOverscrollNonScrollableDirection = true;
+#endif  // defined(OS_ANDROID)
+
 }  // namespace
 
 ElasticOverscrollController::ElasticOverscrollController(
@@ -186,6 +197,15 @@ void ElasticOverscrollController::Overscroll(
     adjusted_overscroll_delta.set_x(0);
   else
     adjusted_overscroll_delta.set_y(0);
+
+  if (!kOverscrollNonScrollableDirection) {
+    // Check whether each direction is scrollable and 0 out the overscroll if it
+    // is not.
+    if (!CanScrollHorizontally())
+      adjusted_overscroll_delta.set_x(0);
+    if (!CanScrollVertically())
+      adjusted_overscroll_delta.set_y(0);
+  }
 
   // Don't allow overscrolling in a direction where scrolling is possible.
   if (!PinnedHorizontally(adjusted_overscroll_delta.x()))

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_exponential.h"
 
+#include "build/build_config.h"
 #include "cc/input/input_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -155,8 +156,8 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
 // Verify that stretching  occurs in one axis at a time, and that it
 // is biased to the Y axis.
 TEST_F(ElasticOverscrollControllerExponentialTest, Axis) {
-  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(0, 0),
-                                            gfx::ScrollOffset(0, 0));
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(10, 10),
+                                            gfx::ScrollOffset(10, 10));
 
   // If we push equally in the X and Y directions, we should see a stretch
   // in the Y direction.
@@ -174,6 +175,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest, Axis) {
   // If we push more in the X direction than the Y direction, we should see a
   // stretch  in the X direction. This decision should be based on the actual
   // overscroll delta.
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(0, 10),
+                                            gfx::ScrollOffset(10, 10));
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(NonMomentumPhase, Vector2dF(-25, 10),
                           Vector2dF(-25, 10));
@@ -409,8 +412,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
 // Verify that OverscrollBehaviorTypeNone disables the stretching on the
 // specified axis.
 TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
-  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(0, 0),
-                                            gfx::ScrollOffset(0, 0));
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(10, 10),
+                                            gfx::ScrollOffset(10, 10));
 
   // If we set OverscrollBehaviorTypeNone on x, we should not see a stretch
   // in the X direction.
@@ -469,6 +472,43 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   EXPECT_EQ(0.f, helper_.StretchAmount().y());
   helper_.SetStretchAmount(Vector2dF());
   EXPECT_EQ(6, helper_.set_stretch_amount_count());
+  SendGestureScrollEnd();
+  EXPECT_EQ(0, helper_.request_begin_frame_count());
+}
+
+// Test overscroll in non-scrollable direction.
+TEST_F(ElasticOverscrollControllerExponentialTest,
+       OverscrollBehaviorNonScrollable) {
+  int expected_stretch_count = 0;
+  // Set up a scroller which is vertically scrollable scrolled to the bottom.
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(0, 10),
+                                            gfx::ScrollOffset(0, 10));
+
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, Vector2dF(25, 0), Vector2dF(25, 0));
+#if defined(OS_ANDROID)
+  // Scrolling in x axis which has no scroll range should produce no stretch
+  // on android.
+  EXPECT_EQ(expected_stretch_count, helper_.set_stretch_amount_count());
+  EXPECT_EQ(0.f, helper_.StretchAmount().x());
+#else
+  EXPECT_EQ(++expected_stretch_count, helper_.set_stretch_amount_count());
+  EXPECT_LT(0.f, helper_.StretchAmount().x());
+#endif
+  EXPECT_EQ(0.f, helper_.StretchAmount().y());
+  helper_.SetStretchAmount(Vector2dF());
+  SendGestureScrollEnd();
+  EXPECT_EQ(0, helper_.request_begin_frame_count());
+  EXPECT_EQ(++expected_stretch_count, helper_.set_stretch_amount_count());
+
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, Vector2dF(0, 25), Vector2dF(0, 25));
+  // Scrolling in y axis which has scroll range should produce overscroll
+  // on all platforms.
+  EXPECT_EQ(++expected_stretch_count, helper_.set_stretch_amount_count());
+  EXPECT_EQ(0.f, helper_.StretchAmount().x());
+  EXPECT_LT(0.f, helper_.StretchAmount().y());
+  helper_.SetStretchAmount(Vector2dF());
   SendGestureScrollEnd();
   EXPECT_EQ(0, helper_.request_begin_frame_count());
 }
