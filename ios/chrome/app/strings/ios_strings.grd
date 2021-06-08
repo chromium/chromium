@@ -1169,10 +1169,10 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Clear
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON" desc="The title of the Accept button of the Sign in to a managed account dialog. [40em]">
-        Accept and sign in
+        Accept and Sign in
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_TITLE" desc="The title of the Sign in to a managed account dialog. [40em]">
-        Sign in with managed account
+        Sign in With Managed Account
       </message>
       <message name="IDS_IOS_MANAGED_SWITCH_ACCEPT_BUTTON" desc="The title of the Accept button of the Switch from a managed account dialog. [40em]">
         Accept and switch accounts
