@@ -49,11 +49,6 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 - (void)didUpdateControllerViewFrame {
   self.backgroundView.frame = self.view.bounds;
-  // The dimmer view should never be under the bottom sheet view, since the
-  // background of the botther sheet is transparent.
-  CGRect dimmerViewFrame = self.backgroundDimmerView.superview.bounds;
-  dimmerViewFrame.size.height = self.view.frame.origin.y;
-  self.backgroundDimmerView.frame = dimmerViewFrame;
 }
 
 #pragma mark - UIViewController

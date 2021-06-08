@@ -29,6 +29,8 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
     BottomSheetNavigationController* navigationController;
 // YES if the presented view is presented.
 @property(nonatomic, assign) BOOL presented;
+// View to dim the UI in the background of the bottom sheet.
+@property(nonatomic, strong) UIView* backgroundDimmerView;
 
 @end
 
@@ -59,7 +61,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 - (void)presentationTransitionWillBegin {
   [super presentationTransitionWillBegin];
   DCHECK(self.navigationController == self.presentedViewController);
-  DCHECK(!self.navigationController.backgroundDimmerView);
+  DCHECK(!self.backgroundDimmerView);
   DCHECK(!self.presented);
   self.presented = YES;
 
@@ -67,11 +69,11 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   self.containerView.accessibilityViewIsModal = YES;
 
   // Add dimmer effect.
-  self.navigationController.backgroundDimmerView = [[UIView alloc] init];
-  self.navigationController.backgroundDimmerView.backgroundColor =
-      [UIColor clearColor];
-  [self.containerView
-      addSubview:self.navigationController.backgroundDimmerView];
+  self.backgroundDimmerView = [[UIView alloc] init];
+  self.backgroundDimmerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.backgroundDimmerView.backgroundColor = [UIColor clearColor];
+  [self.containerView addSubview:self.backgroundDimmerView];
+  AddSameConstraints(self.containerView, self.backgroundDimmerView);
 
   // Add presented view controller.
   [self.containerView addSubview:self.presentedViewController.view];
@@ -89,7 +91,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
         [self.navigationController didUpdateControllerViewFrame];
-        weakSelf.navigationController.backgroundDimmerView.backgroundColor =
+        weakSelf.backgroundDimmerView.backgroundColor =
             [UIColor colorWithWhite:0 alpha:kBackgroundDimmerViewAlpha];
       }
                       completion:nil];
@@ -97,7 +99,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
 - (void)dismissalTransitionWillBegin {
   [super dismissalTransitionWillBegin];
-  DCHECK(self.navigationController.backgroundDimmerView);
+  DCHECK(self.backgroundDimmerView);
   DCHECK(self.presented);
   self.presented = NO;
   // Remove dimmer color and update the views.
@@ -105,8 +107,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   [self.presentedViewController.transitionCoordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        weakSelf.navigationController.backgroundDimmerView.backgroundColor =
-            UIColor.clearColor;
+        weakSelf.backgroundDimmerView.backgroundColor = UIColor.clearColor;
         [self.navigationController didUpdateControllerViewFrame];
       }
                       completion:nil];

@@ -17,17 +17,11 @@
 // ChildBottomSheetViewController protocol.
 @interface BottomSheetNavigationController : UINavigationController
 
-// View used to dim the background around the bottom sheet view. This is a
-// subview of the bottom sheet view superview. BottomSheetNavigationController
-// needs it to adjust when the bottom sheet view is moved.
-@property(nonatomic, strong) UIView* backgroundDimmerView;
-
 // Returns the desired size related to the current view controller shown by
 // |BottomSheetNavigationController|.
 - (CGSize)layoutFittingSize;
 
-// Updates backgroundDimmerView frame and other internal views according to the
-// bottom sheet view position.
+// Updates internal views according to the bottom sheet view position.
 - (void)didUpdateControllerViewFrame;
 
 @end
