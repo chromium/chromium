@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -111,7 +112,7 @@ const GURL OpenSiteSettingsForUrl(Browser* browser, const GURL& url) {
   // Get site settings button.
   views::View* site_settings_button = GetView(
       browser,
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
   ClickAndWaitForSettingsPageToOpen(site_settings_button);
 
   return browser->tab_strip_model()
@@ -201,7 +202,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::vector<PageInfoBubbleView::PageInfoBubbleViewID> expected_identifiers_;
+  std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewBrowserTest);
 };
@@ -314,10 +315,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 
   OpenPageInfoBubble(browser());
   views::View* change_password_button = GetView(
-      browser(), PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
+      browser(), PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   views::View* allowlist_password_reuse_button = GetView(
       browser(),
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(contents);
@@ -395,10 +396,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 
   OpenPageInfoBubble(browser());
   views::View* change_password_button = GetView(
-      browser(), PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
+      browser(), PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   views::View* allowlist_password_reuse_button = GetView(
       browser(),
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(contents);

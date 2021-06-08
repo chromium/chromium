@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_new_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -307,7 +308,7 @@ PageInfoBubbleView::PageInfoBubbleView(
             this),
         PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
         std::u16string(),
-        PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         tooltip, std::u16string()));
   }
 
@@ -410,8 +411,8 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 },
                 this),
             icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
-            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            std::u16string())
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+            tooltip, std::u16string())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -596,8 +597,9 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
                 },
                 this),
             icon, IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT, secondary_text,
-            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
-            subtitle_text)
+            PageInfoViewFactory::
+                VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER,
+            tooltip, subtitle_text)
             .release());
   }
 
@@ -669,7 +671,7 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
           },
           this),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT));
-  exit_button->SetID(VIEW_ID_PAGE_INFO_BUTTON_END_VR);
+  exit_button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_END_VR);
   exit_button->SetProminent(true);
   // Set views::kInternalPaddingKey for flex layout to account for internal
   // button padding when calculating margins.
@@ -771,13 +773,13 @@ void PageInfoBubbleView::HandleMoreInfoRequest(views::View* source) {
 
 void PageInfoBubbleView::HandleMoreInfoRequestAsync(int view_id) {
   switch (view_id) {
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
+    case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
       presenter_->OpenSiteSettingsView();
       break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
+    case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
       presenter_->OpenCookiesDialog();
       break;
-    case PageInfoBubbleView::
+    case PageInfoViewFactory::
         VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER:
       presenter_->OpenCertificateDialog(certificate_.get());
       break;

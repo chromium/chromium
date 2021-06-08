@@ -73,20 +73,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   PageInfoBubbleView& operator=(const PageInfoBubbleView&) = delete;
   ~PageInfoBubbleView() override;
 
-  enum PageInfoBubbleViewID {
-    VIEW_ID_NONE = 0,
-    VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD,
-    VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE,
-    VIEW_ID_PAGE_INFO_LABEL_EV_CERTIFICATE_DETAILS,
-    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER,
-    VIEW_ID_PAGE_INFO_BUTTON_END_VR,
-    VIEW_ID_PAGE_INFO_HOVER_BUTTON_VR_PRESENTATION,
-    VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE,
-    VIEW_ID_PAGE_INFO_BUTTON_IGNORE_WARNING,
-  };
-
   // Creates the appropriate page info bubble for the given |url|.
   // |anchor_view| will be used to place the bubble.  If |anchor_view| is null,
   // |anchor_rect| will be used instead.  |parent_window| will become the

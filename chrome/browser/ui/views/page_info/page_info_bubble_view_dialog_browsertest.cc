@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -263,7 +264,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  std::vector<PageInfoBubbleView::PageInfoBubbleViewID> expected_identifiers_;
+  std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewDialogBrowserTest);
 };

@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout.h"
@@ -106,8 +106,6 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     if (certificate_button_) {
       RemoveChildViewT(certificate_button_);
     }
-    // TODO(olesiamarukhno): Add shared enum for views ID, instead of using one
-    // declared in `PageInfoMainView`.
     certificate_button_ = AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(
@@ -117,7 +115,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                 },
                 this),
             icon, title_id, std::u16string(),
-            PageInfoMainView::
+            PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER,
             tooltip, subtitle_text, PageInfoUI::GetLaunchIcon())
             .release());

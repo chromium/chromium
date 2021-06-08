@@ -89,7 +89,7 @@ PageInfoMainView::PageInfoMainView(
             this),
         PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
         std::u16string(),
-        PageInfoMainView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         tooltip, std::u16string(), PageInfoUI::GetLaunchIcon()));
   }
 
@@ -132,8 +132,8 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 },
                 this),
             icon, IDS_PAGE_INFO_COOKIES, num_cookies_text,
-            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            std::u16string(), PageInfoUI::GetLaunchIcon())
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+            tooltip, std::u16string(), PageInfoUI::GetLaunchIcon())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -205,7 +205,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
             PageInfoUI::GetConnectionSecureIcon(), 0, std::u16string(),
-            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
+            PageInfoViewFactory::
+                VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
             std::u16string(), std::u16string(),
             PageInfoUI::GetOpenSubpageIcon())
             .release());
@@ -264,7 +265,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
           },
           this),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT));
-  exit_button->SetID(VIEW_ID_PAGE_INFO_BUTTON_END_VR);
+  exit_button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_END_VR);
   exit_button->SetProminent(true);
   // Set views::kInternalPaddingKey for flex layout to account for internal
   // button padding when calculating margins.
@@ -321,10 +322,10 @@ void PageInfoMainView::HandleMoreInfoRequest(views::View* source) {
 
 void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   switch (view_id) {
-    case PageInfoMainView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
+    case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
       presenter_->OpenSiteSettingsView();
       break;
-    case PageInfoMainView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
+    case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
       presenter_->OpenCookiesDialog();
       break;
     default:
