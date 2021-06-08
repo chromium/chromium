@@ -4,6 +4,8 @@
 
 #include "chrome/updater/crash_reporter.h"
 
+#include <algorithm>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -25,6 +27,7 @@
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 
+namespace updater {
 namespace {
 
 // True if the current process is connected to a crash handler process.
@@ -35,26 +38,34 @@ crashpad::CrashpadClient* GetCrashpadClient() {
   return crashpad_client;
 }
 
-void RemoveSwitchIfExisting(const char* switch_to_remove,
-                            std::vector<base::CommandLine::StringType>* argv) {
-  const std::string pattern = base::StrCat({"--", switch_to_remove});
-  auto matches_switch =
-      [&pattern](const base::CommandLine::StringType& argument) -> bool {
+// Returns the command line arguments to start the crash handler process with.
+std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(kCrashHandlerSwitch);
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
+  if (updater_scope == UpdaterScope::kSystem) {
+    command_line.AppendSwitch(kSystemSwitch);
+  }
+
+  // The first element in the command line arguments is the program name,
+  // which must be skipped.
 #if defined(OS_WIN)
-    return base::StartsWith(argument, base::UTF8ToWide(pattern),
-                            base::CompareCase::SENSITIVE);
+  std::vector<std::string> args;
+  std::transform(++command_line.argv().begin(), command_line.argv().end(),
+                 std::back_inserter(args),
+                 [](const auto& arg) { return base::WideToUTF8(arg); });
+
+  return args;
 #else
-    return base::StartsWith(argument, pattern, base::CompareCase::SENSITIVE);
-#endif  // OS_WIN
-  };
-  base::EraseIf(*argv, matches_switch);
+  return {++command_line.argv().begin(), command_line.argv().end()};
+#endif
 }
 
 }  // namespace
 
-namespace updater {
-
-void StartCrashReporter(const std::string& version) {
+void StartCrashReporter(UpdaterScope updater_scope,
+                        const std::string& version) {
   static bool started = false;
   DCHECK(!started);
   started = true;
@@ -63,7 +74,7 @@ void StartCrashReporter(const std::string& version) {
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedDirectory(GetUpdaterScope());
+      GetVersionedDirectory(updater_scope);
   if (!database_path) {
     LOG(DFATAL) << "Failed to get the database path.";
     return;
@@ -73,14 +84,12 @@ void StartCrashReporter(const std::string& version) {
   annotations["ver"] = version;
   annotations["prod"] = PRODUCT_FULLNAME_STRING;
 
-  std::vector<std::string> arguments;
-  arguments.push_back(base::StrCat({"--", kCrashHandlerSwitch}));
-
   // TODO(crbug.com/1163583): use the production front end instead of staging.
   crashpad::CrashpadClient* client = GetCrashpadClient();
   if (!client->StartHandler(handler_path, *database_path,
                             /*metrics_dir=*/base::FilePath(),
-                            CRASH_STAGING_UPLOAD_URL, annotations, arguments,
+                            CRASH_STAGING_UPLOAD_URL, annotations,
+                            MakeCrashHandlerArgs(updater_scope),
                             /*restartable=*/true,
                             /*asynchronous_start=*/false)) {
     LOG(DFATAL) << "Failed to start handler.";
@@ -99,11 +108,14 @@ int CrashReporterMain() {
   //   https://bugs.chromium.org/p/crashpad/issues/detail?id=23
   command_line->AppendSwitch(kNoRateLimitSwitch);
 
-  std::vector<base::CommandLine::StringType> argv = command_line->argv();
-
   // Because of https://bugs.chromium.org/p/crashpad/issues/detail?id=82,
   // Crashpad fails on the presence of flags it doesn't handle.
-  RemoveSwitchIfExisting(kCrashHandlerSwitch, &argv);
+  command_line->RemoveSwitch(kCrashHandlerSwitch);
+  command_line->RemoveSwitch(kSystemSwitch);
+  command_line->RemoveSwitch(kEnableLoggingSwitch);
+  command_line->RemoveSwitch(kLoggingModuleSwitch);
+
+  const std::vector<base::CommandLine::StringType> argv = command_line->argv();
 
   // |storage| must be declared before |argv_as_utf8|, to ensure it outlives
   // |argv_as_utf8|, which will hold pointers into |storage|.

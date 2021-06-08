@@ -122,8 +122,8 @@ void AppServer::MaybeUninstall() {
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);
     if (updater_scope() == UpdaterScope::kSystem)
       command_line.AppendSwitch(kSystemSwitch);
-    command_line.AppendSwitch("--enable-logging");
-    command_line.AppendSwitchASCII("--vmodule", "*/updater/*=2");
+    command_line.AppendSwitch(kEnableLoggingSwitch);
+    command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
     DVLOG(2) << "Launching uninstall command: "
              << command_line.GetCommandLineString();
 

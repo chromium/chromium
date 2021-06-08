@@ -186,8 +186,8 @@ void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
 
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
-  command_line.AppendSwitch("enable-logging");
-  command_line.AppendSwitchASCII("vmodule", "*/updater/*=2");
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
   if (scope == UpdaterScope::kSystem) {
     command_line.AppendSwitch(kSystemSwitch);
     command_line = MakeElevated(command_line);

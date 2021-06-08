@@ -82,7 +82,7 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
     VLOG(1) << "Crash reporting initialized.";
   else
     VLOG(1) << "Crash reporting is not available.";
-  StartCrashReporter(kUpdaterVersion);
+  StartCrashReporter(updater_scope, kUpdaterVersion);
 }
 
 }  // namespace

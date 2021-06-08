@@ -11,9 +11,11 @@
 
 namespace updater {
 
+enum class UpdaterScope;
+
 // Starts a new instance of this executable running as the crash reporter
 // process.
-void StartCrashReporter(const std::string& version);
+void StartCrashReporter(UpdaterScope updater_scope, const std::string& version);
 
 // Runs the crash reporter message loop within the current process. On return,
 // the current process should exit.

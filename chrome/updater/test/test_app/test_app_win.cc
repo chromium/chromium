@@ -26,8 +26,8 @@ int InstallUpdater() {
   command_line.AppendSwitch(kInstallSwitch);
   if (GetUpdaterScope() == UpdaterScope::kSystem)
     command_line.AppendSwitch(kSystemSwitch);
-  command_line.AppendSwitch("enable-logging");
-  command_line.AppendSwitchASCII("--vmodule", "*/updater/*=2");
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
 
   VLOG(0) << " Run command: " << command_line.GetCommandLineString();
 

@@ -70,7 +70,7 @@ int InstallUpdater() {
     command.AppendSwitch(kSystemSwitch);
     command = MakeElevated(command);
   }
-  command.AppendSwitchASCII("--vmodule", "*/updater/*=2");
+  command.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
 
   std::string output;
   int exit_code = 0;
