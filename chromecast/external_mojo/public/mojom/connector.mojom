@@ -57,13 +57,3 @@ interface ExternalConnector {
   // Query services that are available from this connector.
   QueryServiceList() => (array<ExternalServiceInfo> services);
 };
-
-// Simple factory for clients to bind an ExternalConnector. This interface is
-// exposed via the Chromium service manager so clients in the Chromium process
-// tree can easily use the External Service Broker. This is a temporary
-// interface which will be deleted once we are no longer using the Service
-// Manager.
-interface ConnectorFactory {
-  // Binds a request for an ExternalConnector.
-  BindConnector(pending_receiver<ExternalConnector> receiver);
-};

@@ -35,8 +35,7 @@ class ExternalMojoBroker;
 // A Mojo service (intended to run within cast_shell or some other Chromium
 // ServiceManager environment) that allows Mojo services built into external
 // processes to interoperate with the Mojo services within cast_shell.
-class BrokerService : public ::service_manager::Service,
-                      public mojom::ConnectorFactory {
+class BrokerService : public ::service_manager::Service {
  public:
   static BrokerService* GetInstance();
   static void ServiceRequestHandler(
@@ -64,10 +63,6 @@ class BrokerService : public ::service_manager::Service,
                  const std::string& interface_name,
                  mojo::ScopedMessagePipeHandle interface_pipe) override;
 
-  // mojom::ConnectorFactory implementation:
-  void BindConnector(
-      mojo::PendingReceiver<mojom::ExternalConnector> receiver) override;
-
   // Dispenses a connector for use in a remote process. The remote process must
   // already belong to the same process network as the BrokerService.
   mojo::PendingRemote<mojom::ExternalConnector> CreateConnector();
@@ -75,6 +70,8 @@ class BrokerService : public ::service_manager::Service,
  private:
   void BindServiceRequest(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+
+  void BindConnector(mojo::PendingReceiver<mojom::ExternalConnector> receiver);
 
   service_manager::ServiceReceiver service_receiver_{this};
 

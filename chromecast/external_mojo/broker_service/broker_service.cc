@@ -68,12 +68,13 @@ BrokerService::BrokerService(service_manager::Connector* connector) {
   io_thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  bundle_.AddInterface(this);
   std::vector<std::string> external_services_to_proxy;
   const service_manager::Manifest& manifest = GetManifest();
   for (const auto& sub_manifest : manifest.packaged_services) {
     external_services_to_proxy.push_back(sub_manifest.service_name);
   }
+  bundle_.AddBinder(base::BindRepeating(&BrokerService::BindConnector,
+                                        base::Unretained(this)));
   broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
                                                     GetBrokerPath());
   broker_.AsyncCall(&ExternalMojoBroker::InitializeChromium)
@@ -119,7 +120,7 @@ const service_manager::Manifest& BrokerService::GetManifest() {
           .ExposeCapability(
               "connector_factory",
               std::set<const char*>{
-                  "chromecast.external_mojo.mojom.ConnectorFactory",
+                  "chromecast.external_mojo.mojom.ExternalConnector",
               })
           .Build()
           .Amend(MakePackagedServices(GetExternalManifests()))};
