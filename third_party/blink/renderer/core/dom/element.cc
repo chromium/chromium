@@ -3396,6 +3396,7 @@ void Element::SetNeedsCompositingUpdate() {
   // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
   if (!layout_object->HasLayer())
     return;
+
   layout_object->Layer()->SetNeedsCompositingInputsUpdate();
 
   // Changes to RequiresAcceleratedCompositing change if the PaintLayer is
@@ -3407,6 +3408,11 @@ void Element::SetNeedsCompositingUpdate() {
   // reasons which affect paint properties.
   if (layout_object->CanHaveAdditionalCompositingReasons())
     layout_object->SetNeedsPaintPropertyUpdate();
+
+  // With CompositeAfterPaint, we need to repaint the layer because the foreign
+  // layer may have changed.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    layout_object->Layer()->SetNeedsRepaint();
 }
 
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {

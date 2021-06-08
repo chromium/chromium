@@ -16,9 +16,11 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::_;
@@ -33,10 +35,10 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD1(OnDisplayTypeChanged, void(DisplayType));
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
 };
-
 }  // namespace
 
-class HTMLVideoElementTest : public PageTestBase {
+class HTMLVideoElementTest : public PaintTestConfigurations,
+                             public RenderingTest {
  public:
   void SetUp() override {
     auto mock_media_player =
@@ -64,8 +66,9 @@ class HTMLVideoElementTest : public PageTestBase {
   // Owned by HTMLVideoElementFrameClient.
   HTMLVideoElementMockMediaPlayer* media_player_;
 };
+INSTANTIATE_PAINT_TEST_SUITE_P(HTMLVideoElementTest);
 
-TEST_F(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
+TEST_P(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
   scoped_refptr<cc::Layer> layer = cc::Layer::Create();
   SetFakeCcLayer(layer.get());
 
@@ -92,7 +95,7 @@ TEST_F(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
   SetFakeCcLayer(nullptr);
 }
 
-TEST_F(HTMLVideoElementTest, PictureInPictureInterstitial_Reattach) {
+TEST_P(HTMLVideoElementTest, PictureInPictureInterstitial_Reattach) {
   scoped_refptr<cc::Layer> layer = cc::Layer::Create();
   SetFakeCcLayer(layer.get());
 
@@ -117,7 +120,7 @@ TEST_F(HTMLVideoElementTest, PictureInPictureInterstitial_Reattach) {
   GetDocument().body()->removeChild(video());
 }
 
-TEST_F(HTMLVideoElementTest, EffectivelyFullscreen_DisplayType) {
+TEST_P(HTMLVideoElementTest, EffectivelyFullscreen_DisplayType) {
   video()->SetSrc("http://example.com/foo.mp4");
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
@@ -150,7 +153,7 @@ TEST_F(HTMLVideoElementTest, EffectivelyFullscreen_DisplayType) {
   }
 }
 
-TEST_F(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
+TEST_P(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
   video()->SetSrc("http://example.com/foo.mp4");
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
@@ -160,25 +163,43 @@ TEST_F(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
   ASSERT_TRUE(video()->GetLayoutObject()->HasLayer());
   auto* paint_layer =
       To<LayoutBoxModelObject>(video()->GetLayoutObject())->Layer();
-  EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
 
   // Change to another cc layer.
   auto layer2 = cc::Layer::Create();
   SetFakeCcLayer(layer2.get());
-  EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
 
   // Remove cc layer.
   SetFakeCcLayer(nullptr);
-  EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  else
+    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
 }
 
-TEST_F(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
+TEST_P(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
   video()->SetSrc("http://example.com/foo.mp4");
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
@@ -190,7 +211,7 @@ TEST_F(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
   EXPECT_TRUE(video()->HasAvailableVideoFrame());
 }
 
-TEST_F(HTMLVideoElementTest, AutoPIPExitPIPTest) {
+TEST_P(HTMLVideoElementTest, AutoPIPExitPIPTest) {
   video()->SetSrc("http://example.com/foo.mp4");
   test::RunPendingTasks();
 
@@ -207,7 +228,7 @@ TEST_F(HTMLVideoElementTest, AutoPIPExitPIPTest) {
 // Blink embedders (such as Webview) can set the default poster image for a
 // video using `blink::Settings`. In some cases we still need to distinguish
 // between a "real" poster image and the default poster image.
-TEST_F(HTMLVideoElementTest, DefaultPosterImage) {
+TEST_P(HTMLVideoElementTest, DefaultPosterImage) {
   String const kDefaultPosterImage = "http://www.example.com/foo.jpg";
 
   // Override the default poster image

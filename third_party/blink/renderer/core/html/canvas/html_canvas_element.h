@@ -381,8 +381,6 @@ class CORE_EXPORT HTMLCanvasElement final
       SourceImageStatus*,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha);
 
-  void OnContentsCcLayerChanged();
-
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
   IntSize size_;

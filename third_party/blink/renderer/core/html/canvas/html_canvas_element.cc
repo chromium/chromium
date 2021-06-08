@@ -310,7 +310,8 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     UseCounter::Count(doc, WebFeature::kNewCanvas2DAPI);
 
   if (ContentsCcLayer() != old_contents_cc_layer)
-    OnContentsCcLayerChanged();
+    SetNeedsCompositingUpdate();
+
   return result;
 }
 
@@ -1525,11 +1526,11 @@ void HTMLCanvasElement::OnWebLayerUpdated() {
 }
 
 void HTMLCanvasElement::RegisterContentsLayer(cc::Layer* layer) {
-  OnContentsCcLayerChanged();
+  SetNeedsCompositingUpdate();
 }
 
 void HTMLCanvasElement::UnregisterContentsLayer(cc::Layer* layer) {
-  OnContentsCcLayerChanged();
+  SetNeedsCompositingUpdate();
 }
 
 FontSelector* HTMLCanvasElement::GetFontSelector() {
@@ -1680,14 +1681,6 @@ cc::Layer* HTMLCanvasElement::ContentsCcLayer() const {
   if (context_ && context_->IsComposited())
     return context_->CcLayer();
   return nullptr;
-}
-
-void HTMLCanvasElement::OnContentsCcLayerChanged() {
-  // We need to repaint the layer because the foreign layer display item may
-  // appear, disappear or change.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      GetLayoutObject() && GetLayoutObject()->HasLayer())
-    GetLayoutBoxModelObject()->Layer()->SetNeedsRepaint();
 }
 
 RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
