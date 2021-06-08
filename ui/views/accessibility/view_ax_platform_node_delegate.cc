@@ -349,7 +349,8 @@ int ViewAXPlatformNodeDelegate::GetChildCount() const {
     }
   }
 
-  return view_child_count + int{child_widgets_result.child_widgets.size()};
+  return view_child_count +
+         static_cast<int>(child_widgets_result.child_widgets.size());
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(int index) {
@@ -418,7 +419,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(int index) {
     DCHECK_GE(index, 0);
   }
 
-  if (index < int{child_widgets_result.child_widgets.size()})
+  if (index < static_cast<int>(child_widgets_result.child_widgets.size()))
     return child_widgets[index]->GetRootView()->GetNativeViewAccessible();
 
   NOTREACHED() << "|index| should be less than the unignored child count.";
@@ -673,7 +674,7 @@ std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds() const {
 std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds(
     int col_index) const {
   std::vector<int32_t> columns = GetColHeaderNodeIds();
-  if (columns.size() <= size_t{col_index}) {
+  if (columns.size() <= static_cast<size_t>(col_index)) {
     return {};
   }
   return {columns[col_index]};

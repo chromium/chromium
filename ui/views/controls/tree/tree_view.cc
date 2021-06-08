@@ -526,9 +526,10 @@ void TreeView::TreeNodesAdded(TreeModel* model,
     std::unique_ptr<AXVirtualView> ax_view =
         CreateAndSetAccessibilityView(child.get());
     parent_node->Add(std::move(child), i);
-    DCHECK_LE(int{i}, parent_node->accessibility_view()->GetChildCount());
+    DCHECK_LE(static_cast<int>(i),
+              parent_node->accessibility_view()->GetChildCount());
     parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view),
-                                                      int{i});
+                                                      static_cast<int>(i));
   }
   if (IsExpanded(parent)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
@@ -953,7 +954,7 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
     // Per the ARIA Spec, aria-posinset and aria-setsize are 1-based
     // not 0-based.
     int pos_in_parent = node->parent()->GetIndexOf(node) + 1;
-    int sibling_size = int{node->parent()->children().size()};
+    int sibling_size = static_cast<int>(node->parent()->children().size());
     data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                           int32_t{pos_in_parent});
     data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,

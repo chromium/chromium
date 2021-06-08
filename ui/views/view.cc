@@ -278,7 +278,8 @@ void View::ReorderChildView(View* view, int index) {
   DCHECK(i != children_.end());
 
   // If |view| is already at the desired position, there's nothing to do.
-  const bool move_to_end = (index < 0) || (size_t{index} >= children_.size());
+  const bool move_to_end =
+      (index < 0) || (static_cast<size_t>(index) >= children_.size());
   const auto pos = move_to_end ? std::prev(children_.end())
                                : std::next(children_.begin(), index);
   if (i == pos)
@@ -2477,7 +2478,7 @@ void View::PaintDebugRects(const PaintInfo& parent_paint_info) {
 void View::AddChildViewAtImpl(View* view, int index) {
   CHECK_NE(view, this) << "You cannot add a view as its own child";
   DCHECK_GE(index, 0);
-  DCHECK_LE(size_t{index}, children_.size());
+  DCHECK_LE(static_cast<size_t>(index), children_.size());
 
   // TODO(https://crbug.com/942298): Should just DCHECK(!view->parent_);.
   View* parent = view->parent_;

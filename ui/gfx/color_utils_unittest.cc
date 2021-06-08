@@ -300,7 +300,7 @@ TEST(ColorUtils, BlendForMinContrast_MatchesNaiveImplementation) {
   SkAlpha alpha = SK_AlphaTRANSPARENT;
   SkColor color = default_foreground;
   for (int i = SK_AlphaTRANSPARENT; i <= SK_AlphaOPAQUE; ++i) {
-    alpha = SkAlpha{i};
+    alpha = static_cast<SkAlpha>(i);
     color = AlphaBlend(high_contrast_foreground, default_foreground, alpha);
     if (GetContrastRatio(color, background) >= kContrastRatio)
       break;

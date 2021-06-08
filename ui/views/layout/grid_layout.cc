@@ -106,7 +106,7 @@ class LayoutElement {
                        std::vector<std::unique_ptr<T>>* elements) {
     DCHECK_GE(start, 0);
     DCHECK_GT(length, 0);
-    DCHECK_LE(size_t{start + length}, elements->size());
+    DCHECK_LE(static_cast<size_t>(start + length), elements->size());
     return std::accumulate(
         elements->cbegin() + start, elements->cbegin() + start + length, 0,
         [](int size, const auto& elem) { return size + elem->Size(); });

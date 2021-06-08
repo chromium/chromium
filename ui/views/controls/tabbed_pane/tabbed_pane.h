@@ -200,7 +200,7 @@ class TabStrip : public View, public gfx::AnimationDelegate {
   METADATA_HEADER(TabStrip);
 
   // The return value of GetSelectedTabIndex() when no tab is selected.
-  static constexpr size_t kNoSelectedTab = size_t{-1};
+  static constexpr size_t kNoSelectedTab = static_cast<size_t>(-1);
 
   TabStrip(TabbedPane::Orientation orientation,
            TabbedPane::TabStripStyle style);

@@ -77,7 +77,7 @@ void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
   DCHECK(view);
   if (view->virtual_parent_view_ == this)
     return;  // Already a child of this virtual view.
-  AddChildViewAt(std::move(view), int{children_.size()});
+  AddChildViewAt(std::move(view), static_cast<int>(children_.size()));
 }
 
 void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
@@ -91,7 +91,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
                                          "AXVirtualView parent. Call "
                                          "RemoveChildView first.";
   DCHECK_GE(index, 0);
-  DCHECK_LE(index, int{children_.size()});
+  DCHECK_LE(index, static_cast<int>(children_.size()));
 
   view->virtual_parent_view_ = this;
   children_.insert(children_.begin() + index, std::move(view));
@@ -103,10 +103,10 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
 
 void AXVirtualView::ReorderChildView(AXVirtualView* view, int index) {
   DCHECK(view);
-  if (index >= int{children_.size()})
+  if (index >= static_cast<int>(children_.size()))
     return;
   if (index < 0)
-    index = int{children_.size()} - 1;
+    index = static_cast<int>(children_.size()) - 1;
 
   DCHECK_EQ(view->virtual_parent_view_, this);
   if (children_[index].get() == view)

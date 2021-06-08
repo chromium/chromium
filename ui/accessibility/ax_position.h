@@ -348,9 +348,9 @@ class AXPosition {
     const std::u16string text = GetText();
     DCHECK_GE(text_offset_, 0);
     const size_t max_text_offset = text.size();
-    DCHECK_LE(text_offset_, int{max_text_offset}) << text;
+    DCHECK_LE(text_offset_, static_cast<int>(max_text_offset)) << text;
     std::u16string annotated_text;
-    if (text_offset_ == int{max_text_offset}) {
+    if (text_offset_ == static_cast<int>(max_text_offset)) {
       annotated_text = text + u"<>";
     } else {
       annotated_text = text.substr(0, text_offset_) + u"<" +
@@ -2340,13 +2340,14 @@ class AXPosition {
           text_position->GetGraphemeIterator();
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_,
-                int{text_position->name_.length()});
-      while (
-          !text_position->AtStartOfAnchor() &&
-          (!gfx::IsValidCodePointIndex(text_position->name_,
-                                       size_t{text_position->text_offset_}) ||
-           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
-                                     size_t{text_position->text_offset_})))) {
+                static_cast<int>(text_position->name_.length()));
+      while (!text_position->AtStartOfAnchor() &&
+             (!gfx::IsValidCodePointIndex(
+                  text_position->name_,
+                  static_cast<size_t>(text_position->text_offset_)) ||
+              (grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_))))) {
         --text_position->text_offset_;
       }
       return text_position;
@@ -2390,18 +2391,20 @@ class AXPosition {
       //
       // TODO(nektar): Remove this workaround as soon as the source of the bug
       // is identified.
-      if (text_position->text_offset_ > int{text_position->name_.length()})
+      if (text_position->text_offset_ >
+          static_cast<int>(text_position->name_.length()))
         return CreateNullPosition();
 
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_,
-                int{text_position->name_.length()});
-      while (
-          !text_position->AtEndOfAnchor() &&
-          (!gfx::IsValidCodePointIndex(text_position->name_,
-                                       size_t{text_position->text_offset_}) ||
-           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
-                                     size_t{text_position->text_offset_})))) {
+                static_cast<int>(text_position->name_.length()));
+      while (!text_position->AtEndOfAnchor() &&
+             (!gfx::IsValidCodePointIndex(
+                  text_position->name_,
+                  static_cast<size_t>(text_position->text_offset_)) ||
+              (grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_))))) {
         ++text_position->text_offset_;
       }
 
@@ -2470,7 +2473,7 @@ class AXPosition {
     } while (text_position->text_offset_ < max_text_offset &&
              grapheme_iterator &&
              !grapheme_iterator->IsGraphemeBoundary(
-                 size_t{text_position->text_offset_}));
+                 static_cast<size_t>(text_position->text_offset_)));
     DCHECK_GT(text_position->text_offset_, 0);
     DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
 
@@ -2544,7 +2547,7 @@ class AXPosition {
       --text_position->text_offset_;
     } while (!text_position->AtStartOfAnchor() && grapheme_iterator &&
              !grapheme_iterator->IsGraphemeBoundary(
-                 size_t{text_position->text_offset_}));
+                 static_cast<size_t>(text_position->text_offset_)));
     DCHECK_GE(text_position->text_offset_, 0);
     DCHECK_LT(text_position->text_offset_, text_position->MaxTextOffset());
 
@@ -3895,9 +3898,10 @@ class AXPosition {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         // TODO(nektar): Switch to anchor->GetInnerTextLength() after AXPosition
         // switches to using UTF8.
-        return int{base::UTF8ToUTF16(GetAnchor()->GetInnerText()).length()};
+        return static_cast<int>(
+            base::UTF8ToUTF16(GetAnchor()->GetInnerText()).length());
       case AXEmbeddedObjectBehavior::kExposeCharacter:
-        return int{GetAnchor()->GetHypertext().length()};
+        return static_cast<int>(GetAnchor()->GetHypertext().length());
     }
   }
 
@@ -4008,7 +4012,7 @@ class AXPosition {
   int AnchorChildCount() const {
     if (!GetAnchor())
       return 0;
-    return int{GetAnchor()->GetChildCountCrossingTreeBoundary()};
+    return static_cast<int>(GetAnchor()->GetChildCountCrossingTreeBoundary());
   }
 
   // When a child is ignored, it looks for unignored nodes of that child's
@@ -4022,12 +4026,14 @@ class AXPosition {
   int AnchorUnignoredChildCount() const {
     if (!GetAnchor())
       return 0;
-    return int{GetAnchor()->GetUnignoredChildCountCrossingTreeBoundary()};
+    return static_cast<int>(
+        GetAnchor()->GetUnignoredChildCountCrossingTreeBoundary());
   }
 
   int AnchorIndexInParent() const {
     // If this is the root tree, the index in parent will be 0.
-    return GetAnchor() ? int{GetAnchor()->index_in_parent()} : INVALID_INDEX;
+    return GetAnchor() ? static_cast<int>(GetAnchor()->index_in_parent())
+                       : INVALID_INDEX;
   }
 
   base::stack<AXNode*> GetAncestorAnchors() const {

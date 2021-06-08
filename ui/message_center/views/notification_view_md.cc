@@ -1263,7 +1263,8 @@ void NotificationViewMD::ActionButtonPressed(size_t index,
   const absl::optional<std::u16string>& placeholder =
       action_buttons_[index]->placeholder();
   if (placeholder) {
-    inline_reply_->textfield()->SetProperty(kTextfieldIndexKey, int{index});
+    inline_reply_->textfield()->SetProperty(kTextfieldIndexKey,
+                                            static_cast<int>(index));
     inline_reply_->textfield()->SetPlaceholderText(
         placeholder->empty()
             ? l10n_util::GetStringUTF16(
@@ -1278,7 +1279,7 @@ void NotificationViewMD::ActionButtonPressed(size_t index,
     SchedulePaint();
   } else {
     MessageCenter::Get()->ClickOnNotificationButton(notification_id(),
-                                                    int{index});
+                                                    static_cast<int>(index));
   }
 }
 

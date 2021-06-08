@@ -897,8 +897,8 @@ void FlexLayout::AllocateFlexShortageAtOrder(
     const int weight = flex_child.flex.weight();
     DCHECK_GT(weight, 0);
     DCHECK(deficit.is_bounded());
-    const SizeBound to_deduct =
-        base::ClampRound(deficit.value() * weight / float{flex_total});
+    const SizeBound to_deduct = base::ClampRound(
+        deficit.value() * weight / static_cast<float>(flex_total));
     const SizeBound new_main = flex_child.preferred_size.main() - to_deduct;
 
     // If a view would shrink smaller than its current size, go with that and
@@ -1029,8 +1029,8 @@ void FlexLayout::AllocateFlexExcessAtOrder(
     // Round up so we give slightly greater weight to earlier views.
     SizeBound flex_amount = remaining;
     if (remaining.is_bounded()) {
-      flex_amount =
-          base::ClampCeil(remaining.value() * weight / float{flex_total});
+      flex_amount = base::ClampCeil(remaining.value() * weight /
+                                    static_cast<float>(flex_total));
     }
     const int old_size = flex_child.current_size.main();
     const SizeBound new_main = flex_amount + old_size;

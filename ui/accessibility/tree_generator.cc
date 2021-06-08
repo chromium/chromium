@@ -71,7 +71,7 @@ void TreeGenerator::BuildUniqueTreeWithIgnoredNodes(int tree_index,
   AXTreeUpdate update;
   BuildUniqueTreeUpdate(tree_index, &update);
 
-  int node_count = int{update.nodes.size()};
+  int node_count = static_cast<int>(update.nodes.size());
   CHECK_GE(ignored_index, 0);
   CHECK_LT(ignored_index, 1 << (node_count - 1));
 

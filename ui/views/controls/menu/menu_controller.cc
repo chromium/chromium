@@ -2746,7 +2746,8 @@ MenuItemView* MenuController::FindNextSelectableMenuItem(
     int index,
     SelectionIncrementDirectionType direction,
     bool is_initial) {
-  int parent_count = int{parent->GetSubmenu()->GetMenuItems().size()};
+  int parent_count =
+      static_cast<int>(parent->GetSubmenu()->GetMenuItems().size());
   int stop_index = (index + parent_count) % parent_count;
   bool include_all_items =
       (index == -1 && direction == INCREMENT_SELECTION_DOWN) ||
@@ -2814,15 +2815,15 @@ MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
     MenuItemView* child = menu_items[i];
     if (child->GetEnabled() && child->GetVisible()) {
       if (child == pending_state_.item)
-        details.index_of_item = int{i};
+        details.index_of_item = static_cast<int>(i);
       if (match_function(child, key)) {
         if (details.first_match == -1)
-          details.first_match = int{i};
+          details.first_match = static_cast<int>(i);
         else
           details.has_multiple = true;
         if (details.next_match == -1 && details.index_of_item != -1 &&
-            int{i} > details.index_of_item)
-          details.next_match = int{i};
+            static_cast<int>(i) > details.index_of_item)
+          details.next_match = static_cast<int>(i);
       }
     }
   }

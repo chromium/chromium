@@ -3337,7 +3337,7 @@ TEST_F(RenderTextTest, MoveCursor_UpDown_Scroll) {
   line_height =
       render_text->GetLineSizeF(render_text->selection_model()).height();
   int offset_y = test_api()->display_offset().y();
-  for (size_t i = kLineSize - 2; i != size_t{-1}; --i) {
+  for (size_t i = kLineSize - 2; i != static_cast<size_t>(-1); --i) {
     SCOPED_TRACE(base::StringPrintf("Testing line [%" PRIuS "]", i));
     render_text->MoveCursor(CHARACTER_BREAK, CURSOR_UP, SELECTION_NONE);
     ASSERT_EQ(Range(i * 2), render_text->selection());
@@ -6146,7 +6146,7 @@ TEST_F(RenderTextTest, Multiline_GetLineContainingCaret) {
 
       // GetCursorBounds should be in the same line as GetLineContainingCaret.
       Rect bounds = render_text->GetCursorBounds(sample.caret, true);
-      EXPECT_EQ(int{sample.line_num},
+      EXPECT_EQ(static_cast<int>(sample.line_num),
                 GetLineContainingYCoord(bounds.origin().y() + 1));
     }
   }

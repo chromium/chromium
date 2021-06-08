@@ -759,7 +759,8 @@ std::u16string AXNode::GetHypertext() const {
     // Note that the word "hypertext" comes from the IAccessible2 Standard and
     // has nothing to do with HTML.
     const std::u16string embedded_character_str(kEmbeddedCharacter);
-    DCHECK_EQ(int{embedded_character_str.length()}, kEmbeddedCharacterLength);
+    DCHECK_EQ(static_cast<int>(embedded_character_str.length()),
+              kEmbeddedCharacterLength);
     for (size_t i = 0; i < GetUnignoredChildCountCrossingTreeBoundary(); ++i) {
       const AXNode* child = GetUnignoredChildAtIndexCrossingTreeBoundary(i);
       // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
@@ -768,10 +769,10 @@ std::u16string AXNode::GetHypertext() const {
       if (child->IsText()) {
         hypertext_.hypertext += base::UTF8ToUTF16(child->GetInnerText());
       } else {
-        int character_offset = int{hypertext_.hypertext.size()};
+        int character_offset = static_cast<int>(hypertext_.hypertext.size());
         auto inserted =
             hypertext_.hypertext_offset_to_hyperlink_child_index.emplace(
-                character_offset, int{i});
+                character_offset, static_cast<int>(i));
         DCHECK(inserted.second) << "An embedded object at " << character_offset
                                 << " has already been encountered.";
         hypertext_.hypertext += embedded_character_str;
@@ -908,7 +909,7 @@ int AXNode::GetInnerTextLength() const {
   // computing the length of their inner text if that text should be derived
   // from their descendant nodes.
   if (node->IsLeaf() && !is_atomic_text_field_with_descendants)
-    return int{node->GetInnerText().length()};
+    return static_cast<int>(node->GetInnerText().length());
 
   int inner_text_length = 0;
   for (auto it = node->UnignoredChildrenBegin();
@@ -964,7 +965,7 @@ absl::optional<int> AXNode::GetTableColCount() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return absl::nullopt;
-  return int{table_info->col_count};
+  return static_cast<int>(table_info->col_count);
 }
 
 absl::optional<int> AXNode::GetTableRowCount() const {
@@ -972,7 +973,7 @@ absl::optional<int> AXNode::GetTableRowCount() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return absl::nullopt;
-  return int{table_info->row_count};
+  return static_cast<int>(table_info->row_count);
 }
 
 absl::optional<int> AXNode::GetTableAriaColCount() const {
@@ -1016,11 +1017,13 @@ AXNode* AXNode::GetTableCellFromIndex(int index) const {
     return nullptr;
 
   // There is a table but there is no cell with the given index.
-  if (index < 0 || size_t{index} >= table_info->unique_cell_ids.size()) {
+  if (index < 0 ||
+      static_cast<size_t>(index) >= table_info->unique_cell_ids.size()) {
     return nullptr;
   }
 
-  return tree_->GetFromId(table_info->unique_cell_ids[size_t{index}]);
+  return tree_->GetFromId(
+      table_info->unique_cell_ids[static_cast<size_t>(index)]);
 }
 
 AXNode* AXNode::GetTableCaption() const {
@@ -1039,13 +1042,15 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
     return nullptr;
 
   // There is a table but the given coordinates are outside the table.
-  if (row_index < 0 || size_t{row_index} >= table_info->row_count ||
-      col_index < 0 || size_t{col_index} >= table_info->col_count) {
+  if (row_index < 0 ||
+      static_cast<size_t>(row_index) >= table_info->row_count ||
+      col_index < 0 ||
+      static_cast<size_t>(col_index) >= table_info->col_count) {
     return nullptr;
   }
 
-  return tree_->GetFromId(
-      table_info->cell_ids[size_t{row_index}][size_t{col_index}]);
+  return tree_->GetFromId(table_info->cell_ids[static_cast<size_t>(row_index)]
+                                              [static_cast<size_t>(col_index)]);
 }
 
 std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds() const {
@@ -1070,10 +1075,11 @@ std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds(int col_index) const {
   if (!table_info)
     return std::vector<AXNodeID>();
 
-  if (col_index < 0 || size_t{col_index} >= table_info->col_count)
+  if (col_index < 0 || static_cast<size_t>(col_index) >= table_info->col_count)
     return std::vector<AXNodeID>();
 
-  return std::vector<AXNodeID>(table_info->col_headers[size_t{col_index}]);
+  return std::vector<AXNodeID>(
+      table_info->col_headers[static_cast<size_t>(col_index)]);
 }
 
 std::vector<AXNodeID> AXNode::GetTableRowHeaderNodeIds(int row_index) const {
@@ -1082,10 +1088,11 @@ std::vector<AXNodeID> AXNode::GetTableRowHeaderNodeIds(int row_index) const {
   if (!table_info)
     return std::vector<AXNodeID>();
 
-  if (row_index < 0 || size_t{row_index} >= table_info->row_count)
+  if (row_index < 0 || static_cast<size_t>(row_index) >= table_info->row_count)
     return std::vector<AXNodeID>();
 
-  return std::vector<AXNodeID>(table_info->row_headers[size_t{row_index}]);
+  return std::vector<AXNodeID>(
+      table_info->row_headers[static_cast<size_t>(row_index)]);
 }
 
 std::vector<AXNodeID> AXNode::GetTableUniqueCellIds() const {
@@ -1126,7 +1133,7 @@ absl::optional<int> AXNode::GetTableRowRowIndex() const {
   const auto& iter = table_info->row_id_to_index.find(id());
   if (iter == table_info->row_id_to_index.end())
     return absl::nullopt;
-  return int{iter->second};
+  return static_cast<int>(iter->second);
 }
 
 std::vector<AXNodeID> AXNode::GetTableRowNodeIds() const {
@@ -1188,7 +1195,7 @@ absl::optional<int> AXNode::GetTableCellIndex() const {
 
   const auto& iter = table_info->cell_id_to_index.find(id());
   if (iter != table_info->cell_id_to_index.end())
-    return int{iter->second};
+    return static_cast<int>(iter->second);
   return absl::nullopt;
 }
 
@@ -1201,7 +1208,7 @@ absl::optional<int> AXNode::GetTableCellColIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return int{table_info->cell_data_vector[*index].col_index};
+  return static_cast<int>(table_info->cell_data_vector[*index].col_index);
 }
 
 absl::optional<int> AXNode::GetTableCellRowIndex() const {
@@ -1213,7 +1220,7 @@ absl::optional<int> AXNode::GetTableCellRowIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return int{table_info->cell_data_vector[*index].row_index};
+  return static_cast<int>(table_info->cell_data_vector[*index].row_index);
 }
 
 absl::optional<int> AXNode::GetTableCellColSpan() const {
@@ -1251,7 +1258,7 @@ absl::optional<int> AXNode::GetTableCellAriaColIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return int{table_info->cell_data_vector[*index].aria_col_index};
+  return static_cast<int>(table_info->cell_data_vector[*index].aria_col_index);
 }
 
 absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
@@ -1263,7 +1270,7 @@ absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return int{table_info->cell_data_vector[*index].aria_row_index};
+  return static_cast<int>(table_info->cell_data_vector[*index].aria_row_index);
 }
 
 std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {

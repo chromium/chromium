@@ -613,7 +613,8 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultilingualDocument(
     std::u16string grapheme = base::WideToUTF16(kGraphemeClusters[i]);
     EXPECT_EQ(1u, grapheme.length())
         << "All English characters should be one UTF16 code unit in length.";
-    text_offsets->push_back(text_offsets->back() + int{grapheme.length()});
+    text_offsets->push_back(text_offsets->back() +
+                            static_cast<int>(grapheme.length()));
     english_text.append(grapheme);
   }
 
@@ -622,7 +623,8 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultilingualDocument(
     std::u16string grapheme = base::WideToUTF16(kGraphemeClusters[i]);
     EXPECT_LE(2u, grapheme.length()) << "All Hindi characters should be two "
                                         "or more UTF16 code units in length.";
-    text_offsets->push_back(text_offsets->back() + int{grapheme.length()});
+    text_offsets->push_back(text_offsets->back() +
+                            static_cast<int>(grapheme.length()));
     hindi_text.append(grapheme);
   }
 
@@ -632,7 +634,8 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultilingualDocument(
     EXPECT_LT(0u, grapheme.length())
         << "One of the Thai characters should be one UTF16 code unit, "
            "whilst others should be two or more.";
-    text_offsets->push_back(text_offsets->back() + int{grapheme.length()});
+    text_offsets->push_back(text_offsets->back() +
+                            static_cast<int>(grapheme.length()));
     thai_text.append(grapheme);
   }
 

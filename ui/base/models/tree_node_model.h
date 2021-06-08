@@ -241,7 +241,7 @@ class TreeNodeModel : public TreeModel {
 
   std::unique_ptr<NodeType> Remove(NodeType* parent, NodeType* node) {
     DCHECK(parent);
-    return Remove(parent, size_t{parent->GetIndexOf(node)});
+    return Remove(parent, static_cast<size_t>(parent->GetIndexOf(node)));
   }
 
   void NotifyObserverTreeNodesAdded(NodeType* parent,

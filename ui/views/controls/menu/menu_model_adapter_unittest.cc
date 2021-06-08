@@ -219,7 +219,7 @@ void CheckSubmenu(const RootModel& model,
       continue;
     }
     // Check placement.
-    EXPECT_EQ(i, size_t{submenu->GetSubmenu()->GetIndexOf(item)});
+    EXPECT_EQ(i, static_cast<size_t>(submenu->GetSubmenu()->GetIndexOf(item)));
 
     // Check type.
     switch (model_item.type) {
@@ -264,7 +264,7 @@ void CheckSubmenu(const RootModel& model,
 
     // Check activation.
     static_cast<views::MenuDelegate*>(delegate)->ExecuteCommand(id);
-    EXPECT_EQ(i, size_t{submodel->last_activation()});
+    EXPECT_EQ(i, static_cast<size_t>(submodel->last_activation()));
     submodel->set_last_activation(-1);
   }
 }
@@ -303,7 +303,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     }
 
     // Check placement.
-    EXPECT_EQ(i, size_t{menu->GetSubmenu()->GetIndexOf(item)});
+    EXPECT_EQ(i, static_cast<size_t>(menu->GetSubmenu()->GetIndexOf(item)));
 
     // Check type.
     switch (model_item.type) {
@@ -348,7 +348,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
 
     // Check activation.
     static_cast<views::MenuDelegate*>(&delegate)->ExecuteCommand(id);
-    EXPECT_EQ(i, size_t{model.last_activation()});
+    EXPECT_EQ(i, static_cast<size_t>(model.last_activation()));
     model.set_last_activation(-1);
   }
 

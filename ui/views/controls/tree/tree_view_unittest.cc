@@ -237,7 +237,7 @@ std::string TreeViewTest::GetSelectedAccessibilityViewName() const {
     const AXVirtualView* parent_view = ax_view->virtual_parent_view();
     while (parent_view) {
       size_t sibling_index_in_parent =
-          size_t{parent_view->GetIndexOf(ax_view)} + 1;
+          static_cast<size_t>(parent_view->GetIndexOf(ax_view)) + 1;
       if (sibling_index_in_parent < parent_view->children().size()) {
         ax_view = parent_view->children()[sibling_index_in_parent].get();
         break;
@@ -311,7 +311,7 @@ const AXVirtualView* TreeViewTest::GetAccessibilityViewByName(
     const AXVirtualView* parent_view = ax_view->virtual_parent_view();
     while (parent_view) {
       size_t sibling_index_in_parent =
-          size_t{parent_view->GetIndexOf(ax_view)} + 1;
+          static_cast<size_t>(parent_view->GetIndexOf(ax_view)) + 1;
       if (sibling_index_in_parent < parent_view->children().size()) {
         ax_view = parent_view->children()[sibling_index_in_parent].get();
         break;

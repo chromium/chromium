@@ -337,7 +337,7 @@ class AXRange {
         if (current_end_offset > start->text_offset()) {
           int characters_to_append =
               (max_count > 0)
-                  ? std::min(max_count - int{range_text.length()},
+                  ? std::min(max_count - static_cast<int>(range_text.length()),
                              current_end_offset - start->text_offset())
                   : current_end_offset - start->text_offset();
 
@@ -350,12 +350,13 @@ class AXRange {
               (found_trailing_newline && start->IsInWhiteSpace());
         }
 
-        DCHECK(max_count < 0 || int{range_text.length()} <= max_count);
+        DCHECK(max_count < 0 ||
+               static_cast<int>(range_text.length()) <= max_count);
         is_first_unignored_leaf = false;
       }
 
       if (start->GetAnchor() == end->GetAnchor() ||
-          int{range_text.length()} == max_count) {
+          static_cast<int>(range_text.length()) == max_count) {
         break;
       } else if (concatenation_behavior ==
                      AXTextConcatenationBehavior::kAsInnerText &&

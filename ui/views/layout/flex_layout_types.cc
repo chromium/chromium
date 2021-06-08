@@ -290,7 +290,7 @@ void Span::Center(const Span& container, const Inset1D& margins) {
 
   // Case 2: room for only part of the margins.
   if (margins.size() > remaining) {
-    float scale = float{remaining} / float{margins.size()};
+    float scale = static_cast<float>(remaining) / margins.size();
     set_start(container.start() + std::roundf(scale * margins.leading()));
     return;
   }

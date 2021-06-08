@@ -80,7 +80,8 @@ ViewAccessibility::~ViewAccessibility() = default;
 
 void ViewAccessibility::AddVirtualChildView(
     std::unique_ptr<AXVirtualView> virtual_view) {
-  AddVirtualChildViewAt(std::move(virtual_view), int{virtual_children_.size()});
+  AddVirtualChildViewAt(std::move(virtual_view),
+                        static_cast<int>(virtual_children_.size()));
 }
 
 void ViewAccessibility::AddVirtualChildViewAt(
@@ -88,7 +89,7 @@ void ViewAccessibility::AddVirtualChildViewAt(
     int index) {
   DCHECK(virtual_view);
   DCHECK_GE(index, 0);
-  DCHECK_LE(size_t{index}, virtual_children_.size());
+  DCHECK_LE(static_cast<size_t>(index), virtual_children_.size());
 
   if (virtual_view->parent_view() == this)
     return;

@@ -174,8 +174,8 @@ void PaintThrobberSpinningAfterWaiting(Canvas* canvas,
 
   // Blend the color between "waiting" and "spinning" states.
   constexpr auto kColorFadeTime = base::TimeDelta::FromMilliseconds(900);
-  const float color_progress = float{Tween::CalculateValue(
-      Tween::LINEAR_OUT_SLOW_IN, std::min(elapsed_time / kColorFadeTime, 1.0))};
+  const float color_progress = static_cast<float>(Tween::CalculateValue(
+      Tween::LINEAR_OUT_SLOW_IN, std::min(elapsed_time / kColorFadeTime, 1.0)));
   const SkColor blend_color =
       color_utils::AlphaBlend(color, waiting_state->color, color_progress);
 

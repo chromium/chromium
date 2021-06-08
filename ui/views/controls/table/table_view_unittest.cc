@@ -523,7 +523,7 @@ class TableViewTest : public ViewsTestBase,
     // Makes sure the virtual row count factors in the presence of the header.
     const int first_row_index = helper_->header() ? 1 : 0;
     const int virtual_row_count = table_->GetRowCount() + first_row_index;
-    EXPECT_EQ(virtual_row_count, int{virtual_children.size()});
+    EXPECT_EQ(virtual_row_count, static_cast<int>(virtual_children.size()));
 
     // Make sure every virtual row is valid.
     for (int index = first_row_index; index < virtual_row_count; index++) {
@@ -637,7 +637,7 @@ TEST_P(TableViewTest, RebuildVirtualAccessibilityChildren) {
                 ax::mojom::IntAttribute::kTableColumnCount)));
 
   // The header takes up another row.
-  ASSERT_EQ(size_t{table_->GetRowCount() + 1},
+  ASSERT_EQ(static_cast<size_t>(table_->GetRowCount() + 1),
             view_accessibility.virtual_children().size());
   const auto& header = view_accessibility.virtual_children().front();
   ASSERT_TRUE(header);

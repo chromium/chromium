@@ -316,12 +316,13 @@ ComPtr<IRawElementProviderSimple>
 AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
     int child_index) {
   if (!GetRootAsAXNode() || child_index < 0 ||
-      size_t{child_index} >= GetRootAsAXNode()->children().size()) {
+      static_cast<size_t>(child_index) >=
+          GetRootAsAXNode()->children().size()) {
     return ComPtr<IRawElementProviderSimple>();
   }
 
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
-      GetRootAsAXNode()->children()[size_t{child_index}]);
+      GetRootAsAXNode()->children()[static_cast<size_t>(child_index)]);
 }
 
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
@@ -2834,7 +2835,8 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageRoleDescription) {
   Init(tree);
   ComPtr<IAccessible> root_obj(GetRootIAccessible());
 
-  for (int child_index = 0; child_index < int{tree.nodes[0].child_ids.size()};
+  for (int child_index = 0;
+       child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
     ComPtr<IDispatch> child_dispatch;
     ASSERT_HRESULT_SUCCEEDED(root_obj->get_accChild(
@@ -2870,7 +2872,8 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageAttributes) {
   Init(tree);
   ComPtr<IAccessible> root_obj(GetRootIAccessible());
 
-  for (int child_index = 0; child_index < int{tree.nodes[0].child_ids.size()};
+  for (int child_index = 0;
+       child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
     ComPtr<IDispatch> child_dispatch;
     ASSERT_HRESULT_SUCCEEDED(root_obj->get_accChild(

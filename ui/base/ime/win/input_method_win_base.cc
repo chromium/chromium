@@ -229,7 +229,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   // If only 1 WM_CHAR per the key event, set it as the character of it.
   if (char_msgs.size() == 1 &&
       !std::iswcntrl(static_cast<wint_t>(char_msgs[0].wParam)))
-    event->set_character(char16_t{char_msgs[0].wParam});
+    event->set_character(static_cast<char16_t>(char_msgs[0].wParam));
 
   return ProcessUnhandledKeyEvent(event, &char_msgs);
 }

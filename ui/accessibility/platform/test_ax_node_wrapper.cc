@@ -365,7 +365,7 @@ AXPlatformNode* TestAXNodeWrapper::GetFromTreeIDAndNodeID(
 }
 
 int TestAXNodeWrapper::GetIndexInParent() {
-  return node_ ? int{node_->GetUnignoredIndexInParent()} : -1;
+  return node_ ? static_cast<int>(node_->GetUnignoredIndexInParent()) : -1;
 }
 
 void TestAXNodeWrapper::ReplaceIntAttribute(int32_t node_id,
@@ -934,13 +934,14 @@ gfx::RectF TestAXNodeWrapper::GetLocation() const {
 }
 
 int TestAXNodeWrapper::InternalChildCount() const {
-  return int{node_->GetUnignoredChildCount()};
+  return static_cast<int>(node_->GetUnignoredChildCount());
 }
 
 TestAXNodeWrapper* TestAXNodeWrapper::InternalGetChild(int index) const {
   CHECK_GE(index, 0);
   CHECK_LT(index, InternalChildCount());
-  return GetOrCreate(tree_, node_->GetUnignoredChildAtIndex(size_t{index}));
+  return GetOrCreate(
+      tree_, node_->GetUnignoredChildAtIndex(static_cast<size_t>(index)));
 }
 
 // Recursive helper function for GetUIADescendants. Aggregates all of the

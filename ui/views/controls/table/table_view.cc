@@ -287,8 +287,10 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
         [id](const auto& column) { return column.column.id == id; });
     if (i != visible_columns_.end()) {
       visible_columns_.erase(i);
-      if (active_visible_column_index_ >= int{visible_columns_.size()})
-        SetActiveVisibleColumnIndex(int{visible_columns_.size()} - 1);
+      if (active_visible_column_index_ >=
+          static_cast<int>(visible_columns_.size()))
+        SetActiveVisibleColumnIndex(static_cast<int>(visible_columns_.size()) -
+                                    1);
     }
   }
 
@@ -380,7 +382,7 @@ int TableView::ModelToView(int model_index) const {
   DCHECK_GE(model_index, 0) << " negative model_index " << model_index;
   if (!GetIsSorted())
     return model_index;
-  DCHECK_LT(model_index, int{model_to_view_.size()})
+  DCHECK_LT(model_index, static_cast<int>(model_to_view_.size()))
       << " out of bounds model_index " << model_index;
   return model_to_view_[model_index];
 }
@@ -390,7 +392,7 @@ int TableView::ViewToModel(int view_index) const {
   DCHECK_LT(view_index, GetRowCount());
   if (!GetIsSorted())
     return view_index;
-  DCHECK_LT(view_index, int{view_to_model_.size()})
+  DCHECK_LT(view_index, static_cast<int>(view_to_model_.size()))
       << " out of bounds view_index " << view_index;
   return view_to_model_[view_index];
 }
@@ -775,8 +777,8 @@ void TableView::OnItemsRemoved(int start, int length) {
   // See (https://crbug.com/1173373).
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
   if (GetIsSorted()) {
-    DCHECK_EQ(GetRowCount(), int{view_to_model_.size()});
-    DCHECK_EQ(GetRowCount(), int{model_to_view_.size()});
+    DCHECK_EQ(GetRowCount(), static_cast<int>(view_to_model_.size()));
+    DCHECK_EQ(GetRowCount(), static_cast<int>(model_to_view_.size()));
   }
 
   // If the selection was empty and is no longer empty select the same visual
@@ -1676,7 +1678,8 @@ AXVirtualView* TableView::GetVirtualAccessibilityRow(int row) {
   DCHECK_LT(row, GetRowCount());
   if (header_)
     ++row;
-  if (size_t{row} < GetViewAccessibility().virtual_children().size()) {
+  if (static_cast<size_t>(row) <
+      GetViewAccessibility().virtual_children().size()) {
     const auto& ax_row = GetViewAccessibility().virtual_children()[size_t{row}];
     DCHECK(ax_row);
     DCHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow);
