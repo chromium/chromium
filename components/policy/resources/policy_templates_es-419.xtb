@@ -391,6 +391,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1515230621229117540">Habilitar el menú de accesibilidad flotante</translation>
 <translation id="1515824657887788963">Permite que una página realice solicitudes XHR síncronas cuando el usuario la abandona</translation>
 <translation id="1516486219683984217">Impide el uso de notificaciones del sistema</translation>
+<translation id="152078218786467087">La hora en la que debe reiniciarse el dispositivo (según su zona horaria local).</translation>
 <translation id="1522425503138261032">Permitir a los sitios que rastreen la ubicación física de los usuarios.</translation>
 <translation id="1523774894176285446">Navegador alternativo que se inicia para sitios web configurados</translation>
 <translation id="1524243669991877602">Si habilitas la política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> podrán combinarse en políticas de la máquina.
@@ -478,9 +479,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces <ph name="IDLE_ACTION_FIELD_NAME" />, se utilizará <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
       Nota: Existen opciones de configuración diferentes para la alimentación de CA y de batería.</translation>
-<translation id="1606917441621112087">Si estableces la política como verdadera, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la app predeterminada.
-
-      Si estableces la política como falsa o no la estableces, podrán abrirse los archivos PDF a menos que los usuarios desactiven el complemento de PDF.</translation>
 <translation id="1608755754295374538">Las URL que recibirán acceso a dispositivos de captura de audio sin solicitarlo</translation>
 <translation id="1611394564825535541">Te permite controlar si los usuarios pueden acceder a impresoras no empresariales.
 
@@ -2094,6 +2092,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces la política, se utilizará el valor <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="3695706037816556327">Acción ante la eliminación del token de seguridad (p. ej., una tarjeta inteligente) para <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3700193037252896716">La frecuencia con la cual se deben reiniciar los dispositivos.</translation>
 <translation id="3700318587977845664">La frecuencia con la que deben verificarse las actualizaciones.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
@@ -3047,6 +3046,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       * Tienen diferentes alcances y niveles: se aplicará la política con la prioridad más alta.
 
       Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
+<translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
 <translation id="5059201920681374653">Las cuentas administradas deben estar en un dispositivo administrado que esté afiliado</translation>
@@ -3875,12 +3875,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6111936128861357925">Permitir juego del huevo de pascua del dinosaurio</translation>
 <translation id="6123052603197028610">No permite que las consultas que se envíen a los servidores de Google recuperen marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquea cookies de terceros</translation>
-<translation id="6132739217670763962">
-      Especifica si puede utilizarse la política SharedArrayBuffers en un contexto que no está aislado
-      en orígenes cruzados. Chrome requerirá el aislamiento en orígenes cruzados cuando se utilice la política
-      SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad con
-      la Web. Encontrarás información adicional en el siguiente sitio:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Se activó la Navegación segura en el modo mejorado. Este modo es más seguro, pero requiere que compartas con Google más datos sobre la navegación.</translation>
 <translation id="6138636318340561140">Verifica en tiempo real el estado de la Navegación segura de las URL</translation>
@@ -3921,9 +3915,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no la estableces, los usuarios podrán cambiar el tema de su navegador como prefieran.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de servidores</translation>
-<translation id="6198947200418556248">Esta política dejó de estar disponible. Si todavía necesitas el comportamiento heredado de las cookies, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permite revertir el comportamiento de todas las cookies conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si se revierte el comportamiento conforme al atributo heredado, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+<translation id="6198947200418556248">Esta política dejó de estar disponible. Si todavía necesitas el comportamiento heredado de las cookies, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permite revertir todas las cookies al comportamiento del atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredado. Si se revierte el comportamiento, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
-          Si no se establece esta política, el comportamiento predeterminado <ph name="ATTRIBUTE_SAMESITE_NAME" /> para las cookies dependerá de la configuración personal del usuario para las funciones <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> y <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, las cuales pueden establecerse con una prueba pública o si se habilitan o inhabilitan las marcas <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivamente.</translation>
+          Si no se establece esta política, el comportamiento predeterminado de <ph name="ATTRIBUTE_SAMESITE_NAME" /> correspondiente a las cookies dependerá de la configuración personal del usuario en las funciones <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> y <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, las cuales pueden establecerse con una prueba pública o si se habilitan o inhabilitan las marcas <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivamente.</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Se muestran todas las impresoras, excepto las de la lista negra.</translation>
@@ -4697,6 +4691,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
+<translation id="7041170641363384736">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Actualmente, la política se aplica solo a los dispositivos que tienen habilitada la app de inicio automático en la sesión de kiosco. Si se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7060497964524144376">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
 
@@ -5510,6 +5505,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de resaltar la posición del cursor estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="8161536598508377155">Establecer un cronograma personalizado para reiniciar los dispositivos de kiosco</translation>
 <translation id="8164144100557223371">Inhabilita el punto de entrada de la barra de herramientas para las funciones experimentales del navegador</translation>
 <translation id="8164687848393015214">Si habilitas la política, se enviarán paquetes de red de control (<ph name="HEARTBEATS_TERM" />) al servidor de administración para controlar el estado de conexión, lo que permite que el servidor detecte si el dispositivo está desconectado de Internet.
 
@@ -5733,6 +5729,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si se establece la política, se borrarán las instantáneas anteriores según sea necesario para respetar el límite. Si se establece la política como "0", no se realizarán instantáneas.</translation>
 <translation id="8451988835943702790">Usar la página Nueva pestaña como página principal</translation>
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
+<translation id="8455551509936646199">El día de la semana en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es semanal ("WEEKLY").</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="847472800012384958">No permitir que ningún sitio muestre ventanas emergentes</translation>

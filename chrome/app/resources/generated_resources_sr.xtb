@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">Прегледајте лозинке</translation>
 <translation id="1244265436519979884">У току је враћање Linux података</translation>
 <translation id="1244303850296295656">Грешка додатка</translation>
+<translation id="1246863218384630739">Инсталирање <ph name="VM_NAME" />-а није успело: URL слике је приказао кôд грешке <ph name="HTTP_ERROR" />. Обратите се администратору.</translation>
 <translation id="1246905108078336582">Желите ли да уклоните предлог из привремене меморије?</translation>
 <translation id="1251366534849411931">Недостаје отворена витичаста заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају сајтови и инсталиране апликације</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2610260699262139870">A&amp;ctual Size (Стварна величина)</translation>
 <translation id="2610780100389066815">Потписивање Microsoft листе поузданих</translation>
 <translation id="2612676031748830579">Број картице</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> ће моћи да мења <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Читање и мењање података на <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2618797463720777311">Подесите Дељење у близини</translation>
@@ -2279,6 +2281,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Поново се пријавите на <ph name="ACCOUNT" /> да бисте верификовали овај налог</translation>
 <translation id="3444641828375597683">Оглашавачи и објављивачи могу да користе груписане податке о кохортама, описане касније на овој страници.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> ће моћи да прегледа <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Брзи одговори Google помоћника</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
@@ -3776,6 +3779,7 @@
 <translation id="5086874064903147617">Желите да вратите подразумевану почетну страницу?</translation>
 <translation id="5087249366037322692">Додала је трећа страна</translation>
 <translation id="5087580092889165836">Додај картицу</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 са RSA шифровањем</translation>
 <translation id="5090637338841444533">Није им дозвољено да прате положај камере</translation>
 <translation id="5094721898978802975">Комуникација са основним апликацијама за сарадњу</translation>
@@ -4557,6 +4561,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све ({COUNT}) у &amp;новом прозору}few{Отвори све ({COUNT}) у &amp;новом прозору}other{Отвори све ({COUNT}) у &amp;новом прозору}}</translation>
 <translation id="5965661248935608907">Контролише и страницу која се приказује када кликнете на дугме Почетак или претражујете из омнибокса.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> може да прегледа датотеке у директоријуму <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Одбачено је обавештење о тастерској пречици</translation>
 <translation id="5971037678316050792">Контрола стања и упаривања Bluetooth адаптера</translation>
 <translation id="597235323114979258">Погледајте још дестинација</translation>
 <translation id="5972666587303800813">Услуга без операције</translation>
@@ -6189,6 +6194,7 @@
 <translation id="7766807826975222231">Крени у обилазак</translation>
 <translation id="7766838926148951335">Прихвати дозволе</translation>
 <translation id="7768507955883790804">Сајтови аутоматски прате ово подешавање када их посетите</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> ће моћи да прегледа фајлове у фолдеру <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промените</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7770612696274572992">Слика је копирана са неког другог уређаја</translation>
@@ -6492,6 +6498,7 @@
 <translation id="8063235345342641131">Подразумевани зелени аватар</translation>
 <translation id="8063535366119089408">Прикажи датотеку</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Дијалог за повезивање</translation>
 <translation id="8068253693380742035">Додирните да бисте се пријавили</translation>
 <translation id="8069615408251337349">Google Cloud штампање</translation>
 <translation id="8071432093239591881">Одштампај као слику</translation>
@@ -7524,6 +7531,7 @@
 <translation id="9186963452600581158">Пријавите се помоћу Google налога детета</translation>
 <translation id="9188732951356337132">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK2" />Сазнајте више<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Користите Android телефон као безбедносни кључ</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> ће моћи да мења фајлове у фолдеру <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Претражи <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Бришу се сви офлајн подаци</translation>
 <translation id="9201220332032049474">Опције закључавања екрана</translation>

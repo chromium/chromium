@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">パスワードを確認</translation>
 <translation id="1244265436519979884">現在、Linux の復元が進行中です</translation>
 <translation id="1244303850296295656">拡張機能のエラー</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
 <translation id="1246905108078336582">クリップボードから候補を削除してもよろしいですか？</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータとインストールされたアプリが削除されます</translation>
@@ -1522,6 +1523,7 @@
 <translation id="2610260699262139870">実寸大(&amp;C)</translation>
 <translation id="2610780100389066815">Microsoft 信頼リストの署名</translation>
 <translation id="2612676031748830579">カード番号</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を編集できるようになります</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2618797463720777311">ニアバイシェアの設定</translation>
@@ -2280,6 +2282,7 @@
 <translation id="3441653493275994384">画面</translation>
 <translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
 <translation id="3444641828375597683">広告主やパブリッシャーは FLoC を使用できます。FLoC についてはこのページで後述します。</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を読み取れるようになります</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
@@ -3777,6 +3780,7 @@
 <translation id="5086874064903147617">デフォルトのホームページに戻しますか？</translation>
 <translation id="5087249366037322692">サードパーティにより追加</translation>
 <translation id="5087580092889165836">カードを追加</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" />（<ph name="PROFILE_NAME" />）</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
 <translation id="5094721898978802975">連携するネイティブ アプリケーションと通信</translation>
@@ -4557,6 +4561,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5965661248935608907">この拡張機能では、ホーム ボタンのクリック時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを表示できます</translation>
+<translation id="5969728632630673489">キーボード ショートカットの通知を非表示にしました</translation>
 <translation id="5971037678316050792">Bluetooth アダプタの状態とペア設定の制御</translation>
 <translation id="597235323114979258">その他の印刷先</translation>
 <translation id="5972666587303800813">機能なしのサービス</translation>
@@ -6192,6 +6197,7 @@
 <translation id="7766807826975222231">使い方ガイド</translation>
 <translation id="7766838926148951335">権限を許可</translation>
 <translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> は <ph name="FOLDERNAME" /> 内のファイルを読み取れるようになります</translation>
 <translation id="7768770796815395237">変更</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7770612696274572992">他のデバイスから画像がコピーされました</translation>
@@ -6495,6 +6501,7 @@
 <translation id="8063235345342641131">デフォルトの緑のアバター</translation>
 <translation id="8063535366119089408">ファイルを表示</translation>
 <translation id="8064279191081105977">グループ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">接続ダイアログ</translation>
 <translation id="8068253693380742035">タップしてログイン</translation>
 <translation id="8069615408251337349">Google クラウド プリント</translation>
 <translation id="8071432093239591881">画像として印刷する</translation>
@@ -7525,6 +7532,7 @@
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="9188732951356337132">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android スマートフォンをセキュリティ キーとして使用する</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> は <ph name="FOLDERNAME" /> 内のファイルを編集できるようになります</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> で検索</translation>
 <translation id="9201023452444595544">オフライン データも削除されます</translation>
 <translation id="9201220332032049474">画面ロックの種類</translation>

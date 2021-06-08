@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">بازبینی گذرواژه‌ها</translation>
 <translation id="1244265436519979884">‏درحال‌حاضر بازیابی Linux درحال انجام است</translation>
 <translation id="1244303850296295656">خطای افزونه</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="1246905108078336582">پیشنهاد از بریده‌دان حذف شود؟</translation>
 <translation id="1251366534849411931">اینجا باید آکولاد باز باشد: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌ها و برنامه‌های نصب‌شده ذخیره کرده‌اند پاک می‌شود</translation>
@@ -1534,6 +1535,7 @@
 <translation id="2610260699262139870">اندازه &amp;واقعی</translation>
 <translation id="2610780100389066815">‏امضای فهرست اطمینان Microsoft</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را ویرایش کند</translation>
 <translation id="2616366145935564096">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2618797463720777311">راه‌اندازی «هم‌رسانی با اطراف»</translation>
@@ -2292,6 +2294,7 @@
 <translation id="3441653493275994384">صفحه</translation>
 <translation id="3441663102605358937">برای به‌تأیید رساندن این حساب، دوباره به سیستم <ph name="ACCOUNT" /> وارد شوید</translation>
 <translation id="3444641828375597683">‏تبلیغ‌کنندگان و ناشران می‌توانند از FLoC که در بخش‌های بعدی این صفحه شرح داده شده استفاده کنند.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
@@ -3790,6 +3793,7 @@
 <translation id="5086874064903147617">صفحه اصلی پیش‌فرض بازیابی شود؟</translation>
 <translation id="5087249366037322692">توسط یک شخص ثالث اضافه شده است</translation>
 <translation id="5087580092889165836">افزودن کارت</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> <ph name="PROFILE_NAME" /></translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 با رمزگذاری RSA</translation>
 <translation id="5090637338841444533">اجازه ندارد موقعیت دوربین را ردیابی کند</translation>
 <translation id="5094721898978802975">ارتباط با برنامه‌های بومی همکار</translation>
@@ -4570,6 +4574,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5965661248935608907">‏این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه صفحه اصلی یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را مشاهده کند</translation>
+<translation id="5969728632630673489">اعلان میان‌برهای صفحه‌کلید رد شد</translation>
 <translation id="5971037678316050792">کنترل حالت آداپتور بلوتوث و مرتبط‌سازی</translation>
 <translation id="597235323114979258">دیدن مقصدهای بیشتر</translation>
 <translation id="5972666587303800813">سرویس غیرفعال</translation>
@@ -6205,6 +6210,7 @@
 <translation id="7766807826975222231">گشت زدن</translation>
 <translation id="7766838926148951335">پذیرفتن مجوزها</translation>
 <translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> خواهد توانست فایل‌های <ph name="FOLDERNAME" /> را مشاهده کند</translation>
 <translation id="7768770796815395237">تغییر دادن</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7770612696274572992">تصویر از دستگاه دیگری کپی شده است</translation>
@@ -6509,6 +6515,7 @@
 <translation id="8063235345342641131">چهره‌نمای پیش‌فرض سبز</translation>
 <translation id="8063535366119089408">مشاهده فایل</translation>
 <translation id="8064279191081105977">گروه <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">کادر گفتگوی اتصال</translation>
 <translation id="8068253693380742035">برای ورود به سیستم لمس کنید</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">چاپ کردن به‌‌عنوان تصویر</translation>
@@ -7540,6 +7547,7 @@
 <translation id="9186963452600581158">‏ورود به سیستم با «حساب Google» فرزند</translation>
 <translation id="9188732951356337132">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. این دستگاه درحال‌حاضر به‌صورت‌ خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه را برای Google ارسال می‌کند. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند برنامه‌نویس‌های Android) کمک می‌کند. اگر تنظیم «فعالیت وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در حساب Google او ذخیره شود. <ph name="BEGIN_LINK2" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">‏استفاده از تلفن Android به‌عنوان کلید امنیتی</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> خواهد توانست فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
 <translation id="920045321358709304">جستجوی <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">هرنوع داده آفلاینی حذف خواهد شد</translation>
 <translation id="9201220332032049474">گزینه‌های قفل صفحه</translation>

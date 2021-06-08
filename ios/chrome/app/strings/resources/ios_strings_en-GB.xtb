@@ -260,7 +260,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3533436815740441613">New Tab</translation>
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
-<translation id="3588492282865875287">Sign out?</translation>
+<translation id="3588492282865875287">Sign Out?</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="359441731697487922">You can open links in Chrome automatically by making it your default browser app.
       
@@ -417,7 +417,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
-<translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /></translation>
+<translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Open image</translation>
 <translation id="5407969256130905701">Discard changes</translation>
 <translation id="5416022985862681400">Last 7 days</translation>
@@ -458,7 +458,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5812974770859303494">Add to…</translation>
 <translation id="5816228676161003208">This lets you search faster using your voice.</translation>
-<translation id="581659025233126501">Turn on Sync</translation>
+<translation id="581659025233126501">Turn On Sync</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
@@ -524,7 +524,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sync your passwords, history and more on all of your devices</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">No username</translation>
-<translation id="6366663624406569102">Sign out and turn off sync</translation>
+<translation id="6366663624406569102">Sign Out and Turn Off Sync</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377118281273296434">Site security</translation>
 <translation id="6380866119319257197">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
@@ -542,7 +542,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter i
 <translation id="6445981559479772097">Message sent.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Check never run.</translation>
-<translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
+<translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Open in New Incognito Tab</translation>
 <translation id="6464397691496239022">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
@@ -601,7 +601,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6914583639806229067">Search for image that you copied</translation>
 <translation id="6914783257214138813">Your passwords will be visible to anyone who can see the exported file.</translation>
 <translation id="6930799952781667037">Tap to change to this language.</translation>
-<translation id="6944369514868857500">Choose another account</translation>
+<translation id="6944369514868857500">Choose Another Account</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -731,7 +731,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
-<translation id="83100941411593607">Sign-in is disabled</translation>
+<translation id="83100941411593607">Sign-in Is Disabled</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>

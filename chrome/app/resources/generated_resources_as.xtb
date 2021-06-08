@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">পাছৱৰ্ড পৰ্যালোচনা কৰক</translation>
 <translation id="1244265436519979884">বর্তমান Linuxক পুনঃস্থাপন কৰা প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="1244303850296295656">এক্সটেনশ্বনৰ আসোঁৱাহ</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> ইনষ্টল কৰিব পৰা নগ'ল: প্ৰতিচ্ছবিৰ URL <ph name="HTTP_ERROR" /> আসোঁৱাহ ক'ডটোৰ বাবে ডাউনল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1246905108078336582">ক্লিপব’ৰ্ডৰ পৰা পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="1251366534849411931">প্ৰত্যাশিত প্ৰাৰম্ভিক কার্লী ব্ৰাচ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">এই কাৰ্যই ছাইটসমূহ আৰু ইনষ্টল হৈ থকা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="TOTAL_USAGE" /> ডেটা মচিব</translation>
@@ -1535,6 +1536,7 @@
 <translation id="2610260699262139870">প্ৰ&amp;কৃত আকাৰ</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2612676031748830579">কার্ড নম্বৰ</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" />এ <ph name="FILENAME" /> সম্পাদনা কৰিব পাৰিব</translation>
 <translation id="2616366145935564096">আপোনাৰ ডেটা <ph name="WEBSITE_1" />ত পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2618797463720777311">Nearby Share কৰাৰ সুবিধাটো ছেট আপ কৰক</translation>
@@ -2292,6 +2294,7 @@
 <translation id="3441653493275994384">স্ক্ৰীণ</translation>
 <translation id="3441663102605358937">এই একাউণ্টটো সত্যাপন কৰিবলৈ <ph name="ACCOUNT" />ত পুনৰ ছাইন ইন কৰক</translation>
 <translation id="3444641828375597683">বিজ্ঞাপনদাতা আৰু প্ৰকাশকে FLoC ব্যৱহাৰ কৰিব পাৰে, এই পৃষ্ঠাখনত পাছত ইয়াৰ বিষয়ে বৰ্ণনা কৰা হৈছে।</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" />এ <ph name="FILENAME" /> চাব পাৰিব</translation>
 <translation id="3445047461171030979">Google Assistantৰ দ্ৰুত উত্তৰসমূহ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
@@ -3786,6 +3789,7 @@
 <translation id="5086874064903147617">ডিফ’ল্ট গৃহপৃষ্ঠাটো পুনঃস্থাপন কৰিবনে?</translation>
 <translation id="5087249366037322692">কোনো তৃতীয় পক্ষই যোগ কৰিছে</translation>
 <translation id="5087580092889165836">কাৰ্ড যোগ কৰক</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰাৰ অনুমতি নাই</translation>
 <translation id="5094721898978802975">সহযোগ কৰা স্থানীয় এপ্লিকেশ্বনৰ সৈতে যোগাযোগ কৰক</translation>
@@ -4564,6 +4568,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{সকলো &amp;নতুন ৱিণ্ড’ত খোলক}=1{&amp;নতুন ৱিণ্ড’ত খোলক}one{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}other{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}}</translation>
 <translation id="5965661248935608907">এইটোৱে লগতে আপুনি গৃহপৃষ্ঠাৰ বুটামটোত ক্লিক কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা দেখুওৱা হয় সেয়াও নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত থকা ফাইলসমূহ চাব পাৰে</translation>
+<translation id="5969728632630673489">কীব’র্ডৰ শ্বৰ্টকাটৰ জাননী অগ্ৰাহ্য কৰা হ'ল</translation>
 <translation id="5971037678316050792">ব্লুটুথ এড’প্টাৰৰ স্থিতি আৰু যোৰা লগোৱা সুবিধাটো নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="597235323114979258">অধিক প্ৰিণ্টাৰ চাওক</translation>
 <translation id="5972666587303800813">ব্যৱহাৰত নথকা সেৱা</translation>
@@ -6193,6 +6198,7 @@
 <translation id="7766807826975222231">ভ্ৰমণৰ অভিজ্ঞতা লওক</translation>
 <translation id="7766838926148951335">অনুমতিসমূহ গ্ৰহণ কৰক</translation>
 <translation id="7768507955883790804">আপুনি ছাইটসমূহ খুলিলে সেইবোৰে এই ছেটিংটো স্বয়ংক্ৰিয়ভাৱে মানি চলে</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত ফাইল চাব পাৰিব</translation>
 <translation id="7768770796815395237">সলনি কৰক</translation>
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="7770612696274572992">অন্য ডিভাইচৰ পৰা প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
@@ -6495,6 +6501,7 @@
 <translation id="8063235345342641131">ডিফ'ল্ট সেউজীয়া অৱতাৰ</translation>
 <translation id="8063535366119089408">ফাইল চাওক</translation>
 <translation id="8064279191081105977">গোট <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">ডায়লগৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="8068253693380742035">ছাইন ইন কৰিবলৈ স্পর্শ কৰক</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">প্ৰতিচ্ছবি হিচাপে প্ৰিণ্ট কৰক</translation>
@@ -7525,6 +7532,7 @@
 <translation id="9186963452600581158">শিশুৰ Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="9188732951356337132">ব্যৱহাৰ আৰু ডায়গন’ষ্টিক ডেটা পঠিয়াওক। ডিভাইচটোৱে বর্তমান স্বয়ংক্ৰিয়ভাৱে Googleলৈ ডায়গন’ষ্টিক, ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আছে। এইটো আপোনাৰ শিশুক চিনাক্ত কৰিবলৈ ব্যৱহাৰ কৰা নহয় আৰু ই ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান ডেটাৰ সমষ্টিয়ে লগতে Google এপ্ আৰু অংশীদাৰ, যেনে Androidৰ বিকাশকর্তাকো সহায় কৰিব। যদি আপোনাৰ শিশুৰ বাবে অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপ অন কৰা হৈছে, তেন্তে এই ডেটা তেওঁলোকৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। <ph name="BEGIN_LINK2" />অধিক জানক<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">আপোনাৰ Android ফ’নটো এটা সুৰক্ষা চাবি হিচাপে ব্যৱহাৰ কৰক</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত ফাইল সম্পাদনা কৰিব পাৰিব</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="9201023452444595544">সকলো অফলাইন ডেটা মচা হ’ব</translation>
 <translation id="9201220332032049474">স্ক্ৰীণ লক সম্পৰ্কীয় বিকল্প</translation>

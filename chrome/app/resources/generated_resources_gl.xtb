@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">Revisar contrasinais</translation>
 <translation id="1244265436519979884">Estase restaurando Linux</translation>
 <translation id="1244303850296295656">Erro de extensión</translation>
+<translation id="1246863218384630739">Non se puido instalar <ph name="VM_NAME" />: o URL da imaxe devolveu o código de erro <ph name="HTTP_ERROR" />. Ponte en contacto co teu administrador.</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ao realizar esta acción, borraranse <ph name="TOTAL_USAGE" /> dos datos que almacenasen os sitios e as aplicacións instaladas</translation>
@@ -1521,6 +1522,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2610260699262139870">&amp;Tamaño real</translation>
 <translation id="2610780100389066815">Sinatura da lista de confianza de Microsoft</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Ler e cambiar os teus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">A tarxeta SIM está bloqueada</translation>
 <translation id="2618797463720777311">Configurar a función Compartir por Nearby</translation>
@@ -2278,6 +2280,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3441663102605358937">Inicia sesión en <ph name="ACCOUNT" /> de novo para verificar esta conta</translation>
 <translation id="3444641828375597683">Os anunciantes e os editores poden usar a técnica Federated Learning of Cohorts (FLoC), que se describe máis adiante nesta páxina.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostas rápidas do Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB‑C</translation>
@@ -3775,6 +3778,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5086874064903147617">Queres restaurar a páxina de inicio predeterminada?</translation>
 <translation id="5087249366037322692">Engadida por un terceiro</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5090637338841444533">Sitios que non poden facer un seguimento da posición da cámara</translation>
 <translation id="5094721898978802975">Comunicarse con aplicacións nativas de cooperación</translation>
@@ -4555,6 +4559,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todos nunha ventá &amp;nova}=1{Abrir nunha ventá &amp;nova}other{Abrir todos ({COUNT}) nunha ventá &amp;nova}}</translation>
 <translation id="5965661248935608907">Tamén controla que páxina se mostra ao facer clic no botón Inicio ou ao buscar desde Omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pode ver os ficheiros de <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Ignorouse o báner sobre os atallos de teclado</translation>
 <translation id="5971037678316050792">Controlar sincronización e estado do adaptador Bluetooth</translation>
 <translation id="597235323114979258">Ver máis destinos</translation>
 <translation id="5972666587303800813">Servizo nonoperativo</translation>
@@ -6190,6 +6195,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7766807826975222231">Realizar un percorrido</translation>
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7768507955883790804">Esta opción de configuración aplicarase automaticamente aos sitios cando os visites</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> poderá ver os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7770612696274572992">Copiouse a imaxe desde outro dispositivo</translation>
@@ -6492,6 +6498,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
 <translation id="8063535366119089408">Ver ficheiro</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" />. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Cadro de diálogo de conexión</translation>
 <translation id="8068253693380742035">Toca para iniciar sesión</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Imprimir como imaxe</translation>
@@ -7522,6 +7529,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
 <translation id="9188732951356337132">Enviar datos de uso e de diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utilizar o teléfono Android como chave de seguranza</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Realizar a busca en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Todos os datos sen conexión borraranse</translation>
 <translation id="9201220332032049474">Opcións de bloqueo da pantalla</translation>

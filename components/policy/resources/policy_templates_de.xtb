@@ -472,9 +472,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Wenn „<ph name="IDLE_ACTION_FIELD_NAME" />“ nicht festgelegt ist, wird die Aktion „<ph name="IDLE_ACTION_ENUM_SUSPEND" />“ ausgeführt.
 
       Hinweis: Es können jeweils eigene Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.</translation>
-<translation id="1606917441621112087">Wenn die Richtlinie auf "True" gesetzt ist, wird der interne PDF Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
-
-      Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht vom Nutzer deaktiviert wird.</translation>
 <translation id="1608755754295374538">URLs, denen ohne Nachfrage Zugriff auf Audioaufnahmegeräte gestattet wird</translation>
 <translation id="1611394564825535541">Mit dieser Richtlinie können Sie festlegen, ob Nutzer auf Drucker außerhalb des Unternehmens zugreifen dürfen.
 
@@ -3851,8 +3848,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
 <translation id="6123052603197028610">Anfragen an Google-Server dürfen keine Zeitstempel abrufen</translation>
 <translation id="6132506775968708399">Drittanbieter-Cookies blockieren</translation>
-<translation id="6132739217670763962">
-      Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. Chrome setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab Version 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen finden Sie hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>

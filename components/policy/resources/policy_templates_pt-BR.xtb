@@ -387,6 +387,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1515230621229117540">Ativa o menu de acessibilidade flutuante</translation>
 <translation id="1515824657887788963">Permite que uma página execute solicitações XHR síncronas durante a dispensa de páginas.</translation>
 <translation id="1516486219683984217">Não permitir o uso de notificações do sistema</translation>
+<translation id="152078218786467087">Horário em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="1522425503138261032">Permitir que os sites rastreiem a localização física dos usuários</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
 <translation id="1524243669991877602">Se a política for ativada, as políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ser mescladas com outras no nível da máquina.
@@ -474,9 +475,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se <ph name="IDLE_ACTION_FIELD_NAME" /> não for definida, a ação <ph name="IDLE_ACTION_ENUM_SUSPEND" /> será realizada.
 
       Observação: há configurações separadas para bateria e alimentação CA.</translation>
-<translation id="1606917441621112087">Se a política for definida como verdadeira, o visualizador de PDF interno será desativado no <ph name="PRODUCT_NAME" />, os arquivos PDF serão tratados como um download e os usuários poderão abrir PDFs com o aplicativo padrão.
-
-      Se a política for definida como falsa ou não for definida, a não ser que os usuários desativem o plug-in de PDF, ele poderá abrir arquivos PDF.</translation>
 <translation id="1608755754295374538">URLs que terão acesso a dispositivos de captura de áudio sem solicitação</translation>
 <translation id="1611394564825535541">Permite controlar se os usuários podem acessar impressoras que não sejam de empresas.
 
@@ -2092,6 +2090,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política não é definida, <ph name="PRINTERS_ALLOW_ALL" /> é colocada em uso.</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3700193037252896716">Frequência com que a reinicialização acontecerá.</translation>
 <translation id="3700318587977845664">Periodicidade de recorrência da verificação de atualização.</translation>
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
@@ -3042,6 +3041,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       * diferentes escopos ou níveis: a política com maior prioridade será aplicada.
 
       Se uma política não estiver na lista e houver um conflito entre fontes, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
+<translation id="5055474681190962362">Dia do mês [1-31] em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "MONTHLY". Caso seja maior que o número máximo de dias de um mês específico, o último dia do mês será usado.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>
 <translation id="5059201920681374653">As contas gerenciadas precisam estar conectadas em um dispositivo gerenciado afiliado</translation>
@@ -3867,12 +3867,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6111936128861357925">Permitir jogo easter egg de dinossauro</translation>
 <translation id="6123052603197028610">Não permitir consultas aos servidores do Google para recuperar carimbos de data/hora</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceiros</translation>
-<translation id="6132739217670763962">
-      Especifica se SharedArrayBuffers pode ser usado em um contexto não
-      isolado de origem cruzada. A partir da versão 91 (25/05/2021), o Chrome exigirá o isolamento de origem cruzada ao usar o
-      SharedArrayBuffers por motivos de compatibilidade
-      na Web. Veja mais detalhes em:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/ (link em inglês).</translation>
 <translation id="6133088669883929098">Permitir que todos os sites usem a geração de chaves</translation>
 <translation id="6135398260575578389">O "Navegação segura" está ativo no modo avançado. Esse modo oferece maior segurança, mas requer o compartilhamento de mais informações de navegação com o Google.</translation>
 <translation id="6138636318340561140">Verifica em tempo real o status dos URLs no "Navegação segura"</translation>
@@ -4686,6 +4680,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
+<translation id="7041170641363384736">Permite configurar uma programação personalizada para reiniciar dispositivos. No momento, esta política se aplica apenas a dispositivos que ativaram a abertura automática de apps na sessão de quiosque. Se ela for definida como verdadeira, o dispositivo será reiniciado de acordo com a programação. A política precisa ser removida para cancelar outras reinicializações programadas.</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7060497964524144376">Se a política for ativada, o Navegação segura confiará nos domínios designados por você. Ele não verificará a presença de recursos perigosos, como phishing, malware ou software indesejado. O serviço de proteção de downloads do Navegação segura não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização delas.
 
@@ -5500,6 +5495,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="8161536598508377155">Definir programação personalizada para reiniciar dispositivos em quiosques</translation>
 <translation id="8164144100557223371">Desativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento. Com isso, o status de conexão é monitorado e o servidor consegue detectar se o dispositivo está off-line.
 
@@ -5709,6 +5705,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida, snapshots antigos serão excluídos conforme necessário para respeitar o limite. Se a política for definida como 0, nenhum snapshot será criado.</translation>
 <translation id="8451988835943702790">Usar a página "Nova guia" como página inicial</translation>
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
+<translation id="8455551509936646199">Dia da semana em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "WEEKLY".</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
 <translation id="847472800012384958">Não permite que nenhum site exiba pop-ups</translation>

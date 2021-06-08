@@ -237,7 +237,7 @@
 <translation id="3393920035788932672">Калк чыкм урукс берл</translation>
 <translation id="3399930248910934354">Chrome'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="3425644765244388016">Картанын ылакап аты</translation>
-<translation id="3433057996795775706">Бул сырсөздү жок кылуу менен, <ph name="WEBSITE" /> аккаунтуңуз жок кылынбайт. <ph name="WEBSITE" /> аккаунтуңузду башкалардан коргоо үчүн сырсөздү өзгөртүңүз.</translation>
+<translation id="3433057996795775706">Бул сырсөздү жок кылуу менен, <ph name="WEBSITE" /> аккаунтуңуз өчпөйт. <ph name="WEBSITE" /> аккаунтуңузду башкалардан коргоо үчүн сырсөздү өзгөртүңүз.</translation>
 <translation id="3443810440409579745">Өтмөк алынды.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мүн.</translation>
 <translation id="3448016392200048164">Бөлүп көрүү режими</translation>
@@ -394,7 +394,7 @@
 <translation id="5059136629401106827">Жарайт</translation>
 <translation id="5062321486222145940">Google Drive'ды орнотуу</translation>
 <translation id="5083464117946352670">Файлдын өлчөмү аныкталбайт.</translation>
-<translation id="5090832849094901128">Бул сырсөздү жок кылуу менен <ph name="WEBSITE" /> аккаунтуңуз жок кылынбайт.</translation>
+<translation id="5090832849094901128">Бул сырсөздү жок кылуу менен <ph name="WEBSITE" /> аккаунтуңуз өчпөйт.</translation>
 <translation id="5094827893301452931">Твиттелди.</translation>
 <translation id="5118764316110575523">Өчүк</translation>
 <translation id="5127805178023152808">Шайкештештирүү өчүк</translation>
@@ -817,6 +817,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="952704832371081537">Жокко чыгаруу</translation>
 <translation id="984509647832111802">Шайкештирүү иштебей жатат.</translation>
 <translation id="988141524645182168">Бшк түзмкт</translation>
-<translation id="989988560359834682">Даректи түзөтүү</translation>
+<translation id="989988560359834682">Даректи өзгөртүү</translation>
 <translation id="994757059139821576">Макалаларды сунуштоо</translation>
 </translationbundle>

@@ -391,6 +391,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1515230621229117540">Attiva il menu Accessibilità mobile</translation>
 <translation id="1515824657887788963">Consenti a una pagina di fare richieste XHR sincrone durante l'uscita dalla pagina</translation>
 <translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
+<translation id="152078218786467087">L'ora in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo.</translation>
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="1524243669991877602">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ai criteri a livello di macchina.
@@ -478,9 +479,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il valore <ph name="IDLE_ACTION_FIELD_NAME" /> non viene impostato, viene usato il valore <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
       Nota: esistono impostazioni separate per l'alimentazione CA e la batteria.</translation>
-<translation id="1606917441621112087">Se il criterio viene impostato su true, il visualizzatore di PDF interno viene disattivato in <ph name="PRODUCT_NAME" />, i file PDF vengono considerati come file scaricati e gli utenti possono aprire i PDF con l'applicazione predefinita.
-
-      Se il criterio viene impostato su false o se non viene configurato, i file PDF vengono aperti, a meno che gli utenti disattivino il plug-in di PDF.</translation>
 <translation id="1608755754295374538">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione audio senza richieste</translation>
 <translation id="1611394564825535541">Consente di controllare se gli utenti possono accedere alle stampanti non aziendali.
 
@@ -2085,6 +2083,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se il criterio non viene configurato, viene usata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="3695706037816556327">Azione alla rimozione del token di sicurezza (ad esempio smart card) per <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3700193037252896716">La frequenza del riavvio.</translation>
 <translation id="3700318587977845664">La frequenza del controllo della disponibilità di aggiornamenti.</translation>
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
@@ -3038,6 +3037,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       * Se hanno ambito o livello diversi: verrà applicato il criterio con la priorità massima.
 
       Se un criterio è nell'elenco, nel caso ci sia conflitto tra le origini, l'ambito o il livello, verrà applicato il criterio con la priorità massima.</translation>
+<translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
 <translation id="5059201920681374653">Gli account gestiti devono trovarsi un su dispositivo gestito affiliato</translation>
@@ -3844,12 +3844,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6132506775968708399">Blocca cookie di terze parti</translation>
-<translation id="6132739217670763962">
-      Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto
-      isolato da tutte le origini. Chrome richiede l'isolamento da tutte le origini se il criterio
-      SharedArrayBuffers viene utilizzato con Chrome 91 e versioni successive (dal 25-05-2021) per motivi di compatibilità
-      web. Ulteriori dettagli sono disponibili all'indirizzo:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Consenti a tutti i siti di utilizzare la generazione di chiavi</translation>
 <translation id="6135398260575578389">Navigazione sicura è attiva in modalità potenziata. Questa modalità fornisce maggior sicurezza, ma non richiede la condivisione di ulteriori dati di navigazione con Google.</translation>
 <translation id="6138636318340561140">Controlla lo stato degli URL in tempo reale con Navigazione sicura</translation>
@@ -4668,6 +4662,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
+<translation id="7041170641363384736">Consente di impostare una programmazione personalizzata per il riavvio dei dispositivi. Attualmente il criterio viene applicato soltanto ai dispositivi per cui è stato attivato l'avvio automatico dell'app nella sessione Kiosk. Se viene impostato su Vero, il dispositivo verrà riavviato in base alla programmazione. Il criterio deve essere rimosso per annullare ulteriori riavvii programmati.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7060497964524144376">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
 
@@ -5484,6 +5479,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
+<translation id="8161536598508377155">Imposta una programmazione personalizzata per il riavvio dei dispositivi kiosk</translation>
 <translation id="8164144100557223371">Disattiva il punto di ingresso nella barra degli strumenti delle funzionalità sperimentali del browser</translation>
 <translation id="8164687848393015214">Se il criterio viene impostato su Attivato, i pacchetti di rete di monitoraggio (<ph name="HEARTBEATS_TERM" />) vengono inviati al server di gestione per monitorare lo stato online e consentire al server di rilevare se il dispositivo è offline.
 
@@ -5697,6 +5693,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se questo criterio viene impostato, le istantanee meno recenti vengono eliminate in base a quanto necessario per rispettare il limite. Se il criterio viene impostato su 0, non vengono acquisite istantanee.</translation>
 <translation id="8451988835943702790">Usa la pagina Nuova scheda come Pagina iniziale</translation>
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
+<translation id="8455551509936646199">Il giorno della settimana in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "WEEKLY".</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
 <translation id="847472800012384958">Non consentire la visualizzazione di popup nei siti</translation>

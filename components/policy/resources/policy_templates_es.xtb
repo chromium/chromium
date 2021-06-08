@@ -391,6 +391,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1515230621229117540">Habilita el menú de accesibilidad flotante</translation>
 <translation id="1515824657887788963">Permite que las páginas realicen solicitudes XHR síncronas durante el cierre de la página.</translation>
 <translation id="1516486219683984217">No permitir que se usen notificaciones del sistema</translation>
+<translation id="152078218786467087">Hora a la que se debe reiniciar, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="1522425503138261032">Permitir que los sitios puedan hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="1523774894176285446">Navegador alternativo donde se abren los sitios web configurados.</translation>
 <translation id="1524243669991877602">Si se le asigna el valor "Enabled" a esta política, se permitirá que las políticas asociadas con una cuenta <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> se fusionen con políticas a nivel de ordenador.
@@ -478,9 +479,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si no se establece <ph name="IDLE_ACTION_FIELD_NAME" />, se utiliza <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
       Nota: Existen opciones independientes para la conexión a la red eléctrica y la batería.</translation>
-<translation id="1606917441621112087">Si se asigna el valor "True" a esta política, se desactivará el visor interno de PDF en <ph name="PRODUCT_NAME" />, los archivos PDF se tratarán como descargas y los usuarios podrán abrir PDFs con la aplicación predeterminada.
-
-      Si se le asigna el valor "False" o no se le asigna ningún valor, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.</translation>
 <translation id="1608755754295374538">URLs a las que se concederá acceso a dispositivos de captura de audio sin confirmación</translation>
 <translation id="1611394564825535541">Permite controlar si los usuarios pueden acceder a impresoras que no sean de empresa
 
@@ -2108,6 +2106,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si no se establece esta política, se utiliza <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="3695706037816556327">Acción al quitar el token de seguridad (por ejemplo, una tarjeta inteligente) en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3700193037252896716">La frecuencia con la que se debe repetir el reinicio.</translation>
 <translation id="3700318587977845664">Frecuencia con la que debe comprobarse si hay actualizaciones.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
@@ -3061,6 +3060,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       * Si tienen distintos permisos o niveles: se aplicará la política que tenga la mayor prioridad.
 
       Si una política no está en la lista y se produce un conflicto entre distintos permisos, niveles o fuentes, se aplicará la política con mayor prioridad.</translation>
+<translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
 <translation id="5059201920681374653">Las cuentas gestionadas deben estar en un dispositivo gestionado asociado</translation>
@@ -3891,12 +3891,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
-<translation id="6132739217670763962">
-      Especifica si SharedArrayBuffers se puede usar en un contexto que no está aislado
-      en orígenes cruzados. Chrome requerirá el aislamiento en orígenes cruzados cuando se use
-      SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad
-      con la Web. Información adicional disponible en:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
@@ -4715,6 +4709,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
+<translation id="7041170641363384736">Permite definir un horario personalizado para reiniciar dispositivos. En este momento, la política solo se aplica a los dispositivos que hayan habilitado el inicio automático de aplicaciones en la sesión del kiosco. Cuando se le asigne el valor True, el dispositivo se reiniciará según el horario. Se debe quitar esta política para cancelar el resto de reinicios programados.</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7060497964524144376">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo, si incluyen suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
 
@@ -5537,6 +5532,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el resaltado del cursor se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="8161536598508377155">Definir un horario personalizado para reiniciar dispositivos de kiosco</translation>
 <translation id="8164144100557223371">Inhabilitar el punto de entrada de las funciones experimentales de la barra de herramientas del navegador</translation>
 <translation id="8164687848393015214">Si se habilita la política, se enviarán paquetes de red de monitorización (<ph name="HEARTBEATS_TERM" />) al servidor de administración para monitorizar el estado de la conexión y permitir que el servidor detecte si el dispositivo está sin conexión.
 
@@ -5750,6 +5746,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se establece, las instantáneas antiguas se eliminarán según sea necesario para respetar el límite. Si se asigna el valor "0" a esta política, no se realizarán instantáneas.</translation>
 <translation id="8451988835943702790">Utilizar página Nueva pestaña como página principal</translation>
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
+<translation id="8455551509936646199">Día de la semana en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "WEEKLY" (semanal).</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="847472800012384958">No permitir que ningún sitio muestre pop-ups</translation>

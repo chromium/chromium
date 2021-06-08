@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1000498691615767391">ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
-<translation id="1035094536595558507">ਸਲਾਈਡ ਦ੍ਰਿਸ਼</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ਆਈਟਮਾਂ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1049926623896334335">ਸ਼ਬਦ ਦਸਤਾਵੇਜ਼</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ਨਾਲ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ, ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ Windows ਫ਼ਾਈਲਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਓ।</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਅਪਲੋਡਿੰਗ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ ਜਦੋਂ Google Drive ਵਾਪਸ ਆਉਂਦੀ ਹੋਵੇ।</translation>
 <translation id="1307931752636661898">Linux ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
-<translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ਫਾਈਲਾਂ ਆਯਾਤ ਕਰ  ਰਿਹਾ ਹੈ...</translation>
 <translation id="1358735829858566124">ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਵਰਤੋਂ ਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1363028406613469049">ਟਰੈਕ</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1395262318152388157">ਸੀਕ ਸਲਾਈਡਰ</translation>
 <translation id="1404323374378969387">ਨਾਰਵੇਜੀਆਈ</translation>
-<translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1433628812591023318">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਲਿਜਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="1471718551822868769">ਸਲੋਵਾਕ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ਅਪਲੋਡ ਨਹੀਂ ਕੀਤੀ ਗਈ ਸੀ। ਤੁਹਾਡੀ Google Drive ਵਿੱਚ ਪੂਰਾ ਖਾਲੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1482884275703521657">ਫਿਨਿਸ਼</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">ਜਾਣਕਾਰੀ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="1838709767668011582">Google ਸਾਈਟ</translation>
 <translation id="1844692022597038441">ਇਹ ਫ਼ਾਈਲ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
-<translation id="1847880352285315359">ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1853795129690976061">ਇਹ ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1864756863218646478">ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕੀ।</translation>
 <translation id="1920670151694390848">ਮਲਿਆਲਮ ਲਿਪੀਅੰਤਰਨ</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2084108471225856927">ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" ਨਾਮਕ ਫਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਤੁਸੀਂ ਕੀ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="2121825465123208577">ਆਕਾਰ ਬਦਲੋ</translation>
 <translation id="2125607626296734455">ਖਮੇਰ</translation>
 <translation id="2142680004883808240">ਧੁਨੀਆਤਮਿਕ YaZHert ਕੀ-ਬੋਰਡ ਨਾਲ ਰੂਸੀ</translation>
 <translation id="2163152940313951844">ਅਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹ: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">ਕੁੱਲ ਫ਼ਾਈਲ ਆਕਾਰ</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
-<translation id="2453576648990281505">ਫਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="2464079411014186876">ਆਈਸ ਕ੍ਰੀਮ</translation>
 <translation id="2468402215065996499">ਤਾਮਾਗੋਚੀ</translation>
 <translation id="2500392669976258912">ਗੁਜਰਾਤੀ ਧੁਨੀਆਤਮਿਕ</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">ਇਸ ਸਮੇਂ Google Drive ਤੇ ਨਹੀਂ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2638942478653899953">Google Drive 'ਤੇ ਪਹੁੰਚਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ <ph name="BEGIN_LINK" />ਲੌਗ ਆਉਟ<ph name="END_LINK" /> ਅਤੇ ਫਿਰ ਲੌਗ ਇਨ ਕਰੋ।</translation>
 <translation id="2649120831653069427">ਰੈਂਬੋਫ਼ਿਸ਼</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">ਮੇਅਨਸਨ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਬਰਮੀ/ਮਿਆਂਮਾਰ</translation>
 <translation id="2664412712123763093">ਫ਼ਾਈਲ ਦਾ ਟਿਕਾਣਾ</translation>
 <translation id="2672394958563893062">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਮੁੱਢ ਤੋਂ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">ਪਨੀਰ</translation>
 <translation id="2781645665747935084">ਬੈਲਜ਼ੀਅਨ</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
-<translation id="2787047795752739979">ਮੂਲ ਨੂੰ ਓਵਰਰਾਈਟ ਕਰੋ</translation>
 <translation id="2830077785865012357">ਚੀਨੀ ਜ਼ੂਯਿਨ</translation>
 <translation id="2843806747483486897">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਦਲੋ...</translation>
 <translation id="2850124913210091882">ਬੈਕਅੱਪ ਲਓ</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> ਦਾ ਬੈਕਅੱਪ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਿਆ</translation>
 <translation id="299638574917407533">ਫਰਾਂਸੀਸੀ (ਕੈਨੇਡਾ)</translation>
 <translation id="3003633581067744647">ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
-<translation id="3007214526293698309">ਅਨੁਪਾਤ ਠੀਕ ਕਰੋ</translation>
 <translation id="3029114385395636667">Docs, Sheets ਅਤੇ Slides ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਉਣ ਲਈ Google Docs ਆਫ਼ਲਾਈਨ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="303198083543495566">ਭੂਗੋਲ</translation>
 <translation id="3047197340186497470">ਚੀਨੀ ਡਾਯੀ</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3113153474486991170">ਇਸ ਟਿਕਾਣੇ ਤੋਂ "<ph name="PATH" />" ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਖੋਲ੍ਹਣ ਲਈ "ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ" ਵਿੱਚ ਕਾਪੀ ਕਰੋ।</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">ਹੋ ਗਿਆ</translation>
 <translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">ਪਾਥ</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3619115746895587757">ਕੈਪੁਚੀਨੋ</translation>
 <translation id="3620292326130836921">ਸਾਰੇ ਬੈਕ ਅਪ ਕੀਤੇ ਗਏ!</translation>
-<translation id="3626281679859535460">ਚਮਕ</translation>
-<translation id="3644896802912593514">ਚੌੜਾਈ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਲਿਜਾਈਆਂ ਗਈਆਂ।</translation>
 <translation id="3645531960514756307">ਫੋਲਡਰ ਨੂੰ ਅਨਪਿੰਨ ਕਰੋ</translation>
 <translation id="3685122418104378273">Google Drive ਸਿੰਕ ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਦੇ ਸਮੇਂ, ਬਾਇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਸਮਰਥਿਤ ਹੁੰਦਾ ਹੈ।</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">ਖਰਗੋਸ਼</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3811494700605067549">1 ਫ਼ਾਈਲ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
-<translation id="38275787300541712">ਜਦੋਂ ਹੋ ਜਾਏ ਤਾਂ Enter ਦਬਾਓ</translation>
 <translation id="3830674330436234648">ਕੋਈ ਪਲੇਬੈਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="383652340667548381">Serbian</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">ਅਰਬੀ-ਆਧਾਰਿਤ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਸੋਰਾਨੀ ਕੁਰਦੀ</translation>
 <translation id="4363958938297989186">ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਰੂਸੀ</translation>
 <translation id="4364327530094270451">ਖਰਬੂਜ਼ਾ</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">ਬਾਹਰੀ ਲਿੰਕ</translation>
 <translation id="4418686080762064601">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਲਈ ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ ਬੈਕ ਅਪ ਕੀਤਾ</translation>
 <translation id="4725511304875193254">ਕੋਰਗੀ</translation>
 <translation id="4732760563705710320">ਮਾਫ਼ ਕਰਨਾ, ਇਹ ਵੀਡੀਓ ਤੁਹਾਡੀ ਕਾਸਟ ਡੀਵਾਈਸ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
-<translation id="4734518477988699048">ਇਨਪੁੱਟ ਮੁੱਲ ਅਵੈਧ ਹੈ।</translation>
 <translation id="4737050008115666127">ਲੈਂਡਿੰਗ</translation>
 <translation id="4747271164117300400">ਮੈਕੇਡੋਨੀਅਨ</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">ਕਾਲਮ ਨੂੰ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ਬਾਈਟ</translation>
 <translation id="4880214202172289027">ਵੌਲਿਊਮ ਸਲਾਈਡਰ</translation>
-<translation id="4880520557730313061">ਆਟੋ-ਫਿਕਸ ਕਰੋ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
 <translation id="4900532980794411603">Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
-<translation id="4924638091161556692">ਫਿਕਸਡ</translation>
 <translation id="4935975195727477204">ਗੈਨਜ਼ਾਨੀਆ ਫਲਾਵਰ</translation>
 <translation id="4943368462779413526">ਫੁੱਟਬਾਲ</translation>
 <translation id="4961158930123534723">1 ਫੋਲਡਰ Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">ਹੋਰ ਦੇਖੋ...</translation>
 <translation id="5044852990838351217">ਅਰਮੀਨੀਆਈ</translation>
 <translation id="5059127710849015030">ਨੇਪਾਲੀ ਲਿਪੀਅੰਤਰਨ</translation>
-<translation id="5061708541166515394">ਕੰਟ੍ਰਾਸਟ</translation>
 <translation id="5068919226082848014">ਪੀਜ਼ਾ</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ਫ਼ਾਈਲਾਂ ਮਿਟਾ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਲਿਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Hangul 3 ਸੈਟ (390)</translation>
 <translation id="5145331109270917438">ਤਾਰੀਖ ਸੰਸ਼ੋਧਿਤ ਕੀਤੀ</translation>
 <translation id="515594325917491223">ਸ਼ਤਰੰਜ</translation>
-<translation id="5158593464696388225">ਚਿੱਤਰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />ਅਜੇ ਆਪਣੀ ਡੀਵਾਈਸ ਨਾ ਹਟਾਓ!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    ਡੀਵਾਈਸ ਦੇ ਵਰਤੋਂ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਇਸਨੂੰ ਹਟਾਉਣ ਨਾਲ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਓਪਰੇਸ਼ਨ ਦੇ ਖ਼ਤਮ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ, ਫਿਰ Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਓ।</translation>
@@ -485,7 +465,6 @@
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ਵਿਕਲਪ ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
 <translation id="6007237601604674381">ਮੂਵ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">ਕੱਟੋ</translation>
 <translation id="60357267506638014">ਚੈਕ QWERTY</translation>
 <translation id="604001903249547235">ਕਲਾਊਡ ਬੈਕਅੱਪ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
@@ -526,10 +505,8 @@
 <translation id="6423031066725912715">TCVN ਕੀ-ਬੋਰਡ ਨਾਲ ਵੀਅਤਨਾਮੀ</translation>
 <translation id="6485131920355264772">ਸਪੇਸ ਜਾਣਕਾਰੀ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
 <translation id="6509122719576673235">ਨਾਰਵੇਜੀਅਨ</translation>
-<translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ਨੂੰ ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6549689063733911810">ਹਾਲੀਆ</translation>
-<translation id="6556866813142980365">ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="6558280019477628686">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਸ਼ਾਇਦ ਕੁਝ ਆਈਟਮਾਂ ਮਿਟਾਈਆਂ ਨਹੀਂ ਗਈਆਂ ਹਨ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ਨੂੰ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6581162200855843583">Google Drive ਲਿੰਕ</translation>
@@ -562,7 +539,6 @@
 <translation id="6885780034956018177">ਘੋਗਾ</translation>
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6898028766943174120">ਹੋਰ ਉਪ-ਫੋਲਡਰ...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਸੰਪਾਦਨ ਕੀਤੇ ਗਏ ਚਿੱਤਰ ਡਾਊਨਲੋਡ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">ਅਮਰੀਕੀ ਵਰਕਮੈਨ</translation>
 <translation id="6930242544192836755">ਮਿਆਦ</translation>
@@ -588,7 +564,6 @@
 <translation id="7040138676081995583">ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="7075931588889865715">TIS 820-2531 ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਥਾਈ</translation>
 <translation id="7086590977277044826">ਇਨਸਕ੍ਰਿਪਟ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤਮਿਲ</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> ਆਈਟਮਾਂ ਚੁਣੀਆਂ</translation>
 <translation id="7103992300314999525">ਮੈਸੇਡੋਨੀਅਨ</translation>
 <translation id="7106346894903675391">ਹੋਰ ਸਟੋਰੇਜ ਖਰੀਦੇ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ਡਰਾਈਵ ਖੋਜੋ&lt;/em&gt;</translation>
@@ -618,7 +593,6 @@
     <ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
 <translation id="7495372004724182530">ਮਲਿਆਲਮ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="7505167922889582512">ਲੁਕਾਈਆਂ ਫਾਈਲਾਂ ਦਿਖਾਓ</translation>
-<translation id="7508545000531937079">ਸਲਾਈਡਸ਼ੋਅ</translation>
 <translation id="751507702149411736">Belarusian</translation>
 <translation id="7532029025027028521">ਫ਼ਾਰਸੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="7544830582642184299">Linux ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੀ Google Drive ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤਬਦੀਲੀਆਂ ਦਾ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਮਕਾਲੀਕਰਨ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -629,7 +603,6 @@
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
 <translation id="7553492409867692754">Linux ਐਪਾਂ ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ਕੇਵਲ ਇੱਕ ਸਕਿੰਟ ਠਹਿਰੋ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7600126690270271294">ਸਰਬੀਆਈ</translation>
@@ -671,7 +644,6 @@
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7853966320808728790">ਫਰਾਂਸੀਸੀ BÉPO</translation>
 <translation id="7868774406711971383">ਪੋਲਿਸ਼</translation>
-<translation id="7873831373602885875"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਸਾਰੇ ਸੰਪਾਦਨ ਡਾਊਨਲੋਡ ਫੋਲਡਰ ਵਿੱਚ <ph name="DOWNLOADS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7874321682039004450">ਫਿਲੀਪੀਨੋ</translation>
 <translation id="7881969471599061635">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="78946041517601018">ਸਾਂਝੇ ਡਰਾਈਵ</translation>
@@ -683,7 +655,6 @@
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">ਫਰਾਂਸੀਸੀ (ਸਵਿਟਜ਼ਰਲੈਂਡ)</translation>
 <translation id="7980421588063892270">ਕੋਲਮੈਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
-<translation id="7982283708762922719">ਉਚਾਈ</translation>
 <translation id="79907182588096956">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। Chrome OS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">ਜੈਕ ਰੂਸੈਲ ਟੈਰੀਅਰ</translation>
 <translation id="8028993641010258682">ਆਕਾਰ</translation>
@@ -691,17 +662,14 @@
 <translation id="8038111231936746805">(ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ਆਡੀਓ</translation>
 <translation id="8045462269890919536">Romanian</translation>
-<translation id="8066773524873206594">ਸਾਰੇ ਸੰਪਾਦਨ <ph name="DOWNLOADS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="8079530767338315840">ਦੋਹਰਾਓ</translation>
 <translation id="8106045200081704138">ਮੇਰੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ</translation>
 <translation id="8116072619078571545">ਠੰਡਾ ਪਾਣੀ</translation>
 <translation id="8128733386027980860">ਡੀਵੋਰਯੈਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਕੇ.)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ਤੁਹਾਡੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤੀ ਗਈ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਮਿਟਾ ਨਹੀਂ ਸਕਦੇ ਕਿਉਂਕਿ ਇਹ ਤੁਹਾਡੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8151638057146502721">ਸੰਰੂਪਿਤ ਕਰੋ</translation>
-<translation id="8153607920959057464">ਇਹ ਫਾਈਲ ਡਿਸਪਲੇ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="8154842056504218462">ਸਾਰੇ ਇੰਦਰਾਜ ਚੁਣੇ ਗਏ।</translation>
 <translation id="8157684860301034423">ਐਪ ਜਾਣਕਾਰੀ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">ਫਰਾਂਸੀਸੀ (ਬੈਲਜੀਅਮ)</translation>
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8193175696669055101">ਡੀਵਾਈਸ ਮਾਡਲ</translation>
@@ -755,7 +723,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ।</translation>
 <translation id="872537912056138402">Croatian</translation>
 <translation id="8750438273876807512">ਫ਼ਾਈਲ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ ਅਤੇ <ph name="ICON" /> 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ ਸ਼ੈਲਫ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਤਤਕਾਲ ਪਹੁੰਚ ਕਰਨ ਲਈ "ਸ਼ੈਲਫ 'ਤੇ ਪਿੰਨ ਕਰੋ" ਨੂੰ ਚੁਣੋ।</translation>
-<translation id="8775404590947523323">ਤੁਹਾਡੇ ਸੰਪਾਦਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।<ph name="BREAKS" />ਅਸਲ ਚਿੱਤਰ ਦੀ ਇੱਕ ਕਾਪੀ ਰੱਖਣ ਲਈ, "ਅਸਲ 'ਤੇ ਓਵਰਰਾਈਟ ਕਰੋ" 'ਤੇ ਨਿਸ਼ਾਨ ਹਟਾਓ।</translation>
 <translation id="8802459921616481935">ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="8808686172382650546">ਬਿੱਲੀ</translation>
 <translation id="8810671769985673465">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ, ਆਈਟਮ ਮੌਜੂਦ ਹੈ: "<ph name="FILE_NAME" />"</translation>
@@ -774,7 +741,6 @@
 <translation id="9034924485347205037">Linux ਫ਼ਾਈਲਾਂ</translation>
 <translation id="9035012421917565900">ਆਈਟਮਾਂ ਨੂੰ '<ph name="DESTINATION_NAME" />' ਵਿੱਚ ਵਾਪਸ ਤਬਦੀਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ, ਇਸ ਕਰਕੇ ਤੁਸੀਂ ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕਰਨ ਦੇ ਯੋਗ ਨਹੀਂ ਹੋਵੋਗੇ।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ਨਾਮਕ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਨਾਮ ਚੁਣੋ।</translation>
-<translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="908378762078012445">ਧੁਨੀਆਤਮਿਕ AATSEEL ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਰੂਸੀ</translation>
 <translation id="9099674669267916096">ਪੰਨਾ ਗਿਣਤੀ</translation>
 <translation id="9110990317705400362">ਅਸੀਂ ਲਗਾਤਾਰ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਧ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣ ਦੇ ਤਰੀਕੇ ਖੋਜਦੇ ਰਹਿੰਦੇ ਹਾਂ। ਪਹਿਲਾਂ, ਕੋਈ ਵੀ ਵੈੱਬਸਾਈਟ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਕਹਿ ਸਕਦੀ ਸੀ। Google Chrome ਦੇ ਨਵੇਂ ਵਰਜਨਾਂ ਵਿੱਚ, ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਸਪਸ਼ਟ ਰੂਪ ਨਾਲ ਦੱਸਣਾ ਪਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਹਨਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਪੰਨੇ ਰਾਹੀਂ ਸ਼ਾਮਲ ਕਰਕੇ ਇਹਨਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -786,8 +752,6 @@
 <translation id="9133055936679483811">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="9144340019284012223">ਕਾਤਾਲਾਨ</translation>
-<translation id="9148058034647219655">ਬਾਹਰ ਜਾਓ</translation>
-<translation id="9154418932169119429">ਇਹ ਚਿੱਤਰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="9172592259078059678">ਗੁਜਰਾਤੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="9173120999827300720">ਅੰਤਰਰਾਸ਼ਟਰੀ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
 <translation id="9174050671906956834">ਰੱਦੀ ਵਿਚਲੀਆਂ ਆਈਟਮਾਂ ਨੂੰ 30 ਦਿਨਾਂ ਬਾਅਦ ਹਮੇਸ਼ਾਂ ਲਈ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</translation>
@@ -796,7 +760,6 @@
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
 <translation id="9219908252191632183">ਚੰਨ ਦਾ ਦ੍ਰਿਸ਼</translation>
 <translation id="939736085109172342">ਨਵਾਂ ਫੋਲਡਰ</translation>
-<translation id="942954117721265519">ਇਸ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ।</translation>
 <translation id="943972244133411984">ਇਸ ਵੱਲੋਂ ਸੋਧੀ ਗਈ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ਤੋਂ <ph name="TO_ENTRY_NAME" /> ਤੱਕ <ph name="ENTRY_COUNT" /> ਇੰਦਰਾਜਾਂ ਦੀ ਰੇਂਜ ਚੁਣੀ ਗਈ ਹੈ।</translation>

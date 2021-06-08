@@ -237,6 +237,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1243436884219965846">Pārskatīt paroles</translation>
 <translation id="1244265436519979884">Šobrīd notiek Linux atjaunošana</translation>
 <translation id="1244303850296295656">Paplašinājuma kļūda</translation>
+<translation id="1246863218384630739">Nevarēja instalēt <ph name="VM_NAME" />: attēla URL atgrieza <ph name="HTTP_ERROR" />. kļūdas kodu. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="1246905108078336582">Vai noņemt ieteikumu no starpliktuves?</translation>
 <translation id="1251366534849411931">Jābūt figūriekavai: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tādējādi tiks notīrīti <ph name="TOTAL_USAGE" /> datu, kas tiek glabāti vietnēs un instalētajās lietotnēs.</translation>
@@ -1524,6 +1525,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2610260699262139870">Patiesais izmērs</translation>
 <translation id="2610780100389066815">Microsoft uzticamības saraksta parakstīšana</translation>
 <translation id="2612676031748830579">Kartes numurs</translation>
+<translation id="2613535083491958306">Vietne <ph name="ORIGIN" /> varēs rediģēt failu <ph name="FILENAME" />.</translation>
 <translation id="2616366145935564096">Lasīt un mainīt jūsu datus vietnē <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM karte ir bloķēta.</translation>
 <translation id="2618797463720777311">Funkcijas Kopīgošana tuvumā iestatīšana</translation>
@@ -2282,6 +2284,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3441653493275994384">Ekrāns</translation>
 <translation id="3441663102605358937">Vēlreiz pierakstieties kontā <ph name="ACCOUNT" />, lai verificētu šo kontu</translation>
 <translation id="3444641828375597683">Reklāmdevēji un izdevēji var izmantot tehnoloģiju FPK, kā aprakstīts tālāk šajā lapā.</translation>
+<translation id="3444726579402183581">Vietne <ph name="ORIGIN" /> varēs skatīt failu <ph name="FILENAME" />.</translation>
 <translation id="3445047461171030979">Google asistenta ātrās atbildes</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C ierīce</translation>
@@ -3779,6 +3782,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5086874064903147617">Vai atjaunot noklusējuma sākumlapu?</translation>
 <translation id="5087249366037322692">Pievienoja trešā puse</translation>
 <translation id="5087580092889165836">Pievienot karti</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ar RSA šifrējumu</translation>
 <translation id="5090637338841444533">Nedrīkst izsekot kameras pozīciju</translation>
 <translation id="5094721898978802975">Sazināties ar iebūvētām lietojumprogrammām, kas sadarbojas</translation>
@@ -4559,6 +4563,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5964113968897211042">{COUNT,plural, =0{Atvērt visas &amp;jaunā logā}=1{Atvērt &amp;jaunā logā}zero{Atvērt visas ({COUNT}) &amp;jaunā logā}one{Atvērt visas ({COUNT}) &amp;jaunā logā}other{Atvērt visas ({COUNT}) &amp;jaunā logā}}</translation>
 <translation id="5965661248935608907">Tas nosaka arī to, kāda lapa tiks rādīta, kad noklikšķināsiet uz pogas “Sākums” vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="5969419185858894314">Vietne <ph name="ORIGIN" /> var atvērt mapē <ph name="FOLDERNAME" /> esošos failus.</translation>
+<translation id="5969728632630673489">Paziņojums par īsinājumtaustiņiem ir noraidīts.</translation>
 <translation id="5971037678316050792">Kontrolēt Bluetooth adaptera statusu un savienošanu pārī</translation>
 <translation id="597235323114979258">Skatīt citus galamērķus</translation>
 <translation id="5972666587303800813">Pakalpojums, kas nedarbojas</translation>
@@ -6191,6 +6196,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7766807826975222231">Skatīt ceļvedi</translation>
 <translation id="7766838926148951335">Piekrist atļaujām</translation>
 <translation id="7768507955883790804">Vietnēs tiks automātiski lietots šis iestatījums, kad tās apmeklēsiet.</translation>
+<translation id="7768526219335215384">Vietne <ph name="ORIGIN" /> varēs skatīt failus mapē “<ph name="FOLDERNAME" />”.</translation>
 <translation id="7768770796815395237">Mainīt</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7770612696274572992">Attēls nokopēts no citas ierīces</translation>
@@ -6494,6 +6500,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8063235345342641131">Noklusējuma iemiesojums zaļā krāsā</translation>
 <translation id="8063535366119089408">Skatīt failu</translation>
 <translation id="8064279191081105977">Grupas <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />) statuss: <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Savienojuma dialoglodziņš</translation>
 <translation id="8068253693380742035">Pieskarieties, lai pierakstītos</translation>
 <translation id="8069615408251337349">Google mākoņdruka</translation>
 <translation id="8071432093239591881">Drukāt kā attēlu</translation>
@@ -7526,6 +7533,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9186963452600581158">Pierakstīties bērna Google kontā</translation>
 <translation id="9188732951356337132">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja jūsu bērnam ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Izmantojiet savu Android tālruni kā drošības atslēgu</translation>
+<translation id="9200339982498053969">Vietne <ph name="ORIGIN" /> varēs rediģēt failus mapē “<ph name="FOLDERNAME" />”.</translation>
 <translation id="920045321358709304">Meklēt pakalpojumā <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Visi bezsaistē esošie dati tiks izdzēsti</translation>
 <translation id="9201220332032049474">Ekrāna bloķēšanas opcijas</translation>

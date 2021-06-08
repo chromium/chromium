@@ -239,6 +239,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1243436884219965846">Pregled lozinki</translation>
 <translation id="1244265436519979884">Vraćanje Linuxa je trenutno u toku</translation>
 <translation id="1244303850296295656">Greška ekstenzije</translation>
+<translation id="1246863218384630739">Instaliranje virtualnog računara <ph name="VM_NAME" /> nije uspjelo: URL slike je rezultirao kodom greške <ph name="HTTP_ERROR" />. Kontaktirajte administratora.</translation>
 <translation id="1246905108078336582">Ukloniti prijedlog iz međumemorije?</translation>
 <translation id="1251366534849411931">Očekivana početna vitičasta zagrada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ovim će se obrisati <ph name="TOTAL_USAGE" /> podataka koje su pohranile web lokacije i instalirane aplikacije</translation>
@@ -1536,6 +1537,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2610260699262139870">A&amp;ctual Size (Stvarna veličina)</translation>
 <translation id="2610780100389066815">Potpisivanje Microsoftove liste pouzdanih stavki</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> će moći uređivati fajl <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Čitati i mijenjati vaše podatke na web lokaciji <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2618797463720777311">Postavite Dijeljenje u blizini</translation>
@@ -2193,7 +2195,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3333190335304955291">Ovu uslugu možete isključiti u Postavkama.</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
-<translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videozapis se reproducira u načinu rada slika u slici</translation>
+<translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videozapis se reproducira u načinu rada slike u slici</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
 <translation id="3336855445806447827">Ne znam</translation>
 <translation id="3337568642696914359">Nemoj dozvoliti web lokacijama upravljanje protokolima</translation>
@@ -2293,6 +2295,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da potvrdite ovaj račun</translation>
 <translation id="3444641828375597683">Oglašivači i izdavači mogu koristiti FLoC, opisan u nastavku na ovoj stranici.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> će moći prikazati fajl <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Brzi odgovori Google Asistenta</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
@@ -3791,6 +3794,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5086874064903147617">Vratiti zadanu početnu stranicu?</translation>
 <translation id="5087249366037322692">Dodala treća strana</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 sa RSA šifriranjem</translation>
 <translation id="5090637338841444533">Nije dozvoljeno praćenje položaja vaše kamere</translation>
 <translation id="5094721898978802975">Komunikacija s izvornim aplikacijama za saradnju</translation>
@@ -4571,6 +4575,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>
 <translation id="5965661248935608907">Također određuje koja stranica će se prikazati kada kliknete dugme Početna ili pretražujete iz Omniboxa.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> može pregledati fajlove u folderu <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Obavještenje o prečici tastature je odbačeno</translation>
 <translation id="5971037678316050792">Kontrolira stanje Bluetooth adaptera i uparivanje</translation>
 <translation id="597235323114979258">Pogledajte više odredišta</translation>
 <translation id="5972666587303800813">Usluga bez funkcije</translation>
@@ -6206,6 +6211,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7766807826975222231">Razgledajte</translation>
 <translation id="7766838926148951335">Prihvati odobrenja</translation>
 <translation id="7768507955883790804">Kada posjećujete web lokacije, one se automatski pridržavaju ovih postavki</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> će moći prikazati sve fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Izmijeni</translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7770612696274572992">Slika je kopirana s drugog uređaja</translation>
@@ -6510,6 +6516,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8063235345342641131">Zadani zeleni avatar</translation>
 <translation id="8063535366119089408">Pregledaj fajl</translation>
 <translation id="8064279191081105977">Grupa <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Dijaloški okvir veze</translation>
 <translation id="8068253693380742035">Dodirnite da se prijavite</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Ispiši kao sliku</translation>
@@ -6859,7 +6866,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8464132254133862871">Ovaj korisnički račun ne ispunjava uslove za ovu uslugu.</translation>
 <translation id="8465252176946159372">Nije važeće</translation>
 <translation id="8465444703385715657">Za pokretanje dodatka <ph name="PLUGIN_NAME" /> je potrebno vaše odobrenje</translation>
-<translation id="8466417995783206254">Ova kartica reproducira videozapis u načinu rada slika u slici.</translation>
+<translation id="8466417995783206254">Ova kartica reproducira videozapis u načinu rada slike u slici.</translation>
 <translation id="8467326454809944210">Odaberi drugi jezik</translation>
 <translation id="8470513973197838199">Sačuvane lozinke za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>
@@ -7542,6 +7549,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9186963452600581158">Prijavite se putem Google računa djeteta</translation>
 <translation id="9188732951356337132">Šaljite podatke o upotrebi i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. Ovo se neće koristiti za identifikaciju vašeg djeteta, a pomoći će stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su programeri za Android. Ako je za vaše dijete uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci mogu biti sačuvani na Google računu djeteta. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Koristite Android telefon kao sigurnosni ključ</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> će moći uređivati sve fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pretraži <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Obrisat će se svi offline podaci</translation>
 <translation id="9201220332032049474">Opcije zaključavanja ekrana</translation>

@@ -391,6 +391,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1515230621229117540">Hiermee wordt het zwevende toegankelijkheidsmenu aangezet</translation>
 <translation id="1515824657887788963">Hiermee wordt toegestaan dat een pagina synchrone XHR-verzoeken verstuurt tijdens de afwijzing van de pagina.</translation>
 <translation id="1516486219683984217">Systeemmeldingen niet toestaan</translation>
+<translation id="152078218786467087">Tijd wanneer opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="1522425503138261032">Sites toestaan de fysieke locatie van gebruikers bij te houden</translation>
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
 <translation id="1524243669991877602">Als je dit beleid toepast, kunnen beleidsregels die aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account zijn gekoppeld, worden samengevoegd in beleidsregels op machineniveau.
@@ -478,9 +479,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als <ph name="IDLE_ACTION_FIELD_NAME" /> niet is ingesteld, wordt <ph name="IDLE_ACTION_ENUM_SUSPEND" /> uitgevoerd.
 
       Opmerking: Er zijn afzonderlijke instellingen voor wanneer het apparaat op netstroom of op de batterij werkt.</translation>
-<translation id="1606917441621112087">Als je het beleid instelt op True, wordt de interne pdf-viewer in <ph name="PRODUCT_NAME" /> uitgezet, worden pdf-bestanden als downloads behandeld en kunnen gebruikers pdf's openen met de standaard-app.
-
-      Als je het beleid instelt op False of niet instelt, worden pdf-bestanden geopend, tenzij gebruikers de pdf-plug-in uitzetten.</translation>
 <translation id="1608755754295374538">URL's die zonder prompt toegang krijgen tot apparaten voor het vastleggen van audio</translation>
 <translation id="1611394564825535541">Hiermee kun je bepalen of gebruikers toegang hebben tot printers die niet van het bedrijf zijn.
 
@@ -2071,6 +2069,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Als je dit beleid niet instelt, wordt <ph name="PRINTERS_ALLOW_ALL" /> gebruikt.</translation>
 <translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3700193037252896716">Frequentie waarmee opnieuw opstarten moet plaatsvinden.</translation>
 <translation id="3700318587977845664">Frequentie waarmee de updatecheck moet worden herhaald.</translation>
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
@@ -3019,6 +3018,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
 
       Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
+<translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
 <translation id="5056708224511062314">Vergrootglas staat uit</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
 <translation id="5059201920681374653">Beheerde accounts moeten op een aangesloten beheerd apparaat staan</translation>
@@ -3824,9 +3824,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
-<translation id="6132739217670763962">
-      Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf Chrome 91 (25-05-2021) vereist Chrome cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met betrekking tot webcompatibiliteit. Je kunt meer informatie bekijken op:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Alle sites toestaan sleutels te genereren</translation>
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>
@@ -4637,6 +4634,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
+<translation id="7041170641363384736">Hiermee kun je een aangepast schema instellen om apparaten opnieuw op te starten. Het beleid is momenteel alleen van toepassing op apparaten waarop automatisch starten van de app in de kiosksessie aanstaat. Als dit beleid is ingesteld op True, wordt het apparaat opnieuw opgestart volgens het schema. Het beleid moet worden verwijderd om meer gepland opnieuw opstarten te annuleren.</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7060497964524144376">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
 
@@ -5457,6 +5455,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie voor cursormarkering in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+<translation id="8161536598508377155">Aangepast schema instellen om kioskapparaten opnieuw op te starten</translation>
 <translation id="8164144100557223371">Beginpunt voor werkbalk met experimentele browserfuncties uitzetten</translation>
 <translation id="8164687848393015214">Als je het beleid toepast, worden controlenetwerkpakketten (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
 
@@ -5670,6 +5669,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
       Als het beleid is ingesteld, worden oude momentopnamen verwijderd als dat nodig is om aan de limiet te voldoen. Als het beleid is ingesteld op 0, worden er geen momentopnamen gemaakt.</translation>
 <translation id="8451988835943702790">De pagina 'Nieuw tabblad' als homepage gebruiken</translation>
 <translation id="8455529558077979314">Instellingen voor privacyscherm</translation>
+<translation id="8455551509936646199">Dag van de week waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op WEEKLY.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameters voor instant-URL die POST gebruikt</translation>
 <translation id="847472800012384958">Niet toestaan dat sites pop-ups tonen</translation>

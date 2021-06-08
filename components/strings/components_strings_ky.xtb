@@ -67,7 +67,7 @@
 <translation id="1206967143813997005">Баштапкы колтамга начар</translation>
 <translation id="1209206284964581585">Азырынча жашыруу</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> доменин ачканга аракет кылдыңыз, бирок сервер чабал ачкычты камтыган тастыктаманы сунуштады. Башкача айтканда, зыянкеч чабуулчу жеке ачкычты бузгандыктан, сервер сиз күтүп жаткан сервер болбой калышы мүмкүн (балким, чабуулчу менен байланышып жатасыз).</translation>
-<translation id="1219129156119358924">Тутумдун коопсуздугу</translation>
+<translation id="1219129156119358924">Системанын коопсуздугу</translation>
 <translation id="1227224963052638717">Белгисиз саясат.</translation>
 <translation id="1228893227497259893">Туура эмес объект аныктагыч</translation>
 <translation id="1232569758102978740">Аты жок</translation>
@@ -314,7 +314,7 @@
 <translation id="2064691555167957331">{COUNT,plural, =1{1 сунуш}other{# сунуш}}</translation>
 <translation id="2071692954027939183">Билдирмелер автоматтык түрдө бөгөттөлдү, анткени, адатта, аларга уруксат бербейсиз</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
-<translation id="20817612488360358">Тутумдун прокси жөндөөлөрү коюлду жана ошону менен катар, айкын прокси конфигурайиясы да белгиленди.</translation>
+<translation id="20817612488360358">Системанын прокси жөндөөлөрү коюлду жана ошону менен катар, айкын прокси конфигурайиясы да белгиленди.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
 <translation id="2085876078937250610">Сактоо…</translation>
 <translation id="2088086323192747268">Шайкештирүүнү башкаруу баскычы, Chrome жөндөөлөрүнөн шайкештирилген маалыматты башкаруу үчүн Enter баскычын басыңыз</translation>
@@ -401,6 +401,7 @@
 <translation id="2359629602545592467">Бир нече</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2359961752320758691">Виртуалдык картаңыздын номери колдонулду.</translation>
+<translation id="236340516568226369">Өчүрүү/күйгүзүү менюсунун өлчөмүн өзгөртүү</translation>
 <translation id="2367567093518048410">Деңгээли</translation>
 <translation id="2372464001869762664">Ырастаганыңыздан кийин Google аккаунтуңуздагы карточканын чоо-жайы бул сайтка жөнөтүлөт. Plex аккаунтуңуздун чоо-жайынан CVC кодун табыңыз.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1275,7 +1276,7 @@
 <translation id="5580958916614886209">Мөөнөтү аяктоочу айды текшерип, кайталап көрүңүз</translation>
 <translation id="5586446728396275693">Сакталган даректер жок</translation>
 <translation id="5593349413089863479">Туташуу кооптуураак</translation>
-<translation id="5595485650161345191">Даректи түзөтүү</translation>
+<translation id="5595485650161345191">Даректи өзгөртүү</translation>
 <translation id="5598944008576757369">Төлөм ыкмасын тандоо</translation>
 <translation id="560412284261940334">Башкаруу колдоого алынбайт</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2245,7 +2246,7 @@
 <translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988159990683914416">Иштеп чыгуучунун курамасы</translation>
-<translation id="989988560359834682">Даректи түзөтүү</translation>
+<translation id="989988560359834682">Даректи өзгөртүү</translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Кызгылтым</translation>
 <translation id="992432478773561401">"<ph name="SOFTWARE_NAME" />" программасы компьютериңизде же тармагыңызда туура орнотулган эмес:

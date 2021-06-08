@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">查看密碼</translation>
 <translation id="1244265436519979884">目前正在執行 Linux 還原作業</translation>
 <translation id="1244303850296295656">擴充功能錯誤</translation>
+<translation id="1246863218384630739">無法安裝 <ph name="VM_NAME" />：映像檔網址傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請與管理員聯絡。</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
@@ -1522,6 +1523,7 @@
 <translation id="2610260699262139870">實際大小(&amp;C)</translation>
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="2612676031748830579">卡號</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
@@ -2280,6 +2282,7 @@
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">再次登入 <ph name="ACCOUNT" /> 以驗證這個帳戶</translation>
 <translation id="3444641828375597683">廣告客戶和發布商可以使用 FLoC 技術 (本頁隨後會加以說明)。</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> 將可查看「<ph name="FILENAME" />」</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
@@ -3776,6 +3779,7 @@
 <translation id="5086874064903147617">要還原預設首頁嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
 <translation id="5094721898978802975">與合作原生應用程式建立連線</translation>
@@ -4556,6 +4560,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="5965661248935608907">這個擴充功能也會控管你點選 [首頁] 按鈕或使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可以查看「<ph name="FOLDERNAME" />」中的檔案</translation>
+<translation id="5969728632630673489">已關閉鍵盤快速鍵通知</translation>
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
 <translation id="597235323114979258">顯示更多列印端點</translation>
 <translation id="5972666587303800813">無作業服務</translation>
@@ -6191,6 +6196,7 @@
 <translation id="7766807826975222231">觀看導覽</translation>
 <translation id="7766838926148951335">接受權限</translation>
 <translation id="7768507955883790804">網站會在你造訪時自動套用這項設定</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> 將可查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>
@@ -6495,6 +6501,7 @@
 <translation id="8063235345342641131">預設的綠色顯示圖片</translation>
 <translation id="8063535366119089408">查看檔案</translation>
 <translation id="8064279191081105977">「<ph name="GROUP_NAME" />」群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">連線對話方塊</translation>
 <translation id="8068253693380742035">輕觸即可登入</translation>
 <translation id="8069615408251337349">Google 雲端列印</translation>
 <translation id="8071432093239591881">以圖片形式列印</translation>
@@ -7524,6 +7531,7 @@
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9188732951356337132">傳送使用狀況與診斷資料。這個裝置目前會自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">使用你的 Android 手機做為安全金鑰</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> 將可編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="920045321358709304">透過 <ph name="SEARCH_ENGINE" /> 搜尋</translation>
 <translation id="9201023452444595544">所有離線資料都將遭到清除</translation>
 <translation id="9201220332032049474">螢幕鎖定選項</translation>

@@ -390,6 +390,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1515230621229117540">Mengaktifkan menu aksesibilitas mengambang</translation>
 <translation id="1515824657887788963">Mengizinkan halaman untuk melakukan permintaan XHR sinkron saat menutup halaman.</translation>
 <translation id="1516486219683984217">Jangan izinkan penggunaan notifikasi sistem</translation>
+<translation id="152078218786467087">Waktu saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="1524243669991877602">Jika kebijakan disetel ke Aktif, kebijakan yang terkait dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diizinkan untuk digabungkan ke kebijakan tingkat mesin.
@@ -477,9 +478,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="IDLE_ACTION_FIELD_NAME" /> tidak disetel, <ph name="IDLE_ACTION_ENUM_SUSPEND" /> akan diambil.
 
       Catatan: Terdapat setelan terpisah untuk daya AC dan baterai.</translation>
-<translation id="1606917441621112087">Jika kebijakan disetel ke Benar (True), penampil PDF internal di <ph name="PRODUCT_NAME" /> akan dinonaktifkan, file PDF akan dianggap sebagai hasil download, dan pengguna akan diizinkan membuka PDF dengan aplikasi default.
-
-      Jika kebijakan disetel ke Salah (False) atau tidak disetel, file PDF akan dibuka kecuali pengguna menonaktifkan plugin PDF.</translation>
 <translation id="1608755754295374538">URL yang akan diberi akses ke perangkat perekam audio tanpa peringatan</translation>
 <translation id="1611394564825535541">Memungkinkan Anda mengontrol apakah pengguna dapat mengakses printer non-perusahaan
 
@@ -2107,6 +2105,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan tidak disetel, <ph name="PRINTERS_ALLOW_ALL" /> akan digunakan.</translation>
 <translation id="3695706037816556327">Tindakan terkait penghapusan token keamanan (misalnya, kartu smart) untuk <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3700193037252896716">Frekuensi saat mulai ulang harus dilakukan kembali.</translation>
 <translation id="3700318587977845664">Frekuensi pengulangan pemeriksaan update.</translation>
 <translation id="3701121231485832347">Mengontrol setelan khusus perangkat <ph name="PRODUCT_OS_NAME" />.yang dikelola <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
@@ -3060,6 +3059,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       * Cakupan atau level berbeda: Kebijakan dengan prioritas tertinggi akan diterapkan.
 
       Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
+<translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>
 <translation id="5059201920681374653">Akun terkelola harus berada di perangkat terkelola yang berafiliasi</translation>
@@ -3892,12 +3892,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
 <translation id="6123052603197028610">Jangan izinkan kueri ke server Google untuk mengambil stempel waktu</translation>
 <translation id="6132506775968708399">Blokir cookie pihak ketiga</translation>
-<translation id="6132739217670763962">
-      Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi
-      lintas asal. Chrome akan memerlukan isolasi lintas asal saat menggunakan
-      SharedArrayBuffer mulai dari Chrome 91 dan selanjutnya (25-05-2021) untuk alasan
-      Kompatibilitas Web. Detail tambahan dapat ditemukan di:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Izinkan semua situs menggunakan pembuatan kunci</translation>
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6138636318340561140">Memeriksa status Safe Browsing pada URL secara real-time</translation>
@@ -4716,6 +4710,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
+<translation id="7041170641363384736">Memungkinkan penyetelan jadwal kustom untuk memulai ulang perangkat. Kebijakan saat ini hanya berlaku pada perangkat yang mengaktifkan peluncuran otomatis aplikasi dalam sesi Kios. Setelah kebijakan disetel ke Benar (True), perangkat akan dimulai ulang sesuai jadwal. Kebijakan harus dihapus untuk membatalkan semua mulai ulang terjadwal lainnya.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7060497964524144376">Jika kebijakan disetel ke Aktif, Safe Browsing akan memercayai domain yang Anda tentukan. Domain tidak akan diperiksa jika ada resource berbahaya misalnya phishing, malware, atau software yang tidak diinginkan. Layanan perlindungan download Safe Browsing tidak akan memeriksa download yang dihosting di domain ini. Layanan perlindungan sandi Safe Browsing tidak akan memeriksa penggunaan ulang sandi.
 
@@ -5529,6 +5524,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
           Jika Anda menetapkan kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="8161536598508377155">Menyetel jadwal kustom untuk memulai ulang perangkat kios</translation>
 <translation id="8164144100557223371">Nonaktifkan entrypoint toolbar fitur eksperimental browser</translation>
 <translation id="8164687848393015214">Jika kebijakan disetel ke Aktif, paket jaringan pemantauan (<ph name="HEARTBEATS_TERM" />) akan dikirim ke server pengelolaan untuk memantau status online, guna memungkinkan server mendeteksi apakah perangkat sedang offline.
 
@@ -5742,6 +5738,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
       Jika kebijakan ditetapkan, rekaman data lama akan dihapus seperlunya untuk mematuhi batas. Jika kebijakan ditetapkan ke 0, tidak ada rekaman data yang akan diambil</translation>
 <translation id="8451988835943702790">Gunakan Halaman Tab Baru sebagai beranda</translation>
 <translation id="8455529558077979314">Setelan layar privasi</translation>
+<translation id="8455551509936646199">Hari dalam seminggu saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'WEEKLY'.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameter untuk URL instan yang menggunakan POST</translation>
 <translation id="847472800012384958">Jangan izinkan situs mana pun menampilkan pop-up</translation>

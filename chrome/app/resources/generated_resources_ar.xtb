@@ -239,6 +239,7 @@
 <translation id="1243436884219965846">مراجعة كلمات المرور</translation>
 <translation id="1244265436519979884">‏استعادة Linux قيد التقدم حاليًا</translation>
 <translation id="1244303850296295656">خطأ في الإضافة</translation>
+<translation id="1246863218384630739">‏تعذّر تثبيت <ph name="VM_NAME" />: عنوان URL للصورة عرضَ رمز الخطأ <ph name="HTTP_ERROR" />. يُرجى التواصل مع المشرف.</translation>
 <translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
 <translation id="1251366534849411931">قوس متعرج مفتوح بشكلٍ متوقع: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات المُخزّنة من خلال المواقع الإلكترونية والتطبيقات المثبّتة.</translation>
@@ -1526,6 +1527,7 @@
 <translation id="2610260699262139870">ال&amp;حجم الفعلي</translation>
 <translation id="2610780100389066815">‏توقيع قائمة الثقة لـ Microsoft</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
+<translation id="2613535083491958306">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" />.</translation>
 <translation id="2616366145935564096">قراءة بياناتك وتغييرها في <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">‏تم قفل شريحة SIM</translation>
 <translation id="2618797463720777311">إعداد ميزة "المشاركة عن قرب"</translation>
@@ -2286,6 +2288,7 @@
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3441663102605358937">يُرجى تسجيل الدخول إلى الحساب <ph name="ACCOUNT" /> مرّة أخرى لإثبات ملكيته.</translation>
 <translation id="3444641828375597683">‏يمكن للمعلِنين والناشرين استخدام تقنية "التعلُّم الموحّد للمجموعات النموذجية" (FLoC)، كما هو موضّح لاحقًا في هذه الصفحة.</translation>
+<translation id="3444726579402183581">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على <ph name="FILENAME" />.</translation>
 <translation id="3445047461171030979">‏إجابات "مساعد Google" السريعة</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="3445925074670675829">‏جهاز USB-C</translation>
@@ -3780,6 +3783,7 @@
 <translation id="5086874064903147617">هل تريد استعادة الصفحة الرئيسية التلقائية؟</translation>
 <translation id="5087249366037322692">تمت الإضافة من قبل جهة خارجية</translation>
 <translation id="5087580092889165836">إضافة بطاقة</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع ترميز RSA</translation>
 <translation id="5090637338841444533">المواقع الإلكترونية التي لا يُسمح لها بتتبّع موضع الكاميرا</translation>
 <translation id="5094721898978802975">الاتصال بتطبيقات التعاون الأصلية</translation>
@@ -4560,6 +4564,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="5965661248935608907">كما أنها تتحكم في الصفحة التي تظهر عند النقر على زر الصفحة الرئيسية أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5969419185858894314">بإمكان <ph name="ORIGIN" /> عرض الملفات في <ph name="FOLDERNAME" />.</translation>
+<translation id="5969728632630673489">تم إغلاق إشعار اختصارات لوحة المفاتيح.</translation>
 <translation id="5971037678316050792">التحكم في حالة محول بلوتوث وإقرانه</translation>
 <translation id="597235323114979258">عرض المزيد من الوجهات</translation>
 <translation id="5972666587303800813">‏خدمة No-op</translation>
@@ -6195,6 +6200,7 @@
 <translation id="7766807826975222231">إجراء جولة</translation>
 <translation id="7766838926148951335">قبول الأذونات</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
+<translation id="7768526219335215384">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="7768770796815395237">تغيير</translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7770612696274572992">تم نسخ الصورة من جهاز آخر.</translation>
@@ -6499,6 +6505,7 @@
 <translation id="8063235345342641131">الصورة الرمزية التلقائية الخضراء</translation>
 <translation id="8063535366119089408">قراءة الملف</translation>
 <translation id="8064279191081105977">مجموعة <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">مربع حوار الاتصال</translation>
 <translation id="8068253693380742035">المس لتسجيل الدخول</translation>
 <translation id="8069615408251337349">‏الطباعة السحابية من Google</translation>
 <translation id="8071432093239591881">الطباعة كصورة</translation>
@@ -7533,6 +7540,7 @@
 <translation id="9186963452600581158">‏تسجيل الدخول باستخدام حساب طفل على Google</translation>
 <translation id="9188732951356337132">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يرسل هذا الجهاز حاليًا بيانات استخدام التطبيق والجهاز والتشخيص تلقائيًا إلى Google. لن يتم استخدام هذا لتعريف حسابك الفرعي وسيساعد في استقرار عمل النظام والتطبيقات، بالإضافة إلى التحسينات الأخرى. كما ستساعد بعض البيانات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج نظام التشغيل Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">‏استخدام هاتفك الذي يعمل بنظام التشغيل Android كمفتاح أمان</translation>
+<translation id="9200339982498053969">سيتمكّن <ph name="ORIGIN" /> من تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="920045321358709304">البحث في <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">سيتم محو أي بيانات متوفرة بلا اتصال بالإنترنت.</translation>
 <translation id="9201220332032049474">خيارات قفل الشاشة</translation>

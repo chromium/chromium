@@ -388,6 +388,7 @@
 <translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
 <translation id="1516486219683984217">不允许使用系统通知</translation>
+<translation id="152078218786467087">应于何时（以设备的本地时区表示）重新启动设备。</translation>
 <translation id="1522425503138261032">允许网站跟踪用户的地理位置</translation>
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
 <translation id="1524243669991877602">如果此政策已启用，与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策便可被合并到计算机级政策中。
@@ -475,9 +476,6 @@
       如果 <ph name="IDLE_ACTION_FIELD_NAME" /> 未设置，系统将执行 <ph name="IDLE_ACTION_ENUM_SUSPEND" />。
 
       注意：交流电源和电池各有对应的设置。</translation>
-<translation id="1606917441621112087">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 中停用内部 PDF 查看器，将 PDF 文件视为下载项，并允许用户使用默认应用打开 PDF 文件。
-
-      如果此政策设为 False 或未设置，系统将会使用 PDF 插件打开 PDF 文件，除非用户停用了该插件。</translation>
 <translation id="1608755754295374538">无需提示用户即可使用音频捕获设备的网址</translation>
 <translation id="1611394564825535541">让您能够控制用户能否访问非企业打印机。
 
@@ -2066,6 +2064,7 @@
 
       如果您未设置此政策，系统将会使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="3695706037816556327">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除安全令牌（例如智能卡）时，系统会执行什么操作。</translation>
+<translation id="3700193037252896716">应以怎样的频率定期重新启动设备。</translation>
 <translation id="3700318587977845664">应以何种频率检查是否有可用更新。</translation>
 <translation id="3701121231485832347">控制由 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" />设备的专用设置。</translation>
 <translation id="3702518095257671450">远程证明</translation>
@@ -3015,6 +3014,7 @@
       * 但范围或级别不同：系统将会应用优先级最高的政策。
 
       如果某项政策不在列表中，而且来源、范围或级别之间存在冲突，系统将会应用优先级最高的政策。</translation>
+<translation id="5055474681190962362">应在每月的哪一天 [1-31]（以设备的本地时区表示）重新启动设备。仅在“频率”设为“MONTHLY”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
 <translation id="5056708224511062314">放大镜已停用</translation>
 <translation id="5058573563327660283">选择在自动清理期间释放磁盘空间时采用的策略（已弃用）</translation>
 <translation id="5059201920681374653">受管理的帐号必须在关联的受管设备上</translation>
@@ -3818,8 +3818,6 @@
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
-<translation id="6132739217670763962">
-      指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
@@ -4635,6 +4633,7 @@
 
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
 <translation id="7040229947030068419">值示例：</translation>
+<translation id="7041170641363384736">允许设置自定义时间表以指定应于何时重新启动设备。此政策目前仅适用于已在自助服务终端会话中启用“自动启动”应用的设备。如果此政策设为 True，设备便会依照所设时间表重新启动。若要取消任何其他已排定的重新启动，您必须撤消在此政策中指定的设置。</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
 <translation id="7060497964524144376">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。该功能将不会检查此类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在此类网域上的下载内容。该功能的密码保护服务将不会检查密码重用情况。
 
@@ -5448,6 +5447,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“光标突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
+<translation id="8161536598508377155">设置自定义时间表以指定应于何时重新启动自助服务终端设备</translation>
 <translation id="8164144100557223371">停用浏览器实验性功能工具栏入口点</translation>
 <translation id="8164687848393015214">如果此政策已启用，系统会将监控网络数据包（“<ph name="HEARTBEATS_TERM" />”）发送到管理服务器以监控设备在线状态，使服务器能够判断设备是否已离线。
 
@@ -5661,6 +5661,7 @@
       如果设置了此政策，系统便会酌情删除旧快照以遵守此限制。如果此政策设为 0，系统将不会创建任何快照</translation>
 <translation id="8451988835943702790">使用“新标签页”作为主页</translation>
 <translation id="8455529558077979314">隐私保护屏设置</translation>
+<translation id="8455551509936646199">应在每周的哪一天（以设备的本地时区表示）重新启动设备。仅在“频率”设为“WEEKLY”时使用。</translation>
 <translation id="8461914792118322307">代理</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
 <translation id="847472800012384958">不允许任何网站显示弹出式窗口</translation>

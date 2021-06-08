@@ -391,6 +391,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1515230621229117540">Permet d'activer le menu d'accessibilité flottant</translation>
 <translation id="1515824657887788963">Autoriser une page à exécuter des requêtes XHR synchrones pendant sa fermeture.</translation>
 <translation id="1516486219683984217">Ne pas autoriser l'utilisation des notifications système</translation>
+<translation id="152078218786467087">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil doit redémarrer.</translation>
 <translation id="1522425503138261032">Autoriser les sites à suivre la position géographique des utilisateurs</translation>
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="1524243669991877602">Si cette règle est activée, les règles associées à un compte <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> sont autorisées à fusionner avec des règles au niveau des machines.
@@ -478,9 +479,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si aucune action n'est définie dans le champ "<ph name="IDLE_ACTION_FIELD_NAME" />", l'action "<ph name="IDLE_ACTION_ENUM_SUSPEND" />" est exécutée.
 
       Remarque : Il est possible de définir des paramètres différents selon que l'appareil est relié à l'alimentation secteur ou qu'il fonctionne sur batterie.</translation>
-<translation id="1606917441621112087">Si cette règle est définie sur "True", la visionneuse de PDF interne est désactivée dans <ph name="PRODUCT_NAME" />, les fichiers PDF sont téléchargés, et l'utilisateur peut les ouvrir avec l'application par défaut.
-
-      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les fichiers PDF sont ouverts par le plug-in PDF, à moins que l'utilisateur le désactive.</translation>
 <translation id="1608755754295374538">URL autorisées à accéder aux appareils de capture audio sans avis préalable</translation>
 <translation id="1611394564825535541">Permet de contrôler si les utilisateurs peuvent accéder à des imprimantes n'appartenant pas à l'entreprise.
 
@@ -2083,6 +2081,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est utilisé.</translation>
 <translation id="3695706037816556327">Action lors du retrait du jeton de sécurité (carte à puce, par exemple) pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3700193037252896716">Fréquence de redémarrage prévue.</translation>
 <translation id="3700318587977845664">Fréquence de recherche des mises à jour.</translation>
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
@@ -3033,6 +3032,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       * la règle ayant la plus haute priorité s'applique si le niveau ou les champs d'application diffèrent.
 
       Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
+<translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
 <translation id="5058573563327660283">Sélectionner la stratégie utilisée pour libérer de l'espace disque au cours du nettoyage automatique (obsolète)</translation>
 <translation id="5059201920681374653">Les comptes gérés doivent être sur un appareil géré affilié</translation>
@@ -3865,12 +3865,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6111936128861357925">Autoriser le jeu Easter Egg du dinosaure</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6132506775968708399">Bloquer les cookies tiers</translation>
-<translation id="6132739217670763962">
-      Indique si SharedArrayBuffers peut être utilisé
-      dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, Chrome nécessitera
-      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffers à partir de Chrome 91
-      (25/05/2021). Pour en savoir plus, accédez à la page
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Autoriser tous les sites à utiliser la génération de clé</translation>
 <translation id="6135398260575578389">La navigation sécurisée est active et en mode de protection renforcée. Ce mode offre une meilleure sécurité, mais nécessite de partager plus d'informations de navigation avec Google.</translation>
 <translation id="6138636318340561140">Vérifier en temps réel l'état de la navigation sécurisée pour les URL</translation>
@@ -4686,6 +4680,7 @@ Si vous sélectionnez les options suivantes :
 
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
+<translation id="7041170641363384736">Permet de planifier le redémarrage des appareils de manière personnalisée. La règle ne s'applique actuellement qu'aux appareils sur lesquels le démarrage automatique de l'application est activé dans la session Kiosque. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7060497964524144376">Si cette règle est activée, la navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à la navigation sécurisée ne vérifie pas non plus les téléchargements hébergés sur ces domaines. Le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
 
@@ -5508,6 +5503,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, la mise en surbrillance du curseur est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="8161536598508377155">Planifier de manière personnalisée le redémarrage des appareils en mode kiosque</translation>
 <translation id="8164144100557223371">Désactiver le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="8164687848393015214">Si cette règle est activée, les paquets de réseau de contrôle (<ph name="HEARTBEATS_TERM" />) sont transmis au serveur de gestion pour vérifier l'état de connexion et permettre au serveur de détecter si l'appareil est hors connexion.
 
@@ -5722,6 +5718,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si la règle est définie, les anciens instantanés sont supprimés au fur et à mesure pour respecter la limite. Si la règle est définie sur 0, aucun instantané n'est enregistré.</translation>
 <translation id="8451988835943702790">Utiliser la page "Nouvel onglet" comme page d'accueil</translation>
 <translation id="8455529558077979314">Paramètres de l'écran de confidentialité</translation>
+<translation id="8455551509936646199">Jour de la semaine (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "WEEKLY".</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
 <translation id="847472800012384958">Interdire à tous les sites d'afficher des fenêtres pop-up</translation>

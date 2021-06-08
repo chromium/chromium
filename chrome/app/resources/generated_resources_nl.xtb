@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">Wachtwoorden checken</translation>
 <translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1244303850296295656">Fout met extensie</translation>
+<translation id="1246863218384630739">Kan <ph name="VM_NAME" /> niet installeren: image-URL heeft een <ph name="HTTP_ERROR" />-foutcode geretourneerd. Neem contact op met je beheerder.</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
 <translation id="1251366534849411931">Verwachte openingsaccolade <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Hiermee wis je <ph name="TOTAL_USAGE" /> van de gegevens die zijn opgeslagen door sites en geïnstalleerde apps</translation>
@@ -1522,6 +1523,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2610260699262139870">We&amp;rkelijke grootte</translation>
 <translation id="2610780100389066815">Microsoft-vertrouwenslijsthandtekening</translation>
 <translation id="2612676031748830579">Kaartnummer</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken</translation>
 <translation id="2616366145935564096">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2618797463720777311">Dichtbij delen instellen</translation>
@@ -2279,6 +2281,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3441653493275994384">Beeldscherm</translation>
 <translation id="3441663102605358937">Log opnieuw in op <ph name="ACCOUNT" /> om dit account te verifiëren</translation>
 <translation id="3444641828375597683">Adverteerders en uitgevers kunnen FLoC gebruiken, dat verderop op deze pagina wordt beschreven.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="3445047461171030979">Snelle antwoorden van de Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
@@ -3774,6 +3777,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5086874064903147617">Standaardhomepage herstellen?</translation>
 <translation id="5087249366037322692">Toegevoegd door een derde partij</translation>
 <translation id="5087580092889165836">Pas toevoegen</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS nr. 1 SHA-512 met RSA-encryptie</translation>
 <translation id="5090637338841444533">Geen toestemming om je camerapositie bij te houden</translation>
 <translation id="5094721898978802975">Communiceren met samenwerkende legitieme apps</translation>
@@ -4554,6 +4558,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5964113968897211042">{COUNT,plural, =0{Alles openen in &amp;nieuw venster}=1{Openen in &amp;nieuw venster}other{Alles ({COUNT}) openen in &amp;nieuw venster}}</translation>
 <translation id="5965661248935608907">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je op de Homepage-knop klikt of vanuit de omnibox zoekt.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> kan bestanden bekijken in <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Melding over sneltoetsen gesloten</translation>
 <translation id="5971037678316050792">Status van Bluetooth-adapter en Bluetooth-koppeling beheren</translation>
 <translation id="597235323114979258">Meer bestemmingen tonen</translation>
 <translation id="5972666587303800813">No-op Service</translation>
@@ -6189,6 +6194,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7766807826975222231">Een rondleiding volgen</translation>
 <translation id="7766838926148951335">Rechten accepteren</translation>
 <translation id="7768507955883790804">Sites volgen deze instelling automatisch als je ze bezoekt</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken</translation>
 <translation id="7768770796815395237">Wijzigen</translation>
 <translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
 <translation id="7770612696274572992">Afbeelding gekopieerd vanaf ander apparaat</translation>
@@ -6491,6 +6497,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8063235345342641131">Standaard groene avatar</translation>
 <translation id="8063535366119089408">Bestand bekijken</translation>
 <translation id="8064279191081105977">Groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Dialoogvenster Verbinding</translation>
 <translation id="8068253693380742035">Tik om in te loggen</translation>
 <translation id="8069615408251337349">Google Cloudprinter</translation>
 <translation id="8071432093239591881">Afdrukken als afbeelding</translation>
@@ -7522,6 +7529,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>
 <translation id="9188732951356337132">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Je Android-telefoon gebruiken als beveiligingssleutel</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bewerken</translation>
 <translation id="920045321358709304">Zoeken op <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Alle offline gegevens worden gewist</translation>
 <translation id="9201220332032049474">Schermvergrendelingsopties</translation>

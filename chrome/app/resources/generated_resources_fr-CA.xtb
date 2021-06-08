@@ -236,6 +236,7 @@
 <translation id="1243436884219965846">Examiner les mots de passe</translation>
 <translation id="1244265436519979884">Restauration Linux en cours…</translation>
 <translation id="1244303850296295656">Erreur au niveau des extensions</translation>
+<translation id="1246863218384630739">Impossible d'installer <ph name="VM_NAME" /> parce que l'URL de l'image a renvoyé une erreur <ph name="HTTP_ERROR" />. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers?</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applications installées</translation>
@@ -1524,6 +1525,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2610260699262139870">Taille ré&amp;elle</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Accéder à vos données sur <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2618797463720777311">Configurer le partage à proximité</translation>
@@ -2282,6 +2284,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3441663102605358937">Connectez-vous à <ph name="ACCOUNT" /> de nouveau pour vérifier ce compte</translation>
 <translation id="3444641828375597683">Les annonceurs et les éditeurs peuvent utiliser la technique FLoC, décrite plus loin sur cette page.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> pourra consulter <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Réponses rapides de l'Assistant Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
@@ -3779,6 +3782,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5086874064903147617">Restaurer la page d'accueil par défaut?</translation>
 <translation id="5087249366037322692">Ajoutée par un tiers</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 avec chiffrement RSA</translation>
 <translation id="5090637338841444533">Non autorisés à suivre la position de votre caméra</translation>
 <translation id="5094721898978802975">Permettre la communication avec les applications natives associées</translation>
@@ -4559,6 +4563,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5965661248935608907">Elle définit également quelle page s'affiche lorsque vous cliquez sur le bouton Accueil ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> peut afficher les fichiers dans le dossier <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Message sur les raccourcis clavier fermé</translation>
 <translation id="5971037678316050792">Gérer l'état et l'association de l'adaptateur Bluetooth</translation>
 <translation id="597235323114979258">Voir d'autres destinations</translation>
 <translation id="5972666587303800813">Service non opérationnel</translation>
@@ -6194,6 +6199,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
 <translation id="7768507955883790804">Les sites respectent automatiquement ce paramètre quand vous les visitez</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> sera en mesure d'afficher tous les fichiers dans le dossier <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Changer</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7770612696274572992">Image copiée d'un autre appareil</translation>
@@ -6497,6 +6503,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
 <translation id="8063535366119089408">Afficher le fichier</translation>
 <translation id="8064279191081105977">Groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Boîte de dialogue de connexion</translation>
 <translation id="8068253693380742035">Touchez pour vous connecter</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Imprimer en tant qu'image</translation>
@@ -7528,6 +7535,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
 <translation id="9188732951356337132">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utiliser votre téléphone Android comme clé de sécurité</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Rechercher <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Toutes les données hors ligne seront effacées</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>

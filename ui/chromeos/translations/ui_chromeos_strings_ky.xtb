@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1000498691615767391">Ачыла турган папканы тандаңыз</translation>
-<translation id="1035094536595558507">Слайд көрүнүшү</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> нерсе жок кылынууда…</translation>
 <translation id="1049926623896334335">Word документи</translation>
 <translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн, алгач аларды Windows папкасына жылдырыңыз.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive учурда жеткиликтүү эмес. Google Drive кайтып келгенден кийин жүктөп берүү аракети автоматтык түрдө кайра аткарылат.</translation>
 <translation id="1307931752636661898">Linux Файлдарын көрүү мүмкүн болбой жатат</translation>
-<translation id="1346748346194534595">Оң</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импорттолууда…</translation>
 <translation id="1358735829858566124">Файлды же каталогду колдонуу мүмкүн эмес.</translation>
 <translation id="1363028406613469049">Трек</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1395262318152388157">Слайдерди издөө</translation>
 <translation id="1404323374378969387">Норвежче</translation>
-<translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1433628812591023318">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына жылдырылышы керек.</translation>
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
-<translation id="1467432559032391204">Сол</translation>
 <translation id="1471718551822868769">Словакча</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктөп берилбей калды. Google Drive’да бош орун жетишпейт.</translation>
 <translation id="1482884275703521657">Финче</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бул файл офлайнда жеткиликтүү эмес.</translation>
-<translation id="1847880352285315359">Сакталды</translation>
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
 <translation id="1864756863218646478">Бир да файл табылган жок.</translation>
 <translation id="1920670151694390848">Малайаламча (транслитерация)</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2084108471225856927">Түзмөктүн жөндөөлөрү</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" деген файл мурунтан эле бар. Эмне кыласыз?</translation>
-<translation id="2121825465123208577">Өлчөмүн өзгөртүү</translation>
 <translation id="2125607626296734455">Хмерче</translation>
 <translation id="2142680004883808240">Орусча (YaZHert фонетикалык баскычтобу)</translation>
 <translation id="2163152940313951844">Жараксыз символ: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">Жалпы файлдардын өлчөмү</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> нерсе <ph name="FOLDER_NAME" /> папкасына көчүрүлүүдө</translation>
 <translation id="2448312741937722512">Түрү</translation>
-<translation id="2453576648990281505">Мындай файл мурунтан эле бар</translation>
 <translation id="2464079411014186876">Балмуздак</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2500392669976258912">Гужаратиче (фонетикалык)</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">Учурда Google Drive'га жетүү мүмкүн эмес.</translation>
 <translation id="2638942478653899953">Google Drive жеткиликтүү эмес. <ph name="BEGIN_LINK" />Тутумдан чыгып<ph name="END_LINK" />, кайра кириңиз.</translation>
 <translation id="2649120831653069427">Түстүү балык</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">Бирмача (Мьянма) жана Myansan баскычтобу</translation>
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
 <translation id="2672394958563893062">Ката кетти. Кайра башынан баштоо үчүн чыкылдатыңыз.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Белгийче</translation>
 <translation id="2782104745158847185">Linux колдонмосун орнотууда ката кетти</translation>
-<translation id="2787047795752739979">Баштапкы файлдын үстүнө жазуу</translation>
 <translation id="2830077785865012357">Кытайча (чжуинь)</translation>
 <translation id="2843806747483486897">Демейкини өзгөртүү…</translation>
 <translation id="2850124913210091882">Камдык көчүрмө сактоо</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> файлынын камдык көчүрмөсү сакталбай калды</translation>
 <translation id="299638574917407533">Французча (Канада)</translation>
 <translation id="3003633581067744647">Эскиз көрүнүшүнө өтүү</translation>
-<translation id="3007214526293698309">Ченөлчөмүн тууралоо</translation>
 <translation id="3029114385395636667">Docs, Таблицалар жана Слайддарды оффлайн режиминде колдонуу үчүн Google Docs Оффлайн кеңейтүүсүн күйгүзүңүз.</translation>
 <translation id="303198083543495566">География</translation>
 <translation id="3047197340186497470">Кытайча (даи)</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebit түзмөктөрү</translation>
 <translation id="3113153474486991170">Бул жерден "<ph name="PATH" />" ачылган жок. Ачуу үчүн "Менин файлдарыма" көчүрүңүз.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">БҮТТҮ</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Жол</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
-<translation id="3626281679859535460">Жарыктыгы</translation>
-<translation id="3644896802912593514">Туурасы</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылды.</translation>
 <translation id="3645531960514756307">Папканы бошотуу</translation>
 <translation id="3685122418104378273">Мобилдик дайындар колдонулуп жатканда, Google Drive шайкештештирүүсү демейки шартта өчүрүлөт.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">Коён</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="3811494700605067549">1 файл тандалды</translation>
-<translation id="38275787300541712">Бүткөндө Enter'ди басыңыз</translation>
 <translation id="3830674330436234648">Ойното турган нерсе жок</translation>
 <translation id="383652340667548381">Сербче</translation>
 <translation id="385051799172605136">Артка</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">Сорани (арабча баскычтоп)</translation>
 <translation id="4363958938297989186">Орусча (фонетикалык баскычтоп)</translation>
 <translation id="4364327530094270451">Коон</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Тышкы шилтеме</translation>
 <translation id="4418686080762064601">Файлдарга өтүү үчүн ыкчам баскычты түзүү</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү сакталды</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4732760563705710320">Кечиресиз, бул видео тышкы экранга чыгаруу түзмөгүңүздө колдоого алынбайт.</translation>
-<translation id="4734518477988699048">Киргизилген маани жараксыз.</translation>
 <translation id="4737050008115666127">Конуу</translation>
 <translation id="4747271164117300400">Македонияча</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">Тилкени кичирейген ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4880214202172289027">Үн слайдери</translation>
-<translation id="4880520557730313061">Авто-оңдоо</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4900532980794411603">Parallels Desktop менен бөлүшүү</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> камдык көчүрмөсүн сактай берсеңиз болот</translation>
-<translation id="4924638091161556692">Оңолду</translation>
 <translation id="4935975195727477204">Газания гүлү</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">1 папка Parallels Desktop менен бөлүшүлдү</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">Дагы…</translation>
 <translation id="5044852990838351217">Армянча</translation>
 <translation id="5059127710849015030">Непалча (транслитерация)</translation>
-<translation id="5061708541166515394">Контраст</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911">Файлдардын <ph name="TOTAL_FILE_SIZE" /> өчүрүлөт</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> нерсе <ph name="FOLDER_NAME" /> папкасына жылдырылууда</translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Хангул 3 топтому (390)</translation>
 <translation id="5145331109270917438">Өзгөртүлгөн күнү</translation>
 <translation id="515594325917491223">Шахмат</translation>
-<translation id="5158593464696388225">Сүрөт сакталбай койду.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Азырынча түзмөгүңүздү суурубай туруңуз!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Түзмөгүңүз колдонулуп жатканда суурулса, дайындар жоголуп кетиши мүмкүн. Иш-аракет аяктагыча күтүп, андан соң түзмөктү Файлдар колдонмосу аркылуу чыгарып салыңыз.</translation>
@@ -485,7 +465,6 @@
 <translation id="5957366693331451795">Chromebox түзмөктөрү</translation>
 <translation id="5982621672636444458">Иреттөө опциясы</translation>
 <translation id="6007237601604674381">Жылдырылбай калды. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Кесип алуу</translation>
 <translation id="60357267506638014">Чехче QWERTY</translation>
 <translation id="604001903249547235">Булуттагы камдык көчүрмө</translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -526,10 +505,8 @@
 <translation id="6423031066725912715">Вьетнамча (TCVN баскычтобу)</translation>
 <translation id="6485131920355264772">Бош орун тууралуу маалымат түшпөй калды</translation>
 <translation id="6509122719576673235">Норвежче</translation>
-<translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />… шайкештештирилүүдө</translation>
 <translation id="6549689063733911810">Акыркы</translation>
-<translation id="6556866813142980365">Кайталоо</translation>
 <translation id="6558280019477628686">Ката кетти. Айрым элементтер өчкөн жок окшойт.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"… жок кылуу</translation>
 <translation id="6581162200855843583">Google Drive шилтемеси</translation>
@@ -562,7 +539,6 @@
 <translation id="6885780034956018177">Үлүл</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6898028766943174120">Дагы башка кошумча файлдар...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" /> папкасына сакталбай жатат. Түзөтүлгөн сүрөттөр "Жүктөлүп алынгандар" папкасына сакталат.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Узактыгы</translation>
@@ -588,7 +564,6 @@
 <translation id="7040138676081995583">Төмөнкү менен ачыңыз…</translation>
 <translation id="7075931588889865715">Тайча (TIS 820-2531 баскычтобу)</translation>
 <translation id="7086590977277044826">Тамилче (InScript баскычтобу)</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> нерсе тандалды</translation>
 <translation id="7103992300314999525">Македончо</translation>
 <translation id="7106346894903675391">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Drive'ды издөө&lt;/em&gt;</translation>
@@ -618,7 +593,6 @@
     Камдык көчүрмөсүн <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сактай берсеңиз болот</translation>
 <translation id="7495372004724182530">Малайаламча, фонетикалык</translation>
 <translation id="7505167922889582512">Жашыруун файлдарды көрсөтүү</translation>
-<translation id="7508545000531937079">Слайдшоу</translation>
 <translation id="751507702149411736">Беларусча</translation>
 <translation id="7532029025027028521">Фарсиче (транслитерация)</translation>
 <translation id="7544830582642184299">Linux колдонмолоруна Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
@@ -629,7 +603,6 @@
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
 <translation id="7553492409867692754">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" калыбына келтирилүүдө...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="7600126690270271294">Сербче</translation>
@@ -671,11 +644,10 @@
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
 <translation id="7853966320808728790">Французча BÉPO</translation>
 <translation id="7868774406711971383">Полякча</translation>
-<translation id="7873831373602885875">Түзөтүүлөр <ph name="FOLDER_NAME" /> папкасында сакталбай койду. Алар <ph name="DOWNLOADS_FOLDER" /> папкасынын ичиндеги "Жүктөлүп алынгандар" папкасында сакталат.</translation>
 <translation id="7874321682039004450">Филиппинче</translation>
 <translation id="7881969471599061635">Коштомо жазууларды өчүрүү</translation>
 <translation id="78946041517601018">Жалпы дисктер</translation>
-<translation id="7908793776359722643">Бөлүмдөрдү форматтасаңыз, анда сакталган бардык маалымат өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
+<translation id="7908793776359722643">Бөлүмдөрдү форматтасаңыз, анда сакталган бардык нерселер өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7925686952655276919">Мобилдик түзмөктөрдөгү дайындар шайкештирилбесин</translation>
 <translation id="7928710562641958568">Түзмөктү сууруу</translation>
 <translation id="7943385054491506837">US Colemak</translation>
@@ -683,7 +655,6 @@
 <translation id="7969525169268594403">Словенче</translation>
 <translation id="7972920761225148017">Французча (Швейцария)</translation>
 <translation id="7980421588063892270">Англисче (АКШ) жана Colemak баскычтобу</translation>
-<translation id="7982283708762922719">Бийиктиги</translation>
 <translation id="79907182588096956">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Өлчөм</translation>
@@ -691,17 +662,14 @@
 <translation id="8038111231936746805">(демейки)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> форматындагы аудио файл</translation>
 <translation id="8045462269890919536">Румынча</translation>
-<translation id="8066773524873206594">Бардык түзөтүүлөр <ph name="DOWNLOADS_FOLDER" /> папкасында сакталат.</translation>
 <translation id="8079530767338315840">Кайталоо</translation>
 <translation id="8106045200081704138">Мени менен бөлүшүлгөн</translation>
 <translation id="8116072619078571545">Муз кошулган суу</translation>
 <translation id="8128733386027980860">Англисче (Улуу Британия) жана Dvorak баскычтобу</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сиз менен бөлүшүлдү. Ал сизге таандык эмес болгондуктан, аны жок кыла албайсыз.</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
-<translation id="8153607920959057464">Файл көрсөтүлбөй койду.</translation>
 <translation id="8154842056504218462">Бардык пункттар тандалды.</translation>
 <translation id="8157684860301034423">Колдонмо тууралуу маалымат алынбай калды.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">Французча (Бельгия)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Түзмөктүн үлгүсү</translation>
@@ -755,7 +723,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> тандалды.</translation>
 <translation id="872537912056138402">Хорватча</translation>
 <translation id="8750438273876807512">Текчедеги файлдарды ыкчам ачуу үчүн файлды коё бербей басып туруп, <ph name="ICON" /> сүрөтчөсүн таптап, "Текчеге кадоону" тандаңыз.</translation>
-<translation id="8775404590947523323">Түзөтүүлөрүңүз автоматтык түрдө сакталды.<ph name="BREAKS" /> Сүрөттүн түпнуска көчүрмөсүн сактап коюу үчүн, "Түпнусканын үстүнөн жазуу" деген параметрди алып салыңыз.</translation>
 <translation id="8802459921616481935">Таштандыга ыргытуу</translation>
 <translation id="8808686172382650546">Мышык</translation>
 <translation id="8810671769985673465">Кысылган жок, бул жердеги элемент: "<ph name="FILE_NAME" />"</translation>
@@ -774,7 +741,6 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Бул файлдарды кайра "<ph name="DESTINATION_NAME" />" дискине жылдырууга мүмкүн болбой калат, андыктан бул аракетти кайтара албай каласыз.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
-<translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>
 <translation id="9110990317705400362">Серептөө аракетиңиздин коопсуздугун чыңдоо үчүн болгон аракетибизди жумшап жатабыз. Буга чейин серепчиңизге кеңейтүү кошууну вебсайттар сунуштап турушчу. Ал эми Google Chrome'дун эң акыркы версияларында керектүү кеңейтүүлөрдү Кеңейтүүлөр бетинен кошуп, орното турганыңызды Chrome'го өзүңүз ачык билдиресиз. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
@@ -786,8 +752,6 @@
 <translation id="9133055936679483811">Кысылбай калды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Желе дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="9144340019284012223">Каталанча</translation>
-<translation id="9148058034647219655">Чыгуу</translation>
-<translation id="9154418932169119429">Бул сүрөт оффлайнда жеткиликтүү эмес.</translation>
 <translation id="9172592259078059678">Гужаратиче (транслитерация)</translation>
 <translation id="9173120999827300720">Англисче (АКШ) жана эл аралык баскычтоп</translation>
 <translation id="9174050671906956834">Таштандыдагы нерселер 30 күндөн кийин биротоло жок кылынат.</translation>
@@ -796,7 +760,6 @@
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="9219908252191632183">Айлуу</translation>
 <translation id="939736085109172342">Жаңы папка</translation>
-<translation id="942954117721265519">Бул каталогдо сүрөт жок.</translation>
 <translation id="943972244133411984">Өзгөрткөн:</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> ортосундагы <ph name="ENTRY_COUNT" /> пункт тандалды.</translation>

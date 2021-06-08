@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1000498691615767391">Selecteer een map om te openen</translation>
-<translation id="1035094536595558507">Diaweergave</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> items verwijderen...</translation>
 <translation id="1049926623896334335">Word-document</translation>
 <translation id="1060368002126861100">Als je bestanden wilt openen met <ph name="APP_NAME" />, verplaats je ze eerst naar de bestandsmap van Windows.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
-<translation id="1346748346194534595">Rechts</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> bestanden importeren...</translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
 <translation id="1363028406613469049">Track</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1395262318152388157">Zoekbalk</translation>
 <translation id="1404323374378969387">Noors</translation>
-<translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1433628812591023318">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden verplaatst naar de map met Windows-bestanden.</translation>
 <translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
-<translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />' is niet geüpload. Er is onvoldoende ruimte beschikbaar in je Google Drive.</translation>
 <translation id="1482884275703521657">Fins</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">Informatie laden…</translation>
 <translation id="1838709767668011582">Google-site</translation>
 <translation id="1844692022597038441">Dit bestand is offline niet beschikbaar.</translation>
-<translation id="1847880352285315359">Opgeslagen</translation>
 <translation id="1853795129690976061">Deze map wordt gedeeld met Linux</translation>
 <translation id="1864756863218646478">Het bestand kan niet worden gevonden.</translation>
 <translation id="1920670151694390848">Malayalam (transliteratie)</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2084108471225856927">Apparaatinstellingen</translation>
 <translation id="2085470240340828803">Er bestaat al een bestand met de naam '<ph name="FILENAME" />'. Wat wil je doen?</translation>
-<translation id="2121825465123208577">Formaat aanpassen</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2142680004883808240">Russisch met fonetisch YaZHert-toetsenbord</translation>
 <translation id="2163152940313951844">Ongeldig teken: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">Totale bestandsgrootte</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> items kopiëren naar <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2453576648990281505">Bestand bestaat al</translation>
 <translation id="2464079411014186876">IJs</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2500392669976258912">Gujarati (fonetisch)</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">Kan Google Drive momenteel niet bereiken.</translation>
 <translation id="2638942478653899953">Google Drive kan niet worden bereikt. <ph name="BEGIN_LINK" />Log uit<ph name="END_LINK" /> en log weer in.</translation>
 <translation id="2649120831653069427">Regenboogvis</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">Birmaans (Myanmar) met MyanSan-toetsenbord</translation>
 <translation id="2664412712123763093">Bestandslocatie</translation>
 <translation id="2672394958563893062">Er is een fout opgetreden. Klik om opnieuw te starten vanaf het begin.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
-<translation id="2787047795752739979">Oorspronkelijk bestand overschrijven</translation>
 <translation id="2830077785865012357">Chinees (Zhuyin)</translation>
 <translation id="2843806747483486897">Standaardactie wijzigen...</translation>
 <translation id="2850124913210091882">Back-up maken</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489">Kan geen back-up maken van <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Frans (Canada)</translation>
 <translation id="3003633581067744647">Overschakelen naar miniatuurweergave</translation>
-<translation id="3007214526293698309">Beeldverhouding corrigeren</translation>
 <translation id="3029114385395636667">Zet Google Offline Documenten aan om Documenten, Spreadsheets en Presentaties offline beschikbaar te maken.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chinees (Dayi)</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3113153474486991170">Kan <ph name="PATH" /> niet openen vanaf deze locatie. Kopieer dit naar Mijn bestanden om het te openen.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">KLAAR</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3197563288998582412">Brits Dvorak</translation>
 <translation id="3202131003361292969">Pad</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Er is een back-up van alles gemaakt</translation>
-<translation id="3626281679859535460">Helderheid</translation>
-<translation id="3644896802912593514">Breedte</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items verplaatst.</translation>
 <translation id="3645531960514756307">Map losmaken</translation>
 <translation id="3685122418104378273">De synchronisatie van Google Drive is bij het gebruik van mobiele data standaard uitgezet.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3811494700605067549">1 bestand geselecteerd</translation>
-<translation id="38275787300541712">Druk op Enter als je klaar bent</translation>
 <translation id="3830674330436234648">Afspelen is niet beschikbaar</translation>
 <translation id="383652340667548381">Servisch</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">Koerdisch Sorani met Arabisch toetsenbord</translation>
 <translation id="4363958938297989186">Russisch met fonetisch toetsenbord</translation>
 <translation id="4364327530094270451">Meloen</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Externe link</translation>
 <translation id="4418686080762064601">Een snelkoppeling maken voor je bestanden</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Sorry, deze video wordt niet ondersteund door je cast-apparaat.</translation>
-<translation id="4734518477988699048">Invoerwaarde is ongeldig.</translation>
 <translation id="4737050008115666127">Landen</translation>
 <translation id="4747271164117300400">Macedonisch</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">Klik om de kolom in aflopende volgorde te sorteren.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Volumeregelaar</translation>
-<translation id="4880520557730313061">Automatisch bewerken</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4900532980794411603">Delen met Parallels Desktop</translation>
 <translation id="4905417359854579806">Klaar om back-up van <ph name="FILE_COUNT" /> te maken</translation>
-<translation id="4924638091161556692">Bewerkt</translation>
 <translation id="4935975195727477204">Bloem</translation>
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
 <translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">Meer tonen…</translation>
 <translation id="5044852990838351217">Armeens</translation>
 <translation id="5059127710849015030">Nepalees (transliteratie)</translation>
-<translation id="5061708541166515394">Contrast</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> van alle bestanden wordt verwijderd</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> items verplaatsen naar <ph name="FOLDER_NAME" /></translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Bijgewerkt op</translation>
 <translation id="515594325917491223">Schaken</translation>
-<translation id="5158593464696388225">Kan afbeelding niet opslaan.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Verwijder je apparaat nog niet!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    
@@ -487,7 +467,6 @@
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
 <translation id="6007237601604674381">Verplaatsen mislukt. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Bijsnijden</translation>
 <translation id="60357267506638014">Tsjechisch QWERTY</translation>
 <translation id="604001903249547235">Cloudback-up</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -528,10 +507,8 @@
 <translation id="6423031066725912715">Vietnamees met TCVN-toetsenbord</translation>
 <translation id="6485131920355264772">Kan ruimte-informatie niet ophalen</translation>
 <translation id="6509122719576673235">Noors</translation>
-<translation id="6527303717912515753">Delen</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> synchroniseren...</translation>
 <translation id="6549689063733911810">Recent</translation>
-<translation id="6556866813142980365">Opnieuw</translation>
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
 <translation id="6581162200855843583">Google Drive-link</translation>
@@ -564,7 +541,6 @@
 <translation id="6885780034956018177">Slak</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6898028766943174120">Meer submappen…</translation>
-<translation id="691516599546977041">Kan niet opslaan in <ph name="FOLDER_NAME" />. Bewerkte afbeeldingen worden opgeslagen in de map Downloads.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Amerikaans Workman</translation>
 <translation id="6930242544192836755">Duur</translation>
@@ -590,7 +566,6 @@
 <translation id="7040138676081995583">Openen met...</translation>
 <translation id="7075931588889865715">Thai met TIS 820-2531-toetsenbord</translation>
 <translation id="7086590977277044826">Tamil met InScript-toetsenbord</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> items geselecteerd</translation>
 <translation id="7103992300314999525">Macedonisch</translation>
 <translation id="7106346894903675391">Meer opslagruimte kopen...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;zoeken in Google Drive&lt;/em&gt;</translation>
@@ -620,7 +595,6 @@
     Klaar om back-up te maken in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
 <translation id="7505167922889582512">Verborgen bestanden tonen</translation>
-<translation id="7508545000531937079">Diavoorstelling</translation>
 <translation id="751507702149411736">Wit-Russisch</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
 <translation id="7544830582642184299">Linux-apps toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
@@ -631,7 +605,6 @@
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="7575645593344061397"><ph name="FILENAME" /> herstellen...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Een ogenblik geduld</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> offline beschikbaar maken</translation>
 <translation id="7600126690270271294">Servisch</translation>
@@ -673,7 +646,6 @@
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
 <translation id="7868774406711971383">Pools</translation>
-<translation id="7873831373602885875">Kan niet opslaan in <ph name="FOLDER_NAME" />. Alle bewerkingen worden opgeslagen in <ph name="DOWNLOADS_FOLDER" /> in de map Downloads.</translation>
 <translation id="7874321682039004450">Filipijns</translation>
 <translation id="7881969471599061635">Ondertiteling uitzetten</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
@@ -685,7 +657,6 @@
 <translation id="7969525169268594403">Sloveens</translation>
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
-<translation id="7982283708762922719">Hoogte</translation>
 <translation id="79907182588096956">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
@@ -693,17 +664,14 @@
 <translation id="8038111231936746805">(standaard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-audio</translation>
 <translation id="8045462269890919536">Roemeens</translation>
-<translation id="8066773524873206594">Alle bewerkingen worden opgeslagen in <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Herhalen</translation>
 <translation id="8106045200081704138">Gedeeld met mij</translation>
 <translation id="8116072619078571545">IJswater</translation>
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>
 <translation id="8151638057146502721">Configureren</translation>
-<translation id="8153607920959057464">Dit bestand kan niet worden weergegeven.</translation>
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
@@ -757,7 +725,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> is geselecteerd.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="8750438273876807512">Tik op een bestand en houd dit vast. Tik vervolgens op <ph name="ICON" /> en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
-<translation id="8775404590947523323">Je bewerkingen worden automatisch opgeslagen.<ph name="BREAKS" />Als je een kopie van de oorspronkelijke afbeelding wilt behouden, vink je het selectievakje 'Oorspronkelijk bestand overschrijven' uit.</translation>
 <translation id="8802459921616481935">Verplaatsen naar prullenbak</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Inpakken mislukt. Item bestaat al: '<ph name="FILE_NAME" />'</translation>
@@ -776,7 +743,6 @@
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
-<translation id="9065203028668620118">Bewerken</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>
 <translation id="9110990317705400362">We zijn altijd op zoek naar manieren om het surfen veiliger te maken. Vroeger kon elke website je vragen een extensie toe te voegen aan je browser. In de nieuwste versies van Google Chrome moet je Chrome expliciet toestemming geven om deze extensies te installeren door ze toe te voegen via de pagina 'Extensies'. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -788,8 +754,6 @@
 <translation id="9133055936679483811">Inpakken mislukt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Dit bestand is bedoeld voor een computer met software van Macintosh. Het is niet compatibel met je apparaat, dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="9144340019284012223">Catalaans</translation>
-<translation id="9148058034647219655">Sluiten</translation>
-<translation id="9154418932169119429">Deze afbeelding is offline niet beschikbaar.</translation>
 <translation id="9172592259078059678">Gujarati (transliteratie)</translation>
 <translation id="9173120999827300720">Engels (VS) met internationaal toetsenbord</translation>
 <translation id="9174050671906956834">Items in de prullenbak worden na 30 dagen definitief verwijderd.</translation>
@@ -798,7 +762,6 @@
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
-<translation id="942954117721265519">Geen afbeeldingen in deze directory.</translation>
 <translation id="943972244133411984">Aangepast door</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="947144732524271678">Een bereik van <ph name="ENTRY_COUNT" /> items van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" /> is geselecteerd.</translation>

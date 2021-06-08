@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">ពិនិត្យមើល​ពាក្យសម្ងាត់</translation>
 <translation id="1244265436519979884">បច្ចុប្បន្ននេះ ការស្ដារ Linux កំពុង​ដំណើរការ</translation>
 <translation id="1244303850296295656">កំហុសឆ្គងកម្មវិធីបន្ថែម</translation>
+<translation id="1246863218384630739">មិនអាច​ដំឡើង <ph name="VM_NAME" />៖ URL រូបភាព​បានបង្ហាញ​លេខកូដបញ្ហា <ph name="HTTP_ERROR" />។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1246905108078336582">លុប​ការណែនាំ​ចេញពី​ឃ្លីបបត?</translation>
 <translation id="1251366534849411931">ត្រូវមានឃ្នាបបើក៖ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">សកម្មភាពនេះ​នឹងសម្អាតទិន្នន័យទំហំ <ph name="TOTAL_USAGE" /> ដែលបានរក្សាទុកដោយគេហទំព័រ និងកម្មវិធីដែលបានដំឡើង</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2610260699262139870">ទំហំពិតប្រាកដ</translation>
 <translation id="2610780100389066815">ការចុះហត្ថលេខាបញ្ជីទុកចិត្ត Microsoft</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> នឹងអាចកែ <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">អាន និងប្តូរទិន្នន័យរបស់អ្នកនៅលើ <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">ស៊ីមកាតជាប់សោ</translation>
 <translation id="2618797463720777311">រៀបចំការ​ចែករំលែកនៅ​ជិត</translation>
@@ -2295,6 +2297,7 @@
 <translation id="3441653493275994384">អេក្រង់</translation>
 <translation id="3441663102605358937">ចូល <ph name="ACCOUNT" /> ម្ដងទៀត ដើម្បី​ផ្ទៀងផ្ទាត់​គណនីនេះ</translation>
 <translation id="3444641828375597683">អ្នកផ្សាយ​ពាណិជ្ជកម្ម និង​អ្នកបោះពុម្ពផ្សាយ​អាចប្រើ​ FLoC ដែលពណ៌នានៅផ្នែកខាងក្រោមនៃទំព័រនេះ។</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> នឹងអាចមើល <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">ចម្លើយ​រហ័សរបស់ Google ជំនួយការ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
@@ -3793,6 +3796,7 @@
 <translation id="5086874064903147617">ស្តារទំព័រដើមលំនាំដើម?</translation>
 <translation id="5087249366037322692">បានបន្ថែមដោយភាគីទីបី</translation>
 <translation id="5087580092889165836">បន្ថែមកាត</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ជាមួយនឹងការអ៊ិនគ្រីប RSA</translation>
 <translation id="5090637338841444533">មិនអនុញ្ញាតឱ្យតាមដានទីតាំងកាមេរ៉ារបស់អ្នកទេ</translation>
 <translation id="5094721898978802975">ទំនាក់ទំនងជាមួយកម្មវិធីដើមសហប្រតិបត្តិការ</translation>
@@ -4574,6 +4578,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{បើកទាំងអស់នៅក្នុង&amp;វិនដូថ្មី}=1{បើកនៅក្នុង&amp;វិនដូថ្មី}other{បើកទាំងអស់ ({COUNT}) នៅក្នុង&amp;វិនដូថ្មី}}</translation>
 <translation id="5965661248935608907">វាក៏គ្រប់គ្រងអ្វីដែលទំព័របានបង្ហាញផងដែរ នៅពេលដែលអ្នកចុចប៊ូតុង ទំព័រដើម ឬស្វែងរកពីប្រអប់អូមនី។</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> អាចមើល​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">ការជូនដំណឹង​អំពីផ្លូវកាត់​ក្ដារចុច​ត្រូវបាន​ច្រានចោល</translation>
 <translation id="5971037678316050792">គ្រប់គ្រងស្ថានភាព និងការភ្ជាប់ឧបករណ៍ប៊្លូធូស</translation>
 <translation id="597235323114979258">មើលគោលដៅ​ច្រើនទៀត</translation>
 <translation id="5972666587303800813">សេវាកម្ម No-op</translation>
@@ -6209,6 +6214,7 @@
 <translation id="7766807826975222231">ចូលទស្សនាស្វែងយល់</translation>
 <translation id="7766838926148951335">ទទួលយក​ការអនុញ្ញាត</translation>
 <translation id="7768507955883790804">គេហទំព័រប្រើការកំណត់នេះដោយស្វ័យប្រវត្តិ នៅពេលអ្នកចូលគេហទំព័រទាំងនោះ</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> នឹងអាចមើលឯកសារ​នៅក្នុង <ph name="FOLDERNAME" />។</translation>
 <translation id="7768770796815395237">ប្ដូរ</translation>
 <translation id="7768784765476638775">ជ្រើសរើសដើម្បីអាន</translation>
 <translation id="7770612696274572992">រូបភាពដែលបានចម្លងពីឧបករណ៍ផ្សេងទៀត</translation>
@@ -6512,6 +6518,7 @@
 <translation id="8063235345342641131">រូបតំណាងពណ៌បៃតងលំនាំដើម</translation>
 <translation id="8063535366119089408">មើល​ឯកសារ</translation>
 <translation id="8064279191081105977">ក្រុម <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">ប្រអប់តភ្ជាប់</translation>
 <translation id="8068253693380742035">ចុចដើម្បី​ចូល</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">បោះពុម្ព​ជា​រូបភាព</translation>
@@ -7542,6 +7549,7 @@
 <translation id="9186963452600581158">ចូល​ដោយប្រើ​គណនី Google របស់កុមារ</translation>
 <translation id="9188732951356337132">បញ្ជូន​ទិន្នន័យ​ប្រើប្រាស់ និង​វិភាគ។ បច្ចុប្បន្ននេះ ឧបករណ៍នេះ​កំពុងបញ្ជូន​ទិន្នន័យនៃការ​វិភាគ ឧបករណ៍ និងការ​ប្រើប្រាស់​កម្មវិធី​ទៅ Google ដោយស្វ័យប្រវត្តិ។ សកម្មភាពនេះ​នឹងមិនត្រូវ​បានធ្វើឡើង ដើម្បី​កំណត់​អត្តសញ្ញាណ​កូន​របស់អ្នក​នោះទេ តែការធ្វើបែបនេះ​នឹងជួយដល់ស្ថិរភាពកម្មវិធី និងប្រព័ន្ធ ព្រមទាំង​ការកែលម្អ​ផ្សេងទៀត។ ទិន្នន័យ​ប្រមូលបាន​មួយចំនួន​ក៏នឹង​ជួយដល់​កម្មវិធី និង​ដៃគូ Google ដូចជា​អ្នកអភិវឌ្ឍន៍ Android ផងដែរ។ ប្រសិនបើ​ការកំណត់​សកម្មភាព​កម្មវិធី និង​គេហទំព័រ​បន្ថែម​ត្រូវបាន​បើកសម្រាប់​កូនរបស់អ្នក នោះ​ទិន្នន័យនេះ​អាចត្រូវ​បានរក្សាទុក​ទៅក្នុង​គណនី Google របស់គាត់។ <ph name="BEGIN_LINK2" />ស្វែងយល់​បន្ថែម<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">ប្រើ​ទូរសព្ទ Android របស់អ្នក​ធ្វើជាសោសុវត្ថិភាព</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> នឹងអាចកែ​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">ស្វែងរក <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">រាល់​​ទិន្នន័យ​ដែលបានផ្ទុកក្នុងឧបករណ៍​នឹង​ត្រូវបាន​សម្អាត</translation>
 <translation id="9201220332032049474">ជម្រើស​ចាក់សោអេក្រង់</translation>

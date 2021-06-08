@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">Прегледајте ги лозинките</translation>
 <translation id="1244265436519979884">Обновата на Linux моментално е во тек</translation>
 <translation id="1244303850296295656">Грешка на наставка</translation>
+<translation id="1246863218384630739">Не можеше да се инсталира <ph name="VM_NAME" />: се појави грешка со код <ph name="HTTP_ERROR" /> за URL на сликата. Контактирајте со администраторот.</translation>
 <translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
 <translation id="1251366534849411931">Се очекува лева голема заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) складирани од сајтовите и инсталираните апликации</translation>
@@ -1538,6 +1539,7 @@
 <translation id="2610260699262139870">В&amp;истинска големина</translation>
 <translation id="2610780100389066815">Запишување во список за доверба на Microsoft</translation>
 <translation id="2612676031748830579">Број на картичка</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> ќе може да ја изменува <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-картичката е заклучена</translation>
 <translation id="2618797463720777311">Поставување „Споделување во близина“</translation>
@@ -2296,6 +2298,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Најавете се на <ph name="ACCOUNT" /> повторно за да ја потврдите сметкава</translation>
 <translation id="3444641828375597683">Огласувачите и издавачите може да ја користат техниката FLoC, опишана подолу на страницава.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> ќе може да ја прегледува <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Брзи одговори од „Помошникот на Google“</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">USB-Ц уред</translation>
@@ -3794,6 +3797,7 @@
 <translation id="5086874064903147617">Да се врати стандардната почетна страница?</translation>
 <translation id="5087249366037322692">Додадено од трето лице</translation>
 <translation id="5087580092889165836">Додај картичка</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 со RSA шифрирање</translation>
 <translation id="5090637338841444533">Не им е дозволено да ја следат позицијата на камерата</translation>
 <translation id="5094721898978802975">Комуницирај со матични апликации што соработуваат</translation>
@@ -4574,6 +4578,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
 <translation id="5965661248935608907">Контролира и која страница се прикажува ако кликнете на копчето Дома или ако пребарувате од лентата за адреси.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> може да прегледува датотеки во <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Известувањето за кратенка од тастатурата е отфрлено</translation>
 <translation id="5971037678316050792">Контрола на состојбата и спарувањето на адаптерот за Bluetooth</translation>
 <translation id="597235323114979258">Видете повеќе дестинации</translation>
 <translation id="5972666587303800813">Услугата не работи</translation>
@@ -6209,6 +6214,7 @@
 <translation id="7766807826975222231">Направете разгледување</translation>
 <translation id="7766838926148951335">Прифати ги дозволите</translation>
 <translation id="7768507955883790804">Сајтовите автоматски ја следат оваа поставка кога ги посетувате</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> ќе може да ги прегледува датотеките во <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промени</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7770612696274572992">Слика копирана од друг уред</translation>
@@ -6512,6 +6518,7 @@
 <translation id="8063235345342641131">Стандарден зелен аватар</translation>
 <translation id="8063535366119089408">Прикажи датотека</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Прозорец за врската</translation>
 <translation id="8068253693380742035">Допрете за да се најавите</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Отпечати како слика</translation>
@@ -7546,6 +7553,7 @@
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
 <translation id="9188732951356337132">Испраќајте податоци за користење и дијагностика. Овој уред во моментов автоматски испраќа дијагностички и податоци за користењето на уредот и апликациите до Google. Овие податоци нема да се користат за идентификација на вашето дете, а ќе помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во сметката на Google на детето. <ph name="BEGIN_LINK2" />Дознајте повеќе<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Користете го телефонот со Android како безбедносен клуч</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> ќе може да ги изменува датотеките во <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Пребарај на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Сите офлајн податоци ќе се избришат</translation>
 <translation id="9201220332032049474">Опции за заклучување на екранот</translation>

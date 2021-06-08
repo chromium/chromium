@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1000498691615767391">Pilih folder untuk dibuka</translation>
-<translation id="1035094536595558507">Paparan slaid</translation>
 <translation id="1047956942837015229">Memadamkan <ph name="COUNT" /> item...</translation>
 <translation id="1049926623896334335">Dokumen Word</translation>
 <translation id="1060368002126861100">Untuk membuka fail dengan <ph name="APP_NAME" />, alihkan fail itu ke folder fail Windows dahulu.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1297922636971898492">Google Drive tidak tersedia pada masa ini. Memuat naik akan dimulakan semula secara automatik sebaik sahaja Google Drive kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat fail Linux</translation>
-<translation id="1346748346194534595">Kanan</translation>
 <translation id="1351692861129622852">Mengimport fail <ph name="FILE_COUNT" />...</translation>
 <translation id="1358735829858566124">Fail atau direktori tidak boleh digunakan.</translation>
 <translation id="1363028406613469049">Penjejakan</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1395262318152388157">Peluncur cari</translation>
 <translation id="1404323374378969387">Norway</translation>
-<translation id="1430915738399379752">Cetak</translation>
 <translation id="1433628812591023318">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti dialihkan ke fail Windows.</translation>
 <translation id="1435838927755162558">Kongsi folder dengan Parallels Desktop</translation>
-<translation id="1467432559032391204">Kiri</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" tidak dimuat naik. Ruang kosong tidak mencukupi dalam Google Drive anda.</translation>
 <translation id="1482884275703521657">Finland</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">Memuatkan maklumat...</translation>
 <translation id="1838709767668011582">Tapak Google</translation>
 <translation id="1844692022597038441">Fail ini tidak boleh didapati di luar talian.</translation>
-<translation id="1847880352285315359">Disimpan</translation>
 <translation id="1853795129690976061">Folder ini dikongsi dengan Linux</translation>
 <translation id="1864756863218646478">Fail tidak dapat dijumpai.</translation>
 <translation id="1920670151694390848">Alih Huruf Malayalam</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2084108471225856927">Tetapan peranti</translation>
 <translation id="2085470240340828803">Fail bernama "<ph name="FILENAME" />" sudah ada. Apa yang anda mahu lakukan?</translation>
-<translation id="2121825465123208577">Ubah saiz</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2142680004883808240">Rusia dengan papan kekunci YaZHert Fonetik</translation>
 <translation id="2163152940313951844">Aksara tidak sah: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">Jumlah saiz fail</translation>
 <translation id="2428749644083375155">Menyalin <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Jenis</translation>
-<translation id="2453576648990281505">Fail sudah wujud</translation>
 <translation id="2464079411014186876">Aiskrim</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2500392669976258912">Fonetik Gujerat</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">Google Drive tidak dapat dicapai pada masa ini.</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dicapai. Sila <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" /> dan log masuk kembali.</translation>
 <translation id="2649120831653069427">Ikan Pelangi</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan papan kekunci Myansan</translation>
 <translation id="2664412712123763093">Lokasi fail</translation>
 <translation id="2672394958563893062">Ralat telah berlaku. Klik untuk memulakan semula dari permulaan.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Bahasa Belgium</translation>
 <translation id="2782104745158847185">Ralat semasa memasang aplikasi Linux</translation>
-<translation id="2787047795752739979">Tulis ganti yang asal</translation>
 <translation id="2830077785865012357">Zhuyin Cina</translation>
 <translation id="2843806747483486897">Tukar lalai...</translation>
 <translation id="2850124913210091882">Sandaran</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489">Tidak dapat menyandarkan <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Perancis (Kanada)</translation>
 <translation id="3003633581067744647">Tukar kepada paparan lakaran kecil</translation>
-<translation id="3007214526293698309">Betulkan nisbah</translation>
 <translation id="3029114385395636667">Dayakan Dokumen Google Luar Talian untuk menjadikan Dokumen, Helaian dan Slaid tersedia di luar talian.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">Dayi Cina</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3113153474486991170">Tidak dapat membuka "<ph name="PATH" />" dari lokasi ini. Sila salin ke "Fail saya" untuk membuka.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">SELESAI</translation>
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="3197563288998582412">Dvorak UK</translation>
 <translation id="3202131003361292969">Laluan</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapucino</translation>
 <translation id="3620292326130836921">Semua disandarkan!</translation>
-<translation id="3626281679859535460">Kecerahan</translation>
-<translation id="3644896802912593514">Lebar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> item dialihkan.</translation>
 <translation id="3645531960514756307">Nyahsemat folder</translation>
 <translation id="3685122418104378273">Penyegerakan Google Drive dilumpuhkan secara lalai, apabila menggunakan data mudah alih.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">Arnab</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3811494700605067549">1 fail dipilih</translation>
-<translation id="38275787300541712">Tekan Enter apabila selesai</translation>
 <translation id="3830674330436234648">Main balik tidak tersedia</translation>
 <translation id="383652340667548381">Bahasa Serbia</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">Kurdistan Sorani dengan papan kekunci berasaskan bahasa Arab</translation>
 <translation id="4363958938297989186">Rusia dengan papan kekunci Fonetik</translation>
 <translation id="4364327530094270451">Tembikai</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Pautan luaran</translation>
 <translation id="4418686080762064601">Buat pintasan untuk fail anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto disandarkan</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Maaf, video ini tidak disokong oleh peranti cast anda.</translation>
-<translation id="4734518477988699048">Nilai input tidak sah.</translation>
 <translation id="4737050008115666127">Mendarat</translation>
 <translation id="4747271164117300400">Macedonia</translation>
 <translation id="4759238208242260848">Muat turun</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">Klik untuk mengisih lajur dalam tertib menurun.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bait</translation>
 <translation id="4880214202172289027">Peluncur kelantangan</translation>
-<translation id="4880520557730313061">Autobaiki</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4900532980794411603">Kongsi dengan Parallels Desktop</translation>
 <translation id="4905417359854579806">Sedia untuk menyandarkan <ph name="FILE_COUNT" /></translation>
-<translation id="4924638091161556692">Dibetulkan</translation>
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
 <translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">Lihat lagi...</translation>
 <translation id="5044852990838351217">Armenia</translation>
 <translation id="5059127710849015030">Alih Huruf Nepal</translation>
-<translation id="5061708541166515394">Kontras</translation>
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> fail akan dipadamkan</translation>
 <translation id="508423945471810158">Mengalihkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Tarikh diubah suai</translation>
 <translation id="515594325917491223">Catur</translation>
-<translation id="5158593464696388225">Gagal menyimpan imej.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Jangan alih keluar peranti anda dahulu!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Mengalih keluar peranti anda semasa sedang digunakan boleh menyebabkan kehilangan data. Sila tunggu sehingga operasi telah selesai, kemudian lentingkan peranti menggunakan apl Fail.</translation>
@@ -486,7 +466,6 @@
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Pilihan isihan</translation>
 <translation id="6007237601604674381">Pemindahan gagal. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Pangkas</translation>
 <translation id="60357267506638014">QWERTY bahasa Czech</translation>
 <translation id="604001903249547235">Sandaran awan</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -527,10 +506,8 @@
 <translation id="6423031066725912715">Vietnam dengan papan kekunci TCVN</translation>
 <translation id="6485131920355264772">Gagal mendapatkan maklumat ruang</translation>
 <translation id="6509122719576673235">Bahasa Norway</translation>
-<translation id="6527303717912515753">Kongsi</translation>
 <translation id="653019979737152879">Menyegerakkan <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Terbaharu</translation>
-<translation id="6556866813142980365">Buat semula</translation>
 <translation id="6558280019477628686">Ralat berlaku. Sesetengah item mungkin tidak dipadamkan.</translation>
 <translation id="656398493051028875">Memadamkan "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Pautan Google Drive</translation>
@@ -563,7 +540,6 @@
 <translation id="6885780034956018177">Siput</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6898028766943174120">Lagi subfolder...</translation>
-<translation id="691516599546977041">Tidak boleh disimpan ke <ph name="FOLDER_NAME" />. Imej yang diedit akan disimpan dalam folder Muat Turun.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Tempoh</translation>
@@ -589,7 +565,6 @@
 <translation id="7040138676081995583">Buka dengan...</translation>
 <translation id="7075931588889865715">Thai dengan papan kekunci TIS 820-2531</translation>
 <translation id="7086590977277044826">Tamil dengan papan kekunci InScript</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> item dipilih</translation>
 <translation id="7103992300314999525">Macedonia</translation>
 <translation id="7106346894903675391">Beli lagi storan...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;cari di Drive&lt;/em&gt;</translation>
@@ -619,7 +594,6 @@
    Sedia untuk menyandarkan ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>
 <translation id="7505167922889582512">Tunjukkan fail tersembunyi</translation>
-<translation id="7508545000531937079">Tayangan slaid</translation>
 <translation id="751507702149411736">Bahasa Belarus</translation>
 <translation id="7532029025027028521">Alih Huruf Parsi</translation>
 <translation id="7544830582642184299">Beri Linux kebenaran apl untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
@@ -630,7 +604,6 @@
 <translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7553492409867692754">Beri Linux kebenaran apl untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="7575645593344061397">Memulihkan "<ph name="FILENAME" />"...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
 <translation id="7592775719802218421">Menjadikan <ph name="FILE_NAME" /> tersedia di luar talian</translation>
 <translation id="7600126690270271294">Serbia</translation>
@@ -672,7 +645,6 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BEPO Perancis</translation>
 <translation id="7868774406711971383">Poland</translation>
-<translation id="7873831373602885875">Tidak boleh disimpan ke <ph name="FOLDER_NAME" />. Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" /> dalam folder Muat Turun.</translation>
 <translation id="7874321682039004450">Filipina</translation>
 <translation id="7881969471599061635">Lumpuhkan sari kata</translation>
 <translation id="78946041517601018">Drive dikongsi</translation>
@@ -684,7 +656,6 @@
 <translation id="7969525169268594403">Bahasa Slovenia</translation>
 <translation id="7972920761225148017">Perancis (Switzerland)</translation>
 <translation id="7980421588063892270">Inggeris (AS) dengan papan kekunci Colemak</translation>
-<translation id="7982283708762922719">Tinggi</translation>
 <translation id="79907182588096956">Fail ini direka bentuk untuk PC yang menggunakan perisian Windows. Fail ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada OS Chrome.</translation>
 <translation id="8008366997883261463">Anjing Jack Russel Terrier</translation>
 <translation id="8028993641010258682">Saiz</translation>
@@ -692,17 +663,14 @@
 <translation id="8038111231936746805">(lalai)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Bahasa Romania</translation>
-<translation id="8066773524873206594">Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ulang</translation>
 <translation id="8106045200081704138">Dikongsi dengan saya</translation>
 <translation id="8116072619078571545">Air ais</translation>
 <translation id="8128733386027980860">Inggeris (UK) dengan papan kekunci Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" telah dikongsikan dengan anda. Anda tidak boleh memadamkan fail kerana anda bukan pemiliknya.</translation>
 <translation id="8151638057146502721">Konfigurasi</translation>
-<translation id="8153607920959057464">Fail ini tidak dapat dipaparkan.</translation>
 <translation id="8154842056504218462">Semua masukan dipilih.</translation>
 <translation id="8157684860301034423">Gagal mengambil maklumat apl.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">Perancis (Belgium)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model peranti</translation>
@@ -756,7 +724,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
 <translation id="872537912056138402">Bahasa Croatia</translation>
 <translation id="8750438273876807512">Sentuh &amp; tahan fail dan ketik <ph name="ICON" /> dan pilih "Semat pada rak" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
-<translation id="8775404590947523323">Suntingan anda disimpan secara automatik.<ph name="BREAKS" />Untuk menyimpan salinan imej asal, nyahtandakan "Tulis ganti yang asal"</translation>
 <translation id="8802459921616481935">Alihkan ke Sampah</translation>
 <translation id="8808686172382650546">Kucing</translation>
 <translation id="8810671769985673465">Gagal mengezip, item wujud: "<ph name="FILE_NAME" />"</translation>
@@ -775,7 +742,6 @@
 <translation id="9034924485347205037">Fail Linux</translation>
 <translation id="9035012421917565900">Items tidak boleh dialihkan kembali ke '<ph name="DESTINATION_NAME" />', oleh itu, anda tidak akan dapat membuat asal tindakan ini.</translation>
 <translation id="9038620279323455325">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Sila pilih nama lain.</translation>
-<translation id="9065203028668620118">Edit</translation>
 <translation id="908378762078012445">Rusia dengan papan kekunci AATSEEL Fonetik</translation>
 <translation id="9099674669267916096">Kiraan halaman</translation>
 <translation id="9110990317705400362">Kami sentiasa mencari cara-cara untuk membuat penyemakan imbas anda lebih selamat. Sebelum ini, mana-mana laman web boleh menggesa anda untuk menambah sambungan ke dalam penyemak imbas anda. Dalam versi terbaharu Google Chrome, anda mesti memberitahu Chrome dengan jelas bahawa anda mahu memasang sambungan ini dengan menambahnya melalui halaman Sambungan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -787,8 +753,6 @@
 <translation id="9133055936679483811">Gagal mengezip. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Fail ini direka untuk komputer yang menggunakan perisian Macintosh. Ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. Sila buat carian di Kedai Web Chrome untuk apl penggantian yang sesuai.</translation>
 <translation id="9144340019284012223">Catalan</translation>
-<translation id="9148058034647219655">Keluar</translation>
-<translation id="9154418932169119429">Imej ini tidak boleh didapati di luar talian.</translation>
 <translation id="9172592259078059678">Alih Huruf Gujerat</translation>
 <translation id="9173120999827300720">Inggeris (AS) dengan papan kekunci Antarabangsa</translation>
 <translation id="9174050671906956834">Item dalam Sampah akan dipadamkan selamanya selepas 30 hari.</translation>
@@ -797,7 +761,6 @@
 <translation id="9219103736887031265">Imej</translation>
 <translation id="9219908252191632183">Qamari</translation>
 <translation id="939736085109172342">Folder baharu</translation>
-<translation id="942954117721265519">Tiada imej dalam direktori ini.</translation>
 <translation id="943972244133411984">Diubah suai oleh</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="947144732524271678">Memilih <ph name="ENTRY_COUNT" /> masukan daripada <ph name="FROM_ENTRY_NAME" /> hingga <ph name="TO_ENTRY_NAME" />.</translation>

@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">പാസ്‌വേഡുകൾ അവലോകനം ചെയ്യൂ</translation>
 <translation id="1244265436519979884">Linux പുനഃസ്ഥാപിക്കൽ നിലവിൽ പുരോഗതിയിലാണ്</translation>
 <translation id="1244303850296295656">വിപുലീകരണ പിശക്</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല: ചിത്ര URL ഒരു പിശക് കോഡ് <ph name="HTTP_ERROR" /> നൽകി. നിങ്ങളുടെ അഡ്മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1246905108078336582">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നിർദ്ദേശം നീക്കം ചെയ്യണോ?</translation>
 <translation id="1251366534849411931">പ്രതീക്ഷിച്ചത് ഓപ്പൺ ചുരുൾ ബ്രാക്കറ്റ്: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ഇത് സൈറ്റുകളും ഇൻസ്‌റ്റാൾ ചെയ്തിരിക്കുന്ന ആപ്പുകളും സംഭരിച്ചിട്ടുള്ള <ph name="TOTAL_USAGE" /> ഡാറ്റ മായ്ക്കും</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2610260699262139870">ശ&amp;രിയായ വലിപ്പം</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2612676031748830579">കാർഡ് നമ്പർ</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> എന്നതിന് <ph name="FILENAME" /> എഡിറ്റ് ചെയ്യാനാകും</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> എന്നതിലെ നിങ്ങളുടെ ഡാറ്റ വായിക്കുക, മാറ്റുക</translation>
 <translation id="2617342710774726426">സിം കാർഡ് ലോക്കുചെയ്‌തു</translation>
 <translation id="2618797463720777311">സമീപമുള്ള പങ്കിടൽ സജ്ജീകരിക്കുക</translation>
@@ -2279,6 +2281,7 @@
 <translation id="3441653493275994384">സ്ക്രീന്‍‌</translation>
 <translation id="3441663102605358937">ഈ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="ACCOUNT" /> എന്നതിലേക്ക് വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3444641828375597683">പരസ്യദാതാക്കൾക്കും പ്രസാധകർക്കും ഈ പേജിൽ ചുവടെ വിവരിച്ചിരിക്കുന്ന FLoC സാങ്കേതികവിദ്യ ഉപയോഗിക്കാനാകും.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> എന്നതിന് <ph name="FILENAME" /> കാണാനാകും</translation>
 <translation id="3445047461171030979">Google Assistant ദ്രുത ഉത്തരങ്ങൾ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
@@ -3775,6 +3778,7 @@
 <translation id="5086874064903147617">ഡിഫോൾട്ട് ഹോം പേജ് പുനഃസ്ഥാപിക്കണോ?</translation>
 <translation id="5087249366037322692">ഒരു മൂന്നാം കക്ഷി ചേർത്തത്</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA എന്‍‌ക്രിപ്‌ഷനോടുകൂടിയ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="5094721898978802975">സഹകരിക്കുന്ന നേറ്റീവ് അപ്ലിക്കേഷനുകളുമായി ആശയവിനിമയം നടത്തുക</translation>
@@ -4556,6 +4560,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{എല്ലാം &amp;പുതിയ വിൻഡോയിൽ തുറക്കുക}=1{&amp;പുതിയ വിൻഡോയിൽ തുറക്കുക}other{എല്ലാം ({COUNT}) &amp;പുതിയ വിൻഡോയിൽ തുറക്കുക}}</translation>
 <translation id="5965661248935608907">നിങ്ങൾ ഹോം ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോഴോ ഓമ്‌നിബോക്‌സിൽ നിന്ന് തിരയുമ്പോഴോ ദൃശ്യമാകുന്ന പേജും അത് നിയന്ത്രിയ്ക്കും.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ കാണാനാവും</translation>
+<translation id="5969728632630673489">കീബോഡ് കുറുക്കുവഴികൾ അറിയിപ്പ് ഡിസ്മിസ് ചെയ്തു</translation>
 <translation id="5971037678316050792">Bluetooth അഡാപ്‌റ്റർ നിലയും ജോടിയാക്കലും നിയന്ത്രിക്കുക</translation>
 <translation id="597235323114979258">കൂടുതൽ ലക്ഷ്യസ്ഥാനങ്ങൾ കാണുക</translation>
 <translation id="5972666587303800813">No-op സേവനം</translation>
@@ -6192,6 +6197,7 @@
 <translation id="7766807826975222231">ഒരു ടൂര്‍‌ നടത്തുക</translation>
 <translation id="7766838926148951335">അനുമതികൾ അംഗീകരിക്കുക</translation>
 <translation id="7768507955883790804">നിങ്ങൾ സെെറ്റുകൾ സന്ദർശിക്കുമ്പോൾ അവ ഈ ക്രമീകരണം സ്വയമേവ പിന്തുടരും</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ കാണാനാകും</translation>
 <translation id="7768770796815395237">മാറ്റുക</translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7770612696274572992">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ചിത്രം</translation>
@@ -6495,6 +6501,7 @@
 <translation id="8063235345342641131">ഡിഫോൾട്ടായ പച്ച അവതാർ</translation>
 <translation id="8063535366119089408">ഫയൽ കാണുക</translation>
 <translation id="8064279191081105977">ഗ്രൂപ്പ് <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">കണക്ഷൻ ഡയലോഗ്</translation>
 <translation id="8068253693380742035">സൈൻ ഇൻ ചെയ്യാൻ സ്‌പർശിക്കുക</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ചിത്രമായി പ്രിന്‍റ് ചെയ്യുക</translation>
@@ -7524,6 +7531,7 @@
 <translation id="9186963452600581158">കുട്ടിയുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് സെെൻ ഇൻ ചെയ്യുക</translation>
 <translation id="9188732951356337132">ഉപയോഗവും പ്രശ്‌നനിർണ്ണയവുമായി ബന്ധപ്പെട്ട ഡാറ്റ അയയ്ക്കുക. പ്രശ്‌നനിർണ്ണയം, ഉപകരണം, ആപ്പ് ഉപയോഗം എന്നിവയുമായി ബന്ധപ്പെട്ട ഡാറ്റ, ഈ ഉപകരണം നിലവിൽ സ്വയമേവ Google-ന് അയയ്ക്കുന്നുണ്ട്. കുട്ടിയെ തിരിച്ചറിയാൻ ഇത് ഉപയോഗിക്കില്ല, സിസ്‌റ്റം, ആപ്പ് സ്ഥിരത, മറ്റ് മെച്ചപ്പെടുത്തൽ എന്നിവയ്ക്ക് സഹായിക്കുകയും ചെയ്യും. ചില സംഗ്രഹ ഡാറ്റ, Google ആപ്പുകളെയും Android ഡെവലപ്പർമാരെപ്പോലുള്ള പങ്കാളികളെയും സഹായിക്കുകയും ചെയ്യും. കുട്ടിയുടെ അധിക വെബ്, ആപ്പ് ആക്‌റ്റിവിറ്റി ക്രമീകരണം ഓണാക്കിയിട്ടുണ്ടെങ്കിൽ, ഈ ഡാറ്റ അവരുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കപ്പെട്ടേക്കാം. <ph name="BEGIN_LINK2" />കൂടുതലറിയുക<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">നിങ്ങളുടെ Android ഫോൺ ഒരു സുരക്ഷാ കീ ആയി ഉപയോഗിക്കുക</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ എഡിറ്റ് ചെയ്യാനാകും</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> തിരയുക</translation>
 <translation id="9201023452444595544">എല്ലാ ഓഫ്‍ലൈൻ ഡാറ്റയും മായ്‌ക്കും</translation>
 <translation id="9201220332032049474">സ്‌ക്രീൻ ലോക്ക് ഓപ്ഷനുകള്‍</translation>

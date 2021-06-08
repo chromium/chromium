@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">Xem lại mật khẩu</translation>
 <translation id="1244265436519979884">Hiện đang khôi phục Linux</translation>
 <translation id="1244303850296295656">Lỗi tiện ích</translation>
+<translation id="1246863218384630739">Không thể cài đặt <ph name="VM_NAME" />: URL của hình ảnh trả về mã lỗi <ph name="HTTP_ERROR" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1246905108078336582">Xóa nội dung đề xuất khỏi bảng nhớ tạm?</translation>
 <translation id="1251366534849411931">Thiếu dấu ngoặc nhọn mở: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Thao tác này sẽ xóa <ph name="TOTAL_USAGE" /> dữ liệu lưu trữ trong các trang web và ứng dụng đã cài đặt</translation>
@@ -1537,6 +1538,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2610260699262139870">Kíc&amp;h thước thực</translation>
 <translation id="2610780100389066815">Ký Danh sách Tin cậy của Microsoft</translation>
 <translation id="2612676031748830579">Số thẻ</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> sẽ chỉnh sửa được <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
@@ -2295,6 +2297,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3441653493275994384">Màn hình</translation>
 <translation id="3441663102605358937">Đăng nhập lại vào <ph name="ACCOUNT" /> để xác minh tài khoản này</translation>
 <translation id="3444641828375597683">Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC (Học liên kết theo nhóm cùng sở thích), được mô tả ở phần sau trên trang này.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> sẽ xem được <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="3445925074670675829">Thiết bị USB-C</translation>
@@ -3793,6 +3796,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5086874064903147617">Khôi phục trang chủ mặc định?</translation>
 <translation id="5087249366037322692">Được thêm bởi bên thứ ba</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Với Mã hóa RSA</translation>
 <translation id="5090637338841444533">Không được phép theo dõi vị trí máy ảnh của bạn</translation>
 <translation id="5094721898978802975">Kết nối với ứng dụng gốc hợp tác</translation>
@@ -4573,6 +4577,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="5965661248935608907">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn nhấp vào nút Trang chủ hoặc tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> có thể xem các tệp trong <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Đã đóng thông báo phím tắt</translation>
 <translation id="5971037678316050792">Kiểm soát ghép nối và trạng thái bộ đổi nguồn Bluetooth</translation>
 <translation id="597235323114979258">Xem điểm đích khác</translation>
 <translation id="5972666587303800813">Dịch vụ không hoạt động</translation>
@@ -6208,6 +6213,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7766807826975222231">Tìm hiểu thêm</translation>
 <translation id="7766838926148951335">Chấp nhận quyền</translation>
 <translation id="7768507955883790804">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> sẽ xem được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7770612696274572992">Hình ảnh được sao chép từ thiết bị khác</translation>
@@ -6512,6 +6518,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8063235345342641131">Hình đại diện màu xanh lục mặc định</translation>
 <translation id="8063535366119089408">Xem tệp</translation>
 <translation id="8064279191081105977">Nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Hộp thoại kết nối</translation>
 <translation id="8068253693380742035">Chạm để đăng nhập</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">In dưới dạng hình ảnh</translation>
@@ -7542,6 +7549,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9186963452600581158">Đăng nhập bằng Tài khoản Google của trẻ</translation>
 <translation id="9188732951356337132">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ không dùng để nhận dạng con bạn mà giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Nếu bạn bật mục cài đặt bổ sung Hoạt động trên web và ứng dụng cho con mình thì dữ liệu này có thể được lưu vào Tài khoản Google của trẻ. <ph name="BEGIN_LINK2" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Dùng điện thoại Android làm khóa bảo mật</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> sẽ chỉnh sửa được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Tìm kiếm trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Mọi dữ liệu ngoại tuyến sẽ bị xóa</translation>
 <translation id="9201220332032049474">Tùy chọn khóa màn hình</translation>

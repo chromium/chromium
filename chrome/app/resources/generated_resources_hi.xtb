@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">पासवर्ड की समीक्षा करें</translation>
 <translation id="1244265436519979884">फ़िलहाल, Linux की बहाल करने की प्रक्रिया जारी है</translation>
 <translation id="1244303850296295656">एक्‍सटेंशन गड़बड़ी</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल नहीं की जा सकी: इमेज यूआरएल पर <ph name="HTTP_ERROR" /> गड़बड़ी कोड आया. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1246905108078336582">क्लिपबोर्ड से सुझाव हटाना चाहते हैं?</translation>
 <translation id="1251366534849411931">शुरुआत में दिखने वाले ज़रूरी कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">इससे, साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
@@ -1538,6 +1539,7 @@
 <translation id="2610260699262139870">वा&amp;स्‍तविक आकार</translation>
 <translation id="2610780100389066815">Microsoft विश्वास सूची हस्ताक्षर</translation>
 <translation id="2612676031748830579">कार्ड संख्या</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" /> में बदलाव कर पाएंगे</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> पर मौजूद आपका डेटा पढ़ और बदल सकता है</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
 <translation id="2618797463720777311">आस-पास शेयर करने की सुविधा सेट अप करें</translation>
@@ -2295,6 +2297,7 @@
 <translation id="3441653493275994384">स्क्रीन</translation>
 <translation id="3441663102605358937">इस खाते की पुष्टि करने के लिए, <ph name="ACCOUNT" /> में फिर से साइन इन करें</translation>
 <translation id="3444641828375597683">विज्ञापन देने वाले और प्रकाशक, इस पेज पर बाद में बताई गई FLoC टेक्नोलॉजी का इस्तेमाल कर सकते हैं.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" />, <ph name="FILENAME" /> देख पाएंगे</translation>
 <translation id="3445047461171030979">Google Assistant में तुरंत जवाब की सुविधा</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
@@ -3792,6 +3795,7 @@
 <translation id="5086874064903147617">डिफ़ॉल्ट होमपेज को बहाल करना चाहते हैं?</translation>
 <translation id="5087249366037322692">किसी तृतीय-पक्ष द्वारा जोड़ा गया</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">कैमरे की स्थिति को ट्रैक करने की अनुमति नहीं है</translation>
 <translation id="5094721898978802975">स्थानीय ऐप्स  के साथ सहयोग करते हुए संचार करें</translation>
@@ -4572,6 +4576,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
 <translation id="5965661248935608907">इससे यह भी नियंत्रित होता है कि जब आप होम बटन पर क्लिक करते हैं या ऑम्निबॉक्स (खोज वाली पट्टी) से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> फ़ाइलों को <ph name="FOLDERNAME" /> में देख सकती है</translation>
+<translation id="5969728632630673489">कीबोर्ड शॉर्टकट की सूचना खारिज कर दी गई</translation>
 <translation id="5971037678316050792">ब्लूटूथ एडाप्टर स्थिति और युग्मन नियंत्रित करें</translation>
 <translation id="597235323114979258">ज़्यादा मंज़िलें देखें</translation>
 <translation id="5972666587303800813">सेवा में नहीं है</translation>
@@ -6207,6 +6212,7 @@
 <translation id="7766807826975222231">एक झलक देखें</translation>
 <translation id="7766838926148951335">अनुमतियां स्वीकार करें</translation>
 <translation id="7768507955883790804">जब आप साइटों पर जाते हैं, तो वे अपने-आप इस सेटिंग को फ़ॉलो करती हैं</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> के अंदर फ़ाइलें देख पाएंगे</translation>
 <translation id="7768770796815395237">बदलें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7770612696274572992">दूसरे डिवाइस से इमेज कॉपी की गई</translation>
@@ -6510,6 +6516,7 @@
 <translation id="8063235345342641131">डिफ़ॉल्ट हरा अवतार</translation>
 <translation id="8063535366119089408">फ़ाइल देखें</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> ग्रुप - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">कनेक्शन डायलॉग</translation>
 <translation id="8068253693380742035">साइन इन करने के लिए टच करें</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">इमेज के रूप में प्रिंट करें</translation>
@@ -7541,6 +7548,7 @@
 <translation id="9186963452600581158">अपने बच्चे के Google खाते से साइन इन करें</translation>
 <translation id="9188732951356337132">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. इसका इस्तेमाल आपके बच्चे की पहचान करने के लिए नहीं किया जाएगा. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. अगर आपके बच्चे के लिए दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">अपने Android फ़ोन को सुरक्षा कुंजी के तौर पर इस्तेमाल करें</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> के अंदर फ़ाइलों में बदलाव कर पाएंगे</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोजें</translation>
 <translation id="9201023452444595544">ऑफ़लाइन डेटा को मिटा दिया जाएगा</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक विकल्प</translation>

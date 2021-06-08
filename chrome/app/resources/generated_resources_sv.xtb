@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">Granska lösenord</translation>
 <translation id="1244265436519979884">Återställning av Linux pågår</translation>
 <translation id="1244303850296295656">Fel i tillägg</translation>
+<translation id="1246863218384630739">Det gick inte att installera <ph name="VM_NAME" />: Avbildningens webbadress returnerade felkoden <ph name="HTTP_ERROR" />. Kontakta administratören.</translation>
 <translation id="1246905108078336582">Vill du ta bort förslaget från urklipp?</translation>
 <translation id="1251366534849411931">Oväntad vänster klammerparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802"><ph name="TOTAL_USAGE" /> data som har lagrats av webbplatser och installerade appar raderas</translation>
@@ -1537,6 +1538,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2610260699262139870">V&amp;erklig storlek</translation>
 <translation id="2610780100389066815">Microsofts Signering av lista över betrodda certifikat</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> får redigeringsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2618797463720777311">Konfigurera Närdelning</translation>
@@ -2295,6 +2297,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3441653493275994384">Skärm</translation>
 <translation id="3441663102605358937">Logga in på <ph name="ACCOUNT" /> igen för att verifiera kontot</translation>
 <translation id="3444641828375597683">Annonsörer och utgivare kan använda FLoC som beskrivs längre ned på den här sidan.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> får läsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Snabba svar från Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
@@ -3793,6 +3796,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5086874064903147617">Vill du återställa standardinställningen för startsidan?</translation>
 <translation id="5087249366037322692">Har lagts till av tredje part</translation>
 <translation id="5087580092889165836">Lägg till kort</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Får inte registrera kamerans position</translation>
 <translation id="5094721898978802975">Kommunicera med samverkande inbyggda appar</translation>
@@ -4573,6 +4577,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Öppna alla i ett &amp;nytt fönster}=1{Öppna i &amp;nytt fönster}other{Öppna alla ({COUNT}) i ett &amp;nytt fönster}}</translation>
 <translation id="5965661248935608907">Det styr också vilken sida som visas när du klickar på hemknappen eller söker i adressfältet.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> har läsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Aviseringen om kortkommandon ignorerades</translation>
 <translation id="5971037678316050792">Styr status och koppling för Bluetooth-adaptern</translation>
 <translation id="597235323114979258">Se fler utskriftsmål</translation>
 <translation id="5972666587303800813">Testtjänst utan funktion</translation>
@@ -6208,6 +6213,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7766807826975222231">Ta en rundtur</translation>
 <translation id="7766838926148951335">Godkänn behörigheterna</translation>
 <translation id="7768507955883790804">Webbplatser som du besöker följer automatiskt den här inställningen</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> får läsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Ändra</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7770612696274572992">Bild kopierad från en annan enhet</translation>
@@ -6512,6 +6518,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8063235345342641131">Grön standardavatar</translation>
 <translation id="8063535366119089408">Visa fil</translation>
 <translation id="8064279191081105977">Grupp <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Dialogruta för anslutning</translation>
 <translation id="8068253693380742035">Tryck här om du vill logga in</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Skriv ut som bild</translation>
@@ -7542,6 +7549,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>
 <translation id="9188732951356337132">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Använd Android-telefonen som säkerhetsnyckel</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> får redigeringsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Sök på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">All offlinedata raderas</translation>
 <translation id="9201220332032049474">Alternativ för skärmlås</translation>

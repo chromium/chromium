@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">Avaliar senhas</translation>
 <translation id="1244265436519979884">A restauração do Linux está em andamento</translation>
 <translation id="1244303850296295656">Erro na extensão</translation>
+<translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Essa ação apagará <ph name="TOTAL_USAGE" /> de dados de armazenados por sites e apps instalados</translation>
@@ -1538,6 +1539,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2610260699262139870">&amp;Tamanho real</translation>
 <translation id="2610780100389066815">Assinatura da lista de confiabilidade da Microsoft</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar o arquivo <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Ler e alterar seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2618797463720777311">Configurar o "Compartilhar por proximidade"</translation>
@@ -2297,6 +2299,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3441653493275994384">Tela</translation>
 <translation id="3441663102605358937">Faça login em <ph name="ACCOUNT" /> novamente para verificar essa conta</translation>
 <translation id="3444641828375597683">Anunciantes e editores podem usar o FLoC, descrito posteriormente nesta página.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> poderá ver o arquivo <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostas rápidas do Google Assistente</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> minutos</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
@@ -3795,6 +3798,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5086874064903147617">Restaurar página inicial padrão?</translation>
 <translation id="5087249366037322692">Adicionada por um terceiro</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 com criptografia RSA</translation>
 <translation id="5090637338841444533">Bloquear o monitoramento da posição da câmera</translation>
 <translation id="5094721898978802975">Comunicar-se com aplicativos nativos de colaboração</translation>
@@ -4576,6 +4580,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir tudo em &amp;uma nova janela}=1{Abrir em &amp;uma nova janela}one{Abrir tudo ({COUNT}) em &amp;uma nova janela}other{Abrir tudo ({COUNT}) em &amp;uma nova janela}}</translation>
 <translation id="5965661248935608907">Controla também qual página deve ser exibida quando você clica no botão "Página inicial" ou quando faz uma pesquisa na Omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> tem permissão para ver arquivos em <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Aviso de atalhos do teclado dispensado</translation>
 <translation id="5971037678316050792">Controlar estado e pareamento do adaptador Bluetooth</translation>
 <translation id="597235323114979258">Ver mais destinos</translation>
 <translation id="5972666587303800813">Serviço sem operação</translation>
@@ -6211,6 +6216,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7766807826975222231">Fazer o tour</translation>
 <translation id="7766838926148951335">Aceitar permissões</translation>
 <translation id="7768507955883790804">Os sites seguem esta configuração automaticamente ao serem acessados</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> poderá ver arquivos na pasta <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Mudar</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7770612696274572992">Imagem copiada de outro dispositivo</translation>
@@ -6515,6 +6521,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8063235345342641131">Avatar verde padrão</translation>
 <translation id="8063535366119089408">Ver arquivo</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Caixa de diálogo de conexão</translation>
 <translation id="8068253693380742035">Toque para fazer login</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Imprimir como imagem</translation>
@@ -7546,6 +7553,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
 <translation id="9188732951356337132">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Usar seu smartphone Android como uma chave de segurança</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar arquivos na pasta <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pesquisar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Todos os dados off-line serão removidos</translation>
 <translation id="9201220332032049474">Opções de bloqueio de tela</translation>

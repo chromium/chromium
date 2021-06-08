@@ -667,6 +667,7 @@
 <translation id="1706625117072057435">जुमका स्तरहरू</translation>
 <translation id="1708338024780164500">(निष्क्रिय)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">यो ब्राउजर परीक्षणका क्रममा छ! यसको प्रयोग गर्दा डेटा गुम्न वा गोपनीयता वा सुरक्षा जोखिममा पर्न सक्छ। कृपया यहाँ गई यस ब्राउजरमा देखिएका समस्याका बारेमा रिपोर्ट गर्नुहोस्: मद्दत &gt; "समस्याका बारेमा रिपोर्ट गर्नुहोस्..."।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (मूल)</translation>
 <translation id="1709217939274742847">प्रमाणीकरणका लागि प्रयोग गर्न कुनै टिकट छान्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">सेयर गर्न सकिँदैन</translation>
@@ -1083,6 +1084,7 @@
 <translation id="2144557304298909478">Linux मा Android एपको विकास</translation>
 <translation id="2146263598007866206">साइटहरूले तपाईंको समय बचत गर्न सम्बन्धित फाइलहरू स्वतः एकसाथ डाउनलोड गर्न सक्छन्</translation>
 <translation id="2147151613919729065">गेस्ट मोडमा गरिएका क्रियाकलापसम्बन्धी इतिहास मेटाउन सबै गेस्ट विन्डो बन्द गर्नुहोस्।</translation>
+<translation id="2147218225094845757">किनाराको प्यानल लुकाइयोस्</translation>
 <translation id="2148219725039824548">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान नेटवर्कमा फेला परेन।</translation>
 <translation id="2148756636027685713">फर्म्याट समाप्त भयो</translation>
 <translation id="2148892889047469596">Cast ट्याब</translation>
@@ -3924,6 +3926,7 @@
 <translation id="5269977353971873915">प्रिन्टिङ असफल भयो</translation>
 <translation id="5275352920323889391">कुकुर</translation>
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
+<translation id="5277127016695466621">किनाराको प्यानल देखाइयोस्</translation>
 <translation id="5278823018825269962">स्ट्याटस Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> को युजरनेम र पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="5280243692621919988">तपाईंले सबै विन्डो बन्द गरेपछि कुकी र साइटका डेटा हटाइयोस्</translation>

@@ -24,7 +24,7 @@
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="2740105938841089077">Use Chrome to open links</translation>
-<translation id="2869959624320573933">Sign in to Chrome</translation>
+<translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2919738076569633423">By using Chrome, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
@@ -61,7 +61,7 @@
 <translation id="5876773482963502140">If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="6036420186814142909">Google Chrome has features that help you manage your internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="6063091872902370735">Allow Chrome sign-in</translation>
+<translation id="6063091872902370735">Allow Chrome Sign-in</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6600954340915313787">Copied to Chrome</translation>

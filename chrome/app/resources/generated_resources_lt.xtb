@@ -240,6 +240,7 @@
 <translation id="1243436884219965846">Peržiūrėti slaptažodžius</translation>
 <translation id="1244265436519979884">Šiuo metu vykdomas „Linux“ atkūrimas</translation>
 <translation id="1244303850296295656">Plėtinio klaida</translation>
+<translation id="1246863218384630739">Nepavyko įdiegti „<ph name="VM_NAME" />“: vaizdo URL pateikė <ph name="HTTP_ERROR" /> klaidos kodą. Susisiekite su administratoriumi.</translation>
 <translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
 <translation id="1251366534849411931">Pradžioje turi būti nurodytas riestinis skliaustas: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Bus išvalyta <ph name="TOTAL_USAGE" /> svetainių ir įdiegtų programų saugomų duomenų</translation>
@@ -1540,6 +1541,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2610260699262139870">T&amp;ikrasis dydis</translation>
 <translation id="2610780100389066815">„Microsoft“ patikimo sąrašo pasirašymas</translation>
 <translation id="2612676031748830579">Kortelės numeris</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> galės redaguoti „<ph name="FILENAME" />“</translation>
 <translation id="2616366145935564096">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM kortelė užrakinta</translation>
 <translation id="2618797463720777311">Bendrinimo netoliese nustatymas</translation>
@@ -2298,6 +2300,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3441653493275994384">Ekranas</translation>
 <translation id="3441663102605358937">Dar kartą prisijunkite prie <ph name="ACCOUNT" />, kad patvirtintumėte šią paskyrą</translation>
 <translation id="3444641828375597683">Reklamuotojai ir leidėjai gali naudoti „FLoC“, aprašytą toliau šiame puslapyje.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> galės peržiūrėti „<ph name="FILENAME" />“</translation>
 <translation id="3445047461171030979">Greiti „Google“ padėjėjo atsakymai</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C įrenginys</translation>
@@ -3796,6 +3799,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5086874064903147617">Atkurti numatytąjį pagrindinį puslapį?</translation>
 <translation id="5087249366037322692">Pridėjo trečioji šalis</translation>
 <translation id="5087580092889165836">Pridėti kortelę</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS Nr. 1 SHA-512 su RSA šifruote</translation>
 <translation id="5090637338841444533">Neleidžiama stebėti fotoaparato pozicijos</translation>
 <translation id="5094721898978802975">Sąveikauti su atitinkamomis vietinėmis programomis</translation>
@@ -4577,6 +4581,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Atidaryti viską &amp;naujame lange}=1{Atidaryti &amp;naujame lange}one{Atidaryti viską ({COUNT}) &amp;naujame lange}few{Atidaryti viską ({COUNT}) &amp;naujame lange}many{Atidaryti viską ({COUNT}) &amp;naujame lange}other{Atidaryti viską ({COUNT}) &amp;naujame lange}}</translation>
 <translation id="5965661248935608907">Ji taip pat kontroliuoja, koks puslapis rodomas, kai spustelėjate pagrindinio puslapio mygtuką ar ieškote „Omnibox“.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> gali peržiūrėti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
+<translation id="5969728632630673489">Sparčiųjų klavišų pranešimo atsisakyta</translation>
 <translation id="5971037678316050792">Valdyti „Bluetooth“ adapterio būseną ir susiejimą</translation>
 <translation id="597235323114979258">Žr. daugiau paskirties vietų</translation>
 <translation id="5972666587303800813">Neveikianti paslauga</translation>
@@ -6212,6 +6217,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7766807826975222231">Peržiūrėti apžvalgą</translation>
 <translation id="7766838926148951335">Priimti leidimus</translation>
 <translation id="7768507955883790804">Svetainėms automatiškai pritaikomas šis nustatymas, kai jose apsilankote</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> galės peržiūrėti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="7768770796815395237">Keisti</translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7770612696274572992">Vaizdas nukopijuotas iš kito įrenginio</translation>
@@ -6516,6 +6522,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8063235345342641131">Numatytasis žalias pseudoportretas</translation>
 <translation id="8063535366119089408">Peržiūrėti failą</translation>
 <translation id="8064279191081105977">Grupė <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Ryšio dialogo langas</translation>
 <translation id="8068253693380742035">Palieskite, kad prisijungtumėte</translation>
 <translation id="8069615408251337349">„Google“ spausdinimas iš debesies</translation>
 <translation id="8071432093239591881">Spausdinti kaip vaizdą</translation>
@@ -7549,6 +7556,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9186963452600581158">Prisijungti naudojant vaiko „Google“ paskyrą</translation>
 <translation id="9188732951356337132">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas „Žiniatinklio ir programų veiklos“ nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. <ph name="BEGIN_LINK2" />Sužinokite daugiau<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">„Android“ telefono naudojimas kaip saugos rakto</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> galės redaguoti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="920045321358709304">Ieškoti sistemoje „<ph name="SEARCH_ENGINE" />“</translation>
 <translation id="9201023452444595544">Visi neprisijungus pasiekiami duomenys bus išvalyti</translation>
 <translation id="9201220332032049474">Ekrano užrakto parinktys</translation>

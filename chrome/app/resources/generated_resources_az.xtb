@@ -233,6 +233,7 @@
 <translation id="1243436884219965846">Parolları nəzərdən keçirin</translation>
 <translation id="1244265436519979884">Linux hazırda bərpa edilir</translation>
 <translation id="1244303850296295656">Artırma xətası</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> quraşdırılmadı: Şəkil keçidi <ph name="HTTP_ERROR" /> xəta kodu ilə nəticələndi. Administratorunuz ilə əlaqə saxlayın.</translation>
 <translation id="1246905108078336582">Təklif mübadilə buferindən silinsin?</translation>
 <translation id="1251366534849411931">Sol fiqurlu mötərizə gözlənilir: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Bununla saytlar və quraşdırılmış tətbiqlər tərəfindən saxlanılan <ph name="TOTAL_USAGE" /> data silinəcək</translation>
@@ -1521,6 +1522,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2610260699262139870">Aktual Ölçü</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2612676031748830579">Kart nömrəsi</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylını redaktə edə biləcək</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> üzərində datanızı oxuyun və dəyişin</translation>
 <translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2618797463720777311">Yaxındakılarla Paylaşmanı ayarlayın</translation>
@@ -2278,6 +2280,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937"><ph name="ACCOUNT" /> hesabına yenidən daxil olaraq bu hesabı doğrulayın</translation>
 <translation id="3444641828375597683">Reklamçılar və naşirlər bu səhifənin sonunda təsvir edilən FLoC üsulundan istifadə edə bilərlər.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylına baxa biləcək</translation>
 <translation id="3445047461171030979">Google Assistent cəld cavablar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="3445925074670675829">USB-C cihazı</translation>
@@ -3773,6 +3776,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5086874064903147617">Defolt əsas səhifə bərpa edilsin?</translation>
 <translation id="5087249366037322692">Üçüncü tərəfindən əlavə edilib</translation>
 <translation id="5087580092889165836">Kart əlavə edin</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Şifrələmə ilə</translation>
 <translation id="5090637338841444533">Kameranızın mövqeyini izləmək icazəsi verilməyib</translation>
 <translation id="5094721898978802975">Nativ tətbiqlərlə əməkdaşlıqla ünsiyyət qurun</translation>
@@ -4551,6 +4555,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5964113968897211042">{COUNT,plural, =0{Hamısını &amp;yeni pəncərədə açın}=1{&amp;Yeni pəncərədə açın}other{Hamısını ({COUNT}) &amp;yeni pəncərədə açın}}</translation>
 <translation id="5965661248935608907">Həmçinin, Əsas səhifə düyməsinə və ya Omnibox'dan axtarışa kliklədiyiniz zaman hansı səhifənin göstərildiyini kontrol edir.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa bilər</translation>
+<translation id="5969728632630673489">Klaviatura qısayolu bildirişi qapadılıb</translation>
 <translation id="5971037678316050792">Bluetooth adaptor durumu və cütlənməsini kontrol edin</translation>
 <translation id="597235323114979258">Daha çox istiqamətə baxın</translation>
 <translation id="5972666587303800813">"Əməliyyat yoxdur" Xidməti</translation>
@@ -6186,6 +6191,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7766807826975222231">Tanış olun</translation>
 <translation id="7766838926148951335">İcazələri qəbul edin</translation>
 <translation id="7768507955883790804">Saytları ziyarət etdikdə onlar avtomatik bu ayarı izləyir</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
 <translation id="7768770796815395237">Dəyişin</translation>
 <translation id="7768784765476638775">Seç və Dinlə</translation>
 <translation id="7770612696274572992">Şəkil başqa cihazdan kopyalanıb</translation>
@@ -6488,6 +6494,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8063235345342641131">Defolt yaşıl avatar</translation>
 <translation id="8063535366119089408">Fayla baxın</translation>
 <translation id="8064279191081105977">Qrup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Bağlantı Dialoqu</translation>
 <translation id="8068253693380742035">Daxil olmaq üçün klikləyin</translation>
 <translation id="8069615408251337349">Google Bulud Printi</translation>
 <translation id="8071432093239591881">Şəkil kimi çap edin</translation>
@@ -7515,6 +7522,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
 <translation id="9188732951356337132">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərir. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android telefonunuzu təhlükəsizlik açarı kimi istifadə edin</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı faylları redaktə edə biləcək</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> provayderində axtarın</translation>
 <translation id="9201023452444595544">Oflayn data silinəcək</translation>
 <translation id="9201220332032049474">Ekran kilidi seçimləri</translation>

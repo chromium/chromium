@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1000498691615767391">Zgjidh një dosje për ta hapur</translation>
-<translation id="1035094536595558507">Pamja rrëshqitëse</translation>
 <translation id="1047956942837015229">Po fshin <ph name="COUNT" /> artikuj...</translation>
 <translation id="1049926623896334335">Dokument Word</translation>
 <translation id="1060368002126861100">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim zhvendosi në dosjen e skedarëve të Windows.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
-<translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351692861129622852">Po importon <ph name="FILE_COUNT" /> skedarë...</translation>
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1395262318152388157">Rrëshqitësi i kërkimit</translation>
 <translation id="1404323374378969387">Norvegjisht</translation>
-<translation id="1430915738399379752">Printo</translation>
 <translation id="1433628812591023318">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të zhvendoset te dosja e skedarëve të Windows.</translation>
 <translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
-<translation id="1467432559032391204">Majtas</translation>
 <translation id="1471718551822868769">Sllovakisht</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" nuk u ngarkua. Nuk ka hapësirë të mjaftueshme në "Diskun e Google".</translation>
 <translation id="1482884275703521657">Finlandisht</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">Informacionet po ngarkohen...</translation>
 <translation id="1838709767668011582">Sajti i Google</translation>
 <translation id="1844692022597038441">Ky skedar nuk ofrohet jashtë linje.</translation>
-<translation id="1847880352285315359">U ruajt</translation>
 <translation id="1853795129690976061">Kjo dosje është ndarë me Linux</translation>
 <translation id="1864756863218646478">Ky skedar nuk mund të gjendej.</translation>
 <translation id="1920670151694390848">Malajalamisht me transliterim</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2084108471225856927">Cilësimet e pajisjes</translation>
 <translation id="2085470240340828803">Skedari me emrin "<ph name="FILENAME" />" ekziston. Çfarë do të bësh?</translation>
-<translation id="2121825465123208577">Ndrysho madhësinë</translation>
 <translation id="2125607626296734455">Kmerisht</translation>
 <translation id="2142680004883808240">Rusisht me tastierë fonetike YaZHert</translation>
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">Madhësia e përgjithshme e skedarit</translation>
 <translation id="2428749644083375155">Po kopjon <ph name="NUMBER_OF_ITEMS" /> artikuj në <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Shkruaj</translation>
-<translation id="2453576648990281505">Skedari ekziston tashmë.</translation>
 <translation id="2464079411014186876">Akullore</translation>
 <translation id="2468402215065996499">Tamagoçi</translation>
 <translation id="2500392669976258912">Guxharatisht fonetike</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">"Disku i Google" nuk mund të arrihet në këtë moment.</translation>
 <translation id="2638942478653899953">"Disku i Google" është i paarritshëm. <ph name="BEGIN_LINK" />Dil<ph name="END_LINK" /> dhe identifikohu përsëri.</translation>
 <translation id="2649120831653069427">Peshku</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">Birmanisht/Mianmar me tastierë Myansan</translation>
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
 <translation id="2672394958563893062">Ndodhi një gabim. Kliko për të rinisur nga fillimi.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2781645665747935084">belge</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
-<translation id="2787047795752739979">Mbishkruaj origjinalin</translation>
 <translation id="2830077785865012357">Kinezisht Zhuyin</translation>
 <translation id="2843806747483486897">Ndrysho parazgjedhjen...</translation>
 <translation id="2850124913210091882">Rezervimi</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> nuk mund të rezervohej</translation>
 <translation id="299638574917407533">Frëngjisht (Kanada)</translation>
 <translation id="3003633581067744647">Kalo te pamja e miniaturës</translation>
-<translation id="3007214526293698309">Rregullo raportin</translation>
 <translation id="3029114385395636667">Aktivizo "Dokumentet e Google jashtë linje" për t'i bërë "Dokumentet", "Fletët" dhe "Diapozitivat" të disponueshme jashtë linje.</translation>
 <translation id="303198083543495566">Gjeografia</translation>
 <translation id="3047197340186497470">Kinezisht Dayi</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3113153474486991170">"<ph name="PATH" />" nuk mund të hapej nga kjo vendndodhje. Kopjoje te "Skedarët e mi" për ta hapur.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">U KRYE</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3197563288998582412">dvorak britanik</translation>
 <translation id="3202131003361292969">Shtegu</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
-<translation id="3626281679859535460">Ndriçimi</translation>
-<translation id="3644896802912593514">Gjerësia</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> artikuj janë zhvendosur.</translation>
 <translation id="3645531960514756307">Zhgozhdo dosjen</translation>
 <translation id="3685122418104378273">Sinkronizimi i "Diskut të Google" është çaktivizuar si parazgjedhje kur përdor të dhënat celulare.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">Lepur</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3811494700605067549">1 skedar i zgjedhur</translation>
-<translation id="38275787300541712">Shtyp "Enter" kur të përfundosh</translation>
 <translation id="3830674330436234648">Luajtja e padisponueshme</translation>
 <translation id="383652340667548381">Serbisht</translation>
 <translation id="385051799172605136">Prapa</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">Kurdishte sorani me tastierë arabe</translation>
 <translation id="4363958938297989186">Rusisht me tastierë fonetike</translation>
 <translation id="4364327530094270451">Pjepër</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Lidhje e jashtme</translation>
 <translation id="4418686080762064601">Krijo një shkurtore për skedarët e tu</translation>
 <translation id="4425149324548788773">Disku im</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotografi u rezervuan</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4732760563705710320">Na vjen keq, por kjo video nuk mbështetet nga pajisja jote e transmetimit.</translation>
-<translation id="4734518477988699048">Vlera e hyrjes është e pavlefshme.</translation>
 <translation id="4737050008115666127">Zbritja</translation>
 <translation id="4747271164117300400">Maqedonisht</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">Kliko për të renditur kolonën në rend zbritës.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajtë</translation>
 <translation id="4880214202172289027">Rrëshqitësi i volumit</translation>
-<translation id="4880520557730313061">Rregullo automatikisht</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
-<translation id="4924638091161556692">Rregulluar</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
 <translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">Shiko më shumë...</translation>
 <translation id="5044852990838351217">Armenisht</translation>
 <translation id="5059127710849015030">Nepalisht me transliterim</translation>
-<translation id="5061708541166515394">Kontrasti</translation>
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> nga skedarët do të fshihen</translation>
 <translation id="508423945471810158">Po zhvendos <ph name="NUMBER_OF_ITEMS" /> artikuj në <ph name="FOLDER_NAME" /></translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Paketa Hangul 3 (390)</translation>
 <translation id="5145331109270917438">Data u modifikua</translation>
 <translation id="515594325917491223">Shah</translation>
-<translation id="5158593464696388225">Ruajtja e imazhit dështoi.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Mos e hiq ende pajisjen tënde!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
@@ -485,7 +465,6 @@
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
 <translation id="6007237601604674381">Lëvizja dështoi. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Prite</translation>
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
 <translation id="604001903249547235">Rezervimi në renë kompjuterike</translation>
 <translation id="6040143037577758943">Mbyll</translation>
@@ -526,10 +505,8 @@
 <translation id="6423031066725912715">Vietnamisht me tastierë TCVN</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
 <translation id="6509122719576673235">Norvegjisht</translation>
-<translation id="6527303717912515753">Ndaj</translation>
 <translation id="653019979737152879">Po sinkronizon <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Të fundit</translation>
-<translation id="6556866813142980365">Ribëje</translation>
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Lidhja e "Diskut të Google"</translation>
@@ -562,7 +539,6 @@
 <translation id="6885780034956018177">Kërmill</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6898028766943174120">Më shumë nëndosje...</translation>
-<translation id="691516599546977041">Nuk mund të ruajë në <ph name="FOLDER_NAME" />. Imazhet e redaktuara do të ruhen në dosjen e "Shkarkimeve".</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Tastiera amerikane Workman</translation>
 <translation id="6930242544192836755">Kohëzgjatja</translation>
@@ -588,7 +564,6 @@
 <translation id="7040138676081995583">Hape me...</translation>
 <translation id="7075931588889865715">Tajlandisht me tastierë TIS 820-2531</translation>
 <translation id="7086590977277044826">Tamilisht me tastierë InScript</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> artikuj u zgjodhën</translation>
 <translation id="7103992300314999525">Maqedonisht</translation>
 <translation id="7106346894903675391">Bli më shumë hapësirë ruajtëse...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
@@ -618,7 +593,6 @@
     Gati për të rezervuar te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Malajalamisht fonetike</translation>
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>
-<translation id="7508545000531937079">Prezantimi</translation>
 <translation id="751507702149411736">Bjellorusisht</translation>
 <translation id="7532029025027028521">Persisht me transliterim</translation>
 <translation id="7544830582642184299">Jepu leje aplikacioneve të Linux që të kenë qasje në skedarët në "Diskun e Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
@@ -629,7 +603,6 @@
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" po restaurohet...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
 <translation id="7600126690270271294">Serbisht</translation>
@@ -671,7 +644,6 @@
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7853966320808728790">Franceze BÉPO</translation>
 <translation id="7868774406711971383">Polonisht</translation>
-<translation id="7873831373602885875">Nuk mund të ruajë në <ph name="FOLDER_NAME" />. Të gjitha modifikimet do të ruhen në <ph name="DOWNLOADS_FOLDER" /> në dosjen e "Shkarkimeve".</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
 <translation id="7881969471599061635">Çaktivizo titrat</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
@@ -683,7 +655,6 @@
 <translation id="7969525169268594403">Sllovenisht</translation>
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
 <translation id="7980421588063892270">Anglisht (SHBA) me tastierë Colemak</translation>
-<translation id="7982283708762922719">Lartësia</translation>
 <translation id="79907182588096956">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="8008366997883261463">Qeni</translation>
 <translation id="8028993641010258682">Madhësia</translation>
@@ -691,17 +662,14 @@
 <translation id="8038111231936746805">(parazgjedhje)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumanisht</translation>
-<translation id="8066773524873206594">Të gjitha redaktimet do të ruhen te <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Përsërit</translation>
 <translation id="8106045200081704138">Të ndara me</translation>
 <translation id="8116072619078571545">Ujë me akull</translation>
 <translation id="8128733386027980860">Anglisht (MB) me tastierë Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" është ndarë me ty. Nuk mund ta fshish sepse nuk je zotëruesi i saj.</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
-<translation id="8153607920959057464">Ky skedar nuk mund të shfaqej.</translation>
 <translation id="8154842056504218462">U zgjodhën të gjitha regjistrimet.</translation>
 <translation id="8157684860301034423">Marrja e informacioneve të aplikacionit dështoi.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">Frëngjisht (Belgjikë)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modeli i pajisjes</translation>
@@ -755,7 +723,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
 <translation id="872537912056138402">Kroatisht</translation>
 <translation id="8750438273876807512">Prek dhe mbaj të shtypur një skedar, trokit te <ph name="ICON" /> dhe zgjidh "Gozhdo te rafti" për qasje të shpejtë te skedarët e tu në raft.</translation>
-<translation id="8775404590947523323">Redaktimet e tua ruhen automatikisht.<ph name="BREAKS" />Për të mbajtur një kopje të imazhit origjinal, anulo zgjedhjen e "Mbishkruaj origjinalin"</translation>
 <translation id="8802459921616481935">Zhvendos te "Koshi"</translation>
 <translation id="8808686172382650546">Macja</translation>
 <translation id="8810671769985673465">Ngjeshja dështoi, artikulli ekziston: "<ph name="FILE_NAME" />"</translation>
@@ -774,7 +741,6 @@
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9035012421917565900">Artikujt nuk mund të zhvendosen sërish te "<ph name="DESTINATION_NAME" />", prandaj nuk do të jesh në gjendje ta zhbësh këtë veprim.</translation>
 <translation id="9038620279323455325">Skedari me emrin "<ph name="FILE_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
-<translation id="9065203028668620118">Redakto</translation>
 <translation id="908378762078012445">Rusisht me tastierë fonetike AATSEEL</translation>
 <translation id="9099674669267916096">Numri i faqeve</translation>
 <translation id="9110990317705400362">Ne kërkojmë vazhdimisht mënyra për ta bërë shfletimin tënd më të sigurt. Më parë, çdo uebsajt mund të të kërkonte të shtoje një shtesë në shfletues. Në versioniet e fundit të Google Chrome, duhet t'i tregosh ti vetë posaçërisht Chrome se dëshiron t'i instalosh këto shtesa duke i shtuar ato përmes faqes "Shtesat". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -786,8 +752,6 @@
 <translation id="9133055936679483811">Ngjeshja dështoi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Macintosh. Ai nuk pajtohet me pajisjen tënde e cila funksionon me sistemin operativ Chrome. Kërko Dyqanin në Ueb të Chrome për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="9144340019284012223">Katalonisht</translation>
-<translation id="9148058034647219655">Dil</translation>
-<translation id="9154418932169119429">Ky imazh nuk ofrohet jashtë linje.</translation>
 <translation id="9172592259078059678">Guxharatisht me transliterim</translation>
 <translation id="9173120999827300720">Anglisht (SHBA) me tastierë ndërkombëtare</translation>
 <translation id="9174050671906956834">Artikujt te "Koshi" fshihen përgjithmonë pas 30 ditësh.</translation>
@@ -796,7 +760,6 @@
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219908252191632183">Hënor</translation>
 <translation id="939736085109172342">Dosje e re</translation>
-<translation id="942954117721265519">Nuk ka imazhe në këtë direktori.</translation>
 <translation id="943972244133411984">Modifikuar nga</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>

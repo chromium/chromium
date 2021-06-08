@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">查看密码</translation>
 <translation id="1244265436519979884">正在进行 Linux 恢复</translation>
 <translation id="1244303850296295656">扩展程序错误</translation>
+<translation id="1246863218384630739">无法安装 <ph name="VM_NAME" />：图片网址返回了 <ph name="HTTP_ERROR" /> 错误代码。请与您的管理员联系。</translation>
 <translation id="1246905108078336582">从剪贴板中移除建议？</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
@@ -1519,6 +1520,7 @@
 <translation id="2610260699262139870">实际大小(&amp;C)</translation>
 <translation id="2610780100389066815">Microsoft 信任列表签名</translation>
 <translation id="2612676031748830579">卡号</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
@@ -2276,6 +2278,7 @@
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此帐号</translation>
 <translation id="3444641828375597683">广告主和发布商可使用 FLoC，具体说明见本页中的下文。</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
@@ -3772,6 +3775,7 @@
 <translation id="5086874064903147617">要恢复默认主页吗？</translation>
 <translation id="5087249366037322692">由第三方添加</translation>
 <translation id="5087580092889165836">添加新卡</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" />（<ph name="PROFILE_NAME" />）</translation>
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
 <translation id="5094721898978802975">与协作的本机应用通信</translation>
@@ -4552,6 +4556,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可查看“<ph name="FOLDERNAME" />”内的文件</translation>
+<translation id="5969728632630673489">已关闭键盘快捷键通知</translation>
 <translation id="5971037678316050792">控制蓝牙适配器状态和配对</translation>
 <translation id="597235323114979258">查看更多目的地</translation>
 <translation id="5972666587303800813">无运维服务</translation>
@@ -6187,6 +6192,7 @@
 <translation id="7766807826975222231">功能导览</translation>
 <translation id="7766838926148951335">接受权限</translation>
 <translation id="7768507955883790804">网站会在您访问时自动采用此设置</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> 将能够查看“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="7768770796815395237">更改</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>
@@ -6490,6 +6496,7 @@
 <translation id="8063235345342641131">默认的绿色头像</translation>
 <translation id="8063535366119089408">查看文件</translation>
 <translation id="8064279191081105977">群组“<ph name="GROUP_NAME" />”- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">连接对话框</translation>
 <translation id="8068253693380742035">触摸以登录</translation>
 <translation id="8069615408251337349">Google 云打印</translation>
 <translation id="8071432093239591881">以图片形式打印</translation>
@@ -7519,6 +7526,7 @@
 <translation id="9186963452600581158">使用孩子的 Google 帐号登录</translation>
 <translation id="9188732951356337132">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">使用您的 Android 手机作为安全密钥</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201023452444595544">所有离线数据都会被清除</translation>
 <translation id="9201220332032049474">屏幕锁定选项</translation>

@@ -237,6 +237,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1243436884219965846">Sprawdź hasła</translation>
 <translation id="1244265436519979884">W tej chwili trwa przywracanie Linuksa</translation>
 <translation id="1244303850296295656">Błąd rozszerzenia</translation>
+<translation id="1246863218384630739">Nie udało się zainstalować <ph name="VM_NAME" />: adres URL obrazu zwrócił kod błędu <ph name="HTTP_ERROR" />. Skontaktuj się z administratorem.</translation>
 <translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
 <translation id="1251366534849411931">Oczekiwany otwierający nawias klamrowy: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez strony i zainstalowane aplikacje</translation>
@@ -1520,6 +1521,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2610260699262139870">&amp;Rozmiar rzeczywisty</translation>
 <translation id="2610780100389066815">Podpisywanie listy zaufania firmy Microsoft</translation>
 <translation id="2612676031748830579">Numer karty</translation>
+<translation id="2613535083491958306">Strona <ph name="ORIGIN" /> będzie mogła edytować plik <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Odczytywanie i modyfikowanie Twoich danych na: <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2618797463720777311">Konfigurowanie Udostępniania w pobliżu</translation>
@@ -2277,6 +2279,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponownie zaloguj się na konto <ph name="ACCOUNT" />, by je zweryfikować</translation>
 <translation id="3444641828375597683">Reklamodawcy i wydawcy mogą korzystać ze sfederowanego uczenia się kohort (FLoC), które opisano niżej na tej stronie.</translation>
+<translation id="3444726579402183581">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać plik <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Krótkie odpowiedzi Asystenta Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
@@ -3774,6 +3777,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5086874064903147617">Przywrócić domyślną stronę główną?</translation>
 <translation id="5087249366037322692">Dodane przez inną firmę</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1, SHA-512 z szyfrowaniem RSA</translation>
 <translation id="5090637338841444533">Nie zezwolono na śledzenie pozycji kamery</translation>
 <translation id="5094721898978802975">Komunikowanie się ze współpracującymi aplikacjami natywnymi</translation>
@@ -4554,6 +4558,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5964113968897211042">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}many{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}other{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}}</translation>
 <translation id="5965661248935608907">Kontroluje także to, jaka strona wyświetla się po kliknięciu przycisku strony głównej lub wyszukiwaniu w omniboksie.</translation>
 <translation id="5969419185858894314">Strona <ph name="ORIGIN" /> może przeglądać pliki w folderze <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Powiadomienie dotyczące skrótów klawiszowych zostało zamknięte</translation>
 <translation id="5971037678316050792">Kontrolowanie stanu adaptera Bluetooth i parowania</translation>
 <translation id="597235323114979258">Zobacz więcej lokalizacji docelowych</translation>
 <translation id="5972666587303800813">Usługa w środowisku bezobsługowym</translation>
@@ -6186,6 +6191,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7766807826975222231">Obejrzyj prezentację</translation>
 <translation id="7766838926148951335">Zaakceptuj uprawnienia</translation>
 <translation id="7768507955883790804">Otwierane witryny automatycznie działają zgodnie z tym ustawieniem.</translation>
+<translation id="7768526219335215384">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Zmień</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7770612696274572992">Obraz skopiowany z innego urządzenia</translation>
@@ -6490,6 +6496,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8063235345342641131">Domyślny zielony awatar</translation>
 <translation id="8063535366119089408">Wyświetl plik</translation>
 <translation id="8064279191081105977">Grupa <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Okno połączenia</translation>
 <translation id="8068253693380742035">Kliknij, by się zalogować</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Drukuj jako grafikę</translation>
@@ -7522,6 +7529,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9188732951356337132">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Używaj telefonu z Androidem jako klucza bezpieczeństwa</translation>
+<translation id="9200339982498053969">Strona <ph name="ORIGIN" /> będzie mogła edytować pliki z folderu <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Szukaj w: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Wszystkie dane offline zostaną wyczyszczone</translation>
 <translation id="9201220332032049474">Opcje blokady ekranu</translation>

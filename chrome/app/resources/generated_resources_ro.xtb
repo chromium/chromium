@@ -236,6 +236,7 @@
 <translation id="1243436884219965846">Examinează parolele</translation>
 <translation id="1244265436519979884">O restabilire Linux este în desfășurare</translation>
 <translation id="1244303850296295656">Eroare privind extensiile</translation>
+<translation id="1246863218384630739">Nu s-a putut instala <ph name="VM_NAME" />: adresa URL a imaginii a returnat un cod de eroare <ph name="HTTP_ERROR" />. Contactează administratorul.</translation>
 <translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
 <translation id="1251366534849411931">Se așteaptă o acoladă de deschidere: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de site-uri și de aplicațiile instalate</translation>
@@ -1523,6 +1524,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2610260699262139870">Di&amp;mensiunea actuală</translation>
 <translation id="2610780100389066815">Semnarea listei de încredere Microsoft</translation>
 <translation id="2612676031748830579">Număr card</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> va putea să editeze <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Citește și modifică datele de pe <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2618797463720777311">Configurează Trimiterea în apropiere</translation>
@@ -2281,6 +2283,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3441663102605358937">Conectează-te din nou la <ph name="ACCOUNT" /> pentru a confirma contul</translation>
 <translation id="3444641828375597683">Advertiserii și editorii pot folosi tehnologia ÎFG, descrisă mai jos în această pagină.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> va putea să vadă <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Răspunsuri rapide de la Asistentul Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
@@ -3778,6 +3781,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5086874064903147617">Restabilești pagina principală prestabilită?</translation>
 <translation id="5087249366037322692">Adăugată de o terță parte</translation>
 <translation id="5087580092889165836">Adaugă un card</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 cu criptare RSA</translation>
 <translation id="5090637338841444533">Nu au permisiunea de a urmări poziția camerei</translation>
 <translation id="5094721898978802975">Comunicarea cu aplicațiile native cooperante</translation>
@@ -4558,6 +4562,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;nouă}=1{Deschide într-o fereastră &amp;nouă}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;nouă}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;nouă}}</translation>
 <translation id="5965661248935608907">Stabilește și ce pagină se afișează când dai clic pe butonul Pagina principală sau când cauți din caseta polivalentă.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> poate vedea fișiere din <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Notificarea privind comenzile rapide de la tastatură a fost închisă</translation>
 <translation id="5971037678316050792">Controlează starea și conectarea adaptorului Bluetooth</translation>
 <translation id="597235323114979258">Vezi mai multe destinații</translation>
 <translation id="5972666587303800813">Serviciu no-op</translation>
@@ -6193,6 +6198,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7766807826975222231">Faceți un tur</translation>
 <translation id="7766838926148951335">Acceptă permisiunile</translation>
 <translation id="7768507955883790804">Site-urile aplică automat această setare când le accesezi</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> va putea vedea fișierele din <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Modifică</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7770612696274572992">Imagine copiată de pe alt dispozitiv</translation>
@@ -6496,6 +6502,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8063235345342641131">Avatar verde prestabilit</translation>
 <translation id="8063535366119089408">Vezi fișierul</translation>
 <translation id="8064279191081105977">Grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Fereastră de dialog de conectare</translation>
 <translation id="8068253693380742035">Atinge pentru a te conecta</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Printează ca imagine</translation>
@@ -7527,6 +7534,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9188732951356337132">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Folosește telefonul Android ca pe o cheie de securitate</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> va putea edita fișierele din <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Caută pe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Toate datele offline vor fi șterse</translation>
 <translation id="9201220332032049474">Opțiuni de blocare a ecranului</translation>

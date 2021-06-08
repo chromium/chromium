@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">Gennemgå dine adgangskoder</translation>
 <translation id="1244265436519979884">Linux er i øjeblikket ved at blive gendannet</translation>
 <translation id="1244303850296295656">Udvidelsesfejl</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> kunne ikke installeres: Webadressen til billedet returnerede en <ph name="HTTP_ERROR" />-fejlkode. Kontakt din administrator.</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
 <translation id="1251366534849411931">Forventet krøllet startparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Denne handling rydder <ph name="TOTAL_USAGE" /> data, der er gemt af websites og installerede apps</translation>
@@ -1538,6 +1539,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2610260699262139870">Fa&amp;ktisk størrelse</translation>
 <translation id="2610780100389066815">Microsoft-signering af tillidslister</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> vil kunne redigere <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Læse og redigere dine data på <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2618797463720777311">Konfigurer "Deling tæt på"</translation>
@@ -2296,6 +2298,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at bekræfte denne konto</translation>
 <translation id="3444641828375597683">Annoncører og udgivere kan bruge FLoC, som er beskrevet længere nede på denne side.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> vil kunne se <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Hurtige svar i Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-enhed</translation>
@@ -3794,6 +3797,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5086874064903147617">Vil du gendanne standardstartsiden?</translation>
 <translation id="5087249366037322692">Tilføjet af en tredjepart</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
@@ -4574,6 +4578,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="5965661248935608907">Den styrer også, hvilken side der vises, når du klikker på knappen Startside eller søger via omnifeltet.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> kan se filer i <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Meddelelsen med tastaturgenveje blev lukket</translation>
 <translation id="5971037678316050792">Kontrollere tilstand og parring af Bluetooth-adaptere</translation>
 <translation id="597235323114979258">Se flere destinationer</translation>
 <translation id="5972666587303800813">Selvkørende tjeneste</translation>
@@ -6209,6 +6214,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7766807826975222231">Få en rundvisning</translation>
 <translation id="7766838926148951335">Acceptér tilladelser</translation>
 <translation id="7768507955883790804">Websites følger automatisk denne indstilling, når du besøger dem</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> vil kunne se filer i <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Skift</translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
 <translation id="7770612696274572992">Billede kopieret fra en anden enhed</translation>
@@ -6512,6 +6518,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8063235345342641131">Grøn standardavatar</translation>
 <translation id="8063535366119089408">Se fil</translation>
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Dialogboks for forbindelse</translation>
 <translation id="8068253693380742035">Tryk for at logge ind</translation>
 <translation id="8069615408251337349">Google Cloudprinter</translation>
 <translation id="8071432093239591881">Udskriv i billedformat</translation>
@@ -7544,6 +7551,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9188732951356337132">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Brug din Android-telefon som sikkerhedsnøgle</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> vil kunne redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Søg via <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Alle offlinedata ryddes</translation>
 <translation id="9201220332032049474">Valgmuligheder for skærmlås</translation>

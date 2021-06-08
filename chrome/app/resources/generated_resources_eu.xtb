@@ -235,6 +235,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1243436884219965846">Berrikusi pasahitzak</translation>
 <translation id="1244265436519979884">Linux-en edukiontzia leheneratzen</translation>
 <translation id="1244303850296295656">Luzapenaren errorea</translation>
+<translation id="1246863218384630739">Ezin izan da instalatu <ph name="VM_NAME" />: irudiaren URLak <ph name="HTTP_ERROR" /> errore-kodea itzuli du. Jarri administratzailearekin harremanetan.</translation>
 <translation id="1246905108078336582">Iradokizuna arbeletik kendu nahi duzu?</translation>
 <translation id="1251366534849411931">Ezkerreko giltza behar da: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Webguneek eta instalatutako aplikazioek gordetako datuen <ph name="TOTAL_USAGE" /> garbituko dira</translation>
@@ -1522,6 +1523,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2610260699262139870">&amp;Benetako tamaina</translation>
 <translation id="2610780100389066815">Microsoft-en fidagarrien zerrendaren sinatzea</translation>
 <translation id="2612676031748830579">Txartelaren zenbakia</translation>
+<translation id="2613535083491958306"><ph name="FILENAME" /> editatzeko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="2616366145935564096">Irakurri eta aldatu <ph name="WEBSITE_1" /> webgunean dituzun datuak</translation>
 <translation id="2617342710774726426">Blokeatuta dago SIM txartela</translation>
 <translation id="2618797463720777311">Konfiguratu Nearby Share</translation>
@@ -2279,6 +2281,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3441653493275994384">Pantaila</translation>
 <translation id="3441663102605358937">Hasi saioa <ph name="ACCOUNT" /> kontuan berriro kontua egiaztatzeko</translation>
 <translation id="3444641828375597683">Iragarleek eta argitaratzaileek FLoC teknika erabil dezakete, zeina orri honetan aurrerago azalduta baitagoen.</translation>
+<translation id="3444726579402183581"><ph name="FILENAME" /> ikusteko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="3445047461171030979">Google-ren Laguntzailea eginbidearen erantzun bizkorrak</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C gailua</translation>
@@ -3776,6 +3779,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5086874064903147617">Orri nagusi lehenetsia leheneratu nahi duzu?</translation>
 <translation id="5087249366037322692">Hirugarrenen batek gehitu du</translation>
 <translation id="5087580092889165836">Gehitu txartel bat</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA enkriptatzearekin</translation>
 <translation id="5090637338841444533">Ezin dute egin kameraren posizioaren jarraipena</translation>
 <translation id="5094721898978802975">Komunikatu aplikazio lankide natiboekin</translation>
@@ -4556,6 +4560,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5964113968897211042">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>
 <translation id="5965661248935608907">Omnibox-eko Hasiera botoia edo bilatzeko aukera sakatzen duzunean gertatzen dena ere kontrolatzen du.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak ikus ditzake</translation>
+<translation id="5969728632630673489">Lasterbideen jakinarazpena baztertu da</translation>
 <translation id="5971037678316050792">Kontrolatu Bluetooth egokigailuaren egoera eta parekatzeko aukera</translation>
 <translation id="597235323114979258">Ikusi helmuga gehiago</translation>
 <translation id="5972666587303800813">No-op zerbitzua</translation>
@@ -6191,6 +6196,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7766807826975222231">Eman txangoa</translation>
 <translation id="7766838926148951335">Eman baimenak</translation>
 <translation id="7768507955883790804">Webguneetan sartzen zarenean, webguneek automatikoki jarraitzen diote ezarpen honi</translation>
+<translation id="7768526219335215384"><ph name="FOLDERNAME" /> karpetako fitxategiak ikusteko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="7768770796815395237">Aldatu</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7770612696274572992">Beste gailu batetik kopiatu da irudia</translation>
@@ -6493,6 +6499,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8063235345342641131">Abatar berde lehenetsia</translation>
 <translation id="8063535366119089408">Ikusi fitxategia</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> taldea. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" />.</translation>
+<translation id="8066444921260601116">Konexioaren leihoa</translation>
 <translation id="8068253693380742035">Saioa hasteko, ukitu hau</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Inprimatu irudi gisa</translation>
@@ -7523,6 +7530,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9186963452600581158">Hasi saioa haurraren Google-ko kontuan</translation>
 <translation id="9188732951356337132">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Erabili Android-eko telefonoa segurtasun-giltza gisa</translation>
+<translation id="9200339982498053969"><ph name="FOLDERNAME" /> karpetako fitxategiak editatzeko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="920045321358709304">Bilatu <ph name="SEARCH_ENGINE" /> zerbitzuaren bidez</translation>
 <translation id="9201023452444595544">Garbitu egingo dira konexiorik gabe erabiltzeko datu guztiak</translation>
 <translation id="9201220332032049474">Pantaila blokeatzeko aukerak</translation>

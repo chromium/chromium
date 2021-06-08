@@ -389,6 +389,7 @@
 <translation id="1515230621229117540">啟用浮動式無障礙選單</translation>
 <translation id="1515824657887788963">允許頁面在關閉時執行同步 XHR 要求。</translation>
 <translation id="1516486219683984217">不允許使用系統通知</translation>
+<translation id="152078218786467087">應重新啟動的時間 (根據裝置當地時區)。</translation>
 <translation id="1522425503138261032">允許網站追蹤使用者的實際位置</translation>
 <translation id="1523774894176285446">要啟動的替代瀏覽器 (適用於已設定的網站)。</translation>
 <translation id="1524243669991877602">如果將這項政策設為 Enabled，與 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帳戶相關的政策就會合併至裝置層級政策。
@@ -476,9 +477,6 @@
       如果未設定 <ph name="IDLE_ACTION_FIELD_NAME" />，系統會採取 <ph name="IDLE_ACTION_ENUM_SUSPEND" /> 動作。
 
       注意：AC 電源和電池的設定各自獨立。</translation>
-<translation id="1606917441621112087">如果將這項政策設為 True，系統會停用 <ph name="PRODUCT_NAME" /> 中的內部 PDF 檢視器、將 PDF 檔案視為下載內容，並且讓使用者以預設的應用程式開啟 PDF。
-
-      如果將這項政策設為 False 或不設定，除非使用者停用 PDF 外掛程式，否則 PDF 外掛程式會開啟 PDF 檔案。</translation>
 <translation id="1608755754295374538">系統會直接授權存取音訊擷取裝置而不需提示的網址</translation>
 <translation id="1611394564825535541">可讓你控管使用者是否可存取非企業所管理的印表機
 
@@ -2066,6 +2064,7 @@
 
       如果不設定這項政策，系統會使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="3695706037816556327">在 <ph name="PRODUCT_OS_NAME" />上移除安全性權杖 (例如智慧型卡片) 時，系統要執行的動作。</translation>
+<translation id="3700193037252896716">重新啟動的頻率。</translation>
 <translation id="3700318587977845664">進行週期性更新檢查的頻率。</translation>
 <translation id="3701121231485832347">控管 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" /> 裝置專屬設定。</translation>
 <translation id="3702518095257671450">遠端認證</translation>
@@ -3014,6 +3013,7 @@
       * 當不同的來源具有不同的範圍或層級時，系統會套用優先順序最高的政策。
 
       如果某項政策不在清單中，但發生來源、範圍或層級衝突，系統會套用優先順序最高的政策。</translation>
+<translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
 <translation id="5059201920681374653">必須在關聯的受管理裝置上使用受管理帳戶</translation>
@@ -3805,8 +3805,6 @@
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
 <translation id="6123052603197028610">不允許向 Google 伺服器發送擷取時間戳記的查詢</translation>
 <translation id="6132506775968708399">封鎖第三方 Cookie</translation>
-<translation id="6132739217670763962">
-      指定 SharedArrayBuffers 是否可用於非跨來源隔離內容。基於網路相容性原因，Chrome 自 91 版 (2021 年 5 月 25 日推出) 起在使用 SharedArrayBuffers 時會要求跨來源隔離。詳情請前往：https://developer.chrome.com/blog/enabling-shared-array-buffer/。</translation>
 <translation id="6133088669883929098">允許所有網站使用金鑰產生功能</translation>
 <translation id="6135398260575578389">已啟用強化模式中的安全瀏覽功能。這個模式可提供更完善的安全防護機制，但使用者必須提供更多瀏覽資訊給 Google。</translation>
 <translation id="6138636318340561140">即時檢查網址的安全瀏覽狀態</translation>
@@ -4620,6 +4618,7 @@
 
           如果不設定這項政策，檔案櫃預設會顯示在畫面底部，且使用者可以變更檔案櫃的位置。</translation>
 <translation id="7040229947030068419">範例值：</translation>
+<translation id="7041170641363384736">允許自訂重新啟動裝置的時間表。這項政策目前僅適用於已在資訊站工作階段啟用自動啟動應用程式功能的裝置。如果設為 True，裝置會根據時間表重新啟動。如要取消任何排定的重新啟動作業，你必須先移除這項政策。</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>
 <translation id="7060497964524144376">如果將這項政策設為啟用，安全瀏覽功能會信任你指定的網域。這表示該功能不會確認這些網域是否為網路詐騙、惡意軟體或垃圾軟體等危險資源。安全瀏覽功能的下載保護服務不會檢查這些網域代管的下載內容，其中的密碼保護服務也不會檢查密碼重複使用情形。
 
@@ -5427,6 +5426,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用游標醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
+<translation id="8161536598508377155">自訂重新啟動資訊站裝置的時間表</translation>
 <translation id="8164144100557223371">停用瀏覽器實驗功能工具列進入點</translation>
 <translation id="8164687848393015214">如果將這項政策設為啟用，系統會將監控網路封包 (<ph name="HEARTBEATS_TERM" />) 傳送到可監控上線狀態的管理伺服器，讓伺服器偵測裝置是否處於離線狀態。
 
@@ -5641,6 +5641,7 @@
       如果設定這項政策，系統會視需要刪除較舊的快照，以避免超出限制。如果這項政策設為 0，則系統不會建立任何快照</translation>
 <translation id="8451988835943702790">將新分頁設為首頁</translation>
 <translation id="8455529558077979314">隱私保護畫面設定</translation>
+<translation id="8455551509936646199">應該在星期幾重新啟動 (根據裝置當地時區)，僅適用於「frequency」設為「WEEKLY」的情況。</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">使用 POST 的互動智慧搜尋網址參數</translation>
 <translation id="847472800012384958">不允許任何網站顯示彈出式視窗</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1000498691615767391">کھولنے کیلئے ایک فولڈر منتخب کریں</translation>
-<translation id="1035094536595558507">سلائیڈ منظر</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> آئٹمز حذف کیے جا رہے ہیں…</translation>
 <translation id="1049926623896334335">‏Word دستاویز</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1297922636971898492">‏Google Drive ابھی دستیاب نہیں ہے۔ Google Drive واپس آ جانے پر اپ لوڈنگ خود بخود دوبارہ شروع ہو جائے گی۔</translation>
 <translation id="1307931752636661898">‏Linux فائلز دیکھنے سے قاصر</translation>
-<translation id="1346748346194534595">دائیں</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> فائلوں کو درآمد کیا جا رہا ہے…</translation>
 <translation id="1358735829858566124">فائل یا ڈائریکٹری قابل استعمال نہیں ہے۔</translation>
 <translation id="1363028406613469049">ٹریک</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1395262318152388157">تلاش کرنے کا سلائیڈر</translation>
 <translation id="1404323374378969387">نارويجين</translation>
-<translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1433628812591023318">‏فائلز کو Parallels Desktop میں ڈراپ کرنے کے لیے، فائل کو Windows کی فائلز میں منتقل کرنا ضروری ہے۔</translation>
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
-<translation id="1467432559032391204">بائیں</translation>
 <translation id="1471718551822868769">سلاواکی</translation>
 <translation id="1474339897586437869">‏"<ph name="FILENAME" />" کو اپ لوڈ نہیں کیا گیا۔ آپ کے Google Drive میں کافی خالی جگہ نہیں ہے۔</translation>
 <translation id="1482884275703521657">فنّش</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">معلومات لوڈ ہو رہی ہے…</translation>
 <translation id="1838709767668011582">‏Google سائٹ</translation>
 <translation id="1844692022597038441">یہ فائل آف لائن دستیاب نہیں ہے۔</translation>
-<translation id="1847880352285315359">محفوظ ہو گئی</translation>
 <translation id="1853795129690976061">‏اس فولڈر کا اشتراک Linux کے ساتھ کر دیا گیا ہے</translation>
 <translation id="1864756863218646478">فائل تلاش نہیں کی جا سکی۔</translation>
 <translation id="1920670151694390848">ملیالم نقل حرفی</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2084108471225856927">آلے کی ترتیبات</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" نام کی ایک فائل پہلے سے موجود ہے۔ آپ کیا کرنا چاہتے ہیں؟</translation>
-<translation id="2121825465123208577">سائز تبدیل کریں</translation>
 <translation id="2125607626296734455">خمیر</translation>
 <translation id="2142680004883808240">‏YaZHert فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">فائلوں کا کُل سائز</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو <ph name="FOLDER_NAME" /> میں کاپی کیا جا رہا ہے</translation>
 <translation id="2448312741937722512">قسم</translation>
-<translation id="2453576648990281505">فائل پہلے سے موجود ہے</translation>
 <translation id="2464079411014186876">آئس کریم</translation>
 <translation id="2468402215065996499">تاما گوچی</translation>
 <translation id="2500392669976258912">گجراتی فونیٹک</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">‏اس وقت Google Drive تک رسائی نہیں ہو سکتی ہے۔</translation>
 <translation id="2638942478653899953">‏Google Drive تک رسائی حاصل نہیں ہو سکی۔ براہ کرم <ph name="BEGIN_LINK" />لاگ آؤٹ کریں<ph name="END_LINK" /> اور دوبارہ لاگ ان کریں۔</translation>
 <translation id="2649120831653069427">رینبو فش</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">میانسان کی بورڈ کے ساتھ برمی/میانمار</translation>
 <translation id="2664412712123763093">فائل کا مقام</translation>
 <translation id="2672394958563893062">ایک خرابی پیش آگئی۔ ابتدا سے دوبارہ شروع کرنے کیلئے کلک کریں۔</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
-<translation id="2787047795752739979">اصل کو اوور رائٹ کریں</translation>
 <translation id="2830077785865012357">‏چینی Zhuyin</translation>
 <translation id="2843806747483486897">ڈیفالٹ کو تبدیل کریں…</translation>
 <translation id="2850124913210091882">بیک اپ لیں</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> کا بیک اپ نہیں لیا جا سکا</translation>
 <translation id="299638574917407533">فرانسیسی (کینیڈا)</translation>
 <translation id="3003633581067744647">تھمب نیل منظر پر سوئچ کریں</translation>
-<translation id="3007214526293698309">تناسب درست کریں</translation>
 <translation id="3029114385395636667">‏Docs، Sheets اور Slides کو آف لائن دستیاب بنانے کیلئے Google Docs آف لائن کو فعال کریں۔</translation>
 <translation id="303198083543495566">جغرافیہ</translation>
 <translation id="3047197340186497470">‏چینی Dayi</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3113153474486991170">"<ph name="PATH" />" کو اس مقام سے نہیں کھولا جا سکا۔ کھولنے کے لیے براہ کرم "میری فائلز" میں کاپی کریں۔</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">ہوگیا</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3197563288998582412">‏UK ڈووراک</translation>
 <translation id="3202131003361292969">راستہ</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
 <translation id="3620292326130836921">سبھی کا بیک اپ بنا لیا گیا!</translation>
-<translation id="3626281679859535460">چمکیلاپن</translation>
-<translation id="3644896802912593514">چوڑائی</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> آئٹمز منتقل کیے گئے۔</translation>
 <translation id="3645531960514756307">فولڈر کا پن ہٹائیں</translation>
 <translation id="3685122418104378273">‏موبائل ڈیٹا استعمال کرتے وقت، Google Drive کی مطابقت پذیری بطور ڈیفالٹ غیر فعال کر دی جاتی ہے۔</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="3811494700605067549">1 فائل منتخب کی گئی</translation>
-<translation id="38275787300541712">مکمل ہو جانے پر انٹر دبائیں</translation>
 <translation id="3830674330436234648">کوئی پلے بیک دستیاب نہیں ہے</translation>
 <translation id="383652340667548381">صربی</translation>
 <translation id="385051799172605136">پیچھے</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">عربی پر مبنی کی بورڈ کے ساتھ سورانی کردش</translation>
 <translation id="4363958938297989186">فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="4364327530094270451">خربوزہ</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">خارجی لنک</translation>
 <translation id="4418686080762064601">اپنی فائلوں کے ليے ایک شارٹ کٹ تخلیق کریں</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> تصاویر کا بیک اپ لے لیا گیا</translation>
 <translation id="4725511304875193254">کورگی</translation>
 <translation id="4732760563705710320">معذرت، یہ ویڈیو آپ کے کاسٹ آلہ کی جانب سے تعاون یافتہ نہیں ہے۔</translation>
-<translation id="4734518477988699048">ان پٹ قدر غلط ہے۔</translation>
 <translation id="4737050008115666127">لینڈنگ</translation>
 <translation id="4747271164117300400">مقدونيائی</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">نزولی ترتیب میں کالم ترتیب دینے کیلئے کلک کریں۔</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بائٹس</translation>
 <translation id="4880214202172289027">والیوم سلائیڈر</translation>
-<translation id="4880520557730313061">خودکار اصلاح</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> بیک اپ لینے کیلئے تیار</translation>
-<translation id="4924638091161556692">مقررہ</translation>
 <translation id="4935975195727477204">گزانیہ پھول</translation>
 <translation id="4943368462779413526">فٹبال</translation>
 <translation id="4961158930123534723">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ 1 فولڈر</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">مزید دیکھیں…</translation>
 <translation id="5044852990838351217">ارمینی</translation>
 <translation id="5059127710849015030">نیپالی نقل حرفی</translation>
-<translation id="5061708541166515394">تناسب امتزاج</translation>
 <translation id="5068919226082848014">پزّا</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> فائلیں حذف کر دی جائیں گی</translation>
 <translation id="508423945471810158">‫<ph name="NUMBER_OF_ITEMS" /> آئٹمز کو <ph name="FOLDER_NAME" /> میں منتقل کیا جا رہا ہے</translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">ہنگول 3 سیٹ (390)</translation>
 <translation id="5145331109270917438">تاریخ میں ترمیم کی گئی ہے</translation>
 <translation id="515594325917491223">شطرنج</translation>
-<translation id="5158593464696388225">تصویر کو محفوط کرنے میں ناکام۔</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />بالکل ابھی اپنا آلہ نہ ہٹائیں!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    زیر استعمال ہونے پر آپ کا آلہ ہٹانے سے ڈیٹا کو نقصان پہنچ سکتا ہے۔  براہ کرم کارروائی مکمل ہونے تک انتظار کریں، پھر فائلز ایپ استعمال کر کے آلہ کو خارج کریں۔</translation>
@@ -485,7 +465,6 @@
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
 <translation id="6007237601604674381">منتقل کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">تراشیں</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
 <translation id="604001903249547235">کلاؤڈ بیک اپ</translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -526,10 +505,8 @@
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
 <translation id="6509122719576673235">نارويجين</translation>
-<translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="6549689063733911810">حالیہ</translation>
-<translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6558280019477628686">ایک خرابی پیش آ گئی۔ ہو سکتا ہے کچھ آئٹمز حذف نہ ہوئے ہوں۔</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>
 <translation id="6581162200855843583">‏Google Drive لنک</translation>
@@ -562,7 +539,6 @@
 <translation id="6885780034956018177">گھونگھا</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6898028766943174120">مزید ذیلی فولڈرز...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" /> میں محفوظ نہیں کیا جا سکتا۔ ترمیم شدہ تصاویر ڈاؤن لوڈز فولڈر میں محفوظ کی جائیں گی۔</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">دورانیہ</translation>
@@ -588,7 +564,6 @@
 <translation id="7040138676081995583">ان کے ساتھ کھولیں…</translation>
 <translation id="7075931588889865715">‏TIS 820-2531 کی بورڈ کے ساتھ تھائی</translation>
 <translation id="7086590977277044826">‏InScript کی بورڈ کے ساتھ تمل</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> آئٹمز منتخب کیے گئے</translation>
 <translation id="7103992300314999525">مقدونيائی</translation>
 <translation id="7106346894903675391">مزید اسٹوریج خریدیں…</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt; Drive تلاش کریں&lt;/em&gt;</translation>
@@ -618,7 +593,6 @@
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پر بیک اپ لینے کیلئے تیار</translation>
 <translation id="7495372004724182530">ملیالم فونیٹک</translation>
 <translation id="7505167922889582512">پوشیدہ فائلیں دکھائیں</translation>
-<translation id="7508545000531937079">سلائیڈ شو</translation>
 <translation id="751507702149411736">بيلاروسی</translation>
 <translation id="7532029025027028521">فارسی نقل حرفی</translation>
 <translation id="7544830582642184299">‏Linux ایپس کو اپنے Google Drive میں فائلز تک رسائی کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
@@ -629,7 +603,6 @@
 <translation id="7551643184018910560">شیلف میں پن کریں</translation>
 <translation id="7553492409867692754">‏Linux ایپس کو <ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کرنے کی اجازت دیں</translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" کو بحال کیا جا رہا ہے...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">بس ایک سیکنڈ انتظار کریں</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> آف لائن دستیاب بنائی جا رہی ہے</translation>
 <translation id="7600126690270271294">سربیائی</translation>
@@ -671,7 +644,6 @@
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
 <translation id="7853966320808728790">‏فرانسیسی BÉPO</translation>
 <translation id="7868774406711971383">پولش</translation>
-<translation id="7873831373602885875"><ph name="FOLDER_NAME" /> میں محفوظ نہیں کیا جا سکتا۔ تمام ترامیم ڈاؤن لوڈز فولڈر میں <ph name="DOWNLOADS_FOLDER" /> میں محفوظ کی جائیں گی۔</translation>
 <translation id="7874321682039004450">فلپینو</translation>
 <translation id="7881969471599061635">سب ٹائٹلز کو غیر فعال کریں</translation>
 <translation id="78946041517601018">مشترکہ ڈرائیوز</translation>
@@ -683,7 +655,6 @@
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
 <translation id="7980421588063892270">کول مارک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
-<translation id="7982283708762922719">اونچائی</translation>
 <translation id="79907182588096956">‏یہ فائل Windows سافٹ ویئر استعمال کرنے والے PC کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ موافق نہیں ہے جو Chrome OS چلاتا ہے۔ Chrome OS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
 <translation id="8028993641010258682">سائز</translation>
@@ -691,17 +662,14 @@
 <translation id="8038111231936746805">(ڈیفالٹ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> آڈیو</translation>
 <translation id="8045462269890919536">رومنی</translation>
-<translation id="8066773524873206594">تمام ترامیم کو <ph name="DOWNLOADS_FOLDER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="8079530767338315840">دہرائیں</translation>
 <translation id="8106045200081704138">میرے ساتھ اشتراک کردہ</translation>
 <translation id="8116072619078571545">برف کا پانی</translation>
 <translation id="8128733386027980860">ڈوراک کی بورڈ کے ساتھ انگریزی (برطانیہ)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" کا آپ کے ساتھ اشتراک کیا گیا ہے۔ آپ اسے حذف نہیں کر سکتے ہیں کیونکہ آپ اس کے مالک نہیں ہیں۔</translation>
 <translation id="8151638057146502721">کنفیگر کریں</translation>
-<translation id="8153607920959057464">یہ فائل ڈسپلے نہیں کی جا سکی۔</translation>
 <translation id="8154842056504218462">تمام اندراجات منتخب کئے گئے۔</translation>
 <translation id="8157684860301034423">ایپ کی معلومات دوبارہ حاصل کرنے میں ناکام ہو گئے۔</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">فرانسیسی (بیلجیم)</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8193175696669055101">آلے کا ماڈل</translation>
@@ -755,7 +723,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> منتخب کیا گیا۔</translation>
 <translation id="872537912056138402">کراتی</translation>
 <translation id="8750438273876807512">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل ٹچ کریں اور دبائے رکھیں اور <ph name="ICON" /> تھپتھپائیں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
-<translation id="8775404590947523323">آپ کی ترامیم خود بخود محفوظ ہو جاتی ہیں۔<ph name="BREAKS" />اصل تصویر کی ایک کاپی رکھنے کیلئے، "اصل کو مٹا کر لکھیں" کو غیر نشان زد کریں</translation>
 <translation id="8802459921616481935">کوڑے دان میں منتقل کریں</translation>
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8810671769985673465">زپ بنانے کا عمل ناکام ہو گیا، آئٹم موجود ہے: "<ph name="FILE_NAME" />"</translation>
@@ -774,7 +741,6 @@
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9035012421917565900">آئٹمز '<ph name="DESTINATION_NAME" />' میں واپس منتقل نہیں کیے جا سکتے، اسلئے آپ اس کارروائي کو کالعدم نہیں کر سکیں گے۔</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
-<translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="908378762078012445">‏فونیٹک AATSEEL کی بورڈ کے ساتھ روسی</translation>
 <translation id="9099674669267916096">صفحات کی تعداد</translation>
 <translation id="9110990317705400362">‏ہم آپ کی براؤزنگ کو محفوظ تر بنانے کے طریقے مستقل تلاش کر رہے ہیں۔ ازیں قبل، کوئی بھی ویب سائٹ آپ کو اپنے براؤزر میں ایک ایکسٹینشن شامل کرنے کا اشارہ دے سکتی تھی۔ Google Chrome کے تازہ ترین ورژن میں، ایکسٹینشنز صفحہ کے ذریعہ ایکسٹینشنز کو شامل کر کے آپ کو واضح طور پر Chrome کو بتا دینا چاہیے کہ آپ انہیں شامل کرنا چاہتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -786,8 +752,6 @@
 <translation id="9133055936679483811">زپ کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">‏یہ فائل Macintosh سافٹ ویئر استعمال کر رہے کمپیوٹر کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ مطابقت پذیر نہیں ہے جو Chrome OS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے Chrome ویب اسٹور تلاش کریں۔</translation>
 <translation id="9144340019284012223">کیٹیلان</translation>
-<translation id="9148058034647219655">خارج ہوں</translation>
-<translation id="9154418932169119429">یہ تصویر آف لائن دستیاب نہیں ہے۔</translation>
 <translation id="9172592259078059678">گجراتی نقل حرفی</translation>
 <translation id="9173120999827300720">بین الاقوامی کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="9174050671906956834">کوڑے دان میں موجود آئٹمز کو 30 دن کے بعد ہمیشہ کے لیے حذف کر دیا جاتا ہے۔</translation>
@@ -796,7 +760,6 @@
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">قمری</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>
-<translation id="942954117721265519">اس ڈائرکٹری میں کوئی تصاویر نہیں ہیں۔</translation>
 <translation id="943972244133411984">ترمیم کنندہ</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>

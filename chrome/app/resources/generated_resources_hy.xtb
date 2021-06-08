@@ -237,6 +237,7 @@
 <translation id="1243436884219965846">Ստուգել գաղտնաբառերը</translation>
 <translation id="1244265436519979884">Լինուքսի վերականգնումն ընթացքի մեջ է</translation>
 <translation id="1244303850296295656">Ընդլայնման սխալ</translation>
+<translation id="1246863218384630739">Չհաջողվեց տեղադրել «<ph name="VM_NAME" />» վիրտուալ մեքենան․ պատկերի URL-ը վերադարձրել է <ph name="HTTP_ERROR" /> սխալի կոդը։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
 <translation id="1251366534849411931">Պակասում է բացող ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Կայքերի և տեղադրված հավելվածների կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն։</translation>
@@ -1524,6 +1525,7 @@
 <translation id="2610260699262139870">Ի&amp;րական չափ</translation>
 <translation id="2610780100389066815">Վստահության ցուցակի ստորագրում (Microsoft)</translation>
 <translation id="2612676031748830579">Քարտի համարը</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="2616366145935564096">Կարդալ և փոխել ձեր տվյալները <ph name="WEBSITE_1" /> վեբկայքում</translation>
 <translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2618797463720777311">Կարգավորեք «Փոխանակում մոտակա սարքերի հետ» գործառույթը</translation>
@@ -2281,6 +2283,7 @@
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3441663102605358937">Այս հաշիվը հաստատելու համար նորից մուտք գործեք <ph name="ACCOUNT" /></translation>
 <translation id="3444641828375597683">Գովազդատուներն ու հրատարակիչները կարող են օգտագործել FLoC տեխնոլոգիան, որի մասին տեղեկությունները տրամադրվում են այս էջում։</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="3445047461171030979">Google Օգնականի արագ պատասխաններ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
@@ -3671,7 +3674,7 @@
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> ֆայլի միջոցով հաքերները կարող են գողանալ ձեր անձնական տեղեկությունները։</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> ֆայլի միջոցով հաքերները կարող են հափշտակել ձեր անձնական տեղեկությունները։</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">բաղադրատոմսերի առաջարկներ</translation>
 <translation id="496185450405387901">Այս հավելվածը տեղադրել է ձեր ադմինիստրատորը։</translation>
@@ -3779,6 +3782,7 @@
 <translation id="5086874064903147617">Վերականգնե՞լ կանխադրված գլխավոր էջը</translation>
 <translation id="5087249366037322692">Ավելացվել է այլ ծրագրի կողմից</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512՝ RSA գաղտնագրումով</translation>
 <translation id="5090637338841444533">Չի թույլատրվում հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="5094721898978802975">Կապվել հարակից native հավելվածների հետ</translation>
@@ -4561,6 +4565,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="5965661248935608907">Այն նաև վերահսկում է, թե որ էջը պետք է ցուցադրվի` Սկիզբ կոճակը սեղմելիս կամ Omnibox-ից որոնում կատարելիս:</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> կայքը կարող է դիտել <ph name="FOLDERNAME" /> պանակի ֆայլերը</translation>
+<translation id="5969728632630673489">Ստեղնային դյուրանցման ծանուցումը փակվեց</translation>
 <translation id="5971037678316050792">Վերահսկել Bluetooth ադապտերի վիճակը և զուգավորումը</translation>
 <translation id="597235323114979258">Տեսնել այլ նպատակակետեր</translation>
 <translation id="5972666587303800813">Առանց գործառույթի ծառայություն</translation>
@@ -4628,7 +4633,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով և ձայնով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
 <translation id="6047632800149092791">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից և նորից մտեք։</translation>
-<translation id="6049797270917061226">Այս ֆայլի միջոցով հաքերները կարող են գողանալ ձեր անձնական տեղեկությունները։</translation>
+<translation id="6049797270917061226">Այս ֆայլի միջոցով հաքերները կարող են հափշտակել ձեր անձնական տեղեկությունները։</translation>
 <translation id="6051354611314852653">Չհաջողվեց API-ին մուտք շնորհել այս սարքում:</translation>
 <translation id="6052976518993719690">SSL հավաստագրման կենտրոն</translation>
 <translation id="6053401458108962351">&amp;Մաքրել դիտարկումների տվյալները…</translation>
@@ -4962,7 +4967,7 @@
 <translation id="6410328738210026208">Վարկածի փոփոխում և Powerwash</translation>
 <translation id="6410390304316730527">Ապահով դիտարկումը պաշտպանում է ձեզ հարձակվողներից, ովքեր կարող են խաբեությամբ ձեր սարքում տեղադրել վնասարար ծրագրեր կամ բացահայտել ձեր անձնական տեղեկությունները (օրինակ՝ գաղտնաբառերը, հեռախոսահամարները կամ վարկային քարտերի տվյալները)։ Եթե անջատեք այն, զգո՛ւյշ եղեք անծանոթ կամ ոչ վստահելի կայքեր այցելելիս։</translation>
 <translation id="6410668567036790476">Որոնման համակարգի ավելացում</translation>
-<translation id="6412673304250309937">Ստուգում է URL-ները Chrome-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chrome-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
+<translation id="6412673304250309937">Ստուգում է URL-ները Chrome-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է հափշտակել ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chrome-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="641469293210305670">Թարմացումների և հավելվածների տեղադրում</translation>
 <translation id="6414878884710400018">Բացել համակարգի կարգավորումները</translation>
 <translation id="6414888972213066896">Դուք այս կայք այցելելու թույլտվության հարցում եք ուղարկել ձեր ծնողին</translation>
@@ -6196,6 +6201,7 @@
 <translation id="7766807826975222231">Կատարել շրջայց</translation>
 <translation id="7766838926148951335">Ընդունել</translation>
 <translation id="7768507955883790804">Երբ դուք այցելում եք կայքեր, դրանք ավտոմատ հետևում են այս կարգավորմանը։</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> կայքը կկարողանա դիտել «<ph name="FOLDERNAME" />» պանակի ֆայլերը</translation>
 <translation id="7768770796815395237">Փոխել</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7770612696274572992">Պատկերը պատճենվեց այլ սարքից</translation>
@@ -6497,6 +6503,7 @@
 <translation id="8063235345342641131">Կանխադրված կանաչ ավատար</translation>
 <translation id="8063535366119089408">Դիտել ֆայլը</translation>
 <translation id="8064279191081105977">Խումբ <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Միացման պատուհան</translation>
 <translation id="8068253693380742035">Հպեք` մուտք գործելու համար</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Տպել որպես պատկեր</translation>
@@ -7528,6 +7535,7 @@
 <translation id="9186963452600581158">Մտեք երեխայի Google հաշիվ</translation>
 <translation id="9188732951356337132">Օգտագործման և դիագնոստիկ տվյալների ուղարկում Ներկայումս այս սարքը ախտորոշման, սարքի և հավելվածի օգտագործման տվյալներն ավտոմատ ուղարկում է Google-ին: Այս տեղեկությունները չեն օգտագործվի ձեր երեխային նույնականացնելու համար և կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը: Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։ <ph name="BEGIN_LINK2" />Մանրամասն<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Օգտագործեք ձեր Android հեռախոսը որպես անվտանգության բանալի</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել «<ph name="FOLDERNAME" />» պանակի ֆայլերը</translation>
 <translation id="920045321358709304">Որոնել <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="9201023452444595544">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>
 <translation id="9201220332032049474">Էկրանի կողպման տարբերակներ</translation>

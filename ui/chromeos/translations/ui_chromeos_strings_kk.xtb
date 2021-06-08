@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1000498691615767391">Ашылатын қалтаны таңдау</translation>
-<translation id="1035094536595558507">Слайд көрінісі</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> элемент жойылуда…</translation>
 <translation id="1049926623896334335">Word құжаты</translation>
 <translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына жылжытыңыз.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive қазір қолжетімді емес. Google Drive қосылғаннан кейін, жүктеп салу процесі автоматты түрде басталады.</translation>
 <translation id="1307931752636661898">Linux файлдарын көру мүмкін емес</translation>
-<translation id="1346748346194534595">Оңға</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импортталуда…</translation>
 <translation id="1358735829858566124">Файл немесе каталог пайдаланылмайды.</translation>
 <translation id="1363028406613469049">Бақылау нөмірі</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1395262318152388157">Ысырманы іздеу</translation>
 <translation id="1404323374378969387">Норвег тілі</translation>
-<translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1433628812591023318">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына орналастыру керек.</translation>
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
-<translation id="1467432559032391204">Сол жақ</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктелген жоқ. Google Drive дискінде жеткілікті орын жоқ.</translation>
 <translation id="1482884275703521657">Фин</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">Ақпарат жүктелуде…</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бұл файл желіден тыс қолжетімді емес.</translation>
-<translation id="1847880352285315359">Сақталды</translation>
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
 <translation id="1864756863218646478">Файлды табу мүмкін емес.</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2084108471225856927">Құрылғы параметрлері</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" атты файл бұрыннан бар. Не істегіңіз келеді?</translation>
-<translation id="2121825465123208577">Өлшемін өзгерту</translation>
 <translation id="2125607626296734455">Кхмер</translation>
 <translation id="2142680004883808240">Орыс (фонетикалық YaZHert пернетақтасымен)</translation>
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">Барлық файлдар мөлшері</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> элемент <ph name="FOLDER_NAME" /> қалтасына көшірілуде.</translation>
 <translation id="2448312741937722512">Түрі</translation>
-<translation id="2453576648990281505">Файл бұрыннан бар</translation>
 <translation id="2464079411014186876">Балмұздақ</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2500392669976258912">Гуджарати (фонетикалық)</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">Google Drive жүйесіне қазір кіру мүмкін емес.</translation>
 <translation id="2638942478653899953">Google Drive мазмұнына қол жеткізу мүмкін емес. <ph name="BEGIN_LINK" />Жүйеден шығып<ph name="END_LINK" />, қайта кіріңіз.</translation>
 <translation id="2649120831653069427">Түрлі түсті балық</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">Бирма/Мьянма (Myansan пернетақтасымен)</translation>
 <translation id="2664412712123763093">Файлдың орналасқан жері</translation>
 <translation id="2672394958563893062">Қате орын алды. Басынан бастап қайта іске қосу үшін басыңыз.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">Ірімшік</translation>
 <translation id="2781645665747935084">Бельгиялық</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
-<translation id="2787047795752739979">Түпнұсқаның үстінен жазу</translation>
 <translation id="2830077785865012357">Қытай (чжуинь)</translation>
 <translation id="2843806747483486897">Әдепкі параметрді өзгерту…</translation>
 <translation id="2850124913210091882">Сақтық көшірме жасау</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> файлының сақтық көшірмесі жасалмады</translation>
 <translation id="299638574917407533">Француз (Канада)</translation>
 <translation id="3003633581067744647">Нобайлар көрінісіне ауысу</translation>
-<translation id="3007214526293698309">Қатынасты түзету</translation>
 <translation id="3029114385395636667">Docs, Sheets және Slides қызметтерін офлайн пайдалану үшін Офлайн Google Docs кеңейтімін қосыңыз.</translation>
 <translation id="303198083543495566">География</translation>
 <translation id="3047197340186497470">Қытай (даи)</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebit құрылғылары</translation>
 <translation id="3113153474486991170">Бұл орыннан "<ph name="PATH" />" файлы ашылмады. Ашу үшін "Менің файлдарым" қалтасына көшіріңіз.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">ДАЙЫН</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3197563288998582412">Ұлыбритания Дворак</translation>
 <translation id="3202131003361292969">Жолы</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620292326130836921">Барлығының сақтық көшірмесі жасалған!</translation>
-<translation id="3626281679859535460">Жарықтық</translation>
-<translation id="3644896802912593514">Ені</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> элемент жылжытылды.</translation>
 <translation id="3645531960514756307">Қалтаны босату</translation>
 <translation id="3685122418104378273">Ұялы деректерді пайдалану кезінде әдепкі бойынша Google Drive синхрондауы өшіріледі.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">Қоян</translation>
 <translation id="3810973564298564668">Басқару</translation>
 <translation id="3811494700605067549">1 файл таңдалды</translation>
-<translation id="38275787300541712">Дайын болғанда, Enter пернесін басу</translation>
 <translation id="3830674330436234648">Ойнатылатын мазмұн жоқ</translation>
 <translation id="383652340667548381">серб</translation>
 <translation id="385051799172605136">Артқа</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">Сорани күрд (араб тілі негізіндегі пернетақтамен)</translation>
 <translation id="4363958938297989186">Орыс (фонетикалық пернетақтамен)</translation>
 <translation id="4364327530094270451">Қауын</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Сыртқы сілтеме</translation>
 <translation id="4418686080762064601">Файлдардың таңбашасын жасау</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> фотосуреттің сақтық көшірмесі жасалды</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4732760563705710320">Кешіріңіз, бұл бейнеге тарату құрылғысы қолдау көрсетпейді.</translation>
-<translation id="4734518477988699048">Енгізілген мән жарамсыз.</translation>
 <translation id="4737050008115666127">Қону</translation>
 <translation id="4747271164117300400">Македон</translation>
 <translation id="4759238208242260848">Жүктеп алынғандар</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">Бағанды кему ретімен сұрыптау үшін басыңыз.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4880214202172289027">Дыбыс деңгейі ысырмасы</translation>
-<translation id="4880520557730313061">Автотүзету</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4900532980794411603">Parallels Desktop арқылы бөлісу</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> файлдың сақтық көшірмесін жасауға болады</translation>
-<translation id="4924638091161556692">Түзетілді</translation>
 <translation id="4935975195727477204">Түймедақ гүлі</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">Parallels Desktop арқылы 1 қалта бөлісіледі.</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">Толығырақ…</translation>
 <translation id="5044852990838351217">Армян</translation>
 <translation id="5059127710849015030">Непал (транслитерация)</translation>
-<translation id="5061708541166515394">Контраст</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл жойылады.</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> элемент <ph name="FOLDER_NAME" /> қалтасына тасымалдануда.</translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">Ханғыл 3-жинақ (390)</translation>
 <translation id="5145331109270917438">Күні өзгертілген</translation>
 <translation id="515594325917491223">Шахмат</translation>
-<translation id="5158593464696388225">Кескін сақтау сәтсіз аяқталды.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Құрылғыңызды әлі жоймаңыз!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Құрылғыңызды пайдалану кезінде жою деректердің жоғалуына себеп болуы мүмкін. Операцияның аяқталуын күтіп, Files қолданбасының көмегімен құрылғыны өшіріңіз.</translation>
@@ -485,7 +465,6 @@
 <translation id="5957366693331451795">Chromebox құрылғылары</translation>
 <translation id="5982621672636444458">Сұрыптау параметрлері</translation>
 <translation id="6007237601604674381">Жылжыту сәтсіз аяқталды. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Қиып алу</translation>
 <translation id="60357267506638014">Чех QWERTY пернетақтасы</translation>
 <translation id="604001903249547235">Бұлттық сақтық көшірме</translation>
 <translation id="6040143037577758943">Жабу</translation>
@@ -526,10 +505,8 @@
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6509122719576673235">норвег</translation>
-<translation id="6527303717912515753">Бөлісу</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрондалуда…</translation>
 <translation id="6549689063733911810">Соңғы</translation>
-<translation id="6556866813142980365">Қайта орындау</translation>
 <translation id="6558280019477628686">Қате пайда болды. Кейбір элементтер жойылмаған болуы мүмкін.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" жойылуда…</translation>
 <translation id="6581162200855843583">Google Drive сілтемесі</translation>
@@ -562,7 +539,6 @@
 <translation id="6885780034956018177">Ұлу</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6898028766943174120">Тағы басқа ішкі қалталар...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" /> қалтасына сақталмайды. Өңделген кескіндер "Жүктеп алынғандар" қалтасына сақталады.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">АҚШ (Workman)</translation>
 <translation id="6930242544192836755">Ұзақтық</translation>
@@ -588,7 +564,6 @@
 <translation id="7040138676081995583">Ашу әдісі…</translation>
 <translation id="7075931588889865715">Тай (TIS 820-2531 пернетақтасымен)</translation>
 <translation id="7086590977277044826">Тамиль (InScript пернетақтасымен)</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> элемент таңдалды</translation>
 <translation id="7103992300314999525">Македон</translation>
 <translation id="7106346894903675391">Қосымша жад сатып алу…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
@@ -618,7 +593,6 @@
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дискіне сақтық көшірмесін жасауға болады</translation>
 <translation id="7495372004724182530">Малаялам (фонетикалық)</translation>
 <translation id="7505167922889582512">Жасырын файлдарды көрсету</translation>
-<translation id="7508545000531937079">Слайдшоу</translation>
 <translation id="751507702149411736">беларус</translation>
 <translation id="7532029025027028521">Парсы (транслитерация)</translation>
 <translation id="7544830582642184299">Linux қолданбаларына Google Drive дискісіндегі файлдарды пайдалануға рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
@@ -629,7 +603,6 @@
 <translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7553492409867692754">Linux қолданбаларына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" файлы қалпына келтірілуде…</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Күте тұрыңыз</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы офлайн режимде қолжетімді етілуде</translation>
 <translation id="7600126690270271294">Серб</translation>
@@ -671,7 +644,6 @@
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>
 <translation id="7853966320808728790">Француз BÉPO</translation>
 <translation id="7868774406711971383">Поляк</translation>
-<translation id="7873831373602885875"><ph name="FOLDER_NAME" /> қалтасына сақтау мүмкін емес. Барлық өзгертулер "Жүктеп алынғандар" ішіндегі <ph name="DOWNLOADS_FOLDER" /> қалтасына сақталады.</translation>
 <translation id="7874321682039004450">Филиппин</translation>
 <translation id="7881969471599061635">Субтитрлерді өшіру</translation>
 <translation id="78946041517601018">Ортақ дискілер</translation>
@@ -683,7 +655,6 @@
 <translation id="7969525169268594403">словен</translation>
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
-<translation id="7982283708762922719">Биіктігі</translation>
 <translation id="79907182588096956">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
@@ -691,17 +662,14 @@
 <translation id="8038111231936746805">(әдепкі)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудиофайлы</translation>
 <translation id="8045462269890919536">румын</translation>
-<translation id="8066773524873206594">Барлық өзгертулер <ph name="DOWNLOADS_FOLDER" /> қалтасына сақталады.</translation>
 <translation id="8079530767338315840">Қайталау</translation>
 <translation id="8106045200081704138">Маған қолжетімді</translation>
 <translation id="8116072619078571545">Мұзды су</translation>
 <translation id="8128733386027980860">Ағылшын (БК), Дворак пернетақтасымен</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сізбен бөлісілді. Өзіңіздікі болмағандықтан, оны жоя алмайсыз.</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
-<translation id="8153607920959057464">Бұл файлды көрсету мүмкін болмады.</translation>
 <translation id="8154842056504218462">Барлық жазба таңдалды.</translation>
 <translation id="8157684860301034423">Қолданба туралы ақпарат алынбады.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">Француз (Бельгия)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Құрылғы үлгісі</translation>
@@ -755,7 +723,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> таңдалды.</translation>
 <translation id="872537912056138402">хорват</translation>
 <translation id="8750438273876807512">Сөредегі файлдарға жылдам кіру үшін файлды түртіп ұстап тұрып, <ph name="ICON" /> белгішесін басыңыз да, "Сөреге бекіту" тармағын таңдаңыз.</translation>
-<translation id="8775404590947523323">Сіздің өңдеулеріңіз автоматты түрде сақталады.<ph name="BREAKS" />Түпнұсқалы кескіннің көшірмесін сақтау үшін "Түпнұсқаның үстінен жазу" құсбелгісін алып тастаңыз.</translation>
 <translation id="8802459921616481935">Себетке жіберу</translation>
 <translation id="8808686172382650546">Мысық</translation>
 <translation id="8810671769985673465">Қысу орындалмады. Мына элемент бұрыннан бар: "<ph name="FILE_NAME" />"</translation>
@@ -774,7 +741,6 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Файлдар "<ph name="DESTINATION_NAME" />" қалтасына қайта көшірілмейді, сондықтан бұл қадамды кері қайтару мүмкін емес.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Басқа атау таңдаңыз.</translation>
-<translation id="9065203028668620118">Өзгерту</translation>
 <translation id="908378762078012445">Орыс (фонетикалық AATSEEL пернетақтасымен)</translation>
 <translation id="9099674669267916096">Бет саны</translation>
 <translation id="9110990317705400362">Біз интернет шолуды барынша қауіпсіз ету жолдарын іздеуден жалықпаймыз. Бұрын кез келген сайт браузеріңізге кеңейтім қосу ұсынысын жасай алатын болса, Google Chrome соңғы нұсқасында енді кеңейтімдерді "Кеңейтімдер" бетіне кіріп қана орната аласыз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -786,8 +752,6 @@
 <translation id="9133055936679483811">Қысу орындалмады. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Бұл файл Macintosh бағдарламалық жасақтамасын пайдаланатын компьютерге арналған. Бұл Chrome OS пайдаланатын құрылғыңызбен үйлесімді емес. Сәйкес ауыстыру қолданбасын Chrome веб-дүкенінен іздеңіз.</translation>
 <translation id="9144340019284012223">Каталан</translation>
-<translation id="9148058034647219655">Шығу</translation>
-<translation id="9154418932169119429">Бұл кескін желіден тыс қолжетімсіз.</translation>
 <translation id="9172592259078059678">Гуджарати (транслитерация)</translation>
 <translation id="9173120999827300720">Ағылшын (АҚШ), халықаралық пернетақтасымен</translation>
 <translation id="9174050671906956834">Себеттегі элементтер 30 күннен кейін мүлдем жойылады.</translation>
@@ -796,7 +760,6 @@
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219908252191632183">Ай ландшафты</translation>
 <translation id="939736085109172342">Жаңа қалта</translation>
-<translation id="942954117721265519">Бұл каталогта кескіндер жоқ.</translation>
 <translation id="943972244133411984">Өзгерткен:</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />—<ph name="TO_ENTRY_NAME" /> аралығынан <ph name="ENTRY_COUNT" /> жазба таңдалды.</translation>

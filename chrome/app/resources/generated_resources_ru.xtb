@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">Проверить пароли</translation>
 <translation id="1244265436519979884">Выполняется восстановление Linux.</translation>
 <translation id="1244303850296295656">Ошибка расширения</translation>
+<translation id="1246863218384630739">Не удалось установить <ph name="VM_NAME" />: URL образа вернул ошибку <ph name="HTTP_ERROR" />. Обратитесь к администратору.</translation>
 <translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
 <translation id="1251366534849411931">Отсутствует ожидаемая открывающая фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="1251480783646955802">Будут удалены сохраненные данные сайтов и установленных с них приложений (<ph name="TOTAL_USAGE" />).</translation>
@@ -1524,6 +1525,7 @@
 <translation id="2610260699262139870">&amp;Реальный размер</translation>
 <translation id="2610780100389066815">Подписывание списка доверия (Microsoft)</translation>
 <translation id="2612676031748830579">Номер карты</translation>
+<translation id="2613535083491958306">Сайт <ph name="ORIGIN" /> сможет изменять файл "<ph name="FILENAME" />".</translation>
 <translation id="2616366145935564096">Просмотр и изменение данных: <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-карта заблокирована</translation>
 <translation id="2618797463720777311">Настройка функции "Обмен с окружением"</translation>
@@ -2281,6 +2283,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Войдите в аккаунт <ph name="ACCOUNT" /> ещё раз, чтобы подтвердить его</translation>
 <translation id="3444641828375597683">Рекламодатели и издатели могут использовать технологию FLoC, которая описана дальше на этой странице.</translation>
+<translation id="3444726579402183581">Сайт <ph name="ORIGIN" /> сможет просматривать файл "<ph name="FILENAME" />".</translation>
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
@@ -3778,6 +3781,7 @@
 <translation id="5086874064903147617">Восстановить стартовую страницу Chrome по умолчанию?</translation>
 <translation id="5087249366037322692">Добавлено сторонней программой</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
 <translation id="5094721898978802975">Установка соединения со смежными нативными приложениями</translation>
@@ -4558,6 +4562,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
 <translation id="5965661248935608907">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница", и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> может просматривать файлы в папке "<ph name="FOLDERNAME" />".</translation>
+<translation id="5969728632630673489">Уведомление о сочетаниях клавиш закрыто</translation>
 <translation id="5971037678316050792">Управление состоянием адаптера Bluetooth и подключением</translation>
 <translation id="597235323114979258">Другие места назначения печати</translation>
 <translation id="5972666587303800813">No-op</translation>
@@ -6193,6 +6198,7 @@
 <translation id="7766807826975222231">Узнать больше</translation>
 <translation id="7766838926148951335">Разрешить</translation>
 <translation id="7768507955883790804">Когда вы посещаете сайты, эти настройки используются автоматически.</translation>
+<translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> сможет просматривать файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="7768770796815395237">Изменить</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7770612696274572992">Изображение скопировано с другого устройства</translation>
@@ -6496,6 +6502,7 @@
 <translation id="8063235345342641131">Аватар по умолчанию (зеленый)</translation>
 <translation id="8063535366119089408">Разрешить</translation>
 <translation id="8064279191081105977">Группа <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Диалоговое окно подключения</translation>
 <translation id="8068253693380742035">Нажмите, чтобы войти</translation>
 <translation id="8069615408251337349">Виртуальный принтер Google</translation>
 <translation id="8071432093239591881">Печатать как изображение</translation>
@@ -7528,6 +7535,7 @@
 <translation id="9186963452600581158">Войти в аккаунт Google ребенка</translation>
 <translation id="9188732951356337132">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Установить личность ребенка по этим данным нельзя. Они нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в аккаунте ребенка. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Используйте телефон Android в качестве электронного ключа</translation>
+<translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="920045321358709304">Искать в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Все офлайн-данные будут удалены.</translation>
 <translation id="9201220332032049474">Параметры блокировки экрана</translation>

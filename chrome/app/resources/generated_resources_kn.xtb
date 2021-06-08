@@ -238,6 +238,7 @@
 <translation id="1243436884219965846">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1244265436519979884">ಪ್ರಸ್ತುತವಾಗಿ Linux ಮರುಸ್ಥಾಪನೆ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="1244303850296295656">ವಿಸ್ತರಣೆ ದೋಷ</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: ಚಿತ್ರದ URL <ph name="HTTP_ERROR" /> ದೋಷದ ಕೋಡ್ ಅನ್ನು ಹಿಂತಿರುಗಿಸಿದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="1246905108078336582">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಸಲಹೆಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="1251366534849411931">ಓಪನಿಂಗ್ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ಸೈಟ್‌ಗಳು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
@@ -676,6 +677,7 @@
 <translation id="1706625117072057435">ಝೂಮ್ ಹಂತಗಳು</translation>
 <translation id="1708338024780164500">(ಸಕ್ರಿಯವಲ್ಲದ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">ಪ್ರಾಯೋಗಿಕ ಬ್ರೌಸರ್! ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗೌಪ್ಯತೆ ಅಥವಾ ಸುರಕ್ಷತೆಗೆ ಧಕ್ಕೆ ಉಂಟು ಮಾಡಬಹುದು. ಯಾವುದೇ ಸಮಸ್ಯೆಗಳಿದ್ದರೆ, ಸಹಾಯ &gt; "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ..." ನಲ್ಲಿ ವರದಿ ಮಾಡಿ.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಸ್ಥಳೀಯ)</translation>
 <translation id="1709217939274742847">ದೃಢೀಕರಣಕ್ಕಾಗಿ ಬಳಸಲು ಟಿಕೆಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2144557304298909478">Linux Android ಆ್ಯಪ್‌ ಸುಧಾರಣೆ</translation>
 <translation id="2146263598007866206">ಸೈಟ್‌ಗಳು, ನಿಮ್ಮ ಸಮಯವನ್ನು ಉಳಿಸಲು ಸಂಬಂಧಿತ ಫೈಲ್‌ಗಳನ್ನು ಒಂದೇ ಬಾರಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="2147151613919729065">ಅತಿಥಿ ಮೋಡ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅತಿಥಿ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
+<translation id="2147218225094845757">ಪಾರ್ಶ್ವ ಫಲಕವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2148219725039824548">ಹಂಚಿಕೆಯನ್ನು ಅಳವಡಿಸುವುದರಲ್ಲಿ ದೋಷವಿದೆ. ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಹಂಚಿಕೆಯು ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="2148756636027685713">ಫಾರ್ಮ್ಯಾಟ್‌ ಮಾಡುವಿಕೆ ಮುಗಿದಿದೆ</translation>
 <translation id="2148892889047469596">ಟ್ಯಾಬ್ ಬಿತ್ತರಿಸಿ</translation>
@@ -1528,6 +1531,7 @@
 <translation id="2610260699262139870">&amp;ನಿಜವಾದ ಗಾತ್ರ</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
+<translation id="2613535083491958306"><ph name="FILENAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> ನಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="2617342710774726426">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2618797463720777311">Nearby ಶೇರ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
@@ -2285,6 +2289,7 @@
 <translation id="3441653493275994384">ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="3441663102605358937">ಈ ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಲು <ph name="ACCOUNT" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3444641828375597683">ಪುಟದ ಕೊನೆಯಲ್ಲಿ ವಿವರಿಸಿದಂತೆ ಜಾಹೀರಾತುದಾರರು ಮತ್ತು ಪ್ರಕಾಶಕರು FLoC ಅನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="3444726579402183581"><ph name="FILENAME" /> ಅನ್ನು ವೀಕ್ಷಿಸಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="3445047461171030979">Google Assistant ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ನಿಮಿಷ</translation>
 <translation id="3445925074670675829">USB-C ಸಾಧನ</translation>
@@ -3784,6 +3789,7 @@
 <translation id="5086874064903147617">ಡಿಫಾಲ್ಟ್ ಮಖಪುಟವನ್ನು ಮರುಸ್ಥಾಪಿಸುವುದೇ?</translation>
 <translation id="5087249366037322692">ಥರ್ಡ್ ಪಾರ್ಟಿ ಮೂಲಕ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="5087580092889165836">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಸ್ಥಾನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5094721898978802975">ಸಹಕರಿಸುವ ಸ್ಥಳೀಯ ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ಸಂವಹಿಸಿ</translation>
@@ -3946,6 +3952,7 @@
 <translation id="5269977353971873915">ಮುದ್ರಣ ವಿಫಲಗೊಂಡಿದೆ</translation>
 <translation id="5275352920323889391">ನಾಯಿ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ನಲ್ಲಿ JavaScript ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
+<translation id="5277127016695466621">ಪಾರ್ಶ್ವ ಫಲಕವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5278823018825269962">ಸ್ಥಿತಿಯ ಐಡಿ</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> ಗಾಗಿ ರುಜುವಾತುಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5280243692621919988">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚುವಾಗ ಯಾವಾಗಲೂ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
@@ -4564,6 +4571,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="5965661248935608907">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ಆಮ್ನಿಬಾಕ್ಸ್ ‌ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
+<translation id="5969728632630673489">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಸೂಚನೆಯನ್ನು ವಜಾಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5971037678316050792">ಬ್ಲೂಟೂತ್‌ ಅಡಾಪ್ಟರ್ ಸ್ಥಿತಿ ಮತ್ತು ಜೋಡಿಸುವಿಕೆಯನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="597235323114979258">ಇನ್ನಷ್ಟು ಗಮ್ಯಸ್ಥಾನಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="5972666587303800813">ಯಾವುದೇ ಕಾರ್ಯಾಚರಣೆ ಸೇವೆಯಿಲ್ಲ</translation>
@@ -6200,6 +6208,7 @@
 <translation id="7766807826975222231">ಪ್ರವಾಸವನ್ನು ಕೈಗೊಳ್ಳಿ</translation>
 <translation id="7766838926148951335">ಅನುಮತಿಗಳನ್ನು ಸಮ್ಮತಿಸಿ</translation>
 <translation id="7768507955883790804">ನೀವು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದಾಗ, ಅವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಅನುಸರಿಸುತ್ತವೆ</translation>
+<translation id="7768526219335215384"><ph name="FOLDERNAME" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="7768770796815395237">ಬದಲಿಸಿ</translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7770612696274572992">ಇತರ ಸಾಧನದಿಂದ ಚಿತ್ರವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
@@ -6500,6 +6509,7 @@
 <translation id="8063235345342641131">ಡಿಫಾಲ್ಟ್ ಹಸಿರು ಅವತಾರ್</translation>
 <translation id="8063535366119089408">ಫೈಲ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8064279191081105977">ಗುಂಪು <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">ಕನೆಕ್ಷನ್ ಡೈಲಾಗ್</translation>
 <translation id="8068253693380742035">ಸೈನ್ ಇನ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ಚಿತ್ರದಂತೆ ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
@@ -7531,6 +7541,7 @@
 <translation id="9186963452600581158">ಮಗುವಿನ Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್-ಇನ್ ಮಾಡಿ</translation>
 <translation id="9188732951356337132">ಬಳಕೆ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಿ. ಪ್ರಸ್ತುತ ಈ ಸಾಧನವು ಡಯಾಗ್ನಾಸ್ಟಿಕ್, ಸಾಧನ, ಮತ್ತು ಆ್ಯಪ್ ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುತ್ತಿದೆ. ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಮಗುವನ್ನು ಗುರುತಿಸುವುದಕ್ಕೆ ಬಳಸುವುದಿಲ್ಲ, ಹಾಗೂ ಇದು ಸಿಸ್ಟಮ್ ಮತ್ತು ಆ್ಯಪ್ ಸ್ಥಿರತೆ, ಹಾಗೂ ಇತರ ಸುಧಾರಣೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಕೆಲವು ಒಟ್ಟುಗೂಡಿಸಿದ ಡೇಟಾವು, Google ಆ್ಯಪ್‌ಗಳಿಗೆ ಮತ್ತು ಪಾಲುದಾರರಿಗೂ ಸಹ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, Android ಡೆವಲಪರ್‌ಗಳು. ನಿಮ್ಮ ಮಗುವಿಗಾಗಿ ಹೆಚ್ಚುವರಿ ವೆಬ್‌ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆನ್‌ ಮಾಡಿದ್ದಲ್ಲಿ, ಈ ಡೇಟಾವು ಅವರ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲ್ಪಡಬಹುದು. <ph name="BEGIN_LINK2" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">ನಿಮ್ಮ Android ಫೋನ್ ಅನ್ನು ಭದ್ರತಾ ಕೀ ಆಗಿ ಬಳಸಿ</translation>
+<translation id="9200339982498053969"><ph name="FOLDERNAME" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> ಹುಡುಕಾಟ</translation>
 <translation id="9201023452444595544">ಯಾವುದೇ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="9201220332032049474">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆಯ್ಕೆಗಳು</translation>

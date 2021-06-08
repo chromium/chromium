@@ -236,6 +236,7 @@
 <translation id="1243436884219965846">የይለፍ ቃላትን ገምግም</translation>
 <translation id="1244265436519979884">Linux ወደነበረበት መመለስ አሁን በሂደት ላይ ነው</translation>
 <translation id="1244303850296295656">የቅጥያ ስህተት</translation>
+<translation id="1246863218384630739"><ph name="VM_NAME" />ን መጫን አልተቻለም፦ የምስል ዩአርኤል የ<ph name="HTTP_ERROR" /> የስህተት ኮድን መልሷል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1246905108078336582">የአስተያየት ጥቆማ ከቅንጥብ ሰሌዳ ይወገድ?</translation>
 <translation id="1251366534849411931">የሚገመት ጠምዛዛ መያዣን መክፈቻ፦ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ይህ በጣቢያዎች እና በተጫኑ መተግበሪያዎቹ የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብ ያጠፋል</translation>
@@ -1531,6 +1532,7 @@
 <translation id="2610260699262139870">&amp;ትክክለኛ መጠን</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2612676031748830579">የካርድ ቁጥር</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" />ን አርትዕ ማድረግ ይችላል</translation>
 <translation id="2616366145935564096">ውሂብዎን በ<ph name="WEBSITE_1" /> ላይ ያነብባል እና ይቀይራል</translation>
 <translation id="2617342710774726426">ሲም ካርድ ተዘግቷል</translation>
 <translation id="2618797463720777311">የአቅራቢያ አጋራን ያቀናብሩ</translation>
@@ -2289,6 +2291,7 @@
 <translation id="3441653493275994384">ማያ ገጽ</translation>
 <translation id="3441663102605358937">ይህንን መለያ ለማረጋገጥ እንደገና ወደ <ph name="ACCOUNT" /> በመለያ ይግቡ</translation>
 <translation id="3444641828375597683">ማስታወቂያ ሰሪዎች እና አታሚዎች በዚህ ገጽ ላይ በኋላ እንደተገለጸው FLoCን መጠቀም ይችላሉ።</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" />ን ማየት ይችላል</translation>
 <translation id="3445047461171030979">የGoogle ረዳት ፈጣን መልሶች</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="3445925074670675829">USB-C መሣሪያ</translation>
@@ -3784,6 +3787,7 @@
 <translation id="5086874064903147617">ነባሪ ጅምር ገጽ ወደነበረበት ይመለስ?</translation>
 <translation id="5087249366037322692">በሶስተኛ ወገን ታክሏል</translation>
 <translation id="5087580092889165836">ካርድ አክል</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ከRSA ምስጠራ ጋር</translation>
 <translation id="5090637338841444533">የካሜራዎን አቀማመጥ ለመከታተል አልተፈቀደም</translation>
 <translation id="5094721898978802975">ከተባባሪ ቤተኛ መተግበሪያዎች ጋር ተገናኝ</translation>
@@ -4564,6 +4568,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{ሁሉንም በ&amp;አዲስ መስኮት ውስጥ ክፈት}=1{በ&amp;አዲስ መስኮት ውስጥ ክፈት}one{ሁሉንም ({COUNT}) በ&amp;አዲስ መስኮት ውስጥ ክፈት}other{ሁሉንም ({COUNT}) በ&amp;አዲስ መስኮት ውስጥ ክፈት}}</translation>
 <translation id="5965661248935608907">እንዲሁም የመነሻ አዝራሩን ጠቅ ሲያደርጉ ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ ምን ገጽ እንደሚታይ ይቆጣጠራል።</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ያሉ ፋይሎችን መመልከት ይችላል</translation>
+<translation id="5969728632630673489">የቁልፍ ሰሌዳ አቋራጭ ማስታወቂያ ተሰናብቷል</translation>
 <translation id="5971037678316050792">የብሉቱዝ አስማሚ ሁኔታ እና ማጣመርን ይቆጣጠራል</translation>
 <translation id="597235323114979258">ተጨማሪ መድረሻዎችን ይመልከቱ</translation>
 <translation id="5972666587303800813">ክወና-አልባ አገልግሎት</translation>
@@ -6199,6 +6204,7 @@
 <translation id="7766807826975222231">ጉብኝት ያድርጉ</translation>
 <translation id="7766838926148951335">ፈቃዶችን ተቀበል</translation>
 <translation id="7768507955883790804">እርስዎ ሲጎበኟቸው ጣቢያዎች ይህን ቅንብር በራስ-ሰር ይከተሉታል</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> በ <ph name="FOLDERNAME" /> ውስጥ ያሉትን ፋይሎች ማየት ይችላል</translation>
 <translation id="7768770796815395237">ለውጥ</translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7770612696274572992">ምስል ከሌላ መሣሪያ ተቀድቷል</translation>
@@ -6508,6 +6514,7 @@ nil</translation>
 <translation id="8063235345342641131">ነባሪ አረንጓዴ አምሳያ</translation>
 <translation id="8063535366119089408">ፋይል ይመልከቱ</translation>
 <translation id="8064279191081105977">ቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">የግንኙነት መገናኛ</translation>
 <translation id="8068253693380742035">በመለያ ለመግባት ይንኩ</translation>
 <translation id="8069615408251337349">Google ዳመና ህትመት</translation>
 <translation id="8071432093239591881">እንደ ምስል አስቀምጥ</translation>
@@ -7538,6 +7545,7 @@ nil</translation>
 <translation id="9186963452600581158">በልጅ Google መለያ ይግቡ</translation>
 <translation id="9188732951356337132">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ ልጅዎን ለመለየት ስራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">የ Android ስልክዎን እንደ ደህንነት ቁልፍ ይጠቀሙበት</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ያሉ ፋይሎችን አርትዕ ማድረግ ይችላል</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />ን ፈልግ</translation>
 <translation id="9201023452444595544">ማናቸውም የመስመር ውጭ ውሂብ ይጸዳል</translation>
 <translation id="9201220332032049474">የማያ ገጽ መቆለፊያ አማራጮች</translation>

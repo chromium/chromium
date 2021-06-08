@@ -235,6 +235,7 @@
 <translation id="1243436884219965846">Revisa les contrasenyes</translation>
 <translation id="1244265436519979884">Hi ha una restauració de Linux en curs</translation>
 <translation id="1244303850296295656">Error d'extensió</translation>
+<translation id="1246863218384630739">No s'ha pogut instal·lar <ph name="VM_NAME" />: l'URL de la imatge ha tornat el codi d'error <ph name="HTTP_ERROR" />. Contacta amb l'administrador.</translation>
 <translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Amb aquesta acció s'esborraran dades emmagatzemades pels llocs web i per les aplicacions instal·lades (<ph name="TOTAL_USAGE" />)</translation>
@@ -1522,6 +1523,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2610260699262139870">Mi&amp;da real</translation>
 <translation id="2610780100389066815">Signatura de llista de confiança de Microsoft</translation>
 <translation id="2612676031748830579">Número de targeta</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Llegir i modificar les dades del lloc web <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2618797463720777311">Configura la funció Compartició Nearby</translation>
@@ -2280,6 +2282,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3441663102605358937">Torna a iniciar la sessió a <ph name="ACCOUNT" /> per verificar aquest compte</translation>
 <translation id="3444641828375597683">Els anunciants i els editors poden utilitzar la tècnica FLoC, que es descriu més endavant en aquesta pàgina.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> podrà veure <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostes ràpides de l'Assistent de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
@@ -3776,6 +3779,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5086874064903147617">Vols restaurar la pàgina d'inici predeterminada?</translation>
 <translation id="5087249366037322692">Afegida per tercers</translation>
 <translation id="5087580092889165836">Afegeix una targeta</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 amb encriptació RSA</translation>
 <translation id="5090637338841444533">Sense permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="5094721898978802975">Comunicació amb aplicacions natives cooperatives</translation>
@@ -4558,6 +4562,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Obre-les totes en una finestra &amp;nova}=1{Obre en una finestra &amp;nova}other{Obre-les totes ({COUNT}) en una finestra &amp;nova}}</translation>
 <translation id="5965661248935608907">També controla la pàgina que es mostra quan feu clic al botó Pàgina d'inici o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pot veure els fitxers que conté la carpeta <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">S'ha ignorat l'avís sobre les tecles de drecera</translation>
 <translation id="5971037678316050792">Controlar l'estat i l'emparellament de l'adaptador Bluetooth</translation>
 <translation id="597235323114979258">Mostra més destinacions</translation>
 <translation id="5972666587303800813">Servei no operatiu</translation>
@@ -6193,6 +6198,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7766807826975222231">Visita guiada</translation>
 <translation id="7766838926148951335">Accepta els permisos</translation>
 <translation id="7768507955883790804">Aquesta opció de configuració s'aplica automàticament als llocs web quan els visites</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> podrà veure els fitxers de la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Canvia</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7770612696274572992">Imatge copiada des d'un altre dispositiu</translation>
@@ -6497,6 +6503,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8063235345342641131">Avatar verd predeterminat</translation>
 <translation id="8063535366119089408">Mostra el fitxer</translation>
 <translation id="8064279191081105977">Grup <ph name="GROUP_NAME" />; <ph name="GROUP_CONTENTS" />; <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Quadre de diàleg de connexió</translation>
 <translation id="8068253693380742035">Toca per iniciar la sessió</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Imprimeix com a imatge</translation>
@@ -7527,6 +7534,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9188732951356337132">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Fes servir el telèfon Android com a clau de seguretat</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> podrà editar els fitxers de la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Cerca <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">S'esborraran totes les dades sense connexió</translation>
 <translation id="9201220332032049474">Opcions de bloqueig de pantalla</translation>

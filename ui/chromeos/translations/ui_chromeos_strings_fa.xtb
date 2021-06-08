@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1000498691615767391">انتخاب پوشه برای باز کردن</translation>
-<translation id="1035094536595558507">مشاهده اسلاید</translation>
 <translation id="1047956942837015229">در حال حذف <ph name="COUNT" /> مورد...</translation>
 <translation id="1049926623896334335">‏سند Word </translation>
 <translation id="1060368002126861100">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را به پوشه فایل‌های Windows منتقل کنید.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">‏Google Drive در حال حاضر در دسترس نیست. به محض در دسترس قرار گرفتن Google Drive بارگذاری کردن به صورت خودکار دوباره شروع می‌شود.</translation>
 <translation id="1307931752636661898">‏نمی‌توان فایل‌های Linux را مشاهده کرد</translation>
-<translation id="1346748346194534595">راست</translation>
 <translation id="1351692861129622852">وارد کردن <ph name="FILE_COUNT" /> فایل...</translation>
 <translation id="1358735829858566124">فایل یا فهرست راهنما قابل استفاده نیست.</translation>
 <translation id="1363028406613469049">تراک</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1395262318152388157">اسلایدر جستجو</translation>
 <translation id="1404323374378969387">نروژی</translation>
-<translation id="1430915738399379752">چاپ</translation>
 <translation id="1433628812591023318">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید به فایل‌های Windows منتقل شود.</translation>
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
-<translation id="1467432559032391204">چپ</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1474339897586437869">‏«<ph name="FILENAME" />» بارگذاری نشد. فضای کافی در Google Drive شما وجود ندارد.</translation>
 <translation id="1482884275703521657">فنلاندی</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">درحال بارگیری اطلاعات...</translation>
 <translation id="1838709767668011582">‏سایت Google</translation>
 <translation id="1844692022597038441">این فایل به‌صورت آفلاین در دسترس نیست.</translation>
-<translation id="1847880352285315359">ذخیره شد</translation>
 <translation id="1853795129690976061">‏این پوشه با Linux هم‌رسانی شده است</translation>
 <translation id="1864756863218646478">این فایل پیدا نشد.</translation>
 <translation id="1920670151694390848">نویسه‌گردانی مالایالم</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2084108471225856927">تنظیمات دستگاه</translation>
 <translation id="2085470240340828803">فایلی با نام «<ph name="FILENAME" />» از قبل وجود دارد. می‌خواهید چه کاری انجام دهید؟</translation>
-<translation id="2121825465123208577">تغییر اندازه</translation>
 <translation id="2125607626296734455">خمر</translation>
 <translation id="2142680004883808240">‏روسی با صفحه‌کلید آوایی YaZHert</translation>
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">حجم کل فایل</translation>
 <translation id="2428749644083375155">درحال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد در <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">نوع</translation>
-<translation id="2453576648990281505">فایل ازقبل موجود است</translation>
 <translation id="2464079411014186876">بستنی</translation>
 <translation id="2468402215065996499">تاماگوچی</translation>
 <translation id="2500392669976258912">گجراتی (آوایی)</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">‏دسترسی به Google Drive در حال حاضر ممکن نیست.</translation>
 <translation id="2638942478653899953">‏دسترسی به Google Drive امکان‌پذیر نیست. لطفاً <ph name="BEGIN_LINK" />از سیستم خارج شوید<ph name="END_LINK" /> و دوباره وارد شوید.</translation>
 <translation id="2649120831653069427">ماهی رنگین‌مکان</translation>
-<translation id="2661146741306740526">۱۶x۹</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
 <translation id="2672394958563893062">خطایی رخ داده است. برای شروع مجدد از ابتدا، کلیک کنید.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>
 <translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
-<translation id="2787047795752739979">رونویسی نسخهٔ اصلی</translation>
 <translation id="2830077785865012357">چینی (ژوئین)</translation>
 <translation id="2843806747483486897">تغییر پیش‌فرض...</translation>
 <translation id="2850124913210091882">پشتیبان‌گیری</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> پشتیبان‌گیری نشد</translation>
 <translation id="299638574917407533">فرانسوی (کانادا)</translation>
 <translation id="3003633581067744647">تغییر وضعیت به نمای تصویر کوچک</translation>
-<translation id="3007214526293698309">تثبیت نسبت</translation>
 <translation id="3029114385395636667">‏برای دسترسی آفلاین به «سندنگار»، «کاربرگ‌نگار»، و «اسلایدنگار»، «سندنگار Google آفلاین» را فعال کنید.</translation>
 <translation id="303198083543495566">جغرافیا</translation>
 <translation id="3047197340186497470">چینی (دایی)</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">‏دستگاه‌های Chromebit</translation>
 <translation id="3113153474486991170">نمی‌توان «<ph name="PATH" />» را از این مکان باز کرد. لطفاً آن را برای باز کردن در «فایل‌های من» کپی کنید.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">تمام</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3197563288998582412">دووارک بریتانیایی</translation>
 <translation id="3202131003361292969">مسیر</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3619115746895587757">کاپوچینو</translation>
 <translation id="3620292326130836921">همه پشتیبان‌گیری شدند.</translation>
-<translation id="3626281679859535460">روشنایی</translation>
-<translation id="3644896802912593514">عرض</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> مورد منتقل شد.</translation>
 <translation id="3645531960514756307">برداشتن سنجاق پوشه</translation>
 <translation id="3685122418104378273">‏هنگام استفاده از داده‌های شبکه همراه، همگام‌سازی Google Drive به‌صورت پیش‌فرض غیرفعال است.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3811494700605067549">۱ فایل انتخاب شد</translation>
-<translation id="38275787300541712">‏پس از انجام کار، Enter را فشار دهید</translation>
 <translation id="3830674330436234648">بازپخش در دسترس نیست</translation>
 <translation id="383652340667548381">صربستانی</translation>
 <translation id="385051799172605136">بازگشت</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">کردی سورانی با صفحه‌کلید مبتنی بر عربی</translation>
 <translation id="4363958938297989186">روسی با صفحه‌کلید آوایی</translation>
 <translation id="4364327530094270451">خربزه</translation>
-<translation id="4372884569765913867">۱x۱</translation>
 <translation id="4394214039309501350">پیوند خارجی</translation>
 <translation id="4418686080762064601">ایجاد میان‌بر برای فایل‌ها</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> عکس پشتیبان گرفته شدند</translation>
 <translation id="4725511304875193254">کورگی</translation>
 <translation id="4732760563705710320">متأسفیم، دستگاه فرستادن شما، این ویدئو را پشتیبانی نمی‌کند.</translation>
-<translation id="4734518477988699048">مقدار ورودی نامعتبر است.</translation>
 <translation id="4737050008115666127">فرود</translation>
 <translation id="4747271164117300400">مقدونی</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">کلیک کنید تا ستون به‌صورت نزولی مرتب شود.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بایت</translation>
 <translation id="4880214202172289027">اسلایدر میزان صدا</translation>
-<translation id="4880520557730313061">تصحیح خودکار</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4900532980794411603">‏هم‌رسانی با Parallels Desktop</translation>
 <translation id="4905417359854579806">آماده پشتیبان گرفتن از <ph name="FILE_COUNT" /> مورد</translation>
-<translation id="4924638091161556692">تصحیح شد</translation>
 <translation id="4935975195727477204">گل میخک</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4961158930123534723">‏۱ پوشه با Parallels Desktop هم‌رسانی شد</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">مشاهده موارد بیشتر...</translation>
 <translation id="5044852990838351217">ارمنی</translation>
 <translation id="5059127710849015030">نویسه‌گردانی نپالی</translation>
-<translation id="5061708541166515394">کنتراست</translation>
 <translation id="5068919226082848014">پیتزا</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> فایل حذف خواهد شد</translation>
 <translation id="508423945471810158">درحال انتقال <ph name="NUMBER_OF_ITEMS" /> مورد به <ph name="FOLDER_NAME" /></translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">مجموعه هانگول ۳ (۳۹۰‏)</translation>
 <translation id="5145331109270917438">تاریخ تغییر</translation>
 <translation id="515594325917491223">شطرنج</translation>
-<translation id="5158593464696388225">تصویر ذخیره نشد.</translation>
 <translation id="5159383109919732130">‏<ph name="BEGIN_BOLD" />هنوز دستگاه خود را جدا نکنید!<ph name="END_BOLD" />
  <ph name="LINE_BREAKS" />
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
@@ -486,7 +466,6 @@
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
 <translation id="6007237601604674381">انتقال انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">بریدن</translation>
 <translation id="60357267506638014">‏QWERTY چکی</translation>
 <translation id="604001903249547235">‏پشتیبان‌گیری Cloud</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -527,10 +506,8 @@
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
 <translation id="6485131920355264772">دریافت اطلاعات فضا انجام نشد</translation>
 <translation id="6509122719576673235">نروژی</translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="653019979737152879">در حال همگام‌سازی <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">اخیر</translation>
-<translation id="6556866813142980365">انجام مجدد</translation>
 <translation id="6558280019477628686">خطایی روی داد. ممکن است بعضی از موارد حذف نشده باشند.</translation>
 <translation id="656398493051028875">در حال حذف «<ph name="FILENAME" />»...</translation>
 <translation id="6581162200855843583">‏پیوند Google Drive</translation>
@@ -563,7 +540,6 @@
 <translation id="6885780034956018177">حلزون</translation>
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6898028766943174120">پوشه‌های فرعی بیشتر...</translation>
-<translation id="691516599546977041">در <ph name="FOLDER_NAME" /> ذخیره نشد. تصاویر ویرایش‌شده در پوشه بارگیری‌ها ذخیره خواهند شد.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">مدت زمان</translation>
@@ -589,7 +565,6 @@
 <translation id="7040138676081995583">باز کردن با...</translation>
 <translation id="7075931588889865715">‏تایلندی با صفحه‌کلید TIS 820-2531</translation>
 <translation id="7086590977277044826">تامیل با صفحه‌کلید هندی</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> مورد انتخاب شدند</translation>
 <translation id="7103992300314999525">مقدونی</translation>
 <translation id="7106346894903675391">خرید فضای ذخیره بیشتر...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;جستجوی Drive&lt;/em&gt;</translation>
@@ -619,7 +594,6 @@
     آماده برای پشتیبان‌گیری در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">مالایالم (آوایی)</translation>
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>
-<translation id="7508545000531937079">نمایش اسلاید</translation>
 <translation id="751507702149411736">بلاروسی</translation>
 <translation id="7532029025027028521">نویسه‌گردانی فارسی</translation>
 <translation id="7544830582642184299">‏به برنامه‌های Linux اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشند. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
@@ -630,7 +604,6 @@
 <translation id="7551643184018910560">سنجاق کردن به فقسه</translation>
 <translation id="7553492409867692754">‏به برنامه‌های Linux اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشند</translation>
 <translation id="7575645593344061397">درحال بازیابی «<ph name="FILENAME" />»…</translation>
-<translation id="7576032389798113292">۶x۴</translation>
 <translation id="7589661784326793847">چند ثانیه صبر کنید</translation>
 <translation id="7592775719802218421">تنظیم <ph name="FILE_NAME" /> برای دسترسی آفلاین</translation>
 <translation id="7600126690270271294">صربی</translation>
@@ -672,7 +645,6 @@
 <translation id="7846076177841592234">لغو انتخاب</translation>
 <translation id="7853966320808728790">‏BÉPO فرانسوی</translation>
 <translation id="7868774406711971383">لهستانی</translation>
-<translation id="7873831373602885875">در <ph name="FOLDER_NAME" /> ذخیره نشد. همه ویرایش‌ها در <ph name="DOWNLOADS_FOLDER" /> در پوشه «بارگیری‌ها» ذخیره می‌شوند.</translation>
 <translation id="7874321682039004450">فیلیپینی</translation>
 <translation id="7881969471599061635">غیرفعال کردن زیرنویس</translation>
 <translation id="78946041517601018">درایوهای هم‌رسانی‌شده</translation>
@@ -684,7 +656,6 @@
 <translation id="7969525169268594403">اسلوونیایی</translation>
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
 <translation id="7980421588063892270">‏انگلیسی (آمریکایی) با صفحه‌کلید Colemak</translation>
-<translation id="7982283708762922719">ارتفاع</translation>
 <translation id="79907182588096956">‏این فایل برای رایانه‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که سیستم‌عامل Chrome را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
@@ -692,17 +663,14 @@
 <translation id="8038111231936746805">(پیش‌‏فرض)</translation>
 <translation id="8042602468072383151">فایل صوتی <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">رومانیایی</translation>
-<translation id="8066773524873206594">همه ویرایش‌ها در <ph name="DOWNLOADS_FOLDER" /> ذخیره می‌شوند.</translation>
 <translation id="8079530767338315840">تکرار</translation>
 <translation id="8106045200081704138">اشتراک‌گذاری شده با من</translation>
 <translation id="8116072619078571545">آب یخ</translation>
 <translation id="8128733386027980860">‏انگلیسی (بریتانیا) با صفحه‌کلید Dvorak</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» با شما به اشتراک گذاشته شده است. شما نمی‌توانید آن را حذف کنید زیرا به شما تعلق ندارد.</translation>
 <translation id="8151638057146502721">پیکربندی</translation>
-<translation id="8153607920959057464">این فایل نمایش داده نمی‌شود.</translation>
 <translation id="8154842056504218462">همه ورودی‌ها انتخاب شد.</translation>
 <translation id="8157684860301034423">اطلاعات برنامه بازیابی نشد.</translation>
-<translation id="8157939133946352716">۷x۵</translation>
 <translation id="8175731104491895765">فرانسوی (بلژیک)</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8193175696669055101">مدل دستگاه</translation>
@@ -756,7 +724,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> انتخاب شد.</translation>
 <translation id="872537912056138402">کرواسی</translation>
 <translation id="8750438273876807512">برای دسترسی سریع به فایل‌های داخل قفسه، فایلی را لمس کنید و نگه دارید، روی <ph name="ICON" /> ضربه بزنید، و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
-<translation id="8775404590947523323">ویرایش‌های شما به‌طور خودکار ذخیره می‌شوند.<ph name="BREAKS" />برای داشتن یک نسخه از تصویر اصلی٬ علامت «رونویسی نسخهٔ اصلی» را بردارید.</translation>
 <translation id="8802459921616481935">انتقال به «حذف‌شده‌ها»</translation>
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8810671769985673465">فشرده‌سازی انجام نشد، موارد موجود: «<ph name="FILE_NAME" />»</translation>
@@ -775,7 +742,6 @@
 <translation id="9034924485347205037">‏فایل‌های Linux</translation>
 <translation id="9035012421917565900">این موارد نمی‌توانند به «<ph name="DESTINATION_NAME" />» برگردانده شوند، بنابراین نمی‌توانید این اقدام را واگرد کنید.</translation>
 <translation id="9038620279323455325">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. لطفاً نام دیگری انتخاب کنید.</translation>
-<translation id="9065203028668620118">ویرایش</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>
 <translation id="9110990317705400362">‏همواره به دنبال راه‌هایی هستیم تا مرورتان را ایمن‌تر کنیم. قبلاً هر وب‌سایتی از شما می‌خواست برنامه‌افزودنی‌ای را در مرورگرتان اضافه کنید. در جدیدترین نسخه Google Chrome، باید به Chrome صراحتاً بگویید که می‌خواهید با افزودن این برنامه‌های افزودنی از طریق صفحه افزونه‌ها آنها را نصب کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -787,8 +753,6 @@
 <translation id="9133055936679483811">فشرده‌سازی انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. با دستگاه شما که Chrome OS را اجرا می‌کند، سازگار نیست. لطفاً به «نت‌بازار Chrome» بروید تا برنامه جایگزین مناسبی پیدا کنید.</translation>
 <translation id="9144340019284012223">کاتالان</translation>
-<translation id="9148058034647219655">خروج</translation>
-<translation id="9154418932169119429">این تصویر به‌صورت آفلاین در دسترس نیست.</translation>
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
 <translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
 <translation id="9174050671906956834">موارد موجود در «حذف‌شده‌ها» بعداز ٣۰ روز برای همیشه حذف می‌شود.</translation>
@@ -797,7 +761,6 @@
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>
 <translation id="939736085109172342">پوشهٔ جدید</translation>
-<translation id="942954117721265519">تصویری در دایرکتوری وجود ندارد.</translation>
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947144732524271678">مجموعه‌ای از <ph name="ENTRY_COUNT" /> ورودی، از <ph name="FROM_ENTRY_NAME" /> تا <ph name="TO_ENTRY_NAME" /> انتخاب شد.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1000498691615767391">열려는 폴더 선택</translation>
-<translation id="1035094536595558507">슬라이드 보기</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />개 항목 삭제 중...</translation>
 <translation id="1049926623896334335">Word 문서</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더로 옮기세요.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">파일</translation>
 <translation id="1297922636971898492">현재 Google Drive를 사용할 수 없습니다. Google Drive를 다시 사용할 수 있게 되면 자동으로 업로드가 다시 시작됩니다.</translation>
 <translation id="1307931752636661898">Linux 파일을 볼 수 없음</translation>
-<translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351692861129622852">파일 <ph name="FILE_COUNT" />개를 가져오는 중...</translation>
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
 <translation id="1363028406613469049">트랙</translation>
@@ -40,10 +38,8 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1395262318152388157">탐색 슬라이더</translation>
 <translation id="1404323374378969387">노르웨이어</translation>
-<translation id="1430915738399379752">인쇄</translation>
 <translation id="1433628812591023318">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 이동해야 합니다.</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
-<translation id="1467432559032391204">왼쪽</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google Drive에 충분한 여유 공간이 없습니다.</translation>
 <translation id="1482884275703521657">핀란드어</translation>
@@ -84,7 +80,6 @@
 <translation id="183183971458492120">정보 로드 중...</translation>
 <translation id="1838709767668011582">Google 사이트</translation>
 <translation id="1844692022597038441">이 파일은 오프라인에서 사용할 수 없습니다.</translation>
-<translation id="1847880352285315359">저장됨</translation>
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
 <translation id="1864756863218646478">파일을 찾지 못했습니다.</translation>
 <translation id="1920670151694390848">말라얄람어(음역)</translation>
@@ -107,7 +102,6 @@
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2084108471225856927">기기 설정</translation>
 <translation id="2085470240340828803">이름이 '<ph name="FILENAME" />'인 파일이 이미 존재합니다. 원하는 작업을 선택하세요.</translation>
-<translation id="2121825465123208577">크기 조정</translation>
 <translation id="2125607626296734455">크메르어</translation>
 <translation id="2142680004883808240">러시아어(표음 YaZHert 키보드)</translation>
 <translation id="2163152940313951844">잘못된 문자: <ph name="CHARACTER_NAME" /></translation>
@@ -135,7 +129,6 @@
 <translation id="2425665904502185219">전체 파일 크기</translation>
 <translation id="2428749644083375155">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
 <translation id="2448312741937722512">유형</translation>
-<translation id="2453576648990281505">이미 존재하는 파일입니다.</translation>
 <translation id="2464079411014186876">아이스크림</translation>
 <translation id="2468402215065996499">다마고치</translation>
 <translation id="2500392669976258912">구자라트어(표음)</translation>
@@ -153,7 +146,6 @@
 <translation id="2620090360073999360">현재 Google Drive에 연결할 수 없습니다.</translation>
 <translation id="2638942478653899953">Google Drive에 연결할 수 없습니다. <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />한 후 다시 로그인하세요.</translation>
 <translation id="2649120831653069427">구피</translation>
-<translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">버마어(미얀마, 미얀산 키보드)</translation>
 <translation id="2664412712123763093">파일 위치</translation>
 <translation id="2672394958563893062">오류가 발생했습니다. 클릭하여 처음부터 다시 시작하세요.</translation>
@@ -165,7 +157,6 @@
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2781645665747935084">벨기에어</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
-<translation id="2787047795752739979">원본 덮어쓰기</translation>
 <translation id="2830077785865012357">중국어(주음부호)</translation>
 <translation id="2843806747483486897">기본값 변경...</translation>
 <translation id="2850124913210091882">백업</translation>
@@ -189,7 +180,6 @@
 <translation id="2994669386200004489"><ph name="FILE_NAME" />을(를) 백업할 수 없음</translation>
 <translation id="299638574917407533">프랑스어(캐나다)</translation>
 <translation id="3003633581067744647">썸네일 이미지 보기로 전환</translation>
-<translation id="3007214526293698309">비율 고정</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slides를 오프라인에서 사용할 수 있도록 Google Docs 오프라인을 사용 설정하세요.</translation>
 <translation id="303198083543495566">위치</translation>
 <translation id="3047197340186497470">중국어(대이수입법)</translation>
@@ -199,7 +189,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3113153474486991170">이 위치에서 "<ph name="PATH" />" 경로를 열 수 없습니다. 열려면 '내 파일'로 복사하세요.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">완료</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3197563288998582412">영어(영국) 드보락</translation>
 <translation id="3202131003361292969">경로</translation>
@@ -248,8 +237,6 @@
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="3620292326130836921">백업되지 않은 파일이 없습니다.</translation>
-<translation id="3626281679859535460">밝기</translation>
-<translation id="3644896802912593514">너비</translation>
 <translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
 <translation id="3645531960514756307">폴더 고정 해제</translation>
 <translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google Drive 동기화가 기본적으로 사용 중지됩니다.</translation>
@@ -267,7 +254,6 @@
 <translation id="3809272675881623365">토끼</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3811494700605067549">파일 1개 선택됨</translation>
-<translation id="38275787300541712">완료되면 Enter 키를 누르세요.</translation>
 <translation id="3830674330436234648">재생을 사용할 수 없음</translation>
 <translation id="383652340667548381">세르비아어</translation>
 <translation id="385051799172605136">뒤로</translation>
@@ -309,7 +295,6 @@
 <translation id="4348495354623233847">소라니 쿠르드어(아랍어 기반 키보드)</translation>
 <translation id="4363958938297989186">러시아어(표음 키보드)</translation>
 <translation id="4364327530094270451">멜론</translation>
-<translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">외부 링크</translation>
 <translation id="4418686080762064601">파일의 바로가기 만들기</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
@@ -342,7 +327,6 @@
 <translation id="4724850507808590449">사진 <ph name="FILE_COUNT" />장을 백업했습니다.</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
 <translation id="4732760563705710320">죄송합니다. 사용 중인 전송 기기에서 지원하지 않는 동영상입니다.</translation>
-<translation id="4734518477988699048">입력 값이 올바르지 않습니다.</translation>
 <translation id="4737050008115666127">착륙</translation>
 <translation id="4747271164117300400">마케도니아어</translation>
 <translation id="4759238208242260848">다운로드</translation>
@@ -362,11 +346,9 @@
 <translation id="4867079195717347957">열을 내림차순으로 정렬하려면 클릭하세요.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" />바이트</translation>
 <translation id="4880214202172289027">볼륨 슬라이더</translation>
-<translation id="4880520557730313061">자동 보정</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4900532980794411603">Parallels Desktop과 공유</translation>
 <translation id="4905417359854579806">파일 <ph name="FILE_COUNT" />개 백업 준비 완료</translation>
-<translation id="4924638091161556692">보정 완료</translation>
 <translation id="4935975195727477204">꽃</translation>
 <translation id="4943368462779413526">풋볼</translation>
 <translation id="4961158930123534723">폴더 1개가 Parallels Desktop과 공유되었습니다.</translation>
@@ -385,7 +367,6 @@
 <translation id="5038625366300922036">더보기...</translation>
 <translation id="5044852990838351217">아르메니아어</translation>
 <translation id="5059127710849015030">네팔어(음역)</translation>
-<translation id="5061708541166515394">대비</translation>
 <translation id="5068919226082848014">피자</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" />의 파일이 삭제됩니다.</translation>
 <translation id="508423945471810158">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더로 이동 중</translation>
@@ -398,7 +379,6 @@
 <translation id="5144820558584035333">한글 세벌식(390)</translation>
 <translation id="5145331109270917438">수정된 날짜</translation>
 <translation id="515594325917491223">체스</translation>
-<translation id="5158593464696388225">이미지를 저장하지 못했습니다.</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />아직 기기를 분리하지 마세요!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
@@ -486,7 +466,6 @@
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">정렬 옵션</translation>
 <translation id="6007237601604674381">이동에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">자르기</translation>
 <translation id="60357267506638014">체코어 QWERTY</translation>
 <translation id="604001903249547235">클라우드 백업</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -527,10 +506,8 @@
 <translation id="6423031066725912715">베트남어(TCVN 키보드)</translation>
 <translation id="6485131920355264772">남은 용량을 알 수 없습니다.</translation>
 <translation id="6509122719576673235">노르웨이어</translation>
-<translation id="6527303717912515753">공유</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />을(를) 동기화하는 중...</translation>
 <translation id="6549689063733911810">최근 문서함</translation>
-<translation id="6556866813142980365">다시실행</translation>
 <translation id="6558280019477628686">오류가 발생했습니다. 일부 항목이 삭제되지 않았을 수 있습니다.</translation>
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>
 <translation id="6581162200855843583">Google Drive 링크</translation>
@@ -563,7 +540,6 @@
 <translation id="6885780034956018177">달팽이</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6898028766943174120">하위 폴더 더보기...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" />에 저장할 수 없습니다. 수정한 이미지는 다운로드 폴더에 저장됩니다.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">미국 워크맨</translation>
 <translation id="6930242544192836755">기간</translation>
@@ -589,7 +565,6 @@
 <translation id="7040138676081995583">연결 프로그램...</translation>
 <translation id="7075931588889865715">태국어(TIS 820-2531 키보드)</translation>
 <translation id="7086590977277044826">타밀어(인스크립트 키보드)</translation>
-<translation id="7100897339030255923"><ph name="COUNT" />개의 항목이 선택됨</translation>
 <translation id="7103992300314999525">마케도니아어</translation>
 <translation id="7106346894903675391">추가 저장용량 구입...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;드라이브 검색&lt;/em&gt;</translation>
@@ -619,7 +594,6 @@
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> 백업 준비 완료</translation>
 <translation id="7495372004724182530">말라얄람어(표음)</translation>
 <translation id="7505167922889582512">숨긴 파일 표시</translation>
-<translation id="7508545000531937079">슬라이드쇼</translation>
 <translation id="751507702149411736">벨로루시어</translation>
 <translation id="7532029025027028521">페르시아어(음역)</translation>
 <translation id="7544830582642184299">Linux 앱이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
@@ -630,7 +604,6 @@
 <translation id="7551643184018910560">실행기에 고정</translation>
 <translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="7575645593344061397">'<ph name="FILENAME" />' 복원 중...</translation>
-<translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정 중</translation>
 <translation id="7600126690270271294">세르비아어</translation>
@@ -672,7 +645,6 @@
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7853966320808728790">프랑스어 BÉPO</translation>
 <translation id="7868774406711971383">폴란드어</translation>
-<translation id="7873831373602885875"><ph name="FOLDER_NAME" />에 저장할 수 없습니다. 모든 수정사항은 다운로드 폴더의 <ph name="DOWNLOADS_FOLDER" />에 저장됩니다.</translation>
 <translation id="7874321682039004450">필리핀어</translation>
 <translation id="7881969471599061635">자막 사용 중지</translation>
 <translation id="78946041517601018">공유 드라이브</translation>
@@ -684,7 +656,6 @@
 <translation id="7969525169268594403">슬로베니아어</translation>
 <translation id="7972920761225148017">프랑스어(스위스)</translation>
 <translation id="7980421588063892270">영어(미국, 콜맥 키보드)</translation>
-<translation id="7982283708762922719">높이</translation>
 <translation id="79907182588096956">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었습니다. 따라서 Chrome OS를 실행하는 기기와는 호환되지 않습니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">개</translation>
 <translation id="8028993641010258682">크기</translation>
@@ -692,17 +663,14 @@
 <translation id="8038111231936746805">(기본값)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 오디오</translation>
 <translation id="8045462269890919536">루마니아어</translation>
-<translation id="8066773524873206594">모든 수정사항은 <ph name="DOWNLOADS_FOLDER" />에 저장됩니다.</translation>
 <translation id="8079530767338315840">반복</translation>
 <translation id="8106045200081704138">공유 문서함</translation>
 <translation id="8116072619078571545">얼음물</translation>
 <translation id="8128733386027980860">영어(영국, 드보락 키보드)</translation>
 <translation id="8137331602592933310">다른 사용자가 '<ph name="FILENAME" />'을(를) 나와 공유했습니다. 내가 소유자가 아니므로 삭제할 수 없습니다.</translation>
 <translation id="8151638057146502721">구성</translation>
-<translation id="8153607920959057464">이 파일은 표시할 수 없습니다.</translation>
 <translation id="8154842056504218462">모든 항목이 선택되었습니다.</translation>
 <translation id="8157684860301034423">앱 정보를 가져오지 못했습니다.</translation>
-<translation id="8157939133946352716">7x5</translation>
 <translation id="8175731104491895765">프랑스어(벨기에)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">기기 모델</translation>
@@ -756,7 +724,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="872537912056138402">크로아티아어</translation>
 <translation id="8750438273876807512">실행기에서 파일에 빠르게 액세스하려면 파일을 길게 터치한 다음 <ph name="ICON" /> 아이콘을 탭하고 '실행기에 고정'을 선택하세요.</translation>
-<translation id="8775404590947523323">수정 사항이 자동으로 저장됩니다.<ph name="BREAKS" />원본 이미지의 사본을 보관하려면 '원본 덮어쓰기'를 선택 해제합니다.</translation>
 <translation id="8802459921616481935">휴지통으로 이동</translation>
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8810671769985673465">압축에 실패했습니다. 남은 항목: '<ph name="FILE_NAME" />'</translation>
@@ -775,7 +742,6 @@
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9035012421917565900">항목을 다시 '<ph name="DESTINATION_NAME" />'(으)로 이동할 수 없으므로 이 작업을 실행취소할 수 없습니다.</translation>
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
-<translation id="9065203028668620118">수정</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9099674669267916096">페이지 수</translation>
 <translation id="9110990317705400362">Google은 더 안전한 인터넷 사용 방법을 끊임없이 모색하고 있습니다. 이전에는 브라우저에 확장 프로그램을 추가하라는 메시지가 어느 웹사이트에서나 표시되었습니다. 하지만 Chrome의 최신 버전에서는 확장 프로그램 페이지를 통해 확장 프로그램을 추가함으로써 설치를 원한다는 사실을 Chrome에 명시적으로 알려야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -787,8 +753,6 @@
 <translation id="9133055936679483811">압축에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색해 보세요.</translation>
 <translation id="9144340019284012223">카탈로니아어</translation>
-<translation id="9148058034647219655">나가기</translation>
-<translation id="9154418932169119429">이 이미지는 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="9172592259078059678">구자라트어(음역)</translation>
 <translation id="9173120999827300720">영어(미국, 국제 키보드)</translation>
 <translation id="9174050671906956834">30일 후 휴지통에 있는 항목이 완전히 삭제됩니다.</translation>
@@ -797,7 +761,6 @@
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219908252191632183">달</translation>
 <translation id="939736085109172342">새 폴더</translation>
-<translation id="942954117721265519">이 디렉터리에 이미지가 없습니다.</translation>
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>

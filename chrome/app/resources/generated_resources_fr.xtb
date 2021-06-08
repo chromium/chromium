@@ -236,6 +236,7 @@
 <translation id="1243436884219965846">Vérifier les mots de passe</translation>
 <translation id="1244265436519979884">Restauration Linux…</translation>
 <translation id="1244303850296295656">Erreur au niveau des extensions.</translation>
+<translation id="1246863218384630739">Impossible d'installer <ph name="VM_NAME" />, car l'URL de l'image a renvoyé une erreur <ph name="HTTP_ERROR" />. Veuillez contacter votre administrateur.</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applications installées</translation>
@@ -1104,7 +1105,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2154710561487035718">Copier l'URL</translation>
 <translation id="2155772377859296191">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker : <ph name="SCRIPT_URL" /></translation>
-<translation id="2156877321344104010">Relancer le contrôle de situation</translation>
+<translation id="2156877321344104010">Relancer le contrôle de sécurité</translation>
 <translation id="2157474325782140681">Pour bénéficier de fonctionnalités supplémentaires, utilisez une station d'accueil Dell compatible avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
 <translation id="2157875535253991059">Cette page est maintenant en mode plein écran</translation>
@@ -1523,6 +1524,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2610260699262139870">Taille ré&amp;elle</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="2612676031748830579">Numéro de carte</translation>
+<translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2618797463720777311">Configurer le Partage à proximité</translation>
@@ -2281,6 +2283,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3441663102605358937">Connectez-vous de nouveau à <ph name="ACCOUNT" /> pour valider ce compte</translation>
 <translation id="3444641828375597683">Les annonceurs et les éditeurs peuvent utiliser le FLoC décrit plus loin sur cette page.</translation>
+<translation id="3444726579402183581"><ph name="ORIGIN" /> pourra consulter <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Réponses rapides sur l'Assistant Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
@@ -3778,6 +3781,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5086874064903147617">Restaurer la page d'accueil par défaut ?</translation>
 <translation id="5087249366037322692">Ajoutée par un tiers</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
+<translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 avec chiffrement RSA</translation>
 <translation id="5090637338841444533">Non autorisé à suivre la position de la caméra</translation>
 <translation id="5094721898978802975">Communiquer avec les applications natives associées</translation>
@@ -4559,6 +4563,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5965661248935608907">Elle contrôle également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5969419185858894314">Le site <ph name="ORIGIN" /> peut afficher les fichiers du dossier <ph name="FOLDERNAME" /></translation>
+<translation id="5969728632630673489">Message sur les raccourcis clavier fermé</translation>
 <translation id="5971037678316050792">Contrôler l'état et l'association de l'adaptateur Bluetooth</translation>
 <translation id="597235323114979258">Voir plus de destinations</translation>
 <translation id="5972666587303800813">Service expérimental</translation>
@@ -6194,6 +6199,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
 <translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
+<translation id="7768526219335215384"><ph name="ORIGIN" /> pourra consulter les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Modifier</translation>
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
 <translation id="7770612696274572992">Image copiée depuis un autre appareil</translation>
@@ -6498,6 +6504,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
 <translation id="8063535366119089408">Afficher le fichier</translation>
 <translation id="8064279191081105977">Groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="8066444921260601116">Boîte de dialogue de connexion</translation>
 <translation id="8068253693380742035">Appuyez pour vous connecter</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Imprimer en tant qu'image</translation>
@@ -7529,6 +7536,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9186963452600581158">Se connecter avec le compte Google d'un enfant</translation>
 <translation id="9188732951356337132">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utiliser votre téléphone Android comme clé de sécurité</translation>
+<translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Rechercher avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Toutes les données hors connexion vont être effacées</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>
