@@ -6488,7 +6488,6 @@ crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-h
 # Sheriff 2021-05-05
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
-crbug.com/1206019 [ Linux ] http/tests/devtools/sources/snippet-module.js [ Failure ]
 
 # Blink_web_tests 2021-05-06
 crbug.com/1205669 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-global-alpha.html [ Pass Timeout ]

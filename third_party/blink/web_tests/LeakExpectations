@@ -60,10 +60,6 @@ crbug.com/836278 [ Linux ] external/wpt/html/canvas/offscreen/manual/convert-to-
 # Moved from TestExpectations (Sheriff 2018-05-31)
 crbug.com/848354 [ Linux ] plugins/fullscreen-plugins-dont-reload.html [ Pass Failure ]
 
-# Sheriff 2018-07-10
-# Test flaking on Linux Trusty Leak
-crbug.com/862029 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js [ Pass Failure ]
-
 # Sheriff 2018-08-17
 crbug.com/847114 [ Linux ] http/tests/devtools/tracing/decode-resize.js [ Pass Failure ]
 
@@ -82,8 +78,6 @@ crbug.com/934144 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-fl
 # Sheriff 2019-08-21
 crbug.com/996235 [ Linux ] media/controls/doubletap-to-jump-backwards-at-start.html [ Pass Failure ]
 
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Failure Pass ]
-
 # Only times out on the leak bots.
 crbug.com/998399 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]
 
@@ -98,12 +92,6 @@ crbug.com/1000768 [ Linux ] external/wpt/storage/idlharness.https.any.html [ Pas
 
 # Sheriff 2019-11-29
 crbug.com/1029417 [ Linux ] external/wpt/web-nfc/NDEFReader_scan_filter.https.html [ Failure ]
-
-# Sheriff 2019-12-30
-crbug.com/1038388 [ Linux ] http/tests/devtools/tracing/timeline-time/timeline-time.js [ Pass Failure ]
-
-# Sheriff 2020-04-03
-crbug.com/1067650 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-load-event.js [ Pass Failure ]
 
 # Sheriff 2020-04-06
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer/worker-module.http.html [ Pass Timeout ]
@@ -120,9 +108,6 @@ crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin/worker-module.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/same-origin/worker-classic.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
-
-# Sheriff 2020-04-20
-crbug.com/1071849 [ Linux ] http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Pass Failure ]
 
 # Sheriff 2020-04-23
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/same-origin/worker-classic.http.html [ Pass Timeout ]
@@ -166,19 +151,8 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
 
-# Sheriff 20201-02-16
-crbug.com/1178723 [ Linux ] http/tests/devtools/network/ping-response.js [ Pass Failure ]
-crbug.com/1178725 [ Linux ] http/tests/devtools/sources/snippet-overrides.js [ Pass Failure ]
-
-# Sheriff 2021-02-18
-crbug.com/1179722 [ Linux ] http/tests/devtools/console/console-string-format.js [ Pass Failure ]
-crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/database-data.js [ Pass Failure ]
-crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/transaction-promise-console.js [ Pass Failure ]
-
 # Sheriff 2021-02-18
 crbug.com/1180251 [ Linux ] virtual/wheel-event-regions/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Pass Failure ]
-crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-pause/debugger-pause-on-promise-rejection.js [ Pass Failure ]
-crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-async/async-await/async-pause-on-exception.js [ Pass Failure ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
@@ -187,30 +161,14 @@ crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.htt
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Pass Failure ]
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
 
-# Sheriff 2021-03-18
-crbug.com/1177856 [ Linux ] http/tests/devtools/elements/shadow/inspect-slot-not-in-shadow-tree.js [ Pass Failure ]
-
 # These tests are flaky on the Leak bots but seem reliable elsewhere
 crbug.com/1164553 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-error-a11y-test.js [ Pass Failure ]
-crbug.com/1164553 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
-crbug.com/1164553 [ Linux ] http/tests/devtools/profiler/heap-snapshot-summary-search-by-id.js [ Pass Failure ]
-crbug.com/1164553 [ Linux ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Pass Failure ]
 
 # Sheriff 2021-04-16
-crbug.com/1199904 [ Linux ] http/tests/devtools/editor/text-editor-accessibility.js [ Pass Failure ]
 crbug.com/1199904 [ Linux ] virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass Failure ]
 
 # Sheriff 2021-05-03
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
-
-# Sheriff 2021-05-05
-crbug.com/1205815 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/snippet-module.js [ Pass Failure ]
-
-# Sheriff 2021-05-12
-crbug.com/1208331 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/shadow/reveal-shadow-dom-node.js [ Pass Failure ]
-
-# Sheriff 2021-06-02
-crbug.com/1215431 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-step/debugger-step-over-across-timeouts.js [ Pass Failure ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
