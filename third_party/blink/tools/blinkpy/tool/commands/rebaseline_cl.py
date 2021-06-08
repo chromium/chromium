@@ -186,8 +186,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
 
-        _log.debug('Rebaselining: %s', test_baseline_set)
-
         if not options.dry_run:
             self.rebaseline(options, test_baseline_set)
         return 0

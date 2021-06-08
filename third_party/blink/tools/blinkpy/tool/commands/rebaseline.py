@@ -526,6 +526,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             )
             return
 
+        # TODO: Consider optimizing here, it takes about 2 minutes for 500 tests
         for test in sorted({t for t, _, _ in test_baseline_set}):
             _log.info('Rebaselining %s', test)
 

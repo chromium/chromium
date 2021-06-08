@@ -995,7 +995,7 @@ class Port(object):
         manifest_path = self._filesystem.join(self.web_tests_dir(), path,
                                               MANIFEST_NAME)
         if not self._filesystem.exists(manifest_path) or self.get_option(
-                'manifest_update', True):
+                'manifest_update', False):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
         return WPTManifest(self.host, manifest_path)
@@ -2056,9 +2056,6 @@ class Port(object):
         # slow.
         wpts = [(wpt_path, self.wpt_manifest(wpt_path))
                 for wpt_path in self.WPT_DIRS]
-
-        _log.debug("Finding WPT tests that match %d path prefixes",
-                   len(filter_paths))
 
         tests = []
         # This walks through the set of paths where we should look for tests.
