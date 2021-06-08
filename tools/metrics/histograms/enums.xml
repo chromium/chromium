@@ -44312,6 +44312,23 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="33" label="33"/>
 </enum>
 
+<enum name="LinuxDistroMintVersion">
+  <int value="17" label="17"/>
+  <int value="18" label="18"/>
+  <int value="19" label="19"/>
+  <int value="20" label="20"/>
+  <int value="17001" label="17.1"/>
+  <int value="17002" label="17.2"/>
+  <int value="17003" label="17.3"/>
+  <int value="18001" label="18.1"/>
+  <int value="18002" label="18.2"/>
+  <int value="18003" label="18.3"/>
+  <int value="19001" label="19.1"/>
+  <int value="19002" label="19.2"/>
+  <int value="19003" label="19.3"/>
+  <int value="20001" label="20.1"/>
+</enum>
+
 <enum name="LinuxDistroOpenSuseLeapVersion">
   <int value="15000" label="15.0"/>
   <int value="15001" label="15.1"/>

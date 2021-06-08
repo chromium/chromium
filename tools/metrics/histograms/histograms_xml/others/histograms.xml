@@ -8994,6 +8994,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Linux.Distro.Mint" enum="LinuxDistroMintVersion"
+    expires_after="2021-10-25">
+  <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    The Linux Mint version number (eg. 20, 20.1) Logged once on startup if
+    Linux.Distro2 is Mint.
+  </summary>
+</histogram>
+
 <histogram name="Linux.Distro.OpenSuseLeap"
     enum="LinuxDistroOpenSuseLeapVersion" expires_after="2021-10-25">
   <owner>thestig@chromium.org</owner>

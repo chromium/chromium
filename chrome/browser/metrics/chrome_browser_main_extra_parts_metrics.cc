@@ -300,6 +300,8 @@ void RecordLinuxDistro() {
     } else if (distro_tokens.size() >= 2 && distro_tokens[1] == "Mint") {
       // Format: Linux Mint RR
       distro_result = UMA_LINUX_DISTRO_MINT;
+      if (distro_tokens.size() >= 3)
+        RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Mint");
     } else if (distro_tokens.size() >= 4 && distro_tokens[0] == "Red" &&
                distro_tokens[1] == "Hat" && distro_tokens[2] == "Enterprise" &&
                distro_tokens[3] == "Linux") {
