@@ -667,11 +667,13 @@ void PdfViewPluginBase::UpdateScroll() {
 
 gfx::PointF PdfViewPluginBase::BoundScrollPositionToDocument(
     const gfx::PointF& scroll_position) {
-  float max_x = std::max(
-      document_size_.width() * float{zoom_} - plugin_dip_size_.width(), 0.0f);
+  float max_x = std::max(document_size_.width() * static_cast<float>(zoom_) -
+                             plugin_dip_size_.width(),
+                         0.0f);
   float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
-  float max_y = std::max(
-      document_size_.height() * float{zoom_} - plugin_dip_size_.height(), 0.0f);
+  float max_y = std::max(document_size_.height() * static_cast<float>(zoom_) -
+                             plugin_dip_size_.height(),
+                         0.0f);
   float y = base::ClampToRange(scroll_position.y(), 0.0f, max_y);
   return gfx::PointF(x, y);
 }
