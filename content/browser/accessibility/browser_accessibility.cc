@@ -1424,12 +1424,13 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
       manager()->GetFromID(selection.anchor_object_id);
   if (anchor_object && !anchor_object->PlatformIsLeaf()) {
     DCHECK_GE(selection.anchor_offset, 0);
-    if (size_t{selection.anchor_offset} <
+    if (static_cast<size_t>(selection.anchor_offset) <
         anchor_object->node()->children().size()) {
       const ui::AXNode* anchor_child =
           anchor_object->node()->children()[selection.anchor_offset];
       DCHECK(anchor_child);
-      selection.anchor_offset = int{anchor_child->GetUnignoredIndexInParent()};
+      selection.anchor_offset =
+          static_cast<int>(anchor_child->GetUnignoredIndexInParent());
     } else {
       selection.anchor_offset = anchor_object->GetChildCount();
     }
@@ -1439,12 +1440,13 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
       manager()->GetFromID(selection.focus_object_id);
   if (focus_object && !focus_object->PlatformIsLeaf()) {
     DCHECK_GE(selection.focus_offset, 0);
-    if (size_t{selection.focus_offset} <
+    if (static_cast<size_t>(selection.focus_offset) <
         focus_object->node()->children().size()) {
       const ui::AXNode* focus_child =
           focus_object->node()->children()[selection.focus_offset];
       DCHECK(focus_child);
-      selection.focus_offset = int{focus_child->GetUnignoredIndexInParent()};
+      selection.focus_offset =
+          static_cast<int>(focus_child->GetUnignoredIndexInParent());
     } else {
       selection.focus_offset = focus_object->GetChildCount();
     }
@@ -1480,7 +1482,7 @@ gfx::NativeViewAccessible BrowserAccessibility::GetParent() {
 }
 
 int BrowserAccessibility::GetChildCount() const {
-  return int{PlatformChildCount()};
+  return static_cast<int>(PlatformChildCount());
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(int index) {
@@ -1895,16 +1897,17 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       if (!anchor_object->PlatformIsLeaf()) {
         DCHECK_GE(selection.anchor_offset, 0);
         const BrowserAccessibility* anchor_child =
-            anchor_object->InternalGetChild(uint32_t{selection.anchor_offset});
+            anchor_object->InternalGetChild(
+                static_cast<uint32_t>(selection.anchor_offset));
         if (anchor_child) {
           selection.anchor_offset =
-              int{anchor_child->node()->index_in_parent()};
+              static_cast<int>(anchor_child->node()->index_in_parent());
           selection.anchor_node_id = anchor_child->node()->parent()->id();
         } else {
           // Since the child was not found, the only alternative is that this is
           // an "after children" position.
           selection.anchor_offset =
-              int{anchor_object->node()->children().size()};
+              static_cast<int>(anchor_object->node()->children().size());
         }
       }
 
@@ -1918,14 +1921,17 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       if (!focus_object->PlatformIsLeaf()) {
         DCHECK_GE(selection.focus_offset, 0);
         const BrowserAccessibility* focus_child =
-            focus_object->InternalGetChild(uint32_t{selection.focus_offset});
+            focus_object->InternalGetChild(
+                static_cast<uint32_t>(selection.focus_offset));
         if (focus_child) {
-          selection.focus_offset = int{focus_child->node()->index_in_parent()};
+          selection.focus_offset =
+              static_cast<int>(focus_child->node()->index_in_parent());
           selection.focus_node_id = focus_child->node()->parent()->id();
         } else {
           // Since the child was not found, the only alternative is that this is
           // an "after children" position.
-          selection.focus_offset = int{focus_object->node()->children().size()};
+          selection.focus_offset =
+              static_cast<int>(focus_object->node()->children().size());
         }
       }
 

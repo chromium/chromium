@@ -489,7 +489,7 @@ void WebAXObjectProxy::NotificationReceived(
       v8::Array::New(isolate, event_intents.size()));
   for (size_t i = 0; i < event_intents.size(); ++i) {
     intents_array
-        ->CreateDataProperty(context, uint32_t{i},
+        ->CreateDataProperty(context, static_cast<uint32_t>(i),
                              v8::String::NewFromUtf8(
                                  isolate, event_intents[i].ToString().c_str())
                                  .ToLocalChecked())
@@ -1571,7 +1571,7 @@ std::string WebAXObjectProxy::MisspellingAtIndex(int index) {
   UpdateLayout();
 
   std::vector<std::string> misspellings = GetMisspellings();
-  if (index < 0 || index >= int{misspellings.size()})
+  if (index < 0 || index >= static_cast<int>(misspellings.size()))
     return std::string();
   return misspellings[index];
 }

@@ -383,7 +383,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, HashLargerFileOK) {
         EXPECT_EQ(
             "34A82D28CB1E0BA92CADC4BE8497DC9EEA9AC4F63B9C445A9E52D298990AC491",
             GetHexEncodedString(hash_value));
-        EXPECT_EQ(int64_t{target_size}, size);
+        EXPECT_EQ(static_cast<int64_t>(target_size), size);
         loop.Quit();
       }));
   loop.Run();

@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_NonExistingFile) {
                    "  self.entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_SAVEAS_FILE, dialog_params.type);
-  EXPECT_EQ(int{file_contents.size()},
+  EXPECT_EQ(static_cast<int>(file_contents.size()),
             EvalJs(shell(),
                    JsReplace("(async () => {"
                              "  const w = await self.entry.createWritable();"

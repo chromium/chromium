@@ -463,7 +463,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     // means a node just got repeated or something harmless like that,
     // but it should still be investigated and could be the sign of a
     // performance issue.
-    DCHECK_LE(int{tree_update.nodes.size()}, ax_tree()->size());
+    DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
   }
 
   // If this page is hidden by an interstitial, suppress all events.
