@@ -71,17 +71,42 @@ SkColor GetColor(const SkColor colors[2],
 
 // This returns a color scheme which provides enough contrast with the custom
 // accent-color to make it easy to see.
-// TODO(crbug.com/1092093): Use separate hard coded colors instead of deferring
-// to the dark color scheme for contrast.
+// |light_contrasting_color| is the color which is used to paint adjacent to
+// |accent_color| in ColorScheme::kLight, and |dark_contrasting_color| is the
+// one used for ColorScheme::kDark.
 ui::NativeTheme::ColorScheme ColorSchemeForAccentColor(
     const absl::optional<SkColor>& accent_color,
-    const ui::NativeTheme::ColorScheme& color_scheme) {
+    const ui::NativeTheme::ColorScheme& color_scheme,
+    const SkColor& light_contrasting_color,
+    const SkColor& dark_contrasting_color) {
+  // If there is enough contrast between accent_color and color_scheme, then
+  // let's keep it the same. Otherwise, flip the color_scheme to guarantee
+  // contrast.
+
   if (!accent_color)
     return color_scheme;
 
-  return color_utils::GetRelativeLuminance(*accent_color) < 0.5
-             ? ui::NativeTheme::ColorScheme::kLight
-             : ui::NativeTheme::ColorScheme::kDark;
+  float contrast_with_light =
+      color_utils::GetContrastRatio(*accent_color, light_contrasting_color);
+  float contrast_with_dark =
+      color_utils::GetContrastRatio(*accent_color, dark_contrasting_color);
+  const float kMinimumContrast = 3;
+
+  if (color_scheme == ui::NativeTheme::ColorScheme::kDark) {
+    if (contrast_with_dark < kMinimumContrast &&
+        contrast_with_dark < contrast_with_light) {
+      // TODO(crbug.com/1216137): what if |contrast_with_light| is less than
+      // |kMinimumContrast|? Should we modify |accent_color|...?
+      return ui::NativeTheme::ColorScheme::kLight;
+    }
+  } else {
+    if (contrast_with_light < kMinimumContrast &&
+        contrast_with_light < contrast_with_dark) {
+      return ui::NativeTheme::ColorScheme::kDark;
+    }
+  }
+
+  return color_scheme;
 }
 
 }  // namespace
@@ -549,7 +574,14 @@ void NativeThemeBase::PaintCheckbox(
     const ButtonExtraParams& button,
     ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) const {
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+  // ControlsBackgroundColorForState is used below for |checkmark_color|, which
+  // gets drawn adjacent to |accent_color|. In order to guarantee contrast
+  // between |checkmark_color| and |accent_color|, we choose the |color_scheme|
+  // here based on the two possible values for |checkmark_color|.
+  color_scheme = ColorSchemeForAccentColor(
+      accent_color, color_scheme,
+      ControlsBackgroundColorForState(state, ColorScheme::kLight),
+      ControlsBackgroundColorForState(state, ColorScheme::kDark));
 
   const float border_radius =
       GetBorderRadiusForPart(kCheckbox, rect.width(), rect.height());
@@ -608,8 +640,6 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     const SkScalar border_radius,
     ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) const {
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
-
   SkRect skrect = gfx::RectToSkRect(rect);
 
   // Use the largest square that fits inside the provided rectangle.
@@ -685,7 +715,14 @@ void NativeThemeBase::PaintRadio(
     const ButtonExtraParams& button,
     ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) const {
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+  // ControlsBackgroundColorForState is used below in PaintCheckboxRadioCommon,
+  // which gets draw adjacent to |accent_color|. In order to guarantee contrast
+  // between the background and |accent_color|, we choose the |color_scheme|
+  // here based on the two possible values for ControlsBackgroundColorForState.
+  color_scheme = ColorSchemeForAccentColor(
+      accent_color, color_scheme,
+      ControlsBackgroundColorForState(state, ColorScheme::kLight),
+      ControlsBackgroundColorForState(state, ColorScheme::kDark));
 
   // Most of a radio button is the same as a checkbox, except the the rounded
   // square is a circle (i.e. border radius >= 100%).
@@ -875,7 +912,17 @@ void NativeThemeBase::PaintSliderTrack(
     const SliderExtraParams& slider,
     ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) const {
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+  // ControlsFillColorForState is used below for the slider track, which
+  // gets drawn adjacent to |accent_color|. In order to guarantee contrast
+  // between the slider track and |accent_color|, we choose the |color_scheme|
+  // here based on the two possible values for the slider track.
+  // We use kNormal here because the user hovering or clicking on the slider
+  // will change the state to something else, and we don't want the color-scheme
+  // to flicker back and forth when the user interacts with it.
+  color_scheme = ColorSchemeForAccentColor(
+      accent_color, color_scheme,
+      ControlsFillColorForState(kNormal, ColorScheme::kLight),
+      ControlsFillColorForState(kNormal, ColorScheme::kDark));
 
   // Paint the entire slider track.
   cc::PaintFlags flags;
@@ -929,7 +976,14 @@ void NativeThemeBase::PaintSliderThumb(
     const SliderExtraParams& slider,
     ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) const {
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+  // This is the same logic used in PaintSliderTrack to guarantee contrast with
+  // |accent_color|. This and PaintSliderTrack are used together to paint
+  // <input type=range>, so the logic must be the same in order to make sure one
+  // color scheme is used to paint the entire control.
+  color_scheme = ColorSchemeForAccentColor(
+      accent_color, color_scheme,
+      ControlsFillColorForState(state, ColorScheme::kLight),
+      ControlsFillColorForState(state, ColorScheme::kDark));
 
   const float radius =
       GetBorderRadiusForPart(kSliderThumb, rect.width(), rect.height());
@@ -992,7 +1046,13 @@ void NativeThemeBase::PaintProgressBar(
     const absl::optional<SkColor>& accent_color) const {
   DCHECK(!rect.IsEmpty());
 
-  color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+  // GetControlColor(kFill) is used below for the track, which
+  // gets drawn adjacent to |accent_color|. In order to guarantee contrast
+  // between the track and |accent_color|, we choose the |color_scheme|
+  // here based on the two possible values for the track.
+  color_scheme = ColorSchemeForAccentColor(
+      accent_color, color_scheme, GetControlColor(kFill, ColorScheme::kLight),
+      GetControlColor(kFill, ColorScheme::kDark));
 
   // Paint the track.
   cc::PaintFlags flags;
