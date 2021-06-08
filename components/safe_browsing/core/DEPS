@@ -1,5 +1,0 @@
-include_rules = [
-  # TODO(crbug.com/1216341): Eliminate the need for these.
-  "!content/public/browser/browser_context.h",
-  "!content/public/browser/browser_thread.h",
-]

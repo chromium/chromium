@@ -4,6 +4,24 @@
 
 import("//build/config/features.gni")
 
+# NOTE: This target is separated from :browser as
+# //components/safe_browsing/content/web_ui, which :browser depends on, depends
+# on this.
+# TODO(crbug.com/1216341): Consider folding all of three these together into
+# :browser, along with the other browser process code in
+# //components/safe_browsing/content.
+source_set("safe_browsing_service") {
+  sources = [
+    "safe_browsing_service_interface.cc",
+    "safe_browsing_service_interface.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("browser") {
   sources = [
     "base_blocking_page.cc",

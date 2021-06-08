@@ -25,9 +25,9 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/util.h"
-#include "components/safe_browsing/core/safe_browsing_service_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 

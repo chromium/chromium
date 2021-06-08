@@ -129,28 +129,6 @@ source_set("verdict_cache_manager_unittest") {
   ]
 }
 
-# safe_browsing/ pulls in content/, which doesn't work on iOS.
-# TODO(crbug.com/1216341): Move this out of core/.
-# TODO(thakis): This should be `safe_browsing_mode != 0`, but chromecast builds
-# set safe_browsing_mode to 0 and build chrome/, and chrome/ currently
-# unconditionally depends on things in this build file. Make these dependencies
-# conditional on safe_browsing_mode != 0 and then change the conditional here.
-if (!is_ios) {
-  assert(!is_ios, "safe_browsing/ pulls in content/ which doesn't work on iOS")
-
-  source_set("public") {
-    sources = [
-      "safe_browsing_service_interface.cc",
-      "safe_browsing_service_interface.h",
-    ]
-
-    deps = [
-      "//base:base",
-      "//content/public/browser",
-    ]
-  }
-}
-
 # These files have no content/ dependency, but we still aren't building them on
 # on iOS since we don't ship download protection on that platform.
 # TODO(crbug/1056278): Enable this on Fuchsia
