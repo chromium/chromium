@@ -144,8 +144,8 @@ class FuchsiaCdm::CdmSession {
 
   ~CdmSession() {
     if (!session_id_.empty()) {
-      session_callbacks_->closed_cb.Run(
-          session_id_, CdmSessionClosedReason::kCdmUnavailable);
+      session_callbacks_->closed_cb.Run(session_id_,
+                                        CdmSessionClosedReason::kInternalError);
     }
   }
 

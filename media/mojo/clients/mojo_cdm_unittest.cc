@@ -217,9 +217,9 @@ class MojoCdmTest : public ::testing::Test {
       // to "close" it.
       EXPECT_CALL(
           cdm_client_,
-          OnSessionClosed(session_id, CdmSessionClosedReason::kUnknown));
+          OnSessionClosed(session_id, CdmSessionClosedReason::kInternalError));
       remote_cdm_->CallSessionClosedCB(session_id,
-                                       CdmSessionClosedReason::kUnknown);
+                                       CdmSessionClosedReason::kInternalError);
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -431,7 +431,7 @@ TEST_F(MojoCdmTest, CreateSession_Success) {
   // Created session should always be closed!
   EXPECT_CALL(
       cdm_client_,
-      OnSessionClosed(session_id, CdmSessionClosedReason::kCdmUnavailable));
+      OnSessionClosed(session_id, CdmSessionClosedReason::kInternalError));
 }
 
 TEST_F(MojoCdmTest, CreateSession_Failure) {

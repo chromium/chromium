@@ -23,12 +23,12 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
   static media::mojom::CdmSessionClosedReason ToMojom(
       ::media::CdmSessionClosedReason input) {
     switch (input) {
-      case ::media::CdmSessionClosedReason::kUnknown:
-        return media::mojom::CdmSessionClosedReason::kUnknown;
+      case ::media::CdmSessionClosedReason::kInternalError:
+        return media::mojom::CdmSessionClosedReason::kInternalError;
       case ::media::CdmSessionClosedReason::kClose:
         return media::mojom::CdmSessionClosedReason::kClose;
-      case ::media::CdmSessionClosedReason::kCdmUnavailable:
-        return media::mojom::CdmSessionClosedReason::kCdmUnavailable;
+      case ::media::CdmSessionClosedReason::kReleaseAcknowledged:
+        return media::mojom::CdmSessionClosedReason::kReleaseAcknowledged;
       case ::media::CdmSessionClosedReason::kHardwareContextReset:
         return media::mojom::CdmSessionClosedReason::kHardwareContextReset;
       case ::media::CdmSessionClosedReason::kResourceEvicted:
@@ -44,14 +44,14 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
   static bool FromMojom(media::mojom::CdmSessionClosedReason input,
                         ::media::CdmSessionClosedReason* output) {
     switch (input) {
-      case media::mojom::CdmSessionClosedReason::kUnknown:
-        *output = ::media::CdmSessionClosedReason::kUnknown;
+      case media::mojom::CdmSessionClosedReason::kInternalError:
+        *output = ::media::CdmSessionClosedReason::kInternalError;
         return true;
       case media::mojom::CdmSessionClosedReason::kClose:
         *output = ::media::CdmSessionClosedReason::kClose;
         return true;
-      case media::mojom::CdmSessionClosedReason::kCdmUnavailable:
-        *output = ::media::CdmSessionClosedReason::kCdmUnavailable;
+      case media::mojom::CdmSessionClosedReason::kReleaseAcknowledged:
+        *output = ::media::CdmSessionClosedReason::kReleaseAcknowledged;
         return true;
       case media::mojom::CdmSessionClosedReason::kHardwareContextReset:
         *output = ::media::CdmSessionClosedReason::kHardwareContextReset;

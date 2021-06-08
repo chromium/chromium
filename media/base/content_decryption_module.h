@@ -73,10 +73,10 @@ enum class HdcpVersion {
 
 // Reasons for CDM session closed.
 enum class CdmSessionClosedReason {
-  kUnknown,         // Anything not listed below.
-  kClose,           // Reaction to MediaKeySession close().
-  kCdmUnavailable,  // CDM is no longer usable, e.g. the CDM was disconnected or
-                    // had fatal internal-error.
+  kInternalError,  // An unrecoverable error happened in the CDM., e.g. crash.
+  kClose,          // Reaction to MediaKeySession close().
+  kReleaseAcknowledged,   // The CDM received a "record-of-license-destruction"
+                          // acknowledgement.
   kHardwareContextReset,  // As a result of hardware context reset.
   kResourceEvicted,  // The CDM resource was evicted, e.g. by newer sessions.
   kMaxValue = kResourceEvicted

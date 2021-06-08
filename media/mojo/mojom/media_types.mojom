@@ -186,10 +186,11 @@ struct VideoDecoderConfig {
 [Native]
 struct SubsampleEntry;
 
+// See media::CdmSessionClosedReason for descriptions.
 enum CdmSessionClosedReason {
-  kUnknown,
+  kInternalError,
   kClose,
-  kCdmUnavailable,
+  kReleaseAcknowledged,
   kHardwareContextReset,
   kResourceEvicted,
 };

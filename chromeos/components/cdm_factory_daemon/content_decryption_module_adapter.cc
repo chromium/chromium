@@ -539,7 +539,7 @@ ContentDecryptionModuleAdapter::~ContentDecryptionModuleAdapter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
   cdm_session_tracker_.CloseRemainingSessions(
-      session_closed_cb_, media::CdmSessionClosedReason::kCdmUnavailable);
+      session_closed_cb_, media::CdmSessionClosedReason::kInternalError);
 }
 
 void ContentDecryptionModuleAdapter::OnConnectionError() {
@@ -557,7 +557,7 @@ void ContentDecryptionModuleAdapter::OnConnectionError() {
   cdm_promise_adapter_.Clear(
       media::CdmPromiseAdapter::ClearReason::kConnectionError);
   cdm_session_tracker_.CloseRemainingSessions(
-      session_closed_cb_, media::CdmSessionClosedReason::kCdmUnavailable);
+      session_closed_cb_, media::CdmSessionClosedReason::kInternalError);
 }
 
 void ContentDecryptionModuleAdapter::RejectTrackedPromise(
