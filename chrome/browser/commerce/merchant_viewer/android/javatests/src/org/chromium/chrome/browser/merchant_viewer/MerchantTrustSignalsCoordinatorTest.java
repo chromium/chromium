@@ -175,6 +175,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage() {
         // Verify previous scheduled message is canceled.
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -208,6 +209,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/60000"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessageLastEventWithinTimeWindow() {
         // Verify previous scheduled message is canceled.
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -236,6 +238,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessageFirstTime() {
         // Verify previous scheduled message is canceled.
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -264,6 +267,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessageNoMerchantTrustData() {
         // Verify previous scheduled message is canceled.
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -306,6 +310,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessageWithScheduledMessageForDifferentHost() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
         NavigationHandle mockNavigationHandle2 = mock(NavigationHandle.class);
@@ -332,6 +337,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessageWithInvalidStorage() {
         doReturn(null).when(mMockMerchantTrustStorageFactory).getForLastUsedProfile();
 
@@ -365,6 +371,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testOnMessageDismissed() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
         coordinator.onMessageDismissed(DismissReason.TIMER);
@@ -373,6 +380,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testOnMessagePrimaryAction() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
         coordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals);
