@@ -33,6 +33,7 @@ CorsErrorStatus::CorsErrorStatus(mojom::IPAddressSpace resource_address_space)
 CorsErrorStatus::~CorsErrorStatus() = default;
 
 bool CorsErrorStatus::operator==(const CorsErrorStatus& rhs) const {
+  // The `issue_id` is not relevant for equality.
   return cors_error == rhs.cors_error &&
          failed_parameter == rhs.failed_parameter &&
          resource_address_space == rhs.resource_address_space;
@@ -42,7 +43,7 @@ std::ostream& operator<<(std::ostream& os, const CorsErrorStatus& status) {
   return os << "CorsErrorStatus{ cors_error = " << status.cors_error
             << ", failed_parameter = " << status.failed_parameter
             << ", resource_address_space = " << status.resource_address_space
-            << " }";
+            << ", issue_id = " << status.issue_id << " }";
 }
 
 }  // namespace network

@@ -62,7 +62,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   // covered by the wildcard in the preflight response.
   // TODO(crbug.com/1176753): Remove this once the investigation is done.
   bool has_authorization_covered_by_wildcard_on_preflight = false;
-  base::UnguessableToken issueId = base::UnguessableToken::Create();
+  base::UnguessableToken issue_id = base::UnguessableToken::Create();
 };
 
 // CorsErrorStatus instances are streamable for ease of debugging.
