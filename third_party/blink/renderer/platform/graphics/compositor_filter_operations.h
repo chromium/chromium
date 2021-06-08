@@ -8,13 +8,14 @@
 #include "cc/paint/filter_operations.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkScalar.h"
 
 namespace blink {
+
+class Color;
 
 // An ordered list of filter operations.
 class PLATFORM_EXPORT CompositorFilterOperations {
@@ -33,7 +34,9 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   void AppendOpacityFilter(float amount);
   void AppendBlurFilter(float amount,
                         SkTileMode tile_mode = SkTileMode::kDecal);
-  void AppendDropShadowFilter(IntPoint offset, float std_deviation, Color);
+  void AppendDropShadowFilter(IntPoint offset,
+                              float std_deviation,
+                              const Color& color);
   void AppendColorMatrixFilter(const cc::FilterOperation::Matrix&);
   void AppendZoomFilter(float amount, int inset);
   void AppendSaturatingBrightnessFilter(float amount);

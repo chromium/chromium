@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -68,7 +69,7 @@ void CompositorFilterOperations::AppendBlurFilter(float amount,
 
 void CompositorFilterOperations::AppendDropShadowFilter(IntPoint offset,
                                                         float std_deviation,
-                                                        Color color) {
+                                                        const Color& color) {
   gfx::Point gfx_offset(offset.X(), offset.Y());
   filter_operations_.Append(cc::FilterOperation::CreateDropShadowFilter(
       gfx_offset, std_deviation, color.Rgb()));
