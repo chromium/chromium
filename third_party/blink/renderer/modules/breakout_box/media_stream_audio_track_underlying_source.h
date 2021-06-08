@@ -9,6 +9,7 @@
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
+#include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -52,12 +53,16 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void StopFrameDelivery() override;
 
   void DisconnectFromTrack();
+  void OnSourceTransferStarted(
+      scoped_refptr<base::SequencedTaskRunner> transferred_runner,
+      TransferredAudioDataQueueUnderlyingSource* source);
 
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.
   const Member<ScriptWrappable> media_stream_track_processor_;
 
   Member<MediaStreamComponent> track_;
+  bool added_to_track_ = false;
 
   media::AudioParameters audio_parameters_;
 

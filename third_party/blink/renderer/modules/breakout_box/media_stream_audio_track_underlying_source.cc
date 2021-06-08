@@ -6,22 +6,13 @@
 
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
-
-namespace {
-class PlaceholderTransferringOptimizer
-    : public ReadableStreamTransferringOptimizer {
-  UnderlyingSourceBase* PerformInProcessOptimization(
-      ScriptState* script_state) override {
-    RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudioWorker);
-    return nullptr;
-  }
-};
-}  // namespace
 
 MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     ScriptState* script_state,
@@ -41,7 +32,11 @@ bool MediaStreamAudioTrackUnderlyingSource::StartFrameDelivery() {
   if (!audio_track)
     return false;
 
+  if (added_to_track_)
+    return true;
+
   WebMediaStreamAudioSink::AddToAudioTrack(this, WebMediaStreamTrack(track_));
+  added_to_track_ = true;
   return true;
 }
 
@@ -52,7 +47,7 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(this,
                                                 WebMediaStreamTrack(track_));
-
+  added_to_track_ = false;
   track_.Clear();
 }
 
@@ -92,7 +87,20 @@ void MediaStreamAudioTrackUnderlyingSource::OnSetFormat(
 
 std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamAudioTrackUnderlyingSource::GetTransferringOptimizer() {
-  return std::make_unique<PlaceholderTransferringOptimizer>();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<AudioDataQueueTransferOptimizer>(
+      this, GetRealmRunner(), MaxQueueSize(),
+      CrossThreadBindOnce(
+          &MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted,
+          WrapCrossThreadWeakPersistent(this)));
+}
+
+void MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted(
+    scoped_refptr<base::SequencedTaskRunner> transferred_runner,
+    TransferredAudioDataQueueUnderlyingSource* source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TransferSource(source);
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudioWorker);
 }
 
 }  // namespace blink
