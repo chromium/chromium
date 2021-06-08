@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/js_compile.gni")
+
 source_set("reading_list") {
   sources = [
     "reading_list_coordinator.h",
@@ -77,6 +79,21 @@ source_set("reading_list") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("reading_list_javascript_feature") {
+  sources = [
+    "reading_list_javascript_feature.h",
+    "reading_list_javascript_feature.mm",
+  ]
+  deps = [
+    ":distiller_js",
+    "//base",
+    "//components/dom_distiller/core",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging:js_messaging",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("features") {
   sources = [
     "reading_list_features.h",
@@ -104,6 +121,13 @@ source_set("reading_list_constants") {
     "reading_list_constants.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("distiller_js") {
+  visibility = [ ":reading_list_javascript_feature" ]
+
+  closure_entry_point = "__crWeb.readingListDOM"
+  sources = [ "resources/dom_distiller.js" ]
 }
 
 source_set("reading_list_ui") {
