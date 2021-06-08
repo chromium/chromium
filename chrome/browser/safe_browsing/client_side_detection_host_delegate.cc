@@ -93,6 +93,8 @@ void ClientSideDetectionHostDelegate::AddReferrerChain(
           kCSDAttributionUserGestureLimitForExtendedReporting,
           verdict->mutable_referrer_chain());
 
+  UMA_HISTOGRAM_COUNTS_100("SafeBrowsing.ReferrerURLChainSize.CSDAttribution",
+                           verdict->referrer_chain().size());
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.ReferrerAttributionResult.CSDAttribution", result,
       SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
