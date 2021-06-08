@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/cpp/origin_quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -27,7 +27,7 @@ class DatabaseTracker;
 //
 // This interface is used on the IO thread by the quota manager.
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
-    : public mojom::QuotaClient {
+    : public OriginQuotaClient {
  public:
   explicit DatabaseQuotaClient(DatabaseTracker& tracker);
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
 
   ~DatabaseQuotaClient() override;
 
-  // QuotaClient method overrides
+  // OriginQuotaClient method overrides.
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;
