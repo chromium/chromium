@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -38,6 +39,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -76,6 +78,19 @@ public class ShareHelper {
 
     /** If non-null, will be used instead of the real activity. */
     private static FakeIntentReceiver sFakeIntentReceiverForTesting;
+
+    private static final String ANY_SHARE_HISTOGRAM_NAME = "Sharing.AnyShareStarted";
+
+    // These values are recorded as histogram values. Entries should not be
+    // renumbered and numeric values should never be reused.
+    @IntDef({ShareSourceAndroid.ANDROID_SHARE_SHEET, ShareSourceAndroid.CHROME_SHARE_SHEET,
+            ShareSourceAndroid.DIRECT_SHARE})
+    public @interface ShareSourceAndroid {
+        int ANDROID_SHARE_SHEET = 0;
+        int CHROME_SHARE_SHEET = 1;
+        int DIRECT_SHARE = 2;
+        int COUNT = 3;
+    };
 
     protected ShareHelper() {}
 
@@ -304,9 +319,11 @@ public class ShareHelper {
     public static void shareWithUi(ShareParams params) {
         if (TargetChosenReceiver.isSupported()) {
             // On LMR1+ open system share sheet.
+            recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
             shareWithSystemSheet(params);
         } else {
             // On L and below open custom share dialog.
+            recordShareSource(ShareSourceAndroid.CHROME_SHARE_SHEET);
             showCompatShareDialog(params);
         }
     }
@@ -403,5 +420,14 @@ public class ShareHelper {
             // Could not find the icon. loadIcon call below will return the default app icon.
         }
         return info.loadIcon(manager);
+    }
+
+    /**
+     * Log that a share happened through some means other than ShareHelper.
+     * @param source The share source.
+     */
+    public static void recordShareSource(int source) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);
     }
 }

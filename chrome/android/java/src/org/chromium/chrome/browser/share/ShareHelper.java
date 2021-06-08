@@ -66,6 +66,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     public static void shareDirectly(
             @NonNull ShareParams params, @NonNull ComponentName component) {
+        recordShareSource(ShareSourceAndroid.DIRECT_SHARE);
         Intent intent = getShareLinkIntent(params);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
         intent.setComponent(component);
