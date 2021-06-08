@@ -14,6 +14,9 @@
     },
     "oauth_account_manager_origin_url": {
       "url": "https://oauthaccountmanager.exampleapis.com"
+    },
+    "account_capabilities_origin_url": {
+      "url": "https://accountcapabilities.exampleapis.com"
     }
   }
 }

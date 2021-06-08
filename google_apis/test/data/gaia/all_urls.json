@@ -16,7 +16,10 @@
       "url": "https://googleapis.will-be-overridden.com"
     },
     "oauth_account_manager_origin_url": {
-      "url": "https://oauthaccountmanager.will-be-overriden.com"
+      "url": "https://oauthaccountmanager.will-be-overridden.com"
+    },
+    "account_capabilities_origin_url": {
+      "url": "https://accountcapabilities.will-be-overridden.com"
     },
     "captcha_base_url": {
       "url": "http://accounts.example.com/"
@@ -95,6 +98,9 @@
     },
     "reauth_url": {
       "url": "https://accounts.example.com/embedded/xreauth/chrome"
+    },
+    "account_capabilities_url": {
+      "url": "https://accountcapabilities.exampleapis.com/v1/capabilities"
     },
     "get_check_connection_info_url": {
       "url": "https://accounts.example.com/GetCheckConnectionInfo"

@@ -28,6 +28,8 @@ const char kDefaultGaiaUrl[] = "https://accounts.google.com";
 const char kDefaultGoogleApisBaseUrl[] = "https://www.googleapis.com";
 const char kDefaultOAuthAccountManagerBaseUrl[] =
     "https://oauthaccountmanager.googleapis.com";
+const char kDefaultAccountCapabilitiesBaseUrl[] =
+    "https://accountcapabilities-pa.googleapis.com";
 
 // API calls from accounts.google.com
 const char kClientLoginUrlSuffix[] = "ClientLogin";
@@ -84,6 +86,10 @@ const char kReAuthApiUrlSuffix[] = "reauth/v1beta/users/";
 
 // API calls from oauthaccountmanager.googleapis.com
 const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
+
+// API calls from accountcapabilities-pa.googleapis.com
+const char kAccountCapabilitiesBatchGetUrlSuffix[] =
+    "v1/accountcapabilities:batchGet";
 
 void GetSwitchValueWithDefault(base::StringPiece switch_value,
                                base::StringPiece default_value,
@@ -254,6 +260,10 @@ const GURL& GaiaUrls::reauth_url() const {
   return reauth_url_;
 }
 
+const GURL& GaiaUrls::account_capabilities_url() const {
+  return account_capabilities_url_;
+}
+
 const std::string& GaiaUrls::oauth2_chrome_client_id() const {
   return oauth2_chrome_client_id_;
 }
@@ -325,6 +335,9 @@ void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&oauth_account_manager_origin_url_,
                          switches::kOAuthAccountManagerUrl,
                          kDefaultOAuthAccountManagerBaseUrl);
+  if (!account_capabilities_origin_url_.is_valid()) {
+    account_capabilities_origin_url_ = GURL(kDefaultAccountCapabilitiesBaseUrl);
+  }
   if (!secure_google_url_.is_valid()) {
     url::Replacements<char> scheme_replacement;
     scheme_replacement.SetScheme(url::kHttpsScheme,
@@ -407,6 +420,11 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&oauth2_issue_token_url_,
                       oauth_account_manager_origin_url_,
                       kOAuth2IssueTokenUrlSuffix);
+
+  // URLs from |account_capabilities_origin_url_|.
+  ResolveURLIfInvalid(&account_capabilities_url_,
+                      account_capabilities_origin_url_,
+                      kAccountCapabilitiesBatchGetUrlSuffix);
 }
 
 void GaiaUrls::InitializeFromConfig() {
@@ -420,6 +438,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(lso_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(captcha_base_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(client_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_login_url));
@@ -449,6 +468,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(add_account_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(get_check_connection_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_url));
