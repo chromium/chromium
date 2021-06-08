@@ -243,7 +243,6 @@ public class WebViewLayoutTest {
         }
     }
 
-    @DisabledTest(message = "crbug.com/929129")
     @Test
     @MediumTest
     public void testRequestMIDIAccess() throws Exception {
