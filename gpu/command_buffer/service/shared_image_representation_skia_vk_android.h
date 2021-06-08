@@ -67,6 +67,8 @@ class SharedImageRepresentationSkiaVkAndroid
                    std::vector<GrBackendSemaphore>* end_semaphores,
                    base::ScopedFD init_read_fence);
   void EndAccess(bool readonly);
+  std::unique_ptr<GrBackendSurfaceMutableState> GetEndAccessState();
+
   VkDevice vk_device();
   VulkanImplementation* vk_implementation();
   VkPhysicalDevice vk_phy_device();

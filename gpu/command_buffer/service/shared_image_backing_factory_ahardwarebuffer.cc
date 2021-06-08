@@ -399,8 +399,14 @@ SharedImageBackingAHB::ProduceSkia(
   // Check whether we are in Vulkan mode OR GL mode and accordingly create
   // Skia representation.
   if (context_state->GrContextIsVulkan()) {
+    uint32_t queue_family = VK_QUEUE_FAMILY_EXTERNAL;
+    if (usage() & SHARED_IMAGE_USAGE_SCANOUT) {
+      // Any Android API that consume or produce buffers (e.g SurfaceControl)
+      // requires a foreign queue.
+      queue_family = VK_QUEUE_FAMILY_FOREIGN_EXT;
+    }
     auto vulkan_image = CreateVkImageFromAhbHandle(
-        GetAhbHandle(), context_state.get(), size(), format());
+        GetAhbHandle(), context_state.get(), size(), format(), queue_family);
 
     if (!vulkan_image)
       return nullptr;

@@ -17,7 +17,8 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    uint32_t queue_family_index) {
   NOTIMPLEMENTED();
   return false;
 }
