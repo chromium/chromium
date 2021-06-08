@@ -91,7 +91,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2021-10-04">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2021-12-05">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -160,7 +160,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.ConfigureStreamsLatency" units="microseconds"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -183,7 +183,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.Facing" enum="ChromeOSCameraFacing"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Camera.Jpeg.Latency" units="microseconds"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes
      name="ChromeOS.Camera.JpegProcessMethod" and
      name="ChromeOS.Camera.JpegProcessType" -->
@@ -227,7 +227,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.OpenDeviceClientType"
-    enum="ChromeOSCameraClientType" expires_after="2021-10-01">
+    enum="ChromeOSCameraClientType" expires_after="2021-12-05">
   <owner>lnishan@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -237,7 +237,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.OpenDeviceLatency" units="microseconds"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -716,7 +716,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdate"
-    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2021-10-04">
+    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2021-12-05">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@google.com</owner>
   <summary>
@@ -726,7 +726,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -746,7 +746,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.MigrationTime" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -1062,7 +1062,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
-    enum="BooleanToggled" expires_after="2021-09-30">
+    enum="BooleanToggled" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1093,7 +1093,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2021-09-30">
+    enum="TouchpadSensitivity" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1137,7 +1137,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.Interaction"
-    enum="SettingsLanguagesPageInteraction" expires_after="2021-10-04">
+    enum="SettingsLanguagesPageInteraction" expires_after="2021-12-05">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1147,7 +1147,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.OfferToTranslateCheckbox"
-    enum="BooleanChecked" expires_after="2021-10-04">
+    enum="BooleanChecked" expires_after="2021-12-05">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1157,7 +1157,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.SupportPageVisits"
-    enum="SettingsLanguagesSupportPage" expires_after="2021-10-04">
+    enum="SettingsLanguagesSupportPage" expires_after="2021-12-05">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1166,7 +1166,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
-    enum="BooleanToggled" expires_after="2021-10-04">
+    enum="BooleanToggled" expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
 
   <owner>myy@chromium.org</owner>
@@ -1199,7 +1199,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumCharsOfQueries" units="characters"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1237,7 +1237,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
-    expires_after="2021-10-01">
+    expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1303,7 +1303,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2021-10-01">
+    enum="OsSettingSearchRequestTypes" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1328,7 +1328,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2021-10-01">
+    enum="OsSettingsSection" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1348,7 +1348,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
-    enum="OsSettingsSubpage" expires_after="2021-10-01">
+    enum="OsSettingsSubpage" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1358,7 +1358,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2021-10-01">
+    enum="OsSettingsSearchResultType" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1392,7 +1392,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
-    enum="OsSettingSearchBoxUserAction" expires_after="2021-10-01">
+    enum="OsSettingSearchBoxUserAction" expires_after="2021-12-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>

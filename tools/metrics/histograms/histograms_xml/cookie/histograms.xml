@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Count2" units="units" expires_after="2021-10-04">
+<histogram name="Cookie.Count2" units="units" expires_after="2021-12-05">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -304,7 +304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.NumDomainPurgedKeys" units="keys"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
   <owner>chlily@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -317,7 +317,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.NumKeys" units="keys" expires_after="2021-10-04">
+<histogram name="Cookie.NumKeys" units="keys" expires_after="2021-12-05">
   <owner>chlily@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>

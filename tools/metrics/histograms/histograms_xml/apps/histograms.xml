@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -690,7 +690,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Overall" enum="AppListUserEvent"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -718,7 +718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon" enum="AppListSearchResult"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -735,7 +735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression"
-    enum="AppListSearchResult" expires_after="2021-10-04">
+    enum="AppListSearchResult" expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -758,7 +758,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch" enum="AppListSearchResult"
-    expires_after="2021-10-04">
+    expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -1261,7 +1261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchBoxActivated"
-    enum="SearchBoxActivationSource" expires_after="2021-10-04">
+    enum="SearchBoxActivationSource" expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -2258,7 +2258,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.StateTransition.Drag.PresentationTime"
-    units="ms" expires_after="2021-09-30">
+    units="ms" expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -2271,7 +2271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.StateTransition.Drag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2021-09-30">
+    expires_after="2021-12-05">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
