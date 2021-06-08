@@ -105,6 +105,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion"
+    units="bookmarks" expires_after="2021-10-25">
+  <owner>rushans@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the number of unsynced entities (bookmarks or folders) as a result
+    of the initial merge for bookmarks. This includes local creations (i.e. did
+    not match any entity in the server) as well as local modifications (e.g.
+    pending reupload). Recorded upon completion of the initial merge procedure.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarkModelMerger.ValidInputUpdates" units="bookmarks"
     expires_after="2021-10-25">
   <owner>rushans@google.com</owner>

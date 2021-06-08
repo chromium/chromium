@@ -344,6 +344,8 @@ TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
 
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       Merge(std::move(updates), bookmark_model.get());
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(3u));
@@ -395,6 +397,10 @@ TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
               Eq(base::ASCIIToUTF16(kUrl4Title)));
   EXPECT_THAT(bookmark_bar_node->children()[2]->children()[1]->url(),
               Eq(GURL(kUrl4)));
+
+  EXPECT_THAT(histogram_tester.GetTotalSum(
+                  "Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion"),
+              Eq(4));
 
   // Verify the tracker contents.
   EXPECT_THAT(tracker->TrackedEntitiesCountForTest(), Eq(11U));
@@ -2126,6 +2132,7 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
       /*is_folder=*/true, /*unique_position=*/posFolder2,
       base::GUID::GenerateRandomV4()));
 
+  base::HistogramTester histogram_tester;
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       Merge(std::move(updates), bookmark_model.get());
 
@@ -2134,6 +2141,10 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
 
   EXPECT_TRUE(tracker->GetEntityForSyncId(kFolder1Id)->IsUnsynced());
   EXPECT_FALSE(tracker->GetEntityForSyncId(kFolder2Id)->IsUnsynced());
+
+  EXPECT_THAT(histogram_tester.GetTotalSum(
+                  "Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion"),
+              Eq(1));
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveDifferentTypeDuplicatesByGUID) {
