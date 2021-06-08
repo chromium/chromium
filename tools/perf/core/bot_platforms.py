@@ -470,8 +470,10 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop')])
-_LACROS_EVE_BENCHMARK_CONFIGS = PerfSuite(['loading.desktop'
-                                           ]).Abridge(['loading.desktop'])
+_LACROS_EVE_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
@@ -600,7 +602,7 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
-                               _LACROS_EVE_BENCHMARK_CONFIGS, 1, 'chromeos')
+                               _LACROS_EVE_BENCHMARK_CONFIGS, 10, 'chromeos')
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(

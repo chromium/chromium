@@ -1198,7 +1198,7 @@
               "device_type": "eve",
               "gpu": null,
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chrome.tests.perf"
             }
           ],
           "expiration": 7200,
@@ -1206,7 +1206,7 @@
           "ignore_task_failure": false,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 1
+          "shards": 10
         },
         "trigger_script": {
           "args": [
