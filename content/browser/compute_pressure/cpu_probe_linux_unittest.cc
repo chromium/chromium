@@ -17,11 +17,25 @@
 
 namespace content {
 
+namespace {
+
+int64_t CpuIdBaseFrequencyInKhz() {
+  base::CPU cpu;
+  int64_t frequency = ParseBaseFrequencyFromCpuid(cpu.cpu_brand());
+
+  constexpr int kKhz = 1000;
+  // Preserve failure, which is reported as -1.
+  return (frequency > 0) ? frequency / kKhz : frequency;
+}
+
+}  // namespace
+
 class CpuProbeLinuxTest : public testing::Test {
  public:
-  CpuProbeLinuxTest()
-      : cpuid_base_frequency_(
-            ParseBaseFrequencyFromCpuid(base::CPU().cpu_brand())) {}
+  // Frequency value passed to WriteFakeCpufreqCore() meaning "delete the file".
+  static constexpr int64_t kDeleteFakeFile = -1;
+
+  CpuProbeLinuxTest() : cpuid_base_frequency_khz_(CpuIdBaseFrequencyInKhz()) {}
 
   ~CpuProbeLinuxTest() override = default;
 
@@ -74,15 +88,19 @@ class CpuProbeLinuxTest : public testing::Test {
   }
 
   bool WriteFakeCpufreqCore(int core_id,
-                            int64_t min_frequency,
-                            int64_t max_frequency,
-                            int64_t base_frequency,
-                            int64_t current_frequency) WARN_UNUSED_RESULT {
+                            int64_t min_frequency_khz,
+                            int64_t max_frequency_khz,
+                            int64_t base_frequency_khz,
+                            int64_t current_frequency_khz) WARN_UNUSED_RESULT {
     DCHECK_GE(core_id, 0);
+    DCHECK_GE(min_frequency_khz, kDeleteFakeFile);
+    DCHECK_GE(max_frequency_khz, kDeleteFakeFile);
+    DCHECK_GE(base_frequency_khz, kDeleteFakeFile);
+    DCHECK_GE(current_frequency_khz, kDeleteFakeFile);
 
-    if (min_frequency >= 0) {
+    if (min_frequency_khz >= 0) {
       if (!WriteFakeCpufreqFile(core_id, "cpuinfo_min_freq",
-                                base::NumberToString(min_frequency))) {
+                                base::NumberToString(min_frequency_khz))) {
         return false;
       }
     } else {
@@ -90,9 +108,9 @@ class CpuProbeLinuxTest : public testing::Test {
         return false;
     }
 
-    if (max_frequency >= 0) {
+    if (max_frequency_khz >= 0) {
       if (!WriteFakeCpufreqFile(core_id, "cpuinfo_max_freq",
-                                base::NumberToString(max_frequency))) {
+                                base::NumberToString(max_frequency_khz))) {
         return false;
       }
     } else {
@@ -100,9 +118,9 @@ class CpuProbeLinuxTest : public testing::Test {
         return false;
     }
 
-    if (base_frequency >= 0) {
+    if (base_frequency_khz >= 0) {
       if (!WriteFakeCpufreqFile(core_id, "base_frequency",
-                                base::NumberToString(base_frequency))) {
+                                base::NumberToString(base_frequency_khz))) {
         return false;
       }
     } else {
@@ -110,9 +128,9 @@ class CpuProbeLinuxTest : public testing::Test {
         return false;
     }
 
-    if (current_frequency >= 0) {
+    if (current_frequency_khz >= 0) {
       if (!WriteFakeCpufreqFile(core_id, "scaling_cur_freq",
-                                base::NumberToString(current_frequency))) {
+                                base::NumberToString(current_frequency_khz))) {
         return false;
       }
     } else {
@@ -124,7 +142,7 @@ class CpuProbeLinuxTest : public testing::Test {
   }
 
  protected:
-  const int64_t cpuid_base_frequency_;
+  const int64_t cpuid_base_frequency_khz_;
   base::ScopedTempDir temp_dir_;
   base::FilePath fake_stat_path_;
   base::FilePath fake_cpufreq_root_path_;
@@ -158,8 +176,8 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
   probe_->Update();
 
   ASSERT_TRUE(WriteFakeStat(R"(
@@ -173,8 +191,8 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'400'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 3'400'000));
   probe_->Update();
 
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.25);
@@ -194,10 +212,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(1, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
   probe_->Update();
 
   ASSERT_TRUE(WriteFakeStat(R"(
@@ -212,10 +230,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'400'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 3'400'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(1, 1'000'000, 3'800'000, 3'000'000, 3'000'000));
   probe_->Update();
 
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.375);
@@ -235,10 +253,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000'000, 3'000'000, 1'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(1, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
   probe_->Update();
 
   ASSERT_TRUE(WriteFakeStat(R"(
@@ -253,9 +271,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'400'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, -1, -1, -1, -1));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 3'400'000));
+  ASSERT_TRUE(WriteFakeCpufreqCore(1, kDeleteFakeFile, kDeleteFakeFile,
+                                   kDeleteFakeFile, kDeleteFakeFile));
   probe_->Update();
 
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.375);
@@ -275,10 +294,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 1'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(1, 1'000'000, 3'800'000, 3'000'000, 1'000'000));
   probe_->Update();
 
   ASSERT_TRUE(WriteFakeStat(R"(
@@ -292,10 +311,10 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  ASSERT_TRUE(WriteFakeCpufreqCore(0, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'400'000'000));
-  ASSERT_TRUE(WriteFakeCpufreqCore(1, 1'000'000'000, 3'800'000'000,
-                                   3'000'000'000, 3'000'000'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(0, 1'000'000, 3'800'000, 3'000'000, 3'400'000));
+  ASSERT_TRUE(
+      WriteFakeCpufreqCore(1, 1'000'000, 3'800'000, 3'000'000, 3'000'000));
   probe_->Update();
 
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.25);
@@ -315,12 +334,13 @@ procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
 
-  SCOPED_TRACE(cpuid_base_frequency_);
-  if (cpuid_base_frequency_ >= 0) {
+  SCOPED_TRACE(testing::Message()
+               << "CPUID base frequency in kHz: " << cpuid_base_frequency_khz_);
+  if (cpuid_base_frequency_khz_ >= 0) {
     ASSERT_TRUE(WriteFakeCpufreqCore(
-        0, 0, cpuid_base_frequency_ + 1'000'000'000, -1, 0));
+        0, 0, cpuid_base_frequency_khz_ + 1'000'000, kDeleteFakeFile, 0));
   } else {
-    ASSERT_TRUE(WriteFakeCpufreqCore(0, 0, 1'000'000'000, -1, 0));
+    ASSERT_TRUE(WriteFakeCpufreqCore(0, 0, 1'000'000, kDeleteFakeFile, 0));
   }
   probe_->Update();
 
@@ -336,12 +356,13 @@ procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
 
-  if (cpuid_base_frequency_ >= 0) {
-    ASSERT_TRUE(WriteFakeCpufreqCore(0, 0,
-                                     cpuid_base_frequency_ + 1'000'000'000, -1,
-                                     cpuid_base_frequency_ + 250'000'000));
+  if (cpuid_base_frequency_khz_ >= 0) {
+    ASSERT_TRUE(WriteFakeCpufreqCore(
+        0, 0, cpuid_base_frequency_khz_ + 1'000'000, kDeleteFakeFile,
+        cpuid_base_frequency_khz_ + 250'000));
   } else {
-    ASSERT_TRUE(WriteFakeCpufreqCore(0, 0, 1'000'000'000, -1, 250'000'000));
+    ASSERT_TRUE(
+        WriteFakeCpufreqCore(0, 0, 1'000'000'000, kDeleteFakeFile, 250'000));
   }
   probe_->Update();
 
