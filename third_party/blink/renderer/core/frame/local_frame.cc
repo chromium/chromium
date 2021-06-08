@@ -2696,7 +2696,7 @@ bool LocalFrame::SwapIn() {
 }
 
 void LocalFrame::DidActivateForPrerendering() {
-  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
+  DCHECK(features::IsPrerender2Enabled());
   GetLocalFrameHostRemote().DidActivateForPrerendering();
 }
 
@@ -2717,7 +2717,8 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
-  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
+  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled(
+      GetDocument()->GetExecutionContext()));
   evict_cached_session_storage_on_freeze_or_unload_ = true;
 }
 

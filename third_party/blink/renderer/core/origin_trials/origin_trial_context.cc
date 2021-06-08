@@ -456,6 +456,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
       !base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
     return false;
   }
+
+  if (trial_name == "Prerender2")
+    return base::FeatureList::IsEnabled(features::kPrerender2);
+
   return true;
 }
 

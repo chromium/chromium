@@ -178,8 +178,19 @@ const base::FeatureParam<FencedFramesImplementationType>
         &fenced_frame_implementation_types};
 
 // Enable the prerender2. https://crbug.com/1126305.
-const base::Feature kPrerender2{"Prerender2",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+// Note that default enabling this does not enable the Prerender2 features
+// because kSetOnlyIfOverridden is used for setting WebRuntimeFeatures'
+// Prerender2. To enable this feature, we need to force-enable this feature
+// using chrome://flags/#enable-prerender2 or --enable-features=Prerender2
+// command line or a valid Origin Trial token in the page.
+const base::Feature kPrerender2 {
+  "Prerender2",
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);

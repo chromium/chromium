@@ -8098,7 +8098,7 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
 }
 
 void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
-  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
+  DCHECK(features::IsPrerender2Enabled());
 
   // For subframes, this can be called before the navigation commit, and this
   // document may be the initial empty one with `is_prerendering_` being false.
@@ -8123,7 +8123,11 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
 
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
-  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+  // TODO(crbug.com/1215103): Consider showing a warning message on DevTools
+  // when the feature is disabled.
+  if (RuntimeEnabledFeatures::Prerender2Enabled(GetExecutionContext())) {
+    DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+  }
 
   // Step 8.3.5 "For each steps in doc’s post-prerendering activation steps
   // list:"

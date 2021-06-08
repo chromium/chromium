@@ -388,6 +388,10 @@ void WebRuntimeFeatures::EnablePrerender2(bool enable) {
   RuntimeEnabledFeatures::SetPrerender2Enabled(enable);
 }
 
+bool WebRuntimeFeatures::IsPrerender2Enabled() {
+  return RuntimeEnabledFeatures::Prerender2EnabledByRuntimeFlag();
+}
+
 void WebRuntimeFeatures::EnableV8IdleTasks(bool enable) {
   RuntimeEnabledFeatures::SetV8IdleTasksEnabled(enable);
 }

@@ -25,7 +25,7 @@ class PrerenderHostRegistryObserverImpl;
 // for a given URL.
 class PrerenderHostRegistryObserver {
  public:
-  explicit PrerenderHostRegistryObserver(content::WebContents& web_contents);
+  explicit PrerenderHostRegistryObserver(WebContents& web_contents);
   ~PrerenderHostRegistryObserver();
   PrerenderHostRegistryObserver(const PrerenderHostRegistryObserver&) = delete;
   PrerenderHostRegistryObserver& operator=(
@@ -51,11 +51,11 @@ class PrerenderHostObserver {
  public:
   // Begins observing the given PrerenderHost immediately. DCHECKs if |host_id|
   // does not identify a live PrerenderHost.
-  PrerenderHostObserver(content::WebContents& web_contents, int host_id);
+  PrerenderHostObserver(WebContents& web_contents, int host_id);
 
   // Will start observing a PrerenderHost for |gurl| as soon as it is
   // triggered.
-  PrerenderHostObserver(content::WebContents& web_contents, const GURL& gurl);
+  PrerenderHostObserver(WebContents& web_contents, const GURL& gurl);
 
   ~PrerenderHostObserver();
   PrerenderHostObserver(const PrerenderHostObserver&) = delete;
@@ -79,7 +79,7 @@ class PrerenderHostObserver {
 // Browser tests can use this class to more conveniently leverage prerendering.
 class PrerenderTestHelper {
  public:
-  explicit PrerenderTestHelper(const content::WebContents::Getter& fn);
+  explicit PrerenderTestHelper(const WebContents::Getter& fn);
   ~PrerenderTestHelper();
   PrerenderTestHelper(const PrerenderTestHelper&) = delete;
   PrerenderTestHelper& operator=(const PrerenderTestHelper&) = delete;
@@ -96,6 +96,8 @@ class PrerenderTestHelper {
   // when the load fails (e.g. because it was blocked by a NavigationThrottle,
   // or the WebContents is destroyed). If the prerender doesn't yet exist, this
   // will wait until it is triggered.
+  static void WaitForPrerenderLoadCompletion(WebContents& web_contents,
+                                             const GURL& gurl);
   void WaitForPrerenderLoadCompletion(const GURL& gurl);
   void WaitForPrerenderLoadCompletion(int host_id);
 
@@ -121,6 +123,7 @@ class PrerenderTestHelper {
   // WebContents to be destroyed during activation and results in crashes.
   // See https://crbug.com/1154501 for the MPArch migration.
   // TODO(crbug.com/1198960): remove this once the migration is complete.
+  static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
 
   // Confirms that, internally, appropriate subframes report that they are
@@ -138,7 +141,7 @@ class PrerenderTestHelper {
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);
 
-  content::WebContents* GetWebContents();
+  WebContents* GetWebContents();
 
   // Counts of requests sent to the server. Keyed by path (not by full URL)
   // because the host part of the requests is translated ("a.test" to
@@ -148,7 +151,7 @@ class PrerenderTestHelper {
   base::test::ScopedFeatureList feature_list_;
   base::OnceClosure monitor_callback_ GUARDED_BY(lock_);
   base::Lock lock_;
-  content::WebContents::Getter get_web_contents_fn_;
+  WebContents::Getter get_web_contents_fn_;
 };
 
 }  // namespace test
