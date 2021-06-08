@@ -488,6 +488,14 @@ class _TextNode(CodeNode):
         CodeNode.__init__(self, template_text=template_text)
 
 
+def FormatNode(format_string, *args, **argv):
+    """
+    Represents a template text node, which is produced by applying
+    codegen_format.format_template to the arguments.
+    """
+    return TextNode(format_template(format_string, *args, **argv))
+
+
 class CompositeNode(CodeNode):
     """
     Represents a composition of multiple code nodes.  Composition will be done

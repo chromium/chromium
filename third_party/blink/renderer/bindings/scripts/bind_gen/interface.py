@@ -15,6 +15,7 @@ from .blink_v8_bridge import make_v8_to_blink_value_variadic
 from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
+from .code_node import FormatNode
 from .code_node import ListNode
 from .code_node import SequenceNode
 from .code_node import SymbolDefinitionNode
@@ -299,7 +300,7 @@ def bind_callback_local_vars(code_node, cg_context):
 
     S = SymbolNode
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     local_vars = []
     template_vars = {}
@@ -594,7 +595,7 @@ def _make_reflect_process_keyword_state(cg_context):
     assert cg_context.attribute_get or cg_context.attribute_set
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     if not cg_context.attribute_get:
         return None
@@ -755,7 +756,7 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
                 and all(isinstance(arg, str) for arg in overriding_args)))
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     def create_definition(symbol_node):
         api_calls = []  # Pairs of (num_of_args, api_call_text)
@@ -858,7 +859,7 @@ def make_check_argument_length(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     if cg_context.v8_callback_type != CodeGenContext.V8_FUNCTION_CALLBACK:
         return None
@@ -1254,7 +1255,7 @@ def make_overload_dispatcher(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     overload_group = cg_context.property_
     items = overload_group.effective_overload_set()
@@ -1602,7 +1603,7 @@ def make_v8_set_return_value(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     if cg_context.does_override_idl_return_type:
         return T("bindings::V8SetReturnValue(${info}, ${return_value});")
@@ -2274,7 +2275,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
 
     S = SymbolNode
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     function_like = cg_context.function_like
 
@@ -2409,7 +2410,7 @@ def make_no_alloc_direct_call_for_testing_call(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     if "NoAllocDirectCall" not in cg_context.operation.extended_attributes:
         return None
@@ -4932,7 +4933,7 @@ def _make_operation_registration_table(table_name, operation_entries):
         for entry in operation_entries)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     no_alloc_direct_call_count = len(
         list(
@@ -6067,7 +6068,7 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
 
     assert isinstance(cg_context, CodeGenContext)
 
-    F = lambda *args, **kwargs: TextNode(_format(*args, **kwargs))
+    F = FormatNode
 
     func_decls = ListNode()
     func_defs = ListNode()
@@ -6518,8 +6519,7 @@ def make_cross_component_init(
     assert isinstance(has_context_independent_props, bool)
     assert isinstance(has_context_dependent_props, bool)
 
-    T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     def filter_four_trampolines(nodes):
         assert len(nodes) == 4
@@ -6592,7 +6592,7 @@ def make_wrapper_type_info(cg_context, function_name,
     assert function_name == "GetWrapperTypeInfo"
     assert isinstance(has_context_dependent_props, bool)
 
-    F = lambda *args, **kwargs: TextNode(_format(*args, **kwargs))
+    F = FormatNode
 
     func_def = CxxFuncDefNode(
         name=function_name,

@@ -5,6 +5,7 @@
 import web_idl
 
 from . import name_style
+from .code_node import FormatNode
 from .code_node import Likeliness
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
@@ -412,7 +413,7 @@ def make_blink_to_v8_value(
     assert isinstance(creation_context_script_state, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     def create_definition(symbol_node):
         binds = {
@@ -678,7 +679,7 @@ def make_v8_to_blink_value(blink_var_name,
     assert isinstance(error_exit_return_statement, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     # Use of fast path is a trade-off between speed and binary size, so apply
     # it only when it's effective.  This hack is most significant on Android.

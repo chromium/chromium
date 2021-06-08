@@ -12,6 +12,7 @@ from .blink_v8_bridge import make_default_value_expr
 from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import native_value_tag
 from .code_node import EmptyNode
+from .code_node import FormatNode
 from .code_node import ListNode
 from .code_node import SequenceNode
 from .code_node import SymbolNode
@@ -201,8 +202,6 @@ def bind_local_vars(code_node, cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     S = SymbolNode
-    T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
 
     local_vars = []
 
@@ -390,7 +389,7 @@ def make_accessor_functions(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     def make_check_assigned_value(member):
         idl_type = member.idl_type.unwrap(typedef=True)
@@ -628,8 +627,7 @@ def make_backward_compatible_accessors(cg_context):
     # TODO(crbug.com/1070871): Remove the accessors introduced just to be
     # backward compatible.
 
-    T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     decls = ListNode()
 
@@ -718,7 +716,7 @@ def make_blink_to_v8_function(cg_context):
 
     S = SymbolNode
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     func_decl = CxxFuncDeclNode(name="FillV8ObjectWithMembers",
                                 arg_decls=[
@@ -798,7 +796,7 @@ def make_v8_to_blink_function(cg_context):
 
     S = SymbolNode
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     func_decl = CxxFuncDeclNode(name="FillMembersFromV8Object",
                                 arg_decls=[
@@ -920,8 +918,7 @@ def make_v8_own_member_names_function(cg_context):
 def make_member_vars_def(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     presence_vars = ListNode([
         F("bool {} = false;", member.presence_var)

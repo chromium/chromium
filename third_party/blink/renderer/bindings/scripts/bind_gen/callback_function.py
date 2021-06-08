@@ -10,6 +10,7 @@ from .blink_v8_bridge import blink_type_info
 from .blink_v8_bridge import make_blink_to_v8_value
 from .blink_v8_bridge import native_value_tag
 from .code_node import EmptyNode
+from .code_node import FormatNode
 from .code_node import ListNode
 from .code_node import SequenceNode
 from .code_node import SymbolNode
@@ -163,7 +164,7 @@ def make_callback_invocation_function(cg_context,
     assert isinstance(is_construct_call, bool)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     func_like = cg_context.function_like
     return_type = ("void" if func_like.return_type.unwrap().is_void else
@@ -360,7 +361,7 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     assert isinstance(api_func_name, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     func_like = cg_context.function_like
     if not (func_like.return_type.unwrap().is_void

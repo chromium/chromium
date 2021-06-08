@@ -11,6 +11,7 @@ from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
+from .code_node import FormatNode
 from .code_node import ListNode
 from .code_node import SequenceNode
 from .code_node import SymbolDefinitionNode
@@ -235,7 +236,7 @@ def make_factory_methods(cg_context):
 
     S = SymbolNode
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     func_decl = CxxFuncDeclNode(name="Create",
                                 arg_decls=[
@@ -583,7 +584,7 @@ def make_accessor_functions(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     decls = ListNode()
     defs = ListNode()
