@@ -821,6 +821,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       // content.
       baseline = EDominantBaseline::kAlphabetic;
     } else {
+      // TODO(crbug.com/1033352, crbug.com/785246): the "element" we are
+      // matching against for <use> instances is in the tree we are instantiated
+      // from, but inheritance happens down the instantiated tree, which means
+      // we are walking up the wrong tree below. That is the reason for the null
+      // check for GetComputedStyle() since the tree we are instantiating from
+      // may be display:none.
       const ContainerNode* parent = element;
       while (baseline == EDominantBaseline::kNoChange ||
              baseline == EDominantBaseline::kResetSize) {
