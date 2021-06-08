@@ -16,16 +16,15 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -109,7 +108,7 @@ class TerminationObserver : public content::NotificationObserver {
 
 }  // namespace
 
-class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
+class AutoLaunchedKioskTest : public OobeBaseTest {
  public:
   AutoLaunchedKioskTest()
       : verifier_format_override_(crx_file::VerifierFormat::CRX3) {
@@ -261,8 +260,6 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
       verifier_format_override_;
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
 
-  EmbeddedTestServerSetupMixin embedded_test_server_setup_{
-      &mixin_host_, embedded_test_server()};
   LoginManagerMixin login_manager_{&mixin_host_, {}};
 
   DISALLOW_COPY_AND_ASSIGN(AutoLaunchedKioskTest);
@@ -272,12 +269,6 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, PRE_CrashRestore) {
   // Verify that Chrome hasn't already exited, e.g. in order to apply user
   // session flags.
   ASSERT_FALSE(termination_observer_->terminated());
-
-  // Set up default network connections, so tests think the device is online.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
 
   // Check that policy flags have not been lost.
   ExpectCommandLineHasDefaultPolicySwitches(
@@ -322,12 +313,6 @@ class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskEphemeralUsersTest, Launches) {
-  // Set up default network connections, so tests think the device is online.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
-
   // Check that policy flags have not been lost.
   ExpectCommandLineHasDefaultPolicySwitches(
       *base::CommandLine::ForCurrentProcess());
@@ -362,12 +347,6 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
       chrome::NOTIFICATION_APP_TERMINATING,
       content::NotificationService::AllSources());
 
-  // Set up default network connections, so tests think the device is online.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
-
   // App launch should be canceled, and user session stopped.
   termination_waiter.Wait();
 
@@ -395,12 +374,6 @@ class ManagementApiKioskTest : public AutoLaunchedKioskTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementApiKioskTest, ManagementApi) {
-  // Set up default network connections, so tests think the device is online.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
-
   // The tests expects to recieve two test result messages:
   //  * result for tests run by the secondary kiosk app.
   //  * result for tests run by the primary kiosk app.
