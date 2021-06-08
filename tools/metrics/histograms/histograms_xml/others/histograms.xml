@@ -5895,7 +5895,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Favicon.OnDemandIconExistsInDb" units="units"
-    expires_after="2021-07-19">
+    expires_after="2021-06-08">
+  <obsolete>
+    Removed in 06/2021.
+  </obsolete>
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
