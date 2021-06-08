@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include <algorithm>
+#include <bitset>
 #include <cmath>
 #include <memory>
 #include <unordered_map>
@@ -5298,10 +5299,14 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // TODO(carlscab): We should no longer get into this branch thanks to
     // https://crrev.com/c/2563674. Lets keep this old code for now just in case
     // and replace with a CHECK once we are confident that is the case.
+    SCOPED_CRASH_KEY_NUMBER("BFCache", "EvictAfterRestoreReasons",
+                            can_store.not_stored_reasons().to_ullong());
     base::debug::DumpWithoutCrashing();
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
             kByJavaScript);
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugBackForwardCacheEvictRestoreRace);
 
     // A document is evicted from the BackForwardCache, but it has already been
     // restored. The current document should be reloaded, because it is not

@@ -37,9 +37,13 @@ enum class DebugScenario {
   // browser-side VS 2) the renderer-side.
   kDebugBrowserVsRendererOriginToCommit = 4,
 
+  // Evict-Restore race in Back Forward Cache - Renderer requested a frame be
+  // evicted from cache, but the frame is no longer in the cache.
+  kDebugBackForwardCacheEvictRestoreRace = 5,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugBrowserVsRendererOriginToCommit
+  kMaxValue = kDebugBackForwardCacheEvictRestoreRace
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be
