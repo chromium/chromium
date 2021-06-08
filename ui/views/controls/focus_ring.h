@@ -93,6 +93,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   FocusRing();
 
   SkPath GetPath() const;
+  SkRRect GetRingRoundRect() const;
 
   void RefreshLayer();
 

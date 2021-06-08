@@ -190,17 +190,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  cc::PaintFlags paint;
-  paint.setAntiAlias(true);
-  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
-  paint.setStyle(cc::PaintFlags::kStroke_Style);
-  paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
-
-  const SkPath path = GetPath();
-
-  DCHECK(IsPathUsable(path));
-  DCHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
-            parent()->GetFlipCanvasOnPaintForRTLUI());
+  const SkRRect ring_rect = GetRingRoundRect();
 
   if (should_paint_focus_aura_) {
     cc::PaintFlags flags;
@@ -208,21 +198,42 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     flags.setColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_FocusAuraColor));
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawPath(path, flags);
+
+    canvas->sk_canvas()->drawRRect(ring_rect, flags);
   }
+
+  cc::PaintFlags paint;
+  paint.setAntiAlias(true);
+  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
+  paint.setStyle(cc::PaintFlags::kStroke_Style);
+  paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
+
+  canvas->sk_canvas()->drawRRect(ring_rect, paint);
+}
+
+SkRRect FocusRing::GetRingRoundRect() const {
+  const SkPath path = GetPath();
+
+  DCHECK(IsPathUsable(path));
+  DCHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
+            parent()->GetFlipCanvasOnPaintForRTLUI());
 
   SkRect bounds;
   SkRRect rbounds;
-  if (path.isRect(&bounds)) {
-    canvas->sk_canvas()->drawRRect(RingRectFromPathRect(bounds), paint);
-  } else if (path.isOval(&bounds)) {
+  if (path.isRect(&bounds))
+    return RingRectFromPathRect(bounds);
+
+  if (path.isOval(&bounds)) {
     gfx::RectF rect = gfx::SkRectToRectF(bounds);
     View::ConvertRectToTarget(parent(), this, &rect);
-    canvas->sk_canvas()->drawRRect(SkRRect::MakeOval(gfx::RectFToSkRect(rect)),
-                                   paint);
-  } else if (path.isRRect(&rbounds)) {
-    canvas->sk_canvas()->drawRRect(RingRectFromPathRect(rbounds), paint);
+    return SkRRect::MakeOval(gfx::RectFToSkRect(rect));
   }
+
+  if (path.isRRect(&rbounds))
+    return RingRectFromPathRect(rbounds);
+
+  NOTREACHED();
+  return SkRRect();
 }
 
 void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {
