@@ -405,7 +405,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
               : RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
 
   uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY;
-  if (composited_mode)
+  if (composited_mode && HasPlaceholderCanvas())
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   const CanvasResourceParams resource_params =
