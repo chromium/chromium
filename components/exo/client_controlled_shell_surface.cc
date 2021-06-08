@@ -1173,9 +1173,11 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
 
   if (pending_window_state_ == chromeos::WindowStateType::kPip) {
     if (ash::features::IsPipRoundedCornersEnabled()) {
+      // The host window's transform scales by |1/scale_| but we do not want the
+      // rounded corners scaled that way. So we multiply the radius by |scale_|.
       decorator_ = std::make_unique<ash::RoundedCornerDecorator>(
           window_state->window(), host_window(), host_window()->layer(),
-          ash::kPipRoundedCornerRadius);
+          base::ClampRound(scale_ * ash::kPipRoundedCornerRadius));
     }
   } else {
     decorator_.reset();  // Remove rounded corners.
