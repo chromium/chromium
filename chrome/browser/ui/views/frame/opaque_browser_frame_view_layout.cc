@@ -627,7 +627,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
   int bounding_rect_width =
       web_app_frame_toolbar_->bounds().x() - available_space_leading_x_;
   delegate_->UpdateWindowControlsOverlay(
-      gfx::Rect(x, y, bounding_rect_width, height));
+      host->GetMirroredRect(gfx::Rect(x, y, bounding_rect_width, height)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
