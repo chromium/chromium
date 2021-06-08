@@ -25,11 +25,6 @@
 #define TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION \
   trace_event_internal::HeapProfilerScopedTaskExecutionTracker
 
-// Scoped tracker that tracks the given program counter as a native stack frame
-// in the heap profiler.
-#define TRACE_HEAP_PROFILER_API_SCOPED_WITH_PROGRAM_COUNTER \
-  trace_event_internal::HeapProfilerScopedStackFrame
-
 // Returns the current task context (c-string) tracked by heap profiler. This is
 // useful along with TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION if a async
 // system needs to track client's allocation context across post tasks. Use this
@@ -74,31 +69,6 @@ class HeapProfilerScopedTaskExecutionTracker {
 
  private:
   const char* context_;
-};
-
-class HeapProfilerScopedStackFrame {
- public:
-  inline explicit HeapProfilerScopedStackFrame(const void* program_counter)
-      : program_counter_(program_counter) {
-    using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(AllocationContextTracker::capture_mode() ==
-                 AllocationContextTracker::CaptureMode::MIXED_STACK)) {
-      AllocationContextTracker::GetInstanceForCurrentThread()
-          ->PushNativeStackFrame(program_counter_);
-    }
-  }
-
-  inline ~HeapProfilerScopedStackFrame() {
-    using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(AllocationContextTracker::capture_mode() ==
-                 AllocationContextTracker::CaptureMode::MIXED_STACK)) {
-      AllocationContextTracker::GetInstanceForCurrentThread()
-          ->PopNativeStackFrame(program_counter_);
-    }
-  }
-
- private:
-  const void* const program_counter_;
 };
 
 inline const char* HeapProfilerCurrentTaskContext() {

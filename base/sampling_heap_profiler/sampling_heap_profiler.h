@@ -46,11 +46,6 @@ class BASE_EXPORT SamplingHeapProfiler
     // Name of the thread that made the sampled allocation.
     const char* thread_name = nullptr;
     // Call stack of PC addresses responsible for the allocation.
-    // If AllocationContextTracker::capture_mode() is in PSEUDO or MIXED modes
-    // the frame pointers may point to the name strings instead of PCs. In this
-    // cases all the strings pointers are also reported with |GetStrings| method
-    // of the |SamplingHeapProfiler|. This way they can be distinguished from
-    // the PC pointers.
     std::vector<void*> stack;
 
     // Public for testing.
@@ -115,7 +110,6 @@ class BASE_EXPORT SamplingHeapProfiler
                    const char* context) override;
   void SampleRemoved(void* address) override;
 
-  void CaptureMixedStack(const char* context, Sample* sample);
   void CaptureNativeStack(const char* context, Sample* sample);
   const char* RecordString(const char* string) EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
@@ -125,12 +119,7 @@ class BASE_EXPORT SamplingHeapProfiler
   // Samples of the currently live allocations.
   std::unordered_map<void*, Sample> samples_ GUARDED_BY(mutex_);
 
-  // When CaptureMode::PSEUDO_STACK or CaptureMode::MIXED_STACK is enabled
-  // the call stack contents of samples may contain strings besides
-  // PC addresses.
-  // In this case each string pointer is also added to the |strings_| set.
-  // The set does only contain pointers to static strings that are never
-  // deleted.
+  // Contains pointers to static sample context strings that are never deleted.
   std::unordered_set<const char*> strings_ GUARDED_BY(mutex_);
 
   // Mutex to make |running_sessions_| and Add/Remove samples observer access

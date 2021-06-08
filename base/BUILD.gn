@@ -2225,8 +2225,6 @@ component("base") {
       "trace_event/event_name_filter.cc",
       "trace_event/event_name_filter.h",
       "trace_event/heap_profiler.h",
-      "trace_event/heap_profiler_event_filter.cc",
-      "trace_event/heap_profiler_event_filter.h",
       "trace_event/interned_args_helper.cc",
       "trace_event/interned_args_helper.h",
       "trace_event/log_message.cc",

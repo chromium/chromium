@@ -20,37 +20,20 @@ namespace trace_event {
 // |AllocationContextTracker| which keeps stacks of context in TLS.
 // The tracker is initialized lazily.
 
-// The backtrace in the allocation context is a snapshot of the stack. For now,
-// this is the pseudo stack where frames are created by trace event macros. In
-// the future, we might add the option to use the native call stack. In that
-// case, |Backtrace| and |AllocationContextTracker::GetContextSnapshot| might
-// have different implementations that can be selected by a compile time flag.
+// The backtrace in the allocation context is a snapshot of the native call
+// stack.
 
-// The number of stack frames stored in the backtrace is a trade off between
-// memory used for tracing and accuracy. Measurements done on a prototype
-// revealed that:
-//
-// - In 60 percent of the cases, pseudo stack depth <= 7.
-// - In 87 percent of the cases, pseudo stack depth <= 9.
-// - In 95 percent of the cases, pseudo stack depth <= 11.
-//
-// See the design doc (https://goo.gl/4s7v7b) for more details.
-
-// Represents (pseudo) stack frame. Used in Backtrace class below.
+// Represents a stack frame. Used in Backtrace class below.
 //
 // Conceptually stack frame is identified by its value, and type is used
 // mostly to properly format the value. Value is expected to be a valid
 // pointer from process' address space.
 struct BASE_EXPORT StackFrame {
   enum class Type {
-    TRACE_EVENT_NAME,   // const char* string
     THREAD_NAME,        // const char* thread name
     PROGRAM_COUNTER,    // as returned by stack tracing (e.g. by StackTrace)
   };
 
-  static StackFrame FromTraceEventName(const char* name) {
-    return {Type::TRACE_EVENT_NAME, name};
-  }
   static StackFrame FromThreadName(const char* name) {
     return {Type::THREAD_NAME, name};
   }

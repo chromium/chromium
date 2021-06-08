@@ -54,8 +54,7 @@ struct ConnectionManager::Connection {
 
   bool HeapDumpNeedsVmRegions() {
     return stack_mode == mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES ||
-           stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES ||
-           stack_mode == mojom::StackMode::MIXED;
+           stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES;
   }
 
   mojo::Remote<mojom::ProfilingClient> client;

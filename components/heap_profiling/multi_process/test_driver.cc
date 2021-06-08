@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/heap_profiler.h"
-#include "base/trace_event/heap_profiler_event_filter.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
@@ -638,8 +637,7 @@ bool TestDriver::ValidateBrowserAllocations(base::Value* dump_json) {
   // the same [an effectively empty] backtrace and get glommed together. More
   // investigation is necessary. For now, I'm turning this off for Android.
   // https://crbug.com/786450.
-  if (!HasPseudoFrames())
-    should_validate_dumps = false;
+  should_validate_dumps = false;
 #endif
 
   std::string thread_name = ShouldIncludeNativeThreadNames() ? kThreadName : "";
@@ -732,15 +730,9 @@ bool TestDriver::ShouldIncludeNativeThreadNames() {
   return options_.stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES;
 }
 
-bool TestDriver::HasPseudoFrames() {
-  return options_.stack_mode == mojom::StackMode::PSEUDO ||
-         options_.stack_mode == mojom::StackMode::MIXED;
-}
-
 bool TestDriver::HasNativeFrames() {
   return options_.stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES ||
-         options_.stack_mode == mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES ||
-         options_.stack_mode == mojom::StackMode::MIXED;
+         options_.stack_mode == mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES;
 }
 
 void TestDriver::WaitForProfilingToStartForBrowserUIThread() {

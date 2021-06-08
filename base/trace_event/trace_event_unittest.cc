@@ -34,7 +34,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/event_name_filter.h"
-#include "base/trace_event/heap_profiler_event_filter.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event_filter.h"
 #include "base/trace_event/trace_event_filter_test_utils.h"
@@ -2982,53 +2981,6 @@ TEST_F(TraceEventTestFixture, MAYBE_EventAllowlistFiltering) {
   EXPECT_TRUE(FindMatchingValue("name", "a cat"));
   EXPECT_TRUE(FindMatchingValue("name", "a dog"));
   EXPECT_FALSE(FindMatchingValue("name", "a pony"));
-}
-
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_HeapProfilerFiltering DISABLED_HeapProfilerFiltering
-#else
-#define MAYBE_HeapProfilerFiltering HeapProfilerFiltering
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_HeapProfilerFiltering) {
-  std::string config_json = StringPrintf(
-      "{"
-      "  \"included_categories\": ["
-      "    \"test_filtered_cat\","
-      "    \"test_unfiltered_cat\","
-      "    \"" TRACE_DISABLED_BY_DEFAULT("test_filtered_cat") "\","
-      "    \"" TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat") "\"],"
-      "  \"excluded_categories\": [\"test_excluded_cat\"],"
-      "  \"event_filters\": ["
-      "     {"
-      "       \"filter_predicate\": \"%s\", "
-      "       \"included_categories\": ["
-      "         \"*\","
-      "         \"" TRACE_DISABLED_BY_DEFAULT("test_filtered_cat") "\"]"
-      "     }"
-      "  ]"
-      "}",
-      HeapProfilerEventFilter::kName);
-
-  TraceConfig trace_config(config_json);
-  TraceLog::GetInstance()->SetEnabled(
-      trace_config, TraceLog::RECORDING_MODE | TraceLog::FILTERING_MODE);
-  EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-
-  TRACE_EVENT0("test_filtered_cat", "a snake");
-  TRACE_EVENT0("test_excluded_cat", "a mushroom");
-  TRACE_EVENT0("test_unfiltered_cat", "a cat");
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"), "a dog");
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat"), "a pony");
-
-  EndTraceAndFlush();
-
-  // The predicate should not change behavior of the trace events.
-  EXPECT_TRUE(FindMatchingValue("name", "a snake"));
-  EXPECT_FALSE(FindMatchingValue("name", "a mushroom"));
-  EXPECT_TRUE(FindMatchingValue("name", "a cat"));
-  EXPECT_TRUE(FindMatchingValue("name", "a dog"));
-  EXPECT_TRUE(FindMatchingValue("name", "a pony"));
 }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 

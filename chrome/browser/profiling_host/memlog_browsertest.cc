@@ -79,7 +79,7 @@ std::vector<TestParam> GetParams() {
   std::vector<TestParam> params;
 
   // Test that if we don't start profiling, nothing happens.
-  params.push_back({Mode::kNone, mojom::StackMode::MIXED,
+  params.push_back({Mode::kNone, mojom::StackMode::NATIVE_WITH_THREAD_NAMES,
                     false /* start_profiling_with_command_line_flag */});
 
   // Test that we can start profiling with command line flag.

@@ -107,7 +107,6 @@ class TestDriver {
   bool ShouldProfileBrowser();
   bool ShouldProfileRenderer();
   bool ShouldIncludeNativeThreadNames();
-  bool HasPseudoFrames();
   bool HasNativeFrames();
 
   void WaitForProfilingToStartForBrowserUIThread();

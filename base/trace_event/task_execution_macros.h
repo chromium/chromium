@@ -22,10 +22,7 @@
             base::trace_event::TraceSourceLocation((task).posted_from))); \
   });                                                                     \
   TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION INTERNAL_TRACE_EVENT_UID( \
-      task_event)((task).posted_from.file_name());                        \
-  TRACE_HEAP_PROFILER_API_SCOPED_WITH_PROGRAM_COUNTER                     \
-  INTERNAL_TRACE_EVENT_UID(task_pc_event)                                 \
-  ((task).posted_from.program_counter());
+      task_event)((task).posted_from.file_name());
 
 // Implementation detail: internal macro to trace a log message, with the source
 // location of the log statement.

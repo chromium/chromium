@@ -12,12 +12,6 @@ enum StackMode {
 
   // Instruction addresses from unwinding the stack.
   NATIVE_WITHOUT_THREAD_NAMES,
-
-  // Uses trace events as identifiers.
-  PSEUDO,
-
-  // Uses a combination of trace events and selective native addresses.
-  MIXED
 };
 
 // Type of the allocator responsible for the allocation sample.
