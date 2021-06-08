@@ -7,7 +7,8 @@ module network.mojom;
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 
-// https://mikewest.github.io/corpp/#integration-html
+// https://html.spec.whatwg.org/multipage/origin.html#embedder-policy-value
+// https://htmlpreview.github.io/?https://github.com/mikewest/credentiallessness/blob/main/index.html
 enum CrossOriginEmbedderPolicyValue {
   kNone,
   kCredentialless,
@@ -27,7 +28,7 @@ interface CrossOriginEmbedderPolicyReporter {
 };
 
 // Corresponding to the "embedder policy" concept in the spec.
-// TODO(yhirano): Attach a spec link.
+// https://html.spec.whatwg.org/multipage/origin.html#coep
 struct CrossOriginEmbedderPolicy {
     // The value of the policy.
     CrossOriginEmbedderPolicyValue value = CrossOriginEmbedderPolicyValue.kNone;
