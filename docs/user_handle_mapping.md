@@ -23,6 +23,7 @@ For Chromium contributors that have different nicks on other domains.
 | csharp            | csharp1         | csharp          |
 | cthomp            | cthomp          | cthomp          |
 | darin, fishd      | fishd           | darin           |
+| dbaron            |                 | ldavidbaron     |
 | dbeam             | danbeam         | dbeam           |
 | dmurph            | dmurph          | dmurph          |
 | dom               | domfarolino     | domfarolino     |
