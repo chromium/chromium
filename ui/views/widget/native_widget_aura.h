@@ -23,7 +23,7 @@
 #include "ui/wm/public/activation_delegate.h"
 
 #if defined(OS_MAC)
-#error This file must not be included on macOS; Chromium Mac doesn't use Aura.
+#error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
 #endif
 
 namespace aura {
