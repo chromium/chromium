@@ -29,6 +29,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kArcResizeLock;
 // certain devices.
 ASH_PUBLIC_EXPORT extern const base::Feature kAutoNightLight;
 
+// Enables the persistent desks bar at the top of the screen in clamshell mode
+// when there are more than one desk.
+ASH_PUBLIC_EXPORT extern const base::Feature kBentoBar;
+
 // Enables the Capture Mode feature which is an enhanced screenshot and screen
 // capture user experience.
 ASH_PUBLIC_EXPORT extern const base::Feature kCaptureMode;
@@ -269,6 +273,8 @@ ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 ASH_PUBLIC_EXPORT bool IsScalableStatusAreaEnabled();
 
 ASH_PUBLIC_EXPORT bool IsShowDateInTrayButtonEnabled();
+
+ASH_PUBLIC_EXPORT bool IsBentoBarEnabled();
 
 // These two functions are supposed to be temporary functions to set or get
 // whether "WebUITabStrip" feature is enabled from Chrome.

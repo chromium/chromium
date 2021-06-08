@@ -40,6 +40,8 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
+#include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -5707,6 +5709,147 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1,
                                      number_of_one_bucket_entries + 1);
+}
+
+class PersistentDesksBarTest : public AshTestBase {
+ public:
+  PersistentDesksBarTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kBentoBar);
+  }
+  PersistentDesksBarTest(const PersistentDesksBarTest&) = delete;
+  PersistentDesksBarTest& operator=(const PersistentDesksBarTest&) = delete;
+  ~PersistentDesksBarTest() override = default;
+
+  const views::Widget* GetBarWidget() const {
+    return Shell::Get()
+        ->persistent_desks_bar_controller()
+        ->persistent_desks_bar_widget();
+  }
+
+  bool IsWidgetVisible() const {
+    auto* bar_widget = GetBarWidget();
+    DCHECK(bar_widget);
+    return bar_widget->GetLayer()->GetTargetVisibility();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the bar will only be created and shown when there are more than
+// one desk.
+TEST_F(PersistentDesksBarTest, MoreThanOneDesk) {
+  auto* shell = Shell::Get();
+  ASSERT_FALSE(shell->tablet_mode_controller()->InTabletMode());
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  auto* bar_controller = shell->persistent_desks_bar_controller();
+  ASSERT_TRUE(bar_controller);
+
+  // The bar should not be created if there is only one desk.
+  EXPECT_FALSE(GetBarWidget());
+
+  // Create a new desk should cause the bar to be created and shown.
+  NewDesk();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed after removed a desk and then there is only one
+  // desk left.
+  RemoveDesk(desks_controller->desks()[1].get());
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  EXPECT_FALSE(GetBarWidget());
+}
+
+// Tests that the bar will only be created and shown in clamshell mode.
+TEST_F(PersistentDesksBarTest, ClamshellOnly) {
+  auto* shell = Shell::Get();
+  TabletModeControllerTestApi().EnterTabletMode();
+  ASSERT_TRUE(shell->tablet_mode_controller()->InTabletMode());
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  auto* bar_controller = shell->persistent_desks_bar_controller();
+  ASSERT_TRUE(bar_controller);
+
+  // Create or remove a desk in tablet mode should not create the bar or cause
+  // any crash.
+  EXPECT_FALSE(GetBarWidget());
+  NewDesk();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_FALSE(GetBarWidget());
+  RemoveDesk(desks_controller->desks()[0].get());
+  EXPECT_FALSE(GetBarWidget());
+  NewDesk();
+
+  // Leaving tablet mode to clamshell mode with more than one desk should create
+  // and show the bar.
+  TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed if tablet mode is entered.
+  TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_TRUE(shell->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(GetBarWidget());
+}
+
+// Tests the bar's visibility while entering or leaving overview mode.
+TEST_F(PersistentDesksBarTest, OverviewMode) {
+  auto* shell = Shell::Get();
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  auto* bar_controller = shell->persistent_desks_bar_controller();
+  ASSERT_TRUE(bar_controller);
+
+  NewDesk();
+  EXPECT_TRUE(GetBarWidget());
+  // Entering overview mode should destroy the bar. Exiting overview mode with
+  // more than one desk should create the bar and show it.
+  auto* overview_controller = shell->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_FALSE(GetBarWidget());
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  overview_controller->EndOverview();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // Exiting overview mode with only one desk should not create the bar.
+  overview_controller->StartOverview();
+  EXPECT_FALSE(GetBarWidget());
+  RemoveDesk(desks_controller->desks()[1].get());
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  overview_controller->EndOverview();
+  EXPECT_FALSE(GetBarWidget());
+
+  // Each desk button in the bar should show the corresponding desk's name.
+  overview_controller->StartOverview();
+  NewDesk();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  desks_controller->desks()[1].get()->SetName(u"test", /*set_by_user=*/true);
+  overview_controller->EndOverview();
+  auto desk_buttons_text = bar_controller->persistent_desks_bar_view()
+                               ->GetDeskButtonsTextForTesting();
+  for (size_t i = 0; i < desk_buttons_text.size(); i++)
+    EXPECT_EQ(desk_buttons_text[i], desks_controller->desks()[i]->name());
+
+  // The desk buttons should have the same order as the desks after reordering.
+  auto* event_generator = GetEventGenerator();
+  overview_controller->StartOverview();
+  EXPECT_EQ(u"test", desks_controller->desks()[1]->name());
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  StartDragDeskPreview(desks_bar_view->mini_views()[1], event_generator);
+  event_generator->MoveMouseTo(desks_bar_view->mini_views()[0]
+                                   ->GetPreviewBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(u"test", desks_controller->desks()[0]->name());
+  overview_controller->EndOverview();
+  desk_buttons_text = bar_controller->persistent_desks_bar_view()
+                          ->GetDeskButtonsTextForTesting();
+  for (size_t i = 0; i < desk_buttons_text.size(); i++)
+    EXPECT_EQ(desk_buttons_text[i], desks_controller->desks()[i]->name());
 }
 
 // TODO(afakhry): Add more tests:

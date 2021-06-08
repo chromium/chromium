@@ -18233,6 +18233,7 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Window on desk activated"/>
   <int value="5" label="Desk-switch 4-finger touchpad swipe"/>
   <int value="6" label="User switch in a multi-profile session"/>
+  <int value="7" label="User switch through the persistent desks bar"/>
 </enum>
 
 <enum name="DesktopCaptureCounters">

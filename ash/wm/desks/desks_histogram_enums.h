@@ -40,7 +40,8 @@ enum class DesksSwitchSource {
   kWindowActivated = 4,
   kDeskSwitchTouchpad = 5,
   kUserSwitch = 6,
-  kMaxValue = kUserSwitch,
+  kPersistentDesksBar = 7,
+  kMaxValue = kPersistentDesksBar,
 };
 
 }  // namespace ash

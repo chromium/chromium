@@ -24,6 +24,8 @@ const base::Feature kArcResizeLock{"ArcResizeLock",
 const base::Feature kAutoNightLight{"AutoNightLight",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kCaptureMode{"CaptureMode",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -323,6 +325,10 @@ bool IsShowDateInTrayButtonEnabled() {
 
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
+}
+
+bool IsBentoBarEnabled() {
+  return base::FeatureList::IsEnabled(kBentoBar);
 }
 
 namespace {

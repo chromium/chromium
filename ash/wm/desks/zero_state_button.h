@@ -20,6 +20,7 @@ class ASH_EXPORT DeskButtonBase
     : public views::LabelButton,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
+  explicit DeskButtonBase(const std::u16string& text);
   DeskButtonBase(const std::u16string& text,
                  int border_corder_radius,
                  int corner_radius);
@@ -44,6 +45,10 @@ class ASH_EXPORT DeskButtonBase
   // showing the desk's name, which should be updated on desk name changes.
   virtual void UpdateLabelText() {}
 
+  // Sets `should_paint_background_` and repaints the button so that the button
+  // may or may not have the background.
+  void SetShouldPaintBackground(bool should_paint_background);
+
   SkColor GetBackgroundColorForTesting() const { return background_color_; }
 
  protected:
@@ -51,10 +56,10 @@ class ASH_EXPORT DeskButtonBase
 
   SkColor background_color_;
 
-  // If true, paints the button with the background of |background_color_|. The
+  // If true, paints a background of the button with `background_color_`. The
   // button is painted with the background by default, exception like
   // ZeroStateNewDeskButton only wants to be painted when the mouse hovers.
-  bool highlight_on_hover_ = true;
+  bool should_paint_background_ = true;
 
   // Paints the background within the button's bounds by default. But if true,
   // paints the contents' bounds of the button only. For example,

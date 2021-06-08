@@ -372,8 +372,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     gfx::RectF dst;
   };
 
-  // If the Virtual Desks feature is enabled, it initializes the widget that
-  // contains the DeskBarView contents.
+  // Initializes the widget that contains the DesksBarView contents.
   void MaybeInitDesksWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages

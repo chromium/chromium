@@ -156,6 +156,7 @@ class PartialMagnificationController;
 class PciePeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
+class PersistentDesksBarController;
 class PersistentWindowController;
 class PolicyRecommendationRestorer;
 class PowerButtonController;
@@ -348,6 +349,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   ::wm::CursorManager* cursor_manager() { return cursor_manager_.get(); }
   DesksController* desks_controller() { return desks_controller_.get(); }
+  PersistentDesksBarController* persistent_desks_bar_controller() {
+    return persistent_desks_bar_controller_.get();
+  }
   DetachableBaseHandler* detachable_base_handler() {
     return detachable_base_handler_.get();
   }
@@ -725,6 +729,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ParentAccessController> parent_access_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
+  std::unique_ptr<PersistentDesksBarController>
+      persistent_desks_bar_controller_;
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;

@@ -1,0 +1,79 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_
+#define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_
+
+#include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_observer.h"
+#include "ui/views/widget/unique_widget_ptr.h"
+
+namespace ash {
+
+class PersistentDesksBarView;
+
+// Controller for the persistent desks bar. One per display, because each
+// display has its own persistent desks bar widget and view hierarchy, different
+// settings to show or hide the bar as well.
+class ASH_EXPORT PersistentDesksBarController
+    : public SessionObserver,
+      public OverviewObserver,
+      public DesksController::Observer,
+      public TabletModeObserver {
+ public:
+  PersistentDesksBarController();
+  PersistentDesksBarController(const PersistentDesksBarController&) = delete;
+  PersistentDesksBarController& operator=(const PersistentDesksBarController&) =
+      delete;
+  ~PersistentDesksBarController() override;
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
+  // OverviewObserver:
+  void OnOverviewModeStartingAnimationComplete(bool canceled) override;
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override;
+
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskSwitchAnimationLaunching() override;
+  void OnDeskSwitchAnimationFinished() override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+
+  const views::Widget* persistent_desks_bar_widget() const {
+    return persistent_desks_bar_widget_.get();
+  }
+
+  const PersistentDesksBarView* persistent_desks_bar_view() const {
+    return persistent_desks_bar_view_;
+  }
+
+ private:
+  // Initializes and shows the widget that contains the PersistentDesksBarView
+  // contents. Creates the widget only if ShouldPersistentDesksBarBeCreated()
+  // returns true and it hasn't been created already. Only refreshes the
+  // contents and shows the widget if it has been created.
+  void MaybeInitBarWidget();
+
+  // Destroys `persistent_desks_bar_widget_` and `persistent_desks_bar_view_`.
+  void DestroyBarWidget();
+
+  views::UniqueWidgetPtr persistent_desks_bar_widget_;
+  // The contents view of the above |persistent_desks_bar_widget_| if created.
+  PersistentDesksBarView* persistent_desks_bar_view_ = nullptr;
+};
+
+}  // namespace ash
+
+#endif  // ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_

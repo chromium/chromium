@@ -145,6 +145,7 @@
 #include "ash/wm/container_finder.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/event_client_impl.h"
 #include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
@@ -727,6 +728,10 @@ Shell::~Shell() {
   shadow_controller_.reset();
   resize_shadow_controller_.reset();
 
+  // Destroy PersistentDesksBarController before `overview_controller_`,
+  // `tablet_mode_controller_` and `desks_controller_` that it observes.
+  persistent_desks_bar_controller_.reset();
+
   // Has to happen before ~MruWindowTracker.
   window_cycle_controller_.reset();
   overview_controller_.reset();
@@ -1040,6 +1045,11 @@ void Shell::Init(
   // present at all times. The desks controller also depends on the focus
   // controller.
   desks_controller_ = std::make_unique<DesksController>();
+
+  if (features::IsBentoBarEnabled()) {
+    persistent_desks_bar_controller_ =
+        std::make_unique<PersistentDesksBarController>();
+  }
 
   Shell::SetRootWindowForNewWindows(GetPrimaryRootWindow());
 

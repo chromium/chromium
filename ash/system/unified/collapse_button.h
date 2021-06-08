@@ -9,10 +9,9 @@
 
 namespace ash {
 
-// Collapse button shown in TopShortcutsView with TopShortcutButtons.
-// UnifiedSystemTrayBubble will support collapsed state where the height of the
-// bubble is smaller, and some rows and labels will be omitted.
-// By pressing the button, the state of the bubble will be toggled.
+// The button with `kUnifiedMenuExpandIcon`. This button can be set as expanded
+// or collapsed through SetExpandedAmount and the icon will be rotated on the
+// `expanded_amount_`. Expanded is the default state.
 class CollapseButton : public views::ImageButton {
  public:
   explicit CollapseButton(PressedCallback callback);
