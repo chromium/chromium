@@ -26,6 +26,8 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
+#include "components/pdf/common/pdf.mojom.h"
+#include "content/public/renderer/render_frame.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_engine.h"
@@ -36,10 +38,13 @@
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
@@ -564,10 +569,11 @@ void PdfViewWebPlugin::SendMessage(base::Value message) {
   post_message_sender_.Post(std::move(message));
 }
 
-// TODO(https://crbug.com/1213294): Add a Pepper-free implementation that is
-// equivalent to pp::PDF::SaveAs().
 void PdfViewWebPlugin::SaveAs() {
-  NOTIMPLEMENTED();
+  GURL gurl(GetURL().c_str());
+  blink::mojom::ReferrerPtr referrer = blink::mojom::Referrer::New(
+      gurl, network::mojom::ReferrerPolicy::kDefault);
+  GetPdfService()->SaveUrlAs(gurl, std::move(referrer));
 }
 
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
@@ -609,7 +615,7 @@ void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
-  NOTIMPLEMENTED();
+  GetPdfService()->SetPluginCanSave(can_save);
 }
 
 void PdfViewWebPlugin::DidStartLoading() {
@@ -678,6 +684,17 @@ bool PdfViewWebPlugin::Redo() {
 
   engine()->Redo();
   return true;
+}
+
+pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
+  if (!pdf_service_remote_) {
+    DCHECK(IsValid());
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(container_wrapper_->GetFrame());
+    render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+        pdf_service_remote_.BindNewEndpointAndPassReceiver());
+  }
+  return pdf_service_remote_.get();
 }
 
 }  // namespace chrome_pdf

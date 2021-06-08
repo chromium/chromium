@@ -9,6 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
+#include "components/pdf/common/pdf.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
@@ -213,10 +215,18 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Undo();
   bool Redo();
 
+  // Gets the receiver associated with the plugin's render frame if the receiver
+  // is bound to `pdf_service_remote_`. If such receiver is not available, binds
+  // `pdf_service_remote_` with a new receiver and returns the handle of that
+  // receiver.
+  pdf::mojom::PdfService* GetPdfService();
+
   blink::WebString selected_text_;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
+
+  mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote_;
 
   blink::WebPluginParams initial_params_;
 
