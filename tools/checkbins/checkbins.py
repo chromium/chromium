@@ -46,6 +46,7 @@ CETCOMPAT_NOT_REQUIRED = [
     'chrome_proxy.exe',
     'chrome_pwa_launcher.exe',
     'elevation_service.exe',
+    'nacl64.exe',
     'notification_helper.exe',
 ]
 
