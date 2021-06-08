@@ -78,6 +78,9 @@ struct SysInfo {
 
   // Returns the current channel name
   string? channel_name@6;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_BOARD
+  string? release_board@7;
 };
 
 struct MachineStatisticsInfo {

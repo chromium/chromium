@@ -29,6 +29,7 @@ constexpr char kReleaseVersion[] = "CHROMEOS_RELEASE_VERSION";
 constexpr char kReleasBuildType[] = "CHROMEOS_RELEASE_BUILD_TYPE";
 constexpr char kReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
 constexpr char kReleaseChromeMilestone[] = "CHROMEOS_RELEASE_CHROME_MILESTONE";
+constexpr char kReleaseBoard[] = "CHROMEOS_RELEASE_BOARD";
 
 static DeviceInfoService* g_info_service = nullptr;
 
@@ -221,6 +222,9 @@ void DeviceInfoService::GetSysInfo(GetSysInfoCallback callback) {
   }
   if (base::SysInfo::GetLsbReleaseValue(kReleaseChromeMilestone, &value)) {
     sys_info->release_milestone = std::move(value);
+  }
+  if (base::SysInfo::GetLsbReleaseValue(kReleaseBoard, &value)) {
+    sys_info->release_board = std::move(value);
   }
 
   sys_info->browser_version = version_info::GetVersionNumber();
