@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
  * segmentation experiment.
  */
 public class AdaptiveToolbarStatePredictor {
+    private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
+
     /**
      * The result of the predictor. Contains the UI states specific to the toolbar button.
      */
@@ -141,8 +143,17 @@ public class AdaptiveToolbarStatePredictor {
      */
     @VisibleForTesting
     void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
+        if (sSegmentationResultsForTesting != null) {
+            callback.onResult(sSegmentationResultsForTesting);
+            return;
+        }
         // TODO(shaktisahu): Hookup to backend which would pass in the segmentation result and
         // whether the backend is ready with valid results.
-        callback.onResult(new Pair<>(false, AdaptiveToolbarButtonVariant.UNKNOWN));
+    }
+
+    /** For testing only. */
+    @VisibleForTesting
+    public static void setSegmentationResultsForTesting(Pair<Boolean, Integer> results) {
+        sSegmentationResultsForTesting = results;
     }
 }

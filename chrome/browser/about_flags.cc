@@ -458,6 +458,34 @@ const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
         nullptr,
     },
 };
+
+const FeatureEntry::FeatureVariation
+    kAdaptiveButtonInTopToolbarCustomizationVariations[] = {
+        {
+            "New Tab",
+            (FeatureEntry::FeatureParam[]){
+                {"default_segment", "new-tab"},
+                {"ignore_segmentation_results", "true"}},
+            1,
+            nullptr,
+        },
+        {
+            "Share",
+            (FeatureEntry::FeatureParam[]){
+                {"default_segment", "share"},
+                {"ignore_segmentation_results", "true"}},
+            1,
+            nullptr,
+        },
+        {
+            "Voice",
+            (FeatureEntry::FeatureParam[]){
+                {"default_segment", "voice"},
+                {"ignore_segmentation_results", "true"}},
+            1,
+            nullptr,
+        },
+};
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
@@ -3259,8 +3287,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationName,
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarCustomization)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAdaptiveButtonInTopToolbarCustomization,
+         kAdaptiveButtonInTopToolbarCustomizationVariations,
+         "OptionalToolbarButtonCustomization")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

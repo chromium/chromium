@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar.adaptive.settings;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
+import android.util.Pair;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -22,6 +24,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -44,6 +47,8 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void setUpTest() throws Exception {
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
         mSettingsActivityTestRule.startSettingsActivity();
         mSettings = mSettingsActivityTestRule.getFragment();
         mSwitchPreference = (ChromeSwitchPreference) mSettings.findPreference(
@@ -54,6 +59,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
 
     @After
     public void tearDownTest() throws Exception {
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SharedPreferencesManager.getInstance().removeKey(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
