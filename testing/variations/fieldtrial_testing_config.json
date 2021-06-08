@@ -6858,6 +6858,37 @@
             ]
         }
     ],
+    "SafeBrowsingCsdComponentVersion25": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled25_052021",
+                    "params": {
+                        "reporter_omaha_tag": "25"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionTag"
+                    ]
+                },
+                {
+                    "name": "Enabled26_052021",
+                    "params": {
+                        "reporter_omaha_tag": "26"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionTag"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [
