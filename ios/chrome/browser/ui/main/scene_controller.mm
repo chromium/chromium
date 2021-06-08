@@ -984,7 +984,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (!firstRun && self.sceneState.appState.initStage > InitStageSafeMode &&
       postOpeningAction == NO_ACTION &&
       !self.sceneState.appState.postCrashLaunch &&
-      !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown()) {
+      !IsChromeLikelyDefaultBrowser()) {
     // Show the Default Browser promo UI if the user's past behavior fits
     // the categorization of potentially interested users or if the user is
     // signed in. Do not show if it is determined that Chrome is already the
@@ -1013,7 +1013,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
         (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
          isStaySafePromoEligible);
-    if (isTailoredPromoEligibleUser) {
+    if (isTailoredPromoEligibleUser && !UserInPromoCooldown()) {
       self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
       self.sceneState.appState.defaultBrowserPromoTypeToShow =
           MostRecentInterestDefaultPromoType(!isSignedIn);
@@ -1025,7 +1025,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     BOOL isGeneralPromoEligibleUser =
         !HasUserInteractedWithFullscreenPromoBefore() &&
         (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-         isSignedIn);
+         isSignedIn) &&
+        !UserInPromoCooldown();
     if (isGeneralPromoEligibleUser ||
         ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
       self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
