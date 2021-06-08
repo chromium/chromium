@@ -70,6 +70,9 @@ bool DummyInputMethod::IsCandidatePopupOpen() const {
 
 void DummyInputMethod::ShowVirtualKeyboardIfEnabled() {}
 
+void DummyInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
+}
+
 void DummyInputMethod::AddObserver(InputMethodObserver* observer) {
 }
 

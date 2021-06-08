@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodObserver {
   // Called when a user gesture should trigger showing the virtual keyboard
   // or alternate input view (e.g. handwriting palette). Used in ChromeOS.
   virtual void OnShowVirtualKeyboardIfEnabled() = 0;
+
+  // Called when an API call is used to explicitly show / hide the virtual
+  // keyboard.
+  virtual void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) {}
 };
 
 }  // namespace ui

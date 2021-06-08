@@ -104,6 +104,11 @@ void MockInputMethod::ShowVirtualKeyboardIfEnabled() {
     observer.OnShowVirtualKeyboardIfEnabled();
 }
 
+void MockInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
+  for (InputMethodObserver& observer : observer_list_)
+    observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);
+}
+
 void MockInputMethod::AddObserver(InputMethodObserver* observer) {
   observer_list_.AddObserver(observer);
 }

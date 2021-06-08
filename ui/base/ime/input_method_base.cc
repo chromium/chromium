@@ -93,6 +93,19 @@ void InputMethodBase::ShowVirtualKeyboardIfEnabled() {
     keyboard->DisplayVirtualKeyboard();
 }
 
+void InputMethodBase::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
+  for (InputMethodObserver& observer : observer_list_)
+    observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);
+  auto* keyboard = GetVirtualKeyboardController();
+  if (keyboard) {
+    if (should_show) {
+      keyboard->DisplayVirtualKeyboard();
+    } else {
+      keyboard->DismissVirtualKeyboard();
+    }
+  }
+}
+
 void InputMethodBase::AddObserver(InputMethodObserver* observer) {
   observer_list_.AddObserver(observer);
 }

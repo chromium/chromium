@@ -840,6 +840,15 @@ void KeyboardUIController::OnShowVirtualKeyboardIfEnabled() {
     ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
 }
 
+void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(
+    bool should_show) {
+  if (should_show) {
+    OnShowVirtualKeyboardIfEnabled();
+  } else {
+    HideKeyboardExplicitlyBySystem();
+  }
+}
+
 void KeyboardUIController::ShowKeyboardInternal(
     aura::Window* target_container) {
   MarkKeyboardLoadStarted();

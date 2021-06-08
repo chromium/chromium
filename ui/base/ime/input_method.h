@@ -141,6 +141,8 @@ class InputMethod {
   // Displays an on screen keyboard if enabled.
   virtual void ShowVirtualKeyboardIfEnabled() = 0;
 
+  virtual void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) = 0;
+
   // Management of the observer list.
   virtual void AddObserver(InputMethodObserver* observer) = 0;
   virtual void RemoveObserver(InputMethodObserver* observer) = 0;

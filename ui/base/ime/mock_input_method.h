@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   TextInputType GetTextInputType() const override;
   bool IsCandidatePopupOpen() const override;
   void ShowVirtualKeyboardIfEnabled() override;
+  void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override;
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
