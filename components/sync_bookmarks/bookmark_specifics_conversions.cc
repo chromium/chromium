@@ -56,6 +56,10 @@ void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
   base::UmaHistogramEnumeration("Sync.InvalidBookmarkSpecifics", error);
 }
 
+void LogFaviconContainedInSpecifics(bool contains_favicon) {
+  base::UmaHistogramBoolean(
+      "Sync.BookmarkSpecificsExcludingFoldersContainFavicon", contains_favicon);
+}
 void UpdateBookmarkSpecificsMetaInfo(
     const bookmarks::BookmarkNode::MetaInfoMap* metainfo_map,
     sync_pb::BookmarkSpecifics* bm_specifics) {
@@ -86,6 +90,9 @@ void SetBookmarkFaviconFromSpecifics(
   DCHECK(bookmark_node);
   DCHECK(favicon_service);
 
+  // TODO(crbug.com/1214843): Avoid invoking this function for folders, although
+  // it's harmless in practice due to later filtering via
+  // HistoryClient::CanAddURL().
   favicon_service->AddPageNoVisitForBookmark(bookmark_node->url(),
                                              bookmark_node->GetTitle());
 
@@ -97,10 +104,17 @@ void SetBookmarkFaviconFromSpecifics(
   GURL icon_url(specifics.icon_url());
 
   if (icon_bytes->size() == 0 && icon_url.is_empty()) {
+    if (!bookmark_node->is_folder()) {
+      LogFaviconContainedInSpecifics(false);
+    }
     // Empty icon URL and no bitmap data means no icon mapping.
     favicon_service->DeleteFaviconMappings({bookmark_node->url()},
                                            favicon_base::IconType::kFavicon);
     return;
+  }
+
+  if (!bookmark_node->is_folder()) {
+    LogFaviconContainedInSpecifics(true);
   }
 
   if (icon_url.is_empty()) {
@@ -286,6 +300,8 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
       GetBookmarkMetaInfo(specifics);
   const bookmarks::BookmarkNode* node;
   if (is_folder) {
+    // TODO(crbug.com/1214840): Folders should propagate the creation time into
+    // BookmarkModel, just like non-folders.
     node = model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
                             &metainfo, guid);
   } else {
