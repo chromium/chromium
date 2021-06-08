@@ -158,7 +158,7 @@ bool MediaValuesDynamic::PrefersReducedData() const {
 }
 
 ForcedColors MediaValuesDynamic::GetForcedColors() const {
-  return CalculateForcedColors();
+  return CalculateForcedColors(frame_);
 }
 
 NavigationControls MediaValuesDynamic::GetNavigationControls() const {

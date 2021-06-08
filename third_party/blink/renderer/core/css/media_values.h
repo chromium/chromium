@@ -120,7 +120,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
       LocalFrame*);
   static bool CalculatePrefersReducedMotion(LocalFrame*);
   static bool CalculatePrefersReducedData(LocalFrame*);
-  static ForcedColors CalculateForcedColors();
+  static ForcedColors CalculateForcedColors(LocalFrame*);
   static NavigationControls CalculateNavigationControls(LocalFrame*);
   static ScreenSpanning CalculateScreenSpanning(LocalFrame*);
   static DevicePosture CalculateDevicePosture(LocalFrame*);

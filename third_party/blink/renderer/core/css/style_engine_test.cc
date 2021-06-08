@@ -1840,6 +1840,48 @@ TEST_F(StyleEngineTest, MediaQueriesChangeForcedColorsAndPreferredColorScheme) {
                 GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, MediaQueriesForcedColorsOverride) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        forced-color-adjust: none;
+      }
+      @media (forced-colors: none) {
+        body { color: red }
+      }
+      @media (forced-colors: active) {
+        body { color: green }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(MakeRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  GetDocument().GetPage()->SetMediaFeatureOverride("forced-colors", "active");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(MakeRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->SetMediaFeatureOverride("forced-colors", "none");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(MakeRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetPage()->ClearMediaFeatureOverrides();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(MakeRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, MediaQueriesColorSchemeOverride) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(

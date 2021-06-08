@@ -56,6 +56,13 @@
   await setEmulatedMediaFeature('color-gamut', 'rec2020');
   await setEmulatedMediaFeature('color-gamut', '__invalid__');
 
+  // Test `forced-colors`.
+  // https://drafts.csswg.org/mediaqueries-5/#forced-colors
+  await setEmulatedMediaFeature('forced-colors', '__invalid__');
+  await setEmulatedMediaFeature('forced-colors', 'active');
+  await setEmulatedMediaFeature('forced-colors', 'none');
+  await setEmulatedMediaFeature('forced-colors', '__invalid__');
+
   // Test combinations.
   await setEmulatedMediaFeatures({
     features: [

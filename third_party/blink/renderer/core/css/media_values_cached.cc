@@ -83,7 +83,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     preferred_contrast = MediaValues::CalculatePreferredContrast(frame);
     prefers_reduced_motion = MediaValues::CalculatePrefersReducedMotion(frame);
     prefers_reduced_data = MediaValues::CalculatePrefersReducedData(frame);
-    forced_colors = MediaValues::CalculateForcedColors();
+    forced_colors = MediaValues::CalculateForcedColors(frame);
     navigation_controls = MediaValues::CalculateNavigationControls(frame);
     screen_spanning = MediaValues::CalculateScreenSpanning(frame);
     device_posture = MediaValues::CalculateDevicePosture(frame);
