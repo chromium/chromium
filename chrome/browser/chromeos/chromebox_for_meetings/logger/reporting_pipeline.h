@@ -44,6 +44,7 @@ class ReportingPipeline : public CfmLoggerService::Delegate,
 
  private:
   void UpdateToken(std::string request_token);
+  ::reporting::Status CheckPolicy() const;
   void OnReportQueueUpdated(
       reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
           report_queue_result);
