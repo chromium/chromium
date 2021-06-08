@@ -160,18 +160,6 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     prerender_helper_->AddPrerenderAsync(prerendering_url);
   }
 
-  // DEPRECATED:
-  // TODO(https://crbug.com/1214964) Do not use AddLinkRelPrerender and
-  // AddLinkRelPrerenderAsync; the <link rel="prerender"> trigger will be
-  // removed soon.
-  int AddLinkRelPrerender(const GURL& prerendering_url) {
-    return prerender_helper_->AddLinkRelPrerender(prerendering_url);
-  }
-
-  void AddLinkRelPrerenderAsync(const GURL& prerendering_url) {
-    prerender_helper_->AddLinkRelPrerenderAsync(prerendering_url);
-  }
-
   bool AddTestUtilJS(RenderFrameHost* host) {
     bool success = false;
     std::string js = R"(

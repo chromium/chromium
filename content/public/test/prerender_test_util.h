@@ -108,19 +108,6 @@ class PrerenderTestHelper {
   int AddPrerender(const GURL& prerendering_url);
   void AddPrerenderAsync(const GURL& prerendering_url);
 
-  // DEPRECATED:
-  // TODO(https://crbug.com/1214964): Do not use AddLinkRelPrerender and
-  // AddLinkRelPrerenderAsync; the <link rel="prerender"> trigger will be
-  // removed soon.
-  // Adds <link rel=prerender> in the current main frame and waits until the
-  // completion of prerendering. Returns the id of the resulting prerendering
-  // host.
-  //
-  // AddLinkRelPrerenderAsync() is the same as AddLinkRelPrerender(), but does
-  // not wait until the completion of prerendering.
-  int AddLinkRelPrerender(const GURL& gurl);
-  void AddLinkRelPrerenderAsync(const GURL& gurl);
-
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 

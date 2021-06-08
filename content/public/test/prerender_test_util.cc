@@ -22,14 +22,6 @@ namespace content {
 namespace test {
 namespace {
 
-// TODO(https://crbug.com/1214964): Remove this script.
-constexpr char kAddPrerenderScript[] = R"({
-    const link = document.createElement('link');
-    link.rel = 'prerender';
-    link.href = $1;
-    document.head.appendChild(link);
-  })";
-
 constexpr char kAddSpeculationRuleScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
@@ -287,22 +279,6 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
   // with it. See the quick migration guide for EvalJs for more information.
   GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
-}
-
-int PrerenderTestHelper::AddLinkRelPrerender(const GURL& gurl) {
-  AddLinkRelPrerenderAsync(gurl);
-
-  WaitForPrerenderLoadCompletion(gurl);
-  int host_id = GetHostForUrl(gurl);
-  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-  return host_id;
-}
-
-void PrerenderTestHelper::AddLinkRelPrerenderAsync(const GURL& gurl) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  std::string script = JsReplace(kAddPrerenderScript, gurl);
-  ignore_result(ExecJs(GetWebContents()->GetMainFrame(), script));
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
