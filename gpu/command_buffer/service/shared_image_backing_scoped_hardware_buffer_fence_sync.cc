@@ -348,8 +348,7 @@ SharedImageBackingScopedHardwareBufferFenceSync::ProduceSkia(
         scoped_hardware_buffer_->buffer());
 
     auto vulkan_image = CreateVkImageFromAhbHandle(
-        std::move(ahb_handle), context_state.get(), size(), format(),
-        VK_QUEUE_FAMILY_FOREIGN_EXT);
+        std::move(ahb_handle), context_state.get(), size(), format());
     if (!vulkan_image)
       return nullptr;
 

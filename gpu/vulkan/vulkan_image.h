@@ -68,9 +68,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       const gfx::Size& size,
       VkFormat format,
       VkImageUsageFlags usage,
-      VkImageCreateFlags flags,
-      VkImageTiling image_tiling,
-      uint32_t queue_family_index);
+      VkImageCreateFlags flags = 0,
+      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL);
 
   static std::unique_ptr<VulkanImage> Create(
       VulkanDeviceQueue* device_queue,
@@ -165,8 +164,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkFormat format,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags,
-      VkImageTiling image_tiling,
-      uint32_t queue_family_index);
+      VkImageTiling image_tiling);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool InitializeWithExternalMemoryAndModifiers(VulkanDeviceQueue* device_queue,
