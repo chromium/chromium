@@ -139,7 +139,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
 // //chrome/browser/ui/test/test_browser_dialog.h
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
-  set_baseline("2573384");
+  set_baseline("2936082");
   // Navigate to an installable site so PWA install icon shows up.
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
                        InvokeUi_IPH_DesktopTabGroupsNewGroup) {
-  set_baseline("2473537");
+  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 
@@ -176,19 +176,19 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
       ->Show();
   RunScheduledLayouts();
 
-  set_baseline("2473537");
+  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ProfileSwitch) {
-  set_baseline("2787107");
+  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
-  set_baseline("2473537");
+  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 
