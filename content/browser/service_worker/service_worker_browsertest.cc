@@ -3539,9 +3539,19 @@ class ServiceWorkerBackForwardCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Fails on Android. https://crbug.com/1216619
+#if defined(OS_ANDROID)
+#define MAYBE_EvictionOfBackForwardCacheWithMultipleServiceWorkers \
+  DISABLED_EvictionOfBackForwardCacheWithMultipleServiceWorkers
+#else
+#define MAYBE_EvictionOfBackForwardCacheWithMultipleServiceWorkers \
+  EvictionOfBackForwardCacheWithMultipleServiceWorkers
+#endif
+
 // Regression test for https://crbug.com/1212618.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
-                       EvictionOfBackForwardCacheWithMultipleServiceWorkers) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerBackForwardCacheBrowserTest,
+    MAYBE_EvictionOfBackForwardCacheWithMultipleServiceWorkers) {
   StartServerAndNavigateToSetup();
 
   ASSERT_TRUE(NavigateToURL(shell(),
