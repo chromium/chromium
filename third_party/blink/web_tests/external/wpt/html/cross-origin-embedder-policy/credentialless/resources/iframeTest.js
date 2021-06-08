@@ -61,7 +61,7 @@ const iframeTest = function(
     // There are no interoperable ways to check an iframe failed to load. So a
     // timeout is being used.
     // See https://github.com/whatwg/html/issues/125
-    step_timeout(()=>send(test_token, "block"), 3000);
+    step_timeout(()=>send(test_token, "block"), 6000);
 
     assert_equals(await receive(test_token), expectation);
   }, description);
