@@ -53,15 +53,16 @@ base::LazyInstance<re2::RE2, PasswordSiteUrlLazyInstanceTraits>
 std::vector<FieldRendererId> GetUsernamePredictions(
     const std::vector<WebFormControlElement>& control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache) {
+    UsernameDetectorCache* username_detector_cache,
+    const WebFormElement& form) {
   // Dummy cache stores the predictions in case no real cache was passed to
   // here.
   UsernameDetectorCache dummy_cache;
   if (!username_detector_cache)
     username_detector_cache = &dummy_cache;
 
-  return GetPredictionsFieldBasedOnHtmlAttributes(control_elements, form_data,
-                                                  username_detector_cache);
+  return GetPredictionsFieldBasedOnHtmlAttributes(
+      control_elements, form_data, username_detector_cache, form);
 }
 
 bool HasGaiaSchemeAndHost(const WebFormElement& form) {
@@ -153,8 +154,9 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
                                 form_data.get(), nullptr /* FormFieldData */)) {
     return nullptr;
   }
-  form_data->username_predictions = GetUsernamePredictions(
-      control_elements.ReleaseVector(), *form_data, username_detector_cache);
+  form_data->username_predictions =
+      GetUsernamePredictions(control_elements.ReleaseVector(), *form_data,
+                             username_detector_cache, web_form);
   form_data->button_titles = form_util::GetButtonTitles(
       web_form, web_form.GetDocument(), button_titles_cache);
 
@@ -193,7 +195,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
         form_util::GetDocumentUrlWithoutAuth(frame.GetDocument());
   }
   form_data->username_predictions = GetUsernamePredictions(
-      control_elements, *form_data, username_detector_cache);
+      control_elements, *form_data, username_detector_cache, WebFormElement());
   form_data->button_titles = form_util::GetButtonTitles(
       WebFormElement(), frame.GetDocument(), button_titles_cache);
 

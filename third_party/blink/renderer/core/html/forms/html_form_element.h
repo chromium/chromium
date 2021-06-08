@@ -102,7 +102,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     return radio_button_group_scope_;
   }
 
-  const ListedElement::List& ListedElements() const;
+  const ListedElement::List& ListedElements(
+      bool include_shadow_trees = false) const;
   const HeapVector<Member<HTMLImageElement>>& ImageElements();
 
   V8UnionElementOrRadioNodeList* AnonymousNamedGetter(const AtomicString& name);
@@ -115,6 +116,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                                const WTF::TextEncoding& encoding);
 
   unsigned UniqueRendererFormId() const { return unique_renderer_form_id_; }
+
+  void InvalidateListedElementsIncludingShadowTrees();
 
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -135,7 +138,11 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void ScheduleFormSubmission(const Event*,
                               HTMLFormControlElement* submit_button);
 
-  void CollectListedElements(Node& root, ListedElement::List&) const;
+  void CollectListedElements(
+      const Node& root,
+      ListedElement::List& elements,
+      ListedElement::List* elements_including_shadow_trees = nullptr,
+      bool in_shadow_tree = false) const;
   void CollectImageElements(Node& root, HeapVector<Member<HTMLImageElement>>&);
 
   // Returns true if the submission should proceed.
@@ -159,6 +166,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   // Do not access listed_elements_ directly. Use ListedElements() instead.
   ListedElement::List listed_elements_;
+  // Do not access listed_elements_including_shadow_trees_ directly. Use
+  // ListedElements(true) instead.
+  ListedElement::List listed_elements_including_shadow_trees_;
   // Do not access image_elements_ directly. Use ImageElements() instead.
   HeapVector<Member<HTMLImageElement>> image_elements_;
 
@@ -169,6 +179,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool is_constructing_entry_list_ = false;
 
   bool listed_elements_are_dirty_ : 1;
+  bool listed_elements_including_shadow_trees_are_dirty_ : 1;
   bool image_elements_are_dirty_ : 1;
   bool has_elements_associated_by_parser_ : 1;
   bool has_elements_associated_by_form_attribute_ : 1;

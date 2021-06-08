@@ -69,17 +69,6 @@ struct CategoryOfWords {
   const size_t non_latin_dictionary_size;
 };
 
-// Used only inside DCHECK.
-bool AllElementsBelongsToSameForm(
-    const std::vector<WebFormControlElement>& all_control_elements) {
-  return std::adjacent_find(all_control_elements.begin(),
-                            all_control_elements.end(),
-                            [](const WebFormControlElement& a,
-                               const WebFormControlElement& b) {
-                              return a.Form() != b.Form();
-                            }) == all_control_elements.end();
-}
-
 // 1. Removes delimiters from |raw_value| and appends the remainder to
 // |*field_data_value|. A sentinel symbol is added first if |*field_data_value|
 // is not empty.
@@ -290,16 +279,13 @@ void FindUsernameFieldInternal(
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache) {
+    UsernameDetectorCache* username_detector_cache,
+    const WebFormElement& form) {
   // The cache will store the object referenced in the return value, so it must
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
   DCHECK(!all_control_elements.empty());
-
-  // All elements in |all_control_elements| should have the same |Form()|.
-  DCHECK(AllElementsBelongsToSameForm(all_control_elements));
-  const WebFormElement form = all_control_elements.at(0).Form();
 
   // True if the cache has no entry for |form|.
   bool cache_miss = true;

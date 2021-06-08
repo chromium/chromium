@@ -983,5 +983,10 @@ const base::Feature kMinimizeAudioProcessingForUnusedOutput{
 const base::Feature kDialogFocusNewSpecBehavior{
     "DialogFocusNewSpecBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Makes autofill look across shadow boundaries when collecting form controls to
+// fill.
+const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
