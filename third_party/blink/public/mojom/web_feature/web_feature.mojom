@@ -3244,6 +3244,7 @@ enum WebFeature {
   kCSSSelectorPseudoHas = 3929,
   kHTMLMediaElementControlsListNoPlaybackRate = 3930,
   kDocumentTransition = 3931,
+  kSpeculationRules = 3932,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
