@@ -209,6 +209,9 @@ void TabHoverCardController::UpdateHoverCard(
   // then when the fade timer elapses we won't incorrectly try to fade in on the
   // wrong tab.
   if (target_tab_ != tab) {
+    target_tab_observation_.Reset();
+    if (tab)
+      target_tab_observation_.Observe(tab);
     target_tab_ = tab;
     delayed_show_timer_.Stop();
   }
@@ -316,7 +319,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
                                            const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
-  if (hover_card_ || target_tab_ != intended_tab)
+  if (hover_card_ || !target_tab_ || target_tab_ != intended_tab)
     return;
 
   CreateHoverCard(target_tab_);
@@ -362,15 +365,22 @@ bool TabHoverCardController::UseAnimations() {
 }
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
-  DCHECK_EQ(hover_card_, observed_view);
-  hover_card_observation_.Reset();
-  event_sniffer_.reset();
-  slide_progressed_subscription_ = base::CallbackListSubscription();
-  slide_complete_subscription_ = base::CallbackListSubscription();
-  fade_complete_subscription_ = base::CallbackListSubscription();
-  slide_animator_.reset();
-  fade_animator_.reset();
-  hover_card_ = nullptr;
+  if (hover_card_ == observed_view) {
+    hover_card_observation_.Reset();
+    event_sniffer_.reset();
+    slide_progressed_subscription_ = base::CallbackListSubscription();
+    slide_complete_subscription_ = base::CallbackListSubscription();
+    fade_complete_subscription_ = base::CallbackListSubscription();
+    slide_animator_.reset();
+    fade_animator_.reset();
+    hover_card_ = nullptr;
+  } else if (target_tab_ == observed_view) {
+    UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+    // These postconditions should always be met after calling
+    // UpdateHoverCard(nullptr, ...)
+    DCHECK(!target_tab_);
+    DCHECK(!target_tab_observation_.IsObserving());
+  }
 }
 
 size_t TabHoverCardController::GetTabCount() const {
