@@ -15,10 +15,6 @@ namespace features {
 // See https://crbug.com/1021193 for more details.
 ASH_PUBLIC_EXPORT extern const base::Feature kAllowAmbientEQ;
 
-// Enables the pre-load app window for ARC++ app during ARCVM booting stage on
-// full restore process.
-ASH_PUBLIC_EXPORT extern const base::Feature kArcGhostWindow;
-
 // Enables resize lock for ARC++ and puts restrictions on window resizing.
 // TODO(takise): Remove this after the feature is fully launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kArcResizeLock;
@@ -57,10 +53,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDisplayIdentification;
 // TODO(afakhry): Remove this after the feature is fully launched.
 // https://crbug.com/709824.
 ASH_PUBLIC_EXPORT extern const base::Feature kDockedMagnifier;
-
-// Enables the full restore feature. If this is enabled, we will restore apps
-// and app windows after a crash or reboot.
-ASH_PUBLIC_EXPORT extern const base::Feature kFullRestore;
 
 // Limits the windows listed in Alt-Tab to the ones in the currently active
 // desk.
@@ -200,8 +192,6 @@ ASH_PUBLIC_EXPORT bool IsAltTabLimitedToActiveDesk();
 
 ASH_PUBLIC_EXPORT bool IsPerDeskShelfEnabled();
 
-ASH_PUBLIC_EXPORT bool IsArcGhostWindowEnabled();
-
 ASH_PUBLIC_EXPORT bool IsArcResizeLockEnabled();
 
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
@@ -211,8 +201,6 @@ ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 ASH_PUBLIC_EXPORT bool IsCompositingBasedThrottlingEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
-
-ASH_PUBLIC_EXPORT bool IsFullRestoreEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideArcMediaNotificationsEnabled();
 

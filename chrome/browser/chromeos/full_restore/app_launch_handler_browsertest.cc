@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/split_view_test_api.h"
@@ -49,6 +48,7 @@
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -281,7 +281,8 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
   AppLaunchHandlerBrowserTest()
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::full_restore::features::kFullRestore);
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
   }
@@ -1557,7 +1558,8 @@ class AppLaunchHandlerSystemWebAppsBrowserTest
     : public SystemWebAppIntegrationTest {
  public:
   AppLaunchHandlerSystemWebAppsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::full_restore::features::kFullRestore);
   }
   ~AppLaunchHandlerSystemWebAppsBrowserTest() override = default;
 

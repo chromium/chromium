@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -205,7 +206,7 @@ bool CanIncludeWindowInMruList(aura::Window* window) {
 // MruWindowTracker, public:
 
 MruWindowTracker::MruWindowTracker() {
-  if (features::IsFullRestoreEnabled())
+  if (full_restore::features::IsFullRestoreEnabled())
     aura::Env::GetInstance()->AddObserver(this);
 
   Shell::Get()->activation_client()->AddObserver(this);
@@ -294,7 +295,7 @@ void MruWindowTracker::OnWindowActivated(ActivationReason reason,
 
   SetActiveWindow(gained_active);
 
-  if (gained_active && features::IsFullRestoreEnabled())
+  if (gained_active && full_restore::features::IsFullRestoreEnabled())
     FullRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
@@ -307,7 +308,7 @@ void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
 }
 
 void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
-  DCHECK(features::IsFullRestoreEnabled());
+  DCHECK(full_restore::features::IsFullRestoreEnabled());
 
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);

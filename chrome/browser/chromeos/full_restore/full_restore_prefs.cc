@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
+#include "components/full_restore/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -24,7 +24,7 @@ const char kRestoreSelectedCountPrefName[] =
     "full_restore.restore_selected_count";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  if (!ash::features::IsFullRestoreEnabled())
+  if (!::full_restore::features::IsFullRestoreEnabled())
     return;
 
   registry->RegisterIntegerPref(

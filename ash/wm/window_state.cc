@@ -10,7 +10,6 @@
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
@@ -188,7 +188,7 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
 
 // Notifies the full restore controller to write to file.
 void SaveWindowForFullRestore(WindowState* window_state) {
-  if (!features::IsFullRestoreEnabled())
+  if (!full_restore::features::IsFullRestoreEnabled())
     return;
 
   auto* controller = FullRestoreController::Get();

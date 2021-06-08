@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -77,7 +77,8 @@ class FullRestoreServiceTest : public testing::Test {
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::full_restore::features::kFullRestore);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;

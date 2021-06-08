@@ -9,7 +9,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -25,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -203,7 +203,7 @@ bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
     if (topmost_visible_iter != active_desk_children.rend() &&
         (*topmost_visible_iter)
             ->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
-      DCHECK(features::IsFullRestoreEnabled());
+      DCHECK(full_restore::features::IsFullRestoreEnabled());
       return false;
     }
   }

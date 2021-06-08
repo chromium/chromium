@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/app_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -34,8 +34,7 @@ namespace {
 // request (Shift+F4/F4).
 class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
  public:
-  explicit BrowserWindowStateDelegate(Browser* browser)
-      : browser_(browser) {
+  explicit BrowserWindowStateDelegate(Browser* browser) : browser_(browser) {
     DCHECK(browser_);
   }
   ~BrowserWindowStateDelegate() override {}
@@ -63,8 +62,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
 BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
                                  BrowserView* browser_view)
-    : views::NativeWidgetAura(browser_frame),
-      browser_view_(browser_view) {
+    : views::NativeWidgetAura(browser_frame), browser_view_(browser_view) {
   GetNativeWindow()->SetName("BrowserFrameAsh");
   Browser* browser = browser_view->browser();
 
@@ -127,7 +125,7 @@ void BrowserFrameAsh::GetWindowPlacement(
     // Widget/NativeWidgetAura the window is a normal window, so get the restore
     // bounds directly from the ash window state.
     bool used_window_state_restore_bounds = false;
-    if (ash::features::IsFullRestoreEnabled()) {
+    if (full_restore::features::IsFullRestoreEnabled()) {
       auto* window_state = ash::WindowState::Get(window);
       if (window_state->IsSnapped() && window_state->HasRestoreBounds()) {
         // Additionally, if the window is closed, and not from logging out we

@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/window_properties.h"
@@ -46,6 +45,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/system/sys_info.h"
+#include "components/full_restore/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -739,7 +739,7 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
   // Windows created by full restore are not activatable while being restored.
   // However, we still want to be able to snap these windows at this point.
   bool restoring_snap_state = false;
-  if (features::IsFullRestoreEnabled()) {
+  if (full_restore::features::IsFullRestoreEnabled()) {
     restoring_snap_state =
         FullRestoreController::Get()->is_restoring_snap_state();
   }

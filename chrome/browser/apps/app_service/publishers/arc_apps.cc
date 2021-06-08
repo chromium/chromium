@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -47,6 +46,7 @@
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -439,7 +439,8 @@ apps::mojom::WindowInfoPtr SetSessionId(
     window_info->display_id = display::kInvalidDisplayId;
   }
 
-  if (!ash::features::IsFullRestoreEnabled() || window_info->window_id != -1) {
+  if (!full_restore::features::IsFullRestoreEnabled() ||
+      window_info->window_id != -1) {
     return window_info;
   }
 

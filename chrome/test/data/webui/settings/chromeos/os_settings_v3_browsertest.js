@@ -8,6 +8,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ash_features.h"');
+GEN('#include "components/full_restore/features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -78,7 +79,7 @@ var OSSettingsOnStartupPageV3Test = class extends OSSettingsV3BrowserTest {
 
   /** @override */
   get featureList() {
-    return {enabled: ['ash::features::kFullRestore']};
+    return {enabled: ['full_restore::features::kFullRestore']};
   }
 };
 
@@ -400,7 +401,8 @@ function registerTest(testName, module, caseName) {
   this[className] = class extends OSSettingsV3BrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://os-settings/test_loader.html?module=settings/chromeos/${module}`;
+      return `chrome://os-settings/test_loader.html?module=settings/chromeos/${
+          module}`;
     }
   };
 

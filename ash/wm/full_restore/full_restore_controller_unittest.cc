@@ -6,7 +6,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -24,6 +23,7 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -241,7 +241,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        full_restore::features::kFullRestore);
 
     AshTestBase::SetUp();
 

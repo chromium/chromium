@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "components/full_restore/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
@@ -46,7 +46,9 @@ class ArcWindowUtilsTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kFullRestore, ash::features::kArcGhostWindow}, {});
+        {::full_restore::features::kFullRestore,
+         ::full_restore::features::kArcGhostWindow},
+        {});
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
   }
 

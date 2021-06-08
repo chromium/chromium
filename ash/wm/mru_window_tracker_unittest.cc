@@ -4,7 +4,6 @@
 
 #include "ash/wm/mru_window_tracker.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -12,6 +11,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
@@ -163,7 +163,8 @@ class MruWindowTrackerFullRestoreTest : public MruWindowTrackerTest {
 
   // MruWindowTrackerTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        full_restore::features::kFullRestore);
     MruWindowTrackerTest::SetUp();
   }
 

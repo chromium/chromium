@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
+#include "components/full_restore/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -26,7 +26,8 @@ class FullRestorePrefsTest : public testing::Test {
       : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::full_restore::features::kFullRestore);
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   }

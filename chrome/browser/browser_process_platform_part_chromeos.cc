@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -51,6 +50,7 @@
 #include "chromeos/timezone/timezone_resolver.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
+#include "components/full_restore/features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -108,7 +108,7 @@ void BrowserProcessPlatformPart::BrowserRestoreObserver::OnBrowserAdded(
 bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
     Browser* browser) {
   // If the full restore feature is not enabled, don't open urls.
-  if (!ash::features::IsFullRestoreEnabled())
+  if (!full_restore::features::IsFullRestoreEnabled())
     return false;
 
   Profile* profile = browser->profile();

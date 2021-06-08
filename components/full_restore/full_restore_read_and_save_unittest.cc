@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -14,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/app_restore_data.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -151,7 +151,8 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(
+        full_restore::features::kFullRestore);
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
   }
 
