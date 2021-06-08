@@ -1033,7 +1033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.EventlessEventPages" units="units"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3101,8 +3101,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.PopupCreateTime" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2022-06-30">
   <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     The time taken between a user clicking on a button to open a popup, and the
     popup finishing loading its initial URL. This is a good way to measure the
@@ -3114,8 +3115,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.PopupLoadTime2" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2022-06-30">
   <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     The time taken for an extension popup to load its initial URL. This may not
     include the time taken for an extension process to start, if the extension
@@ -3391,8 +3393,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.SyncGetMessageBundle" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2022-06-30">
   <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     The amount of synchronous time spent retrieving an extension's message
     bundle (the collection of its i18n resources) from the browser.
@@ -3400,7 +3403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ThrottledNetworkRequestDelay" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
