@@ -25,6 +25,12 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -111,7 +117,14 @@ public class PriceDropNotificationManager {
                     NotificationIntentInterceptor.INVALID_CREATE_TIME);
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
             if (offerId == null) return;
-            // TODO(crbug.com/1205194): Unsubscribe the subscription related to this offerId.
+            SubscriptionsManagerImpl subscriptionsManager =
+                    (new CommerceSubscriptionsServiceFactory())
+                            .getForLastUsedProfile()
+                            .getSubscriptionsManager();
+            subscriptionsManager.unsubscribe(
+                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
+                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID),
+                    (didSucceed) -> { assert didSucceed : "Failed to remove subscriptions."; });
             NotificationUmaTracker.getInstance().onNotificationActionClick(
                     NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
                     NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
