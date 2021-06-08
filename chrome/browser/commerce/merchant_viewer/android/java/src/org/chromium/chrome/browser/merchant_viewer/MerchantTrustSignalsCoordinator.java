@@ -21,6 +21,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -92,7 +93,7 @@ public class MerchantTrustSignalsCoordinator {
         } else {
             mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN);
 
-            getDataForUnfamiliarMerchant(item.getUrl(), (trustSignals) -> {
+            getDataForUnfamiliarMerchant(item.getNavigationHandle(), (trustSignals) -> {
                 if (trustSignals == null) {
                     return;
                 }
@@ -121,21 +122,22 @@ public class MerchantTrustSignalsCoordinator {
                 messageContext.getHostName(), System.currentTimeMillis()));
     }
 
-    private void getDataForUnfamiliarMerchant(GURL url, Callback<MerchantTrustSignals> callback) {
+    private void getDataForUnfamiliarMerchant(
+            NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
-        if (storage == null) {
+        if (storage == null || navigationHandle == null || navigationHandle.getUrl() == null) {
             return;
         }
 
-        storage.load(url.getHost(), (event) -> {
+        storage.load(navigationHandle.getUrl().getHost(), (event) -> {
             if (event == null) {
-                mDataProvider.getDataForUrl(url, callback);
+                mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
             } else if (System.currentTimeMillis() - event.getTimestamp()
                     > TimeUnit.SECONDS.toMillis(
                             MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_SECONDS
                                     .getValue())) {
                 storage.delete(event);
-                mDataProvider.getDataForUrl(url, callback);
+                mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
             } else {
                 callback.onResult(null);
             }

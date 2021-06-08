@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -38,17 +39,21 @@ public class MerchantTrustMessageContextTest {
     @Mock
     private WebContents mMockWebContents;
 
+    @Mock
+    private NavigationHandle mMockNavigationHandle;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn("fake_host").when(mMockGurl).getHost();
+        doReturn(mMockGurl).when(mMockNavigationHandle).getUrl();
     }
 
     @Test
     public void testIsValid() {
         doReturn(false).when(mMockWebContents).isDestroyed();
         MerchantTrustMessageContext context =
-                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents);
         assertTrue(context.isValid());
     }
 
@@ -56,7 +61,7 @@ public class MerchantTrustMessageContextTest {
     public void testIsValidDestroyedWebContents() {
         doReturn(true).when(mMockWebContents).isDestroyed();
         MerchantTrustMessageContext context =
-                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents);
         assertFalse(context.isValid());
     }
 
@@ -65,7 +70,7 @@ public class MerchantTrustMessageContextTest {
         doReturn(false).when(mMockWebContents).isDestroyed();
         doReturn(true).when(mMockGurl).isEmpty();
         MerchantTrustMessageContext context =
-                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents);
         assertFalse(context.isValid());
     }
 
@@ -79,7 +84,8 @@ public class MerchantTrustMessageContextTest {
 
     @Test
     public void testIsValidNullWebContents() {
-        MerchantTrustMessageContext context = new MerchantTrustMessageContext(mMockGurl, null);
+        MerchantTrustMessageContext context =
+                new MerchantTrustMessageContext(mMockNavigationHandle, null);
         assertFalse(context.isValid());
     }
 
@@ -87,18 +93,14 @@ public class MerchantTrustMessageContextTest {
     public void testGetHostName() {
         assertEquals("", (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
         assertEquals("fake_host",
-                (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getHostName());
+                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+                        .getHostName());
     }
 
     @Test
     public void testGetWebContents() {
         assertEquals(mMockWebContents,
-                (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getWebContents());
-    }
-
-    @Test
-    public void testGetUrl() {
-        assertEquals(
-                mMockGurl, (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getUrl());
+                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+                        .getWebContents());
     }
 }

@@ -9,7 +9,7 @@ import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOut
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
-import org.chromium.url.GURL;
+import org.chromium.content_public.browser.NavigationHandle;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,9 +24,10 @@ class MerchantTrustSignalsDataProvider {
                     Arrays.asList(HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS));
 
     /** Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge}. */
-    public void getDataForUrl(GURL url, Callback<MerchantTrustSignals> callback) {
-        sOptimizationGuideBridgeFactory.create().canApplyOptimization(
-                url, HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
+    public void getDataForNavigationHandle(
+            NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
+        sOptimizationGuideBridgeFactory.create().canApplyOptimization(navigationHandle,
+                HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
                     if (decision != OptimizationGuideDecision.TRUE || metadata == null) {
                         callback.onResult(null);
                         return;

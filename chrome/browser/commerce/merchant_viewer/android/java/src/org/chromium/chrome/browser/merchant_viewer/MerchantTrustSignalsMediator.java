@@ -44,7 +44,7 @@ class MerchantTrustSignalsMediator {
             }
 
             mDelegate.maybeDisplayMessage(
-                    new MerchantTrustMessageContext(navigation.getUrl(), mCurrentWebContents));
+                    new MerchantTrustMessageContext(navigation, mCurrentWebContents));
         }
     };
 
