@@ -486,9 +486,7 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
   auto* local_dom_window = CurrentDOMWindow(isolate);
   // Determine if the access check failure was because of cross-origin or if the
   // WindowAgentFactory is different. If the WindowAgentFactories are different
-  // it indicates that the "disallowdocumentaccess" attribute was used on an
-  // iframe somewhere in the ancestor chain so report the error as "restricted"
-  // instead of "cross-origin".
+  // so report the error as "restricted" instead of "cross-origin".
   DOMWindow::CrossDocumentAccessPolicy cross_document_access =
       (!target->ToLocalDOMWindow() ||
        IsSameWindowAgentFactory(local_dom_window, target->ToLocalDOMWindow()))

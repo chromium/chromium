@@ -305,16 +305,6 @@ void HTMLFrameOwnerElement::SetSandboxFlags(
   }
 }
 
-void HTMLFrameOwnerElement::SetDisallowDocumentAccesss(bool disallowed) {
-  frame_policy_.disallow_document_access = disallowed;
-  // Don't notify about updates if ContentFrame() is null, for example when
-  // the subframe hasn't been created yet.
-  if (ContentFrame()) {
-    GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeFramePolicy(
-        ContentFrame()->GetFrameToken(), frame_policy_);
-  }
-}
-
 bool HTMLFrameOwnerElement::IsKeyboardFocusable() const {
   return content_frame_ && HTMLElement::IsKeyboardFocusable();
 }

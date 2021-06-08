@@ -558,10 +558,6 @@ void WebRuntimeFeatures::EnableAutomationControlled(bool enable) {
   RuntimeEnabledFeatures::SetAutomationControlledEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableDisallowDocumentAccess(bool enable) {
-  RuntimeEnabledFeatures::SetDisallowDocumentAccessEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableDisplayCutoutAPI(bool enable) {
   RuntimeEnabledFeatures::SetDisplayCutoutAPIEnabled(enable);
 }

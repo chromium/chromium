@@ -204,7 +204,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   WindowAgentFactory* window_agent_factory = nullptr;
   if (opener) {
     window_agent_factory = &ToCoreFrame(*opener)->window_agent_factory();
-  } else if (!frame_policy.disallow_document_access) {
+  } else {
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 
@@ -280,7 +280,7 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
   WindowAgentFactory* window_agent_factory = nullptr;
   if (opener) {
     window_agent_factory = &ToCoreFrame(*opener)->window_agent_factory();
-  } else if (!frame_policy.disallow_document_access) {
+  } else {
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 

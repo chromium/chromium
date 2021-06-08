@@ -27,8 +27,7 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   FramePolicy();
   FramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
               const ParsedPermissionsPolicy& container_policy,
-              const DocumentPolicyFeatureState& required_document_policy,
-              bool disallow_document_access = false);
+              const DocumentPolicyFeatureState& required_document_policy);
   FramePolicy(const FramePolicy& lhs);
   ~FramePolicy();
 
@@ -39,10 +38,6 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   // - 'Require-Document-Policy' http header
   // - |required_document_policy| of parent frame
   DocumentPolicyFeatureState required_document_policy;
-
-  // Whether or not a frame allows direct script access across frame
-  // boundaries.
-  bool disallow_document_access = false;
 };
 
 }  // namespace blink

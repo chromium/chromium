@@ -33,7 +33,6 @@
     [PutForwards=value] readonly attribute DOMTokenList sandbox;
     // Note: The seamless attribute was once supported, but was removed.
     [CEReactions, Reflect] attribute boolean allowFullscreen;
-    [RuntimeEnabled=DisallowDocumentAccess, CEReactions, Reflect] attribute boolean disallowDocumentAccess;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
 

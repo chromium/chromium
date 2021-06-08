@@ -10,18 +10,15 @@ namespace blink {
 FramePolicy::FramePolicy()
     : sandbox_flags(network::mojom::WebSandboxFlags::kNone),
       container_policy({}),
-      required_document_policy({}),
-      disallow_document_access(false) {}
+      required_document_policy({}) {}
 
 FramePolicy::FramePolicy(
     network::mojom::WebSandboxFlags sandbox_flags,
     const ParsedPermissionsPolicy& container_policy,
-    const DocumentPolicyFeatureState& required_document_policy,
-    bool disallow_document_access)
+    const DocumentPolicyFeatureState& required_document_policy)
     : sandbox_flags(sandbox_flags),
       container_policy(container_policy),
-      required_document_policy(required_document_policy),
-      disallow_document_access(disallow_document_access) {}
+      required_document_policy(required_document_policy) {}
 
 FramePolicy::FramePolicy(const FramePolicy& lhs) = default;
 

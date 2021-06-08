@@ -231,12 +231,6 @@ void HTMLIFrameElement::ParseAttribute(
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
     }
-  } else if (name == html_names::kDisallowdocumentaccessAttr &&
-             RuntimeEnabledFeatures::DisallowDocumentAccessEnabled()) {
-    UseCounter::Count(GetDocument(), WebFeature::kDisallowDocumentAccess);
-    SetDisallowDocumentAccesss(!value.IsNull());
-    // We don't need to call tell the client frame properties
-    // changed since this attribute only stays inside the renderer.
   } else if (name == html_names::kPolicyAttr) {
     if (required_policy_ != value) {
       required_policy_ = value;

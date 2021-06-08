@@ -9,8 +9,6 @@ namespace mojo {
 bool StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy>::Read(
     blink::mojom::FramePolicyDataView in,
     blink::FramePolicy* out) {
-  out->disallow_document_access = in.disallow_document_access();
-
   // TODO(chenleihu): Add sanity check on enum values in
   // required_document_policy.
   return in.ReadSandboxFlags(&out->sandbox_flags) &&
