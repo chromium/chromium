@@ -18,6 +18,9 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogInstallPendingProfileResult(HermesResponseStatus status);
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
+    LogEnableProfileResult(HermesResponseStatus status);
+
+void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogDisableProfileResult(HermesResponseStatus status);
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)

@@ -19,6 +19,11 @@ void LogInstallPendingProfileResult(HermesResponseStatus status) {
       "Network.Cellular.ESim.InstallPendingProfile.Result", status);
 }
 
+void LogEnableProfileResult(HermesResponseStatus status) {
+  base::UmaHistogramEnumeration("Network.Cellular.ESim.EnableProfile.Result",
+                                status);
+}
+
 void LogDisableProfileResult(HermesResponseStatus status) {
   base::UmaHistogramEnumeration("Network.Cellular.ESim.DisableProfile.Result",
                                 status);

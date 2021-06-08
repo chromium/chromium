@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
@@ -91,6 +92,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
       ErrorCallback error_callback);
 
  private:
+  friend class CellularConnectionHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, NoService);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           ServiceAlreadyConnectable);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, FailsInhibiting);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, NoRelevantEuicc);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           FailsRequestingInstalledProfiles);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           TimeoutWaitingForConnectable);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, Success);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           Success_AlreadyEnabled);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, ConnectToStub);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, MultipleRequests);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, NewProfile);
+
   struct ConnectionRequestMetadata {
     ConnectionRequestMetadata(const std::string& iccid,
                               SuccessCallback success_callback,
@@ -123,6 +141,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConnectionState& step);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PrepareCellularConnectionResult {
+    kSuccess = 0,
+    kCouldNotFindNetworkWithIccid = 1,
+    kInhibitFailed = 2,
+    kCouldNotFindRelevantEuicc = 3,
+    kRefreshProfilesFailed = 4,
+    kCouldNotFindRelevantESimProfile = 5,
+    kEnableProfileFailed = 6,
+    kTimeoutWaitingForConnectable = 7,
+    kMaxValue = kTimeoutWaitingForConnectable
+  };
+  static absl::optional<std::string> ResultToErrorString(
+      PrepareCellularConnectionResult result);
+
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
@@ -134,9 +168,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   void ProcessRequestQueue();
   void TransitionToConnectionState(ConnectionState state);
 
-  // If |error_name| is is non-null, invokes the error callback. If |error_name|
-  // is non-null and a relevant network exists, invokes the success callback.
-  void CompleteConnectionAttempt(const absl::optional<std::string>& error_name);
+  // Invokes the success or error callback, depending on |result|.
+  void CompleteConnectionAttempt(PrepareCellularConnectionResult result);
 
   const NetworkState* GetNetworkStateForCurrentOperation() const;
   absl::optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
