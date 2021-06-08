@@ -3367,6 +3367,8 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
       NGFragmentItems::ClearAssociatedFragments(this);
     }
   }
+  // |layout_results_| is particularly critical when side effects are disabled.
+  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.Shrink(results_to_keep);
 }
 
