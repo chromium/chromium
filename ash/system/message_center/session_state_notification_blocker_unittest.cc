@@ -71,9 +71,9 @@ class SessionStateNotificationBlockerTest
   bool ShouldShowNotificationAsPopup(
       const message_center::NotifierId& notifier_id) {
     message_center::Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "chromeos-id",
-        u"chromeos-title", u"chromeos-message", gfx::Image(),
-        u"chromeos-source", GURL(), notifier_id,
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
+        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -104,13 +104,13 @@ TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, "test-notifier");
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Login screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
@@ -174,12 +174,12 @@ TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, "test-notifier");
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
 
   // Login screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
 
   // Simulates login event sequence in production code:
   // - Add a user session;
@@ -193,11 +193,11 @@ TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
                                             user_manager::USER_TYPE_REGULAR,
                                             false /* provide_pref_service */);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
 
   session_controller_client->SwitchActiveUser(kUserAccountId);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
 
   session_controller_client->SetSessionState(SessionState::ACTIVE);
   EXPECT_EQ(1, GetStateChangedCountAndReset());

@@ -48,12 +48,6 @@ bool CalculateShouldShowPopup() {
   SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
-  // Enable popup in OOBE and login screen to display system notifications
-  // (wifi, etc.).
-  if (session_controller->GetSessionState() == SessionState::OOBE ||
-      session_controller->GetSessionState() == SessionState::LOGIN_PRIMARY)
-    return true;
-
   if (session_controller->IsRunningInAppMode() ||
       session_controller->GetSessionState() != SessionState::ACTIVE) {
     return false;
@@ -118,10 +112,8 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
   if (session_controller->IsRunningInAppMode())
     return false;
 
-  if (notification.notifier_id().profile_id.empty() &&
-      notification.priority() >= message_center::SYSTEM_PRIORITY) {
+  if (notification.id() == BatteryNotification::kNotificationId)
     return true;
-  }
 
   return should_show_popup_;
 }
