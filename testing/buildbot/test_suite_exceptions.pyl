@@ -117,13 +117,6 @@
       },
     },
   },
-  'angle_perftests': {
-    'remove_from': [
-      'Android FYI Release (Nexus 5)',  # crbug.com/915429
-      'Android FYI Release (Nexus 6)',  # anglebug.com/2433
-      'Linux FYI GPU TSAN Release',  # crbug.com/950542
-    ],
-  },
   'angle_unittests': {
     'remove_from': [
       # On Android, these are already run on the main waterfall.

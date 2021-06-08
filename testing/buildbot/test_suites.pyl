@@ -2378,60 +2378,6 @@
       },
     },
 
-    # The angle perf tests should eventually be run on every platform
-    # ANGLE supports. Currently they run on Windows, Linux and Android.
-    'gpu_angle_perf_smoke_isolated_scripts': {
-      'angle_perftests': {
-        'args': [
-          'angle_perftests',
-          '--non-telemetry=true',
-          '--gtest-benchmark-name=angle_perftests',
-          '-v',
-          # Tell the tests to exit after one frame for faster iteration.
-          '--one-frame-only',
-          '--test-timeout=100',
-        ],
-        'android_args': [
-          '--test-launcher-batch-limit=1',
-        ],
-        'desktop_args': [
-          '--batch-size=1',
-          '--bot-mode',
-          '--max-processes=1',
-          '--print-test-stdout',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          # Does not upload to the perf dashboard
-          'args': [
-            '--smoke-test-mode',
-          ],
-        },
-        'swarming': {
-          'shards': 2,
-        },
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-    },
-
-    'gpu_angle_restricted_trace_gold_isolated_scripts': {
-      'angle_restricted_trace_gold_tests': {
-        'android_args': [
-          '-v',
-        ],
-        'args': [
-          '--test-machine-name',
-          '${buildername}',
-        ],
-        'mixins': [
-          'angle_skia_gold_test',
-          'chrome-gpu-gold-service-account',
-        ],
-      }
-    },
-
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
         'args': [
@@ -5969,17 +5915,6 @@
 
     # BEGIN composition test suites used by the GPU bots
 
-    'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'gpu_angle_restricted_trace_gold_isolated_scripts',
-      'rendering_desktop_representative_perf_tests_isolated_scripts',
-    ],
-
-    'gpu_angle_and_mobile_representative_perf_fyi_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'rendering_mobile_representative_perf_tests_isolated_scripts',
-    ],
-
     'gpu_angle_android_gtests': [
       'gpu_angle_deqp_egl_gles_gtests',
       'gpu_angle_deqp_gles2_gles_gtests',
@@ -6015,25 +5950,9 @@
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
-    'gpu_angle_fyi_win_optional_and_representative_perf_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'gpu_command_buffer_perf_passthrough_isolated_scripts',
-      'rendering_desktop_representative_perf_tests_isolated_scripts',
-    ],
-
-    'gpu_angle_fyi_win_optional_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'gpu_command_buffer_perf_passthrough_isolated_scripts',
-    ],
-
     'gpu_angle_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
-    ],
-
-    'gpu_angle_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'gpu_angle_restricted_trace_gold_isolated_scripts',
     ],
 
     'gpu_angle_linux_gtests': [
@@ -6099,11 +6018,6 @@
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_angle_perf_smoke_isolated_scripts_and_test_buildbucket_api_gpu_use_cases': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'test_buildbucket_api_gpu_use_cases',
     ],
 
     'gpu_angle_win7_nvidia_gtests': [
@@ -6253,6 +6167,10 @@
       'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
       'gpu_desktop_specific_gtests',
+    ],
+
+    'gpu_desktop_representative_perf_fyi_isolated_scripts': [
+      'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
     'gpu_fyi_android_gtests': [
@@ -6536,9 +6454,7 @@
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
 
-    'gpu_fyi_win_nvidia_release_x64_isolated_scripts': [
-      'gpu_angle_perf_smoke_isolated_scripts',
-      'gpu_angle_restricted_trace_gold_isolated_scripts',
+    'gpu_fyi_win_optional_and_representative_perf_isolated_scripts': [
       'gpu_command_buffer_perf_passthrough_isolated_scripts',
       'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
@@ -6554,6 +6470,10 @@
       'gpu_swiftshader_gtests',
     ],
 
+    'gpu_fyi_win_optional_isolated_scripts': [
+      'gpu_command_buffer_perf_passthrough_isolated_scripts',
+    ],
+
     'gpu_fyi_win_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -6563,6 +6483,10 @@
       'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
+    ],
+
+    'gpu_mobile_representative_perf_fyi_isolated_scripts': [
+      'rendering_mobile_representative_perf_tests_isolated_scripts',
     ],
 
     'gpu_nexus5x_telemetry_tests': [
@@ -6627,6 +6551,10 @@
     'gpu_swangle_telemetry_tests': [
       'gpu_webgl_conformance_swangle_passthrough_telemetry_tests',
       'gpu_webgl_conformance_swiftshader_validating_telemetry_tests',
+    ],
+
+    'gpu_test_buildbucket_api_gpu_use_cases': [
+      'test_buildbucket_api_gpu_use_cases',
     ],
 
     'gpu_v8_desktop_passthrough_telemetry_tests': [

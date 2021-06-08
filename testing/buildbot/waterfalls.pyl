@@ -1169,7 +1169,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_android_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
         },
       },
       'android-angle-chromium-arm64-builder': {},
@@ -1238,7 +1237,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_intel_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'linux-angle-nvidia': {
@@ -1248,7 +1246,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_nvidia_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'mac-angle-amd': {
@@ -1334,7 +1331,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_win_intel_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'win10-angle-x64-nvidia': {
@@ -1344,7 +1340,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_win_nvidia_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'win7-angle-chromium-x86-amd': {
@@ -3771,7 +3766,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_angle_gtests',
           'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
         },
       },
       'ANGLE GPU Linux Release (Intel HD 630)': {
@@ -3783,7 +3777,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_gtests',
           'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'ANGLE GPU Linux Release (NVIDIA)': {
@@ -3795,7 +3788,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_gtests',
           'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       # END Fake builder used as mirror targets for ANGLE's GPU tryservers
@@ -3840,7 +3832,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'isolated_scripts': 'gpu_angle_and_mobile_representative_perf_fyi_isolated_scripts',
+          'isolated_scripts': 'gpu_mobile_representative_perf_fyi_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
@@ -3857,7 +3849,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
@@ -3873,7 +3864,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
@@ -4037,7 +4027,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_restricted_trace_gold_isolated_scripts',
         },
       },
       'Linux FYI Experimental Release (NVIDIA)': {
@@ -4052,7 +4041,6 @@
         # should be running the same tests as 'Linux FYI Release (NVIDIA)'.
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_and_dawn_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
         },
       },
@@ -4067,7 +4055,6 @@
           # This bot doesn't run any browser-based tests
           # (tab_capture_end2end_tests) either.
           'gtest_tests': 'gpu_fyi_linux_debug_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
         },
       },
       'Linux FYI Release (AMD RX 5500 XT)': {
@@ -4082,7 +4069,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
         },
       },
@@ -4095,7 +4081,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_restricted_trace_gold_isolated_scripts',
         },
       },
       'Linux FYI Release (Intel UHD 630)': {
@@ -4108,7 +4093,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_restricted_trace_gold_isolated_scripts',
         },
       },
       'Linux FYI Release (NVIDIA)': {
@@ -4120,7 +4104,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'Linux FYI SkiaRenderer Dawn Release (Intel HD 630)': {
@@ -4386,7 +4369,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_optional_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts_and_test_buildbucket_api_gpu_use_cases',
+          'isolated_scripts': 'gpu_test_buildbucket_api_gpu_use_cases',
           'gpu_telemetry_tests': 'gpu_fyi_optional_linux_telemetry_tests',
         },
       },
@@ -4434,7 +4417,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_optional_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_optional_win_intel_telemetry_tests',
         },
       },
@@ -4446,7 +4428,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_optional_gtests',
-          'isolated_scripts': 'gpu_angle_fyi_win_optional_isolated_scripts',
+          'isolated_scripts': 'gpu_fyi_win_optional_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_optional_win_telemetry_tests',
         },
       },
@@ -4493,7 +4475,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts',
+          'isolated_scripts': 'gpu_desktop_representative_perf_fyi_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
@@ -4511,7 +4493,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
-          'isolated_scripts': 'gpu_fyi_win_nvidia_release_x64_isolated_scripts',
+          'isolated_scripts': 'gpu_fyi_win_optional_and_representative_perf_isolated_scripts',
         },
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
@@ -4525,7 +4507,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts',
+          'isolated_scripts': 'gpu_desktop_representative_perf_fyi_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_amd_release_telemetry_tests',
         },
       },
@@ -4537,7 +4519,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts',
+          'isolated_scripts': 'gpu_desktop_representative_perf_fyi_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
@@ -4564,7 +4546,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
-          'isolated_scripts': 'gpu_fyi_win_nvidia_release_x64_isolated_scripts',
+          'isolated_scripts': 'gpu_fyi_win_optional_and_representative_perf_isolated_scripts',
         },
       },
       'Win10 FYI x64 Release XR Perf (NVIDIA)': {
@@ -4596,7 +4578,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_angle_fyi_win_optional_and_representative_perf_isolated_scripts',
+          'isolated_scripts': 'gpu_fyi_win_optional_and_representative_perf_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
       },

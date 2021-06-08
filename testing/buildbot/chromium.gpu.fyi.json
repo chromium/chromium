@@ -82,50 +82,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--test-launcher-batch-limit=1"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
           "webgl_conformance",
           "--show-stdout",
           "--browser=android-chromium",
@@ -326,73 +282,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
       {
         "args": [
           "info_collection",
@@ -696,73 +585,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
       {
         "args": [
           "info_collection",
@@ -2327,50 +2149,6 @@
       },
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--test-launcher-batch-limit=1"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=android-chromium",
@@ -3842,51 +3620,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--test-launcher-batch-limit=1"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "M",
-              "device_os_type": "userdebug",
-              "device_type": "flounder",
-              "os": "Android",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
       {
         "args": [
           "context_lost",
@@ -8168,38 +7901,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-20.0.8",
-              "os": "Ubuntu-18.04.5",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release",
@@ -8947,43 +8648,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:2184",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release",
@@ -9606,8 +9270,7 @@
         "test": "swiftshader_unittests",
         "test_id_prefix": "ninja://third_party/swiftshader/tests/GLESUnitTests:swiftshader_unittests/"
       }
-    ],
-    "isolated_scripts": []
+    ]
   },
   "Linux FYI Release (AMD RX 5500 XT)": {
     "gtest_tests": [
@@ -9821,43 +9484,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
       {
         "args": [
           "context_lost",
@@ -10484,37 +10110,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
       {
         "args": [
           "context_lost",
@@ -11167,38 +10762,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release",
@@ -11823,73 +11386,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
       {
         "args": [
           "context_lost",
@@ -26360,42 +25856,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
           "info_collection",
           "--show-stdout",
           "--browser=release",
@@ -28619,42 +28079,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
           "info_collection",
           "--show-stdout",
           "--browser=release_x64",
@@ -29228,42 +28652,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
       {
         "args": [
           "info_collection",
@@ -30872,75 +30260,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.7870|8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.7870|8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release_x64",
@@ -31955,75 +31274,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release_x64",
@@ -33002,75 +32252,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "1002:7340",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "1002:7340",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu.experimental"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release_x64",
@@ -33997,73 +33178,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
       {
         "args": [
           "context_lost",
@@ -35967,73 +35081,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
-      {
-        "args": [
-          "--test-machine-name",
-          "${buildername}",
-          "--git-revision=${got_angle_revision}"
-        ],
-        "isolate_name": "angle_restricted_trace_gold_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_restricted_trace_gold_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests/"
-      },
-      {
-        "args": [
           "context_lost",
           "--show-stdout",
           "--browser=release_x64",
@@ -37136,42 +36183,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "args": [
-          "angle_perftests",
-          "--non-telemetry=true",
-          "--gtest-benchmark-name=angle_perftests",
-          "-v",
-          "--one-frame-only",
-          "--test-timeout=100",
-          "--batch-size=1",
-          "--bot-mode",
-          "--max-processes=1",
-          "--print-test-stdout"
-        ],
-        "isolate_name": "angle_perftests",
-        "merge": {
-          "args": [
-            "--smoke-test-mode"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "angle_perftests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-27.21.14.5148",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
-      },
       {
         "args": [
           "context_lost",
