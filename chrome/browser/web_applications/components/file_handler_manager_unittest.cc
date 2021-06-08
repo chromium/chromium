@@ -10,9 +10,10 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,18 +119,28 @@ class FileHandlerManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    registrar_ = std::make_unique<TestAppRegistrar>();
-    file_handler_manager_ = std::make_unique<TestFileHandlerManager>(profile());
+    test_registry_controller_ =
+        std::make_unique<TestWebAppRegistryController>();
+    test_registry_controller_->SetUp(profile());
 
-    file_handler_manager_->SetSubsystems(registrar_.get());
+    file_handler_manager_ = std::make_unique<TestFileHandlerManager>(profile());
+    file_handler_manager_->SetSubsystems(&app_registrar());
+
+    controller().Init();
   }
 
   TestFileHandlerManager& file_handler_manager() {
     return *file_handler_manager_.get();
   }
 
+  TestWebAppRegistryController& controller() {
+    return *test_registry_controller_;
+  }
+
+  WebAppRegistrar& app_registrar() { return controller().registrar(); }
+
  private:
-  std::unique_ptr<TestAppRegistrar> registrar_;
+  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<TestFileHandlerManager> file_handler_manager_;
 
   base::test::ScopedFeatureList features_;
