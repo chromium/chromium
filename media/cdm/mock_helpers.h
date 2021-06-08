@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "media/cdm/cdm_allocator.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
 #include "media/cdm/cdm_helpers.h"
@@ -51,7 +52,9 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
   MOCK_METHOD1(GetStorageIdCalled, std::vector<uint8_t>(uint32_t version));
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
+#if defined(OS_WIN)
   MOCK_METHOD(void, GetCdmOriginId, (GetCdmOriginIdCB callback), (override));
+#endif  // defined(OS_WIN)
 
  private:
   std::unique_ptr<CdmAllocator> allocator_;

@@ -49,8 +49,10 @@ void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   std::move(callback).Run(version, std::vector<uint8_t>());
 }
 
+#if defined(OS_WIN)
 void CdmAuxiliaryHelper::GetCdmOriginId(GetCdmOriginIdCB callback) {
   std::move(callback).Run(base::UnguessableToken::Null());
 }
+#endif  // defined(OS_WIN)
 
 }  // namespace media

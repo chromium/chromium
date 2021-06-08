@@ -703,8 +703,6 @@ static_library("browser") {
     "media/media_storage_id_salt.h",
     "media/output_protection_proxy.cc",
     "media/output_protection_proxy.h",
-    "media/platform_verification_impl.cc",
-    "media/platform_verification_impl.h",
     "media/webrtc/audio_debug_recordings_handler.cc",
     "media/webrtc/audio_debug_recordings_handler.h",
     "media/webrtc/camera_pan_tilt_zoom_permission_context.cc",
@@ -4834,8 +4832,6 @@ static_library("browser") {
       "install_verification/win/module_list.h",
       "install_verification/win/module_verification_common.cc",
       "install_verification/win/module_verification_common.h",
-      "media/cdm_pref_service_impl.cc",
-      "media/cdm_pref_service_impl.h",
       "media/webrtc/window_icon_util_win.cc",
       "media_galleries/win/mtp_device_delegate_impl_win.cc",
       "media_galleries/win/mtp_device_delegate_impl_win.h",
@@ -6005,6 +6001,20 @@ static_library("browser") {
     if (mojo_media_host == "browser") {
       deps += [ "//media/mojo/services" ]
     }
+  }
+
+  if (enable_library_cdms || is_win) {
+    sources += [
+      "media/cdm_document_service_impl.cc",
+      "media/cdm_document_service_impl.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "media/cdm_pref_service_helper.cc",
+      "media/cdm_pref_service_helper.h",
+    ]
   }
 
   if (enable_message_center) {

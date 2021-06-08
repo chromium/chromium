@@ -379,7 +379,7 @@
 
 #if defined(OS_WIN)
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
-#include "chrome/browser/media/cdm_pref_service_impl.h"
+#include "chrome/browser/media/cdm_pref_service_helper.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -1206,7 +1206,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
 #if defined(OS_WIN)
-  CdmPrefServiceImpl::RegisterProfilePrefs(registry);
+  CdmPrefServiceHelper::RegisterProfilePrefs(registry);
   component_updater::RegisterProfilePrefsForSwReporter(registry);
   NetworkProfileBubble::RegisterProfilePrefs(registry);
   safe_browsing::SettingsResetPromptPrefsManager::RegisterProfilePrefs(

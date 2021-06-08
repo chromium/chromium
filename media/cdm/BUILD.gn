@@ -94,10 +94,8 @@ source_set("cdm") {
       "cdm_adapter_factory.h",
       "cdm_module.cc",
       "cdm_module.h",
-      "cdm_pref_service.h",
       "cdm_wrapper.h",
       "output_protection.h",
-      "platform_verification.h",
       "supported_cdm_versions.cc",
       "supported_cdm_versions.h",
     ]
@@ -118,6 +116,7 @@ source_set("cdm") {
       "cdm_allocator.h",
       "cdm_auxiliary_helper.cc",
       "cdm_auxiliary_helper.h",
+      "cdm_document_service.h",
       "cdm_helpers.cc",
       "cdm_helpers.h",
     ]

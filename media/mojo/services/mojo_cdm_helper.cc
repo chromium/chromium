@@ -47,10 +47,12 @@ url::Origin MojoCdmHelper::GetCdmOrigin() {
   return cdm_origin;
 }
 
+#if defined(OS_WIN)
 void MojoCdmHelper::GetCdmOriginId(GetCdmOriginIdCB callback) {
-  ConnectToCdmPrefService();
-  cdm_pref_service_->GetCdmOriginId(std::move(callback));
+  ConnectToCdmDocumentService();
+  cdm_document_service_->GetCdmOriginId(std::move(callback));
 }
+#endif  // defined(OS_WIN)
 
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {
   return GetAllocator()->CreateCdmBuffer(capacity);
@@ -82,16 +84,16 @@ void MojoCdmHelper::ChallengePlatform(const std::string& service_id,
   ChallengePlatformCB scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false,
                                                   "", "", "");
-  ConnectToPlatformVerification();
-  platform_verification_->ChallengePlatform(service_id, challenge,
-                                            std::move(scoped_callback));
+  ConnectToCdmDocumentService();
+  cdm_document_service_->ChallengePlatform(service_id, challenge,
+                                           std::move(scoped_callback));
 }
 
 void MojoCdmHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   StorageIdCB scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), version, std::vector<uint8_t>());
-  ConnectToPlatformVerification();
-  platform_verification_->GetStorageId(version, std::move(scoped_callback));
+  ConnectToCdmDocumentService();
+  cdm_document_service_->GetStorageId(version, std::move(scoped_callback));
 }
 
 void MojoCdmHelper::CloseCdmFileIO(MojoCdmFileIO* cdm_file_io) {
@@ -128,17 +130,10 @@ void MojoCdmHelper::ConnectToOutputProtection() {
   }
 }
 
-void MojoCdmHelper::ConnectToPlatformVerification() {
-  if (!platform_verification_) {
+void MojoCdmHelper::ConnectToCdmDocumentService() {
+  if (!cdm_document_service_) {
     frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        platform_verification_.BindNewPipeAndPassReceiver()));
-  }
-}
-
-void MojoCdmHelper::ConnectToCdmPrefService() {
-  if (!cdm_pref_service_) {
-    frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        cdm_pref_service_.BindNewPipeAndPassReceiver()));
+        cdm_document_service_.BindNewPipeAndPassReceiver()));
   }
 }
 

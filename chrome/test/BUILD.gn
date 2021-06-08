@@ -4656,7 +4656,7 @@ test("unit_tests") {
       "../browser/install_verification/win/module_list_unittest.cc",
       "../browser/install_verification/win/module_verification_test.cc",
       "../browser/install_verification/win/module_verification_test.h",
-      "../browser/media/cdm_pref_service_impl_test.cc",
+      "../browser/media/cdm_document_service_impl_test.cc",
       "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
       "../browser/performance_manager/mechanisms/working_set_trimmer_win_unittest.cc",
       "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",

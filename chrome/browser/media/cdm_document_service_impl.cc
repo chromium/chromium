@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/platform_verification_impl.h"
+#include "chrome/browser/media/cdm_document_service_impl.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "media/media_buildflags.h"
@@ -28,7 +30,9 @@
 #include "chromeos/settings/cros_settings_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using media::mojom::PlatformVerification;
+#if defined(OS_WIN)
+#include "chrome/browser/media/cdm_pref_service_helper.h"
+#endif  // defined(OS_WIN)
 
 namespace {
 
@@ -51,39 +55,40 @@ std::vector<uint8_t> GetStorageIdSaltFromProfile(
 }  // namespace
 
 // static
-void PlatformVerificationImpl::Create(
+void CdmDocumentServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::PlatformVerification> receiver) {
+    mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver) {
   DVLOG(2) << __func__;
   DCHECK(render_frame_host);
 
-  // PlatformVerificationFlow requires to run on the UI thread.
+  // PlatformVerificationFlow and the pref service requires to be run/accessed
+  // on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentServiceBase for details.
-  new PlatformVerificationImpl(render_frame_host, std::move(receiver));
+  new CdmDocumentServiceImpl(render_frame_host, std::move(receiver));
 }
 
-PlatformVerificationImpl::PlatformVerificationImpl(
+CdmDocumentServiceImpl::CdmDocumentServiceImpl(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::PlatformVerification> receiver)
+    mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver)
     : DocumentServiceBase(render_frame_host, std::move(receiver)),
       render_frame_host_(render_frame_host) {}
 
-PlatformVerificationImpl::~PlatformVerificationImpl() {
+CdmDocumentServiceImpl::~CdmDocumentServiceImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void PlatformVerificationImpl::ChallengePlatform(
+void CdmDocumentServiceImpl::ChallengePlatform(
     const std::string& service_id,
     const std::string& challenge,
     ChallengePlatformCallback callback) {
   DVLOG(2) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-// TODO(crbug.com/676224). This should be commented out at the mojom
-// level so that it's only available for ChromeOS.
+  // TODO(crbug.com/676224). This should be commented out at the mojom
+  // level so that it's only available for ChromeOS.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
@@ -93,7 +98,7 @@ void PlatformVerificationImpl::ChallengePlatform(
   platform_verification_flow_->ChallengePlatformKey(
       content::WebContents::FromRenderFrameHost(render_frame_host()),
       service_id, challenge,
-      base::BindOnce(&PlatformVerificationImpl::OnPlatformChallenged,
+      base::BindOnce(&CdmDocumentServiceImpl::OnPlatformChallenged,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 #else
   // Not supported, so return failure.
@@ -102,7 +107,7 @@ void PlatformVerificationImpl::ChallengePlatform(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void PlatformVerificationImpl::OnPlatformChallenged(
+void CdmDocumentServiceImpl::OnPlatformChallenged(
     ChallengePlatformCallback callback,
     PlatformVerificationResult result,
     const std::string& signed_data,
@@ -128,13 +133,13 @@ void PlatformVerificationImpl::OnPlatformChallenged(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void PlatformVerificationImpl::GetStorageId(uint32_t version,
-                                            GetStorageIdCallback callback) {
+void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
+                                          GetStorageIdCallback callback) {
   DVLOG(2) << __func__ << " version: " << version;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-// TODO(crbug.com/676224). This should be commented out at the mojom
-// level so that it's only available if Storage Id is available.
+  // TODO(crbug.com/676224). This should be commented out at the mojom
+  // level so that it's only available if Storage Id is available.
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
   // Check that the request is for a supported version.
@@ -142,7 +147,7 @@ void PlatformVerificationImpl::GetStorageId(uint32_t version,
       version == kRequestLatestStorageIdVersion) {
     ComputeStorageId(
         GetStorageIdSaltFromProfile(render_frame_host_), origin(),
-        base::BindOnce(&PlatformVerificationImpl::OnStorageIdResponse,
+        base::BindOnce(&CdmDocumentServiceImpl::OnStorageIdResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
@@ -154,7 +159,7 @@ void PlatformVerificationImpl::GetStorageId(uint32_t version,
 }
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-void PlatformVerificationImpl::OnStorageIdResponse(
+void CdmDocumentServiceImpl::OnStorageIdResponse(
     GetStorageIdCallback callback,
     const std::vector<uint8_t>& storage_id) {
   DVLOG(2) << __func__ << " version: " << kCurrentStorageIdVersion
@@ -165,7 +170,7 @@ void PlatformVerificationImpl::OnStorageIdResponse(
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void PlatformVerificationImpl::IsVerifiedAccessEnabled(
+void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
   // If we are in guest/incognito mode, then verified access is effectively
   // disabled.
@@ -187,3 +192,19 @@ void PlatformVerificationImpl::IsVerifiedAccessEnabled(
   std::move(callback).Run(enabled_for_device);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_WIN)
+void CdmDocumentServiceImpl::GetCdmOriginId(GetCdmOriginIdCallback callback) {
+  const url::Origin cdm_origin = origin();
+  if (cdm_origin.opaque()) {
+    mojo::ReportBadMessage("EME use is not allowed on opaque origin");
+    return;
+  }
+
+  PrefService* user_prefs = user_prefs::UserPrefs::Get(
+      content::WebContents::FromRenderFrameHost(render_frame_host())
+          ->GetBrowserContext());
+  std::move(callback).Run(
+      CdmPrefServiceHelper::GetCdmOriginId(user_prefs, cdm_origin));
+}
+#endif  // defined(OS_WIN)

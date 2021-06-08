@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/cdm_pref_service_impl.h"
+#include "chrome/browser/media/cdm_pref_service_helper.h"
 
 #include "base/logging.h"
 
@@ -13,7 +13,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -86,42 +85,26 @@ class OriginData {
 
 }  // namespace
 
-void CdmPrefServiceImpl::Create(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::CdmPrefService> receiver) {
-  DCHECK(render_frame_host);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+CdmPrefServiceHelper::CdmPrefServiceHelper() = default;
+CdmPrefServiceHelper::~CdmPrefServiceHelper() = default;
 
-  // The object is bound to the lifetime of `render_frame_host` and the mojo
-  // connection. See DocumentServiceBase for details.
-  new CdmPrefServiceImpl(render_frame_host, std::move(receiver));
-}
-
-CdmPrefServiceImpl::CdmPrefServiceImpl(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::CdmPrefService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
-
-CdmPrefServiceImpl::~CdmPrefServiceImpl() = default;
-
-void CdmPrefServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void CdmPrefServiceHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kMediaCdmOrigin);
 }
 
-void CdmPrefServiceImpl::GetCdmOriginId(GetCdmOriginIdCallback callback) {
+base::UnguessableToken CdmPrefServiceHelper::GetCdmOriginId(
+    PrefService* user_prefs,
+    const url::Origin& cdm_origin) {
   // Access to the PrefService must be made from the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  PrefService* user_prefs = user_prefs::UserPrefs::Get(
-      content::WebContents::FromRenderFrameHost(render_frame_host())
-          ->GetBrowserContext());
   const base::DictionaryValue* dict =
       user_prefs->GetDictionary(prefs::kMediaCdmOrigin);
 
-  const url::Origin cdm_origin = origin();
+  DCHECK(!cdm_origin.opaque());
   if (cdm_origin.opaque()) {
     mojo::ReportBadMessage("EME use is not allowed on opaque origin");
-    return;
+    return base::UnguessableToken::Null();
   }
 
   const std::string serialized_cdm_origin = cdm_origin.Serialize();
@@ -146,5 +129,5 @@ void CdmPrefServiceImpl::GetCdmOriginId(GetCdmOriginIdCallback callback) {
     dict->SetKey(serialized_cdm_origin, origin_data->ToDictValue());
   }
 
-  std::move(callback).Run(origin_data->origin_id());
+  return origin_data->origin_id();
 }

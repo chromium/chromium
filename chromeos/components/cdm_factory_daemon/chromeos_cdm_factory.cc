@@ -89,14 +89,14 @@ void ChromeOsCdmFactory::Create(
   // Check that the user has Verified Access enabled in their Chrome settings
   // and if they do not then block this connection since OEMCrypto utilizes
   // remote attestation as part of verification.
-  if (!platform_verification_) {
+  if (!cdm_document_service_) {
     frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        platform_verification_.BindNewPipeAndPassReceiver()));
-    platform_verification_.set_disconnect_handler(
+        cdm_document_service_.BindNewPipeAndPassReceiver()));
+    cdm_document_service_.set_disconnect_handler(
         base::BindOnce(&ChromeOsCdmFactory::OnVerificationMojoConnectionError,
                        weak_factory_.GetWeakPtr()));
   }
-  platform_verification_->IsVerifiedAccessEnabled(base::BindOnce(
+  cdm_document_service_->IsVerifiedAccessEnabled(base::BindOnce(
       &ChromeOsCdmFactory::OnVerifiedAccessEnabled, weak_factory_.GetWeakPtr(),
       key_system, cdm_config, session_message_cb, session_closed_cb,
       session_keys_change_cb, session_expiration_update_cb,
@@ -257,7 +257,7 @@ void ChromeOsCdmFactory::OnFactoryMojoConnectionError() {
 
 void ChromeOsCdmFactory::OnVerificationMojoConnectionError() {
   DVLOG(1) << __func__;
-  platform_verification_.reset();
+  cdm_document_service_.reset();
 }
 
 }  // namespace chromeos

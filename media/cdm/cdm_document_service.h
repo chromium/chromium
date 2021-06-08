@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CDM_PLATFORM_VERIFICATION_H_
-#define MEDIA_CDM_PLATFORM_VERIFICATION_H_
+#ifndef MEDIA_CDM_CDM_DOCUMENT_SERVICE_H_
+#define MEDIA_CDM_CDM_DOCUMENT_SERVICE_H_
 
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
-class MEDIA_EXPORT PlatformVerification {
+class MEDIA_EXPORT CdmDocumentService {
  public:
-  PlatformVerification() = default;
-  virtual ~PlatformVerification() = default;
+  CdmDocumentService() = default;
+  CdmDocumentService(const CdmDocumentService& other) = delete;
+  CdmDocumentService& operator=(const CdmDocumentService& other) = delete;
+  virtual ~CdmDocumentService() = default;
 
   using ChallengePlatformCB =
       base::OnceCallback<void(bool success,
@@ -27,6 +30,9 @@ class MEDIA_EXPORT PlatformVerification {
   using StorageIdCB =
       base::OnceCallback<void(uint32_t version,
                               const std::vector<uint8_t>& storage_id)>;
+
+  using GetCdmOriginIdCB =
+      base::OnceCallback<void(const base::UnguessableToken&)>;
 
   // Allows authorized services to verify that the underlying platform is
   // trusted. An example of a trusted platform is a Chrome OS device in
@@ -53,10 +59,14 @@ class MEDIA_EXPORT PlatformVerification {
   //                 version does not exist.
   virtual void GetStorageId(uint32_t version, StorageIdCB callback) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformVerification);
+#if defined(OS_WIN)
+  // Gets the origin ID associated with the origin of the CDM. The origin ID is
+  // used in place of the origin when hiding the concrete origin is needed. The
+  // origin ID is also user resettable by clearing the browsing data.
+  virtual void GetCdmOriginId(GetCdmOriginIdCB callback) = 0;
+#endif  // defined(OS_WIN)
 };
 
 }  // namespace media
 
-#endif  // MEDIA_CDM_PLATFORM_VERIFICATION_H_
+#endif  // MEDIA_CDM_CDM_DOCUMENT_SERVICE_H_
