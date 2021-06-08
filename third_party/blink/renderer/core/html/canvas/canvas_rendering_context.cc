@@ -159,6 +159,7 @@ bool CanvasRenderingContext::WouldTaintOrigin(CanvasImageSource* image_source) {
 void CanvasRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(host_);
   ScriptWrappable::Trace(visitor);
+  ActiveScriptWrappable::Trace(visitor);
 }
 
 void CanvasRenderingContext::DidDrawCommon() {

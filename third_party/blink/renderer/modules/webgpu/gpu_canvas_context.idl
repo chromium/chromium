@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
+    ActiveScriptWrappable,
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUCanvasContext {
     [RaisesException] GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);

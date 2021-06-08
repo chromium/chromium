@@ -28,6 +28,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
@@ -51,8 +52,10 @@ class
 class
     V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext;
 
-class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
-                                           public Thread::TaskObserver {
+class CORE_EXPORT CanvasRenderingContext
+    : public ScriptWrappable,
+      public ActiveScriptWrappable<CanvasRenderingContext>,
+      public Thread::TaskObserver {
   USING_PRE_FINALIZER(CanvasRenderingContext, Dispose);
 
  public:
@@ -85,6 +88,18 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
     kBitmaprenderer = 3,
     kWebgpu = 4,
   };
+
+  // ActiveScriptWrappable
+  // As this class inherits from ActiveScriptWrappable, as long as
+  // HasPendingActivity returns true, we can ensure that the Garbage Collector
+  // won't try to collect this class. This is needed specifically for the
+  // offscreencanvas use case.
+  bool HasPendingActivity() const override { return false; }
+  ExecutionContext* GetExecutionContext() const {
+    if (!Host())
+      return nullptr;
+    return Host()->GetTopExecutionContext();
+  }
 
   void RecordUKMCanvasRenderingAPI(CanvasRenderingAPI canvasRenderingAPI);
   void RecordUKMCanvasDrawnToRenderingAPI(
@@ -214,7 +229,7 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
     return IntSize(0, 0);
   }
 
-  // OffscreenCanvas-specific methods
+  // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
 

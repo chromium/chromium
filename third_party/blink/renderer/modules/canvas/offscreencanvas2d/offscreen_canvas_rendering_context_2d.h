@@ -72,6 +72,12 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {
     RestoreMatrixClipStack(c);
   }
+  // CanvasRenderingContext - ActiveScriptWrappable
+  // This method will avoid this class to be garbage collected, as soon as
+  // HasPendingActivity returns true.
+  bool HasPendingActivity() const final {
+    return !dirty_rect_for_commit_.isEmpty();
+  }
 
   String font() const;
   void setFont(const String&) override;

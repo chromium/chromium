@@ -5,6 +5,7 @@
 // https://html.spec.whatwg.org/C/#the-imagebitmap-rendering-context
 
 [
+     ActiveScriptWrappable,
      Exposed=(Window,Worker)
 ] interface ImageBitmapRenderingContext {
     // back-reference to the canvas
