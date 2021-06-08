@@ -4,6 +4,7 @@
 
 #include "chromeos/services/libassistant/audio/audio_input_impl.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/bind.h"
@@ -213,7 +214,8 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   // Runs on audio service thread.
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) override {
-    LOG(ERROR) << "Capture error " << message << ", code=" << code;
+    LOG(ERROR) << "Capture error " << message
+               << ", code=" << static_cast<uint32_t>(code);
     base::AutoLock lock(observers_lock_);
     for (auto* observer : observers_)
       observer->OnAudioError(assistant_client::AudioInput::Error::FATAL_ERROR);
