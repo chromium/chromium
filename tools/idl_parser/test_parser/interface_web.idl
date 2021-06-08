@@ -53,8 +53,8 @@ interface mixin IFaceMixinInherit : Foo {};
 
 /** TREE
  *Interface(PartialIFaceMixin)
- *  PARTIAL: True
  *  MIXIN: True
+ *  PARTIAL: True
  */
 partial interface mixin PartialIFaceMixin {};
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -98,7 +98,8 @@ class IDLNode(object):
 #
 #
 #
-  # Return a string representation of this node
+# Return a string representation of this node
+
   def __str__(self):
     name = self.GetProperty('NAME','')
     value = self.GetProperty('VALUE')
@@ -157,7 +158,7 @@ class IDLNode(object):
         self.out.append(tab + str(node))
 
         proplist = []
-        for key, value in node.GetProperties().iteritems():
+        for key, value in node.GetProperties().items():
           if key not in self.props:
             proplist.append(tab + '  %s: %s' % (key, str(value)))
         if proplist:
@@ -173,7 +174,8 @@ class IDLNode(object):
 #
 # Search related functions
 #
-  # Check if node is of a given type
+# Check if node is of a given type
+
   def IsA(self, *typelist):
     if self._cls in typelist:
       return True
