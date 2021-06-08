@@ -10,6 +10,7 @@
 namespace blink {
 
 class FloatPoint;
+class FloatRect;
 class LayoutObject;
 
 // An NG version of blink::SVGTextQuery, which is an implementation of SVG DOM
@@ -24,6 +25,7 @@ class NGSvgTextQuery {
   float SubStringLength(unsigned start_index, unsigned length) const;
   FloatPoint StartPositionOfCharacter(unsigned index) const;
   FloatPoint EndPositionOfCharacter(unsigned index) const;
+  FloatRect ExtentOfCharacter(unsigned index) const;
 
  private:
   LayoutObject& query_root_;

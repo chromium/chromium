@@ -75,9 +75,10 @@ const NGFragmentItem* FindFragmentItemForAddressableCharacterIndex(
 
   unsigned character_index = 0;
   for (const auto* item : item_list) {
-    if (character_index >= index)
+    unsigned item_length = CodePointLength(item->Text(*items));
+    if (character_index <= index && index < character_index + item_length)
       return item;
-    character_index += CodePointLength(item->Text(*items));
+    character_index += item_length;
   }
   return nullptr;
 }
@@ -173,6 +174,16 @@ FloatPoint NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
   const float scaling_factor = inline_text.ScalingFactor();
   point.Scale(1 / scaling_factor, 1 / scaling_factor);
   return point;
+}
+
+FloatRect NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
+  const NGFragmentItem* item =
+      FindFragmentItemForAddressableCharacterIndex(query_root_, index);
+  DCHECK(item);
+  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  if (item->IsHiddenForPaint())
+    return FloatRect();
+  return item->ObjectBoundingBox();
 }
 
 }  // namespace blink

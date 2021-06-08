@@ -212,7 +212,7 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
   FloatRect rect;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    // TODO(1179585): Implement this.
+    rect = NGSvgTextQuery(*layout_object).ExtentOfCharacter(charnum);
   } else {
     rect = SVGTextQuery(layout_object).ExtentOfCharacter(charnum);
   }
