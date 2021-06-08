@@ -488,6 +488,13 @@
       status:  "experimental",
     },
     {
+      // Stop propagation from BODY to HTML and viewport if HTML or BODY
+      // elements have any containment applied.
+      // https://drafts.csswg.org/css-contain-2/#contain-property
+      name: "CSSContainedBodyPropagation",
+      status: "test",
+    },
+    {
       name: "CSSContainerQueries",
     },
     {

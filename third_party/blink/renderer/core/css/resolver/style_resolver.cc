@@ -1715,17 +1715,38 @@ bool PropagateScrollSnapStyleToViewport(
 
 }  // namespace
 
+bool StyleResolver::ShouldStopBodyPropagation(const Element& body_or_html) {
+  DCHECK(!body_or_html.NeedsReattachLayoutTree())
+      << "This method relies on LayoutObject to be attached and up-to-date";
+  DCHECK(IsA<HTMLBodyElement>(body_or_html) ||
+         IsA<HTMLHtmlElement>(body_or_html));
+  LayoutObject* layout_object = body_or_html.GetLayoutObject();
+  if (!layout_object)
+    return true;
+  if (!RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled())
+    return false;
+  bool contained = layout_object->ShouldApplyAnyContainment();
+  DCHECK_EQ(contained,
+            layout_object->StyleRef().ShouldApplyAnyContainment(body_or_html))
+      << "Applied containment must give the same result from LayoutObject and "
+         "ComputedStyle";
+  return contained;
+}
+
 void StyleResolver::PropagateStyleToViewport() {
   DCHECK(GetDocument().InStyleRecalc());
-  HTMLBodyElement* body = GetDocument().FirstBodyElement();
   Element* document_element = GetDocument().documentElement();
-
   const ComputedStyle* document_element_style =
       document_element && document_element->GetLayoutObject()
           ? document_element->GetComputedStyle()
           : nullptr;
-  const ComputedStyle* body_style =
-      body && body->GetLayoutObject() ? body->GetComputedStyle() : nullptr;
+  const ComputedStyle* body_style = nullptr;
+  if (HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
+    if (!ShouldStopBodyPropagation(*document_element) &&
+        !ShouldStopBodyPropagation(*body)) {
+      body_style = body->GetComputedStyle();
+    }
+  }
 
   const ComputedStyle& viewport_style =
       GetDocument().GetLayoutView()->StyleRef();
@@ -1792,22 +1813,18 @@ void StyleResolver::PropagateStyleToViewport() {
 
   // Overflow
   {
-    const ComputedStyle* overflow_style = nullptr;
-    if (Element* viewport_element = GetDocument().ViewportDefiningElement()) {
-      if (viewport_element == body) {
-        overflow_style = body_style;
-      } else {
-        DCHECK_EQ(viewport_element, document_element);
-        overflow_style = document_element_style;
+    const ComputedStyle* overflow_style = document_element_style;
+    if (body_style &&
+        document_element_style->IsOverflowVisibleAlongBothAxes()) {
+      overflow_style = body_style;
 
-        // The body element has its own scrolling box, independent from the
-        // viewport.  This is a bit of a weird edge case in the CSS spec that we
-        // might want to try to eliminate some day (eg. for ScrollTopLeftInterop
-        // - see http://crbug.com/157855).
-        if (body_style && body_style->IsScrollContainer()) {
-          UseCounter::Count(GetDocument(),
-                            WebFeature::kBodyScrollsInAdditionToViewport);
-        }
+      // The body element has its own scrolling box, independent from the
+      // viewport.  This is a bit of a weird edge case in the CSS spec that we
+      // might want to try to eliminate some day (eg. for ScrollTopLeftInterop
+      // - see http://crbug.com/157855).
+      if (body_style && body_style->IsScrollContainer()) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kBodyScrollsInAdditionToViewport);
       }
     }
 

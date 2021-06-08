@@ -161,6 +161,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                       const CSSPropertyName&,
                                       const CSSValue&);
 
+  // Check if the BODY or HTML element's display or containment stops
+  // propagation of BODY style to HTML and viewport.
+  static bool ShouldStopBodyPropagation(const Element& body_or_html);
+
   scoped_refptr<ComputedStyle> StyleForInterpolations(
       Element& element,
       ActiveInterpolationsMap& animations);

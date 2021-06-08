@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -95,17 +96,24 @@ bool IsEditableElement(Element* element, const ComputedStyle& style) {
 
 TouchAction AdjustTouchActionForElement(TouchAction touch_action,
                                         const ComputedStyle& style,
+                                        const ComputedStyle& parent_style,
                                         Element* element) {
-  // if body is the viewport defining element then ScrollsOverflow should
-  // return false as body should have overflow-x/overflow-y set to visible
-  Element* body = element ? element->GetDocument().body() : nullptr;
-  bool is_body_and_viewport =
-      element && element == body &&
-      body == element->GetDocument().ViewportDefiningElement();
-  bool is_child_document =
-      element && element == element->GetDocument().documentElement() &&
-      element->GetDocument().LocalOwner();
-  if ((!is_body_and_viewport && style.ScrollsOverflow()) || is_child_document)
+  Element* document_element = element->GetDocument().documentElement();
+  bool scrolls_overflow = style.ScrollsOverflow();
+  if (element && element == element->GetDocument().FirstBodyElement()) {
+    // Body scrolls overflow if html root overflow is not visible or the
+    // propagation of overflow is stopped by containment.
+    if (parent_style.IsOverflowVisibleAlongBothAxes()) {
+      if (!RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled() ||
+          (!parent_style.ShouldApplyAnyContainment(*document_element) &&
+           !style.ShouldApplyAnyContainment(*element))) {
+        scrolls_overflow = false;
+      }
+    }
+  }
+  bool is_child_document = element && element == document_element &&
+                           element->GetDocument().LocalOwner();
+  if (scrolls_overflow || is_child_document)
     return touch_action | TouchAction::kPan | TouchAction::kInternalPanXScrolls;
   return touch_action;
 }
@@ -607,8 +615,8 @@ static void AdjustEffectiveTouchAction(ComputedStyle& style,
   // The panning-restricted cancellation should also apply to iframes, so we
   // allow (panning & local touch action) on the first descendant element of a
   // iframe element.
-  inherited_action =
-      AdjustTouchActionForElement(inherited_action, style, element);
+  inherited_action = AdjustTouchActionForElement(inherited_action, style,
+                                                 parent_style, element);
 
   TouchAction enforced_by_policy = TouchAction::kNone;
   if (element->GetDocument().IsVerticalScrollEnforced())
