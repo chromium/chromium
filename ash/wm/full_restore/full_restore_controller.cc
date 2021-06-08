@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
@@ -24,7 +25,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/account_id/account_id.h"
 #include "components/full_restore/features.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -414,6 +417,11 @@ void FullRestoreController::SaveWindowImpl(
           static_cast<AppType>(window->GetProperty(aura::client::kAppType)))) {
     return;
   }
+
+  // Do not save window data if the setting is turned off by active user.
+  if (!full_restore::FullRestoreInfo::GetInstance()->ShouldRestore(
+          Shell::Get()->session_controller()->GetActiveAccountId()))
+    return;
 
   int window_activation_index;
   if (activation_index) {

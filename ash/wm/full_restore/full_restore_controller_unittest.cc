@@ -7,6 +7,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -23,7 +24,9 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id.h"
 #include "components/full_restore/features.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -253,6 +256,11 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         base::BindRepeating(&FullRestoreControllerTest::OnSaveWindow,
                             base::Unretained(this)));
     env_observation_.Observe(aura::Env::GetInstance());
+
+    // Turn on should restore flag by default, so do not need to set the flag
+    // for all test cases all the time.
+    full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
+        Shell::Get()->session_controller()->GetActiveAccountId(), true);
   }
 
   void TearDown() override {
@@ -343,6 +351,27 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests window save with setting on or off.
+TEST_F(FullRestoreControllerTest, WindowSaveDisabled) {
+  auto window = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
+  ResetSaveWindowsCount();
+
+  // Disable full restore.
+  full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
+      Shell::Get()->session_controller()->GetActiveAccountId(), false);
+
+  auto* window_state = WindowState::Get(window.get());
+  window_state->Minimize();
+  EXPECT_EQ(0, GetSaveWindowsCount(window.get()));
+
+  // Enable full restore.
+  full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
+      Shell::Get()->session_controller()->GetActiveAccountId(), true);
+
+  window_state->Unminimize();
+  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+}
 
 // Tests that data gets saved when changing a window's window state.
 TEST_F(FullRestoreControllerTest, WindowStateChanged) {
