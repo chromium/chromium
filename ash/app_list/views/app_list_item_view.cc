@@ -575,11 +575,10 @@ void AppListItemView::OnContextMenuModelReceived(
   if (source_type == ui::MENU_SOURCE_TOUCH && touch_dragging_)
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
 
-  gfx::Rect anchor_rect =
-      parent()->GetMirroredRect(grid_delegate_->GetIdealBounds(this));
+  // Screen bounds don't need RTL flipping.
+  gfx::Rect anchor_rect = GetBoundsInScreen();
   // Anchor the menu to the same rect that is used for selection highlight.
   AdaptBoundsForSelectionHighlight(&anchor_rect);
-  views::View::ConvertRectToScreen(parent(), &anchor_rect);
 
   AppLaunchedMetricParams metric_params = {
       AppListLaunchedFrom::kLaunchedFromGrid};
