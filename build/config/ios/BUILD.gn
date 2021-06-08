@@ -204,6 +204,14 @@ config("disable_implicit_retain_self_warning") {
 config("xctest_config") {
   framework_dirs = [ "$ios_sdk_platform_path/Developer/Library/Frameworks" ]
 
+  # TODO(crbug.com/1217378) Remove when fixed.
+  if (xcode_version_int >= 1300) {
+    cflags = [
+      "--system-header-prefix",
+      "XCTest/",
+    ]
+  }
+
   frameworks = [
     "Foundation.framework",
     "XCTest.framework",
