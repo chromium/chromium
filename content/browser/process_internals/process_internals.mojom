@@ -35,7 +35,8 @@ struct FrameInfo {
 
   array<FrameInfo> subframes;
 
-  bool is_bfcached;
+  enum Type { kActive, kBackForwardCache, kPrerender };
+  Type type;
 };
 
 // Basic information describing a WebContents object and all frames that are
@@ -44,6 +45,7 @@ struct WebContentsInfo {
   string title;
   FrameInfo root_frame;
   array<FrameInfo> bfcached_root_frames;
+  array<FrameInfo> prerender_root_frames;
 };
 
 // Information about a currently active isolated origin, including the origin

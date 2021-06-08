@@ -28,8 +28,9 @@ namespace {
 
 using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
-::mojom::FrameInfoPtr RenderFrameHostToFrameInfo(RenderFrameHostImpl* frame,
-                                                 bool is_bfcached) {
+::mojom::FrameInfoPtr RenderFrameHostToFrameInfo(
+    RenderFrameHostImpl* frame,
+    ::mojom::FrameInfo::Type type) {
   auto frame_info = ::mojom::FrameInfo::New();
 
   frame_info->routing_id = frame->GetRoutingID();
@@ -40,7 +41,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       frame->GetLastCommittedURL().is_valid()
           ? absl::make_optional(frame->GetLastCommittedURL())
           : absl::nullopt;
-  frame_info->is_bfcached = is_bfcached;
+  frame_info->type = type;
 
   SiteInstanceImpl* site_instance =
       static_cast<SiteInstanceImpl*>(frame->GetSiteInstance());
@@ -73,10 +74,22 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   for (size_t i = 0; i < frame->child_count(); ++i) {
     frame_info->subframes.push_back(RenderFrameHostToFrameInfo(
-        frame->child_at(i)->current_frame_host(), is_bfcached));
+        frame->child_at(i)->current_frame_host(), type));
   }
 
   return frame_info;
+}
+
+// Adds `host` to `out_frames` if it is a prerendered main frame.
+void CollectPrerenders(std::vector<::mojom::FrameInfoPtr>& out_frames,
+                       RenderFrameHost* host) {
+  if (!host->GetParent() &&
+      host->GetLifecycleState() ==
+          RenderFrameHost::LifecycleState::kPrerendering) {
+    out_frames.push_back(
+        RenderFrameHostToFrameInfo(static_cast<RenderFrameHostImpl*>(host),
+                                   ::mojom::FrameInfo::Type::kPrerender));
+  }
 }
 
 std::string IsolatedOriginSourceToString(IsolatedOriginSource source) {
@@ -201,16 +214,21 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
 
     auto info = ::mojom::WebContentsInfo::New();
     info->title = base::UTF16ToUTF8(web_contents->GetTitle());
-    info->root_frame =
-        RenderFrameHostToFrameInfo(web_contents->GetMainFrame(), false);
+    info->root_frame = RenderFrameHostToFrameInfo(
+        web_contents->GetMainFrame(), ::mojom::FrameInfo::Type::kActive);
 
     // Retrieve all root frames from bfcache as well.
     NavigationControllerImpl& controller = web_contents->GetController();
     const auto& entries = controller.GetBackForwardCache().GetEntries();
     for (const auto& entry : entries) {
-      info->bfcached_root_frames.push_back(
-          RenderFrameHostToFrameInfo((*entry).render_frame_host.get(), true));
+      info->bfcached_root_frames.push_back(RenderFrameHostToFrameInfo(
+          (*entry).render_frame_host.get(),
+          ::mojom::FrameInfo::Type::kBackForwardCache));
     }
+
+    // Retrieve prerendering root frames.
+    web_contents->ForEachRenderFrameHost(base::BindRepeating(
+        &CollectPrerenders, std::ref(info->prerender_root_frames)));
 
     infos.push_back(std::move(info));
   }
