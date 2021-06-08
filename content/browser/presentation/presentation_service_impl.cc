@@ -460,12 +460,13 @@ void PresentationServiceImpl::DidFinishNavigation(
   // RenderFrameHost, we should reset the connections when a navigation
   // finished but we're still using the same RenderFrameHost.
   // We don't need to do anything when the navigation didn't actually commit,
-  // won't use the same RenderFrameHost, or is restoring a RenderFrameHost from
-  // the back-forward cache.
+  // won't use the same RenderFrameHost, is restoring a RenderFrameHost from
+  // the back-forward cache, or is activating a prerendered page.
   DVLOG(2) << "PresentationServiceImpl::DidNavigateAnyFrame";
   if (!navigation_handle->HasCommitted() ||
       !FrameMatches(navigation_handle->GetRenderFrameHost()) ||
-      navigation_handle->IsServedFromBackForwardCache()) {
+      navigation_handle->IsServedFromBackForwardCache() ||
+      navigation_handle->IsPrerenderedPageActivation()) {
     return;
   }
 
