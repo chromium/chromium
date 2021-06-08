@@ -173,13 +173,6 @@ class NativeInputMethodEngine
     void OnProfileWillBeDestroyed();
 
    private:
-    // Called when this is connected to the input engine. |bound| indicates
-    // the success of the connection.
-    void OnConnected(base::Time start, std::string engine_id, bool bound);
-
-    // Called when there's a connection error.
-    void OnError(base::Time start);
-
     // Called when a rule-based key press is processed by Mojo.
     void OnRuleBasedKeyEventResponse(
         base::Time start,

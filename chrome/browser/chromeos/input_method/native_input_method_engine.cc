@@ -151,6 +151,24 @@ ime::mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
       ModifierStateFromEvent(event));
 }
 
+void OnConnected(bool bound) {
+  LogEvent(bound ? ImeServiceEvent::kActivateImeSuccess
+                 : ImeServiceEvent::kActivateImeFailed);
+}
+
+void OnError(base::Time start) {
+  LOG(ERROR) << "IME Service connection error";
+
+  // If the Mojo pipe disconnection happens in 1000 ms after the service
+  // is initialized, we consider it as a failure. Normally it's caused
+  // by the Mojo service itself or misconfigured on Chrome OS.
+  if (base::Time::Now() - start < base::TimeDelta::FromMilliseconds(1000)) {
+    LogEvent(ImeServiceEvent::kInitFailed);
+  } else {
+    LogEvent(ImeServiceEvent::kServiceDisconnected);
+  }
+}
+
 }  // namespace
 
 NativeInputMethodEngine::NativeInputMethodEngine() = default;
@@ -263,8 +281,8 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       auto* ime_manager = input_method::InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
           remote_manager_.BindNewPipeAndPassReceiver());
-      remote_manager_.set_disconnect_handler(base::BindOnce(
-          &ImeObserver::OnError, base::Unretained(this), base::Time::Now()));
+      remote_manager_.set_disconnect_handler(
+          base::BindOnce(&OnError, base::Time::Now()));
       LogEvent(ImeServiceEvent::kInitSuccess);
     }
 
@@ -276,8 +294,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     remote_manager_->ConnectToInputMethod(
         new_engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
-        base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
-                       base::Time::Now(), new_engine_id));
+        base::BindOnce(&OnConnected));
 
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
@@ -286,8 +303,8 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       auto* ime_manager = input_method::InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
           remote_manager_.BindNewPipeAndPassReceiver());
-      remote_manager_.set_disconnect_handler(base::BindOnce(
-          &ImeObserver::OnError, base::Unretained(this), base::Time::Now()));
+      remote_manager_.set_disconnect_handler(
+          base::BindOnce(&OnError, base::Time::Now()));
       LogEvent(ImeServiceEvent::kInitSuccess);
     }
 
@@ -298,8 +315,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     remote_manager_->ConnectToImeEngine(
         engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
         receiver_from_engine_.BindNewPipeAndPassRemote(), /*extra=*/{0},
-        base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
-                       base::Time::Now(), engine_id));
+        base::BindOnce(&OnConnected));
 
     // `ConnectToImeEngine` doesn't actually activate the IME in the IME
     // service. We must call `OnInputMethodChanged` as well.
@@ -649,26 +665,6 @@ void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
     receiver_from_engine_.FlushForTesting();
   if (remote_to_engine_.is_bound())
     remote_to_engine_.FlushForTesting();
-}
-
-void NativeInputMethodEngine::ImeObserver::OnConnected(base::Time start,
-                                                       std::string engine_id,
-                                                       bool bound) {
-  LogEvent(bound ? ImeServiceEvent::kActivateImeSuccess
-                 : ImeServiceEvent::kActivateImeSuccess);
-}
-
-void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {
-  LOG(ERROR) << "IME Service connection error";
-
-  // If the Mojo pipe disconnection happens in 1000 ms after the service
-  // is initialized, we consider it as a failure. Normally it's caused
-  // by the Mojo service itself or misconfigured on Chrome OS.
-  if (base::Time::Now() - start < base::TimeDelta::FromMilliseconds(1000)) {
-    LogEvent(ImeServiceEvent::kInitFailed);
-  } else {
-    LogEvent(ImeServiceEvent::kServiceDisconnected);
-  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
