@@ -10,6 +10,8 @@
 #include <set>
 
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_rewriter.h"
 
@@ -26,7 +28,9 @@ enum class MagnifierCommand;
 // AccessibilityEventRewriter sends key events to Accessibility extensions (such
 // as ChromeVox and Switch Access) via the delegate when the corresponding
 // extension is enabled. Continues dispatch of unhandled key events.
-class ASH_EXPORT AccessibilityEventRewriter : public ui::EventRewriter {
+class ASH_EXPORT AccessibilityEventRewriter
+    : public ui::EventRewriter,
+      public chromeos::input_method::InputMethodManager::Observer {
  public:
   AccessibilityEventRewriter(ui::EventRewriterChromeOS* event_rewriter_chromeos,
                              AccessibilityEventRewriterDelegate* delegate);
@@ -65,6 +69,8 @@ class ASH_EXPORT AccessibilityEventRewriter : public ui::EventRewriter {
   }
 
  private:
+  friend class ChromeVoxAccessibilityEventRewriterTest;
+
   // Internal helpers to rewrite an event for a given accessibility feature.
   // Returns true if the event is captured.
   bool RewriteEventForChromeVox(const ui::Event& event,
@@ -84,6 +90,11 @@ class ASH_EXPORT AccessibilityEventRewriter : public ui::EventRewriter {
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
       const Continuation continuation) override;
+
+  // chromeos::input_method::InputMethodManager::Observer:
+  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+                          Profile* profile,
+                          bool show_message) override;
 
   // Continuation saved for OnUnhandledSpokenFeedbackEvent().
   Continuation chromevox_continuation_;
@@ -111,6 +122,14 @@ class ASH_EXPORT AccessibilityEventRewriter : public ui::EventRewriter {
 
   // Suspends key handling for Switch Access during key assignment in web ui.
   bool suspend_switch_access_key_handling_ = false;
+
+  // Whether to try and rewrite positional keys for ChromeVox.
+  bool try_rewriting_positional_keys_for_chromevox_ = true;
+
+  // Used to monitor input method changes.
+  base::ScopedObservation<chromeos::input_method::InputMethodManager,
+                          chromeos::input_method::InputMethodManager::Observer>
+      observation_{this};
 };
 
 }  // namespace ash

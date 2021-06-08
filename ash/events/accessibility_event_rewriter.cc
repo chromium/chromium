@@ -15,6 +15,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
@@ -42,6 +43,9 @@ AccessibilityEventRewriter::AccessibilityEventRewriter(
     AccessibilityEventRewriterDelegate* delegate)
     : delegate_(delegate), event_rewriter_chromeos_(event_rewriter_chromeos) {
   Shell::Get()->accessibility_controller()->SetAccessibilityEventRewriter(this);
+  observation_.Observe(input_method::InputMethodManager::Get());
+  // InputMethodManagerImpl::AddObserver calls our InputMethodChanged, so no
+  // further initialization needed.
 }
 
 AccessibilityEventRewriter::~AccessibilityEventRewriter() {
@@ -134,8 +138,16 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     std::unique_ptr<ui::Event> rewritten_event;
     ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
                                                       &rewritten_event);
-    const ui::KeyEvent* rewritten_key_event =
-        rewritten_event.get()->AsKeyEvent();
+    ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
+    // Account for positional keys which we want to remap.
+    if (try_rewriting_positional_keys_for_chromevox_) {
+      const ui::KeyboardCode remapped_key_code =
+          ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+              key_event->code());
+      if (remapped_key_code != ui::VKEY_UNKNOWN)
+        rewritten_key_event->set_key_code(remapped_key_code);
+    }
 
     bool capture = chromevox_capture_all_keys_;
 
@@ -310,6 +322,14 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
 
   return captured ? DiscardEvent(continuation)
                   : SendEvent(continuation, &event);
+}
+
+void AccessibilityEventRewriter::InputMethodChanged(
+    chromeos::input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  try_rewriting_positional_keys_for_chromevox_ =
+      manager->ArePositionalShortcutsUsedByCurrentInputMethod();
 }
 
 }  // namespace ash
