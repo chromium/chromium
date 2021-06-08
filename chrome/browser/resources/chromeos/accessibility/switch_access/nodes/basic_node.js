@@ -299,7 +299,12 @@ export class BasicRootNode extends SARootNode {
     super.onFocus();
     this.childrenChangedHandler_ = new RepeatedEventHandler(
         this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
-        this.refresh.bind(this));
+        (event) => {
+          const cache = new SACache();
+          if (SwitchAccessPredicate.isInterestingSubtree(event.target, cache)) {
+            this.refresh();
+          }
+        });
   }
 
   /** @override */

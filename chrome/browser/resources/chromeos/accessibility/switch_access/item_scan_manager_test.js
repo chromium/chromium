@@ -438,3 +438,46 @@ TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
     assertEquals('ok', button.automationNode.name);
   });
 });
+
+TEST_F(
+    'SwitchAccessItemScanManagerTest', 'ChildrenChangedDoesNotRefresh',
+    function() {
+      const website = `
+    <div id="slider" role="slider">
+      <div role="group"><div></div></div>
+    </div>
+    <button>done</button>
+  `;
+      this.runWithLoadedTree(website, async (root) => {
+        // SA initially focuses this node; wait for it first.
+        await this.untilFocusIs(
+            {className: 'BrowserNonClientFrameViewChromeOS'});
+
+        // Move to the slider.
+        Navigator.byItem.moveTo_(this.findNodeById('slider'));
+        const slider = Navigator.byItem.node_;
+        assertEquals(
+            'slider', slider.automationNode.htmlAttributes.id,
+            'Current node is not slider');
+
+        // Trigger a children changed on the group.
+        const automationGroup =
+            root.find({role: chrome.automation.RoleType.GROUP});
+        assertTrue(!!automationGroup);
+        const group = Navigator.byItem.group_;
+        assertTrue(!!group);
+        const handler = group.childrenChangedHandler_;
+        assertTrue(!!handler);
+
+        // Fake a children changed event.
+        handler.eventStack_ = [{
+          type: chrome.automation.EventType.CHILDREN_CHANGED,
+          target: automationGroup
+        }];
+        handler.handleEvent_();
+
+        // This subtree is not interesting, so it should not have triggered a
+        // complete refresh of the SA tree.
+        assertEquals(slider, Navigator.byItem.node_);
+      });
+    });
