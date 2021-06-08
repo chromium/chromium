@@ -26,10 +26,10 @@ GPL2 license.
 Some external libraries that are included with the Checker Framework
 distribution have different licenses.  Here are some examples.
 
- * javaparser is dual licensed under the LGPL or the Apache license -- you
-   may use it under whichever one you want.  (The javaparser source code
+ * JavaParser is dual licensed under the LGPL or the Apache license -- you
+   may use it under whichever one you want.  (The JavaParser source code
    contains a file with the text of the GPL, but it is not clear why, since
-   javaparser does not use the GPL.)  See
+   JavaParser does not use the GPL.)  See
    https://github.com/typetools/stubparser .
 
  * Annotation Tools (https://github.com/typetools/annotation-tools) uses
