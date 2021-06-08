@@ -70,6 +70,8 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
                             ArcBridgeService* bridge_service);
   ~ArcBootPhaseMonitorBridge() override;
 
+  // If ARC has already been booted, OnBootCompleted() is called immediately for
+  // the |observer|.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

@@ -101,6 +101,8 @@ ArcBootPhaseMonitorBridge::~ArcBootPhaseMonitorBridge() {
 
 void ArcBootPhaseMonitorBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+  if (boot_completed_)
+    observer->OnBootCompleted();
 }
 
 void ArcBootPhaseMonitorBridge::RemoveObserver(Observer* observer) {
