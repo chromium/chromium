@@ -126,8 +126,7 @@ static nacl::PnaclCacheInfo GetTestCacheInfo() {
   do {                                                                       \
     SCOPED_TRACE("");                                                        \
     host_->GetNexeFd(                                                        \
-        renderer, 0, /* ignore render_view_id for now */                     \
-        instance, incognito, info,                                           \
+        renderer, instance, incognito, info,                                 \
         base::BindRepeating(expect_hit ? &PnaclHostTest::CallbackExpectHit   \
                                        : &PnaclHostTest::CallbackExpectMiss, \
                             base::Unretained(this)));                        \

@@ -49,7 +49,6 @@ bool PnaclTranslationResourceHost::OnMessageReceived(
 }
 
 void PnaclTranslationResourceHost::RequestNexeFd(
-    int render_view_id,
     PP_Instance instance,
     const nacl::PnaclCacheInfo& cache_info,
     RequestNexeFdCallback callback) {
@@ -58,19 +57,17 @@ void PnaclTranslationResourceHost::RequestNexeFd(
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PnaclTranslationResourceHost::SendRequestNexeFd, this,
-                     render_view_id, instance, cache_info,
-                     std::move(callback)));
+                     instance, cache_info, std::move(callback)));
   return;
 }
 
 void PnaclTranslationResourceHost::SendRequestNexeFd(
-    int render_view_id,
     PP_Instance instance,
     const nacl::PnaclCacheInfo& cache_info,
     RequestNexeFdCallback callback) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!sender_ || !sender_->Send(new NaClHostMsg_NexeTempFileRequest(
-          render_view_id, instance, cache_info))) {
+                      instance, cache_info))) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   static_cast<int32_t>(PP_ERROR_FAILED), false,

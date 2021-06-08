@@ -39,8 +39,6 @@ class CONTENT_EXPORT BrowserPpapiHost {
       ppapi::PpapiPermissions permissions,
       base::Process plugin_child_process,
       IPC::ChannelProxy* channel,
-      int render_process_id,
-      int render_view_id,
       const base::FilePath& profile_directory);
 
   virtual ~BrowserPpapiHost() {}

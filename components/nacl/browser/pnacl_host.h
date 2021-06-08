@@ -81,7 +81,6 @@ class PnaclHost {
   // in the cache, but the renderer is still expected to call
   // TranslationFinished.
   void GetNexeFd(int render_process_id,
-                 int render_view_id,
                  int pp_instance,
                  bool is_incognito,
                  const nacl::PnaclCacheInfo& cache_info,
@@ -128,7 +127,6 @@ class PnaclHost {
     PendingTranslation(const PendingTranslation& other);
     ~PendingTranslation();
     base::ProcessHandle process_handle;
-    int render_view_id;
     base::File* nexe_fd;
     bool got_nexe_fd;
     bool got_cache_reply;

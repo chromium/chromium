@@ -81,7 +81,6 @@ PnaclHost* PnaclHost::GetInstance() {
 
 PnaclHost::PendingTranslation::PendingTranslation()
     : process_handle(base::kNullProcessHandle),
-      render_view_id(0),
       nexe_fd(nullptr),
       got_nexe_fd(false),
       got_cache_reply(false),
@@ -223,7 +222,6 @@ void PnaclHost::CreateTemporaryFile(TempFileCallback cb) {
 ////////////////////// Common steps
 
 void PnaclHost::GetNexeFd(int render_process_id,
-                          int render_view_id,
                           int pp_instance,
                           bool is_incognito,
                           const nacl::PnaclCacheInfo& cache_info,
@@ -240,8 +238,8 @@ void PnaclHost::GetNexeFd(int render_process_id,
     task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PnaclHost::GetNexeFd, base::Unretained(this),
-                       render_process_id, render_view_id, pp_instance,
-                       is_incognito, cache_info, cb),
+                       render_process_id, pp_instance, is_incognito, cache_info,
+                       cb),
         base::TimeDelta::FromMilliseconds(
             kTranslationCacheInitializationDelayMs));
     return;
@@ -263,7 +261,6 @@ void PnaclHost::GetNexeFd(int render_process_id,
   }
 
   PendingTranslation pt;
-  pt.render_view_id = render_view_id;
   pt.callback = cb;
   pt.cache_info = cache_info;
   pt.cache_key = cache_key;

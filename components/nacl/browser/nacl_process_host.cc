@@ -215,7 +215,6 @@ NaClProcessHost::NaClProcessHost(
     const NaClFileToken& nexe_token,
     const std::vector<NaClResourcePrefetchResult>& prefetched_resource_files,
     ppapi::PpapiPermissions permissions,
-    int render_view_id,
     uint32_t permission_bits,
     bool uses_nonsfi_mode,
     bool nonsfi_mode_allowed,
@@ -240,8 +239,7 @@ NaClProcessHost::NaClProcessHost(
       enable_crash_throttling_(false),
       off_the_record_(off_the_record),
       process_type_(process_type),
-      profile_directory_(profile_directory),
-      render_view_id_(render_view_id) {
+      profile_directory_(profile_directory) {
   process_ = content::BrowserChildProcessHost::Create(
       static_cast<content::ProcessType>(PROCESS_TYPE_NACL_LOADER), this,
       content::ChildProcessHost::IpcMode::kLegacy);
@@ -911,8 +909,7 @@ bool NaClProcessHost::StartPPAPIProxy(
   ppapi_host_.reset(content::BrowserPpapiHost::CreateExternalPluginProcess(
       ipc_proxy_channel_.get(),  // sender
       permissions_, process_->GetData().GetProcess().Duplicate(),
-      ipc_proxy_channel_.get(), nacl_host_message_filter_->render_process_id(),
-      render_view_id_, profile_directory_));
+      ipc_proxy_channel_.get(), profile_directory_));
 
   ppapi::PpapiNaClPluginArgs args;
   args.off_the_record = nacl_host_message_filter_->off_the_record();

@@ -60,7 +60,6 @@ NaClLaunchParams::NaClLaunchParams(
     uint64_t nexe_token_hi,
     const std::vector<NaClResourcePrefetchRequest>&
         resource_prefetch_request_list,
-    int render_view_id,
     int render_frame_id,
     uint32_t permission_bits,
     bool uses_nonsfi_mode,
@@ -70,7 +69,6 @@ NaClLaunchParams::NaClLaunchParams(
       nexe_token_lo(nexe_token_lo),
       nexe_token_hi(nexe_token_hi),
       resource_prefetch_request_list(resource_prefetch_request_list),
-      render_view_id(render_view_id),
       render_frame_id(render_frame_id),
       permission_bits(permission_bits),
       uses_nonsfi_mode(uses_nonsfi_mode),

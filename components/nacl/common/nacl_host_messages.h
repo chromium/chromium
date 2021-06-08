@@ -34,7 +34,6 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClLaunchParams)
   IPC_STRUCT_TRAITS_MEMBER(nexe_token_lo)
   IPC_STRUCT_TRAITS_MEMBER(nexe_token_hi)
   IPC_STRUCT_TRAITS_MEMBER(resource_prefetch_request_list)
-  IPC_STRUCT_TRAITS_MEMBER(render_view_id)
   IPC_STRUCT_TRAITS_MEMBER(render_frame_id)
   IPC_STRUCT_TRAITS_MEMBER(permission_bits)
   IPC_STRUCT_TRAITS_MEMBER(uses_nonsfi_mode)
@@ -87,8 +86,7 @@ IPC_SYNC_MESSAGE_CONTROL0_1(NaClHostMsg_NaClCreateTemporaryFile,
 
 // A renderer sends this to the browser to request a file descriptor for
 // a translated nexe.
-IPC_MESSAGE_CONTROL3(NaClHostMsg_NexeTempFileRequest,
-                     int /* render_view_id */,
+IPC_MESSAGE_CONTROL2(NaClHostMsg_NexeTempFileRequest,
                      int /* instance */,
                      nacl::PnaclCacheInfo /* cache info */)
 

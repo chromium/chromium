@@ -17,8 +17,6 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
     ppapi::PpapiPermissions permissions,
     base::Process plugin_child_process,
     IPC::ChannelProxy* channel,
-    int render_process_id,
-    int render_view_id,
     const base::FilePath& profile_directory) {
   // The plugin name and path shouldn't be needed for external plugins.
   BrowserPpapiHostImpl* browser_ppapi_host =

@@ -292,10 +292,9 @@ void NaClHostMessageFilter::LaunchNaClContinuationOnProcessThread(
 
   NaClProcessHost* host = new NaClProcessHost(
       GURL(launch_params.manifest_url), base::File(nexe_file), nexe_token,
-      prefetched_resource_files, permissions, launch_params.render_view_id,
-      launch_params.permission_bits, launch_params.uses_nonsfi_mode,
-      nonsfi_mode_allowed, off_the_record_, launch_params.process_type,
-      profile_directory_);
+      prefetched_resource_files, permissions, launch_params.permission_bits,
+      launch_params.uses_nonsfi_mode, nonsfi_mode_allowed, off_the_record_,
+      launch_params.process_type, profile_directory_);
   GURL manifest_url(launch_params.manifest_url);
   base::FilePath manifest_path;
   // We're calling MapUrlToLocalFilePath with the non-blocking API
@@ -355,7 +354,6 @@ void NaClHostMessageFilter::OnNaClGetNumProcessors(int* num_processors) {
 }
 
 void NaClHostMessageFilter::OnGetNexeFd(
-    int render_view_id,
     int pp_instance,
     const nacl::PnaclCacheInfo& cache_info) {
   if (!cache_info.pexe_url.is_valid()) {
@@ -367,8 +365,7 @@ void NaClHostMessageFilter::OnGetNexeFd(
   }
 
   pnacl::PnaclHost::GetInstance()->GetNexeFd(
-      render_process_id_, render_view_id, pp_instance, off_the_record_,
-      cache_info,
+      render_process_id_, pp_instance, off_the_record_, cache_info,
       base::BindRepeating(&NaClHostMessageFilter::AsyncReturnTemporaryFile,
                           this, pp_instance));
 }

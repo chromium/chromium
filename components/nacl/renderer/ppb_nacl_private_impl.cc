@@ -183,16 +183,6 @@ static const PP_NaClFileInfo kInvalidNaClFileInfo = {
     0,  // token_hi
 };
 
-int GetRoutingID(PP_Instance instance) {
-  // Check that we are on the main renderer thread.
-  DCHECK(content::RenderThread::Get());
-  content::RendererPpapiHost* host =
-      content::RendererPpapiHost::GetForPPInstance(instance);
-  if (!host)
-    return 0;
-  return host->GetRoutingIDForWidget(instance);
-}
-
 int GetFrameRoutingID(PP_Instance instance) {
   // Check that we are on the main renderer thread.
   DCHECK(content::RenderThread::Get());
@@ -421,13 +411,12 @@ void PPBNaClPrivate::LaunchSelLdr(
 
   IPC::Sender* sender = content::RenderThread::Get();
   DCHECK(sender);
-  int routing_id = GetRoutingID(instance);
   NexeLoadManager* load_manager = GetNexeLoadManager(instance);
   DCHECK(load_manager);
   content::PepperPluginInstance* plugin_instance =
       content::PepperPluginInstance::Get(instance);
   DCHECK(plugin_instance);
-  if (!routing_id || !load_manager || !plugin_instance) {
+  if (!load_manager || !plugin_instance) {
     if (nexe_file_info->handle != PP_kInvalidFileHandle) {
       base::File closer(nexe_file_info->handle);
     }
@@ -478,7 +467,7 @@ void PPBNaClPrivate::LaunchSelLdr(
   if (!sender->Send(new NaClHostMsg_LaunchNaCl(
           NaClLaunchParams(instance_info.url.spec(), nexe_for_transit,
                            nexe_file_info->token_lo, nexe_file_info->token_hi,
-                           resource_prefetch_request_list, routing_id,
+                           resource_prefetch_request_list,
                            GetFrameRoutingID(instance), perm_bits,
                            PP_ToBool(uses_nonsfi_mode), process_type),
           &launch_result, &error_message_string))) {
@@ -718,8 +707,8 @@ void GetNexeFd(PP_Instance instance,
   cache_info.sandbox_isa = GetSandboxArch();
   cache_info.extra_flags = GetCpuFeatures();
 
-  g_pnacl_resource_host.Get()->RequestNexeFd(GetRoutingID(instance), instance,
-                                             cache_info, std::move(callback));
+  g_pnacl_resource_host.Get()->RequestNexeFd(instance, cache_info,
+                                             std::move(callback));
 }
 
 void LogTranslationFinishedUMA(const std::string& uma_suffix,
