@@ -29,7 +29,7 @@ float Scale(float value, int output_max, int input_max) {
 // |input_max|.
 float ScaleAndClamp(float value, int output_max, int input_max) {
   value = Scale(value, output_max, input_max);
-  return base::ClampToRange(value, 0.0f, float{output_max});
+  return base::ClampToRange(value, 0.0f, static_cast<float>(output_max));
 }
 
 }  // namespace
