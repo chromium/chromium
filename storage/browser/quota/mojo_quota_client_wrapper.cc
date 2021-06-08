@@ -66,6 +66,4 @@ void MojoQuotaClientWrapper::PerformStorageCleanup(
   wrapped_client_->PerformStorageCleanup(type, std::move(callback));
 }
 
-void MojoQuotaClientWrapper::OnQuotaManagerDestroyed() {}
-
 }  // namespace storage

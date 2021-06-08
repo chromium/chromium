@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoQuotaClientWrapper
                         DeleteOriginDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
-  void OnQuotaManagerDestroyed() override;
 
  private:
   ~MojoQuotaClientWrapper() override;

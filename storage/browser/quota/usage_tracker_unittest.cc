@@ -45,8 +45,6 @@ class UsageTrackerTestQuotaClient : public QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
 
-  void OnQuotaManagerDestroyed() override {}
-
   void GetOriginUsage(const url::Origin& origin,
                       StorageType type,
                       GetOriginUsageCallback callback) override {

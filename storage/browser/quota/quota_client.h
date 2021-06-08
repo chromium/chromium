@@ -30,10 +30,6 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaClient
     : public base::RefCountedThreadSafe<QuotaClient>,
       public storage::mojom::QuotaClient {
- public:
-  // Called when the QuotaManager is destroyed.
-  virtual void OnQuotaManagerDestroyed() = 0;
-
  protected:
   friend class RefCountedThreadSafe<QuotaClient>;
 

@@ -1298,11 +1298,6 @@ bool QuotaManagerImpl::ResetUsageTracker(StorageType type) {
 QuotaManagerImpl::~QuotaManagerImpl() {
   proxy_->InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>());
 
-  // Iterating over `legacy_clients_for_ownership_` is correct here because we
-  // want to call OnQuotaManagerDestroyed() once per QuotaClient.
-  for (const auto& client : legacy_clients_for_ownership_)
-    client->OnQuotaManagerDestroyed();
-
   if (database_)
     db_runner_->DeleteSoon(FROM_HERE, database_.release());
 }

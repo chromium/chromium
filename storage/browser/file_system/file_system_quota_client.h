@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
   // QuotaClient methods.
-  void OnQuotaManagerDestroyed() override {}
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;

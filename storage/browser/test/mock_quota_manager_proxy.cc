@@ -42,7 +42,6 @@ void MockQuotaManagerProxy::SimulateQuotaManagerDestroyed() {
   if (registered_legacy_client_) {
     // We cannot call this in the destructor as the client (indirectly)
     // holds a refptr of the proxy.
-    registered_legacy_client_->OnQuotaManagerDestroyed();
     registered_legacy_client_ = nullptr;
   }
 

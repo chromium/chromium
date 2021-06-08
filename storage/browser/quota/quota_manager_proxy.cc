@@ -68,13 +68,10 @@ void QuotaManagerProxy::RegisterLegacyClient(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (!quota_manager_impl_) {
-    client->OnQuotaManagerDestroyed();
-    return;
+  if (quota_manager_impl_) {
+    quota_manager_impl_->RegisterLegacyClient(std::move(client), client_type,
+                                              storage_types);
   }
-
-  quota_manager_impl_->RegisterLegacyClient(std::move(client), client_type,
-                                            storage_types);
 }
 
 void QuotaManagerProxy::RegisterClient(
