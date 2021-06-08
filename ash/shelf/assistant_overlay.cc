@@ -85,12 +85,19 @@ AssistantOverlay::AssistantOverlay(HomeButton* host_view)
   layer()->Add(ripple_layer_.get());
 }
 
-AssistantOverlay::~AssistantOverlay() = default;
+AssistantOverlay::~AssistantOverlay() {
+  StopObservingImplicitAnimations();
+}
 
 void AssistantOverlay::StartAnimation(bool show_icon) {
   animation_state_ = AnimationState::STARTING;
   show_icon_ = show_icon;
   SetVisible(true);
+
+  // Remove clip_rect from host_view_ and its ancestors as the animation goes
+  // beyond its size. We delete the object once end/hide/burst animation ends
+  // which will follow this starting animation.
+  scoped_no_clip_rect_ = host_view_->CreateScopedNoClipRect();
 
   // Setup ripple initial state.
   ripple_layer_->SetOpacity(0);
@@ -146,6 +153,7 @@ void AssistantOverlay::BurstAnimation() {
     settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
+    settings.AddObserver(this);
 
     ripple_layer_->SetTransform(transform);
     ripple_layer_->SetOpacity(0);
@@ -177,6 +185,7 @@ void AssistantOverlay::EndAnimation() {
     settings.SetTransitionDuration(
         base::TimeDelta::FromMilliseconds(kFullRetractDurationMs));
     settings.SetTweenType(gfx::Tween::SLOW_OUT_LINEAR_IN);
+    settings.AddObserver(this);
 
     ripple_layer_->SetTransform(transform);
 
@@ -197,6 +206,7 @@ void AssistantOverlay::HideAnimation() {
     settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
+    settings.AddObserver(this);
 
     ripple_layer_->SetOpacity(0);
   }
@@ -212,4 +222,9 @@ void AssistantOverlay::OnThemeChanged() {
       AshColorProvider::Get()->GetRippleAttributes().base_color);
   SchedulePaint();
 }
+
+void AssistantOverlay::OnImplicitAnimationsCompleted() {
+  scoped_no_clip_rect_.reset();
+}
+
 }  // namespace ash

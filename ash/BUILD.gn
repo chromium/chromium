@@ -2209,6 +2209,7 @@ test("ash_unittests") {
     "rotator/screen_rotation_animator_unittest.cc",
     "screen_util_unittest.cc",
     "session/session_controller_impl_unittest.cc",
+    "shelf/assistant_overlay_unittest.cc",
     "shelf/back_button_unittest.cc",
     "shelf/contextual_tooltip_unittest.cc",
     "shelf/drag_handle_unittest.cc",

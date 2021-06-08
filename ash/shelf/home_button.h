@@ -13,11 +13,13 @@
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
 #include "base/macros.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
 
 class ShelfButtonDelegate;
+class ShelfNavigationWidget;
 
 // Button used for the AppList icon on the shelf. It opens the app list (in
 // clamshell mode) or home screen (in tablet mode). Because the clamshell-mode
@@ -30,6 +32,18 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShelfButtonDelegate,
                               public views::ViewTargeterDelegate {
  public:
+  class ScopedNoClipRect {
+   public:
+    explicit ScopedNoClipRect(ShelfNavigationWidget* shelf_navigation_widget);
+    ScopedNoClipRect(const ScopedNoClipRect&) = delete;
+    ScopedNoClipRect& operator=(const ScopedNoClipRect&) = delete;
+    ~ScopedNoClipRect();
+
+   private:
+    ShelfNavigationWidget* const shelf_navigation_widget_;
+    const gfx::Rect clip_rect_;
+  };
+
   static const char kViewClassName[];
 
   explicit HomeButton(Shelf* shelf);
@@ -60,6 +74,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // Returns the display which contains this view.
   int64_t GetDisplayId() const;
+
+  // Clip rect of this view's widget will be removed during the life time of the
+  // returned ScopedNoClipRect.
+  std::unique_ptr<ScopedNoClipRect> CreateScopedNoClipRect() WARN_UNUSED_RESULT;
 
  protected:
   // views::Button:

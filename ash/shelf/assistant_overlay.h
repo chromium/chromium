@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/shelf/home_button.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
@@ -15,9 +16,8 @@
 
 namespace ash {
 
-class HomeButton;
-
-class ASH_EXPORT AssistantOverlay : public views::View {
+class ASH_EXPORT AssistantOverlay : public views::View,
+                                    public ui::ImplicitAnimationObserver {
  public:
   explicit AssistantOverlay(HomeButton* host_view);
   ~AssistantOverlay() override;
@@ -34,6 +34,9 @@ class ASH_EXPORT AssistantOverlay : public views::View {
   // views::View:
   const char* GetClassName() const override;
   void OnThemeChanged() override;
+
+  // ui::ImplicitAnimationObserver
+  void OnImplicitAnimationsCompleted() override;
 
  private:
   enum class AnimationState {
@@ -56,6 +59,7 @@ class ASH_EXPORT AssistantOverlay : public views::View {
   bool show_icon_ = false;
 
   views::CircleLayerDelegate circle_layer_delegate_;
+  std::unique_ptr<HomeButton::ScopedNoClipRect> scoped_no_clip_rect_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantOverlay);
 };
