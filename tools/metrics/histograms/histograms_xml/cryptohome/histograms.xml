@@ -427,7 +427,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
-    expires_after="M93">
+    expires_after="2022-01-01">
   <owner>vsavu@google.com</owner>
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
