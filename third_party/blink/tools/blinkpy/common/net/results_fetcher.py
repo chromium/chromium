@@ -180,14 +180,9 @@ class TestResultsFetcher(object):
             # patch)'. Only make sure it starts with blink_web_tests and
             # runs with a patch. This should be changed eventually to use actual
             # structured data from the test results server.
-            if
-            (re.match(r'(blink_web_tests|wpt_tests_suite).*\(with patch\)$',
-                      entry['TestType'])
-             # TODO(crbug.com/1178099) remove this once highdpi is stabilized
-             # and no longer experimental. With the current config,
-             # TestType doesn't have (with patch) suffix for highdpi while the
-             # results url has (experimental, with patch) suffix.
-             or entry['TestType'].startswith('high_dpi_blink_web_tests'))
+            if re.match(
+                r'(blink_web_tests|wpt_tests_suite|high_dpi_blink_web_tests).*\(with patch\)$',
+                entry['TestType'])
         ]
         # In manual testing, I sometimes saw results where the same suite was
         # repeated twice. De-duplicate here to try to catch this.
@@ -197,11 +192,6 @@ class TestResultsFetcher(object):
                 'build %s on builder %s expected to only have one web test '
                 'step, instead has %s' % (build.build_number,
                                           build.builder_name, suites))
-        if suites[0].startswith('high_dpi_blink_web_tests'):
-            # TODO(crbug.com/1178099) remove this once highdpi is stabilized
-            # and no longer experimental.
-            suites[0] = suites[0] + " (with patch, experimental)"
-
         return suites[0]
 
     @memoized

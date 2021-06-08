@@ -112,11 +112,6 @@ class BuilderList(object):
             if  (include_specifiers and
                      not include_specifiers & builder_specifiers):
                 continue
-            # TODO(crbug.com/1178099): When this builder is stabilized remove this
-            # and make it part of default try builders.
-            if is_try and not flag_specific and self.is_flag_specific_builder(
-                    b):
-                continue
             builders.append(b)
         return sorted(builders)
 
@@ -146,6 +141,9 @@ class BuilderList(object):
 
     def is_flag_specific_builder(self, builder_name):
         return self._builders[builder_name].get('flag_specific', None) != None
+
+    def flag_specific_option(self, builder_name):
+        return self._builders[builder_name].get('flag_specific', None)
 
     def platform_specifier_for_builder(self, builder_name):
         return self.specifiers_for_builder(builder_name)[0]

@@ -128,8 +128,8 @@ class BuilderListTest(unittest.TestCase):
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
         self.assertEqual([
-            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B',
-            'some-wpt-bot'
+            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Flag Specific', 'Try A',
+            'Try B', 'some-wpt-bot'
         ], builders.all_try_builder_names())
 
     def test_all_cq_try_builder_names(self):

@@ -1065,7 +1065,7 @@
           'shards': 12,
         },
         # Experimental until tests are rebaselined.
-        'experiment_percentage': 100,
+        # 'experiment_percentage': 100,
       },
     },
 

@@ -1,0 +1,106 @@
+Before:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [450, 225],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "bounds": [45, 45],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='overlapped'",
+      "position": [12, 1512],
+      "bounds": [60, 60],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFA500",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 150, 0, 1]
+      ]
+    }
+  ]
+}
+
+After scroll:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [450, 225],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "bounds": [45, 45],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='overlapped'",
+      "position": [12, 153],
+      "bounds": [60, 60],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFA500",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 150, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -57439,7 +57439,6 @@
           "--flag-specific=highdpi",
           "--num-retries=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [

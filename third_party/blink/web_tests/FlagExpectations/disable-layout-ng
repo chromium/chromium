@@ -1125,3 +1125,13 @@ crbug.com/591099 virtual/transform-interop/transforms/3d/general/perspective-uni
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/temporal_svc.any.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/temporal_svc.any.worker.html [ Failure ]
+
+crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-013.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_avc [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_avc [ Failure ]
+crbug.com/591099 fast/forms/time/time-appearance-basic.html [ Failure ]
+crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ Failure ]

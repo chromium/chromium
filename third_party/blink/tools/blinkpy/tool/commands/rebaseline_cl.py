@@ -186,6 +186,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
 
+        for builder in test_baseline_set.all_builders():
+            if self._tool.builders.is_flag_specific_builder(builder):
+                options.flag_specific = self._tool.builders.flag_specific_option(
+                    builder)
+
         if not options.dry_run:
             self.rebaseline(options, test_baseline_set)
         return 0
@@ -285,17 +290,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         results = {}
 
         for build, status in jobs.iteritems():
-            # TODO(crbug.com/1178099): highdpi builder status is always
-            # ('COMPLETED', 'SUCCESS') since it is experimental.
-            # Remove the special case once it is stabilized.
-            if (status == TryJobStatus('COMPLETED', 'SUCCESS')
-                    and 'optional-highdpi' not in build.builder_name):
+            if status == TryJobStatus('COMPLETED', 'SUCCESS'):
                 # Builds with passing try jobs are mapped to None, to indicate
                 # that there are no baselines to download.
                 results[build] = None
                 continue
-            if (status != TryJobStatus('COMPLETED', 'FAILURE')
-                    and 'optional-highdpi' not in build.builder_name):
+            if status != TryJobStatus('COMPLETED', 'FAILURE'):
                 # Only completed failed builds will contain actual failed
                 # web tests to download baselines for.
                 continue

@@ -315,7 +315,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     builders_to_fallback_paths[builder] = fallback_path
             else:
                 wpt_builders.add(builder)
-
         return set(builders_to_fallback_paths) | wpt_builders
 
     def _rebaseline_commands(self, test_baseline_set, options):
@@ -380,6 +379,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 args.extend(['--build-number', str(build.build_number)])
             if options.results_directory:
                 args.extend(['--results-directory', options.results_directory])
+
             if (options.flag_specific
                     and self._tool.builders.is_flag_specific_builder(
                         build.builder_name)):
