@@ -73,6 +73,8 @@ const char NetworkConnectionHandler::kErrorSimLocked[] = "sim-locked";
 const char NetworkConnectionHandler::kErrorCellularDeviceBusy[] =
     "cellular-device-busy";
 const char NetworkConnectionHandler::kErrorConnectTimeout[] = "connect-timeout";
+const char NetworkConnectionHandler::kConnectableCellularTimeout[] =
+    "connectable-timeout";
 
 NetworkConnectionHandler::NetworkConnectionHandler()
     : tether_delegate_(nullptr) {}

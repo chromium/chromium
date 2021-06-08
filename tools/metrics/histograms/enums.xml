@@ -80974,6 +80974,7 @@ Full version information for the fingerprint enum values:
   <int value="14" label="Enabled or disabled when not available"/>
   <int value="15" label="Cellular device busy"/>
   <int value="16" label="Error Connect Timeout"/>
+  <int value="17" label="Cellular waiting for connectable timeout"/>
 </enum>
 
 <enum name="UserInitiatedEvent">

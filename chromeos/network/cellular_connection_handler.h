@@ -101,7 +101,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
                            FailsRequestingInstalledProfiles);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
-                           TimeoutWaitingForConnectable);
+                           TimeoutWaitingForConnectable_ESim);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           TimeoutWaitingForConnectable_PSim);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, Success);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
                            Success_AlreadyEnabled);

@@ -131,6 +131,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Connect failed because connect request timed out.
   static const char kErrorConnectTimeout[];
 
+  // Connect failed because waiting for connectable timed out.
+  static const char kConnectableCellularTimeout[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
     using StringErrorCallback =

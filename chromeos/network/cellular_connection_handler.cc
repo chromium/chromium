@@ -96,9 +96,10 @@ absl::optional<std::string> CellularConnectionHandler::ResultToErrorString(
     case PrepareCellularConnectionResult::kCouldNotFindRelevantESimProfile:
       FALLTHROUGH;
     case PrepareCellularConnectionResult::kEnableProfileFailed:
-      FALLTHROUGH;
-    case PrepareCellularConnectionResult::kTimeoutWaitingForConnectable:
       return NetworkConnectionHandler::kErrorESimProfileIssue;
+
+    case PrepareCellularConnectionResult::kTimeoutWaitingForConnectable:
+      return NetworkConnectionHandler::kConnectableCellularTimeout;
   }
 }
 
@@ -489,8 +490,8 @@ void CellularConnectionHandler::CheckForConnectable() {
 
 void CellularConnectionHandler::OnWaitForConnectableTimeout() {
   DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
-  NET_LOG(ERROR) << "eSIM connection timed out waiting for network to become "
-                 << "connectable";
+  NET_LOG(ERROR) << "Cellular connection timed out waiting for network to "
+                    "become connectable";
   CompleteConnectionAttempt(
       PrepareCellularConnectionResult::kTimeoutWaitingForConnectable);
 }
