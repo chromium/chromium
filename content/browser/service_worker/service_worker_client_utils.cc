@@ -122,7 +122,7 @@ class OpenURLObserver : public WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(OpenURLObserver);
 };
 
-blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfoOnUI(
+blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
     int render_process_id,
     int render_frame_id,
     base::TimeTicks create_time,
@@ -155,47 +155,15 @@ blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfoOnUI(
       render_frame_host->frame_tree_node()->last_focus_time(), create_time);
 }
 
-blink::mojom::ServiceWorkerClientInfoPtr FocusOnUI(
-    int render_process_id,
-    int render_frame_id,
-    base::TimeTicks create_time,
-    const std::string& client_uuid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(render_frame_host));
-
-  if (!render_frame_host || !web_contents)
-    return nullptr;
-
-  FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
-
-  // Focus the frame in the frame tree node, in case it has changed.
-  frame_tree_node->frame_tree()->SetFocusedFrame(
-      frame_tree_node, render_frame_host->GetSiteInstance());
-
-  // Focus the frame's view to make sure the frame is now considered as focused.
-  render_frame_host->GetView()->Focus();
-
-  // Move the web contents to the foreground.
-  web_contents->Activate();
-
-  return GetWindowClientInfoOnUI(render_process_id, render_frame_id,
-                                 create_time, client_uuid);
-}
-
-// This is only called for main frame navigations in OpenWindowOnUI().
-void DidOpenURLOnUI(WindowType type,
-                    OpenURLCallback callback,
-                    WebContents* web_contents) {
+// This is only called for main frame navigations in OpenWindow().
+void DidOpenURL(WindowType type,
+                OpenURLCallback callback,
+                WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!web_contents) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
-                       MSG_ROUTING_NONE));
+    std::move(callback).Run(ChildProcessHost::kInvalidUniqueID,
+                            MSG_ROUTING_NONE);
     return;
   }
 
@@ -213,113 +181,11 @@ void DidOpenURLOnUI(WindowType type,
                       std::move(callback));
 }
 
-void OpenWindowOnUI(
-    const GURL& url,
-    const GURL& script_url,
-    int worker_id,
-    int worker_process_id,
-    const scoped_refptr<ServiceWorkerContextWrapper>& context_wrapper,
-    WindowType type,
-    OpenURLCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  RenderProcessHost* render_process_host =
-      RenderProcessHost::FromID(worker_process_id);
-  if (render_process_host->IsForGuestsOnly()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
-                       MSG_ROUTING_NONE));
-    return;
-  }
-
-  SiteInstance* site_instance =
-      context_wrapper->process_manager()->GetSiteInstanceForWorker(worker_id);
-  if (!site_instance) {
-    // Worker isn't running anymore. Fail.
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
-                       MSG_ROUTING_NONE));
-    return;
-  }
-
-  // The following code is a rough copy of Navigator::RequestOpenURL. That
-  // function can't be used directly since there is no render frame host yet
-  // that the navigation will occur in.
-
-  OpenURLParams params(
-      url,
-      Referrer::SanitizeForRequest(
-          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
-      type == WindowType::PAYMENT_HANDLER_WINDOW
-          ? WindowOpenDisposition::NEW_POPUP
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
-  params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
-  params.initiator_origin = url::Origin::Create(script_url.GetOrigin());
-
-  // End of RequestOpenURL copy.
-
-  GetContentClient()->browser()->OpenURL(
-      site_instance, params,
-      base::BindOnce(&DidOpenURLOnUI, type, std::move(callback)));
-}
-
-void NavigateClientOnUI(const GURL& url,
-                        const GURL& script_url,
-                        int process_id,
-                        int frame_id,
-                        OpenURLCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  RenderFrameHostImpl* rfhi = RenderFrameHostImpl::FromID(process_id, frame_id);
-  WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
-
-  if (!rfhi || !web_contents) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
-                       MSG_ROUTING_NONE));
-    return;
-  }
-
-  // Reject the navigate() call if there is an ongoing browser-initiated
-  // navigation. Not rejecting it would allow websites to prevent the user from
-  // navigating away. See https://crbug.com/930154.
-  NavigationRequest* ongoing_navigation_request =
-      rfhi->frame_tree()->root()->navigation_request();
-  if (ongoing_navigation_request &&
-      ongoing_navigation_request->browser_initiated()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
-                       MSG_ROUTING_NONE));
-    return;
-  }
-
-  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
-  Navigator& navigator = rfhi->frame_tree_node()->navigator();
-  navigator.RequestOpenURL(
-      rfhi, url, nullptr /* initiator_frame_token */,
-      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      url::Origin::Create(script_url), nullptr /* post_body */,
-      std::string() /* extra_headers */,
-      Referrer::SanitizeForRequest(
-          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
-      WindowOpenDisposition::CURRENT_TAB,
-      false /* should_replace_current_entry */, false /* user_gesture */,
-      blink::mojom::TriggeringEventInfo::kUnknown,
-      std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
-      absl::nullopt);
-  new OpenURLObserver(web_contents, frame_tree_node_id, std::move(callback));
-}
-
 void AddWindowClient(
     const ServiceWorkerContainerHost* container_host,
     std::vector<std::tuple<int, int, base::TimeTicks, std::string>>*
         client_info) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!container_host->IsContainerForWindowClient()) {
     return;
   }
@@ -334,7 +200,7 @@ void AddNonWindowClient(
     const ServiceWorkerContainerHost* container_host,
     blink::mojom::ServiceWorkerClientType client_type,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* out_clients) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::mojom::ServiceWorkerClientType host_client_type =
       container_host->GetClientType();
   if (host_client_type == blink::mojom::ServiceWorkerClientType::kWindow)
@@ -355,41 +221,6 @@ void AddNonWindowClient(
       blink::mojom::ServiceWorkerClientLifecycleState::kActive,
       base::TimeTicks(), container_host->create_time());
   out_clients->push_back(std::move(client_info));
-}
-
-void OnGetWindowClientsOnUI(
-    // The tuple contains process_id, frame_id, create_time, client_uuid.
-    const std::vector<std::tuple<int, int, base::TimeTicks, std::string>>&
-        clients_info,
-    const GURL& script_url,
-    blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
-    std::vector<blink::mojom::ServiceWorkerClientInfoPtr> out_clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& it : clients_info) {
-    blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfoOnUI(
-        std::get<0>(it), std::get<1>(it), std::get<2>(it), std::get<3>(it));
-
-    // If the request to the container_host returned a null
-    // ServiceWorkerClientInfo, that means that it wasn't possible to associate
-    // it with a valid RenderFrameHost. It might be because the frame was killed
-    // or navigated in between.
-    if (!info)
-      continue;
-    DCHECK(!info->client_uuid.empty());
-
-    // We can get info for a frame that was navigating end ended up with a
-    // different URL than expected. In such case, we should make sure to not
-    // expose cross-origin WindowClient.
-    if (info->url.GetOrigin() != script_url.GetOrigin())
-      continue;
-
-    out_clients.push_back(std::move(info));
-  }
-
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(std::move(callback), std::move(out_clients)));
 }
 
 struct ServiceWorkerClientInfoSort {
@@ -417,7 +248,7 @@ struct ServiceWorkerClientInfoSort {
 void DidGetClients(
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::sort(clients.begin(), clients.end(), ServiceWorkerClientInfoSort());
 
@@ -429,7 +260,7 @@ void GetNonWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it = controller->context()->GetClientContainerHostIterator(
@@ -452,7 +283,7 @@ void DidGetWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (options->client_type == blink::mojom::ServiceWorkerClientType::kAll) {
     GetNonWindowClients(controller, std::move(options), std::move(callback),
                         std::move(clients));
@@ -466,7 +297,7 @@ void GetWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(options->client_type ==
              blink::mojom::ServiceWorkerClientType::kWindow ||
          options->client_type == blink::mojom::ServiceWorkerClientType::kAll);
@@ -492,13 +323,29 @@ void GetWindowClients(
     return;
   }
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&OnGetWindowClientsOnUI, clients_info,
-                     controller->script_url(),
-                     base::BindOnce(&DidGetWindowClients, controller,
-                                    std::move(options), std::move(callback)),
-                     std::move(clients)));
+  for (const auto& it : clients_info) {
+    blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
+        std::get<0>(it), std::get<1>(it), std::get<2>(it), std::get<3>(it));
+
+    // If the request to the container_host returned a null
+    // ServiceWorkerClientInfo, that means that it wasn't possible to associate
+    // it with a valid RenderFrameHost. It might be because the frame was killed
+    // or navigated in between.
+    if (!info)
+      continue;
+    DCHECK(!info->client_uuid.empty());
+
+    // We can get info for a frame that was navigating end ended up with a
+    // different URL than expected. In such case, we should make sure to not
+    // expose cross-origin WindowClient.
+    if (info->url.GetOrigin() != controller->script_url().GetOrigin())
+      continue;
+
+    clients.push_back(std::move(info));
+  }
+
+  DidGetWindowClients(controller, std::move(options), std::move(callback),
+                      std::move(clients));
 }
 
 // TODO(crbug.com/1199077): Update `sane_origin` to StorageKey once
@@ -508,7 +355,7 @@ void DidGetExecutionReadyClient(
     const std::string& client_uuid,
     const GURL& sane_origin,
     NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -528,7 +375,7 @@ void DidGetExecutionReadyClient(
 
   CHECK_EQ(container_host->url().GetOrigin(), sane_origin);
 
-  blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfoOnUI(
+  blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
       container_host->process_id(), container_host->frame_id(),
       container_host->create_time(), container_host->client_uuid());
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk, std::move(info));
@@ -538,12 +385,34 @@ void DidGetExecutionReadyClient(
 
 void FocusWindowClient(ServiceWorkerContainerHost* container_host,
                        ClientCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(container_host->IsContainerForWindowClient());
 
-  blink::mojom::ServiceWorkerClientInfoPtr info =
-      FocusOnUI(container_host->process_id(), container_host->frame_id(),
-                container_host->create_time(), container_host->client_uuid());
+  RenderFrameHostImpl* render_frame_host = RenderFrameHostImpl::FromID(
+      container_host->process_id(), container_host->frame_id());
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(render_frame_host));
+
+  if (!render_frame_host || !web_contents) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
+
+  // Focus the frame in the frame tree node, in case it has changed.
+  frame_tree_node->frame_tree()->SetFocusedFrame(
+      frame_tree_node, render_frame_host->GetSiteInstance());
+
+  // Focus the frame's view to make sure the frame is now considered as focused.
+  render_frame_host->GetView()->Focus();
+
+  // Move the web contents to the foreground.
+  web_contents->Activate();
+
+  blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
+      container_host->process_id(), container_host->frame_id(),
+      container_host->create_time(), container_host->client_uuid());
   std::move(callback).Run(std::move(info));
 }
 
@@ -555,12 +424,48 @@ void OpenWindow(const GURL& url,
                 const base::WeakPtr<ServiceWorkerContextCore>& context,
                 WindowType type,
                 NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  RenderProcessHost* render_process_host =
+      RenderProcessHost::FromID(worker_process_id);
+  if (render_process_host->IsForGuestsOnly()) {
+    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
+                ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    return;
+  }
+
+  scoped_refptr<ServiceWorkerContextWrapper> context_wrapper =
+      base::WrapRefCounted(context->wrapper());
+  SiteInstance* site_instance =
+      context_wrapper->process_manager()->GetSiteInstanceForWorker(worker_id);
+  if (!site_instance) {
+    // Worker isn't running anymore. Fail.
+    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
+                ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    return;
+  }
+
+  // The following code is a rough copy of Navigator::RequestOpenURL. That
+  // function can't be used directly since there is no render frame host yet
+  // that the navigation will occur in.
+
+  OpenURLParams params(
+      url,
+      Referrer::SanitizeForRequest(
+          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
+      type == WindowType::PAYMENT_HANDLER_WINDOW
+          ? WindowOpenDisposition::NEW_POPUP
+          : WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
+  params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
+  params.initiator_origin = url::Origin::Create(script_url.GetOrigin());
+
+  // End of RequestOpenURL copy.
+
+  GetContentClient()->browser()->OpenURL(
+      site_instance, params,
       base::BindOnce(
-          &OpenWindowOnUI, url, script_url, worker_id, worker_process_id,
-          base::WrapRefCounted(context->wrapper()), type,
+          &DidOpenURL, type,
           base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
                          std::move(callback))));
 }
@@ -572,25 +477,58 @@ void NavigateClient(const GURL& url,
                     int frame_id,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
                     NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(
-          &NavigateClientOnUI, url, script_url, process_id, frame_id,
-          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
-                         std::move(callback))));
+  RenderFrameHostImpl* rfhi = RenderFrameHostImpl::FromID(process_id, frame_id);
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
+
+  if (!rfhi || !web_contents) {
+    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
+                ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    return;
+  }
+
+  // Reject the navigate() call if there is an ongoing browser-initiated
+  // navigation. Not rejecting it would allow websites to prevent the user from
+  // navigating away. See https://crbug.com/930154.
+  NavigationRequest* ongoing_navigation_request =
+      rfhi->frame_tree()->root()->navigation_request();
+  if (ongoing_navigation_request &&
+      ongoing_navigation_request->browser_initiated()) {
+    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
+                ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    return;
+  }
+
+  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
+  Navigator& navigator = rfhi->frame_tree_node()->navigator();
+  navigator.RequestOpenURL(
+      rfhi, url, nullptr /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      url::Origin::Create(script_url), nullptr /* post_body */,
+      std::string() /* extra_headers */,
+      Referrer::SanitizeForRequest(
+          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
+      WindowOpenDisposition::CURRENT_TAB,
+      false /* should_replace_current_entry */, false /* user_gesture */,
+      blink::mojom::TriggeringEventInfo::kUnknown,
+      std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
+      absl::nullopt);
+  new OpenURLObserver(
+      web_contents, frame_tree_node_id,
+      base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
+                     std::move(callback)));
 }
 
 void GetClient(ServiceWorkerContainerHost* container_host,
                ClientCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(container_host->IsContainerForClient());
 
   blink::mojom::ServiceWorkerClientType host_client_type =
       container_host->GetClientType();
   if (host_client_type == blink::mojom::ServiceWorkerClientType::kWindow) {
-    blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfoOnUI(
+    blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
         container_host->process_id(), container_host->frame_id(),
         container_host->create_time(), container_host->client_uuid());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -614,7 +552,7 @@ void GetClient(ServiceWorkerContainerHost* container_host,
 void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
                 blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
                 blink::mojom::ServiceWorkerHost::GetClientsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto clients = std::vector<blink::mojom::ServiceWorkerClientInfoPtr>();
   if (!controller->HasControllee() && !options->include_uncontrolled) {
@@ -640,7 +578,7 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  NavigationCallback callback,
                  int render_process_id,
                  int render_frame_id) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort,
