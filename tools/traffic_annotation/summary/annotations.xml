@@ -141,6 +141,7 @@ Refer to README.md for content description and update process.
  <item id="gaia_auth_revoke_token" added_in_milestone="62" hash_code="133982351" type="0" content_hash_code="96665330" os_list="linux,windows" file_path="google_apis/gaia/gaia_auth_fetcher.cc"/>
  <item id="gaia_cookie_manager_external_cc_result" added_in_milestone="62" hash_code="4300475" type="0" content_hash_code="31188375" os_list="linux,windows" file_path="components/signin/internal/identity_manager/gaia_cookie_manager_service.cc"/>
  <item id="gaia_create_reauth_proof_token_for_parent" added_in_milestone="80" hash_code="67750043" type="0" content_hash_code="103500636" os_list="linux,windows" file_path="google_apis/gaia/gaia_auth_fetcher.cc"/>
+ <item id="gaia_oauth_client_get_account_capabilities" added_in_milestone="93" hash_code="87437888" type="0" content_hash_code="51145869" os_list="linux,windows" file_path="google_apis/gaia/gaia_oauth_client.cc"/>
  <item id="gaia_oauth_client_get_token_info" added_in_milestone="62" hash_code="32585152" type="0" content_hash_code="128143346" os_list="linux,windows" file_path="google_apis/gaia/gaia_oauth_client.cc"/>
  <item id="gaia_oauth_client_get_tokens" added_in_milestone="62" hash_code="5637379" type="0" content_hash_code="12099176" os_list="linux,windows" file_path="google_apis/gaia/gaia_oauth_client.cc"/>
  <item id="gaia_oauth_client_get_user_info" added_in_milestone="62" hash_code="83476155" type="0" content_hash_code="35159007" os_list="linux,windows" file_path="google_apis/gaia/gaia_oauth_client.cc"/>

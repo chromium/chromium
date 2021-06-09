@@ -250,6 +250,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="gaia_auth_multilogin"/>
       <traffic_annotation unique_id="gaia_cookie_manager_external_cc_result"/>
       <traffic_annotation unique_id="gaia_oauth_client_get_token_info"/>
+      <traffic_annotation unique_id="gaia_oauth_client_get_account_capabilities"/>
       <traffic_annotation unique_id="gaia_oauth_client_get_tokens"/>
       <traffic_annotation unique_id="gaia_oauth_client_get_user_info"/>
       <traffic_annotation unique_id="gaia_oauth_client_refresh_token"/>

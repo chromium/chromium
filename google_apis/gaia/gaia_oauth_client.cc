@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -78,6 +80,11 @@ class GaiaOAuthClient::Core
   void GetUserInfo(const std::string& oauth_access_token,
                    int max_retries,
                    Delegate* delegate);
+  void GetAccountCapabilities(
+      const std::string& oauth_access_token,
+      const std::vector<std::string>& capabilities_names,
+      int max_retries,
+      Delegate* delegate);
   void GetTokenInfo(const std::string& qualifier,
                     const std::string& query,
                     int max_retries,
@@ -97,6 +104,7 @@ class GaiaOAuthClient::Core
     USER_EMAIL,
     USER_ID,
     USER_INFO,
+    ACCOUNT_CAPABILITIES,
   };
 
   ~Core() {}
@@ -349,6 +357,59 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
               traffic_annotation);
 }
 
+void GaiaOAuthClient::Core::GetAccountCapabilities(
+    const std::string& oauth_access_token,
+    const std::vector<std::string>& capabilities_names,
+    int max_retries,
+    Delegate* delegate) {
+  DCHECK(!capabilities_names.empty());
+
+  std::string post_body = base::StrCat(
+      {"names=", net::EscapeUrlEncodedData(*capabilities_names.begin(), true)});
+  for (auto it = capabilities_names.begin() + 1; it != capabilities_names.end();
+       ++it) {
+    base::StrAppend(&post_body,
+                    {"&names=", net::EscapeUrlEncodedData(*it, true)});
+  }
+
+  std::string auth = base::StrCat({"Bearer ", oauth_access_token});
+
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation(
+      net::DefineNetworkTrafficAnnotation(
+          "gaia_oauth_client_get_account_capabilities",
+          R"(
+        semantics {
+          sender: "OAuth 2.0 calls"
+          description:
+            "This request is used to fetch account capabilities. Capabilities "
+            "provide information about state and features of Gaia accounts."
+          trigger:
+            "AccountTrackerService fetches account capabilities soon after the "
+            "user signs in. Afterwards, AccountTrackerService periodically "
+            "triggers this request to keep account capabilities up to date for "
+            "existing accounts."
+          data:
+            "The OAuth 2.0 access token of the account and a predefined list "
+            "of capabilities to fetch."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be disabled in settings, but if the user "
+            "signs out of Chrome, this request would not be made."
+          chrome_policy {
+            SigninAllowed {
+              SigninAllowed: false
+            }
+          }
+        })"));
+
+  MakeRequest(ACCOUNT_CAPABILITIES,
+              GURL(GaiaUrls::GetInstance()->account_capabilities_url()),
+              post_body, auth, max_retries, delegate, traffic_annotation);
+}
+
 void GaiaOAuthClient::Core::MakeRequest(
     RequestType type,
     const GURL& url,
@@ -524,7 +585,12 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
       break;
     }
 
-    default:
+    case ACCOUNT_CAPABILITIES: {
+      delegate_->OnGetAccountCapabilitiesResponse(std::move(response_dict));
+      break;
+    }
+
+    case NO_PENDING_REQUEST:
       NOTREACHED();
   }
 }
@@ -591,6 +657,15 @@ void GaiaOAuthClient::GetTokenHandleInfo(const std::string& token_handle,
                                          Delegate* delegate) {
   return core_->GetTokenInfo("token_handle", token_handle, max_retries,
                              delegate);
+}
+
+void GaiaOAuthClient::GetAccountCapabilities(
+    const std::string& oauth_access_token,
+    const std::vector<std::string>& capabilities_names,
+    int max_retries,
+    Delegate* delegate) {
+  return core_->GetAccountCapabilities(oauth_access_token, capabilities_names,
+                                       max_retries, delegate);
 }
 
 }  // namespace gaia

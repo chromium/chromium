@@ -51,6 +51,8 @@ class GaiaOAuthClient {
     // Invoked on a successful response to the GetTokenInfo request.
     virtual void OnGetTokenInfoResponse(
         std::unique_ptr<base::DictionaryValue> token_info) {}
+    virtual void OnGetAccountCapabilitiesResponse(
+        std::unique_ptr<base::Value> account_capabilities) {}
     // Invoked when there is an OAuth error with one of the requests.
     virtual void OnOAuthError() = 0;
     // Invoked when there is a network error or upon receiving an invalid
@@ -134,6 +136,17 @@ class GaiaOAuthClient {
   void GetTokenHandleInfo(const std::string& token_handle,
                           int max_retries,
                           Delegate* delegate);
+
+  // Call the account capabilities API, returning a dictionary of response
+  // values. Only fetches values for capabilities listed in
+  // |capabilities_names|. The provided access token must have
+  // https://www.googleapis.com/auth/account.capabilities in its scopes. See
+  // |max_retries| docs above.
+  void GetAccountCapabilities(
+      const std::string& oauth_access_token,
+      const std::vector<std::string>& capabilities_names,
+      int max_retries,
+      Delegate* delegate);
 
  private:
   // The guts of the implementation live in this class.
