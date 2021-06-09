@@ -239,7 +239,6 @@
 /tflite/src
 /tint/src
 /tsan/
-/turbine/src
 /turbine/*.jar
 /ub-uiautomator/lib
 /ukey2/src
