@@ -370,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/tabs", .page_url = "enum_validity.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.page_url = "enum_validity.html"}))
       << message_;
 }
 

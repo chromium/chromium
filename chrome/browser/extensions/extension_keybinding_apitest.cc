@@ -1037,7 +1037,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, MAYBE_IncognitoMode) {
 
   bool is_incognito_enabled = GetParam();
 
-  ASSERT_TRUE(RunExtensionTest({.name = "keybinding/basics"},
+  ASSERT_TRUE(RunExtensionTest("keybinding/basics", {},
                                {.allow_in_incognito = is_incognito_enabled}))
       << message_;
 

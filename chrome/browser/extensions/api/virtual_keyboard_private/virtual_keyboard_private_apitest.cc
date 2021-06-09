@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, Multipaste) {
   CopyBitmapItem();
   CopyFileItem();
 
-  ASSERT_TRUE(RunExtensionTest({.name = "virtual_keyboard_private"},
+  ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private", {},
                                {.load_as_component = true}))
       << message_;
 }

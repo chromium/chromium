@@ -34,10 +34,6 @@ class Extension;
 class ExtensionApiTest : public ExtensionBrowserTest {
  public:
   struct RunOptions {
-    // Load the specified extension for the test. This is a subdirectory
-    // in "chrome/test/data/extensions/api_test".
-    const char* name = nullptr;
-
     // Start the test by opening the specified page URL. This must be an
     // absolute URL.
     const char* page_url = nullptr;

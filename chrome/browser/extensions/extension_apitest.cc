@@ -92,15 +92,6 @@ bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
   return RunExtensionTest(extension_name, {}, {});
 }
 
-bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options) {
-  return RunExtensionTest(run_options.name, run_options, {});
-}
-
-bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
-                                        const LoadOptions& load_options) {
-  return RunExtensionTest(run_options.name, run_options, load_options);
-}
-
 bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
                                         const RunOptions& run_options) {
   return RunExtensionTest(extension_name, run_options, {});
