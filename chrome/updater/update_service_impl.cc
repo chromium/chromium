@@ -169,16 +169,23 @@ void UpdateServiceImpl::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                RegistrationResponse(DoRegistration(request))));
+}
 
+int UpdateServiceImpl::DoRegistration(const RegistrationRequest& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Version current_version =
+      persisted_data_->GetProductVersion(request.app_id);
+  if (current_version.IsValid() &&
+      current_version.CompareTo(request.version) == 1) {
+    return kRegistrationAlreadyRegistered;
+  }
   persisted_data_->RegisterApp(request);
   update_client_->SendRegistrationPing(request.app_id, request.version,
                                        base::DoNothing());
-
-  // Result of registration. Currently there's no error handling in
-  // PersistedData, so we assume success every time, which is why we respond
-  // with 0.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), RegistrationResponse(0)));
+  return kRegistrationSuccess;
 }
 
 void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
