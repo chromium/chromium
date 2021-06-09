@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {ActivityLogDelegate} from './activity_log/activity_log_history.js';
@@ -13,7 +14,6 @@ import {LoadErrorDelegate} from './load_error.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
 import {PackDialogDelegate} from './pack_dialog.js';
 import {ToolbarDelegate} from './toolbar.js';
-
 
 export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
                                 ErrorPageDelegate, ItemDelegate,
@@ -425,7 +425,8 @@ export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
     });
   }
 
-  getOnExtensionActivity(): any {
+  getOnExtensionActivity(): ChromeEvent<
+      (activity: chrome.activityLogPrivate.ExtensionActivity) => void> {
     return chrome.activityLogPrivate.onExtensionActivity;
   }
 

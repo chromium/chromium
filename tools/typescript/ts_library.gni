@@ -119,6 +119,8 @@ template("ts_library") {
       "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
               "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
               target_gen_dir),
+      "/tools/typescript/definitions/*|" +
+          rebase_path("//tools/typescript/definitions/*", target_gen_dir),
     ]
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
