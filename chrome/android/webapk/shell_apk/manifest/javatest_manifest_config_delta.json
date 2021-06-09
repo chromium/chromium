@@ -1,4 +1,14 @@
 {
+  "scope_url": "https://pwa-directory.appspot.com/",
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "pwa-directory.appspot.com",
+    "scope_url_path_type": "android:pathPrefix",
+    "scope_url_path": "/"
+  },
+  "start_url": "https://pwa-directory.appspot.com/",
+  "icon_urls_and_icon_murmur2_hashes": "https://pwa-directory.appspot.com/icon1.png 0 https://pwa-directory.appspot.com/icon2.png 0",
+  "web_manifest_url": "https://pwa-directory.appspot.com/manifest.json",
   "bound_webapk": {
     "runtime_host": "org.chromium.chrome.tests"
   },
