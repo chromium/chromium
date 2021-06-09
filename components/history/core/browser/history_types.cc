@@ -370,10 +370,33 @@ AnnotatedVisit::AnnotatedVisit(URLRow url_row,
       context_annotations(context_annotations),
       content_annotations(content_annotations) {}
 AnnotatedVisit::AnnotatedVisit(const AnnotatedVisit&) = default;
+AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;
 AnnotatedVisit::~AnnotatedVisit() = default;
 
 Cluster::Cluster() = default;
+Cluster::Cluster(int64_t cluster_id,
+                 std::vector<AnnotatedVisit> annotated_visits,
+                 std::vector<std::u16string> keywords)
+    : cluster_id(cluster_id),
+      annotated_visits(annotated_visits),
+      keywords(keywords) {}
 Cluster::Cluster(const Cluster&) = default;
+Cluster& Cluster::operator=(const Cluster&) = default;
 Cluster::~Cluster() = default;
+
+ClusterRow::ClusterRow() = default;
+ClusterRow::ClusterRow(int64_t cluster_id) : cluster_id(cluster_id) {}
+ClusterRow::ClusterRow(const ClusterRow&) = default;
+ClusterRow& ClusterRow::operator=(const ClusterRow&) = default;
+ClusterRow::~ClusterRow() = default;
+
+ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult() = default;
+ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult(
+    std::vector<int64_t> cluster_ids,
+    std::vector<AnnotatedVisit> annotated_visits)
+    : cluster_ids(cluster_ids), annotated_visits(annotated_visits) {}
+ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult(
+    const ClusterAndAnnotatedVisitsResult&) = default;
+ClusterAndAnnotatedVisitsResult::~ClusterAndAnnotatedVisitsResult() = default;
 
 }  // namespace history
