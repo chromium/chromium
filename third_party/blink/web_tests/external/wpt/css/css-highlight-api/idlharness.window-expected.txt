@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: member names are unique
+PASS Highlight interface: existence and properties of interface object
+FAIL Highlight interface object length assert_equals: wrong value for Highlight.length expected 0 but got 1
+PASS Highlight interface object name
+PASS Highlight interface: existence and properties of interface prototype object
+PASS Highlight interface: existence and properties of interface prototype object's "constructor" property
+PASS Highlight interface: existence and properties of interface prototype object's @@unscopables property
+PASS Highlight interface: attribute priority
+PASS Highlight must be primary interface of new Highlight(new Range())
+PASS Stringification of new Highlight(new Range())
+PASS Highlight interface: new Highlight(new Range()) must inherit property "priority" with the proper type
+PASS HighlightRegistry interface: existence and properties of interface object
+PASS HighlightRegistry interface object length
+PASS HighlightRegistry interface object name
+PASS HighlightRegistry interface: existence and properties of interface prototype object
+PASS HighlightRegistry interface: existence and properties of interface prototype object's "constructor" property
+PASS HighlightRegistry interface: existence and properties of interface prototype object's @@unscopables property
+PASS HighlightRegistry must be primary interface of CSS.highlights
+PASS Stringification of CSS.highlights
+PASS CSS namespace: operation escape(CSSOMString)
+PASS CSS namespace: attribute highlights
+Harness: the test ran to completion.
+

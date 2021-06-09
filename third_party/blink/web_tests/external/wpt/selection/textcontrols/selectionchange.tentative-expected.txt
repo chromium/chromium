@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 56 tests; 12 PASS, 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Modifying selectionStart value of the input element assert_equals: expected 1 but got 0
 FAIL Modifying selectionEnd value of the input element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the input element assert_equals: expected 1 but got 0
@@ -11,6 +12,8 @@ FAIL Setting the same selectionEnd value twice on the input element assert_equal
 PASS Setting initial zero selection range on the input element
 FAIL Setting the same selection range twice on the input element assert_equals: expected 1 but got 0
 FAIL Calling select() twice on the input element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() after select() on the input element assert_equals: expected 2 but got 0
+FAIL Calling setRangeText() repeatedly on the input element assert_equals: expected 4 but got 0
 FAIL Modifying selectionStart value of the disconnected input element assert_equals: expected 1 but got 0
 FAIL Modifying selectionEnd value of the disconnected input element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the disconnected input element assert_equals: expected 1 but got 0
@@ -23,6 +26,8 @@ FAIL Setting the same selectionEnd value twice on the disconnected input element
 PASS Setting initial zero selection range on the disconnected input element
 FAIL Setting the same selection range twice on the disconnected input element assert_equals: expected 1 but got 0
 FAIL Calling select() twice on the disconnected input element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() after select() on the disconnected input element assert_equals: expected 2 but got 0
+FAIL Calling setRangeText() repeatedly on the disconnected input element assert_equals: expected 4 but got 0
 FAIL Modifying selectionStart value of the textarea element assert_equals: expected 1 but got 0
 FAIL Modifying selectionEnd value of the textarea element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the textarea element assert_equals: expected 1 but got 0
@@ -35,6 +40,8 @@ FAIL Setting the same selectionEnd value twice on the textarea element assert_eq
 PASS Setting initial zero selection range on the textarea element
 FAIL Setting the same selection range twice on the textarea element assert_equals: expected 1 but got 0
 FAIL Calling select() twice on the textarea element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() after select() on the textarea element assert_equals: expected 2 but got 0
+FAIL Calling setRangeText() repeatedly on the textarea element assert_equals: expected 4 but got 0
 FAIL Modifying selectionStart value of the disconnected textarea element assert_equals: expected 1 but got 0
 FAIL Modifying selectionEnd value of the disconnected textarea element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the disconnected textarea element assert_equals: expected 1 but got 0
@@ -47,5 +54,7 @@ FAIL Setting the same selectionEnd value twice on the disconnected textarea elem
 PASS Setting initial zero selection range on the disconnected textarea element
 FAIL Setting the same selection range twice on the disconnected textarea element assert_equals: expected 1 but got 0
 FAIL Calling select() twice on the disconnected textarea element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() after select() on the disconnected textarea element assert_equals: expected 2 but got 0
+FAIL Calling setRangeText() repeatedly on the disconnected textarea element assert_equals: expected 4 but got 0
 Harness: the test ran to completion.
 

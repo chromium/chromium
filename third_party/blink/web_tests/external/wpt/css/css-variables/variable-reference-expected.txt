@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS width: var(--prop);
+PASS width: var(--prop) !important;
+PASS width: var(--prop, );
+PASS width: var(--prop, 20px);
+PASS width: var(--prop, blue);
+PASS width: var(--prop1, var(--prop2));
+PASS width: var(--prop1, var(--prop2, var(--prop3, auto)));
+PASS width: var(--prop1) var(--prop2)
+FAIL width: var(--prop,); assert_equals: expected "var(--prop,)" but got ""
+PASS width: var();
+PASS width: var(prop);
+PASS width: var(-prop);
+PASS width: var(--prop 20px);
+PASS width: var(--prop, var(prop));
+PASS width: var(--prop, var(-prop));
+PASS width: var(20px);
+PASS width: var(var(--prop));
+PASS Variable reference left open at end of stylesheet
+Harness: the test ran to completion.
+

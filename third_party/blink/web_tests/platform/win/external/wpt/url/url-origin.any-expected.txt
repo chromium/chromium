@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 322 tests; 312 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 324 tests; 313 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -37,6 +37,8 @@ PASS Origin parsing: <?> against <http://example.org/foo/bar>
 PASS Origin parsing: </> against <http://example.org/foo/bar>
 PASS Origin parsing: <:23> against <http://example.org/foo/bar>
 PASS Origin parsing: </:23> against <http://example.org/foo/bar>
+PASS Origin parsing: <\x> against <http://example.org/foo/bar>
+FAIL Origin parsing: <\\x\hello> against <http://example.org/foo/bar> assert_equals: origin expected "http://x" but got "file://"
 PASS Origin parsing: <::> against <http://example.org/foo/bar>
 PASS Origin parsing: <::23> against <http://example.org/foo/bar>
 PASS Origin parsing: <foo://> against <http://example.org/foo/bar>

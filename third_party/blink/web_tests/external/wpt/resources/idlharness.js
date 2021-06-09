@@ -650,7 +650,7 @@ function exposure_set(object, default_set) {
 }
 
 function exposed_in(globals) {
-    if ('document' in self) {
+    if ('Window' in self) {
         return globals.has("Window");
     }
     if ('DedicatedWorkerGlobalScope' in self &&

@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+FAIL idl_test validation Validation error at line 21 in ../wpt_internal/system-wake-lock/resources/system-wake-lock:
+  Promise<void> release()
+          ^ `void` is now replaced by `undefined`. Refer to the [relevant GitHub issue](https://github.com/heycam/webidl/issues/60) for more information.
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface WorkerNavigator: original interface defined
+PASS Partial interface WorkerNavigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS WakeLock interface: existence and properties of interface object
+PASS WakeLock interface object length
+PASS WakeLock interface object name
+PASS WakeLock interface: existence and properties of interface prototype object
+PASS WakeLock interface: existence and properties of interface prototype object's "constructor" property
+PASS WakeLock interface: existence and properties of interface prototype object's @@unscopables property
+PASS WakeLock interface: operation request(optional WakeLockType)
+PASS WakeLock must be primary interface of navigator.wakeLock
+PASS Stringification of navigator.wakeLock
+PASS WakeLock interface: navigator.wakeLock must inherit property "request(optional WakeLockType)" with the proper type
+PASS WakeLock interface: calling request(optional WakeLockType) on navigator.wakeLock with too few arguments must throw TypeError
+PASS WakeLockSentinel interface: existence and properties of interface object
+PASS WakeLockSentinel interface object length
+PASS WakeLockSentinel interface object name
+PASS WakeLockSentinel interface: existence and properties of interface prototype object
+PASS WakeLockSentinel interface: existence and properties of interface prototype object's "constructor" property
+PASS WakeLockSentinel interface: existence and properties of interface prototype object's @@unscopables property
+PASS WakeLockSentinel interface: attribute type
+PASS WakeLockSentinel interface: operation release()
+PASS WakeLockSentinel interface: attribute onrelease
+PASS WakeLockSentinel must be primary interface of sentinel
+PASS Stringification of sentinel
+PASS WakeLockSentinel interface: sentinel must inherit property "type" with the proper type
+PASS WakeLockSentinel interface: sentinel must inherit property "release()" with the proper type
+PASS WakeLockSentinel interface: sentinel must inherit property "onrelease" with the proper type
+PASS Navigator interface: attribute wakeLock
+PASS Navigator interface: navigator must inherit property "wakeLock" with the proper type
+Harness: the test ran to completion.
+

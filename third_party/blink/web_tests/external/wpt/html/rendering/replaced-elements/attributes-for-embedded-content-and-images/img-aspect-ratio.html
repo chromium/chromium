@@ -63,6 +63,15 @@ test(function () {
   assert_equals(getComputedStyle(img).height, "0px");
 }, "Create, append and test immediately: <img> with attributes width=50% height=25%");
 
+test(function () {
+  img = new Image();
+  img.setAttribute("width", "50pp");
+  img.setAttribute("height", "25xx");
+  img.src = "/images/blue.png";
+  document.body.appendChild(img);
+  assert_ratio(img, 2);
+}, "Create, append and test immediately: <img> with invalid trailing attributes width=50pp height=25xx");
+
 test_computed_style("10", "20", "auto 10 / 20");
 test_computed_style("0", "1", "auto 0 / 1");
 test_computed_style("1", "0", "auto 1 / 0");
@@ -95,6 +104,8 @@ onload = function() {
 
   test(function () {
     assert_not_equals(images[5].offsetHeight, 500, "Images with alt text should be inline and ignore the aspect ratio");
+    // Though aspect-ratio is ignored, its value does not change.
+    assert_equals(getComputedStyle(images[5]).aspectRatio, "auto 100 / 500");
   }, "Loaded images test: Error image with width, height and alt attributes");
 
   test(function () {

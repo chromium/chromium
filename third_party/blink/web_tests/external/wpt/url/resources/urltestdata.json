@@ -540,6 +540,36 @@
     "hash": ""
   },
   {
+    "input": "\\x",
+    "base": "http://example.org/foo/bar",
+    "href": "http://example.org/x",
+    "origin": "http://example.org",
+    "protocol": "http:",
+    "username": "",
+    "password": "",
+    "host": "example.org",
+    "hostname": "example.org",
+    "port": "",
+    "pathname": "/x",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "\\\\x\\hello",
+    "base": "http://example.org/foo/bar",
+    "href": "http://x/hello",
+    "origin": "http://x",
+    "protocol": "http:",
+    "username": "",
+    "password": "",
+    "host": "x",
+    "hostname": "x",
+    "port": "",
+    "pathname": "/hello",
+    "search": "",
+    "hash": ""
+  },
+  {
     "input": "::",
     "base": "http://example.org/foo/bar",
     "href": "http://example.org/foo/::",

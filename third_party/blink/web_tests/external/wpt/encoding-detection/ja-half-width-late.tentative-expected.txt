@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check detection result assert_equals: Expected Shift_JIS expected "Shift_JIS" but got "gb18030"
+Harness: the test ran to completion.
+

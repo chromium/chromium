@@ -1,0 +1,77 @@
+This is a testharness.js-based test.
+Found 73 tests; 59 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS no variable
+PASS variable
+PASS single char variable
+PASS single char '-' variable
+PASS no char variable
+PASS white space value (single space)
+FAIL white space value (double space) assert_equals: Expected Value should match actual value expected "  " but got " "
+PASS overwrite
+PASS can't overwrite with no value
+PASS can overwrite with space value
+PASS case sensetivity
+PASS case sensetivity2
+PASS parsing three dashes at start of variable
+PASS parsing multiple dashes with one dash at start of variable
+PASS  leading white space (single space)
+PASS  middle white space (single space)
+PASS  trailing white space (single space)
+FAIL  leading white space (double space) 2 assert_equals: Expected Value should match actual value expected "  value" but got " value"
+FAIL  middle white space (double space) 2 assert_equals: Expected Value should match actual value expected "value1  value2" but got "value1 value2"
+FAIL  trailing white space (double space) 2 assert_equals: Expected Value should match actual value expected "value  " but got "value "
+PASS !important
+PASS !important 2
+PASS !important (with space)
+PASS no variable (Computed Style)
+PASS variable (Computed Style)
+PASS single char variable (Computed Style)
+PASS single char '-' variable (Computed Style)
+PASS no char variable (Computed Style)
+PASS white space value (single space) (Computed Style)
+FAIL white space value (double space) (Computed Style) assert_equals: Expected Value should match actual value expected "  " but got " "
+PASS overwrite (Computed Style)
+PASS can't overwrite with no value (Computed Style)
+PASS can overwrite with space value (Computed Style)
+PASS case sensetivity (Computed Style)
+PASS case sensetivity2 (Computed Style)
+PASS parsing three dashes at start of variable (Computed Style)
+PASS parsing multiple dashes with one dash at start of variable (Computed Style)
+PASS  leading white space (single space) (Computed Style)
+PASS  middle white space (single space) (Computed Style)
+PASS  trailing white space (single space) (Computed Style)
+FAIL  leading white space (double space) 2 (Computed Style) assert_equals: Expected Value should match actual value expected "  value" but got " value"
+FAIL  middle white space (double space) 2 (Computed Style) assert_equals: Expected Value should match actual value expected "value1  value2" but got "value1 value2"
+FAIL  trailing white space (double space) 2 (Computed Style) assert_equals: Expected Value should match actual value expected "value  " but got "value "
+PASS !important (Computed Style)
+PASS !important 2 (Computed Style)
+PASS !important (with space) (Computed Style)
+PASS no variable (Cascading)
+PASS variable (Cascading)
+PASS single char variable (Cascading)
+PASS single char '-' variable (Cascading)
+PASS no char variable (Cascading)
+PASS white space value (single space) (Cascading)
+FAIL white space value (double space) (Cascading) assert_equals: Expected Value should match actual value expected "  " but got " "
+PASS overwrite (Cascading)
+PASS can't overwrite with no value (Cascading)
+PASS can overwrite with space value (Cascading)
+PASS case sensetivity (Cascading)
+PASS case sensetivity2 (Cascading)
+PASS parsing three dashes at start of variable (Cascading)
+PASS parsing multiple dashes with one dash at start of variable (Cascading)
+PASS  leading white space (single space) (Cascading)
+PASS  middle white space (single space) (Cascading)
+PASS  trailing white space (single space) (Cascading)
+FAIL  leading white space (double space) 2 (Cascading) assert_equals: Expected Value should match actual value expected "  value" but got " value"
+FAIL  middle white space (double space) 2 (Cascading) assert_equals: Expected Value should match actual value expected "value1  value2" but got "value1 value2"
+FAIL  trailing white space (double space) 2 (Cascading) assert_equals: Expected Value should match actual value expected "value  " but got "value "
+PASS !important (Cascading)
+PASS !important 2 (Cascading)
+PASS !important (with space) (Cascading)
+PASS basic CSSOM.setProperty
+FAIL CSSOM.setProperty with space 1 assert_equals: Expected Value should match actual value expected "" but got "green"
+FAIL CSSOM.setProperty with space 2 assert_equals: Expected Value should match actual value expected "" but got "green"
+PASS CSSOM.setProperty with space 3
+Harness: the test ran to completion.
+

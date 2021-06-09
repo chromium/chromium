@@ -70,8 +70,8 @@ dictionary WebTransportStats {
 
 [ Exposed=(Window,Worker) ]
 interface SendStream : WritableStream /* of Uint8Array */ {
-  readonly attribute Promise<StreamAbortInfo> writingAborted;
-  undefined abortWriting(optional StreamAbortInfo abortInfo = {});
+  readonly attribute Promise<StreamAbortInfo> remoteCanceled;
+  undefined reset(optional StreamAbortInfo abortInfo = {});
 };
 
 dictionary StreamAbortInfo {
@@ -80,8 +80,7 @@ dictionary StreamAbortInfo {
 
 [ Exposed=(Window,Worker) ]
 interface ReceiveStream : ReadableStream /* of Uint8Array */ {
-  readonly attribute Promise<StreamAbortInfo> readingAborted;
-  undefined abortReading(optional StreamAbortInfo abortInfo = {});
+  readonly attribute Promise<StreamAbortInfo> remoteReset;
 };
 
 [ Exposed=(Window,Worker) ]

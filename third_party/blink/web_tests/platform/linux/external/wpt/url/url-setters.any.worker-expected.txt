@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 207 tests; 130 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 213 tests; 133 PASS, 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -108,6 +108,8 @@ FAIL URL: Setting <file://y/>.host = 'loc%41lhost' assert_equals: expected "file
 FAIL URL: Setting <file://hi/x>.host = '' assert_equals: expected "file:///x" but got "file://hi/x"
 FAIL URL: Setting <sc://test@test/>.host = '' assert_equals: expected "test" but got ""
 FAIL URL: Setting <sc://test:12/>.host = '' assert_equals: expected "test:12" but got ""
+PASS URL: Setting <http://example.com/>.host = '///bad.com' Leading / is not stripped
+FAIL URL: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 FAIL URL: Setting <sc://x/>.hostname = '\0' Non-special scheme assert_equals: expected "x" but got ""
 FAIL URL: Setting <sc://x/>.hostname = '	' assert_equals: expected "sc:///" but got "sc://x/"
 FAIL URL: Setting <sc://x/>.hostname = '
@@ -145,6 +147,8 @@ FAIL URL: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test"
 FAIL URL: Setting <sc://test:12/>.hostname = '' assert_equals: expected "test:12" but got ""
 FAIL URL: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL URL: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
+FAIL URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+FAIL URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS URL: Setting <http://example.net>.port = '8080'
 PASS URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value
 PASS URL: Setting <http://example.net:8080>.port = '80' Default port number is removed
@@ -179,6 +183,8 @@ PASS URL: Setting <http://example.net>.pathname = '?' ? needs to be encoded
 PASS URL: Setting <http://example.net>.pathname = '#' # needs to be encoded
 FAIL URL: Setting <sc://example.net>.pathname = '?' ? needs to be encoded, non-special scheme assert_equals: expected "sc://example.net/%3F" but got "sc://example.net"
 FAIL URL: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
+PASS URL: Setting <http://example.net>.pathname = '/?é' ? doesn't mess up encoding
+PASS URL: Setting <http://example.net>.pathname = '/#é' # doesn't mess up encoding
 PASS URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
 PASS URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
 PASS URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes

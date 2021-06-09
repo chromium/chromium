@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Indexed properties of the window object (strict mode)
+PASS Indexed properties of the window object (strict mode) 1
+PASS Indexed properties of the window object (strict mode) 2
+FAIL Borderline numeric key: 2 ** 32 - 2 is an index (strict mode) assert_false: expected false got true
+PASS Borderline numeric key: 2 ** 32 - 1 is not an index (strict mode)
+PASS Indexed properties of the window object (strict mode) 3
+Harness: the test ran to completion.
+

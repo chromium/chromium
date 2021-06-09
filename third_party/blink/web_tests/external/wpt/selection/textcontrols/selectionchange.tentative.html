@@ -11,8 +11,8 @@
   }
 </style>
 
-<input id="input" value="XXXXXXXXXXXXXXXXXXX" width="200"><br>
-<textarea id="textarea" width="200">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</textarea>
+<input id="input" width="200"><br>
+<textarea id="textarea" width="200"></textarea>
 
 <script>
   class SelectionChangeCollector {
@@ -40,6 +40,7 @@
     ],
     async initialize() {
       for (const collector of this.collectors) {
+        collector.target.value = "XXXXXXXXXXXXXXXXXXX";
         collector.target.blur();
         collector.target.setSelectionRange(0, 0);
       }
@@ -175,5 +176,27 @@
       await data.assert_empty_spin();
       assert_equals(collector.events.length, 1);
     }, `Calling select() twice on ${name}`);
+
+    promise_test(async () => {
+      await data.initialize();
+
+      target.select();
+      target.setRangeText("foo", 2, 6);
+
+      await data.assert_empty_spin();
+      assert_equals(collector.events.length, 2);
+    }, `Calling setRangeText() after select() on ${name}`);
+
+    promise_test(async () => {
+      await data.initialize();
+
+      target.select();
+      target.setRangeText("", 10, 12);
+      target.setRangeText("", 10, 12);
+      target.setRangeText("", 10, 12);
+
+      await data.assert_empty_spin();
+      assert_equals(collector.events.length, 4);
+    }, `Calling setRangeText() repeatedly on ${name}`);
   }
 </script>

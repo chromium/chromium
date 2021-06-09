@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: document is not defined
+PASS File interface object exists
+PASS Required arguments
+PASS empty fileBits
+PASS DOMString fileBits
+PASS Unicode DOMString fileBits
+PASS String object fileBits
+PASS Empty Blob fileBits
+PASS Blob fileBits
+PASS Empty File fileBits
+PASS File fileBits
+PASS ArrayBuffer fileBits
+PASS Typed array fileBits
+PASS Various fileBits
+PASS Number in fileBits
+PASS Array in fileBits
+PASS Object in fileBits
+Harness: the test ran to completion.
+

@@ -70,7 +70,13 @@ dictionary AudioEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
+callback EncodedAudioChunkOutputCallback =
+    undefined (EncodedAudioChunk output,
+               optional EncodedAudioChunkMetadata metadata = {});
+
+dictionary EncodedAudioChunkMetadata {
+  AudioDecoderConfig decoderConfig;
+};
 
 [Exposed=(Window,DedicatedWorker)]
 interface VideoEncoder {
@@ -93,7 +99,14 @@ dictionary VideoEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
+callback EncodedVideoChunkOutputCallback =
+    undefined (EncodedVideoChunk chunk,
+               optional EncodedVideoChunkMetadata metadata = {});
+
+dictionary EncodedVideoChunkMetadata {
+  VideoDecoderConfig decoderConfig;
+  unsigned long temporalLayerId;
+};
 
 dictionary AudioDecoderSupport {
   boolean supported;
@@ -117,40 +130,37 @@ dictionary VideoEncoderSupport {
 
 dictionary AudioDecoderConfig {
   required DOMString codec;
-  required unsigned long sampleRate;
-  required unsigned long numberOfChannels;
+  [EnforceRange] required unsigned long sampleRate;
+  [EnforceRange] required unsigned long numberOfChannels;
   BufferSource description;
 };
 
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  unsigned long codedWidth;
-  unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 
 dictionary AudioEncoderConfig {
   required DOMString codec;
-  unsigned long sampleRate;
-  unsigned long numberOfChannels;
-  unsigned long long bitrate;
+  [EnforceRange] unsigned long sampleRate;
+  [EnforceRange] unsigned long numberOfChannels;
+  [EnforceRange] unsigned long long bitrate;
 };
 
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  unsigned long long bitrate;
-  required unsigned long width;
-  required unsigned long height;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long long bitrate;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  DOMString scalabilityMode;
 };
 
 enum HardwareAcceleration {
@@ -183,7 +193,7 @@ interface EncodedAudioChunk {
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
 };
 
@@ -205,8 +215,8 @@ interface EncodedVideoChunk {
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  required long long timestamp;    // microseconds
-  long long duration;              // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] long long duration;              // microseconds
   required BufferSource data;
 };
 
@@ -223,30 +233,39 @@ interface AudioData {
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
-  readonly attribute unsigned long allocationSize;
   readonly attribute long long duration;     // microseconds
   readonly attribute long long timestamp;    // microseconds
 
-  undefined copyTo([AllowShared] BufferSource destination, unsigned long planeNumber);
+  unsigned long allocationSize(AudioDataCopyToOptions options);
+  undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
   AudioData clone();
   undefined close();
 };
 
 dictionary AudioDataInit {
   required AudioSampleFormat sampleFormat;
-  required float sampleRate;
-  required unsigned long numberOfFrames;
-  required unsigned long numberOfChannels;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required float sampleRate;
+  [EnforceRange] required unsigned long numberOfFrames;
+  [EnforceRange] required unsigned long numberOfChannels;
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
+};
+
+dictionary AudioDataCopyToOptions {
+  required unsigned long planeIndex;
+  unsigned long frameOffset = 0;
+  unsigned long frameCount;
 };
 
 enum AudioSampleFormat {
   "U8",
   "S16",
+  "S24",
   "S32",
   "FLT",
+  "U8P",
   "S16P",
+  "S24P",
   "S32P",
   "FLTP",
 };
@@ -281,16 +300,16 @@ dictionary VideoFrameInit {
 
 dictionary VideoFramePlaneInit {
   required PixelFormat format;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
-  long long duration;     // microseconds
-  long long timestamp;    // microseconds
+  [EnforceRange] required unsigned long codedWidth;
+  [EnforceRange] required unsigned long codedHeight;
+  [EnforceRange] unsigned long cropLeft;
+  [EnforceRange] unsigned long cropTop;
+  [EnforceRange] unsigned long cropWidth;
+  [EnforceRange] unsigned long cropHeight;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+  [EnforceRange] long long duration;     // microseconds
+  [EnforceRange] long long timestamp;    // microseconds
 };
 
 [Exposed=(Window,DedicatedWorker)]
@@ -304,8 +323,8 @@ interface Plane {
 
 dictionary PlaneInit {
   required BufferSource src;
-  required unsigned long stride;
-  required unsigned long rows;
+  [EnforceRange] required unsigned long stride;
+  [EnforceRange] required unsigned long rows;
 };
 
 enum PixelFormat {
@@ -333,13 +352,13 @@ dictionary ImageDecoderInit {
   required ImageBufferSource data;
   PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
-  unsigned long desiredWidth;
-  unsigned long desiredHeight;
+  [EnforceRange] unsigned long desiredWidth;
+  [EnforceRange] unsigned long desiredHeight;
   boolean preferAnimation;
 };
 
 dictionary ImageDecodeOptions {
-  unsigned long frameIndex = 0;
+  [EnforceRange] unsigned long frameIndex = 0;
   boolean completeFramesOnly = true;
 };
 
@@ -353,16 +372,16 @@ interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
   readonly attribute Promise<undefined> ready;
-  readonly attribute unsigned long length;
-  readonly attribute long selectedIndex;
+  [EnforceRange] readonly attribute unsigned long length;
+  [EnforceRange] readonly attribute long selectedIndex;
   readonly attribute ImageTrack? selectedTrack;
 };
 
 [Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
-  readonly attribute unsigned long frameCount;
-  readonly attribute unrestricted float repetitionCount;
+  [EnforceRange] readonly attribute unsigned long frameCount;
+  [EnforceRange] readonly attribute unrestricted float repetitionCount;
   attribute EventHandler onchange;
   attribute boolean selected;
 };

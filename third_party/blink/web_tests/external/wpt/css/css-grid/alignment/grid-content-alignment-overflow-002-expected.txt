@@ -1,0 +1,78 @@
+This is a testharness.js-based test.
+FAIL .grid 1 assert_equals: 
+<div class="container" style="margin-bottom: 50px; margin-right: 25px;">
+  <div class="grid overflowWidth contentCenter" data-expected-width="60" data-expected-height="300" data-expected-scroll-width="110" data-expected-scroll-height="300">
+    <div class="firstRowFirstColumn" data-offset-x="-20" data-offset-y="50" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="-20" data-offset-y="150" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="30" data-offset-y="50" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="30" data-offset-y="150" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollWidth expected 110 but got 80
+FAIL .grid 2 assert_equals: 
+<div class="container" style="margin-bottom: 50px; margin-right: 25px;">
+  <div class="grid overflowHeight contentCenterUnsafe" data-expected-width="200" data-expected-height="150" data-expected-scroll-width="200" data-expected-scroll-height="205">
+    <div class="firstRowFirstColumn" data-offset-x="50" data-offset-y="-25" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="50" data-offset-y="75" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="100" data-offset-y="-25" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="100" data-offset-y="75" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollHeight expected 205 but got 175
+FAIL .grid 3 assert_equals: 
+<div class="container" style="margin-bottom: 50px; margin-right: 25px;">
+  <div class="grid overflowWidth contentCenterSafe" data-expected-width="60" data-expected-height="300" data-expected-scroll-width="160" data-expected-scroll-height="300">
+    <div class="firstRowFirstColumn" data-offset-x="30" data-offset-y="50" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="30" data-offset-y="150" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="80" data-offset-y="50" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="80" data-offset-y="150" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollWidth expected 160 but got 130
+FAIL .grid 4 assert_equals: 
+<div class="container" style="margin-bottom: 75px; margin-right: 25px;">
+  <div class="grid overflowHeight contentCenterSafe" data-expected-width="200" data-expected-height="150" data-expected-scroll-width="200" data-expected-scroll-height="260">
+    <div class="firstRowFirstColumn" data-offset-x="50" data-offset-y="30" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="50" data-offset-y="130" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="100" data-offset-y="30" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="100" data-offset-y="130" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollHeight expected 260 but got 230
+PASS .grid 5
+PASS .grid 6
+FAIL .grid 7 assert_equals: 
+<div class="container" style="margin-bottom: 50px; margin-right: 25px;">
+  <div class="grid overflowWidth contentEndSafe" data-expected-width="60" data-expected-height="300" data-expected-scroll-width="160" data-expected-scroll-height="300">
+    <div class="firstRowFirstColumn" data-offset-x="30" data-offset-y="70" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="30" data-offset-y="170" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="80" data-offset-y="70" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="80" data-offset-y="170" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollWidth expected 160 but got 130
+FAIL .grid 8 assert_equals: 
+<div class="container" style="margin-bottom: 75px; margin-right: 25px;">
+  <div class="grid overflowHeight contentEndSafe" data-expected-width="200" data-expected-height="150" data-expected-scroll-width="200" data-expected-scroll-height="260">
+    <div class="firstRowFirstColumn" data-offset-x="70" data-offset-y="30" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowFirstColumn" data-offset-x="70" data-offset-y="130" data-expected-width="50" data-expected-height="100"></div>
+    <div class="firstRowSecondColumn" data-offset-x="120" data-offset-y="30" data-expected-width="50" data-expected-height="100"></div>
+    <div class="secondRowSecondColumn" data-offset-x="120" data-offset-y="130" data-expected-width="50" data-expected-height="100"></div>
+  </div>
+</div>
+scrollHeight expected 260 but got 230
+PASS .grid 9
+PASS .grid 10
+PASS .grid 11
+FAIL .grid 12 assert_equals: 
+<div class="container" style="margin-bottom: 100px; margin-right: 75px;">
+  <div class="grid contentSizedTracks fit-content maxSize contentCenterUnsafe" data-expected-width="100" data-expected-height="100" data-expected-scroll-width="180" data-expected-scroll-height="205">
+    <div class="item1 firstRowSecondColumn" data-offset-x="100" data-offset-y="-75" data-expected-width="50" data-expected-height="150"></div>
+    <div class="item2 secondRowFirstColumn" data-offset-x="-50" data-offset-y="75" data-expected-width="150" data-expected-height="100"></div>
+  </div>
+</div>
+scrollWidth expected 180 but got 150
+PASS .grid 13
+PASS .grid 14
+Harness: the test ran to completion.
+

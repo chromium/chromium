@@ -1,0 +1,114 @@
+This is a testharness.js-based test.
+PASS Upload file-for-upload-in-form-NUL-[\0].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-BS-[].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-VT-[].txt (ASCII) in fetch with FormData
+FAIL Upload file-for-upload-in-form-LF-[
+].txt (ASCII) in fetch with FormData assert_true: Unexpected multipart-shaped form data received:
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-LF-[
+].txt\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="file-for-upload-in-form-LF-[%0A].txt"\r
+\r
+filename\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-LF-[%0A].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM--\r
+
+Expected:
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-LF-[\r
+].txt\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="file-for-upload-in-form-LF-[%0D%0A].txt"\r
+\r
+filename\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-LF-[%0A].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundaryIvtx2AvBnh8tnqWM-- expected true got false
+FAIL Upload file-for-upload-in-form-LF-CR-[
+\r].txt (ASCII) in fetch with FormData assert_true: Unexpected multipart-shaped form data received:
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-LF-CR-[
+\r].txt\r
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="file-for-upload-in-form-LF-CR-[%0A%0D].txt"\r
+\r
+filename\r
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-LF-CR-[%0A%0D].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundary4APln0LuzR3B8lP3--\r
+
+Expected:
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-LF-CR-[\r
+\r
+].txt\r
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="file-for-upload-in-form-LF-CR-[%0D%0A%0D%0A].txt"\r
+\r
+filename\r
+------WebKitFormBoundary4APln0LuzR3B8lP3\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-LF-CR-[%0A%0D].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundary4APln0LuzR3B8lP3-- expected true got false
+FAIL Upload file-for-upload-in-form-CR-[\r].txt (ASCII) in fetch with FormData assert_true: Unexpected multipart-shaped form data received:
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-CR-[\r].txt\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="file-for-upload-in-form-CR-[%0D].txt"\r
+\r
+filename\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-CR-[%0D].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy--\r
+
+Expected:
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="filename"\r
+\r
+file-for-upload-in-form-CR-[\r
+].txt\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="file-for-upload-in-form-CR-[%0D%0A].txt"\r
+\r
+filename\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy\r
+Content-Disposition: form-data; name="file"; filename="file-for-upload-in-form-CR-[%0D].txt"\r
+Content-Type: text/plain\r
+\r
+ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ\r
+------WebKitFormBoundaryfxVOfKAPNZbn5UPy-- expected true got false
+PASS Upload file-for-upload-in-form-CR-LF-[\r
+].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-HT-[	].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-FF-[].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-DEL-[].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-ESC-[].txt (ASCII) in fetch with FormData
+PASS Upload file-for-upload-in-form-SPACE-[ ].txt (ASCII) in fetch with FormData
+Harness: the test ran to completion.
+

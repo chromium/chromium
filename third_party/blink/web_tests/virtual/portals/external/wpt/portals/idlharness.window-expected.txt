@@ -1,0 +1,80 @@
+This is a testharness.js-based test.
+Found 76 tests; 71 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Window: original interface defined
+PASS Partial interface Window: member names are unique
+PASS Partial interface mixin WindowEventHandlers: original interface mixin defined
+PASS Partial interface mixin WindowEventHandlers: member names are unique
+PASS Partial interface HTMLBodyElement: member names are unique
+PASS Partial interface Window[2]: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS HTMLPortalElement interface: existence and properties of interface object
+PASS HTMLPortalElement interface object length
+PASS HTMLPortalElement interface object name
+PASS HTMLPortalElement interface: existence and properties of interface prototype object
+PASS HTMLPortalElement interface: existence and properties of interface prototype object's "constructor" property
+PASS HTMLPortalElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS HTMLPortalElement interface: attribute src
+PASS HTMLPortalElement interface: attribute referrerPolicy
+PASS HTMLPortalElement interface: operation activate(optional PortalActivateOptions)
+PASS HTMLPortalElement interface: operation postMessage(any, optional PostMessageOptions)
+PASS HTMLPortalElement interface: attribute onmessage
+PASS HTMLPortalElement interface: attribute onmessageerror
+PASS HTMLPortalElement must be primary interface of document.createElement("portal")
+PASS Stringification of document.createElement("portal")
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "src" with the proper type
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "referrerPolicy" with the proper type
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "activate(optional PortalActivateOptions)" with the proper type
+PASS HTMLPortalElement interface: calling activate(optional PortalActivateOptions) on document.createElement("portal") with too few arguments must throw TypeError
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type
+PASS HTMLPortalElement interface: calling postMessage(any, optional PostMessageOptions) on document.createElement("portal") with too few arguments must throw TypeError
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "onmessage" with the proper type
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "onmessageerror" with the proper type
+PASS PortalHost interface: existence and properties of interface object
+PASS PortalHost interface object length
+PASS PortalHost interface object name
+PASS PortalHost interface: existence and properties of interface prototype object
+PASS PortalHost interface: existence and properties of interface prototype object's "constructor" property
+PASS PortalHost interface: existence and properties of interface prototype object's @@unscopables property
+PASS PortalHost interface: operation postMessage(any, optional PostMessageOptions)
+PASS PortalHost interface: attribute onmessage
+PASS PortalHost interface: attribute onmessageerror
+FAIL Stringification of window.portalHost assert_class_string: class string of window.portalHost expected "[object PortalHost]" but got "[object Null]"
+FAIL PortalHost interface: window.portalHost must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type assert_inherits: provided value is not an object
+FAIL PortalHost interface: calling postMessage(any, optional PostMessageOptions) on window.portalHost with too few arguments must throw TypeError assert_inherits: provided value is not an object
+FAIL PortalHost interface: window.portalHost must inherit property "onmessage" with the proper type assert_inherits: provided value is not an object
+FAIL PortalHost interface: window.portalHost must inherit property "onmessageerror" with the proper type assert_inherits: provided value is not an object
+PASS PortalActivateEvent interface: existence and properties of interface object
+PASS PortalActivateEvent interface object length
+PASS PortalActivateEvent interface object name
+PASS PortalActivateEvent interface: existence and properties of interface prototype object
+PASS PortalActivateEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS PortalActivateEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS PortalActivateEvent interface: attribute data
+PASS PortalActivateEvent interface: operation adoptPredecessor()
+PASS PortalActivateEvent must be primary interface of new PortalActivateEvent("portalactivate")
+PASS Stringification of new PortalActivateEvent("portalactivate")
+PASS PortalActivateEvent interface: new PortalActivateEvent("portalactivate") must inherit property "data" with the proper type
+PASS PortalActivateEvent interface: new PortalActivateEvent("portalactivate") must inherit property "adoptPredecessor()" with the proper type
+PASS HTMLBodyElement interface: attribute onportalactivate
+PASS Window interface: attribute portalHost
+PASS Window interface: attribute onportalactivate
+PASS HTMLFrameSetElement interface: attribute onportalactivate
+Harness: the test ran to completion.
+

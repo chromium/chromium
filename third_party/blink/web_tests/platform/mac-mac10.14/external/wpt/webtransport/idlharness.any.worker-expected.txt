@@ -1,0 +1,72 @@
+This is a testharness.js-based test.
+Found 68 tests; 43 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "SyntaxError: Failed to construct 'WebTransport': The URL's scheme must be 'https'. 'quic-transport' is not allowed."
+PASS idl_test validation
+PASS WebTransport includes UnidirectionalStreamsTransport: member names are unique
+PASS DatagramDuplexStream interface: existence and properties of interface object
+PASS DatagramDuplexStream interface object length
+PASS DatagramDuplexStream interface object name
+PASS DatagramDuplexStream interface: existence and properties of interface prototype object
+PASS DatagramDuplexStream interface: existence and properties of interface prototype object's "constructor" property
+PASS DatagramDuplexStream interface: existence and properties of interface prototype object's @@unscopables property
+PASS DatagramDuplexStream interface: attribute readable
+PASS DatagramDuplexStream interface: attribute writable
+PASS WebTransport interface: existence and properties of interface object
+PASS WebTransport interface object length
+PASS WebTransport interface object name
+PASS WebTransport interface: existence and properties of interface prototype object
+PASS WebTransport interface: existence and properties of interface prototype object's "constructor" property
+PASS WebTransport interface: existence and properties of interface prototype object's @@unscopables property
+FAIL WebTransport interface: operation getStats() assert_own_property: interface prototype object missing non-static operation expected property "getStats" missing
+FAIL WebTransport interface: attribute state assert_true: The prototype object must have a property "state" expected true got false
+PASS WebTransport interface: attribute ready
+PASS WebTransport interface: attribute closed
+PASS WebTransport interface: operation close(optional WebTransportCloseInfo)
+FAIL WebTransport interface: attribute onstatechange assert_true: The prototype object must have a property "onstatechange" expected true got false
+FAIL WebTransport interface: attribute maxDatagramSize assert_true: The prototype object must have a property "maxDatagramSize" expected true got false
+FAIL WebTransport interface: attribute datagrams assert_true: The prototype object must have a property "datagrams" expected true got false
+PASS WebTransport interface: operation createBidirectionalStream()
+PASS WebTransport interface: attribute incomingBidirectionalStreams
+PASS WebTransport interface: operation createUnidirectionalStream(optional SendStreamParameters)
+PASS WebTransport interface: attribute incomingUnidirectionalStreams
+FAIL WebTransport must be primary interface of webTransport assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL Stringification of webTransport assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "getStats()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "state" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "ready" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "closed" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "close(optional WebTransportCloseInfo)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: calling close(optional WebTransportCloseInfo) on webTransport with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "onstatechange" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "maxDatagramSize" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "datagrams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "createBidirectionalStream()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "incomingBidirectionalStreams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "createUnidirectionalStream(optional SendStreamParameters)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: calling createUnidirectionalStream(optional SendStreamParameters) on webTransport with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+FAIL WebTransport interface: webTransport must inherit property "incomingUnidirectionalStreams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+PASS SendStream interface: existence and properties of interface object
+PASS SendStream interface object length
+PASS SendStream interface object name
+PASS SendStream interface: existence and properties of interface prototype object
+PASS SendStream interface: existence and properties of interface prototype object's "constructor" property
+PASS SendStream interface: existence and properties of interface prototype object's @@unscopables property
+FAIL SendStream interface: attribute remoteCanceled assert_true: The prototype object must have a property "remoteCanceled" expected true got false
+FAIL SendStream interface: operation reset(optional StreamAbortInfo) assert_own_property: interface prototype object missing non-static operation expected property "reset" missing
+PASS ReceiveStream interface: existence and properties of interface object
+PASS ReceiveStream interface object length
+PASS ReceiveStream interface object name
+PASS ReceiveStream interface: existence and properties of interface prototype object
+PASS ReceiveStream interface: existence and properties of interface prototype object's "constructor" property
+PASS ReceiveStream interface: existence and properties of interface prototype object's @@unscopables property
+FAIL ReceiveStream interface: attribute remoteReset assert_true: The prototype object must have a property "remoteReset" expected true got false
+PASS BidirectionalStream interface: existence and properties of interface object
+PASS BidirectionalStream interface object length
+PASS BidirectionalStream interface object name
+PASS BidirectionalStream interface: existence and properties of interface prototype object
+PASS BidirectionalStream interface: existence and properties of interface prototype object's "constructor" property
+PASS BidirectionalStream interface: existence and properties of interface prototype object's @@unscopables property
+PASS BidirectionalStream interface: attribute readable
+PASS BidirectionalStream interface: attribute writable
+Harness: the test ran to completion.
+

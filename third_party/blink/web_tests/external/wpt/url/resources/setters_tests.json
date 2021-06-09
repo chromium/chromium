@@ -990,6 +990,26 @@
                 "hostname": "test",
                 "port": "12"
             }
+        },
+        {
+            "comment": "Leading / is not stripped",
+            "href": "http://example.com/",
+            "new_value": "///bad.com",
+            "expected": {
+                "href": "http://example.com/",
+                "host": "example.com",
+                "hostname": "example.com"
+            }
+        },
+        {
+            "comment": "Leading / is not stripped",
+            "href": "sc://example.com/",
+            "new_value": "///bad.com",
+            "expected": {
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
+            }
         }
     ],
     "hostname": [
@@ -1345,6 +1365,26 @@
                 "hostname": "",
                 "pathname": "//p"
             }
+        },
+        {
+            "comment": "Leading / is not stripped",
+            "href": "http://example.com/",
+            "new_value": "///bad.com",
+            "expected": {
+                "href": "http://example.com/",
+                "host": "example.com",
+                "hostname": "example.com"
+            }
+        },
+        {
+            "comment": "Leading / is not stripped",
+            "href": "sc://example.com/",
+            "new_value": "///bad.com",
+            "expected": {
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
+            }
         }
     ],
     "port": [
@@ -1665,6 +1705,24 @@
             "expected": {
                 "href": "sc://example.net/%23",
                 "pathname": "/%23"
+            }
+        },
+        {
+            "comment": "? doesn't mess up encoding",
+            "href": "http://example.net",
+            "new_value": "/?é",
+            "expected": {
+                "href": "http://example.net/%3F%C3%A9",
+                "pathname": "/%3F%C3%A9"
+            }
+        },
+        {
+            "comment": "# doesn't mess up encoding",
+            "href": "http://example.net",
+            "new_value": "/#é",
+            "expected": {
+                "href": "http://example.net/%23%C3%A9",
+                "pathname": "/%23%C3%A9"
             }
         },
         {

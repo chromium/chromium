@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS ReadableStream with byte source: read()ing from a closed stream still transfers the buffer
+PASS ReadableStream with byte source: read()ing from a stream with queued chunks still transfers the buffer
+PASS ReadableStream with byte source: enqueuing an already-detached buffer throws
+PASS ReadableStream with byte source: enqueuing a zero-length buffer throws
+PASS ReadableStream with byte source: enqueuing a zero-length view on a non-zero-length buffer throws
+PASS ReadableStream with byte source: reading into an already-detached buffer rejects
+PASS ReadableStream with byte source: reading into a zero-length buffer rejects
+PASS ReadableStream with byte source: reading into a zero-length view on a non-zero-length buffer rejects
+PASS ReadableStream with byte source: respond() throws if the BYOB request's buffer has been detached (in the readable state)
+PASS ReadableStream with byte source: respond() throws if the BYOB request's buffer has been detached (in the closed state)
+PASS ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer has been detached (in the readable state)
+PASS ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer is zero-length (in the readable state)
+PASS ReadableStream with byte source: respondWithNewView() throws if the supplied view is zero-length on a non-zero-length buffer (in the readable state)
+FAIL ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer has a different length (in the readable state) assert_throws_js: function "() => c.byobRequest.respondWithNewView(view)" did not throw
+PASS ReadableStream with byte source: respondWithNewView() throws if the supplied view has a larger length (in the readable state)
+PASS ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer has been detached (in the closed state)
+FAIL ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer is zero-length (in the closed state) assert_throws_js: function "() => c.byobRequest.respondWithNewView(view)" threw object "TypeError: Failed to execute 'respondWithNewView' on 'ReadableStreamBYOBRequest': ArrayBufferView is empty" ("TypeError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+FAIL ReadableStream with byte source: respondWithNewView() throws if the supplied view is non-zero-length (in the closed state) assert_throws_js: function "() => c.byobRequest.respondWithNewView(view)" threw object "RangeError: Failed to execute 'respondWithNewView' on 'ReadableStreamBYOBRequest': byte lengths are not equal" ("RangeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL ReadableStream with byte source: respondWithNewView() throws if the supplied view's buffer has a different length (in the closed state) assert_throws_js: function "() => c.byobRequest.respondWithNewView(view)" threw object "TypeError: Failed to execute 'respondWithNewView' on 'ReadableStreamBYOBRequest': ArrayBufferView is empty" ("TypeError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+PASS ReadableStream with byte source: enqueue() throws if the BYOB request's buffer has been detached (in the readable state)
+PASS ReadableStream with byte source: enqueue() throws if the BYOB request's buffer has been detached (in the closed state)
+Harness: the test ran to completion.
+

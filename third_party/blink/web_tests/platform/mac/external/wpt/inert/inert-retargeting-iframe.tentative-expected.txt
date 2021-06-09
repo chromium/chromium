@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
+PASS elementsFromPoint returns inert element
+FAIL Tests that any mouse event on a non-inert element is correctly targeted to that element promise_test: Unhandled rejection with value: "did not get mouseout on foreground"
+PASS Tests that any mouse event on an inert element is targeted to the nearest non-inert ancestor at the same coordinates
+PASS Tests that any pointer event on a non-inert element is correctly targeted to that element
+PASS Tests that any pointer event on an inert element is targeted to the nearest non-inert ancestor at the same coordinates
+Harness: the test ran to completion.
+

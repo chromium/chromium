@@ -7,13 +7,13 @@
 <script type="module">
   import styleSheet from "../serve-with-content-type.py?fn=css-module/resources/utf-8.css" assert { type: "css"};
   test(() => {
-    assert_equals(styleSheet.rules[0].style.content, "\"œæ¹¿Ÿ\"");
+    assert_equals(styleSheet.rules[0].style.content, "\"ï¿½æ¹¿ï¿½\"");
   }, "CSS module should be loaded as utf-8 even though document's encoding is windows-1250");
 </script>
 <script type="module">
   import styleSheet from "../serve-with-content-type.py?fn=css-module/resources/windows-1250.css&ct=text/css%3Bcharset=windows-1250" assert { type: "css"};
   test(() => {
-    assert_not_equals(styleSheet.rules[0].style.content, "\"œæ¹¿Ÿ\"",
+    assert_not_equals(styleSheet.rules[0].style.content, "\"ï¿½æ¹¿ï¿½\"",
                     'Should be decoded as UTF-8');
   }, "CSS module should be loaded as utf-8 even if it is encoded in windows-1250 and served with a windows-1250 charset response header, and this document's encoding is windows-1250");
 </script>
