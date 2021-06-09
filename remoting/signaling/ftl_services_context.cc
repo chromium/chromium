@@ -28,7 +28,7 @@ const net::BackoffEntry::Policy& FtlServicesContext::GetBackoffPolicy() {
       0,
 
       // Initial delay for exponential back-off in ms.
-      kBackoffInitialDelay.InMilliseconds(),
+      static_cast<int>(kBackoffInitialDelay.InMilliseconds()),
 
       // Factor by which the waiting time will be multiplied.
       2,
