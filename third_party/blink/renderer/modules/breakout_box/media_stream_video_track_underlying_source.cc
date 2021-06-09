@@ -17,22 +17,6 @@
 
 namespace blink {
 
-namespace {
-
-void PostFrameToTransferredSource(
-    scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    TransferredVideoFrameQueueUnderlyingSource* transferred_source,
-    scoped_refptr<media::VideoFrame> media_frame) {
-  PostCrossThreadTask(
-      *transferred_runner.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &TransferredVideoFrameQueueUnderlyingSource::QueueFrame,
-          WrapCrossThreadPersistent(transferred_source),
-          std::move(media_frame)));
-}
-
-}  // namespace
-
 MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
@@ -70,28 +54,7 @@ void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
     TransferredVideoFrameQueueUnderlyingSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!transferred_source_);
-
-  transferred_runner_ = std::move(transferred_runner);
-  transferred_source_ = source;
-
-  auto finalize_transfer = [](MediaStreamVideoTrackUnderlyingSource* self) {
-    DCHECK(self->GetIOTaskRunner()->RunsTasksInCurrentSequence());
-    self->was_transferred_ = true;
-  };
-
-  // All queued frames will be immediately transferred. All frames in flight for
-  // the main thread will be immediately transferred as they arrive.
-  //
-  // New frames queued via QueueFrame() in OnFrameFromTrack() will be saved in
-  // a temporary queue, only accessed on the IO thread, until
-  // FinalizeQueueTransfer() is called.
-  TransferQueueFromRealmRunner(
-      CrossThreadBindRepeating(&PostFrameToTransferredSource,
-                               transferred_runner_,
-                               WrapCrossThreadPersistent(source)),
-      GetIOTaskRunner(),
-      CrossThreadBindOnce(finalize_transfer, WrapCrossThreadPersistent(this)));
+  TransferSource(source);
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideoWorker);
 }
 
@@ -100,13 +63,6 @@ void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_media_frames*/,
     base::TimeTicks estimated_capture_time) {
   DCHECK(GetIOTaskRunner()->RunsTasksInCurrentSequence());
-
-  if (was_transferred_) {
-    PostFrameToTransferredSource(transferred_runner_, transferred_source_.Get(),
-                                 std::move(media_frame));
-    return;
-  }
-
   // The scaled video frames are currently ignored.
   QueueFrame(std::move(media_frame));
 }

@@ -26,19 +26,39 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     : UnderlyingSourceBase(script_state),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      max_queue_size_(std::max(1u, max_queue_size)) {}
+      frame_queue_handle_(
+          base::MakeRefCounted<FrameQueue<NativeFrameType>>(max_queue_size)) {}
+
+template <typename NativeFrameType>
+FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
+    ScriptState* script_state,
+    FrameQueueUnderlyingSource<NativeFrameType>* other_source)
+    : UnderlyingSourceBase(script_state),
+      realm_task_runner_(ExecutionContext::From(script_state)
+                             ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
+      frame_queue_handle_(other_source->frame_queue_handle_.Queue()) {}
 
 template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
     ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  if (!queue_.empty()) {
-    ProcessPullRequest();
-  } else {
+  auto frame_queue = frame_queue_handle_.Queue();
+  if (!frame_queue)
+    return ScriptPromise::CastUndefined(script_state);
+  if (frame_queue->IsEmpty()) {
+    MutexLocker locker(mutex_);
     is_pending_pull_ = true;
+    return ScriptPromise::CastUndefined(script_state);
   }
-
-  DCHECK_LT(queue_.size(), max_queue_size_);
+  // Enqueuing the frame in the stream controller synchronously can lead to a
+  // state where the JS code issuing and handling the read requests keeps
+  // executing and prevents other tasks from executing. To avoid this, enqueue
+  // the frame on another task. See https://crbug.com/1216445#c1
+  realm_task_runner_->PostTask(
+      FROM_HERE,
+      WTF::Bind(&FrameQueueUnderlyingSource<
+                    NativeFrameType>::MaybeSendFrameFromQueueToStream,
+                WrapPersistent(this)));
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -55,6 +75,12 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
             "Invalid track",
             DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
   }
+  if (is_pending_close_) {
+    realm_task_runner_->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FrameQueueUnderlyingSource<NativeFrameType>::Close,
+                  WrapWeakPersistent(this)));
+  }
 
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -69,9 +95,22 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
 }
 
 template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::CloseController() {
-  if (Controller())
-    Controller()->Close();
+bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
+  MutexLocker locker(mutex_);
+  return is_pending_pull_ && Controller();
+}
+
+template <typename NativeFrameType>
+void FrameQueueUnderlyingSource<NativeFrameType>::ContextDestroyed() {
+  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  UnderlyingSourceBase::ContextDestroyed();
+  frame_queue_handle_.Invalidate();
+}
+
+template <typename NativeFrameType>
+wtf_size_t FrameQueueUnderlyingSource<NativeFrameType>::MaxQueueSize() const {
+  auto queue = frame_queue_handle_.Queue();
+  return queue ? queue->MaxSize() : 0;
 }
 
 template <typename NativeFrameType>
@@ -80,20 +119,56 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   if (is_closed_)
     return;
 
+  // The source has not started. Postpone close until it starts.
+  if (!Controller()) {
+    is_pending_close_ = true;
+    return;
+  }
+
   StopFrameDelivery();
   CloseController();
-  queue_.clear();
-  pending_transfer_queue_.clear();
-  transfer_frames_cb_.Reset();
-  transfer_done_cb_.Reset();
-  is_pending_pull_ = false;
-
+  frame_queue_handle_.Invalidate();
   is_closed_ = true;
+  {
+    MutexLocker locker(mutex_);
+    is_pending_pull_ = false;
+    if (transferred_source_) {
+      PostCrossThreadTask(
+          *transferred_source_->GetRealmRunner(), FROM_HERE,
+          CrossThreadBindOnce(
+              &FrameQueueUnderlyingSource<NativeFrameType>::Close,
+              WrapCrossThreadWeakPersistent(transferred_source_.Get())));
+    }
+    transferred_source_.Clear();
+  }
 }
 
 template <typename NativeFrameType>
-bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
-  return is_pending_pull_ && Controller();
+void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
+    NativeFrameType media_frame) {
+  bool should_send_frame_to_stream;
+  {
+    MutexLocker locker(mutex_);
+    if (transferred_source_) {
+      transferred_source_->QueueFrame(std::move(media_frame));
+      return;
+    }
+    should_send_frame_to_stream = is_pending_pull_;
+  }
+
+  auto frame_queue = frame_queue_handle_.Queue();
+  if (!frame_queue)
+    return;
+
+  frame_queue->Push(std::move(media_frame));
+  if (should_send_frame_to_stream) {
+    PostCrossThreadTask(
+        *realm_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &FrameQueueUnderlyingSource<
+                NativeFrameType>::MaybeSendFrameFromQueueToStream,
+            WrapCrossThreadPersistent(this)));
+  }
 }
 
 template <typename NativeFrameType>
@@ -103,184 +178,54 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Trace(
 }
 
 template <typename NativeFrameType>
+bool FrameQueueUnderlyingSource<NativeFrameType>::IsPendingPullForTesting()
+    const {
+  MutexLocker locker(mutex_);
+  return is_pending_pull_;
+}
+
+template <typename NativeFrameType>
 double FrameQueueUnderlyingSource<NativeFrameType>::DesiredSizeForTesting()
     const {
+  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   return Controller()->DesiredSize();
 }
 
 template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::ContextDestroyed() {
+void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
+    FrameQueueUnderlyingSource<NativeFrameType>* transferred_source) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  UnderlyingSourceBase::ContextDestroyed();
-  queue_.clear();
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
-    NativeFrameType media_frame) {
-  DCHECK(!queue_transferred_);
-
-  // We don't bother to acquire a lock to check |transfer_frames_cb_|.
-  // It should be set on |realm_task_runner_| (at which point it's
-  // still fine to call QueueFrameOnRealmTaskRunnder()), and unset on
-  // |transfer_task_runner_|
-  if (transfer_frames_cb_) {
-    DCHECK(transfer_task_runner_->RunsTasksInCurrentSequence());
-    pending_transfer_queue_.push_back(std::move(media_frame));
-    return;
-  }
-
-  if (realm_task_runner_->RunsTasksInCurrentSequence()) {
-    QueueFrameOnRealmTaskRunner(std::move(media_frame));
-    return;
-  }
-
-  PostCrossThreadTask(
-      *realm_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&FrameQueueUnderlyingSource<
-                              NativeFrameType>::QueueFrameOnRealmTaskRunner,
-                          WrapCrossThreadPersistent(this),
-                          std::move(media_frame)));
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrameOnRealmTaskRunner(
-    NativeFrameType media_frame) {
-  DCHECK(!queue_transferred_);
-  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_LE(queue_.size(), max_queue_size_);
-
-  if (transfer_frames_cb_) {
-    // We are currently transferring this frame queue. This frame should be
-    // immediately sent, because older frames (the ones in |queue_|) are
-    // already transferred, and new frames are saved in
-    // |pending_transfer_queue_|.
-    DCHECK(queue_.empty());
-    transfer_frames_cb_.Run(std::move(media_frame));
-    return;
-  }
-
-  // The queue was stopped, and we shouldn't save frames.
-  if (!Controller())
-    return;
-
-  // If the |queue_| is empty and the consumer has signaled a pull, bypass
-  // |queue_| and send the frame directly to the stream controller.
-  if (queue_.empty() && is_pending_pull_) {
-    SendFrameToStream(std::move(media_frame));
-    return;
-  }
-
-  if (queue_.size() == max_queue_size_)
-    queue_.pop_front();
-
-  queue_.push_back(std::move(media_frame));
-  if (is_pending_pull_) {
-    ProcessPullRequest();
-  }
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::TransferQueueFromRealmRunner(
-    TransferFramesCB transfer_frames_cb,
-    scoped_refptr<base::SequencedTaskRunner> transfer_task_runner,
-    CrossThreadOnceClosure transfer_done_cb) {
-  DCHECK(!queue_transferred_);
-  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-
-  // QueueFrame() will stop posting frames to QueueFrameOnRealmTaskRunner().
-  // New frames will be saved in |pending_transfer_queue_| instead.
-  transfer_frames_cb_ = std::move(transfer_frames_cb);
-  transfer_done_cb_ = std::move(transfer_done_cb);
-  transfer_task_runner_ = std::move(transfer_task_runner);
-
-  // All current frames should be send immediately, as they are the oldest.
-  while (!queue_.empty()) {
-    transfer_frames_cb_.Run(std::move(queue_.front()));
-    queue_.pop_front();
-  }
-
-  // Make sure that all in-flight calls to QueueFrameOnRealmTaskRunner()
-  // settle.
-  EnsureAllRealmRunnerFramesProcessed();
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<
-    NativeFrameType>::EnsureAllRealmRunnerFramesProcessed() {
-  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!queue_transferred_);
-  DCHECK(queue_.empty());
-
-  auto frame_barrier_done_cb = ConvertToBaseOnceCallback(
-      CrossThreadBindOnce(&FrameQueueUnderlyingSource<
-                              NativeFrameType>::OnAllRealmRunnerFrameProcessed,
-                          WrapCrossThreadPersistent(this)));
-
-  // Send |frame_barrier_done_cb| to |transfer_task_runner_| and back,
-  // acting as a "barrier" for pending QueueFrameOnRealmTaskRunner() calls.
-  transfer_task_runner_->PostTask(
-      FROM_HERE,
-      BindPostTask(realm_task_runner_, std::move(frame_barrier_done_cb)));
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<
-    NativeFrameType>::OnAllRealmRunnerFrameProcessed() {
-  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!queue_transferred_);
-  DCHECK(queue_.empty());
-
-  // We can now start queueing frames directly on the transferred source.
+  MutexLocker locker(mutex_);
+  DCHECK(!transferred_source_);
+  transferred_source_ = transferred_source;
   CloseController();
+  frame_queue_handle_.Invalidate();
+}
 
-  // Unset this flag, as to not keep |this| alive through HasPendingActivity().
-  is_pending_pull_ = false;
-
-  PostCrossThreadTask(
-      *transfer_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &FrameQueueUnderlyingSource<
-              NativeFrameType>::FinalizeQueueTransferOnTransferRunner,
-          WrapCrossThreadPersistent(this)));
+template <typename NativeFrameType>
+void FrameQueueUnderlyingSource<NativeFrameType>::CloseController() {
+  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  if (Controller())
+    Controller()->Close();
 }
 
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<
-    NativeFrameType>::FinalizeQueueTransferOnTransferRunner() {
-  DCHECK(transfer_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!queue_transferred_);
-  DCHECK(queue_.empty());
+    NativeFrameType>::MaybeSendFrameFromQueueToStream() {
+  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  auto frame_queue = frame_queue_handle_.Queue();
+  if (!frame_queue)
+    return;
 
-  // All frames that were bound to the |realm_task_runner_| have been
-  // transferred. We can transfer our temporary frames without fear of changing
-  // the ordering of frames.
-  while (!pending_transfer_queue_.empty()) {
-    transfer_frames_cb_.Run(std::move(pending_transfer_queue_.front()));
-    pending_transfer_queue_.pop_front();
+  absl::optional<NativeFrameType> media_frame = frame_queue->Pop();
+  if (!media_frame.has_value())
+    return;
+
+  Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
+  {
+    MutexLocker locker(mutex_);
+    is_pending_pull_ = false;
   }
-
-  queue_transferred_ = true;
-  transfer_task_runner_.reset();
-  transfer_frames_cb_.Reset();
-  std::move(transfer_done_cb_).Run();
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::ProcessPullRequest() {
-  DCHECK(!queue_.empty());
-  SendFrameToStream(std::move(queue_.front()));
-  queue_.pop_front();
-}
-
-template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::SendFrameToStream(
-    NativeFrameType media_frame) {
-  DCHECK(Controller());
-  DCHECK(media_frame);
-
-  Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame)));
-  is_pending_pull_ = false;
 }
 
 template <>
