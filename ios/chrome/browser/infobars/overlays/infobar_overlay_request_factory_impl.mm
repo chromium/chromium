@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory_impl.h"
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -30,6 +32,7 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
+using reading_list_infobar_overlay::ReadingListBannerRequestConfig;
 
 InfobarOverlayRequestFactoryImpl::InfobarOverlayRequestFactoryImpl() {
   SetUpFactories(InfobarType::kInfobarTypePasswordSave,
@@ -51,6 +54,9 @@ InfobarOverlayRequestFactoryImpl::InfobarOverlayRequestFactoryImpl() {
   SetUpFactories(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                  CreateFactory<SaveAddressProfileBannerRequestConfig>(),
                  CreateFactory<SaveAddressProfileModalRequestConfig>());
+  SetUpFactories(InfobarType::kInfobarTypeAddToReadingList,
+                 CreateFactory<ReadingListBannerRequestConfig>(),
+                 CreateFactory<ReadingListInfobarModalOverlayRequestConfig>());
 }
 
 InfobarOverlayRequestFactoryImpl::~InfobarOverlayRequestFactoryImpl() = default;

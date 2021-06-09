@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/reading_list/reading_list_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_coordinator.h"
 
@@ -18,9 +19,10 @@ namespace infobar_modal {
 NSArray<Class>* GetSupportedOverlayCoordinatorClasses() {
   return @[
     [PasswordInfobarModalOverlayCoordinator class],
-    [TranslateInfobarModalOverlayCoordinator class],
+    [ReadingListInfobarModalOverlayCoordinator class],
     [SaveAddressProfileInfobarModalOverlayCoordinator class],
-    [SaveCardInfobarModalOverlayCoordinator class]
+    [SaveCardInfobarModalOverlayCoordinator class],
+    [TranslateInfobarModalOverlayCoordinator class],
   ];
 }
 
