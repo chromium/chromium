@@ -97,7 +97,8 @@ void DownloadShelfUI::DiscardDownload(uint32_t download_id) {
   if (!download_ui_model)
     return;
 
-  DownloadCommands(download_ui_model).ExecuteCommand(DownloadCommands::DISCARD);
+  DownloadCommands(download_ui_model->GetWeakPtr())
+      .ExecuteCommand(DownloadCommands::DISCARD);
 }
 
 void DownloadShelfUI::KeepDownload(uint32_t download_id) {
@@ -108,7 +109,8 @@ void DownloadShelfUI::KeepDownload(uint32_t download_id) {
   if (!download_ui_model)
     return;
 
-  DownloadCommands(download_ui_model).ExecuteCommand(DownloadCommands::KEEP);
+  DownloadCommands(download_ui_model->GetWeakPtr())
+      .ExecuteCommand(DownloadCommands::KEEP);
 }
 
 void DownloadShelfUI::ShowContextMenu(

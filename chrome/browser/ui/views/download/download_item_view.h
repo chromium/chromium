@@ -231,7 +231,7 @@ class DownloadItemView : public views::View,
   const DownloadUIModel::DownloadUIModelPtr model_;
 
   // A utility object to help execute commands on the model.
-  DownloadCommands commands_{model()};
+  DownloadCommands commands_{model()->GetWeakPtr()};
 
   // The download shelf that owns us.
   DownloadShelfView* const shelf_;

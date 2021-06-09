@@ -121,13 +121,17 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
 }  // namespace
 
-DownloadCommands::DownloadCommands(DownloadUIModel* model) : model_(model) {
+DownloadCommands::DownloadCommands(base::WeakPtr<DownloadUIModel> model)
+    : model_(model) {
   DCHECK(model_);
 }
 
 DownloadCommands::~DownloadCommands() = default;
 
 GURL DownloadCommands::GetLearnMoreURLForInterruptedDownload() const {
+  if (!model_)
+    return GURL();
+
   GURL learn_more_url(chrome::kDownloadInterruptedLearnMoreURL);
   learn_more_url = google_util::AppendGoogleLocaleParam(
       learn_more_url, g_browser_process->GetApplicationLocale());
@@ -137,14 +141,17 @@ GURL DownloadCommands::GetLearnMoreURLForInterruptedDownload() const {
 }
 
 bool DownloadCommands::IsCommandEnabled(Command command) const {
-  return model_->IsCommandEnabled(this, command);
+  return model_ ? model_->IsCommandEnabled(this, command) : false;
 }
 
 bool DownloadCommands::IsCommandChecked(Command command) const {
-  return model_->IsCommandChecked(this, command);
+  return model_ ? model_->IsCommandChecked(this, command) : false;
 }
 
 bool DownloadCommands::IsCommandVisible(Command command) const {
+  if (!model_)
+    return false;
+
   if (command == PLATFORM_OPEN)
     return model_->ShouldPreferOpeningInBrowser();
 
@@ -152,6 +159,9 @@ bool DownloadCommands::IsCommandVisible(Command command) const {
 }
 
 void DownloadCommands::ExecuteCommand(Command command) {
+  if (!model_)
+    return;
+
   model_->ExecuteCommand(this, command);
 }
 
@@ -159,12 +169,18 @@ void DownloadCommands::ExecuteCommand(Command command) {
     defined(OS_CHROMEOS)
 
 Browser* DownloadCommands::GetBrowser() const {
+  if (!model_)
+    return nullptr;
+
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(model_->profile());
   DCHECK(browser_displayer.browser());
   return browser_displayer.browser();
 }
 
 bool DownloadCommands::IsDownloadPdf() const {
+  if (!model_)
+    return false;
+
   base::FilePath path = model_->GetTargetFilePath();
   return path.MatchesExtension(FILE_PATH_LITERAL(".pdf"));
 }
@@ -188,6 +204,9 @@ bool DownloadCommands::CanOpenPdfInSystemViewer() const {
         // defined(OS_CHROMEOS)
 
 void DownloadCommands::CopyFileAsImageToClipboard() {
+  if (!model_)
+    return;
+
   if (model_->GetState() != download::DownloadItem::COMPLETE ||
       model_->GetCompletedBytes() > kMaxImageClipboardSize) {
     return;
@@ -207,6 +226,9 @@ void DownloadCommands::CopyFileAsImageToClipboard() {
 }
 
 bool DownloadCommands::CanBeCopiedToClipboard() const {
+  if (!model_)
+    return false;
+
   return model_->GetState() == download::DownloadItem::COMPLETE &&
          model_->GetCompletedBytes() <= kMaxImageClipboardSize;
 }

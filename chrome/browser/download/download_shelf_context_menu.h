@@ -31,7 +31,7 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   ~DownloadShelfContextMenu() override;
 
  protected:
-  explicit DownloadShelfContextMenu(DownloadUIModel* download);
+  explicit DownloadShelfContextMenu(base::WeakPtr<DownloadUIModel> download);
 
   // Returns the correct menu model depending on the state of the download item.
   // Returns nullptr if the download was destroyed.
@@ -46,6 +46,10 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   std::u16string GetLabelForCommandId(int command_id) const override;
 
  private:
+  friend class DownloadShelfContextMenuTest;
+  FRIEND_TEST_ALL_PREFIXES(DownloadShelfContextMenuTest,
+                           InvalidDownloadWontCrashContextMenu);
+
   // Detaches self from |download_item_|. Called when the DownloadItem is
   // destroyed or when this object is being destroyed.
   void DetachFromDownloadItem();

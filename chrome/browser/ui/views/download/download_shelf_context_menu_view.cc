@@ -16,11 +16,11 @@
 
 DownloadShelfContextMenuView::DownloadShelfContextMenuView(
     DownloadItemView* download_item_view)
-    : DownloadShelfContextMenu(download_item_view->model()),
+    : DownloadShelfContextMenu(download_item_view->model()->GetWeakPtr()),
       download_item_view_(download_item_view) {}
 
 DownloadShelfContextMenuView::DownloadShelfContextMenuView(
-    DownloadUIModel* download_ui_model)
+    base::WeakPtr<DownloadUIModel> download_ui_model)
     : DownloadShelfContextMenu(download_ui_model) {}
 
 DownloadShelfContextMenuView::~DownloadShelfContextMenuView() = default;

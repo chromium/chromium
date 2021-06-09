@@ -325,7 +325,7 @@ void DownloadItemNotification::Click(
       item_->CompleteSafeBrowsingScan();
     }
 
-    DownloadCommands(item_.get()).ExecuteCommand(command);
+    DownloadCommands(item_->GetWeakPtr()).ExecuteCommand(command);
 
     // ExecuteCommand() might cause |item_| to be destroyed.
     if (item_ && command != DownloadCommands::PAUSE &&
@@ -443,7 +443,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
     return;
   }
 
-  DownloadCommands command(item_.get());
+  DownloadCommands command(item_->GetWeakPtr());
 
   notification_->set_title(GetTitle());
   notification_->set_message(GetSubStatusString());

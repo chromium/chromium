@@ -27,7 +27,8 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
  public:
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
-  explicit DownloadShelfContextMenuView(DownloadUIModel* download_ui_model);
+  explicit DownloadShelfContextMenuView(
+      base::WeakPtr<DownloadUIModel> download_ui_model);
   DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
   DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
       delete;

@@ -139,7 +139,7 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
                      pings->ping_request(), pings->ping_response()));
   if (download_command == DownloadCommands::KEEP) {
     DownloadItemModel model(download);
-    DownloadCommands(&model).ExecuteCommand(download_command);
+    DownloadCommands(model.GetWeakPtr()).ExecuteCommand(download_command);
   }
 }
 

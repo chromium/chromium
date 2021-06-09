@@ -110,14 +110,15 @@ void DownloadShelfWebView::AnimationEnded(const gfx::Animation* animation) {
   const bool shown = shelf_animation_.IsShowing();
   parent_->SetDownloadShelfVisible(shown);
 
-  // If the shelf was explicitly closed by the user, there are further steps to
-  // take to complete closing.
   if (shown || is_hidden())
     return;
 
+  // The shelf is explicitly closed by the user. First, remove the
+  // context menu before DownloadUIModels are removed from DownloadShelfUI.
+  context_menu_view_.reset();
+  // Then, remove all downloads that are not in progress.
   DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
   if (download_shelf_ui) {
-    // Remove all downloads that are not in progress.
     for (DownloadUIModel* model : download_shelf_ui->GetDownloads()) {
       // Treat the item as opened when the shelf closes. This way if it gets
       // shown again the user need not open the item for the shelf to
@@ -146,7 +147,8 @@ void DownloadShelfWebView::ShowDownloadContextMenu(
     base::OnceClosure on_menu_will_show_callback) {
   gfx::Point screen_position = position;
   ConvertPointToScreen(this, &screen_position);
-  context_menu_view_ = std::make_unique<DownloadShelfContextMenuView>(download);
+  context_menu_view_ =
+      std::make_unique<DownloadShelfContextMenuView>(download->GetWeakPtr());
   context_menu_view_->SetOnMenuWillShowCallback(
       std::move(on_menu_will_show_callback));
   context_menu_view_->Run(
