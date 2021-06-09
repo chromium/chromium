@@ -78,39 +78,39 @@ void InsecureFormBlockingPage::CommandReceived(const std::string& command) {
 }
 
 void InsecureFormBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   PopulateValuesForSharedHTML(load_time_data);
 
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_INSECURE_FORM_TITLE));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
+      "tabTitle", l10n_util::GetStringUTF16(IDS_INSECURE_FORM_TITLE));
+  load_time_data->SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_INSECURE_FORM_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_INSECURE_FORM_PRIMARY_PARAGRAPH));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "proceedButtonText",
       l10n_util::GetStringUTF16(IDS_INSECURE_FORM_SUBMIT_BUTTON));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_INSECURE_FORM_BACK_BUTTON));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "optInLink",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
 void InsecureFormBlockingPage::PopulateValuesForSharedHTML(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetString("type", "INSECURE_FORM");
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetString("openDetails", "");
-  load_time_data->SetString("explanationParagraph", "");
-  load_time_data->SetString("finalParagraph", "");
+    base::Value* load_time_data) {
+  load_time_data->SetStringKey("type", "INSECURE_FORM");
+  load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
+  load_time_data->SetStringKey("recurrentErrorParagraph", "");
+  load_time_data->SetStringKey("openDetails", "");
+  load_time_data->SetStringKey("explanationParagraph", "");
+  load_time_data->SetStringKey("finalParagraph", "");
 }
 }  // namespace security_interstitials

@@ -37,7 +37,7 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
   void CommandReceived(const std::string& command) override;
 
  protected:
-  void PopulateInterstitialStrings(base::DictionaryValue*) override;
+  void PopulateInterstitialStrings(base::Value*) override;
 
  private:
   network::OriginPolicyState error_reason_;

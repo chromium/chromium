@@ -36,7 +36,7 @@ class SafeBrowsingQuietErrorUI
 
   // Fills the passed dictionary with the values to be passed to the template
   // when creating the HTML.
-  void PopulateStringsForHtml(base::DictionaryValue* load_time_data) override;
+  void PopulateStringsForHtml(base::Value* load_time_data) override;
 
   void HandleCommand(SecurityInterstitialCommand command) override;
 
@@ -47,10 +47,10 @@ class SafeBrowsingQuietErrorUI
   int GetHTMLTemplateId() const override;
 
  private:
-  void PopulateMalwareLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulateHarmfulLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulatePhishingLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulateBillingLoadTimeData(base::DictionaryValue* load_time_data);
+  void PopulateMalwareLoadTimeData(base::Value* load_time_data);
+  void PopulateHarmfulLoadTimeData(base::Value* load_time_data);
+  void PopulatePhishingLoadTimeData(base::Value* load_time_data);
+  void PopulateBillingLoadTimeData(base::Value* load_time_data);
 
   bool is_giant_webview_;
 

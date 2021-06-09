@@ -74,31 +74,31 @@ void CertReportHelper::SetFakeOfficialBuildForTesting() {
 }
 
 void CertReportHelper::PopulateExtendedReportingOption(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   // Only show the checkbox if not off-the-record and if this client is
   // part of the respective Finch group, and the feature is not disabled
   // by policy.
   const bool show = ShouldShowCertificateReporterCheckbox() &&
                     !ShouldShowEnhancedProtectionMessage();
 
-  load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, show);
+  load_time_data->SetBoolKey(security_interstitials::kDisplayCheckBox, show);
   if (!show)
     return;
 
-  load_time_data->SetBoolean(
+  load_time_data->SetBoolKey(
       security_interstitials::kBoxChecked,
       safe_browsing::IsExtendedReportingEnabled(*GetPrefs(web_contents_)));
 
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
 }
 
 void CertReportHelper::PopulateEnhancedProtectionMessage(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   const bool show = ShouldShowEnhancedProtectionMessage();
 
-  load_time_data->SetBoolean(
+  load_time_data->SetBoolKey(
       security_interstitials::kDisplayEnhancedProtectionMessage, show);
 
   if (!show)
@@ -109,7 +109,7 @@ void CertReportHelper::PopulateEnhancedProtectionMessage(
         security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
   }
 
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       security_interstitials::kEnhancedProtectionMessage,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }

@@ -23,7 +23,7 @@ class BlockedInterceptionUI {
                         ControllerClient* controller_);
   ~BlockedInterceptionUI();
 
-  void PopulateStringsForHTML(base::DictionaryValue* load_time_data);
+  void PopulateStringsForHTML(base::Value* load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
 
  private:

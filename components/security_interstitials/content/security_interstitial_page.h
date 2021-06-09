@@ -12,7 +12,7 @@
 #include "url/gurl.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace content {
@@ -58,8 +58,7 @@ class SecurityInterstitialPage {
 
  protected:
   // Populates the strings used to generate the HTML from the template.
-  virtual void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) = 0;
+  virtual void PopulateInterstitialStrings(base::Value* load_time_data) = 0;
 
   virtual int GetHTMLTemplateId();
 

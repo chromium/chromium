@@ -33,7 +33,7 @@ class IOSCaptivePortalBlockingPage
  private:
   // IOSSecurityInterstitialPage overrides:
   bool ShouldCreateNewNavigation() const override;
-  void PopulateInterstitialStrings(base::DictionaryValue*) const override;
+  void PopulateInterstitialStrings(base::Value* value) const override;
   void HandleCommand(
       security_interstitials::SecurityInterstitialCommand command,
       const GURL& origin_url,

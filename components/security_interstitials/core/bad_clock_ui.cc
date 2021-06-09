@@ -35,7 +35,7 @@ BadClockUI::~BadClockUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void BadClockUI::PopulateStringsForHTML(base::DictionaryValue* load_time_data) {
+void BadClockUI::PopulateStringsForHTML(base::Value* load_time_data) {
   CHECK(load_time_data);
 
   // Shared with other SSL errors.
@@ -45,13 +45,14 @@ void BadClockUI::PopulateStringsForHTML(base::DictionaryValue* load_time_data) {
 
   // Clock-specific strings.
   PopulateClockStrings(load_time_data);
-  load_time_data->SetString("finalParagraph", std::string());  // Placeholder.
+  load_time_data->SetStringKey("finalParagraph",
+                               std::string());  // Placeholder.
 }
 
-void BadClockUI::PopulateClockStrings(base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("bad_clock", true);
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button",
+void BadClockUI::PopulateClockStrings(base::Value* load_time_data) {
+  load_time_data->SetBoolKey("bad_clock", true);
+  load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetBoolKey("hide_primary_button",
                              !controller_->CanLaunchDateAndTimeSettings());
   int heading_string = 0;
   switch (clock_state_) {
@@ -64,20 +65,20 @@ void BadClockUI::PopulateClockStrings(base::DictionaryValue* load_time_data) {
     default:
       NOTREACHED();
   }
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_CLOCK_ERROR_TITLE));
-  load_time_data->SetString("heading",
-                            l10n_util::GetStringUTF16(heading_string));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
+      "tabTitle", l10n_util::GetStringUTF16(IDS_CLOCK_ERROR_TITLE));
+  load_time_data->SetStringKey("heading",
+                               l10n_util::GetStringUTF16(heading_string));
+  load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_CLOCK_ERROR_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url_),
           base::TimeFormatFriendlyDateAndTime(time_triggered_)));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CLOCK_ERROR_UPDATE_DATE_AND_TIME));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_CLOCK_ERROR_EXPLANATION));
 }

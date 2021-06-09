@@ -66,8 +66,7 @@ class SafeBrowsingBlockingPage
       bool user_is_interacting,
       web::WebFrame* sender_frame) override;
   bool ShouldCreateNewNavigation() const override;
-  void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) const override;
+  void PopulateInterstitialStrings(base::Value* load_time_data) const override;
 
   // The unsafe resource triggering the blocking page.
   security_interstitials::UnsafeResource resource_;

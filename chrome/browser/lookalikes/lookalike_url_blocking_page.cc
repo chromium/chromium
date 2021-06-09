@@ -57,7 +57,7 @@ LookalikeUrlBlockingPage::GetTypeForTesting() {
 }
 
 void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   CHECK(load_time_data);
 
   PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,

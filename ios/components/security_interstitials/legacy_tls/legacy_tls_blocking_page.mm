@@ -42,17 +42,17 @@ bool LegacyTLSBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void LegacyTLSBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) const {
+    base::Value* load_time_data) const {
   CHECK(load_time_data);
 
   // Shared with SSL errors.
   security_interstitials::common_string_util::PopulateSSLLayoutStrings(
       net::ERR_SSL_OBSOLETE_VERSION, load_time_data);
 
-  load_time_data->SetBoolean("overridable", true);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetBoolean("bad_clock", false);
-  load_time_data->SetString("type", "LEGACY_TLS");
+  load_time_data->SetBoolKey("overridable", true);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+  load_time_data->SetBoolKey("bad_clock", false);
+  load_time_data->SetStringKey("type", "LEGACY_TLS");
 
   const std::u16string hostname(
       security_interstitials::common_string_util::GetFormattedHostName(

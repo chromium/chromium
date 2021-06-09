@@ -139,8 +139,8 @@ bool SafeBrowsingBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) const {
-  load_time_data->SetString("url_to_reload", request_url().spec());
+    base::Value* load_time_data) const {
+  load_time_data->SetStringKey("url_to_reload", request_url().spec());
   error_ui_->PopulateStringsForHtml(load_time_data);
 }
 

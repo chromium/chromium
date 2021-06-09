@@ -30,7 +30,7 @@ class SSLErrorUI {
              ControllerClient* controller);
   virtual ~SSLErrorUI();
 
-  virtual void PopulateStringsForHTML(base::DictionaryValue* load_time_data);
+  virtual void PopulateStringsForHTML(base::Value* load_time_data);
   virtual void HandleCommand(SecurityInterstitialCommand command);
 
  protected:
@@ -40,8 +40,8 @@ class SSLErrorUI {
   int cert_error() const;
 
  private:
-  void PopulateOverridableStrings(base::DictionaryValue* load_time_data);
-  void PopulateNonOverridableStrings(base::DictionaryValue* load_time_data);
+  void PopulateOverridableStrings(base::Value* load_time_data);
+  void PopulateNonOverridableStrings(base::Value* load_time_data);
 
   const GURL request_url_;
   const int cert_error_;

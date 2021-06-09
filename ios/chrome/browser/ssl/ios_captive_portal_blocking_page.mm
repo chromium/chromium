@@ -40,18 +40,18 @@ bool IOSCaptivePortalBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) const {
-  load_time_data->SetString("iconClass", "icon-offline");
-  load_time_data->SetString("type", "CAPTIVE_PORTAL");
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetString(
+    base::Value* load_time_data) const {
+  load_time_data->SetStringKey("iconClass", "icon-offline");
+  load_time_data->SetStringKey("type", "CAPTIVE_PORTAL");
+  load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
   std::u16string tab_title =
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_HEADING_WIFI);
-  load_time_data->SetString("tabTitle", tab_title);
-  load_time_data->SetString("heading", tab_title);
+  load_time_data->SetStringKey("tabTitle", tab_title);
+  load_time_data->SetStringKey("heading", tab_title);
 
   std::u16string paragraph;
   if (landing_url_.spec() ==
@@ -72,16 +72,16 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
     paragraph = l10n_util::GetStringFUTF16(
         IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_WIFI, login_host);
   }
-  load_time_data->SetString("primaryParagraph", paragraph);
+  load_time_data->SetStringKey("primaryParagraph", paragraph);
   // Explicitly specify other expected fields to empty.
-  load_time_data->SetString("openDetails", std::u16string());
-  load_time_data->SetString("closeDetails", std::u16string());
-  load_time_data->SetString("explanationParagraph", std::u16string());
-  load_time_data->SetString("finalParagraph", std::u16string());
-  load_time_data->SetString("recurrentErrorParagraph", std::u16string());
-  load_time_data->SetString("optInLink", std::u16string());
-  load_time_data->SetString("enhancedProtectionMessage", std::u16string());
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
+  load_time_data->SetStringKey("openDetails", std::u16string());
+  load_time_data->SetStringKey("closeDetails", std::u16string());
+  load_time_data->SetStringKey("explanationParagraph", std::u16string());
+  load_time_data->SetStringKey("finalParagraph", std::u16string());
+  load_time_data->SetStringKey("recurrentErrorParagraph", std::u16string());
+  load_time_data->SetStringKey("optInLink", std::u16string());
+  load_time_data->SetStringKey("enhancedProtectionMessage", std::u16string());
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
 }
 
 void IOSCaptivePortalBlockingPage::HandleCommand(

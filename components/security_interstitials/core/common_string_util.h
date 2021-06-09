@@ -21,20 +21,16 @@ namespace common_string_util {
 std::u16string GetFormattedHostName(const GURL& gurl);
 
 // For SSL-related errors that share a basic structure.
-void PopulateSSLLayoutStrings(int cert_error,
-                              base::DictionaryValue* load_time_data);
+void PopulateSSLLayoutStrings(int cert_error, base::Value* load_time_data);
 
 // For SSL-related errors that provide debugging information.
 void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                                  const base::Time time_triggered,
-                                 base::DictionaryValue* load_time_data);
-
-// For determining whether to use the old or new icon sets.
-void PopulateNewIconStrings(base::DictionaryValue* load_time_data);
+                                 base::Value* load_time_data);
 
 // Fills in the details for a legacy TLS error. Abstracts the strings for
 // access from ios/.
-void PopulateLegacyTLSStrings(base::DictionaryValue* load_time_data,
+void PopulateLegacyTLSStrings(base::Value* load_time_data,
                               const std::u16string& hostname);
 
 }  // common_string_util

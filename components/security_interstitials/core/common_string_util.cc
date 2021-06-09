@@ -25,37 +25,37 @@ std::u16string GetFormattedHostName(const GURL& gurl) {
   return host;
 }
 
-void PopulateSSLLayoutStrings(int cert_error,
-                              base::DictionaryValue* load_time_data) {
-  load_time_data->SetString("type", "SSL");
-  load_time_data->SetString("errorCode", net::ErrorToString(cert_error));
-  load_time_data->SetString(
+void PopulateSSLLayoutStrings(int cert_error, base::Value* load_time_data) {
+  load_time_data->SetStringKey("type", "SSL");
+  load_time_data->SetStringKey("errorCode", net::ErrorToString(cert_error));
+  load_time_data->SetStringKey(
       "openDetails", l10n_util::GetStringUTF16(IDS_SSL_OPEN_DETAILS_BUTTON));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "closeDetails", l10n_util::GetStringUTF16(IDS_SSL_CLOSE_DETAILS_BUTTON));
   // Not used by most interstitials; can be overridden by individual
   // interstitials as needed.
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
-  load_time_data->SetString(
+  load_time_data->SetStringKey("recurrentErrorParagraph", "");
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
+  load_time_data->SetStringKey(
       "optInLink",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
 void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                                  const base::Time time_triggered,
-                                 base::DictionaryValue* load_time_data) {
-  load_time_data->SetString("subject",
-                            ssl_info.cert->subject().GetDisplayName());
-  load_time_data->SetString("issuer", ssl_info.cert->issuer().GetDisplayName());
-  load_time_data->SetString(
+                                 base::Value* load_time_data) {
+  load_time_data->SetStringKey("subject",
+                               ssl_info.cert->subject().GetDisplayName());
+  load_time_data->SetStringKey("issuer",
+                               ssl_info.cert->issuer().GetDisplayName());
+  load_time_data->SetStringKey(
       "expirationDate",
       base::TimeFormatShortDate(ssl_info.cert->valid_expiry()));
-  load_time_data->SetString("currentDate",
-                            base::TimeFormatShortDate(time_triggered));
+  load_time_data->SetStringKey("currentDate",
+                               base::TimeFormatShortDate(time_triggered));
   std::vector<std::string> sct_list;
   for (const auto& sct_status : ssl_info.signed_certificate_timestamps) {
     std::string sct_info = "\n\nSCT " + sct_status.sct->log_description + " (" +
@@ -64,28 +64,28 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                            ")";
     sct_list.push_back(sct_info);
   }
-  load_time_data->SetString("ct", base::StrCat(sct_list));
+  load_time_data->SetStringKey("ct", base::StrCat(sct_list));
   std::vector<std::string> encoded_chain;
   ssl_info.cert->GetPEMEncodedChain(&encoded_chain);
-  load_time_data->SetString("pem", base::StrCat(encoded_chain));
+  load_time_data->SetStringKey("pem", base::StrCat(encoded_chain));
 }
 
-void PopulateLegacyTLSStrings(base::DictionaryValue* load_time_data,
+void PopulateLegacyTLSStrings(base::Value* load_time_data,
                               const std::u16string& hostname) {
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-  load_time_data->SetString("heading",
-                            l10n_util::GetStringUTF16(IDS_LEGACY_TLS_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey("tabTitle",
+                               l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
+  load_time_data->SetStringKey(
+      "heading", l10n_util::GetStringUTF16(IDS_LEGACY_TLS_HEADING));
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_SAFETY_BUTTON));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_LEGACY_TLS_PRIMARY_PARAGRAPH));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_LEGACY_TLS_EXPLANATION));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "finalParagraph", l10n_util::GetStringFUTF16(
                             IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, hostname));
 }

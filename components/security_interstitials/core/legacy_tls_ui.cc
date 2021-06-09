@@ -47,38 +47,37 @@ LegacyTLSUI::~LegacyTLSUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void LegacyTLSUI::PopulateStringsForHTML(
-    base::DictionaryValue* load_time_data) {
+void LegacyTLSUI::PopulateStringsForHTML(base::Value* load_time_data) {
   CHECK(load_time_data);
 
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
       ssl_info_, base::Time::NowFromSystemTime(), load_time_data);
-  load_time_data->SetBoolean("overridable", true);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetBoolean("bad_clock", false);
-  load_time_data->SetString("type", "LEGACY_TLS");
+  load_time_data->SetBoolKey("overridable", true);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+  load_time_data->SetBoolKey("bad_clock", false);
+  load_time_data->SetStringKey("type", "LEGACY_TLS");
 
   const std::u16string hostname(
       common_string_util::GetFormattedHostName(request_url_));
 
   // Set strings that are shared between enterprise and non-enterprise
   // interstitials.
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-  load_time_data->SetString("heading",
-                            l10n_util::GetStringUTF16(IDS_LEGACY_TLS_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey("tabTitle",
+                               l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
+  load_time_data->SetStringKey(
+      "heading", l10n_util::GetStringUTF16(IDS_LEGACY_TLS_HEADING));
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_SAFETY_BUTTON));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_LEGACY_TLS_PRIMARY_PARAGRAPH));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_LEGACY_TLS_EXPLANATION));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "finalParagraph", l10n_util::GetStringFUTF16(
                             IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, hostname));
 }

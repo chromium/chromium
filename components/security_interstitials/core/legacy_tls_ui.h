@@ -22,7 +22,7 @@ class LegacyTLSUI {
               const net::SSLInfo& ssl_info,
               ControllerClient* controller_);
   ~LegacyTLSUI();
-  void PopulateStringsForHTML(base::DictionaryValue* load_time_data);
+  void PopulateStringsForHTML(base::Value* load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
 
  private:
