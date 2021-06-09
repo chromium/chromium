@@ -6715,7 +6715,8 @@
                         "stamp": "1Rb"
                     },
                     "enable_features": [
-                        "RelatedSearches"
+                        "RelatedSearches",
+                        "RelatedSearchesUi"
                     ]
                 }
             ]
