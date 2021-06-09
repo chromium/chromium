@@ -36,20 +36,17 @@ class SubsequenceRecorder final {
   }
 
   SubsequenceRecorder(GraphicsContext& context, const DisplayItemClient& client)
-      : paint_controller_(context.GetPaintController()), client_(client) {
-    paint_controller_.BeginSubsequence(subsequence_index_, start_chunk_index_);
+      : paint_controller_(context.GetPaintController()) {
+    subsequence_index_ = paint_controller_.BeginSubsequence(client);
   }
 
   ~SubsequenceRecorder() {
-    paint_controller_.EndSubsequence(client_, subsequence_index_,
-                                     start_chunk_index_);
+    paint_controller_.EndSubsequence(subsequence_index_);
   }
 
  private:
   PaintController& paint_controller_;
-  const DisplayItemClient& client_;
   wtf_size_t subsequence_index_;
-  wtf_size_t start_chunk_index_;
 
   DISALLOW_COPY_AND_ASSIGN(SubsequenceRecorder);
 };

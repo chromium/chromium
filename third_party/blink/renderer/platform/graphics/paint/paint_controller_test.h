@@ -45,6 +45,10 @@ class PaintControllerTestBase : public testing::Test {
                              DisplayItem::kUninitializedType),
         paint_controller_(std::make_unique<PaintController>()) {}
 
+  void SetUp() override {
+    testing::FLAGS_gtest_death_test_style = "threadsafe";
+  }
+
   void InitRootChunk() { InitRootChunk(GetPaintController()); }
   void InitRootChunk(PaintController& paint_controller) {
     paint_controller.UpdateCurrentPaintChunkProperties(
