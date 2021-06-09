@@ -6,6 +6,6 @@
 
 namespace blink {
 
-unsigned CORE_EXPORT NGDisableSideEffectsScope::count_ = 0;
+unsigned NGDisableSideEffectsScope::count_ = 0;
 
 }  // namespace blink
