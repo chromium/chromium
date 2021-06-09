@@ -1273,6 +1273,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("isAccountManagerEnabled",
                           IsAccountManagerAvailable(profile));
+  html_source->AddBoolean("isMainProfile", profile->IsMainProfile());
 #endif
 
   AddSignOutDialogStrings(html_source, profile);

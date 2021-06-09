@@ -351,6 +351,13 @@ import '../settings_shared_css.js';
         return false;
       }
       // </if>
+      // <if expr="lacros">
+      if (loadTimeData.getBoolean('isMainProfile')) {
+        // On Lacros the primary account doesn't support turning off sync yet.
+        // TODO(https://crbug.com/1217645): Remove after adding sync off state.
+        return false;
+      }
+      // </if>
       return !this.hideButtons && !this.showSetupButtons_ &&
           !!this.syncStatus.signedIn;
     },
