@@ -290,18 +290,7 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
   ASSERT_NE(prerender_host, nullptr);
   RenderFrameHostImpl* prerender_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
-  // Ignore the result of ExecJs().
-  //
-  // Navigation from the prerendered page could cancel prerendering and
-  // destroy the prerendered frame before ExecJs() gets a result from that.
-  // This results in execution failure even when the execution succeeded. See
-  // https://crbug.com/1186584 for details.
-  //
-  // This part will drastically be modified by the MPArch, so we take the
-  // approach just to ignore it instead of fixing the timing issue. When
-  // ExecJs() actually fails, the remaining test steps should fail, so it
-  // should be safe to ignore it.
-  ignore_result(
+  EXPECT_TRUE(
       ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl)));
 }
 
@@ -310,18 +299,7 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
                                               const GURL& gurl) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   content::TestNavigationObserver observer(&web_contents);
-  // Ignore the result of ExecJs().
-  //
-  // Depending on timing, activation could destroy the current WebContents
-  // before ExecJs() gets a result from the frame that executed scripts. This
-  // results in execution failure even when the execution succeeded. See
-  // https://crbug.com/1156141 for details.
-  //
-  // This part will drastically be modified by the MPArch, so we take the
-  // approach just to ignore it instead of fixing the timing issue. When
-  // ExecJs() actually fails, the remaining test steps should fail, so it
-  // should be safe to ignore it.
-  ignore_result(
+  EXPECT_TRUE(
       ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl)));
   observer.Wait();
 }
