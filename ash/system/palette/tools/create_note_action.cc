@@ -11,6 +11,8 @@
 #include "ash/system/palette/palette_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -54,6 +56,9 @@ views::View* CreateNoteAction::CreateView() {
   if (!GetAvailableClient())
     return nullptr;
 
+  if (!ShouldShowOnDisplay())
+    return nullptr;
+
   return CreateDefaultView(
       l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_CREATE_NOTE_ACTION));
 }
@@ -77,6 +82,22 @@ void CreateNoteAction::OnKeyEvent(ui::KeyEvent* event) {
 
   // This event shouldn't be handled as a regular key event, so consume it.
   event->StopPropagation();
+}
+
+// Don't show the create note action on external displays. This
+// avoids some corner cases that haven't been addressed yet.
+bool CreateNoteAction::ShouldShowOnDisplay() {
+  if (external_display_for_test_)
+    return false;
+
+  // Allow the unit tests to function normally without a window
+  aura::Window* root = delegate()->GetWindow();
+  if (root == nullptr)
+    return true;
+
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root);
+  return display.IsInternal();
 }
 
 }  // namespace ash

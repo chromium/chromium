@@ -33,6 +33,8 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
   // ui::EventHandler overrides.
   void OnKeyEvent(ui::KeyEvent* event) override;
 
+  bool ShouldShowOnDisplay();
+
   DISALLOW_COPY_AND_ASSIGN(CreateNoteAction);
 };
 

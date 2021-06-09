@@ -142,4 +142,15 @@ TEST_F(CreateNoteTest, ToolIsEnabledWhenStylusButtonIsPressed) {
   EXPECT_EQ(1, note_taking_client->GetCreateNoteCount());
 }
 
+// The note tool is only visible on the internal display
+TEST_F(CreateNoteTest, ViewOnlyAppearsOnInternalDisplay) {
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
+  std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
+  EXPECT_TRUE(view);
+  tool_->OnViewDestroyed();
+
+  tool_->SetExternalDisplayForTest();
+  EXPECT_FALSE(tool_->CreateView());
+  tool_->OnViewDestroyed();
+}
 }  // namespace ash
