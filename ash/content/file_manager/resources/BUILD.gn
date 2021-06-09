@@ -33,17 +33,22 @@ js_library("main_js") {
   deps = [ "//ash/content/file_manager/mojom:mojom_webui_js" ]
 }
 
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+
 js_type_check("closure_compile") {
   deps = [
     ":main_js",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:load_time_data",
   ]
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(mojom_webui_folder, root_build_dir),
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" +
+                        rebase_path(mojom_webui_folder, root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"",
+                  ]
 }
 
 action("gen_main_html") {
@@ -101,6 +106,9 @@ optimize_webui("build") {
   js_out_files = [ "main.rollup.js" ]
 
   excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
+
+  external_paths =
+      [ "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path" ]
 
   deps = [
     ":preprocess",

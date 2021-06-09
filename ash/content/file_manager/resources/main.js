@@ -14,9 +14,9 @@ import './crt0.js';
  */
 import {BrowserProxy} from './browser_proxy.js'
 import {ScriptLoader} from './script_loader.js'
-import {VolumeManagerImpl} from '../../../../../ui/file_manager/file_manager/background/js/volume_manager_impl.m.js';
-import '../../../../../ui/file_manager/file_manager/background/js/metrics_start.m.js';
-import {background} from '../../../../../ui/file_manager/file_manager/background/js/background.m.js';
+import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.m.js';
+import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.m.js';
+import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.m.js';
 
 /**
  * Represents file manager application. Starting point for the application

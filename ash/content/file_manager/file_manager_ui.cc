@@ -4,15 +4,12 @@
 
 #include "ash/content/file_manager/file_manager_ui.h"
 
-#include "ash/content/file_manager/buildflags.h"
 #include "ash/content/file_manager/file_manager_page_handler.h"
 #include "ash/content/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/content/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/content/file_manager/url_constants.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -35,15 +32,6 @@ void AddFilesAppResources(content::WebUIDataSource* source,
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
       source->AddResourcePath(path, entries[i].id);
-
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-      // When optmize_webui=false, the SWA loads individual JS files from the
-      // file_manager extension, so we add the same resource with the path
-      // relative from the SWA to the extension:
-      std::string path_from_swa(
-          base::StrCat({"ui/file_manager/", entries[i].path}));
-      source->AddResourcePath(path_from_swa, entries[i].id);
-#endif
     }
   }
 }
