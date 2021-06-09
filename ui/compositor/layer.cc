@@ -30,6 +30,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/animation/animation.h"
@@ -38,8 +39,10 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/transform.h"
 
 namespace ui {
 namespace {
@@ -75,6 +78,9 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
     dest->set_delegate(this);
   }
 
+  LayerMirror(const LayerMirror&) = delete;
+  LayerMirror& operator=(const LayerMirror&) = delete;
+
   ~LayerMirror() override {
     dest_->RemoveObserver(this);
     dest_->set_delegate(nullptr);
@@ -99,8 +105,6 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
  private:
   Layer* const source_;
   Layer* const dest_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerMirror);
 };
 
 // Manages the subpixel offset data for a given set of parameters (device
@@ -108,6 +112,9 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
 class Layer::SubpixelPositionOffsetCache {
  public:
   SubpixelPositionOffsetCache() = default;
+  SubpixelPositionOffsetCache(const SubpixelPositionOffsetCache&) = delete;
+  SubpixelPositionOffsetCache& operator=(const SubpixelPositionOffsetCache&) =
+      delete;
   ~SubpixelPositionOffsetCache() = default;
 
   gfx::Vector2dF GetSubpixelOffset(float device_scale_factor,
@@ -173,8 +180,6 @@ class Layer::SubpixelPositionOffsetCache {
 
   // True if the subpixel offset was computed and set by an external source.
   bool has_explicit_subpixel_offset_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubpixelPositionOffsetCache);
 };
 
 Layer::Layer(LayerType type)
@@ -391,7 +396,7 @@ void Layer::Remove(Layer* child) {
   // Stop (and complete) an ongoing animation to update the bounds immediately.
   LayerAnimator* child_animator = child->animator_.get();
   if (child_animator)
-    child_animator->StopAnimatingProperty(ui::LayerAnimationElement::BOUNDS);
+    child_animator->StopAnimatingProperty(LayerAnimationElement::BOUNDS);
 
   // Do not proceed if |this| or |child| is released by an animation observer
   // of |child|'s bounds animation.
@@ -836,7 +841,7 @@ bool Layer::SwitchCCLayerForTest() {
 }
 
 // Note: The code that sets this flag would be responsible to unset it on that
-// ui::Layer. We do not want to clone this flag to a cloned layer by accident,
+// Layer. We do not want to clone this flag to a cloned layer by accident,
 // which could be a supprise. But we want to preserve it after switching to a
 // new cc::Layer. There could be a whole subtree and the root changed, but does
 // not mean we want to treat the cache all different.
@@ -879,7 +884,7 @@ void Layer::RemoveDeferredPaintRequest() {
 }
 
 // Note: The code that sets this flag would be responsible to unset it on that
-// ui::Layer. We do not want to clone this flag to a cloned layer by accident,
+// Layer. We do not want to clone this flag to a cloned layer by accident,
 // which could be a supprise. But we want to preserve it after switching to a
 // new cc::Layer. There could be a whole subtree and the root changed, but does
 // not mean we want to treat the trilinear filtering all different.
@@ -1582,7 +1587,7 @@ float Layer::GetRefreshRate() const {
   return compositor ? compositor->refresh_rate() : 60.0;
 }
 
-ui::Layer* Layer::GetLayer() {
+Layer* Layer::GetLayer() {
   return this;
 }
 
