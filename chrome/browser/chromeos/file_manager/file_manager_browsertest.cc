@@ -269,6 +269,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("fileDisplayDownloads"),
+#if !defined(OFFICIAL_BUILD)
+        TestCase("fileDisplayDownloads").FilesSwa(),
+#endif
         TestCase("fileDisplayDownloads").InGuestMode(),
         TestCase("fileDisplayDownloads").TabletMode(),
         TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),

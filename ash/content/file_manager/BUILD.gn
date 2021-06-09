@@ -13,6 +13,13 @@ buildflag_header("buildflags") {
   flags = [ "OPTIMIZE_WEBUI=$optimize_webui" ]
 }
 
+static_library("constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+}
+
 static_library("file_manager_ui") {
   sources = [
     "file_manager_page_handler.cc",
@@ -26,6 +33,7 @@ static_library("file_manager_ui") {
 
   deps = [
     ":buildflags",
+    ":constants",
     "//ash/content/file_manager/mojom",
     "//ash/content/file_manager/resources:file_manager_swa_resources",
     "//base",

@@ -10,6 +10,15 @@
 window.isSWA = true;
 
 /**
+ * Sets window.IN_TEST if this code is run in the test environment. We
+ * detect this by checking for presence of domAutomationController.
+ * @const {boolean}
+ */
+window.IN_TEST = window.IN_TEST || (() => {
+  return window.domAutomationController ? true : undefined;
+})();
+
+/**
  * Listener service to local chrome.*{add,remove}Listener clients.
  */
 // eslint-disable-next-line

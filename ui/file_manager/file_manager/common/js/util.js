@@ -380,7 +380,12 @@ util.queryDecoratedElement = (query, type) => {
  * @return {string} The translated string.
  */
 /* #export */ function str(id) {
-  return loadTimeData.getString(id);
+  try {
+    return loadTimeData.getString(id);
+  } catch (e) {
+    console.warn('Failed to get string for ', id);
+    return id;
+  }
 }
 
 /**

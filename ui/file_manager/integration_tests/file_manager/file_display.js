@@ -11,12 +11,11 @@
  * @param {Array<TestEntryInfo>} defaultEntries Default file entries.
  */
 async function fileDisplay(path, defaultEntries) {
-  const defaultList = TestEntryInfo.getExpectedRows(defaultEntries).sort();
-
   // Open Files app on the given |path| with default file entries.
   const appId = await setupAndWaitUntilReady(path);
 
   // Verify the default file list is present in |result|.
+  const defaultList = TestEntryInfo.getExpectedRows(defaultEntries).sort();
   await remoteCall.waitForFiles(appId, defaultList);
 
   // Add new file entries.
