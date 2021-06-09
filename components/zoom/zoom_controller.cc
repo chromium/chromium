@@ -315,8 +315,10 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
 void ZoomController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
     return;
+  }
 
   if (navigation_handle->IsErrorPage())
     content::HostZoomMap::SendErrorPageZoomLevelRefresh(web_contents());

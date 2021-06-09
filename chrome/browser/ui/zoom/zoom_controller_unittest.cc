@@ -54,6 +54,7 @@ TEST_F(ZoomControllerTest, DidNavigateMainFrame) {
                                          zoom_change_data);
   content::MockNavigationHandle handle;
   handle.set_has_committed(true);
+  handle.set_is_in_primary_main_frame(true);
   zoom_controller_->DidFinishNavigation(&handle);
   zoom_change_watcher.Wait();
 }

@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/zoom/test/zoom_test_utils.h"
+#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,6 +29,9 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using zoom::ZoomChangedWatcher;
@@ -299,3 +303,77 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   zoom_change_watcher.Wait();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
+                                          public zoom::ZoomObserver {
+ public:
+  ZoomControllerForPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &ZoomControllerForPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~ZoomControllerForPrerenderingTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    zoom_controller_ = ZoomController::FromWebContents(GetWebContents());
+    zoom_controller_->AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    zoom_controller_->RemoveObserver(this);
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  // ZoomObserver implementation:
+  void OnZoomChanged(
+      const zoom::ZoomController::ZoomChangedEventData& data) override {
+    is_on_zoom_changed_called_ = true;
+  }
+
+  void reset_is_on_zoom_changed_called() { is_on_zoom_changed_called_ = false; }
+  bool is_on_zoom_changed_called() { return is_on_zoom_changed_called_; }
+
+ private:
+  bool is_on_zoom_changed_called_ = false;
+
+  content::test::PrerenderTestHelper prerender_helper_;
+  ZoomController* zoom_controller_;
+};
+
+IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,
+                       DontFireZoomChangedListenerOnPrerender) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  // Reset |is_on_zoom_changed_called_| to check that it is not called during
+  // the prerendering.
+  reset_is_on_zoom_changed_called();
+
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+
+  // Make sure that the prerender was not activated.
+  EXPECT_FALSE(host_observer.was_activated());
+  // OnZoomChanged should not be called during the prerendering.
+  EXPECT_FALSE(is_on_zoom_changed_called());
+
+  // Navigate the primary page to the URL.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Make sure that the prerender was activated.
+  EXPECT_TRUE(host_observer.was_activated());
+  // OnZoomChanged should be called after the prerendered page was activated.
+  EXPECT_TRUE(is_on_zoom_changed_called());
+}

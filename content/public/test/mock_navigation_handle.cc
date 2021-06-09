@@ -26,7 +26,8 @@ MockNavigationHandle::MockNavigationHandle(const GURL& url,
     : navigation_id_(++g_mock_handle_id),
       url_(url),
       web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host) {
+      render_frame_host_(render_frame_host),
+      is_in_primary_main_frame_(IsInMainFrame()) {
   proxy_server_ = net::ProxyServer::Direct();
 }
 
