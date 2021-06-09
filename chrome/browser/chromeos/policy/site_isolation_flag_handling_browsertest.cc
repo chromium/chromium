@@ -48,10 +48,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
+namespace policy {
 namespace {
+
+namespace em = ::enterprise_management;
 
 // TODO(https://crbug.com/1164001): remove once this file is migrated.
 using ::ash::ChromeUserManagerImpl;
@@ -184,21 +184,21 @@ class SiteIsolationFlagHandlingTest
   SiteIsolationFlagHandlingTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    SessionManagerClient::InitializeFakeInMemory();
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
 
     // Mark that chrome restart can be requested.
     // Note that AttemptRestart() is mocked out in UserSessionManager through
     // |SetAttemptRestartClosureInTests| (set up in SetUpOnMainThread).
-    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
+    ash::FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
 
-    std::unique_ptr<ScopedDevicePolicyUpdate> update =
+    std::unique_ptr<ash::ScopedDevicePolicyUpdate> update =
         device_state_.RequestDevicePolicyUpdate();
     update->policy_payload()
         ->mutable_ephemeral_users_enabled()
         ->set_ephemeral_users_enabled(GetParam().ephemeral_users);
     update.reset();
 
-    std::unique_ptr<ScopedUserPolicyUpdate> user_policy_update =
+    std::unique_ptr<ash::ScopedUserPolicyUpdate> user_policy_update =
         user_policy_.RequestPolicyUpdate();
     if (GetParam().user_policy_site_per_process) {
       user_policy_update->policy_payload()
@@ -224,20 +224,21 @@ class SiteIsolationFlagHandlingTest
 
   void SetUpOnMainThread() override {
     fake_gaia_.SetupFakeGaiaForLogin(kTestUserAccountId, kTestUserGaiaId,
-                                     FakeGaiaMixin::kFakeRefreshToken);
+                                     ash::FakeGaiaMixin::kFakeRefreshToken);
 
     OobeBaseTest::SetUpOnMainThread();
 
     // Mock out chrome restart.
-    test::UserSessionManagerTestApi session_manager_test_api(
-        UserSessionManager::GetInstance());
+    ash::test::UserSessionManagerTestApi session_manager_test_api(
+        ash::UserSessionManager::GetInstance());
     session_manager_test_api.SetAttemptRestartClosureInTests(
         base::BindRepeating(
             &SiteIsolationFlagHandlingTest::AttemptRestartCalled,
             base::Unretained(this)));
 
     // Observe for user session start.
-    user_session_started_observer_ = std::make_unique<SessionStateWaiter>();
+    user_session_started_observer_ =
+        std::make_unique<ash::SessionStateWaiter>();
   }
 
   ChromeUserManagerImpl* GetChromeUserManager() const {
@@ -259,7 +260,7 @@ class SiteIsolationFlagHandlingTest
   // This is important because ephemeral users only work on enrolled machines.
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  UserPolicyMixin user_policy_{
+  ash::UserPolicyMixin user_policy_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId)};
 
@@ -267,10 +268,10 @@ class SiteIsolationFlagHandlingTest
       AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId)};
   LoginManagerMixin login_manager_{&mixin_host_, {user_}};
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
 
   // Observes for user session start.
-  std::unique_ptr<SessionStateWaiter> user_session_started_observer_;
+  std::unique_ptr<ash::SessionStateWaiter> user_session_started_observer_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SiteIsolationFlagHandlingTest);
@@ -279,9 +280,9 @@ class SiteIsolationFlagHandlingTest
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, PRE_FlagHandlingTest) {
-  chromeos::LoginDisplayHost::default_host()
+  ash::LoginDisplayHost::default_host()
       ->GetOobeUI()
-      ->GetView<chromeos::GaiaScreenHandler>()
+      ->GetView<ash::GaiaScreenHandler>()
       ->ShowSigninScreenForTest(kTestUserAccountId, kTestUserPassword,
                                 kEmptyServices);
   user_session_started_observer_->Wait();
@@ -311,9 +312,9 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
   ash::WizardController::SkipPostLoginScreensForTesting();
   OobeBaseTest::WaitForSigninScreen();
 
-  LoginDisplayHost::default_host()
+  ash::LoginDisplayHost::default_host()
       ->GetOobeUI()
-      ->GetView<GaiaScreenHandler>()
+      ->GetView<ash::GaiaScreenHandler>()
       ->ShowSigninScreenForTest(kTestUserAccountId, kTestUserPassword,
                                 kEmptyServices);
 
@@ -337,9 +338,10 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
   AccountId test_account_id =
       AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId);
   std::vector<std::string> switches_for_user;
-  bool has_switches_for_user = FakeSessionManagerClient::Get()->GetFlagsForUser(
-      cryptohome::CreateAccountIdentifierFromAccountId(test_account_id),
-      &switches_for_user);
+  bool has_switches_for_user =
+      ash::FakeSessionManagerClient::Get()->GetFlagsForUser(
+          cryptohome::CreateAccountIdentifierFromAccountId(test_account_id),
+          &switches_for_user);
   EXPECT_TRUE(has_switches_for_user);
 
   // Remove flag sentinels. Keep whatever is between those sentinels, to
@@ -354,4 +356,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SiteIsolationFlagHandlingTest,
                          ::testing::ValuesIn(kTestCases));
 
-}  // namespace chromeos
+}  // namespace policy

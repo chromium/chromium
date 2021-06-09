@@ -39,11 +39,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace policy {
 namespace {
 
-namespace em = enterprise_management;
+namespace em = ::enterprise_management;
 
 const char kDomain[] = "domain.com";
 const char kUsername[] = "user@domain.com";
@@ -68,8 +67,8 @@ const char kDMRegisterRequest[] = "/device_management?request=register";
 const char kDMPolicyRequest[] = "/device_management?request=policy";
 
 void CopyLockResult(base::RunLoop* loop,
-                    InstallAttributes::LockResult* out,
-                    InstallAttributes::LockResult result) {
+                    ash::InstallAttributes::LockResult* out,
+                    ash::InstallAttributes::LockResult result) {
   *out = result;
   loop->Quit();
 }
@@ -98,7 +97,7 @@ class BlockingLoginTest
     OobeBaseTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
-        policy::switches::kDeviceManagementUrl,
+        switches::kDeviceManagementUrl,
         embedded_test_server()->GetURL("/device_management").spec());
   }
 
@@ -131,24 +130,24 @@ class BlockingLoginTest
 
   void EnrollDevice(const std::string& domain) {
     base::RunLoop loop;
-    InstallAttributes::LockResult result;
-    InstallAttributes::Get()->LockDevice(
-        policy::DEVICE_MODE_ENTERPRISE, domain, std::string(), "100200300",
+    ash::InstallAttributes::LockResult result;
+    ash::InstallAttributes::Get()->LockDevice(
+        DEVICE_MODE_ENTERPRISE, domain, std::string(), "100200300",
         base::BindOnce(&CopyLockResult, &loop, &result));
     loop.Run();
-    EXPECT_EQ(InstallAttributes::LOCK_SUCCESS, result);
+    EXPECT_EQ(ash::InstallAttributes::LOCK_SUCCESS, result);
     RunUntilIdle();
   }
 
   void Login(const std::string& username) {
-    LoginDisplayHost::default_host()
+    ash::LoginDisplayHost::default_host()
         ->GetOobeUI()
-        ->GetView<GaiaScreenHandler>()
+        ->GetView<ash::GaiaScreenHandler>()
         ->ShowSigninScreenForTest(username, "password", "[]");
 
     // Wait for the session to start after submitting the credentials. This
     // will wait until all the background requests are done.
-    test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   // Handles an HTTP request sent to the test server. This handler either
@@ -226,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {
   // Verify that there isn't a logged in user when the test starts.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_FALSE(user_manager->IsUserLoggedIn());
-  EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
+  EXPECT_FALSE(ash::InstallAttributes::Get()->IsEnterpriseManaged());
   EXPECT_FALSE(profile_added_);
 
   // Enroll the device, if enrollment is enabled for this test instance.
@@ -234,8 +233,8 @@ IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {
     EnrollDevice(kDomain);
 
     EXPECT_FALSE(user_manager->IsUserLoggedIn());
-    EXPECT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
-    EXPECT_EQ(kDomain, InstallAttributes::Get()->GetDomain());
+    EXPECT_TRUE(ash::InstallAttributes::Get()->IsEnterpriseManaged());
+    EXPECT_EQ(kDomain, ash::InstallAttributes::Get()->GetDomain());
     EXPECT_FALSE(profile_added_);
     RunUntilIdle();
     EXPECT_FALSE(
@@ -325,4 +324,4 @@ INSTANTIATE_TEST_SUITE_P(DISABLED_BlockingLoginTestInstance,
                          BlockingLoginTest,
                          testing::ValuesIn(kBlockinLoginTestCases));
 
-}  // namespace chromeos
+}  // namespace policy

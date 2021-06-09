@@ -86,6 +86,7 @@ class ScopedStubInstallAttributes {
 // source migration is finished.
 namespace ash {
 using ::chromeos::ScopedStubInstallAttributes;
-}
+using ::chromeos::StubInstallAttributes;
+}  // namespace ash
 
 #endif  // CHROMEOS_TPM_STUB_INSTALL_ATTRIBUTES_H_

@@ -28,11 +28,10 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using base::test::DictionaryHasValue;
-
-namespace chromeos {
-
+namespace policy {
 namespace {
+
+using ::base::test::DictionaryHasValue;
 
 constexpr char kUserProfilePath[] = "user_profile";
 constexpr char kSharedProfilePath[] = "/profile/default";
@@ -51,7 +50,7 @@ constexpr char kServiceWifi2[] = "/service/2";
 class ServiceConnectedWaiter {
  public:
   ServiceConnectedWaiter(
-      ShillServiceClient::TestInterface* shill_service_client_test,
+      ash::ShillServiceClient::TestInterface* shill_service_client_test,
       const std::string& service_path)
       : shill_service_client_test_(shill_service_client_test),
         service_path_(service_path) {
@@ -68,27 +67,30 @@ class ServiceConnectedWaiter {
   }
 
  private:
-  ShillServiceClient::TestInterface* shill_service_client_test_;
+  ash::ShillServiceClient::TestInterface* shill_service_client_test_;
   std::string service_path_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceConnectedWaiter);
 };
 
-// Registers itself as NetworkPolicyObserver and records events for
-// NetworkPolicyObserver::PoliciesApplied and
-// NetworkPolicyObserver::PolicyAppliedtoNetwork.
-class ScopedNetworkPolicyApplicationObserver : public NetworkPolicyObserver {
+// Registers itself as ash::NetworkPolicyObserver and records events for
+// ash::NetworkPolicyObserver::PoliciesApplied and
+// ash::NetworkPolicyObserver::PolicyAppliedtoNetwork.
+class ScopedNetworkPolicyApplicationObserver
+    : public ash::NetworkPolicyObserver {
  public:
   ScopedNetworkPolicyApplicationObserver() {
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler =
-        NetworkHandler::Get()->managed_network_configuration_handler();
+    ash::ManagedNetworkConfigurationHandler*
+        managed_network_configuration_handler =
+            ash::NetworkHandler::Get()->managed_network_configuration_handler();
     managed_network_configuration_handler->AddObserver(this);
   }
 
   ~ScopedNetworkPolicyApplicationObserver() override {
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler =
-        NetworkHandler::Get()->managed_network_configuration_handler();
+    ash::ManagedNetworkConfigurationHandler*
+        managed_network_configuration_handler =
+            ash::NetworkHandler::Get()->managed_network_configuration_handler();
     managed_network_configuration_handler->RemoveObserver(this);
   }
 
@@ -122,7 +124,7 @@ class ScopedNetworkPolicyApplicationObserver : public NetworkPolicyObserver {
 
 // This class is used for implementing integration tests for network policy
 // application across sign-in screen and/or user session.
-class NetworkPolicyApplicationTest : public LoginManagerTest {
+class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
  public:
   NetworkPolicyApplicationTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);
@@ -136,8 +138,7 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
         .WillByDefault(testing::Return(true));
     ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
         .WillByDefault(testing::Return(true));
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
+    BrowserPolicyConnector::SetPolicyProviderForTesting(&policy_provider_);
 
     LoginManagerTest::SetUp();
   }
@@ -147,7 +148,7 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
 
     // Allow policy fetches to fail - these tests use
     // MockConfigurationPolicyProvider.
-    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -157,10 +158,14 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
 
-    shill_manager_client_test_ = ShillManagerClient::Get()->GetTestInterface();
-    shill_service_client_test_ = ShillServiceClient::Get()->GetTestInterface();
-    shill_profile_client_test_ = ShillProfileClient::Get()->GetTestInterface();
-    shill_device_client_test_ = ShillDeviceClient::Get()->GetTestInterface();
+    shill_manager_client_test_ =
+        ash::ShillManagerClient::Get()->GetTestInterface();
+    shill_service_client_test_ =
+        ash::ShillServiceClient::Get()->GetTestInterface();
+    shill_profile_client_test_ =
+        ash::ShillProfileClient::Get()->GetTestInterface();
+    shill_device_client_test_ =
+        ash::ShillDeviceClient::Get()->GetTestInterface();
     shill_service_client_test_->ClearServices();
     shill_device_client_test_->ClearDevices();
     shill_profile_client_test_->ClearProfiles();
@@ -175,19 +180,17 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
 
   void SetDeviceOpenNetworkConfiguration(
       const std::string& device_onc_policy_blob) {
-    current_policy_.Set(policy::key::kDeviceOpenNetworkConfiguration,
-                        policy::POLICY_LEVEL_MANDATORY,
-                        policy::POLICY_SCOPE_MACHINE,
-                        policy::POLICY_SOURCE_CLOUD,
+    current_policy_.Set(key::kDeviceOpenNetworkConfiguration,
+                        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                        POLICY_SOURCE_CLOUD,
                         base::Value(device_onc_policy_blob), nullptr);
     policy_provider_.UpdateChromePolicy(current_policy_);
   }
 
   void SetUserOpenNetworkConfiguration(
       const std::string& user_onc_policy_blob) {
-    current_policy_.Set(policy::key::kOpenNetworkConfiguration,
-                        policy::POLICY_LEVEL_MANDATORY,
-                        policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+    current_policy_.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
+                        POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                         base::Value(user_onc_policy_blob), nullptr);
     policy_provider_.UpdateChromePolicy(current_policy_);
   }
@@ -202,7 +205,7 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
 
   void ConnectToService(const std::string& service_path) {
     base::RunLoop run_loop;
-    ShillServiceClient::Get()->Connect(
+    ash::ShillServiceClient::Get()->Connect(
         dbus::ObjectPath(service_path), run_loop.QuitClosure(),
         base::BindOnce(&NetworkPolicyApplicationTest::OnConnectToServiceFailed,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -210,17 +213,17 @@ class NetworkPolicyApplicationTest : public LoginManagerTest {
   }
 
   // Unowned pointers -- just pointers to the singleton instances.
-  ShillManagerClient::TestInterface* shill_manager_client_test_ = nullptr;
-  ShillServiceClient::TestInterface* shill_service_client_test_ = nullptr;
-  ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
-  ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
+  ash::ShillManagerClient::TestInterface* shill_manager_client_test_ = nullptr;
+  ash::ShillServiceClient::TestInterface* shill_service_client_test_ = nullptr;
+  ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
+  ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
 
   LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId test_account_id_;
 
  private:
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  policy::PolicyMap current_policy_;
+  testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
+  PolicyMap current_policy_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkPolicyApplicationTest);
 };
@@ -501,4 +504,4 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   }
 }
 
-}  // namespace chromeos
+}  // namespace policy

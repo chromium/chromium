@@ -15,12 +15,12 @@
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_test.h"
 
-namespace em = enterprise_management;
+namespace policy {
 
-namespace chromeos {
+namespace em = ::enterprise_management;
 
 class DeviceSystemWideTracingEnabledPolicyTest
-    : public policy::DevicePolicyCrosBrowserTest {
+    : public DevicePolicyCrosBrowserTest {
  protected:
   DeviceSystemWideTracingEnabledPolicyTest() = default;
   ~DeviceSystemWideTracingEnabledPolicyTest() override = default;
@@ -32,7 +32,7 @@ class DeviceSystemWideTracingEnabledPolicyTest
 
   // Updates the device policy in |device_system_wide_tracing_enabled.enabled|.
   void UpdatePolicy(bool device_system_wide_tracing_enabled) {
-    policy::DevicePolicyBuilder* builder = device_policy();
+    DevicePolicyBuilder* builder = device_policy();
     ASSERT_TRUE(builder);
     em::ChromeDeviceSettingsProto& proto(builder->payload());
     proto.mutable_device_system_wide_tracing_enabled()->set_enabled(
@@ -65,7 +65,8 @@ class DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest
     : public DeviceSystemWideTracingEnabledPolicyTest {
  protected:
   DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest()
-      : install_attributes_(StubInstallAttributes::CreateConsumerOwned()) {}
+      : install_attributes_(ash::StubInstallAttributes::CreateConsumerOwned()) {
+  }
   ~DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest() override = default;
 
   chromeos::ScopedStubInstallAttributes install_attributes_;
@@ -84,8 +85,8 @@ class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
  protected:
   DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest()
       : install_attributes_(
-            StubInstallAttributes::CreateCloudManaged("fake-domain.com",
-                                                      "fake-id")) {}
+            ash::StubInstallAttributes::CreateCloudManaged("fake-domain.com",
+                                                           "fake-id")) {}
   ~DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest() override =
       default;
 
@@ -109,4 +110,4 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
 }
 
-}  // namespace chromeos
+}  // namespace policy

@@ -26,6 +26,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace policy {
+namespace {
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -36,7 +39,6 @@ using ::testing::Matches;
 using ::testing::Pair;
 using ::testing::SaveArg;
 
-namespace {
 const char* const kFakeCustomerId = "fake_customer_id";
 const char* const kFakeDeviceId = "fake_device_id";
 const char* const kHeartbeatGCMAppID = "com.google.chromeos.monitoring";
@@ -171,14 +173,14 @@ class HeartbeatSchedulerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   MockGCMDriver gcm_driver_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  testing::NiceMock<policy::MockCloudPolicyClient> cloud_policy_client_;
-  testing::NiceMock<policy::MockCloudPolicyStore> cloud_policy_store_;
+  testing::NiceMock<MockCloudPolicyClient> cloud_policy_client_;
+  testing::NiceMock<MockCloudPolicyStore> cloud_policy_store_;
 
   // TaskRunner used to run individual tests.
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
   // The HeartbeatScheduler instance under test.
-  policy::HeartbeatScheduler scheduler_;
+  HeartbeatScheduler scheduler_;
 };
 
 TEST_F(HeartbeatSchedulerTest, Basic) {
@@ -339,7 +341,7 @@ TEST_F(HeartbeatSchedulerTest, DisableHeartbeats) {
   // Should have a new heartbeat task posted.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());
   CheckPendingTaskDelay(scheduler_.last_heartbeat(),
-                        policy::HeartbeatScheduler::kDefaultHeartbeatInterval);
+                        HeartbeatScheduler::kDefaultHeartbeatInterval);
   testing::Mock::VerifyAndClearExpectations(&gcm_driver_);
 
   IgnoreUpstreamNotificationMsg();
@@ -366,7 +368,7 @@ TEST_F(HeartbeatSchedulerTest, CheckMessageContents) {
 
   // Heartbeats should have a time-to-live equivalent to the heartbeat frequency
   // so we don't have more than one heartbeat queued at a time.
-  EXPECT_EQ(policy::HeartbeatScheduler::kDefaultHeartbeatInterval,
+  EXPECT_EQ(HeartbeatScheduler::kDefaultHeartbeatInterval,
             base::TimeDelta::FromSeconds(message.time_to_live));
 
   // Check the values in the message payload.
@@ -380,7 +382,7 @@ TEST_F(HeartbeatSchedulerTest, CheckMessageContents) {
 TEST_F(HeartbeatSchedulerTest, SendGcmIdUpdate) {
   // Verifies that GCM id update request was sent after GCM registration.
   cloud_policy_client_.SetDMToken(kDMToken);
-  policy::CloudPolicyClient::StatusCallback callback;
+  CloudPolicyClient::StatusCallback callback;
   EXPECT_CALL(cloud_policy_client_, UpdateGcmId_(kRegistrationId, _))
       .WillOnce(MoveArg<1>(&callback));
 
@@ -430,3 +432,4 @@ TEST_F(HeartbeatSchedulerTest, GcmUpstreamNotificationSignup) {
 }
 
 }  // namespace
+}  // namespace policy

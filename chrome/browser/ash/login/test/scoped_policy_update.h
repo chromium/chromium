@@ -73,6 +73,7 @@ class ScopedDevicePolicyUpdate {
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 using ::chromeos::ScopedDevicePolicyUpdate;
+using ::chromeos::ScopedUserPolicyUpdate;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_

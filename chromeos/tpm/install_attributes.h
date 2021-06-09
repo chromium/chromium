@@ -237,4 +237,10 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::InstallAttributes;
+}
+
 #endif  // CHROMEOS_TPM_INSTALL_ATTRIBUTES_H_

@@ -21,29 +21,28 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
+namespace policy {
 
-namespace chromeos {
+namespace em = ::enterprise_management;
 
-class SystemUse24HourClockPolicyTest
-    : public policy::DevicePolicyCrosBrowserTest {
+class SystemUse24HourClockPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
   SystemUse24HourClockPolicyTest() = default;
 
-  // policy::DevicePolicyCrosBrowserTest:
+  // DevicePolicyCrosBrowserTest:
   void SetUpOnMainThread() override {
-    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
   }
 
   void TearDownOnMainThread() override {
     // If the login display is still showing, exit gracefully.
-    if (LoginDisplayHost::default_host()) {
+    if (ash::LoginDisplayHost::default_host()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&chrome::AttemptExit));
       RunUntilBrowserProcessQuits();
@@ -54,8 +53,8 @@ class SystemUse24HourClockPolicyTest
   void RefreshPolicyAndWaitDeviceSettingsUpdated() {
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
-        CrosSettings::Get()->AddSettingsObserver(
-            kSystemUse24HourClock, run_loop.QuitWhenIdleClosure());
+        ash::CrosSettings::Get()->AddSettingsObserver(
+            ash::kSystemUse24HourClock, run_loop.QuitWhenIdleClosure());
 
     RefreshDevicePolicy();
     run_loop.Run();
@@ -79,8 +78,8 @@ class SystemUse24HourClockPolicyTest
 
 IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckUnset) {
   bool system_use_24hour_clock;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kSystemUse24HourClock,
-                                               &system_use_24hour_clock));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(ash::kSystemUse24HourClock,
+                                                    &system_use_24hour_clock));
 
   EXPECT_FALSE(SystemClockShouldUse24Hour());
   EXPECT_FALSE(IsPrimarySystemTrayUse24Hour());
@@ -88,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckUnset) {
 
 IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckTrue) {
   bool system_use_24hour_clock = true;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kSystemUse24HourClock,
-                                               &system_use_24hour_clock));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(ash::kSystemUse24HourClock,
+                                                    &system_use_24hour_clock));
 
   EXPECT_FALSE(SystemClockShouldUse24Hour());
   EXPECT_FALSE(IsPrimarySystemTrayUse24Hour());
@@ -99,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckTrue) {
   RefreshPolicyAndWaitDeviceSettingsUpdated();
 
   system_use_24hour_clock = false;
-  EXPECT_TRUE(CrosSettings::Get()->GetBoolean(kSystemUse24HourClock,
-                                              &system_use_24hour_clock));
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetBoolean(ash::kSystemUse24HourClock,
+                                                   &system_use_24hour_clock));
   EXPECT_TRUE(system_use_24hour_clock);
   EXPECT_TRUE(SystemClockShouldUse24Hour());
   EXPECT_TRUE(IsPrimarySystemTrayUse24Hour());
@@ -108,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckTrue) {
 
 IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckFalse) {
   bool system_use_24hour_clock = true;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kSystemUse24HourClock,
-                                               &system_use_24hour_clock));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(ash::kSystemUse24HourClock,
+                                                    &system_use_24hour_clock));
 
   EXPECT_FALSE(SystemClockShouldUse24Hour());
   EXPECT_FALSE(IsPrimarySystemTrayUse24Hour());
@@ -119,11 +118,11 @@ IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckFalse) {
   RefreshPolicyAndWaitDeviceSettingsUpdated();
 
   system_use_24hour_clock = true;
-  EXPECT_TRUE(CrosSettings::Get()->GetBoolean(kSystemUse24HourClock,
-                                              &system_use_24hour_clock));
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetBoolean(ash::kSystemUse24HourClock,
+                                                   &system_use_24hour_clock));
   EXPECT_FALSE(system_use_24hour_clock);
   EXPECT_FALSE(SystemClockShouldUse24Hour());
   EXPECT_FALSE(IsPrimarySystemTrayUse24Hour());
 }
 
-}  // namespace chromeos
+}  // namespace policy

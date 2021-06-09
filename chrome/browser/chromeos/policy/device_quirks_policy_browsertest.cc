@@ -14,14 +14,14 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace policy {
 
 const int64_t kProductId = 0x0000aaaa;
 const char kDisplayName[] = "FakeDisplay";
 const char kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
                              0x20, 0x20, 0x02, 0x10, 0x00, 0x00};
 
-class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
+class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
   DeviceQuirksPolicyTest() {}
 
@@ -47,8 +47,8 @@ class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
   void RefreshPolicyAndWaitDeviceSettingsUpdated() {
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
-        CrosSettings::Get()->AddSettingsObserver(
-            kDeviceQuirksDownloadEnabled, run_loop.QuitWhenIdleClosure());
+        ash::CrosSettings::Get()->AddSettingsObserver(
+            ash::kDeviceQuirksDownloadEnabled, run_loop.QuitWhenIdleClosure());
 
     RefreshDevicePolicy();
     run_loop.Run();
@@ -89,8 +89,8 @@ class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckUnset) {
   bool quirks_download_enabled;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kDeviceQuirksDownloadEnabled,
-                                               &quirks_download_enabled));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(
+      ash::kDeviceQuirksDownloadEnabled, &quirks_download_enabled));
 
   // No policy set, default is enabled, so Quirks should find the fake icc file.
   EXPECT_TRUE(TestQuirksEnabled());
@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckUnset) {
 
 IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckTrue) {
   bool quirks_download_enabled;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kDeviceQuirksDownloadEnabled,
-                                               &quirks_download_enabled));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(
+      ash::kDeviceQuirksDownloadEnabled, &quirks_download_enabled));
 
   enterprise_management::ChromeDeviceSettingsProto& proto(
       device_policy()->payload());
@@ -107,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckTrue) {
   RefreshPolicyAndWaitDeviceSettingsUpdated();
 
   quirks_download_enabled = false;
-  EXPECT_TRUE(CrosSettings::Get()->GetBoolean(kDeviceQuirksDownloadEnabled,
-                                              &quirks_download_enabled));
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetBoolean(
+      ash::kDeviceQuirksDownloadEnabled, &quirks_download_enabled));
   EXPECT_TRUE(quirks_download_enabled);
 
   // With policy enabled, Quirks should find the fake icc file.
@@ -117,8 +117,8 @@ IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckTrue) {
 
 IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckFalse) {
   bool quirks_download_enabled;
-  EXPECT_FALSE(CrosSettings::Get()->GetBoolean(kDeviceQuirksDownloadEnabled,
-                                               &quirks_download_enabled));
+  EXPECT_FALSE(ash::CrosSettings::Get()->GetBoolean(
+      ash::kDeviceQuirksDownloadEnabled, &quirks_download_enabled));
 
   enterprise_management::ChromeDeviceSettingsProto& proto(
       device_policy()->payload());
@@ -126,12 +126,12 @@ IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckFalse) {
   RefreshPolicyAndWaitDeviceSettingsUpdated();
 
   quirks_download_enabled = true;
-  EXPECT_TRUE(CrosSettings::Get()->GetBoolean(kDeviceQuirksDownloadEnabled,
-                                              &quirks_download_enabled));
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetBoolean(
+      ash::kDeviceQuirksDownloadEnabled, &quirks_download_enabled));
   EXPECT_FALSE(quirks_download_enabled);
 
   // With policy disabled, Quirks should abort and not find the fake icc file.
   EXPECT_FALSE(TestQuirksEnabled());
 }
 
-}  // namespace chromeos
+}  // namespace policy

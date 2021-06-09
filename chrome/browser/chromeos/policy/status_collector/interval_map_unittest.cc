@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/policy/status_collector/interval_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace policy {
 namespace {
 
 // Our tests only modify the interval map entries in [0..kTestSize).
@@ -110,8 +111,9 @@ class IntervalMapTest : public testing::Test {
 
  protected:
   SimpleIntervalMap truth_;
-  policy::IntervalMap<int32_t, int32_t> testee_;
+  IntervalMap<int32_t, int32_t> testee_;
 };
+
 }  // namespace
 
 TEST_F(IntervalMapTest, SimpleTest) {
@@ -271,3 +273,5 @@ TEST_F(IntervalMapTest, RandomSetTest) {
     }
   }
 }
+
+}  // namespace policy

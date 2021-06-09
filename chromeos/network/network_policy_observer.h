@@ -34,4 +34,10 @@ class NetworkPolicyObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::NetworkPolicyObserver;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_POLICY_OBSERVER_H_
