@@ -26,7 +26,7 @@ public final class CloudManagementAndroidConnectionTest {
     /* Simple implementation of {@link CloudManagementAndroidConnection} that overrides {@link
      * generateClientIdInternal} for easier testing. */
     private static class FakeCloudManagementAndroidConnectionDelegate
-            extends CloudManagementAndroidConnectionDelegate {
+            implements CloudManagementAndroidConnectionDelegate {
         @Override
         public String generateClientId() {
             return CLIENT_ID;
