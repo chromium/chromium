@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"

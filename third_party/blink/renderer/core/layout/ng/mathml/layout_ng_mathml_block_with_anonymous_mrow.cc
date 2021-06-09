@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block_with_anonymous_mrow.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+
 namespace blink {
 
 LayoutNGMathMLBlockWithAnonymousMrow::LayoutNGMathMLBlockWithAnonymousMrow(

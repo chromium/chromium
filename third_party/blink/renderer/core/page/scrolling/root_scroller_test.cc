@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"

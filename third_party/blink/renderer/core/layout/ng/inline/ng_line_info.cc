@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 

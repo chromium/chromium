@@ -4,10 +4,11 @@
 
 #include "build/build_config.h"
 
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/line_box_list_painter.h"
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box_model.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"

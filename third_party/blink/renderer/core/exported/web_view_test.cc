@@ -84,6 +84,7 @@
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/dom/document.h"

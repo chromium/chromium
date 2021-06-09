@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"

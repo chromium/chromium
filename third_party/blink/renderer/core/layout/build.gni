@@ -11,6 +11,7 @@ blink_core_sources_layout = [
   "api/line_layout_br.h",
   "api/line_layout_inline.h",
   "api/line_layout_item.h",
+  "api/line_layout_item.cc",
   "api/line_layout_list_marker.h",
   "api/line_layout_ruby_base.h",
   "api/line_layout_ruby_run.h",

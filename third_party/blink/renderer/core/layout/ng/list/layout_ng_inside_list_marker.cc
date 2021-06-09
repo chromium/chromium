@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {

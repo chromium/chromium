@@ -124,6 +124,7 @@
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"

@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"

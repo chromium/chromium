@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"

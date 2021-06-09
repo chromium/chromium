@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 
 #include "third_party/blink/renderer/core/css/counter_style.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"

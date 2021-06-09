@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"

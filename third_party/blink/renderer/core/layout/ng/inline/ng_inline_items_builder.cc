@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"

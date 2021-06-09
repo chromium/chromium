@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 
 #include "third_party/blink/renderer/core/css/counter_style.h"
+#include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"

@@ -8,6 +8,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"

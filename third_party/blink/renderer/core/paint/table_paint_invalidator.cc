@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 
 namespace blink {

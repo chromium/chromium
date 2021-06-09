@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"

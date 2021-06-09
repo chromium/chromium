@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"

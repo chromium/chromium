@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"

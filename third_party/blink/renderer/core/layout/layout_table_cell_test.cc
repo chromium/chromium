@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
