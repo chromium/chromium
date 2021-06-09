@@ -31,6 +31,7 @@ source_set("quiche") {
   sources = [
     "overrides/quiche_platform_impl/quic_mutex_impl.cc",
     "overrides/quiche_platform_impl/quic_mutex_impl.h",
+    "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
     "overrides/quiche_platform_impl/quiche_export_impl.h",
     "overrides/quiche_platform_impl/quiche_logging_impl.h",
     "overrides/quiche_platform_impl/quiche_time_utils_impl.cc",
@@ -141,12 +142,10 @@ source_set("quiche") {
     "src/http2/http2_structures.h",
     "src/http2/platform/api/http2_bug_tracker.h",
     "src/http2/platform/api/http2_containers.h",
-    "src/http2/platform/api/http2_estimate_memory_usage.h",
     "src/http2/platform/api/http2_flag_utils.h",
     "src/http2/platform/api/http2_flags.h",
     "src/http2/platform/api/http2_logging.h",
     "src/http2/platform/api/http2_macros.h",
-    "src/http2/platform/api/http2_string_utils.h",
     "src/quic/core/congestion_control/bandwidth_sampler.cc",
     "src/quic/core/congestion_control/bandwidth_sampler.h",
     "src/quic/core/congestion_control/bbr2_drain.cc",
@@ -552,7 +551,6 @@ source_set("quiche") {
     "src/quic/platform/api/quic_client_stats.h",
     "src/quic/platform/api/quic_containers.h",
     "src/quic/platform/api/quic_error_code_wrappers.h",
-    "src/quic/platform/api/quic_estimate_memory_usage.h",
     "src/quic/platform/api/quic_export.h",
     "src/quic/platform/api/quic_exported_stats.h",
     "src/quic/platform/api/quic_file_utils.cc",
@@ -634,7 +632,6 @@ source_set("quiche") {
     "src/spdy/core/spdy_simple_arena.h",
     "src/spdy/core/zero_copy_output_buffer.h",
     "src/spdy/platform/api/spdy_containers.h",
-    "src/spdy/platform/api/spdy_estimate_memory_usage.h",
   ]
 
   deps = [ "//net:net_deps" ]
