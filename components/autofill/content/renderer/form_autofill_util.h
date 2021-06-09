@@ -70,18 +70,6 @@ enum ExtractMask {
                                  // kMaxDataLength.
 };
 
-struct ShadowFieldData {
-  ShadowFieldData();
-  ShadowFieldData(const ShadowFieldData& other);
-  ~ShadowFieldData();
-
-  // If the form control is inside shadow DOM, then these lists will contain
-  // id and name attributes of the parent shadow host elements. There may be
-  // more than one if the form control is in nested shadow DOM.
-  std::vector<std::u16string> shadow_host_id_attributes;
-  std::vector<std::u16string> shadow_host_name_attributes;
-};
-
 // Indicates if an iframe |element| is considered actually visible to the user.
 //
 // This function is not intended to implement a perfect visibility check. It
@@ -204,6 +192,8 @@ std::vector<blink::WebFormControlElement> ExtractAutofillableElementsFromSet(
 // Returns all the auto-fillable form control elements in |form_element|.
 std::vector<blink::WebFormControlElement> ExtractAutofillableElementsInForm(
     const blink::WebFormElement& form_element);
+
+struct ShadowFieldData;
 
 // Fills out a FormField object from a given WebFormControlElement.
 // |extract_mask|: See the enum ExtractMask above for details. Field properties

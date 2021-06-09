@@ -75,6 +75,21 @@ using mojom::ButtonTitleType;
 
 namespace form_util {
 
+struct ShadowFieldData {
+  ShadowFieldData() = default;
+  ShadowFieldData(ShadowFieldData&& other) = default;
+  ShadowFieldData& operator=(ShadowFieldData&& other) = default;
+  ShadowFieldData(const ShadowFieldData& other) = delete;
+  ShadowFieldData& operator=(const ShadowFieldData& other) = delete;
+  ~ShadowFieldData() = default;
+
+  // If the form control is inside shadow DOM, then these lists will contain
+  // id and name attributes of the parent shadow host elements. There may be
+  // more than one if the form control is in nested shadow DOM.
+  std::vector<std::u16string> shadow_host_id_attributes;
+  std::vector<std::u16string> shadow_host_name_attributes;
+};
+
 namespace {
 
 // Maximal length of a button's title.
@@ -1312,51 +1327,29 @@ struct CompareByRendererId {
   }
 };
 
-// Searches field_set for a matching named element in the case that
-// Label::CorrespondingControl from blink didn't return a matching form control
-// element. Returns nullptr if no match was found.
+// Searches |field_set| for a unique field with name |field_name|. If there is
+// none or more than one field with that name, the fields' shadow hosts' name
+// and id attributes are tested, and the first match is returned. Returns
+// nullptr if no match was found.
 FormFieldData* SearchForFormControlByName(
-    const std::u16string& target_name,
+    const std::u16string& field_name,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set) {
-  // Sometimes site authors will incorrectly specify the corresponding
-  // field element's name rather than its id, so we compensate here.
-  if (target_name.empty())
+  if (field_name.empty())
     return nullptr;
 
-  // Look through the list for elements with this name. There can actually
-  // be more than one. In this case, the label may not be particularly
-  // useful, so just discard it.
-  FormFieldData* field_data = nullptr;
-  for (const auto& iter : field_set) {
-    if (iter.first->name == target_name) {
-      if (field_data) {
-        field_data = nullptr;
-        break;
-      }
-      field_data = iter.first;
-    }
+  auto get_field_name = [](const auto& p) { return p.first->name; };
+  auto it = base::ranges::find(field_set, field_name, get_field_name);
+  auto end = field_set.end();
+  if (it == end ||
+      base::ranges::find(it + 1, end, field_name, get_field_name) != end) {
+    auto ShadowHostHasTargetName = [&](const auto& p) {
+      return base::Contains(p.second.shadow_host_name_attributes, field_name) ||
+             base::Contains(p.second.shadow_host_id_attributes, field_name);
+    };
+    it = base::ranges::find_if(field_set, ShadowHostHasTargetName);
   }
-
-  if (field_data)
-    return field_data;
-
-  // If there is identifying information that will help us find the target
-  // form control in the form control's shadow host(s), look there too.
-  for (const auto& iter : field_set) {
-    for (const std::u16string& shadow_host_name :
-         iter.second.shadow_host_name_attributes) {
-      if (shadow_host_name == target_name)
-        return iter.first;
-    }
-    for (const std::u16string& shadow_host_id :
-         iter.second.shadow_host_id_attributes) {
-      if (shadow_host_id == target_name)
-        return iter.first;
-    }
-  }
-
-  return nullptr;
+  return it != end ? it->first : nullptr;
 }
 
 // Updates the FormFieldData::label of each field in `field_set` according to
@@ -1381,6 +1374,8 @@ void MatchLabelsAndFields(
     FormFieldData* field_data = nullptr;
 
     if (control.IsNull()) {
+      // Sometimes site authors will incorrectly specify the corresponding
+      // field element's name rather than its id, so we compensate here.
       field_data = SearchForFormControlByName(label.GetAttribute(*kFor).Utf16(),
                                               field_set);
     } else if (control.IsFormControlElement()) {
@@ -1457,7 +1452,7 @@ bool FormOrFieldsetsToFormData(
   }
   std::vector<bool> fields_extracted(control_elements.size(), false);
 
-  std::vector<ShadowFieldData> shadow_field_data;
+  std::vector<ShadowFieldData> shadow_fields;
 
   for (size_t i = 0, next_iframe = 0; i < control_elements.size(); ++i) {
     const WebFormControlElement& control_element = control_elements[i];
@@ -1466,11 +1461,10 @@ bool FormOrFieldsetsToFormData(
       continue;
 
     form->fields.push_back(FormFieldData());
-    ShadowFieldData shadow_field;
-    WebFormControlElementToFormField(form->unique_renderer_id, control_element,
-                                     field_data_manager, extract_mask,
-                                     &form->fields.back(), &shadow_field);
-    shadow_field_data.emplace_back(shadow_field);
+    shadow_fields.push_back(ShadowFieldData());
+    WebFormControlElementToFormField(
+        form->unique_renderer_id, control_element, field_data_manager,
+        extract_mask, &form->fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
 
     if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
@@ -1503,10 +1497,9 @@ bool FormOrFieldsetsToFormData(
   // Extracts field labels from the <label for="..."> tags.
   {
     std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
-    DCHECK_EQ(form->fields.size(), shadow_field_data.size());
+    DCHECK_EQ(form->fields.size(), shadow_fields.size());
     for (size_t i = 0; i < form->fields.size(); i++) {
-      items.emplace_back(
-          std::make_pair(&form->fields[i], std::move(shadow_field_data[i])));
+      items.emplace_back(&form->fields[i], std::move(shadow_fields[i]));
     }
     base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                    CompareByRendererId>
@@ -2597,10 +2590,6 @@ std::u16string GetAriaDescription(const blink::WebDocument& document,
   return CoalesceTextByIdList(document,
                               element.GetAttribute(*kAriaDescribedBy));
 }
-
-ShadowFieldData::ShadowFieldData() = default;
-ShadowFieldData::ShadowFieldData(const ShadowFieldData& other) = default;
-ShadowFieldData::~ShadowFieldData() = default;
 
 }  // namespace form_util
 }  // namespace autofill
