@@ -449,4 +449,28 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, OpenNativeSettings) {
                                base::CompareCase::SENSITIVE));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, WindowMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
+            apps::mojom::WindowMode::kWindow);
+
+  web_apps_publisher_host.SetWindowMode(app_id,
+                                        apps::mojom::WindowMode::kBrowser);
+  mock_app_publisher.Wait();
+
+  EXPECT_GE(mock_app_publisher.get_deltas().size(), 2U);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
+            apps::mojom::WindowMode::kBrowser);
+}
+
 }  // namespace web_app

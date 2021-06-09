@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -33,7 +35,8 @@ class WebAppProvider;
 class WebAppRegistrar;
 class WebAppLaunchManager;
 
-class WebAppPublisherHelper : public content_settings::Observer {
+class WebAppPublisherHelper : public AppRegistrarObserver,
+                              public content_settings::Observer {
  public:
   class Delegate {
    public:
@@ -167,6 +170,18 @@ class WebAppPublisherHelper : public content_settings::Observer {
   WebAppRegistrar& registrar() const;
 
  private:
+  // AppRegistrarObserver:
+  void OnAppRegistrarDestroyed() override;
+  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
+                                            bool is_locally_installed) override;
+  void OnWebAppLastLaunchTimeChanged(
+      const std::string& app_id,
+      const base::Time& last_launch_time) override;
+  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
+                                      DisplayMode user_display_mode) override;
+  void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
+                                                   bool enabled) override;
+
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -195,6 +210,9 @@ class WebAppPublisherHelper : public content_settings::Observer {
   Delegate* const delegate_;
 
   WebAppProvider* const provider_;
+
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+      registrar_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};

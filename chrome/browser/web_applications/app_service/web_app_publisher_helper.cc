@@ -131,6 +131,7 @@ bool WebAppPublisherHelper::Accepts(const std::string& app_id) {
 }
 
 void WebAppPublisherHelper::Shutdown() {
+  registrar_observation_.Reset();
   content_settings_observation_.Reset();
 }
 
@@ -215,6 +216,11 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
+
+  auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
+  app->window_mode = ConvertDisplayModeToWindowMode(
+      display_mode,
+      registrar().IsInExperimentalTabbedWindowMode(web_app->app_id()));
 
   // app->version is left empty here.
   PopulateWebAppPermissions(web_app, &app->permissions);
@@ -598,18 +604,65 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
     const std::string& app_id,
     blink::mojom::DisplayMode display_mode,
     bool in_experimental_tabbed_window) {
-  if (GetWebApp(app_id) && Accepts(app_id)) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = app_type();
-    app->app_id = app_id;
-    app->window_mode = ConvertDisplayModeToWindowMode(
-        display_mode, in_experimental_tabbed_window);
-    delegate_->PublishWebApp(std::move(app));
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
   }
+
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type();
+  app->app_id = app_id;
+  app->window_mode = ConvertDisplayModeToWindowMode(
+      display_mode, in_experimental_tabbed_window);
+  delegate_->PublishWebApp(std::move(app));
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
+}
+
+void WebAppPublisherHelper::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
+void WebAppPublisherHelper::OnWebAppLocallyInstalledStateChanged(
+    const AppId& app_id,
+    bool is_locally_installed) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+
+  auto app = apps::mojom::App::New();
+  app->app_type = app_type();
+  app->app_id = app_id;
+  app->icon_key = MakeIconKey(web_app);
+  delegate_->PublishWebApp(std::move(app));
+}
+
+void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
+    const std::string& app_id,
+    const base::Time& last_launch_time) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+
+  delegate_->PublishWebApp(ConvertLaunchedWebApp(web_app));
+}
+
+void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
+    const AppId& app_id,
+    DisplayMode user_display_mode) {
+  PublishWindowModeUpdate(app_id, user_display_mode,
+                          registrar().IsInExperimentalTabbedWindowMode(app_id));
+}
+
+void WebAppPublisherHelper::OnWebAppExperimentalTabbedWindowModeChanged(
+    const AppId& app_id,
+    bool enabled) {
+  auto display_mode = registrar().GetAppUserDisplayMode(app_id);
+  PublishWindowModeUpdate(app_id, display_mode, enabled);
 }
 
 void WebAppPublisherHelper::OnContentSettingChanged(
@@ -635,6 +688,12 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 }
 
 void WebAppPublisherHelper::Init() {
+  // Allow for web app migration tests.
+  if (!provider_ || !provider_->registrar().AsWebAppRegistrar()) {
+    return;
+  }
+
+  registrar_observation_.Observe(&registrar());
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
   web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);

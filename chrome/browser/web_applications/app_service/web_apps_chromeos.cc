@@ -432,21 +432,6 @@ void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
   }
 }
 
-void WebAppsChromeOs::OnWebAppUserDisplayModeChanged(
-    const AppId& app_id,
-    DisplayMode user_display_mode) {
-  publisher_helper().PublishWindowModeUpdate(
-      app_id, user_display_mode,
-      GetRegistrar()->IsInExperimentalTabbedWindowMode(app_id));
-}
-
-void WebAppsChromeOs::OnWebAppExperimentalTabbedWindowModeChanged(
-    const AppId& app_id,
-    bool enabled) {
-  auto display_mode = GetRegistrar()->GetAppUserDisplayMode(app_id);
-  publisher_helper().PublishWindowModeUpdate(app_id, display_mode, enabled);
-}
-
 void WebAppsChromeOs::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   if (provider()->policy_manager().IsDisabledAppsModeHidden()) {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
@@ -654,11 +639,6 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
 
   bool paused = publisher_helper().IsPaused(web_app->app_id());
   app->icon_key = publisher_helper().MakeIconKey(web_app);
-
-  auto display_mode = GetRegistrar()->GetAppUserDisplayMode(web_app->app_id());
-  app->window_mode = publisher_helper().ConvertDisplayModeToWindowMode(
-      display_mode,
-      GetRegistrar()->IsInExperimentalTabbedWindowMode(web_app->app_id()));
 
   apps::mojom::OptionalBool has_notification =
       app_notifications_.HasNotification(web_app->app_id())

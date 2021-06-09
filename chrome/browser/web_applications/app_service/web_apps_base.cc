@@ -185,15 +185,6 @@ void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {
   Publish(std::move(app), subscribers_);
 }
 
-void WebAppsBase::OnWebAppLastLaunchTimeChanged(
-    const std::string& app_id,
-    const base::Time& last_launch_time) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (web_app && Accepts(app_id)) {
-    Publish(publisher_helper().ConvertLaunchedWebApp(web_app), subscribers_);
-  }
-}
-
 void WebAppsBase::OnWebAppManifestUpdated(const AppId& app_id,
                                           base::StringPiece old_name) {
   const WebApp* web_app = GetWebApp(app_id);
@@ -204,19 +195,6 @@ void WebAppsBase::OnWebAppManifestUpdated(const AppId& app_id,
 
 void WebAppsBase::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
-}
-
-void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
-    const AppId& app_id,
-    bool is_locally_installed) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app)
-    return;
-  auto app = apps::mojom::App::New();
-  app->app_type = app_type_;
-  app->app_id = app_id;
-  app->icon_key = publisher_helper().MakeIconKey(web_app);
-  Publish(std::move(app), subscribers_);
 }
 
 void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,

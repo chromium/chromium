@@ -116,15 +116,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                                base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
-  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
-                                            bool is_locally_installed) override;
-  void OnWebAppLastLaunchTimeChanged(
-      const std::string& app_id,
-      const base::Time& last_launch_time) override;
-  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
-                                      DisplayMode user_display_mode) override;
-  void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
-                                                   bool enabled) override;
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 
   // MediaCaptureDevicesDispatcher::Observer:

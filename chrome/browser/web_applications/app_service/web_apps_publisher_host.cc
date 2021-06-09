@@ -64,6 +64,7 @@ void WebAppsPublisherHost::Init() {
 }
 
 void WebAppsPublisherHost::Shutdown() {
+  registrar_observation_.Reset();
   publisher_helper().Shutdown();
 }
 
@@ -203,47 +204,6 @@ void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
 
 void WebAppsPublisherHost::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
-}
-
-void WebAppsPublisherHost::OnWebAppLocallyInstalledStateChanged(
-    const AppId& app_id,
-    bool is_locally_installed) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  auto app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kWeb;
-  app->app_id = app_id;
-  app->icon_key = publisher_helper().MakeIconKey(web_app);
-  PublishWebApp(std::move(app));
-}
-
-void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
-    const std::string& app_id,
-    const base::Time& last_launch_time) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  PublishWebApp(publisher_helper().ConvertLaunchedWebApp(web_app));
-}
-
-void WebAppsPublisherHost::OnWebAppUserDisplayModeChanged(
-    const AppId& app_id,
-    DisplayMode user_display_mode) {
-  publisher_helper().PublishWindowModeUpdate(
-      app_id, user_display_mode,
-      registrar().IsInExperimentalTabbedWindowMode(app_id));
-}
-
-void WebAppsPublisherHost::OnWebAppExperimentalTabbedWindowModeChanged(
-    const AppId& app_id,
-    bool enabled) {
-  auto display_mode = registrar().GetAppUserDisplayMode(app_id);
-  publisher_helper().PublishWindowModeUpdate(app_id, display_mode, enabled);
 }
 
 void WebAppsPublisherHost::OnRequestUpdate(

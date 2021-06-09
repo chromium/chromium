@@ -101,10 +101,6 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
-  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
-                                      DisplayMode user_display_mode) override;
-  void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
-                                                   bool enabled) override;
 
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);

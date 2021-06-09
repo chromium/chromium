@@ -56,9 +56,6 @@ class WebAppsBase : public apps::PublisherBase,
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
-  void OnWebAppLastLaunchTimeChanged(
-      const std::string& app_id,
-      const base::Time& last_launch_time) override;
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
@@ -111,8 +108,6 @@ class WebAppsBase : public apps::PublisherBase,
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnAppRegistrarDestroyed() override;
-  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
-                                            bool is_locally_installed) override;
 
   virtual apps::mojom::AppPtr Convert(const WebApp* web_app,
                                       apps::mojom::Readiness readiness) = 0;
