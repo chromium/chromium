@@ -33010,8 +33010,8 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="FeatureUsageEvent">
   <int value="0"
-      label="Device is eligible for this feature. Recorded once per day."/>
-  <int value="1" label="Feature is enabled by user. Recorded once per day."/>
+      label="Device is eligible for this feature. Recorded periodically."/>
+  <int value="1" label="Feature is enabled by user. Recorded periodically."/>
   <int value="2"
       label="Successful attempt to use the feature. Recorded on each event."/>
   <int value="3"
