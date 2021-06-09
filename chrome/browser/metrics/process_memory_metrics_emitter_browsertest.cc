@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/allocator/buildflags.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -183,6 +184,16 @@ void CheckExperimentalMemoryMetricsForProcessType(
   CheckMemoryMetric(std::string("Memory.Experimental.") + process_type + "2.V8",
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // It's a small metric, so should not be strictly zero in theory, but could be
+  // if purge comes at the wrong time, or the thread cache is not available on
+  // this platform.
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Small.Malloc.ThreadCache",
+                    histogram_tester, count, ValueRestriction::NONE,
+                    number_of_processes);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void CheckExperimentalMemoryMetrics(
