@@ -97,7 +97,6 @@ class PDFiumEngine : public PDFEngine,
   void PostPaint() override;
   bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) override;
   bool HandleInputEvent(const blink::WebInputEvent& event) override;
-  uint32_t QuerySupportedPrintOutputFormats() override;
   void PrintBegin() override;
   pp::Resource PrintPages(
       const PP_PrintPageNumberRange_Dev* page_ranges,

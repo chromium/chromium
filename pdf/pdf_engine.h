@@ -319,7 +319,6 @@ class PDFEngine {
   virtual void PostPaint() = 0;
   virtual bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) = 0;
   virtual bool HandleInputEvent(const blink::WebInputEvent& event) = 0;
-  virtual uint32_t QuerySupportedPrintOutputFormats() = 0;
   virtual void PrintBegin() = 0;
   virtual pp::Resource PrintPages(
       const PP_PrintPageNumberRange_Dev* page_ranges,

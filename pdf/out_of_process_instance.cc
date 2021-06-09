@@ -730,7 +730,7 @@ int32_t OutOfProcessInstance::PdfPrintBegin(
   if (!ret)
     return 0;
 
-  uint32_t supported_formats = engine()->QuerySupportedPrintOutputFormats();
+  uint32_t supported_formats = QuerySupportedPrintOutputFormats();
   if ((print_settings->format & supported_formats) == 0)
     return 0;
 
@@ -742,7 +742,11 @@ int32_t OutOfProcessInstance::PdfPrintBegin(
 }
 
 uint32_t OutOfProcessInstance::QuerySupportedPrintOutputFormats() {
-  return engine()->QuerySupportedPrintOutputFormats();
+  if (engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY))
+    return PP_PRINTOUTPUTFORMAT_PDF | PP_PRINTOUTPUTFORMAT_RASTER;
+  if (engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY))
+    return PP_PRINTOUTPUTFORMAT_RASTER;
+  return 0;
 }
 
 int32_t OutOfProcessInstance::PrintBegin(
