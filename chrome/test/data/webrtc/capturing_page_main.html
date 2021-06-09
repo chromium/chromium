@@ -82,7 +82,7 @@
           throw "Unexpected event type.";
         }
         window.domAutomationController.send(
-          JSON.stringify(event.captureHandle)
+          JSON.stringify(event.captureHandle())
         );
       }
 
