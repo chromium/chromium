@@ -119,14 +119,6 @@ id<GREYMatcher> AddBookmarkButton() {
                                                      newFolderEnabled:YES];
 }
 
-// TODO(crbug.com/781445): Re-enable this test on 32-bit.
-#if defined(ARCH_CPU_64_BITS)
-#define MAYBE_testSwipeToDeleteDisabledInEditMode \
-  testSwipeToDeleteDisabledInEditMode
-#else
-#define MAYBE_testSwipeToDeleteDisabledInEditMode \
-  FLAKY_testSwipeToDeleteDisabledInEditMode
-#endif
 - (void)testSwipeToDeleteDisabledInEditMode {
   // TODO(crbug.com/851227): On non Compact Width  the bookmark cell is being
   // deleted by grey_swipeFastInDirection.
@@ -447,8 +439,7 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All functionality on multiple url selection.
-// TODO(crbug.com/816699): Re-enable this test on simulators.
-- (void)FLAKY_testContextMenuForMultipleURLOpenAll {
+- (void)testContextMenuForMultipleURLOpenAll {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -490,8 +481,7 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All in Incognito functionality on multiple url selection.
-// TODO(crbug.com/816699): Re-enable this test on simulators.
-- (void)FLAKY_testContextMenuForMultipleURLOpenAllInIncognito {
+- (void)testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
