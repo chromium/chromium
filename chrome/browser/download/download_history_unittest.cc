@@ -7,13 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,13 +38,14 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
+using testing::_;
 using testing::DoAll;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 using testing::WithArg;
-using testing::_;
 
 namespace {
 
@@ -71,6 +73,8 @@ struct CreateDownloadHistoryEntry {
 class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
  public:
   FakeHistoryAdapter() : DownloadHistory::HistoryAdapter(nullptr) {}
+  FakeHistoryAdapter(const FakeHistoryAdapter&) = delete;
+  FakeHistoryAdapter& operator=(const FakeHistoryAdapter&) = delete;
 
   void QueryDownloads(
       history::HistoryService::DownloadQueryCallback callback) override {
@@ -197,8 +201,6 @@ class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
   absl::optional<std::vector<history::DownloadRow>> expect_query_downloads_;
   IdSet remove_downloads_;
   history::DownloadRow create_download_row_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHistoryAdapter);
 };
 
 class TestDownloadHistoryObserver : public DownloadHistory::Observer {
@@ -212,12 +214,14 @@ class TestDownloadHistoryObserver : public DownloadHistory::Observer {
 class DownloadHistoryTest : public testing::Test {
  public:
   DownloadHistoryTest()
-      : manager_(std::make_unique<content::MockDownloadManager>()) {}
+      : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()) {}
+  DownloadHistoryTest(const DownloadHistoryTest&) = delete;
+  DownloadHistoryTest& operator=(const DownloadHistoryTest&) = delete;
 
  protected:
   void TearDown() override { download_history_.reset(); }
 
-  content::MockDownloadManager& manager() { return *manager_.get(); }
+  NiceMock<content::MockDownloadManager>& manager() { return *manager_.get(); }
   download::MockDownloadItem& item(size_t index) { return *items_[index]; }
   DownloadHistory* download_history() { return download_history_.get(); }
 
@@ -480,14 +484,12 @@ class DownloadHistoryTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
-  std::unique_ptr<content::MockDownloadManager> manager_;
+  std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   FakeHistoryAdapter* history_ = nullptr;
   std::unique_ptr<DownloadHistory> download_history_;
   content::DownloadManager::Observer* manager_observer_ = nullptr;
   size_t download_created_index_ = 0;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadHistoryTest);
 };
 
 
