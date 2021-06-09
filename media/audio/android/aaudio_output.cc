@@ -20,23 +20,34 @@ namespace media {
 class LOCKABLE AAudioDestructionHelper {
  public:
   explicit AAudioDestructionHelper(AAudioOutputStream* stream)
-      : stream_(stream) {}
+      : output_stream_(stream) {}
+
+  ~AAudioDestructionHelper() {
+    DCHECK(is_closing_);
+    if (aaudio_stream_)
+      AAudioStream_close(aaudio_stream_);
+  }
 
   AAudioOutputStream* GetAndLockStream() EXCLUSIVE_LOCK_FUNCTION() {
     lock_.Acquire();
-    return stream_;
+    return is_closing_ ? nullptr : output_stream_;
   }
 
   void UnlockStream() UNLOCK_FUNCTION() { lock_.Release(); }
 
-  void OnStreamDestroyed() {
+  void DeferStreamClosure(AAudioStream* stream) {
     base::AutoLock al(lock_);
-    stream_ = nullptr;
+    DCHECK(!is_closing_);
+
+    is_closing_ = true;
+    aaudio_stream_ = stream;
   }
 
  private:
   base::Lock lock_;
-  AAudioOutputStream* stream_ GUARDED_BY(lock_) = nullptr;
+  AAudioOutputStream* output_stream_ GUARDED_BY(lock_) = nullptr;
+  AAudioStream* aaudio_stream_ GUARDED_BY(lock_) = nullptr;
+  bool is_closing_ GUARDED_BY(lock_) = false;
 };
 
 static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
@@ -107,9 +118,6 @@ AAudioOutputStream::~AAudioOutputStream() {
   // after calling AAudioStream_close(). The code below is a mitigation to work
   // around this issue. See crbug.com/1183255.
 
-  // |destruction_helper_->GetStreamAndLock()| will return nullptr after this.
-  destruction_helper_->OnStreamDestroyed();
-
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid until the callbacks stop.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -117,7 +125,7 @@ AAudioOutputStream::~AAudioOutputStream() {
       base::BindOnce(
           base::DoNothing::Once<std::unique_ptr<AAudioDestructionHelper>>(),
           std::move(destruction_helper_)),
-      base::TimeDelta::FromSeconds(1));
+      base::TimeDelta::FromMilliseconds(250));
 }
 
 void AAudioOutputStream::Flush() {}
@@ -172,13 +180,12 @@ void AAudioOutputStream::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   Stop();
-  if (aaudio_stream_) {
-    const auto result = AAudioStream_close(aaudio_stream_);
-    if (result != AAUDIO_OK) {
-      DLOG(ERROR) << "Failed to close audio stream, result: "
-                  << AAudio_convertResultToText(result);
-    }
-  }
+
+  // |destruction_helper_->GetStreamAndLock()| will return nullptr after this.
+  destruction_helper_->DeferStreamClosure(aaudio_stream_);
+
+  // We shouldn't be acessing |aaudio_stream_| after it's stopped.
+  aaudio_stream_ = nullptr;
 
   // Note: This must be last, it will delete |this|.
   audio_manager_->ReleaseOutputStream(this);
