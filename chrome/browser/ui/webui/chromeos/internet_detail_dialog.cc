@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 
@@ -40,9 +40,9 @@ int s_internet_detail_dialog_count = 0;
 
 void AddInternetStrings(content::WebUIDataSource* html_source) {
   // Add default strings first.
-  chromeos::network_element::AddLocalizedStrings(html_source);
-  chromeos::network_element::AddOncLocalizedStrings(html_source);
-  chromeos::network_element::AddDetailsLocalizedStrings(html_source);
+  ui::network_element::AddLocalizedStrings(html_source);
+  ui::network_element::AddOncLocalizedStrings(html_source);
+  ui::network_element::AddDetailsLocalizedStrings(html_source);
   // Add additional strings and overrides needed by the dialog.
   struct {
     const char* name;
@@ -58,7 +58,7 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
       {"networkSectionProxy", IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY},
       {"networkIPConfigAuto", IDS_SETTINGS_INTERNET_NETWORK_IP_CONFIG_AUTO},
       {"save", IDS_SAVE},
-      // Override for network_element::AddDetailsLocalizedStrings
+      // Override for ui::network_element::AddDetailsLocalizedStrings
       {"networkProxyConnectionType",
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_CONNECTION_TYPE_DIALOG},
   };

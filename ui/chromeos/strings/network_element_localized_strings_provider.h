@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_
+#ifndef UI_CHROMEOS_STRINGS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_
+#define UI_CHROMEOS_STRINGS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_
 
 namespace login {
 class LocalizedValuesBuilder;
@@ -13,7 +13,7 @@ namespace content {
 class WebUIDataSource;
 }
 
-namespace chromeos {
+namespace ui {
 namespace network_element {
 
 // This file contains functions to add localized strings used by
@@ -39,6 +39,6 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source);
 void AddErrorLocalizedStrings(content::WebUIDataSource* html_source);
 
 }  // namespace network_element
-}  // namespace chromeos
+}  // namespace ui
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_
+#endif  // UI_CHROMEOS_STRINGS_NETWORK_ELEMENT_LOCALIZED_STRINGS_PROVIDER_H_

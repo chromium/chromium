@@ -6,11 +6,11 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
@@ -184,7 +184,7 @@ void ErrorScreenHandler::DeclareLocalizedValues(
   builder->Add("proxySettingsMenuName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiNetworkMenuName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
-  network_element::AddLocalizedValuesToBuilder(builder);
+  ui::network_element::AddLocalizedValuesToBuilder(builder);
 }
 
 void ErrorScreenHandler::Initialize() {

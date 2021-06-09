@@ -7,7 +7,6 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace chromeos {
@@ -35,10 +35,10 @@ constexpr int kDialogHeightPasswordOnly = 365;
 
 void AddInternetStrings(content::WebUIDataSource* html_source) {
   // Add default strings first.
-  chromeos::network_element::AddLocalizedStrings(html_source);
-  chromeos::network_element::AddOncLocalizedStrings(html_source);
-  chromeos::network_element::AddConfigLocalizedStrings(html_source);
-  chromeos::network_element::AddErrorLocalizedStrings(html_source);
+  ui::network_element::AddLocalizedStrings(html_source);
+  ui::network_element::AddOncLocalizedStrings(html_source);
+  ui::network_element::AddConfigLocalizedStrings(html_source);
+  ui::network_element::AddErrorLocalizedStrings(html_source);
   // Add additional strings and overrides needed by the dialog.
   struct {
     const char* name;

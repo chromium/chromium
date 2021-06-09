@@ -11,11 +11,11 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 
@@ -89,7 +89,7 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
   builder->Add("offlineDemoSetupListItemName",
                IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  network_element::AddLocalizedValuesToBuilder(builder);
+  ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 

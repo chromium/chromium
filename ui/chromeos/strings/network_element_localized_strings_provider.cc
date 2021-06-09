@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -22,7 +21,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ui {
 namespace network_element {
 
 namespace {
@@ -383,7 +382,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("useAttachApn", features::ShouldUseAttachApn());
+  html_source->AddBoolean("useAttachApn",
+                          chromeos::features::ShouldUseAttachApn());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -409,17 +409,17 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
-      base::FeatureList::IsEnabled(features::kHiddenNetworkWarning));
+      base::FeatureList::IsEnabled(ash::features::kHiddenNetworkWarning));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.
   // NOTE: Guest and kiosk users can only create unshared network configs.
   // NOTE: Insecure wifi networks are always shared.
   html_source->AddBoolean("shareNetworkDefault",
-                          !LoginState::Get()->UserHasNetworkProfile());
+                          !ash::LoginState::Get()->UserHasNetworkProfile());
   // Only authenticated users can toggle the share state.
   html_source->AddBoolean("shareNetworkAllowEnable",
-                          LoginState::Get()->IsUserAuthenticated());
+                          ash::LoginState::Get()->IsUserAuthenticated());
 }
 
 void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -428,7 +428,7 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_NETWORK_ERROR_CANNOT_CHANGE_SHARED_CONFIG},
       {"Error.PolicyControlled", IDS_NETWORK_ERROR_POLICY_CONTROLLED},
       {"networkErrorNoUserCertificate", IDS_NETWORK_ERROR_NO_USER_CERT},
-      {NetworkConnectionHandler::kErrorPassphraseRequired,
+      {chromeos::NetworkConnectionHandler::kErrorPassphraseRequired,
        IDS_NETWORK_ERROR_PASSPHRASE_REQUIRED},
       {"networkErrorUnknown", IDS_NETWORK_ERROR_UNKNOWN},
       {"networkErrorNotAvailableForNetworkAuth",
@@ -469,4 +469,4 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace network_element
 
-}  // namespace chromeos
+}  // namespace ui
