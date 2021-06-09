@@ -75,6 +75,13 @@ TEST_F(IsPossibleUsernameValidTest, PossibleUsernameValue) {
   EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
                                        possible_username_data_.signon_realm,
                                        {u"alice", u"bob"}));
+
+  // Empty usernames are not okay, even if credentials with empty usernames
+  // exist.
+  possible_username_data_.value = u"";
+  EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
+                                       possible_username_data_.signon_realm,
+                                       {u"alice", u""}));
 }
 
 }  // namespace

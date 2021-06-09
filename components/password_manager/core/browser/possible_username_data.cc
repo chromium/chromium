@@ -41,8 +41,13 @@ bool IsPossibleUsernameValid(
   // username. In the initial version of the username first flow it is better to
   // be conservative in that. This check only allows usernames that match
   // existing usernames after canonicalization.
+
+  // This line is a workaround to pass the method to overloaded base::Contains
+  // as a projection that will be moved and applied to all container methods.
   std::u16string (*Canonicalize)(base::StringPiece16) = &CanonicalizeUsername;
-  if (!base::Contains(possible_usernames, Canonicalize(possible_username.value),
+  std::u16string canonicalized_username = Canonicalize(possible_username.value);
+  if (canonicalized_username.empty() ||
+      !base::Contains(possible_usernames, canonicalized_username,
                       Canonicalize)) {
     return false;
   }
