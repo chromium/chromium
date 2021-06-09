@@ -231,7 +231,8 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
                   base::File::Info info;
                   if (!base::GetFileInfo(path, &info))
                     return SizeAndTime{0, absl::nullopt};
-                  return SizeAndTime{info.size, info.last_modified};
+                  return SizeAndTime{static_cast<uint64_t>(info.size),
+                                     info.last_modified};
                 },
                 item->path()),
             base::BindOnce(
