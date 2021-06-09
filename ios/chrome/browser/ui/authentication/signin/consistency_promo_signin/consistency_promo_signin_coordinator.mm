@@ -132,24 +132,6 @@
 
 #pragma mark - Private
 
-// Displays the sign-in coordinator to add an account to the device.
-- (void)displayAddAccount {
-  DCHECK(!self.addAccountCoordinator);
-  self.addAccountCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:self.navigationController
-                                          browser:self.browser
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_WEB_SIGNIN];
-  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
-  self.addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf.addAccountCoordinator stop];
-        weakSelf.addAccountCoordinator = nil;
-      };
-  [self.addAccountCoordinator start];
-}
-
 // Dismisses the bottom sheet view controller.
 - (void)dismissNavigationViewController {
   __weak __typeof(self) weakSelf = self;
@@ -179,15 +161,10 @@
 }
 
 // Displays the error panel.
-- (void)displayCookieErrorWithState:(GoogleServiceAuthError::State)errorState {
+- (void)displayGenericCookieError {
   DCHECK(!self.alertCoordinator);
   [self.defaultAccountCoordinator stopSigninSpinner];
-  NSString* errorMessage;
-  if (errorState == GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
-    errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_WRONG_CREDENTIALS);
-  } else {
-    errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_AUTH_FAILURE);
-  }
+  NSString* errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_AUTH_FAILURE);
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
@@ -195,22 +172,10 @@
                                      IDS_IOS_SIGN_IN_FAILURE_TITLE)
                          message:errorMessage];
 
-  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_DISMISS)
-                action:^{
-                  [weakSelf dismissNavigationViewController];
-                }
+                action:nil
                  style:UIAlertActionStyleCancel];
-
-  if (errorState == GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_AGAIN)
-                  action:^{
-                    [weakSelf displayAddAccount];
-                  }
-                   style:UIAlertActionStyleDefault];
-  }
   [self.alertCoordinator start];
 }
 
@@ -302,7 +267,20 @@
 
 - (void)consistencyAccountChooserCoordinatorOpenAddAccount:
     (ConsistencyAccountChooserCoordinator*)coordinator {
-  [self displayAddAccount];
+  DCHECK(!self.addAccountCoordinator);
+  self.addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:self.navigationController
+                                          browser:self.browser
+                                      accessPoint:signin_metrics::AccessPoint::
+                                                      ACCESS_POINT_WEB_SIGNIN];
+  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
+  self.addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf.addAccountCoordinator stop];
+        weakSelf.addAccountCoordinator = nil;
+      };
+  [self.addAccountCoordinator start];
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
@@ -382,7 +360,7 @@
     return;
   }
   self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
-    [weakSelf displayCookieErrorWithState:error.state()];
+    [weakSelf displayGenericCookieError];
   });
 }
 
