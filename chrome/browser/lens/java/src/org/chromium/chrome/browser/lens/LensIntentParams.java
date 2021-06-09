@@ -16,6 +16,7 @@ public class LensIntentParams {
     private String mImageTitleOrAltText;
     private String mPageUrl;
     private boolean mIsIncognito;
+    // TODO(b/182675578): Remove requiresConfirmation from LensIntentParams.
     private boolean mRequiresConfirmation;
     private int mIntentType;
     private String mProactiveSessionId;

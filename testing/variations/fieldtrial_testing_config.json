@@ -2190,7 +2190,6 @@
                     "name": "EnabledWithTextShopImageWithGoogleLens",
                     "params": {
                         "disableOnIncognito": "true",
-                        "lensShopVariation": "ShopImageWithGoogleLens",
                         "logUkm": "true",
                         "minAgsaVersionNameForShopping": "11.17"
                     },

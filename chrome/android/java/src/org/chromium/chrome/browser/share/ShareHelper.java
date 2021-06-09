@@ -138,18 +138,18 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
             boolean isIncognito, GURL srcUrl, String titleOrAltText, GURL pageUrl,
-            @LensEntryPoint int lensEntryPoint, boolean requiresConfirmation) {
+            @LensEntryPoint int lensEntryPoint) {
         if (LensUtils.useDirectIntentSdkIntegration(ContextUtils.getApplicationContext())
                 || LensUtils.useLensIntentApi()) {
             LensIntentParams intentParams = LensUtils.buildLensIntentParams(imageUri, isIncognito,
                     srcUrl.getValidSpecOrEmpty(), titleOrAltText, pageUrl.getValidSpecOrEmpty(),
-                    lensEntryPoint, requiresConfirmation);
+                    lensEntryPoint);
             LensController.getInstance().startLens(window, intentParams);
         } else {
             Intent shareIntent =
                     LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),
                             imageUri, isIncognito, SystemClock.elapsedRealtimeNanos(), srcUrl,
-                            titleOrAltText, pageUrl, lensEntryPoint, requiresConfirmation);
+                            titleOrAltText, pageUrl, lensEntryPoint);
             try {
                 // Pass an empty callback to ensure the triggered activity can identify the source
                 // of the intent (startActivityForResult allows app identification).

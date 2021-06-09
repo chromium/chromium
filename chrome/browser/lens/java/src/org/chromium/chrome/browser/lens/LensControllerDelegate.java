@@ -60,6 +60,12 @@ public class LensControllerDelegate {
         return null;
     }
 
+    /** @see {@link LensController#getShareWithGoogleLensIntent()} */
+    public Intent getShareWithGoogleLensIntent(Uri imageUri, boolean isIncognito, String srcUrl,
+            String titleOrAltText, String pageUrl, @Nullable String lensIntentType) {
+        return null;
+    }
+
     /** @see {@link LensController#startLens(WindowAndroid, Intent)} */
     public void startLens(WindowAndroid window, Intent intent) {}
 

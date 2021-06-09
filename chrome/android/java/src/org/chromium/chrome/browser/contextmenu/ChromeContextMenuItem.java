@@ -38,8 +38,7 @@ class ChromeContextMenuItem {
             Item.DIRECT_SHARE_LINK, Item.READ_LATER, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE,
             Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB,
             Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS,
-            Item.SHOP_SIMILAR_PRODUCTS, Item.SHOP_IMAGE_WITH_GOOGLE_LENS,
-            Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE, Item.CALL,
+            Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE, Item.CALL,
             Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
             Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP, Item.SHARE_HIGHLIGHT,
             Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE})
@@ -73,26 +72,24 @@ class ChromeContextMenuItem {
         int COPY_IMAGE = 20;
         int SEARCH_BY_IMAGE = 21;
         int SEARCH_WITH_GOOGLE_LENS = 22;
-        int SHOP_SIMILAR_PRODUCTS = 23;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 24;
-        int SEARCH_SIMILAR_PRODUCTS = 25;
-        int SHARE_IMAGE = 26;
-        int DIRECT_SHARE_IMAGE = 27;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 23;
+        int SHARE_IMAGE = 24;
+        int DIRECT_SHARE_IMAGE = 25;
         // Message Group
-        int CALL = 28;
-        int SEND_MESSAGE = 29;
-        int ADD_TO_CONTACTS = 30;
-        int COPY = 31;
+        int CALL = 26;
+        int SEND_MESSAGE = 27;
+        int ADD_TO_CONTACTS = 28;
+        int COPY = 29;
         // Video Group
-        int SAVE_VIDEO = 32;
+        int SAVE_VIDEO = 30;
         // Other
-        int OPEN_IN_CHROME = 33;
+        int OPEN_IN_CHROME = 31;
         // Shared Highlighting options
-        int SHARE_HIGHLIGHT = 34;
-        int REMOVE_HIGHLIGHT = 35;
-        int LEARN_MORE = 36;
+        int SHARE_HIGHLIGHT = 32;
+        int REMOVE_HIGHLIGHT = 33;
+        int LEARN_MORE = 34;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 37;
+        int NUM_ENTRIES = 35;
     }
 
     /**
@@ -122,9 +119,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_copy_image, // Item.COPY_IMAGE
             R.id.contextmenu_search_by_image, // Item.SEARCH_BY_IMAGE
             R.id.contextmenu_search_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS
-            R.id.contextmenu_shop_similar_products, // Item.SHOP_SIMILAR_PRODUCTS
             R.id.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
-            R.id.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
             R.id.contextmenu_share_image, // Item.SHARE_IMAGE
             R.id.contextmenu_direct_share_image, // Item.DIRECT_SHARE_IMAGE
             R.id.contextmenu_call, // Item.CALL
@@ -167,9 +162,7 @@ class ChromeContextMenuItem {
             LensUtils.useSearchImageWithGoogleLensItemName()
                     ? R.string.contextmenu_search_image_with_google_lens
                     : R.string.contextmenu_search_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS:
-            R.string.contextmenu_shop_similar_products, // Item.SHOP_SIMILAR_PRODUCTS
-            R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
-            R.string.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
+            R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
             R.string.contextmenu_share_image, // Item.SHARE_IMAGE
             0, // Item.DIRECT_SHARE_IMAGE is not handled by this mapping.
             R.string.contextmenu_call, // Item.CALL:
@@ -242,17 +235,9 @@ class ChromeContextMenuItem {
                 return addOrRemoveNewLabel(context, item,
                         ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
-            case Item.SHOP_SIMILAR_PRODUCTS:
-                return addOrRemoveNewLabel(context, item,
-                        ChromePreferenceKeys.CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED,
-                        showInProductHelp);
             case Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
                 return addOrRemoveNewLabel(context, item,
                         ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
-                        showInProductHelp);
-            case Item.SEARCH_SIMILAR_PRODUCTS:
-                return addOrRemoveNewLabel(context, item,
-                        ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED,
                         showInProductHelp);
             default:
                 return context.getString(getStringId(item));

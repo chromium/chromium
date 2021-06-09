@@ -297,14 +297,8 @@ public final class ChromePreferenceKeys {
     public static final String CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.SearchWithGoogleLensClicked";
 
-    public static final String CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED =
-            "Chrome.ContextMenu.ShopSimilarProductsClicked";
-
     public static final String CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.ShopImageWithGoogleLensClicked";
-
-    public static final String CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED =
-            "Chrome.ContextMenu.SearchSimilarProductsClicked";
 
     public static final String CRASH_UPLOAD_FAILURE_BROWSER = "browser_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_GPU = "gpu_crash_failure_upload";
@@ -1012,8 +1006,6 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST,
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
-                CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED,
-                CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED,
                 CRYPTID_LAST_RENDER_TIMESTAMP,
                 DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,

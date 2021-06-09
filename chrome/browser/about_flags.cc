@@ -1882,22 +1882,6 @@ const FeatureEntry::FeatureVariation kHomepagePromoCardVariations[] = {
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kContextMenuShopSimilarProducts[] = {
-    {"lensShopVariation", "ShopSimilarProducts"}};
-const FeatureEntry::FeatureParam kContextMenuShopImageWithGoogleLens[] = {
-    {"lensShopVariation", "ShopImageWithGoogleLens"}};
-const FeatureEntry::FeatureParam kContextMenuSearchSimilarProducts[] = {
-    {"lensShopVariation", "SearchSimilarProducts"}};
-
-const FeatureEntry::FeatureVariation
-    kContextMenuShopWithGoogleLensShopVariations[] = {
-        {"ShopSimilarProducts", kContextMenuShopSimilarProducts,
-         base::size(kContextMenuShopSimilarProducts), nullptr},
-        {"ShopImageWithGoogleLens", kContextMenuShopImageWithGoogleLens,
-         base::size(kContextMenuShopImageWithGoogleLens), nullptr},
-        {"SearchSimilarProducts", kContextMenuSearchSimilarProducts,
-         base::size(kContextMenuSearchSimilarProducts), nullptr}};
-
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
 
@@ -5854,10 +5838,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"context-menu-shop-with-google-lens",
      flag_descriptions::kContextMenuShopWithGoogleLensName,
      flag_descriptions::kContextMenuShopWithGoogleLensDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kContextMenuShopWithGoogleLens,
-         kContextMenuShopWithGoogleLensShopVariations,
-         "ContextMenuShopWithGoogleLens")},
+     FEATURE_VALUE_TYPE(chrome::android::kContextMenuShopWithGoogleLens)},
 
     {"context-menu-search-and-shop-with-google-lens",
      flag_descriptions::kContextMenuSearchAndShopWithGoogleLensName,
