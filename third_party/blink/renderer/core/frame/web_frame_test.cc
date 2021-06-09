@@ -13977,8 +13977,8 @@ TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
       <!DOCTYPE html>
       <style>
         iframe {
-          width: 1600;
-          height: 1200;
+          width: 1600px;
+          height: 1200px;
           transform-origin: top left;
           transform: scale(0.5);
           border: none;
@@ -14015,8 +14015,8 @@ TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
       <!DOCTYPE html>
       <style>
         iframe {
-          width: 1600;
-          height: 1200;
+          width: 1600px;
+          height: 1200px;
           transform-origin: top left;
           transform: scale(0.5) rotate(45deg);
           border: none;
@@ -14053,8 +14053,8 @@ TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
       <!DOCTYPE html>
       <style>
         iframe {
-          width: 1600;
-          height: 1200;
+          width: 1600px;
+          height: 1200px;
           transform-origin: top left;
           transform: scale(0);
           border: none;
@@ -14078,6 +14078,42 @@ TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // reasonable minimum scale even though the iframe's transform scale is zero.
   EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.25f);
+}
+
+TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(gfx::Size(800, 800));
+  InitializeWithHTML(*web_view->MainFrameImpl()->GetFrame(), R"HTML(
+      <!DOCTYPE html>
+      <style>
+        iframe {
+          width: 1600px;
+          height: 1200px;
+          transform-origin: top left;
+          transform: scale(10.0);
+          border: none;
+        }
+      </style>
+      <iframe></iframe>
+  )HTML");
+
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  remote_frame->SetReplicatedOrigin(
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
+
+  // Call directly into frame view since we need to RunPostLifecycleSteps() too.
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->View()
+      ->UpdateAllLifecyclePhasesForTest();
+  RunPendingTasks();
+
+  // The compositing scale factor is at most 5.0 irrespective of iframe scale.
+  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 5.0f);
 }
 
 TEST_F(WebFrameTest, IsPrerendering) {
