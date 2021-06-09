@@ -41,6 +41,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
@@ -246,6 +247,7 @@ PaletteTray::PaletteTray(Shelf* shelf)
   tray_container()->AddChildView(icon_);
 
   Shell::Get()->AddShellObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
 PaletteTray::~PaletteTray() {
@@ -254,6 +256,7 @@ PaletteTray::~PaletteTray() {
 
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
 // static
@@ -299,9 +302,21 @@ bool PaletteTray::ShouldShowOnDisplay() {
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
+  // Is there a TouchscreenDevice which targets this display or one of
+  // the active mirrors?
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display::DisplayIdList ids;
+  ids.push_back(display.id());
+  if (display_manager->IsInMirrorMode()) {
+    display::DisplayIdList mirrors =
+        display_manager->GetMirroringDestinationDisplayIdList();
+    ids.insert(ids.end(), mirrors.begin(), mirrors.end());
+    ids.push_back(display_manager->mirroring_source_id());
+  }
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-    if (device.has_stylus && device.target_display_id == display.id()) {
+    if (device.has_stylus && std::find(ids.begin(), ids.end(),
+                                       device.target_display_id) != ids.end()) {
       return true;
     }
   }
@@ -388,6 +403,10 @@ void PaletteTray::OnLockStateChanged(bool locked) {
   }
 }
 
+void PaletteTray::OnDisplayConfigurationChanged() {
+  UpdateIconVisibility();
+}
+
 void PaletteTray::ClickedOutsideBubble() {
   if (num_actions_in_bubble_ == 0) {
     RecordPaletteOptionsUsage(PaletteTrayOptions::PALETTE_CLOSED_NO_ACTION,
@@ -419,6 +438,10 @@ void PaletteTray::OnInputDeviceConfigurationChanged(
   if (input_device_types & ui::InputDeviceEventObserver::kTouchscreen) {
     UpdateIconVisibility();
   }
+}
+
+void PaletteTray::OnTouchDeviceAssociationChanged() {
+  UpdateIconVisibility();
 }
 
 void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
