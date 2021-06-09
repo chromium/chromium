@@ -1343,14 +1343,12 @@ void UserSessionManager::InitProfilePreferences(
         IdentityManagerFactory::GetForProfile(profile);
     std::string gaia_id = user_context.GetGaiaID();
     if (gaia_id.empty()) {
-      absl::optional<AccountInfo> maybe_account_info =
-          identity_manager
-              ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                  user_context.GetAccountId().GetUserEmail());
+      const AccountInfo account_info =
+          identity_manager->FindExtendedAccountInfoByEmailAddress(
+              user_context.GetAccountId().GetUserEmail());
 
-      DCHECK(maybe_account_info.has_value() || IsRunningTest());
-      if (maybe_account_info.has_value())
-        gaia_id = maybe_account_info.value().gaia;
+      DCHECK(!account_info.IsEmpty() || IsRunningTest());
+      gaia_id = account_info.gaia;
 
       // Use a fake gaia id for tests that do not have it.
       if (IsRunningTest() && gaia_id.empty())

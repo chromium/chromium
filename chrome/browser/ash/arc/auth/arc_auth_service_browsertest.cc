@@ -769,18 +769,17 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
-  absl::optional<AccountInfo> maybe_account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-              kSecondaryAccountEmail);
-  ASSERT_TRUE(maybe_account_info.has_value());
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByEmailAddress(
+          kSecondaryAccountEmail);
+  ASSERT_TRUE(!account_info.IsEmpty());
 
   // Necessary to ensure that the OnExtendedAccountInfoRemoved() observer will
   // be sent.
   EnableRemovalOfExtendedAccountInfo();
 
   signin::RemoveRefreshTokenForAccount(identity_manager,
-                                       maybe_account_info.value().account_id);
+                                       account_info.account_id);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, auth_instance().num_account_removed_calls());

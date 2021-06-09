@@ -112,10 +112,9 @@ void LocaleSwitchScreen::ShowImpl() {
   identity_manager_observer_.Observe(identity_manager);
 
   gaia_id_ = user->GetAccountId().GetGaiaId();
-  absl::optional<AccountInfo> maybe_account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id_);
-  if (!maybe_account_info.has_value() || maybe_account_info->locale.empty()) {
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id_);
+  if (account_info.locale.empty()) {
     // Will continue from observer.
     timeout_waiter_.Start(FROM_HERE, kLocaleWaitTimeout,
                           base::BindOnce(&LocaleSwitchScreen::OnTimeout,
@@ -123,7 +122,7 @@ void LocaleSwitchScreen::ShowImpl() {
     return;
   }
 
-  std::string locale = maybe_account_info->locale;
+  std::string locale = account_info.locale;
   SwitchLocale(std::move(locale));
 }
 

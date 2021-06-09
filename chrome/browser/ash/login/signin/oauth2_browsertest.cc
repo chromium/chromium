@@ -681,10 +681,8 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, VerifyInAdvancedProtectionAfterOnlineAuth) {
   auto* identity_manager =
       IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_TRUE(
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-              kTestEmail)
-          ->is_under_advanced_protection);
+      identity_manager->FindExtendedAccountInfoByEmailAddress(kTestEmail)
+          .is_under_advanced_protection);
 }
 
 IN_PROC_BROWSER_TEST_F(OAuth2Test,
@@ -696,10 +694,8 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test,
   auto* identity_manager =
       IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_FALSE(
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-              kTestEmail)
-          ->is_under_advanced_protection);
+      identity_manager->FindExtendedAccountInfoByEmailAddress(kTestEmail)
+          .is_under_advanced_protection);
 }
 
 // Sets up a new user with stored refresh token.
