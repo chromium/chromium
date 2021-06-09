@@ -15307,6 +15307,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReceivedExternalIntent">
+  <obsolete>
+    Deprecated as of 06/2021. Replaced by MobileTabbedModeViewIntentFromApp and
+    MobileTabbedModeViewIntentFromChrome.
+  </obsolete>
   <owner>tedchoc@chromium.org</owner>
   <description>
     A VIEW intent was received by the tabbed mode activity. This will combine
@@ -15318,6 +15322,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReceivedExternalIntent.App">
+  <obsolete>
+    Deprecated as of 06/2021. Replaced by MobileTabbedModeViewIntentFromApp.
+  </obsolete>
   <owner>tedchoc@chromium.org</owner>
   <description>
     A VIEW intent was received by the tabbed mode activity from an external
@@ -15326,6 +15333,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReceivedExternalIntent.Chrome">
+  <obsolete>
+    Deprecated as of 06/2021. Replaced by MobileTabbedModeViewIntentFromChrome.
+  </obsolete>
   <owner>tedchoc@chromium.org</owner>
   <description>
     A VIEW intent was received by the tabbed mode activity from Chrome. This is

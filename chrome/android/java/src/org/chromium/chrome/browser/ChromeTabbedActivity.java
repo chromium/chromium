@@ -1353,7 +1353,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         launchIntent(url, referer, headers, externalAppId, true,
                                 isRendererInitiated, initiatorOrigin, intent);
                     }
-                    logMobileReceivedExternalIntent(externalAppId, intent);
                     int shortcutSource =
                             intent.getIntExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
                     LaunchMetrics.recordHomeScreenLaunchIntoTab(url, shortcutSource);
@@ -1376,8 +1375,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     } else {
                         TabModelUtils.setIndex(tabModel, tabIndex);
                     }
-
-                    logMobileReceivedExternalIntent(externalAppId, intent);
                     break;
                 case TabOpenType.CLOBBER_CURRENT_TAB:
                     // The browser triggered the intent. This happens when clicking links which
@@ -1397,8 +1394,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                     break;
                 case TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB:
-                    openNewTab(url, referer, headers, externalAppId, isRendererInitiated,
-                            initiatorOrigin, intent, false);
+                    launchIntent(url, referer, headers, externalAppId, false, isRendererInitiated,
+                            initiatorOrigin, intent);
                     break;
                 case TabOpenType.REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB:
                     int tabId = IntentUtils.safeGetIntExtra(
@@ -1425,8 +1422,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             }
                         }
                         if (!loaded) {
-                            openNewTab(url, referer, headers, externalAppId, isRendererInitiated,
-                                    initiatorOrigin, intent, false);
+                            launchIntent(url, referer, headers, externalAppId, false,
+                                    isRendererInitiated, initiatorOrigin, intent);
                         }
                     }
                     break;
@@ -1436,8 +1433,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         reportNewTabShortcutUsed(false);
                     }
 
-                    openNewTab(url, referer, headers, externalAppId, isRendererInitiated,
-                            initiatorOrigin, intent, true);
+                    launchIntent(url, referer, headers, externalAppId, true, isRendererInitiated,
+                            initiatorOrigin, intent);
                     break;
                 case TabOpenType.OPEN_NEW_INCOGNITO_TAB:
                     if (!TextUtils.equals(externalAppId, getPackageName())) {
@@ -1517,33 +1514,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         public void processTranslateTabIntent(
                 @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
             TranslateIntentHandler.translateTab(getActivityTab(), targetLanguageCode, expectedUrl);
-        }
-
-        /**
-         * Opens a new Tab with the possibility of showing it in a Custom Tab, instead.
-         *
-         * See IntentHandler#processUrlViewIntent() for an explanation most of the parameters.
-         * @param forceNewTab If not handled by a Custom Tab, forces the new tab to be created.
-         */
-        private void openNewTab(String url, String referer, String headers, String externalAppId,
-                boolean isRendererInitiated, @Nullable Origin initiatorOrigin, Intent intent,
-                boolean forceNewTab) {
-            // Create a new tab.
-            launchIntent(url, referer, headers, externalAppId, forceNewTab, isRendererInitiated,
-                    initiatorOrigin, intent);
-            logMobileReceivedExternalIntent(externalAppId, intent);
-        }
-
-        // TODO(tedchoc): Remove once we have verified that MobileTabbedModeViewIntentFromChrome
-        //                and MobileTabbedModeViewIntentFromApp are suitable/more correct
-        //                replacments for these.
-        private void logMobileReceivedExternalIntent(String externalAppId, Intent intent) {
-            RecordUserAction.record("MobileReceivedExternalIntent");
-            if (isFromChrome(intent, externalAppId)) {
-                RecordUserAction.record("MobileReceivedExternalIntent.Chrome");
-            } else {
-                RecordUserAction.record("MobileReceivedExternalIntent.App");
-            }
         }
 
         private boolean isFromChrome(Intent intent, String externalAppId) {
