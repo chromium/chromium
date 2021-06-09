@@ -4,8 +4,10 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "base/rand_util.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -90,7 +92,13 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kJSONMimeType);
-  resource_request->headers.SetHeader(kSecWebIdCsrfHeader, "");
+
+  // Using a random 64-bit header value. This is just to keep service
+  // implementations from assuming any particular static value.
+  const int kBytes = 64 / 8;
+  std::string webid_header_value;
+  base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
+  resource_request->headers.SetHeader(kSecWebIdCsrfHeader, webid_header_value);
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();

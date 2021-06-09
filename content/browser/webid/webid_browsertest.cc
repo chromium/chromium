@@ -146,6 +146,10 @@ class IdpTestServer {
     if (request.relative_url.rfind("/test", 0) == 0)
       return nullptr;
 
+    if (request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
+      EXPECT_EQ(request.headers.at(kIdpForbiddenHeader).size(), 12ul);
+    }
+
     auto response = std::make_unique<BasicHttpResponse>();
     if (IsWellKnownRequest(request)) {
       BuildResponseFromDetails(*response.get(), well_known_details_);
