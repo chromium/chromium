@@ -1160,7 +1160,7 @@
     {
       name: "LayoutNGGrid",
       depends_on: ["LayoutNG"],
-      status: "test",
+      status: "stable",
     },
     {
       name: "LayoutNGLayoutOverflowRecalc",
