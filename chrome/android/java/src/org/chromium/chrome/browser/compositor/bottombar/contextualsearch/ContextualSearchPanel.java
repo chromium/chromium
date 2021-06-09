@@ -39,6 +39,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
+import java.util.List;
+
 /**
  * Controls the Contextual Search Panel, primarily the Bar - the
  * {@link ContextualSearchBarControl} - and the content area that shows the Search Result.
@@ -541,7 +543,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      */
     @VisibleForTesting
     @Nullable
-    public String[] getRelatedSearches() {
+    public List<String> getRelatedSearches() {
         return getRelatedSearchesControl().getRelatedSearchesSuggestions();
     }
 
@@ -688,7 +690,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      */
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, @CardTag int cardTagEnum, @Nullable String[] relatedSearches) {
+            int quickActionCategory, @CardTag int cardTagEnum,
+            @Nullable List<String> relatedSearches) {
         getRelatedSearchesControl().setRelatedSearchesSuggestions(relatedSearches);
         mPanelMetrics.onSearchTermResolved();
         if (cardTagEnum == CardTag.CT_DEFINITION

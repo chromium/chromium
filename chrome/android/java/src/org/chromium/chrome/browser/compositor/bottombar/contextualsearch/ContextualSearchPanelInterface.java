@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDe
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.List;
+
 /**
  * An interface that encapsulates all the methods that {@link ContextualSearchManager} needs to
  * communicate with the {@link ContextualSearchPanel} to make it easier to swap out the
@@ -30,7 +32,8 @@ public interface ContextualSearchPanelInterface {
     void setSearchTerm(String searchTerm);
     void setDidSearchInvolvePromo();
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, @CardTag int cardTagEnum, @Nullable String[] relatedSearches);
+            int quickActionCategory, @CardTag int cardTagEnum,
+            @Nullable List<String> relatedSearches);
     void setCaption(String caption);
     void ensureCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);

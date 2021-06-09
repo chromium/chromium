@@ -33,6 +33,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /**
  * Coordinator for the {@link BottomSheet} and {@link ThinWebView} based Contextual Search panel.
  */
@@ -150,7 +152,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, int cardTagEnum, @Nullable String[] relatedSearches) {}
+            int quickActionCategory, int cardTagEnum, @Nullable List<String> relatedSearches) {}
 
     @Override
     public void setCaption(String caption) {}

@@ -778,15 +778,10 @@ public class ContextualSearchManager
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
         mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
-        int numRSearches = mRelatedSearches.getQueries().size();
-        String[] relatedSearches = new String[numRSearches];
-        for (int i = 0; i < numRSearches; i++) {
-            relatedSearches[i] = mRelatedSearches.getQueries().get(i);
-        }
         assert mSearchPanel != null;
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), relatedSearches);
+                resolvedSearchTerm.cardTagEnum(), mRelatedSearches.getQueries());
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will

@@ -64,7 +64,7 @@ public class RelatedSearchesControl {
     private RelatedSearchesControlView mControlView;
 
     /** The query suggestions for this feature, or {@code null} if we don't have any. */
-    private @Nullable String[] mRelatedSearchesSuggestions;
+    private @Nullable List<String> mRelatedSearchesSuggestions;
     private List<Chip> mChips;
 
     /** Whether the view is visible. */
@@ -175,9 +175,9 @@ public class RelatedSearchesControl {
 
     /**
      * Sets the Related Searches suggestions to show in this view.
-     * @param relatedSearches An array of suggested queries or {@code null} when none.
+     * @param relatedSearches An {@code List} of suggested queries or {@code null} when none.
      */
-    void setRelatedSearchesSuggestions(@Nullable String[] relatedSearches) {
+    void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches) {
         mRelatedSearchesSuggestions = relatedSearches;
         show();
         calculateHeight();
@@ -187,7 +187,7 @@ public class RelatedSearchesControl {
 
     @VisibleForTesting
     @Nullable
-    String[] getRelatedSearchesSuggestions() {
+    List<String> getRelatedSearchesSuggestions() {
         return mRelatedSearchesSuggestions;
     }
 
@@ -353,7 +353,7 @@ public class RelatedSearchesControl {
     private void calculateHeight() {
         if (mControlView == null || !hasReleatedSearchesToShow()) return;
 
-        mControlView.setRelatedSearches(mRelatedSearchesSuggestions);
+        mControlView.updateRelatedSearchesToShow();
         mControlView.layoutView();
 
         final float previousContentHeight = mContentHeightPx;
@@ -389,7 +389,7 @@ public class RelatedSearchesControl {
     /** Returns whether we have Related Searches to show or not.  */
     private boolean hasReleatedSearchesToShow() {
         return mIsEnabled && mRelatedSearchesSuggestions != null
-                && mRelatedSearchesSuggestions.length > 0;
+                && mRelatedSearchesSuggestions.size() > 0;
     }
 
     // ============================================================================================
@@ -486,25 +486,21 @@ public class RelatedSearchesControl {
             super.layout();
         }
 
-        /** Sets the Related Searches to display in the view to the given suggestions to show. */
-        void setRelatedSearches(String[] suggestionsToShow) {
-            if (suggestionsToShow.length > 0) {
-                View relatedSearchesView = getControlView();
-                ViewGroup relatedSearchesViewGroup = (ViewGroup) relatedSearchesView;
-                if (relatedSearchesViewGroup == null) return;
+        /** Tells the control to update the Related Searches to display in the view. */
+        void updateRelatedSearchesToShow() {
+            View relatedSearchesView = getControlView();
+            ViewGroup relatedSearchesViewGroup = (ViewGroup) relatedSearchesView;
+            if (relatedSearchesViewGroup == null) return;
 
-                // Notify the coordinator that the chips need to change
-                mChipsCoordinator.onChipsChanged();
-                View coordinatorView = mChipsCoordinator.getView();
-                if (coordinatorView == null) return;
+            // Notify the coordinator that the chips need to change
+            mChipsCoordinator.onChipsChanged();
+            View coordinatorView = mChipsCoordinator.getView();
+            if (coordinatorView == null) return;
 
-                ViewGroup parent = (ViewGroup) coordinatorView.getParent();
-                if (parent != null) parent.removeView(coordinatorView);
-                relatedSearchesViewGroup.addView(coordinatorView);
-                invalidate(false);
-            } else {
-                hide();
-            }
+            ViewGroup parent = (ViewGroup) coordinatorView.getParent();
+            if (parent != null) parent.removeView(coordinatorView);
+            relatedSearchesViewGroup.addView(coordinatorView);
+            invalidate(false);
         }
 
         @Override
