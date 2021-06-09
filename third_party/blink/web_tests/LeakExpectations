@@ -170,6 +170,15 @@ crbug.com/1199904 [ Linux ] virtual/site-isolated-code-cache/http/tests/devtools
 # Sheriff 2021-05-03
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
 
+# Sheriff 2021-06-09
+crbug.com/1217831 [ Linux ] virtual/plz-service-worker/http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/plz-service-worker/http/tests/devtools/console/console-repeat-count.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-async/async-callstack-middle-run.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-script-first-stmt.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-by-source-code.js [ Pass Failure ]
+crbug.com/1217831 [ Linux ] virtual/synchronous_html_parser/http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-script-first-stmt.js [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
