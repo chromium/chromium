@@ -78,7 +78,7 @@ void QRCodeGeneratorServiceImpl::DrawDino(SkCanvas* canvas,
                                           const int dino_border_px,
                                           const SkPaint& paint_foreground,
                                           const SkPaint& paint_background) {
-  int dino_width_px = pixels_per_dino_tile * dino_image::kDinoHeight;
+  int dino_width_px = pixels_per_dino_tile * dino_image::kDinoWidth;
   int dino_height_px = pixels_per_dino_tile * dino_image::kDinoHeight;
 
   // If we request too big a dino, we'll clip. In practice the dino size
