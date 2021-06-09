@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/policy_pref_names.h"
 
+namespace policy {
 namespace prefs {
 
 // Maintain a list of last upload times of system logs in double type; this is
@@ -12,3 +13,4 @@ const char kStoreLogStatesAcrossReboots[] =
     "policy_store_log_states_across_reboots";
 
 }  // namespace prefs
+}  // namespace policy

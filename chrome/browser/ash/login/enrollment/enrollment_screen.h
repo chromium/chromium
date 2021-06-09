@@ -45,7 +45,7 @@ class EnrollmentScreen
     : public BaseScreen,
       public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer,
       public EnrollmentScreenView::Controller,
-      public ActiveDirectoryJoinDelegate {
+      public policy::ActiveDirectoryJoinDelegate {
  public:
   enum class Result { COMPLETED, BACK, SKIPPED_FOR_TESTS };
 
@@ -84,10 +84,10 @@ class EnrollmentScreen
   void OnDeviceAttributeUpdatePermission(bool granted) override;
   void OnRestoreAfterRollbackCompleted() override;
 
-  // ActiveDirectoryJoinDelegate implementation:
+  // policy::ActiveDirectoryJoinDelegate implementation:
   void JoinDomain(const std::string& dm_token,
                   const std::string& domain_join_config,
-                  OnDomainJoinedCallback on_joined_callback) override;
+                  policy::OnDomainJoinedCallback on_joined_callback) override;
 
   // Notification that the browser is being restarted.
   void OnBrowserRestart();
@@ -207,7 +207,7 @@ class EnrollmentScreen
   base::CancelableOnceClosure retry_task_;
   int num_retries_ = 0;
   std::unique_ptr<EnterpriseEnrollmentHelper> enrollment_helper_;
-  OnDomainJoinedCallback on_joined_callback_;
+  policy::OnDomainJoinedCallback on_joined_callback_;
 
   // Helper to call AuthPolicyClient and cancel calls if needed. Used to join
   // Active Directory domain.

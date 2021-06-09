@@ -133,9 +133,10 @@ void DeviceCloudPolicyManagerChromeOS::Shutdown() {
 // static
 void DeviceCloudPolicyManagerChromeOS::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kServerBackedDeviceState);
-  registry->RegisterBooleanPref(prefs::kRemoveUsersRemoteCommand, false);
-  registry->RegisterStringPref(prefs::kLastRsuDeviceIdUploaded, std::string());
+  registry->RegisterDictionaryPref(::prefs::kServerBackedDeviceState);
+  registry->RegisterBooleanPref(::prefs::kRemoveUsersRemoteCommand, false);
+  registry->RegisterStringPref(::prefs::kLastRsuDeviceIdUploaded,
+                               std::string());
   registry->RegisterListPref(prefs::kStoreLogStatesAcrossReboots);
 }
 
@@ -192,7 +193,7 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   core()->StartRefreshScheduler();
   core()->RefreshSoon();
   core()->TrackRefreshDelayPref(local_state_,
-                                prefs::kDevicePolicyRefreshRate);
+                                ::prefs::kDevicePolicyRefreshRate);
 
   external_data_manager_->Connect(
       g_browser_process->shared_url_loader_factory());

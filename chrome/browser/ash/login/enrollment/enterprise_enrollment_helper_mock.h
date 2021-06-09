@@ -22,7 +22,7 @@ class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
   EnrollmentStatusConsumer* status_consumer() const;
 
   MOCK_METHOD3(Setup,
-               void(ActiveDirectoryJoinDelegate* ad_join_delegate,
+               void(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
                     const policy::EnrollmentConfig& enrollment_config,
                     const std::string& enrolling_user_domain));
   MOCK_METHOD1(EnrollUsingAuthCode, void(const std::string& auth_code));

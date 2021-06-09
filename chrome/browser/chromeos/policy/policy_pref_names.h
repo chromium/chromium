@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_POLICY_PREF_NAMES_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_POLICY_PREF_NAMES_H_
 
+namespace policy {
 namespace prefs {
 
 // Non-specific prefs.
 extern const char kStoreLogStatesAcrossReboots[];
 
 }  // namespace prefs
+}  // namespace policy
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_POLICY_PREF_NAMES_H_

@@ -75,7 +75,7 @@ class EnterpriseEnrollmentHelper {
   // Factory method. Caller takes ownership of the returned object.
   static std::unique_ptr<EnterpriseEnrollmentHelper> Create(
       EnrollmentStatusConsumer* status_consumer,
-      ActiveDirectoryJoinDelegate* ad_join_delegate,
+      policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain);
 
@@ -146,7 +146,7 @@ class EnterpriseEnrollmentHelper {
   EnterpriseEnrollmentHelper();
 
   // This method is called once from Create method.
-  virtual void Setup(ActiveDirectoryJoinDelegate* ad_join_delegate,
+  virtual void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
                      const policy::EnrollmentConfig& enrollment_config,
                      const std::string& enrolling_user_domain) = 0;
 

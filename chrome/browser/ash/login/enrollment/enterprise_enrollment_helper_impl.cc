@@ -96,7 +96,7 @@ EnterpriseEnrollmentHelperImpl::~EnterpriseEnrollmentHelperImpl() {
 }
 
 void EnterpriseEnrollmentHelperImpl::Setup(
-    ActiveDirectoryJoinDelegate* ad_join_delegate,
+    policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain) {
   ad_join_delegate_ = ad_join_delegate;

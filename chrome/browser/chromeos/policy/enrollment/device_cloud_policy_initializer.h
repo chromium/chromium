@@ -30,8 +30,6 @@ class SequencedTaskRunner;
 }
 
 namespace chromeos {
-
-class ActiveDirectoryJoinDelegate;
 class InstallAttributes;
 
 namespace attestation {
@@ -44,7 +42,7 @@ class StatisticsProvider;
 }  // namespace chromeos
 
 namespace policy {
-
+class ActiveDirectoryJoinDelegate;
 class DeviceCloudPolicyManagerChromeOS;
 class DeviceCloudPolicyStoreChromeOS;
 class DeviceManagementService;
@@ -82,7 +80,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   // the operation.
   virtual void PrepareEnrollment(
       DeviceManagementService* device_management_service,
-      chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
+      ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       DMAuth dm_auth,
       EnrollmentCallback enrollment_callback);

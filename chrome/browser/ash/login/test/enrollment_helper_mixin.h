@@ -18,9 +18,11 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace policy {
 class ActiveDirectoryJoinDelegate;
+}
 
+namespace chromeos {
 namespace test {
 
 // This test mixin covers mocking backend interaction during enterprise
@@ -72,7 +74,7 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
                                    const std::string& location);
 
   // Forces the Active Directory domain join flow during enterprise enrollment.
-  void SetupActiveDirectoryJoin(ActiveDirectoryJoinDelegate* delegate,
+  void SetupActiveDirectoryJoin(policy::ActiveDirectoryJoinDelegate* delegate,
                                 const std::string& expected_domain,
                                 const std::string& domain_join_config,
                                 const std::string& dm_token);

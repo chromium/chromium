@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace policy {
 
 // Called on successful Active Directory domain join. Pass Active Directory
 // realm.
@@ -37,13 +37,6 @@ class ActiveDirectoryJoinDelegate {
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryJoinDelegate);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ActiveDirectoryJoinDelegate;
-using ::chromeos::OnDomainJoinedCallback;
-}  // namespace ash
+}  // namespace policy
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_ACTIVE_DIRECTORY_JOIN_DELEGATE_H_

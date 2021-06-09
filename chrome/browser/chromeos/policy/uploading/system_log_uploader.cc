@@ -525,7 +525,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   PrefService* local_state = g_browser_process->local_state();
 
   const base::ListValue* prev_log_uploads =
-      local_state->GetList(prefs::kStoreLogStatesAcrossReboots);
+      local_state->GetList(policy::prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
 
@@ -558,7 +558,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.ToDoubleT());
   }
-  local_state->Set(prefs::kStoreLogStatesAcrossReboots,
+  local_state->Set(policy::prefs::kStoreLogStatesAcrossReboots,
                    updated_prev_log_uploads);
 
   // Write the changes to the disk to prevent loss of changes.
@@ -584,7 +584,7 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // To ensure at most kLogThrottleCount logs are uploaded in
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
-              ->GetList(prefs::kStoreLogStatesAcrossReboots)
+              ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
               ->GetSize() >= kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -

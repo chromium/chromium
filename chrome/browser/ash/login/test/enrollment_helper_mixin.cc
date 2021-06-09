@@ -154,7 +154,7 @@ void EnrollmentHelperMixin::ExpectAttributePromptUpdate(
 }
 
 void EnrollmentHelperMixin::SetupActiveDirectoryJoin(
-    ActiveDirectoryJoinDelegate* delegate,
+    policy::ActiveDirectoryJoinDelegate* delegate,
     const std::string& expected_domain,
     const std::string& domain_join_config,
     const std::string& dm_token) {

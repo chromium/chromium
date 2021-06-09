@@ -38,7 +38,7 @@ void FakeDeviceCloudPolicyInitializer::Shutdown() {}
 
 void FakeDeviceCloudPolicyInitializer::PrepareEnrollment(
     DeviceManagementService* device_management_service,
-    chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
+    ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
     DMAuth auth,
     EnrollmentCallback enrollment_callback) {

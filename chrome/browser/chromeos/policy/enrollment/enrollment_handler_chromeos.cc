@@ -170,7 +170,7 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
     chromeos::attestation::AttestationFlow* attestation_flow,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
+    ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
     DMAuth dm_auth,
     const std::string& client_id,
