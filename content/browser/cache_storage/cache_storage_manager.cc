@@ -13,7 +13,7 @@ bool CacheStorageManager::IsValidQuotaStorageKey(
     const blink::StorageKey& storage_key) {
   // Disallow opaque storage keys at the quota boundary because we DCHECK that
   // we don't get an opaque key in lower code layers.
-  return !storage_key.opaque();
+  return !storage_key.origin().opaque();
 }
 
 }  // namespace content

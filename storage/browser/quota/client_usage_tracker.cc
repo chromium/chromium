@@ -343,7 +343,7 @@ void ClientUsageTracker::AccumulateStorageKeyUsage(
   if (storage_key.has_value()) {
     // TODO(https://crbug.com/941480): `storage_key` should not be opaque or
     // have an empty url, but sometimes it is.
-    if (storage_key->opaque()) {
+    if (storage_key->origin().opaque()) {
       DVLOG(1) << "AccumulateStorageKeyUsage for opaque storage_key!";
       RecordSkippedOriginHistogram(InvalidOriginReason::kIsOpaque);
     } else if (storage_key->origin().GetURL().is_empty()) {

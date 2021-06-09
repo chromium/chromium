@@ -721,7 +721,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateVersionToActive(
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (key.opaque())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
@@ -746,7 +746,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateLastCheckTime(
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (key.opaque())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
@@ -772,7 +772,7 @@ ServiceWorkerDatabase::UpdateNavigationPreloadEnabled(
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (key.opaque())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
@@ -798,7 +798,7 @@ ServiceWorkerDatabase::UpdateNavigationPreloadHeader(
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (key.opaque())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
@@ -825,7 +825,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
     return Status::kOk;
   if (status != Status::kOk)
     return status;
-  if (key.opaque())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   leveldb::WriteBatch batch;
@@ -1373,7 +1373,7 @@ ServiceWorkerDatabase::DeleteAllDataForStorageKeys(
   leveldb::WriteBatch batch;
 
   for (const blink::StorageKey& key : keys) {
-    if (key.opaque())
+    if (key.origin().opaque())
       return Status::kErrorFailed;
 
     // Delete from the unique origin list.

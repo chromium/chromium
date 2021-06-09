@@ -9,21 +9,34 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace {
+
+// Opaqueness here is used as a way of checking for "correctly constructed" in
+// most tests.
+//
+// Why not call it IsValid()? Because some tests actually want to check for
+// opaque origins.
+bool IsOpaque(const blink::StorageKey& key) {
+  return key.origin().opaque();
+}
+
+}  // namespace
+
 namespace blink {
 
 // Test when a constructed StorageKey object should be considered valid/opaque.
 TEST(StorageKeyTest, ConstructionValidity) {
   StorageKey empty = StorageKey();
-  EXPECT_TRUE(empty.opaque());
+  EXPECT_TRUE(IsOpaque(empty));
 
   url::Origin valid_origin = url::Origin::Create(GURL("https://example.com"));
   StorageKey valid = StorageKey(valid_origin);
-  EXPECT_FALSE(valid.opaque());
+  EXPECT_FALSE(IsOpaque(valid));
 
   url::Origin invalid_origin =
       url::Origin::Create(GURL("I'm not a valid URL."));
   StorageKey invalid = StorageKey(invalid_origin);
-  EXPECT_TRUE(invalid.opaque());
+  EXPECT_TRUE(IsOpaque(invalid));
 }
 
 // Test that StorageKeys are/aren't equivalent as expected.
@@ -41,9 +54,9 @@ TEST(StorageKeyTest, Equivalance) {
   StorageKey key4_origin3 = StorageKey(origin3);
   StorageKey key5_origin3 = StorageKey(origin3);
   StorageKey key6_origin4 = StorageKey(origin4);
-  EXPECT_TRUE(key4_origin3.opaque());
-  EXPECT_TRUE(key5_origin3.opaque());
-  EXPECT_TRUE(key6_origin4.opaque());
+  EXPECT_TRUE(IsOpaque(key4_origin3));
+  EXPECT_TRUE(IsOpaque(key5_origin3));
+  EXPECT_TRUE(IsOpaque(key6_origin4));
 
   // All are equivalent to themselves
   EXPECT_EQ(key1_origin1, key1_origin1);
@@ -120,10 +133,10 @@ TEST(StorageKeyTest, Deserialize) {
   absl::optional<StorageKey> key3 = StorageKey::Deserialize(wrong);
   absl::optional<StorageKey> key4 = StorageKey::Deserialize(std::string());
 
-  EXPECT_TRUE(key1.has_value());
-  EXPECT_FALSE(key1->opaque());
-  EXPECT_TRUE(key2.has_value());
-  EXPECT_FALSE(key2->opaque());
+  ASSERT_TRUE(key1.has_value());
+  EXPECT_FALSE(IsOpaque(*key1));
+  ASSERT_TRUE(key2.has_value());
+  EXPECT_FALSE(IsOpaque(*key2));
   EXPECT_FALSE(key3.has_value());
   EXPECT_FALSE(key4.has_value());
 }
@@ -137,10 +150,10 @@ TEST(StorageKeyTest, CreateFromStringForTesting) {
   StorageKey key2 = StorageKey::CreateFromStringForTesting(wrong);
   StorageKey key3 = StorageKey::CreateFromStringForTesting(std::string());
 
-  EXPECT_FALSE(key1.opaque());
+  EXPECT_FALSE(IsOpaque(key1));
   EXPECT_EQ(key1, StorageKey(url::Origin::Create(GURL(example))));
-  EXPECT_TRUE(key2.opaque());
-  EXPECT_TRUE(key3.opaque());
+  EXPECT_TRUE(IsOpaque(key2));
+  EXPECT_TRUE(IsOpaque(key3));
 }
 
 // Test that a StorageKey, constructed by deserializing another serialized

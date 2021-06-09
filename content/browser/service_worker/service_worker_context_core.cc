@@ -725,7 +725,7 @@ bool ServiceWorkerContextCore::IsValidRegisterRequest(
   }
   std::vector<GURL> urls = {scope_url, script_url};
 
-  if (key.opaque())
+  if (key.origin().opaque())
     return false;
 
   urls.push_back(key.origin().GetURL());

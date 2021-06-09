@@ -1041,7 +1041,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
               owner,
               std::move(blob_storage_context))),
       memory_only_(path.empty()) {
-  DCHECK(!storage_key_.opaque());
+  DCHECK(!storage_key_.origin().opaque());
   DCHECK(quota_manager_proxy_.get());
 
   if (cache_size_ != CacheStorage::kSizeUnknown &&

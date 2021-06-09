@@ -54,8 +54,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   // not call if `this` is opaque.
   std::string SerializeForLocalStorage() const;
 
-  bool opaque() const { return origin_.opaque(); }
-
   const url::Origin& origin() const { return origin_; }
 
   std::string GetDebugString() const;
