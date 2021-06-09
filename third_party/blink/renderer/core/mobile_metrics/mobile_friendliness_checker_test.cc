@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_metrics_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -35,9 +36,12 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   }
 
   MobileFriendlinessTree CalculateMetricsForHTMLString(
-      const std::string& html) {
+      const std::string& html,
+      float device_scale = 1.0) {
     frame_test_helpers::WebViewHelper helper;
     helper.Initialize(nullptr, nullptr, ConfigureAndroidSettings);
+    helper.GetWebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(
+        device_scale);
     helper.Resize(gfx::Size(480, 800));
     frame_test_helpers::LoadHTMLString(helper.GetWebView()->MainFrameImpl(),
                                        html,
@@ -46,9 +50,12 @@ class MobileFriendlinessCheckerTest : public testing::Test {
         helper.GetWebView()->MainFrameImpl()->GetFrameView());
   }
 
-  MobileFriendlinessTree CalculateMetricsForFile(const std::string& path) {
+  MobileFriendlinessTree CalculateMetricsForFile(const std::string& path,
+                                                 float device_scale = 1.0) {
     frame_test_helpers::WebViewHelper helper;
     helper.Initialize(nullptr, nullptr, ConfigureAndroidSettings);
+    helper.GetWebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(
+        device_scale);
     helper.Resize(gfx::Size(480, 800));
     url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
@@ -60,15 +67,24 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   }
 
   MobileFriendliness CalculateMainFrameMetricsForHTMLString(
-      const std::string& html) {
-    return CalculateMetricsForHTMLString(html).mf;
+      const std::string& html,
+      float device_scale = 1.0) {
+    return CalculateMetricsForHTMLString(html, device_scale).mf;
   }
-  MobileFriendliness CalculateMainFrameMetricsForFile(const std::string& path) {
-    return CalculateMetricsForFile(path).mf;
+
+  MobileFriendliness CalculateMainFrameMetricsForFile(
+      const std::string& path,
+      float device_scale = 1.0) {
+    return CalculateMetricsForFile(path, device_scale).mf;
+  }
+
+  void SetUseZoomForDSF(bool use_zoom_for_dsf) {
+    platform_->SetUseZoomForDSF(use_zoom_for_dsf);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 TEST_F(MobileFriendlinessCheckerTest, NoViewportSetting) {
@@ -89,6 +105,16 @@ TEST_F(MobileFriendlinessCheckerTest, DeviceWidth) {
 TEST_F(MobileFriendlinessCheckerTest, HardcodedViewport) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForFile("viewport/viewport-30.html");
+  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_hardcoded_width, 200);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, HardcodedViewportWithDeviceScale3) {
+  SetUseZoomForDSF(true);
+  MobileFriendliness actual_mf =
+      CalculateMainFrameMetricsForFile("viewport/viewport-30.html",
+                                       /*device_scale=*/3.0);
   EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
   EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
   EXPECT_EQ(actual_mf.viewport_hardcoded_width, 200);

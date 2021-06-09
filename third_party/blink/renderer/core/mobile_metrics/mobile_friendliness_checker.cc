@@ -362,6 +362,9 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
       if (viewport.max_width.IsFixed()) {
         mobile_friendliness_.viewport_hardcoded_width =
             viewport.max_width.GetFloatValue();
+        // Convert value from Blink space to device-independent pixels.
+        if (viewport_scalar_ != 0)
+          mobile_friendliness_.viewport_hardcoded_width /= viewport_scalar_;
       }
       if (viewport.zoom_is_explicit) {
         mobile_friendliness_.viewport_initial_scale_x10 =
