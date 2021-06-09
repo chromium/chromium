@@ -278,8 +278,7 @@ void SessionsRestoredWaiter::OnSessionRestoreDone(int num_tabs_restored) {
     std::move(quit_closure_).Run();
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 void AutoCloseDialog(views::Widget* widget) {
   // Call CancelDialog to close the dialog, but the actual behavior will be
   // determined by the ScopedTestDialogAutoConfirm configs.
@@ -1633,8 +1632,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 #endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+// TODO(crbug.com/1217869): Test is disabled on Mac since it causes failures
+// in many bots.
+#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
  protected:
   StartupBrowserWebAppUrlHandlingTest() {
