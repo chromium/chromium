@@ -4,16 +4,18 @@
 
 #include "components/content_creation/notes/core/server/note_data.h"
 
+#include "url/gurl.h"
+
 namespace content_creation {
 
 NoteData::NoteData(std::string comment,
                    std::string quote,
-                   std::string webpage_url,
+                   GURL webpage_url,
                    std::string highlight_directive)
-    : comment(comment),
-      quote(quote),
-      webpage_url(webpage_url),
-      highlight_directive(highlight_directive) {}
+    : comment(std::move(comment)),
+      quote(std::move(quote)),
+      webpage_url(std::move(webpage_url)),
+      highlight_directive(std::move(highlight_directive)) {}
 
 NoteData::NoteData(NoteData const& note_data) = default;
 

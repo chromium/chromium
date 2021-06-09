@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTENT_CREATION_NOTES_CORE_SERVER_NOTE_DATA_H_
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_SERVER_NOTE_DATA_H_
 
+#include "url/gurl.h"
+
 #include <string>
 
 namespace content_creation {
@@ -13,14 +15,14 @@ namespace content_creation {
 struct NoteData {
   NoteData(std::string comment,
            std::string quote,
-           std::string webpage_url,
+           GURL webpage_url,
            std::string highlight_directive);
   NoteData(NoteData const& note_data);
   ~NoteData();
 
   std::string comment;
   std::string quote;
-  std::string webpage_url;
+  GURL webpage_url;
   std::string highlight_directive;
 };
 

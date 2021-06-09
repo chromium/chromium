@@ -20,7 +20,9 @@ static_library("server") {
     "//base",
     "//components/signin/public/identity_manager",
     "//google_apis",
+    "//net",
     "//services/network/public/cpp",
+    "//url",
   ]
 }
 

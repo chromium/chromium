@@ -3,6 +3,7 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/strings/grit",
   "+google_apis",
+  "+net",
   "+services/network/public/cpp",
   "+ui/base",
 ]
