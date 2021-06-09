@@ -79,10 +79,6 @@ class ExtensionInstallEventLogger
   // Destroys the |log_collector_|, if it exists.
   void StopCollector();
 
-  // Stores a list of pending extensions into a pref.
-  void SetInstallPendingPref(
-      const std::set<extensions::ExtensionId>& extensions);
-
   // Override for InstallEventLoggerBase::AddForSetOfApps.
   void AddForSetOfApps(
       const std::set<extensions::ExtensionId>& extensions,
@@ -114,9 +110,6 @@ class ExtensionInstallEventLogger
   // push-install process. Non-|nullptr| whenever there are one or more pending
   // app push-install requests.
   std::unique_ptr<ExtensionInstallEventLogCollector> log_collector_;
-
-  // Path for stateful partition.
-  base::FilePath stateful_path_;
 };
 
 }  // namespace policy

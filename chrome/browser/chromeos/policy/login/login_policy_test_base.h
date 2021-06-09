@@ -64,7 +64,6 @@ class LoginPolicyTestBase : public chromeos::OobeBaseTest {
   chromeos::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
 
  private:
-  void SetUpGaiaServerWithAccessTokens();
   void SetMergeSessionParams();
 
   std::unique_ptr<UserPolicyTestHelper> user_policy_helper_;

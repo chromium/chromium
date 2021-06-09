@@ -196,10 +196,6 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // Handles the policy validation result for the offline demo mode.
   void OnOfflinePolicyValidated(DeviceCloudPolicyValidator* validator);
 
-  // Handles the fetching auth codes for robot accounts during enrollment.
-  void OnRobotAuthCodesFetched(DeviceManagementStatus status,
-                               const std::string& auth_code);
-
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       const std::string& domain);
@@ -235,9 +231,6 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
 
   // Whether the server signaled to skip robot auth setup.
   bool skip_robot_auth_ = false;
-
-  // The robot account refresh token.
-  std::string robot_refresh_token_;
 
   // The validated policy response info to be installed in the store.
   std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;

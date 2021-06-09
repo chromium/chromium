@@ -143,8 +143,6 @@ class DeviceScheduledUpdateChecker
   // Timer that is scheduled to check for updates.
   std::unique_ptr<chromeos::NativeTimer> update_check_timer_;
 
-  base::WeakPtrFactory<DeviceScheduledUpdateChecker> weak_factory_{this};
-
   DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateChecker);
 };
 

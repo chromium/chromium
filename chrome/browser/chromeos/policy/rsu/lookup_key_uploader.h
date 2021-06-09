@@ -49,11 +49,9 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   void OnStoreLoaded(CloudPolicyStore* store) override;
   void OnStoreError(CloudPolicyStore* store) override;
 
-  void Start();
   void GetDataFromCryptohome(bool available);
   void OnRsuDeviceIdReceived(
       absl::optional<user_data_auth::GetRsuDeviceIdReply> result);
-  void HandleRsuDeviceId(const std::string& rsu_device_id);
 
   void OnEnrollmentCertificateUploaded(
       const std::string& uploaded_key,

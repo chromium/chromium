@@ -102,8 +102,6 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   chromeos::SessionManagerClient* session_manager_client_;
   ash::DeviceSettingsService* device_settings_service_;
 
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
   base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyStore);

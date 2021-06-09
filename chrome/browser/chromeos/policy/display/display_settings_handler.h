@@ -73,9 +73,6 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
   // Requests the list of displays and applies each setting.
   void RequestDisplaysAndApplyChanges();
 
-  // Callback function for settings_observer_.
-  void OnCrosSettingsChanged();
-
   // Apply all default settings defined by policies to all conencted displays.
   void ApplyChanges(std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
 

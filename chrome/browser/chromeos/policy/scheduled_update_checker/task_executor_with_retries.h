@@ -47,10 +47,6 @@ class TaskExecutorWithRetries {
   void ScheduleRetry(AsyncTask task);
 
  private:
-  // Called upon starting |retry_timer_|. Indicates whether or not the timer was
-  // started successfully.
-  void OnRetryTimerStartResult(bool result);
-
   // Resets state including stopping all pending callbacks.
   void ResetState();
 

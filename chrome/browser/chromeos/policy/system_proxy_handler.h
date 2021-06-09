@@ -38,8 +38,6 @@ class SystemProxyHandler {
   chromeos::SystemProxyManager* system_proxy_manager_for_testing_ = nullptr;
   chromeos::CrosSettings* cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;
-
-  base::WeakPtrFactory<SystemProxyHandler> weak_factory_{this};
 };
 
 }  // namespace policy
