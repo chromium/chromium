@@ -553,7 +553,7 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
 
   uint8_t count_before = bucket.count;
   if (limit == 0) {
-    FreeAfter(bucket.freelist_head);
+    FreeAfter(bucket.freelist_head, bucket.slot_size);
     bucket.freelist_head = nullptr;
   } else {
     // Free the *end* of the list, not the head, since the head contains the
@@ -561,10 +561,10 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-      head = head->GetNext();
+      head = head->GetNext(bucket.slot_size);
       items++;
     }
-    FreeAfter(head->GetNext());
+    FreeAfter(head->GetNext(bucket.slot_size), bucket.slot_size);
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -576,14 +576,14 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   PA_DCHECK(cached_memory_ == CachedMemory());
 }
 
-void ThreadCache::FreeAfter(PartitionFreelistEntry* head) {
+void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
   // acquisitions can be expensive.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   while (head) {
     void* ptr = head;
-    head = head->GetNext();
+    head = head->GetNext(slot_size);
     root_->RawFreeLocked(ptr);
   }
 }

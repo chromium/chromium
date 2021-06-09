@@ -302,7 +302,7 @@ class BASE_EXPORT ThreadCache {
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
-  void FreeAfter(PartitionFreelistEntry* head);
+  void FreeAfter(PartitionFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
                               float multiplier);
 
@@ -438,7 +438,11 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
 
   PA_DCHECK(bucket.count != 0);
   auto* result = bucket.freelist_head;
-  auto* next = result->GetNext();
+  // Passes the bucket size to |GetNext()|, so that in case of freelist
+  // corruption, we know the bucket size that lead to the crash, helping to
+  // narrow down the search for culprit. |bucket| was touched just now, so this
+  // does not introduce another cache miss.
+  auto* next = result->GetNext(bucket.slot_size);
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);

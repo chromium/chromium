@@ -138,7 +138,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 bool IsInFreeList(void* slot_start) {
   auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   for (auto* entry = slot_span->freelist_head; entry;
-       entry = entry->GetNext()) {
+       entry = entry->GetNext(slot_span->bucket->slot_size)) {
     if (entry == slot_start)
       return true;
   }

@@ -138,7 +138,7 @@ DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
       return PartitionDirectUnmap(this);
     }
 #if DCHECK_IS_ON()
-    freelist_head->CheckFreeList();
+    freelist_head->CheckFreeList(bucket->slot_size);
 #endif
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.

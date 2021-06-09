@@ -560,7 +560,8 @@ SlotSpanMetadata<thread_safe>::Free(void* slot_start) {
   // Catches an immediate double free.
   PA_CHECK(slot_start != freelist_head);
   // Look for double free one level deeper in debug.
-  PA_DCHECK(!freelist_head || slot_start != freelist_head->GetNext());
+  PA_DCHECK(!freelist_head ||
+            slot_start != freelist_head->GetNext(bucket->slot_size));
   auto* entry = static_cast<internal::PartitionFreelistEntry*>(slot_start);
   entry->SetNext(freelist_head);
   SetFreelistHead(entry);

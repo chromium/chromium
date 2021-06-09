@@ -209,7 +209,7 @@ static size_t PartitionPurgeSlotSpan(
     size_t slot_index = (reinterpret_cast<char*>(entry) - ptr) / slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
-    entry = entry->GetNext();
+    entry = entry->GetNext(slot_size);
 #if !defined(OS_WIN)
     // If we have a slot where the masked freelist entry is 0, we can actually
     // discard that freelist entry because touching a discarded page is

@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -24,7 +25,10 @@ namespace internal {
 namespace {
 
 #if defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
-[[noreturn]] NOINLINE void FreelistCorruptionDetected() {
+[[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
+  // Make it visible in minidumps.
+  size_t tmp_extra = extra;
+  base::debug::Alias(&tmp_extra);
   IMMEDIATE_CRASH();
 }
 #endif  // defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
@@ -83,22 +87,29 @@ class PartitionFreelistEntry {
     return reinterpret_cast<EncodedPartitionFreelistEntry*>(Transform(ptr));
   }
 
-  ALWAYS_INLINE PartitionFreelistEntry* GetNext() const;
-  NOINLINE void CheckFreeList() const {
+  // Puts |extra| on the stack before crashing in case of memory
+  // corruption. Meant to be used to report the failed allocation size.
+  ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
+  NOINLINE void CheckFreeList(size_t extra) const {
 #if defined(PA_HAS_FREELIST_HARDENING)
-    for (auto* entry = this; entry; entry = entry->GetNext()) {
+    for (auto* entry = this; entry; entry = entry->GetNext(extra)) {
       // |GetNext()| checks freelist integrity.
     }
 #endif
   }
 
   ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
+    // SetNext() is either called on the freelist head, when provisioning new
+    // slots, or when GetNext() has been called before, no need to pass the
+    // size.
 #if DCHECK_IS_ON()
     // Regular freelists always point to an entry within the same super page.
+    //
+    // This is most likely a PartitionAlloc bug if this triggers.
     if (UNLIKELY(ptr &&
                  (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) !=
                      (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
-      FreelistCorruptionDetected();
+      FreelistCorruptionDetected(0);
     }
 #endif  // DCHECK_IS_ON()
     SetNextInternal(ptr);
@@ -168,13 +179,14 @@ static_assert(sizeof(PartitionFreelistEntry) ==
                   sizeof(EncodedPartitionFreelistEntry),
               "Should not have padding");
 
-ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext() const {
+ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
+    size_t extra) const {
 #if defined(PA_HAS_FREELIST_HARDENING)
   // GetNext() can be called on decommitted memory, which is full of
   // zeroes. This is not a corruption issue, so only check integrity when we
   // have a non-nullptr |next_| pointer.
   if (UNLIKELY(next_ && ~reinterpret_cast<uintptr_t>(next_) != inverted_next_))
-    FreelistCorruptionDetected();
+    FreelistCorruptionDetected(extra);
 #endif  // defined(PA_HAS_FREELIST_HARDENING)
   auto* ret = EncodedPartitionFreelistEntry::Decode(next_);
   // In real-world profiles, the load of |next_| above is responsible for a

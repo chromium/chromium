@@ -731,7 +731,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // is large), meaning that |slot_span->freelist_head| can be nullptr.
   if (slot_span->freelist_head) {
     PA_DCHECK(free_list_entries_added);
-    slot_span->freelist_head->CheckFreeList();
+    slot_span->freelist_head->CheckFreeList(slot_size);
   }
 #endif
 
@@ -927,7 +927,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // have a usable freelist head.
   if (LIKELY(new_slot_span->freelist_head != nullptr)) {
     PartitionFreelistEntry* entry = new_slot_span->freelist_head;
-    PartitionFreelistEntry* new_head = entry->GetNext();
+    PartitionFreelistEntry* new_head = entry->GetNext(slot_size);
     new_slot_span->SetFreelistHead(new_head);
     new_slot_span->num_allocated_slots++;
 
