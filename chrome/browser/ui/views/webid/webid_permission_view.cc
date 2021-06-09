@@ -83,9 +83,13 @@ std::unique_ptr<views::View> CreateInitialMessage(
 
   secondary_label->SetText(secondary_text);
   secondary_label->AddStyleRange(
-      gfx::Range{offsets[0], offsets[0] + idp_hostname.length()}, bold_style);
+      gfx::Range{static_cast<uint32_t>(offsets[0]),
+                 static_cast<uint32_t>(offsets[0] + idp_hostname.length())},
+      bold_style);
   secondary_label->AddStyleRange(
-      gfx::Range{offsets[1], offsets[1] + rp_hostname.length()}, bold_style);
+      gfx::Range{static_cast<uint32_t>(offsets[1]),
+                 static_cast<uint32_t>(offsets[1] + rp_hostname.length())},
+      bold_style);
   view->AddChildView(std::move(secondary_label));
   return view;
 }
@@ -133,9 +137,13 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
   views::StyledLabel::RangeStyleInfo bold_style;
   bold_style.text_style = STYLE_EMPHASIZED_SECONDARY;
   secondary_label->AddStyleRange(
-      gfx::Range{offsets[0], offsets[0] + rp_hostname.length()}, bold_style);
+      gfx::Range{static_cast<uint32_t>(offsets[0]),
+                 static_cast<uint32_t>(offsets[0] + rp_hostname.length())},
+      bold_style);
   secondary_label->AddStyleRange(
-      gfx::Range{offsets[1], offsets[1] + idp_hostname.length()}, bold_style);
+      gfx::Range{static_cast<uint32_t>(offsets[1]),
+                 static_cast<uint32_t>(offsets[1] + idp_hostname.length())},
+      bold_style);
   view->AddChildView(std::move(secondary_label));
   return view;
 }

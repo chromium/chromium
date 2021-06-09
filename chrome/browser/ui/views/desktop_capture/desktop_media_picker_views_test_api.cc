@@ -111,7 +111,7 @@ bool DesktopMediaPickerViewsTestApi::HasSourceAtIndex(size_t index) const {
   const views::TableView* table = GetTableView();
   if (table)
     return base::checked_cast<size_t>(table->GetRowCount()) > index;
-  return bool{GetSourceAtIndex(index)};
+  return !!GetSourceAtIndex(index);
 }
 
 views::View* DesktopMediaPickerViewsTestApi::GetSelectedListView() {

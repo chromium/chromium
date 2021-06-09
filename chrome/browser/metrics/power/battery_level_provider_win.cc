@@ -165,9 +165,9 @@ BatteryLevelProvider::BatteryInterface BatteryLevelProviderWin::GetInterface(
   if (!battery_information.has_value() || !battery_status.has_value())
     return BatteryInterface(true);
 
-  return BatteryInterface({battery_status->PowerState & BATTERY_POWER_ON_LINE,
-                           battery_status->Capacity,
-                           battery_information->FullChargedCapacity});
+  return BatteryInterface(
+      {!!(battery_status->PowerState & BATTERY_POWER_ON_LINE),
+       battery_status->Capacity, battery_information->FullChargedCapacity});
 }
 
 std::vector<BatteryLevelProvider::BatteryInterface>

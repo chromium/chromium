@@ -726,7 +726,7 @@ base::Time GetConsoleSessionStartTime() {
 
   wts_info = reinterpret_cast<WTSINFO*>(buffer);
   FILETIME filetime = {wts_info->LogonTime.u.LowPart,
-                       wts_info->LogonTime.u.HighPart};
+                       static_cast<DWORD>(wts_info->LogonTime.u.HighPart)};
   return base::Time::FromFileTime(filetime);
 }
 

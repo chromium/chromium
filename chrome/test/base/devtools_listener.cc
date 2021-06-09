@@ -35,7 +35,7 @@ base::StringPiece SpanToStringPiece(const base::span<const uint8_t>& s) {
 std::string EncodeURIComponent(const std::string& component) {
   url::RawCanonOutputT<char> encoded;
   url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
-  return {encoded.data(), encoded.length()};
+  return {encoded.data(), static_cast<size_t>(encoded.length())};
 }
 
 }  // namespace

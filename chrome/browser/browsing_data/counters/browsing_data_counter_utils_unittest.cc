@@ -56,15 +56,17 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
       {42, false, true,
        "Frees up less than 1 MB. Some sites may load more slowly on your next "
        "visit."},
-      {2.312 * kBytesInAMegabyte, false, false, "2.3 MB"},
-      {2.312 * kBytesInAMegabyte, false, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false, "2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
        "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
-      {2.312 * kBytesInAMegabyte, true, false, "Less than 2.3 MB"},
-      {2.312 * kBytesInAMegabyte, true, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
+       "Less than 2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
        "Frees up less than 2.3 MB. Some sites may load more slowly on your "
        "next visit."},
-      {500.2 * kBytesInAMegabyte, false, false, "500 MB"},
-      {500.2 * kBytesInAMegabyte, true, false, "Less than 500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), false, false, "500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), true, false,
+       "Less than 500 MB"},
   };
 
   for (const TestCase& test_case : kTestCases) {

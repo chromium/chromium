@@ -50,7 +50,8 @@ class CommanderEntityMatchTest : public BrowserWithTestWindowTest {
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     TabGroupModel* group_model = tab_strip_model->group_model();
     for (size_t i = 0; i < titles.size(); ++i) {
-      tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({i});
+      tab_groups::TabGroupId group =
+          tab_strip_model->AddToNewGroup({static_cast<int>(i)});
       tab_groups::TabGroupVisualData data(
           titles.at(i), tab_groups::TabGroupColorId::kGrey, false);
       group_model->GetTabGroup(group)->SetVisualData(data);

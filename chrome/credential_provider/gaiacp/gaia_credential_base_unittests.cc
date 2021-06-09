@@ -3412,7 +3412,10 @@ TEST_P(GcpGaiaCredentialBaseUploadEventLogsTest, UploadEventViewerLogs) {
   std::vector<FakeEventLogsUploadManager::EventLogEntry> logs;
   for (size_t i = 0; i < num_events_in_log; i++) {
     std::wstring data(1024, '0');  // 1KB payload.
-    logs.push_back({i + 1, {1000 + i, 200 + i}, data, 1 + i % 4});
+    logs.push_back({i + 1,
+                    {1000 + i, static_cast<uint32_t>(200 + i)},
+                    data,
+                    static_cast<uint32_t>(1 + i % 4)});
   }
 
   FakeEventLogsUploadManager fake_event_logs_upload_manager(logs);
