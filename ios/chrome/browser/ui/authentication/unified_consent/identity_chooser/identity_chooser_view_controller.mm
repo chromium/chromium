@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -46,8 +48,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor =
+  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.styler.tableViewBackgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    self.styler.cellBackgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  }
+  self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+
   self.preferredContentSize =
       CGSizeMake(kViewControllerWidth, kViewControllerHeight);
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
