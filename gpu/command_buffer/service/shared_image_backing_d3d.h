@@ -103,7 +103,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
 
-  bool BeginAccessD3D12(uint64_t* acquire_key);
+  bool BeginAccessD3D12();
   void EndAccessD3D12();
 
   bool BeginAccessD3D11();
@@ -138,7 +138,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
     bool BeginAccessD3D11();
     void EndAccessD3D11();
 
-    bool BeginAccessD3D12(uint64_t* acquire_key);
+    bool BeginAccessD3D12();
     void EndAccessD3D12();
 
     HANDLE GetSharedHandle() const;
@@ -153,10 +153,8 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
     // keyed mutex. To create the corresponding D3D12 interface, pass the handle
     // stored in |shared_handle_| to ID3D12Device::OpenSharedHandle. Only one
     // component is allowed to read/write to the texture at a time.
-    // |acquire_key_| is incremented on every Acquire/Release usage.
     base::win::ScopedHandle shared_handle_;
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
-    uint64_t acquire_key_ = 0;
     bool acquired_for_d3d12_ = false;
     int acquired_for_d3d11_count_ = 0;
   };

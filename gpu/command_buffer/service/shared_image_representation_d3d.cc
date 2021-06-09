@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
 
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 
@@ -69,14 +70,13 @@ WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
   SharedImageBackingD3D* d3d_image_backing =
       static_cast<SharedImageBackingD3D*>(backing());
 
-  uint64_t shared_mutex_acquire_key;
-  if (!d3d_image_backing->BeginAccessD3D12(&shared_mutex_acquire_key)) {
+  if (!d3d_image_backing->BeginAccessD3D12())
     return nullptr;
-  }
 
   dawn_native::d3d12::ExternalImageAccessDescriptorDXGIKeyedMutex descriptor;
   descriptor.isInitialized = IsCleared();
-  descriptor.acquireMutexKey = shared_mutex_acquire_key;
+  descriptor.acquireMutexKey = kDXGIKeyedMutexAcquireKey;
+  descriptor.releaseMutexKey = kDXGIKeyedMutexAcquireKey;
   descriptor.isSwapChainTexture =
       (d3d_image_backing->usage() &
        SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
