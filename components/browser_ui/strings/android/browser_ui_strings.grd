@@ -288,9 +288,6 @@
       <message name="IDS_SHOW" desc="Label for a show button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Show
       </message>
-      <message name="IDS_USER" desc="Generic label for UI elements with information about user.">
-        User
-      </message>
       <message name="IDS_MENU_ITEM_MOVE_UP" desc="Option in item menu. User can click the 'Move up' option to move the item up by one position in its list. [CHAR_LIMIT=24]">
         Move up
       </message>

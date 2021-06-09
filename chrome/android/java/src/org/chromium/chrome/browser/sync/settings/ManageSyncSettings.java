@@ -73,8 +73,7 @@ import java.util.Set;
 /**
  * Settings fragment to customize Sync options (data types, encryption). Corresponds to
  * chrome://settings/syncSetup/advanced and parts of chrome://settings/syncSetup on desktop.
- * With the MobileIdentityConsistency feature, this fragment is accessible from the main settings
- * view. If the feature is disabled, the entry point is in {@link SyncAndServicesSettings}.
+ * This fragment is accessible from the main settings view.
  */
 public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
@@ -305,7 +304,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         // Advanced sync consent flow - add a bottom bar and un-hide relevant preferences.
         ViewGroup result = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
-        inflater.inflate(R.layout.sync_and_services_bottom_bar, result, true);
+        inflater.inflate(R.layout.manage_sync_settings_bottom_bar, result, true);
 
         ButtonCompat cancelButton = result.findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(view -> cancelSync());

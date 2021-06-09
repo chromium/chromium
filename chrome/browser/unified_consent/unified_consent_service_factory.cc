@@ -29,7 +29,7 @@ namespace {
 // Note: The synced prefs returned by this method have to match the prefs
 // shown in
 // chrome/browser/resources/settings/privacy_page/personalization_options.html
-// on Desktop and chrome/android/java/res/xml/sync_and_services_preferences.xml
+// on Desktop and chrome/android/java/res/xml/google_services_preferences.xml
 // on Android.
 
 std::vector<std::string> GetSyncedServicePrefNames() {

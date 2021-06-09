@@ -1225,7 +1225,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SignInPreference.java",
-  "java/src/org/chromium/chrome/browser/sync/settings/SyncAndServicesSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncErrorCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncPromoPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtils.java",

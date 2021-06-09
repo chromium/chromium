@@ -778,6 +778,7 @@ chrome_java_resources = [
   "java/res/layout/location_status_incognito_badge.xml",
   "java/res/layout/long_screenshots_area_selection_dialog.xml",
   "java/res/layout/manage_space_activity.xml",
+  "java/res/layout/manage_sync_settings_bottom_bar.xml",
   "java/res/layout/managed_by_menu_item.xml",
   "java/res/layout/material_tooltip.xml",
   "java/res/layout/menu_button.xml",
@@ -837,7 +838,6 @@ chrome_java_resources = [
   "java/res/layout/suggestions_tile_view.xml",
   "java/res/layout/suggestions_tile_view_condensed.xml",
   "java/res/layout/suspended_tab.xml",
-  "java/res/layout/sync_and_services_bottom_bar.xml",
   "java/res/layout/sync_custom_passphrase.xml",
   "java/res/layout/sync_enter_passphrase.xml",
   "java/res/layout/sync_passphrase_types.xml",
@@ -909,6 +909,5 @@ chrome_java_resources = [
   "java/res/xml/phone_as_a_security_key_accessory_filter.xml",
   "java/res/xml/privacy_preferences.xml",
   "java/res/xml/search_widget_info.xml",
-  "java/res/xml/sync_and_services_preferences.xml",
   "java/res/xml/tracing_preferences.xml",
 ]
