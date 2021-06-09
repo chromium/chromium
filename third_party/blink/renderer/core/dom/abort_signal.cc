@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -21,6 +22,14 @@ namespace blink {
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
     : execution_context_(execution_context) {}
 AbortSignal::~AbortSignal() = default;
+
+// static
+AbortSignal* AbortSignal::abort(ScriptState* script_state) {
+  AbortSignal* signal =
+      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+  signal->aborted_flag_ = true;
+  return signal;
+}
 
 const AtomicString& AbortSignal::InterfaceName() const {
   return event_target_names::kAbortSignal;

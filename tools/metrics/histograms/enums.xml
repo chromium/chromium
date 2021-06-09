@@ -32891,6 +32891,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3930" label="HTMLMediaElementControlsListNoPlaybackRate"/>
   <int value="3931" label="DocumentTransition"/>
   <int value="3932" label="SpeculationRules"/>
+  <int value="3933" label="V8AbortSignal_Abort_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

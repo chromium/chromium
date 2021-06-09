@@ -7,6 +7,12 @@
 [
     Exposed=(Window,Worker)
 ] interface AbortSignal : EventTarget {
+    [
+        CallWith=ScriptState,
+        Measure,
+        NewObject
+    ] static AbortSignal abort();
+
     readonly attribute boolean aborted;
 
     attribute EventHandler onabort;

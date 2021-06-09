@@ -15,6 +15,7 @@
 namespace blink {
 
 class ExecutionContext;
+class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
 class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
@@ -25,6 +26,7 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   ~AbortSignal() override;
 
   // abort_signal.idl
+  static AbortSignal* abort(ScriptState*);
   bool aborted() const { return aborted_flag_; }
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
 
