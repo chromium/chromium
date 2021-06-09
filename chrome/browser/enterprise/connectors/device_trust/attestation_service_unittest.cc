@@ -14,6 +14,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 constexpr char challenge[] =
@@ -50,6 +54,11 @@ class AttestationServiceTest : public testing::Test {
 
  private:
   ScopedTestingLocalState local_state_;
+  base::test::TaskEnvironment task_environment_;
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::FakeBrowserDMTokenStorage dm_token_storage_;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_F(AttestationServiceTest, BuildChallengeResponse) {

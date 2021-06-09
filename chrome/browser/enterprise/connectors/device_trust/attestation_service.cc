@@ -13,8 +13,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "crypto/random.h"
 
 namespace enterprise_connectors {
@@ -30,6 +35,24 @@ AttestationService::AttestationService() {
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   key_pair_ = std::make_unique<DeviceTrustKeyPair>();
   key_pair_->Init();
+
+  device_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+  policy::ChromeBrowserPolicyConnector* browser_policy_connector =
+      g_browser_process->browser_policy_connector();
+  if (!browser_policy_connector) {
+    LOG(ERROR) << "No customer_id filled.";
+    return;
+  }
+  policy::MachineLevelUserCloudPolicyManager*
+      machine_level_user_cloud_policy_manager =
+          browser_policy_connector->machine_level_user_cloud_policy_manager();
+  if (!machine_level_user_cloud_policy_manager) {
+    LOG(ERROR) << "No customer_id filled.";
+    return;
+  }
+  customer_id_ = machine_level_user_cloud_policy_manager->store()
+                     ->policy()
+                     ->obfuscated_customer_id();
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 }
 
@@ -109,7 +132,6 @@ void AttestationService::BuildChallengeResponseForVAChallenge(
   AttestationCallback reply = base::BindOnce(
       &AttestationService::PaserChallengeResponseAndRunCallback,
       weak_factory_.GetWeakPtr(), challenge, std::move(callback));
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(
@@ -165,15 +187,16 @@ void AttestationService::SignEnterpriseChallengeTask(
   SignedData signed_challenge;
   if (!signed_challenge.ParseFromString(request.challenge())) {
     LOG(ERROR) << __func__ << ": Failed to parse signed challenge.";
-    result->set_status(STATUS_INVALID_PARAMETER);
+    result->set_status(STATUS_INVALID_PARAMETER_ERROR);
     return;
   }
-
   KeyInfo key_info;
   // Fill `key_info` out for Chrome Browser.
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   key_info.set_key_type(CBCM);
   key_info.set_browser_instance_public_key(ExportPEMPublicKey());
+  key_info.set_device_id(device_id_);
+  key_info.set_customer_id(customer_id_);
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   ChallengeResponse response_pb;

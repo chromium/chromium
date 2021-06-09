@@ -108,6 +108,9 @@ class AttestationService {
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   GoogleKeys google_keys_;
+  std::string customer_id_;
+  std::string device_id_;
+
   base::WeakPtrFactory<AttestationService> weak_factory_{this};
 };
 
