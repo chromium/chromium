@@ -20,6 +20,7 @@
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -3100,6 +3101,22 @@ TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
       display_manager()->layout_store()->forced_mirror_mode_for_tablet());
   EXPECT_TRUE(Shell::Get()->ShouldSaveDisplaySettings());
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
+}
+
+TEST_F(DisplayManagerTest, DisplayPrefsAndKioskMode) {
+  // Login in as kiosk app.
+  UserSession session;
+  session.session_id = 1u;
+  session.user_info.type = user_manager::USER_TYPE_KIOSK_APP;
+  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
+  session.user_info.display_name = "User 1";
+  session.user_info.display_email = "user1@test.com";
+  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  EXPECT_EQ(LoginStatus::KIOSK_APP,
+            Shell::Get()->session_controller()->login_status());
+  UpdateDisplay("400x300,800x800");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Shell::Get()->ShouldSaveDisplaySettings());
 }
 
 TEST_F(DisplayManagerTest, DockMode) {

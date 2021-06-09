@@ -435,6 +435,9 @@ bool Shell::IsInTabletMode() const {
 bool Shell::ShouldSaveDisplaySettings() {
   return !(
       screen_orientation_controller_->ignore_display_configuration_updates() ||
+      // Save display settings if we don't need to show the display change
+      // dialog.
+      resolution_notification_controller_->ShouldShowDisplayChangeDialog() ||
       !display_configuration_observer_->save_preference());
 }
 

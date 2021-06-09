@@ -65,6 +65,8 @@ class ASH_EXPORT ResolutionNotificationController
     return confirmation_dialog_.get();
   }
 
+  bool ShouldShowDisplayChangeDialog() const;
+
  private:
   friend class ResolutionNotificationControllerTest;
   FRIEND_TEST_ALL_PREFIXES(ResolutionNotificationControllerTest, Timeout);

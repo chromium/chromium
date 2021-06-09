@@ -125,11 +125,16 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
   return true;
 }
 
+bool ResolutionNotificationController::ShouldShowDisplayChangeDialog() const {
+  return change_info_ && Shell::Get()->session_controller()->login_status() !=
+                             LoginStatus::KIOSK_APP;
+}
+
 void ResolutionNotificationController::CreateOrReplaceModalDialog() {
   if (confirmation_dialog_)
     confirmation_dialog_->GetWidget()->CloseNow();
 
-  if (!change_info_)
+  if (!ShouldShowDisplayChangeDialog())
     return;
 
   const std::u16string display_name =

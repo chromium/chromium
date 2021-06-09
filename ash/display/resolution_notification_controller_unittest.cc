@@ -464,6 +464,35 @@ TEST_P(ResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
                                 /*new_is_native=*/false);
 }
 
+TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
+  // Login in as kiosk app.
+  UserSession session;
+  session.session_id = 1u;
+  session.user_info.type = user_manager::USER_TYPE_KIOSK_APP;
+  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
+  session.user_info.display_name = "User 1";
+  session.user_info.display_email = "user1@test.com";
+  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  EXPECT_EQ(LoginStatus::KIOSK_APP,
+            Shell::Get()->session_controller()->login_status());
+
+  UpdateDisplay("100x100,150x150#150x150%59|200x200%60");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+  int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
+  ASSERT_EQ(0, accept_count());
+  EXPECT_FALSE(IsNotificationVisible());
+
+  // Changes the resolution and apply the result.
+  SetDisplayResolutionAndNotify(
+      display_manager_test.GetSecondaryDisplay(), gfx::Size(200, 200), 60,
+      /*old_is_native=*/false, /*new_is_native=*/true);
+  EXPECT_FALSE(IsNotificationVisible());
+  display::ManagedDisplayMode mode;
+  EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
+  EXPECT_EQ("200x200", mode.size().ToString());
+  EXPECT_EQ(60.0f, mode.refresh_rate());
+}
+
 // Parametrizes all tests to run with display::features::kListAllDisplayModes
 // enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
