@@ -114,6 +114,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace em = enterprise_management;
@@ -1098,7 +1099,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
  private:
   // Builds a device ONC dictionary defining a single untrusted authority
   // certificate.
-  base::DictionaryValue BuildDeviceOncDictForUntrustedAuthority(
+  static base::DictionaryValue BuildDeviceOncDictForUntrustedAuthority(
       const std::string& x509_authority_cert) {
     base::DictionaryValue onc_certificate;
     onc_certificate.SetKey(onc::certificate::kGUID, base::Value(kTestGuid));
@@ -1145,182 +1146,6 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
   DISALLOW_COPY_AND_ASSIGN(WebviewClientCertsLoginTest);
 };
 
-// Test that client certificate authentication using certificates from the
-// system slot is enabled in the sign-in frame. The server does not request
-// certificates signed by a specific authority.
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameNoAuthorityGiven) {
-  ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got client cert with fingerprint: " +
-                GetCertSha1Fingerprint(kClientCert1Name),
-            https_reply_content);
-}
-
-// Test that client certificate autoselect selects the right certificate even
-// with multiple filters for the same pattern.
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameCertMultipleFiltersAutoSelected) {
-  ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})",
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "foo baz bar"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got client cert with fingerprint: " +
-                GetCertSha1Fingerprint(kClientCert1Name),
-            https_reply_content);
-}
-
-// Test that if no client certificate is auto-selected using policy on the
-// sign-in frame, the client does not send up any client certificate.
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameCertNotAutoSelected) {
-  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-
-  EXPECT_EQ("got no client cert", https_reply_content);
-}
-
-// Test that client certificate authentication using certificates from the
-// system slot is enabled in the sign-in frame. The server requests
-// a certificate signed by a specific authority.
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
-  ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  base::FilePath ca_path =
-      net::GetTestCertsDirectory().Append(FILE_PATH_LITERAL("client_1_ca.pem"));
-  ssl_options.client_authorities.push_back(ca_path);
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got client cert with fingerprint: " +
-                GetCertSha1Fingerprint(kClientCert1Name),
-            https_reply_content);
-}
-
-// Test that client certificate authentication using certificates from the
-// system slot is enabled in the sign-in frame. The server requests
-// a certificate signed by a specific authority. The client doesn't have a
-// matching certificate.
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameAuthorityGivenNoMatchingCert) {
-  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  base::FilePath ca_path =
-      net::GetTestCertsDirectory().Append(FILE_PATH_LITERAL("client_2_ca.pem"));
-  ssl_options.client_authorities.push_back(ca_path);
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got no client cert", https_reply_content);
-}
-
-// Test that client certificate will not be discovered if the server requests
-// certificates signed by a root authority, the installed certificate has been
-// issued by an intermediate authority, and the intermediate authority is not
-// known on the device (it has not been made available through device ONC
-// policy).
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameIntermediateAuthorityUnknown) {
-  ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  base::FilePath ca_path = net::GetTestCertsDirectory().Append(
-      FILE_PATH_LITERAL("client_root_ca.pem"));
-  ssl_options.client_authorities.push_back(ca_path);
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got no client cert", https_reply_content);
-}
-
-// Test that client certificate will be discovered if the server requests
-// certificates signed by a root authority, the installed certificate has been
-// issued by an intermediate authority, and the intermediate authority is
-// known on the device (it has been made available through device ONC policy).
-IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
-                       SigninFrameIntermediateAuthorityKnown) {
-  ASSERT_NO_FATAL_FAILURE(
-      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
-  net::SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.request_client_certificate = true;
-  base::FilePath ca_path = net::GetTestCertsDirectory().Append(
-      FILE_PATH_LITERAL("client_root_ca.pem"));
-  ssl_options.client_authorities.push_back(ca_path);
-  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
-
-  const std::vector<std::string> autoselect_patterns = {
-      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
-  SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  base::FilePath intermediate_ca_path =
-      net::GetTestCertsDirectory().Append(FILE_PATH_LITERAL("client_1_ca.pem"));
-  ASSERT_NO_FATAL_FAILURE(
-      SetIntermediateAuthorityInDeviceOncPolicy(intermediate_ca_path));
-
-  WaitForGaiaPageLoadAndPropertyUpdate();
-
-  const std::string https_reply_content =
-      RequestClientCertTestPageInFrame(kSigninWebview);
-  EXPECT_EQ("got client cert with fingerprint: " +
-                GetCertSha1Fingerprint(kClientCert1Name),
-            https_reply_content);
-}
-
 // Tests that client certificate authentication is not enabled in a webview on
 // the sign-in screen which is not the sign-in frame. In this case, the EULA
 // webview is used.
@@ -1344,6 +1169,181 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
       RequestClientCertTestPageInFrame("$('cros-eula-frame')");
   EXPECT_EQ("got no client cert", https_reply_content);
 }
+
+namespace {
+
+// Parameter type for the `SigninFrameWebviewClientCertsLoginTest` parameterized
+// test fixture.
+struct SigninCertParam {
+  // Arrange the test to install these client certificates (specified by name,
+  // e.g., "client1") into the system slot - see
+  // `SetUpClientCertsInSystemSlot()`.
+  std::vector<std::string> arrange_client_certs;
+  // If non-null, arrange the test to configure this intermediate CA (specified
+  // by name, e.g., "client_1_ca") as known to the client via device policy -
+  // see `SetIntermediateAuthorityInDeviceOncPolicy()`.
+  absl::optional<std::string> arrange_intermediate_cert;
+  // Arrange the test to configure these certificate auto-selection patterns in
+  // device policy - see `SetAutoSelectCertificatePatterns()`.
+  std::vector<std::string> arrange_autoselect_patterns;
+  // Make the web server include the specified CA certificates in its client
+  // certificate request.
+  std::vector<std::string> act_ca_certs;
+  // Assert that the selected certificate is the one specified here. When null,
+  // asserts that no certificate is selected.
+  absl::optional<std::string> assert_cert;
+};
+
+}  // namespace
+
+// Parameterized test fixture for simple testing of the client certificate
+// selection behavior in the sign-in frame.
+class SigninFrameWebviewClientCertsLoginTest
+    : public WebviewClientCertsLoginTest,
+      public ::testing::WithParamInterface<SigninCertParam> {};
+
+IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, Test) {
+  // Arrange the system slot.
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot(GetParam().arrange_client_certs));
+  // Arrange the device policy.
+  if (GetParam().arrange_intermediate_cert) {
+    const std::string intermediate_cert_name = base::StringPrintf(
+        "%s.pem", GetParam().arrange_intermediate_cert->c_str());
+    const base::FilePath intermediate_cert_path =
+        net::GetTestCertsDirectory().AppendASCII(intermediate_cert_name);
+    ASSERT_NO_FATAL_FAILURE(
+        SetIntermediateAuthorityInDeviceOncPolicy(intermediate_cert_path));
+  }
+  SetAutoSelectCertificatePatterns(GetParam().arrange_autoselect_patterns);
+
+  // Prepare the test server for the "act" part of the test.
+  net::SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.request_client_certificate = true;
+  for (const std::string& ca_cert : GetParam().act_ca_certs) {
+    const std::string ca_cert_file_name =
+        base::StringPrintf("%s.pem", ca_cert.c_str());
+    const base::FilePath ca_cert_file_path =
+        net::GetTestCertsDirectory().AppendASCII(ca_cert_file_name);
+    ssl_options.client_authorities.push_back(ca_cert_file_path);
+  }
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
+
+  WaitForGaiaPageLoadAndPropertyUpdate();
+
+  // Act: navigate to the page hosted by the test server.
+  const std::string https_reply_content =
+      RequestClientCertTestPageInFrame(kSigninWebview);
+
+  // Assert the expectation on the client certificate that got selected.
+  if (GetParam().assert_cert) {
+    EXPECT_EQ("got client cert with fingerprint: " +
+                  GetCertSha1Fingerprint(*GetParam().assert_cert),
+              https_reply_content);
+  } else {
+    EXPECT_EQ("got no client cert", https_reply_content);
+  }
+}
+
+// Test that client certificate authentication using certificates from the
+// system slot is enabled in the sign-in frame. The server does not request
+// certificates signed by a specific authority.
+INSTANTIATE_TEST_SUITE_P(
+    SuccessSimple,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*arrange_intermediate_cert=*/absl::nullopt,
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+        /*act_ca_certs=*/{},
+        /*assert_cert=*/kClientCert1Name}));
+
+// Test that client certificate autoselect selects the right certificate even
+// with multiple filters for the same pattern.
+INSTANTIATE_TEST_SUITE_P(
+    SuccessMultipleFilters,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*arrange_intermediate_cert=*/absl::nullopt,
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})",
+         R"({"pattern": "*", "filter": {"ISSUER": {"CN": "foo bar"}}})"},
+        /*act_ca_certs=*/{},
+        /*assert_cert=*/kClientCert1Name}));
+
+// Test that client certificate authentication using certificates from the
+// system slot is enabled in the sign-in frame. The server requests a
+// certificate signed by a specific authority.
+INSTANTIATE_TEST_SUITE_P(
+    SuccessViaCa,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*arrange_intermediate_cert=*/absl::nullopt,
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+        /*act_ca_certs=*/{"client_1_ca"},
+        /*assert_cert=*/kClientCert1Name}));
+
+// Test that client certificate will be discovered if the server requests
+// certificates signed by a root authority, the installed certificate has been
+// issued by an intermediate authority, and the intermediate authority is
+// known on the device (it has been made available through device ONC policy).
+INSTANTIATE_TEST_SUITE_P(
+    SuccessViaCaAndIntermediate,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*arrange_intermediate_cert=*/"client_1_ca",
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+        /*act_ca_certs=*/{"client_root_ca"},
+        /*assert_cert=*/kClientCert1Name}));
+
+// Test that if no client certificate is auto-selected using policy on the
+// sign-in frame, the client does not send up any client certificate.
+INSTANTIATE_TEST_SUITE_P(ErrorNoAutoSelect,
+                         SigninFrameWebviewClientCertsLoginTest,
+                         testing::Values(SigninCertParam{
+                             /*arrange_client_certs=*/{kClientCert1Name},
+                             /*arrange_intermediate_cert=*/absl::nullopt,
+                             /*arrange_autoselect_patterns=*/
+                             {},
+                             /*act_ca_certs=*/{"client_1_ca"},
+                             /*assert_cert=*/absl::nullopt}));
+
+// Test that client certificate authentication using certificates from the
+// system slot is enabled in the sign-in frame. The server requests
+// a certificate signed by a specific authority. The client doesn't have a
+// matching certificate.
+INSTANTIATE_TEST_SUITE_P(
+    ErrorWrongCa,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name},
+        /*arrange_intermediate_cert=*/absl::nullopt,
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+        /*act_ca_certs=*/{"client_2_ca"},
+        /*assert_cert=*/absl::nullopt}));
+
+// Test that client certificate will not be discovered if the server requests
+// certificates signed by a root authority, the installed certificate has been
+// issued by an intermediate authority, and the intermediate authority is not
+// known on the device (it has not been made available through device ONC
+// policy).
+INSTANTIATE_TEST_SUITE_P(
+    ErrorNoIntermediateCa,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*arrange_client_certs=*/{kClientCert1Name, kClientCert2Name},
+        /*arrange_intermediate_cert=*/absl::nullopt,
+        /*arrange_autoselect_patterns=*/
+        {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
+        /*act_ca_certs=*/{"client_root_ca"},
+        /*assert_cert=*/absl::nullopt}));
 
 // Tests the scenario where the system token is not initialized initially (due
 // to the TPM not being ready).
