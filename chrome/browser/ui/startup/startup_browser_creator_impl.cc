@@ -479,6 +479,7 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
 
     StartupTabs onboarding_tabs;
     if (promotional_tabs_enabled) {
+#if defined(OS_WIN)
       // This is a launch from a prompt presented to an inactive user who chose
       // to open Chrome and is being brought to a specific URL for this one
       // launch. Launch the browser with the desired welcome back URL in the
@@ -487,6 +488,7 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
       StartupTabs welcome_back_tabs = provider.GetWelcomeBackTabs(
           profile_, browser_creator_, process_startup);
       AppendTabs(welcome_back_tabs, &tabs);
+#endif  // defined(OS_WIN)
 
       if (welcome_enabled) {
         // Policies for welcome (e.g., first run) may show promotional and

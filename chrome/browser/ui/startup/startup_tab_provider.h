@@ -31,11 +31,13 @@ class StartupTabProvider {
   virtual StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const = 0;
 
+#if defined(OS_WIN)
   // Returns a "welcome back" tab to be shown if requested for a specific
   // launch.
   virtual StartupTabs GetWelcomeBackTabs(Profile* profile,
                                          StartupBrowserCreator* browser_creator,
                                          bool process_startup) const = 0;
+#endif  // defined(OS_WIN)
 
   // Checks for the presence of a trigger indicating the need to offer a Profile
   // Reset on this profile. Returns any tabs which should be shown accordingly.
@@ -155,9 +157,13 @@ class StartupTabProviderImpl : public StartupTabProvider {
 
   // StartupTabProvider:
   StartupTabs GetOnboardingTabs(Profile* profile) const override;
+
+#if defined(OS_WIN)
   StartupTabs GetWelcomeBackTabs(Profile* profile,
                                  StartupBrowserCreator* browser_creator,
                                  bool process_startup) const override;
+#endif  // defined(OS_WIN)
+
   StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const override;
   StartupTabs GetResetTriggerTabs(Profile* profile) const override;

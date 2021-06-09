@@ -2059,6 +2059,7 @@ if (!is_android) {
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
+        "../browser/ui/startup/startup_browser_creator_welcome_back_browsertest.cc",
         "../browser/ui/views/chrome_cleaner_dialog_browsertest_win.cc",
         "../browser/ui/views/chrome_cleaner_reboot_dialog_browsertest_win.cc",
         "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",

@@ -45,6 +45,7 @@ class StartupBrowserCreator {
   // tabs shown at first run.
   void AddFirstRunTab(const GURL& url);
 
+#if defined(OS_WIN)
   // Configures the instance to include the specified "welcome back" page in a
   // tab before other tabs (e.g., those from session restore). This is used for
   // specific launches via retention experiments for which no URLs are provided
@@ -53,6 +54,7 @@ class StartupBrowserCreator {
     welcome_back_page_ = welcome_back_page;
   }
   bool welcome_back_page() const { return welcome_back_page_; }
+#endif  // defined(OS_WIN)
 
   // This function is equivalent to ProcessCommandLine but should only be
   // called during actual process startup.
@@ -215,8 +217,10 @@ class StartupBrowserCreator {
   // Additional tabs to open during first run.
   std::vector<GURL> first_run_tabs_;
 
+#if defined(OS_WIN)
   // The page to be shown in a tab when welcoming a user back to Chrome.
   bool welcome_back_page_ = false;
+#endif  // defined(OS_WIN)
 
   // True if we have already read and reset the preference kWasRestarted. (A
   // member variable instead of a static variable inside WasRestarted because

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -26,9 +27,12 @@ constexpr uint32_t kResetTriggerTabs = 1 << 2;
 constexpr uint32_t kPinnedTabs = 1 << 3;
 constexpr uint32_t kPreferencesTabs = 1 << 4;
 constexpr uint32_t kNewTabPageTabs = 1 << 5;
-constexpr uint32_t kWelcomeBackTab = 1 << 6;
-constexpr uint32_t kPostCrashTab = 1 << 7;
-constexpr uint32_t kExtensionsCheckupTabs = 1 << 8;
+constexpr uint32_t kPostCrashTab = 1 << 6;
+constexpr uint32_t kExtensionsCheckupTabs = 1 << 7;
+
+#if defined(OS_WIN)
+constexpr uint32_t kWelcomeBackTab = 1 << 8;
+#endif  // defined(OS_WIN)
 
 class FakeStartupTabProvider : public StartupTabProvider {
  public:
@@ -82,6 +86,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
     return tabs;
   }
 
+#if defined(OS_WIN)
   StartupTabs GetWelcomeBackTabs(Profile* profile,
                                  StartupBrowserCreator* browser_creator,
                                  bool process_startup) const override {
@@ -90,6 +95,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
       tabs.emplace_back(GURL("https://welcome-back"), false);
     return tabs;
   }
+#endif  // defined(OS_WIN)
 
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override {
@@ -284,6 +290,7 @@ TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_ExtensionCheckupPage) {
   EXPECT_EQ("new-tab", output[1].url.host());
 }
 
+#if defined(OS_WIN)
 // The welcome back page should appear before any other session restore tabs.
 TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_WelcomeBackPage) {
   FakeStartupTabProvider provider_allows_ntp(kPinnedTabs | kPreferencesTabs |
@@ -314,6 +321,7 @@ TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_WelcomeBackPage) {
   EXPECT_EQ("prefs", output[0].url.host());
   EXPECT_EQ("pinned", output[1].url.host());
 }
+#endif  // defined(OS_WIN)
 
 TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_Startup) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);

@@ -72,6 +72,7 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if defined(OS_WIN)
 StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
     Profile* profile,
     StartupBrowserCreator* browser_creator,
@@ -87,6 +88,7 @@ StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
   }
   return tabs;
 }
+#endif  // defined(OS_WIN)
 
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
     StartupBrowserCreator* browser_creator) const {
