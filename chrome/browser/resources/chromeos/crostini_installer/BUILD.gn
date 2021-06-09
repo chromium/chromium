@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -32,12 +32,6 @@ js_library("browser_proxy") {
   ]
 }
 
-polymer_modulizer("app") {
-  js_file = "app.js"
-  html_file = "app.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
-  public_deps = [ ":app_module" ]
+html_to_js("web_components") {
+  js_files = [ "app.js" ]
 }

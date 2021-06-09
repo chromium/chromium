@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -32,21 +32,9 @@ js_library("smb_credentials_dialog") {
   ]
 }
 
-polymer_modulizer("smb_share_dialog") {
-  js_file = "smb_share_dialog.js"
-  html_file = "smb_share_dialog.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("smb_credentials_dialog") {
-  js_file = "smb_credentials_dialog.js"
-  html_file = "smb_credentials_dialog.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":smb_credentials_dialog_module",
-    ":smb_share_dialog_module",
+html_to_js("web_components") {
+  js_files = [
+    "smb_share_dialog.js",
+    "smb_credentials_dialog.js",
   ]
 }

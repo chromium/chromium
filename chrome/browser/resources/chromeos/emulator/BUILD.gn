@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -55,56 +55,14 @@ js_library("device_emulator_pages") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-polymer_modulizer("audio_settings") {
-  js_file = "audio_settings.js"
-  html_file = "audio_settings.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("battery_settings") {
-  js_file = "battery_settings.js"
-  html_file = "battery_settings.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("bluetooth_settings") {
-  js_file = "bluetooth_settings.js"
-  html_file = "bluetooth_settings.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("input_device_settings") {
-  js_file = "input_device_settings.js"
-  html_file = "input_device_settings.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("device_emulator_pages") {
-  js_file = "device_emulator_pages.js"
-  html_file = "device_emulator_pages.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("icons") {
-  js_file = "icons.js"
-  html_file = "icons.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("shared_styles") {
-  js_file = "shared_styles.js"
-  html_file = "shared_styles.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":audio_settings_module",
-    ":battery_settings_module",
-    ":bluetooth_settings_module",
-    ":device_emulator_pages_module",
-    ":icons_module",
-    ":input_device_settings_module",
-    ":shared_styles_module",
+html_to_js("web_components") {
+  js_files = [
+    "audio_settings.js",
+    "battery_settings.js",
+    "bluetooth_settings.js",
+    "input_device_settings.js",
+    "device_emulator_pages.js",
+    "icons.js",
+    "shared_styles.js",
   ]
 }
