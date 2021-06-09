@@ -10,6 +10,7 @@
 
 #include <algorithm>
 
+#include "base/callback.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
@@ -23,6 +24,9 @@ namespace {
 // TODO(https://crbug.com/973095): Update this value based on average and
 // maximum sizes of serialized Semantic Nodes.
 constexpr size_t kMaxNodesPerUpdate = 16;
+
+constexpr size_t kMaxNodesPerDelete =
+    fuchsia::accessibility::semantics::MAX_NODES_PER_UPDATE - 1;
 
 // Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
 constexpr float kRectConversionError = 0.5;
@@ -41,6 +45,29 @@ int32_t GetOffsetContainerId(const ui::AXTree* tree,
   if (offset_container_id == -1)
     return tree->root()->id();
   return offset_container_id;
+}
+
+// Applies |op| to elements of |items| in batches. Maximum batch size is set
+// by |batch_size|.
+template <typename T>
+inline void BatchApply(std::vector<T> items,
+                       size_t batch_size,
+                       base::RepeatingCallback<void(std::vector<T>)> op) {
+  const size_t total_items = items.size();
+  if (total_items == 0) {
+    return;
+  }
+
+  std::vector<T> batch;
+  batch.reserve(batch_size);
+  for (size_t current = 0; current < total_items; current += batch_size) {
+    const size_t next_batch_size = std::min(total_items - current, batch_size);
+    std::move(items.begin() + current,
+              items.begin() + current + next_batch_size,
+              std::back_inserter(batch));
+    op.Run(std::move(batch));
+    batch.clear();
+  }
 }
 
 }  // namespace
@@ -137,21 +164,18 @@ void AccessibilityBridge::TryCommit() {
 
   // Deletions come before updates because first the nodes are deleted, and
   // then we update the parents to no longer point at them.
-  if (!to_delete_.empty())
-    semantic_tree_->DeleteSemanticNodes(std::move(to_delete_));
+  BatchApply(
+      std::move(to_delete_), kMaxNodesPerDelete,
+      base::BindRepeating(
+          &fuchsia::accessibility::semantics::SemanticTree::DeleteSemanticNodes,
+          base::Unretained(semantic_tree_.get())));
 
-  size_t start = 0;
-  while (start < to_update_.size()) {
-    // TODO(https://crbug.com/1134727): AccessibilityBridge must respect FIDL
-    // size limits.
-    size_t end =
-        start + std::min(kMaxNodesPerUpdate, to_update_.size() - start);
-    decltype(to_update_) batch;
-    std::move(to_update_.begin() + start, to_update_.begin() + end,
-              std::back_inserter(batch));
-    semantic_tree_->UpdateSemanticNodes(std::move(batch));
-    start = end;
-  }
+  BatchApply(
+      std::move(to_update_), kMaxNodesPerUpdate,
+      base::BindRepeating(
+          &fuchsia::accessibility::semantics::SemanticTree::UpdateSemanticNodes,
+          base::Unretained(semantic_tree_.get())));
+
   semantic_tree_->CommitUpdates(
       fit::bind_member(this, &AccessibilityBridge::OnCommitComplete));
   commit_inflight_ = true;
