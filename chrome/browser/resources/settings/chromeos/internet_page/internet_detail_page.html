@@ -67,6 +67,14 @@
         color: var(--google-red-500);
       }
 
+      #preferNetworkToggleContainer:hover {
+        background-color: var(--cr-hover-background-color);
+      }
+
+      #preferNetworkToggleContainer:active {
+        background-color: var(--cr-active-background-color);
+      }
+
       paper-spinner-lite {
         height: var(--cr-icon-size);
         width: var(--cr-icon-size);
@@ -209,7 +217,8 @@
         <template is="dom-if"
             if="[[showPreferNetwork_(managedProperties_, globalPolicy,
                 managedNetworkAvailable)]]">
-          <div class="settings-box"  on-click="onPreferNetworkRowClicked_"
+          <div id="preferNetworkToggleContainer" class="settings-box"
+              on-click="onPreferNetworkRowClicked_"
               actionable$="[[!isNetworkPolicyEnforced(
                   managedProperties_.priority)]]">
             <div id="preferNetworkToggleLabel" class="start settings-box-text">
