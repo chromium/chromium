@@ -335,66 +335,6 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
                                                              : AccountInfo();
 }
 
-absl::optional<AccountInfo>
-IdentityManager::FindExtendedAccountInfoForAccountWithRefreshToken(
-    const CoreAccountInfo& account_info) const {
-  AccountInfo extended_account_info =
-      account_tracker_service_->GetAccountInfo(account_info.account_id);
-
-  // AccountTrackerService always returns an AccountInfo, even on failure. In
-  // case of failure, the AccountInfo will be unpopulated, thus we should not
-  // be able to find a valid refresh token.
-  if (!HasAccountWithRefreshToken(extended_account_info.account_id))
-    return absl::nullopt;
-
-  return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
-}
-
-absl::optional<AccountInfo>
-IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-    const CoreAccountId& account_id) const {
-  AccountInfo account_info =
-      account_tracker_service_->GetAccountInfo(account_id);
-
-  // AccountTrackerService always returns an AccountInfo, even on failure. In
-  // case of failure, the AccountInfo will be unpopulated, thus we should not
-  // be able to find a valid refresh token.
-  if (!HasAccountWithRefreshToken(account_info.account_id))
-    return absl::nullopt;
-
-  return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
-}
-
-absl::optional<AccountInfo> IdentityManager::
-    FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-        const std::string& email_address) const {
-  AccountInfo account_info =
-      account_tracker_service_->FindAccountInfoByEmail(email_address);
-
-  // AccountTrackerService always returns an AccountInfo, even on failure. In
-  // case of failure, the AccountInfo will be unpopulated, thus we should not
-  // be able to find a valid refresh token.
-  if (!HasAccountWithRefreshToken(account_info.account_id))
-    return absl::nullopt;
-
-  return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
-}
-
-absl::optional<AccountInfo>
-IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-    const std::string& gaia_id) const {
-  AccountInfo account_info =
-      account_tracker_service_->FindAccountInfoByGaiaId(gaia_id);
-
-  // AccountTrackerService always returns an AccountInfo, even on failure. In
-  // case of failure, the AccountInfo will be unpopulated, thus we should not
-  // be able to find a valid refresh token.
-  if (!HasAccountWithRefreshToken(account_info.account_id))
-    return absl::nullopt;
-
-  return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
-}
-
 std::unique_ptr<UbertokenFetcher>
 IdentityManager::CreateUbertokenFetcherForAccount(
     const CoreAccountId& account_id,

@@ -267,44 +267,6 @@ class IdentityManager : public KeyedService,
   // The same as `FindExtendedAccountInfo()` but finds an account by gaia ID.
   AccountInfo FindExtendedAccountInfoByGaiaId(const std::string& gaia_id) const;
 
-  // Returns extended information for account identified by |account_info|.
-  // The information will be returned if the information is available and
-  // refresh token is available for account.
-  // DEPRECATED: Use FindExtendedAccountInfo() instead, see
-  // https://crbug.com/1213351
-  absl::optional<AccountInfo> FindExtendedAccountInfoForAccountWithRefreshToken(
-      const CoreAccountInfo& account_info) const;
-
-  // Looks up and returns information for account with given |account_id|. If
-  // the account cannot be found, return an empty optional. This is equivalent
-  // to searching on the vector returned by GetAccountsWithRefreshTokens() but
-  // without allocating memory for the vector.
-  // DEPRECATED: Use FindExtendedAccountInfoByAccountId() instead, see
-  // https://crbug.com/1213351
-  absl::optional<AccountInfo>
-  FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-      const CoreAccountId& account_id) const;
-
-  // Looks up and returns information for account with given |email_address|. If
-  // the account cannot be found, return an empty optional. This is equivalent
-  // to searching on the vector returned by GetAccountsWithRefreshTokens() but
-  // without allocating memory for the vector.
-  // DEPRECATED: Use FindExtendedAccountInfoByEmailAddress() instead, see
-  // https://crbug.com/1213351
-  absl::optional<AccountInfo>
-  FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-      const std::string& email_address) const;
-
-  // Looks up and returns information for account with given |gaia_id|. If the
-  // account cannot be found, return an empty optional. This is equivalent to
-  // searching on the vector returned by GetAccountsWithRefreshTokens() but
-  // without allocating memory for the vector.
-  // DEPRECATED: Use FindExtendedAccountInfoByGaiaId() instead, see
-  // https://crbug.com/1213351
-  absl::optional<AccountInfo>
-  FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-      const std::string& gaia_id) const;
-
   // Creates an UbertokenFetcher given the passed-in information, allowing
   // to specify a custom |url_loader_factory| as well.
   std::unique_ptr<UbertokenFetcher> CreateUbertokenFetcherForAccount(
