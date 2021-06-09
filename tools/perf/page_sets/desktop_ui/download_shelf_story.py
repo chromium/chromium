@@ -39,7 +39,8 @@ class DownloadShelfStory(MultiTabStory):
         tabs.New(url=url)
       except Exception:
         pass
-    self._devtools = action_runner.tab.browser.GetUIDevtools()
+    if not IsMac():
+      self._devtools = action_runner.tab.browser.GetUIDevtools()
 
   def IsWebUI(self):
     return 'webui' in self.NAME
