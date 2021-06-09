@@ -103,8 +103,8 @@
 
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 // Enable libcast streaming receiver.
+#include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
 #include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
-#include "media/cast/receiver/constants.h"                        // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMECAST)
@@ -759,7 +759,7 @@ MediaFactory::CreateRendererFactorySelector(
   }
 
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
-  if (url.SchemeIs(media::cast::kMirroringScheme)) {
+  if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
         std::make_unique<CastRendererClientFactory>(
@@ -777,7 +777,7 @@ MediaFactory::CreateRendererFactorySelector(
         std::make_unique<media::cast::CastStreamingRendererFactory>(
             std::move(default_factory_cast_streaming));
     factory_selector->AddBaseFactory(
-        FactoryType::kLibcastMirroring,
+        RendererType::kCastStreaming,
         std::move(cast_streaming_renderer_factory));
   }
 #endif  // BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
