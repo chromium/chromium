@@ -2817,6 +2817,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "extension-workflow-justification",
+    "owners": [ "igorruvinov", "zmin" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "extensions-on-chrome-urls",
     "owners": [ "//extensions/OWNERS" ],
     // This enables the use of extensions on chrome:// URLs. This is useful for

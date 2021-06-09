@@ -1579,6 +1579,9 @@ extern const char kSanitizerApiDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
+extern const char kExtensionWorkflowJustificationName[];
+extern const char kExtensionWorkflowJustificationDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

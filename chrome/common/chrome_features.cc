@@ -418,6 +418,11 @@ const base::FeatureParam<base::TimeDelta>
         base::TimeDelta::FromMinutes(1)};
 #endif
 
+// Controls whether the user justification text field is visible on the
+// extension request dialog.
+const base::Feature kExtensionWorkflowJustification{
+    "ExtensionWorkflowJustification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
 // parameter value controls which |ExternalInstallBubbleAlert| button is the
 // default.

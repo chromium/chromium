@@ -44940,6 +44940,7 @@ from previous Chrome versions.
   <int value="-2136173537" label="QuickAnswers:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
+  <int value="-2134112201" label="ExtensionWorkflowJustification:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
   <int value="-2133277113" label="CCTModuleCustomHeader:disabled"/>
   <int value="-2133276662" label="EduCoexistenceConsentLog:disabled"/>
@@ -46671,6 +46672,7 @@ from previous Chrome versions.
   <int value="-726844226"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
   <int value="-726567328" label="disable-virtual-keyboard"/>
+  <int value="-725374685" label="ExtensionWorkflowJustification:disabled"/>
   <int value="-725264428" label="CompositingBasedThrottling:enabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>

@@ -7193,6 +7193,11 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kUnifiedPasswordManagerAndroid)},
 #endif
 
+    {"extension-workflow-justification",
+     flag_descriptions::kExtensionWorkflowJustificationName,
+     flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kExtensionWorkflowJustification)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
