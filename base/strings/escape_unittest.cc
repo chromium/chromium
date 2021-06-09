@@ -421,8 +421,10 @@ TEST(EscapeTest, ContainsEncodedBytes) {
   EXPECT_TRUE(ContainsEncodedBytes("abc%2fdef", {'/', '\\'}));
 
   // Should be looking for byte values, not UTF-8 character values.
-  EXPECT_TRUE(ContainsEncodedBytes("caf%C3%A9", {'\xc3'}));
-  EXPECT_FALSE(ContainsEncodedBytes("caf%C3%A9", {'\xe9'}));
+  EXPECT_TRUE(
+      ContainsEncodedBytes("caf%C3%A9", {static_cast<uint8_t>('\xc3')}));
+  EXPECT_FALSE(
+      ContainsEncodedBytes("caf%C3%A9", {static_cast<uint8_t>('\xe9')}));
 }
 
 }  // namespace base

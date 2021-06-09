@@ -197,7 +197,8 @@ TEST(MetadataRecorderTest, ReclaimInactiveSlots) {
   // Fill up the metadata map.
   for (size_t i = 0; i < MetadataRecorder::MAX_METADATA_COUNT; ++i) {
     recorder.Set(i, absl::nullopt, i);
-    items_set.insert(MetadataRecorder::Item{i, absl::nullopt, i});
+    items_set.insert(
+        MetadataRecorder::Item{i, absl::nullopt, static_cast<int64_t>(i)});
   }
 
   // Remove every fourth entry to fragment the data.
@@ -205,13 +206,15 @@ TEST(MetadataRecorderTest, ReclaimInactiveSlots) {
   for (size_t i = 3; i < MetadataRecorder::MAX_METADATA_COUNT; i += 4) {
     recorder.Remove(i, absl::nullopt);
     ++entries_removed;
-    items_set.erase(MetadataRecorder::Item{i, absl::nullopt, i});
+    items_set.erase(
+        MetadataRecorder::Item{i, absl::nullopt, static_cast<int64_t>(i)});
   }
 
   // Ensure that the inactive slots are reclaimed to make room for more entries.
   for (size_t i = 1; i <= entries_removed; ++i) {
     recorder.Set(i * 100, absl::nullopt, i * 100);
-    items_set.insert(MetadataRecorder::Item{i * 100, absl::nullopt, i * 100});
+    items_set.insert(MetadataRecorder::Item{i * 100, absl::nullopt,
+                                            static_cast<int64_t>(i * 100)});
   }
 
   MetadataRecorder::ItemArray items_arr;
