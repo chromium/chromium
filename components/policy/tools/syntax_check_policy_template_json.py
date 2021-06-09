@@ -485,7 +485,7 @@ class PolicyTemplateChecker(object):
   # can it?).
   def _CheckDevicePolicyProtoMappingExistence(self, device_policy_proto_map,
                                               device_policy_proto_path):
-    with open(device_policy_proto_path, 'r') as file:
+    with open(device_policy_proto_path, 'r', encoding='utf-8') as file:
       device_policy_proto = file.read()
 
     for policy, proto_path in device_policy_proto_map.items():
@@ -1643,7 +1643,7 @@ class PolicyTemplateChecker(object):
     # strings. It changes hash of the string and grit can't find translation in
     # the file.
     three_quotes_cnt = 0
-    with open(filename) as f:
+    with open(filename, encoding='utf-8') as f:
       indent = 0
       line_number = 0
       for line in f:
@@ -1703,7 +1703,7 @@ class PolicyTemplateChecker(object):
         if os.path.exists(backupfilename):
           os.remove(backupfilename)
         os.rename(filename, backupfilename)
-      with open(filename, 'w') as f:
+      with open(filename, 'w', encoding='utf-8') as f:
         f.writelines(fixed_lines)
 
   def _ValidatePolicyAtomicGroups(self, atomic_groups, max_id, deleted_ids):
@@ -1730,8 +1730,8 @@ class PolicyTemplateChecker(object):
 
   def Main(self, filename, options, original_file_contents, current_version):
     try:
-      with open(filename, "rb") as f:
-        raw_data = f.read().decode("UTF-8")
+      with open(filename, 'rb') as f:
+        raw_data = f.read().decode('UTF-8')
         data = eval(raw_data)
         DuplicateKeyVisitor().visit(ast.parse(raw_data))
     except ValueError as e:

@@ -16,7 +16,7 @@ def _GetPolicyTemplates(template_path):
   # parser because policy_templates.json is not quite JSON, and uses some
   # python features such as #-comments and '''strings'''. policy_templates.json
   # is actually maintained as a python dictionary.
-  with open(template_path) as f:
+  with open(template_path, encoding='utf-8') as f:
     template_data = eval(f.read(), {})
   policies = [ policy
                for policy in template_data['policy_definitions']
@@ -86,7 +86,8 @@ def _CheckPolicyTestCases(input_api, output_api, policies):
        'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
   policy_test_cases_file = input_api.os_path.join(
       root, test_cases_depot_path)
-  test_names = input_api.json.load(open(policy_test_cases_file)).keys()
+  with open(policy_test_cases_file, encoding='utf-8') as f:
+    test_names = input_api.json.load(f).keys()
   tested_policies = frozenset(name.partition('.')[0]
                               for name in test_names
                               if name[:2] != '--')
@@ -120,7 +121,7 @@ def _CheckPolicyHistograms(input_api, output_api, policies):
   root = input_api.change.RepositoryRoot()
   histograms = input_api.os_path.join(
       root, 'tools', 'metrics', 'histograms', 'enums.xml')
-  with open(histograms) as f:
+  with open(histograms, encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -160,7 +161,7 @@ def _CheckPolicyAtomicGroupsHistograms(input_api, output_api, atomic_groups):
   root = input_api.change.RepositoryRoot()
   histograms = input_api.os_path.join(
       root, 'tools', 'metrics', 'histograms', 'enums.xml')
-  with open(histograms) as f:
+  with open(histograms, encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -198,7 +199,7 @@ def _CheckPolicyAtomicGroupsHistograms(input_api, output_api, atomic_groups):
   return results
 
 def _CheckMissingPlaceholders(input_api, output_api, template_path):
-  with open(template_path) as f:
+  with open(template_path, encoding='utf-8') as f:
     template_data = eval(f.read(), {})
 
   results = []
