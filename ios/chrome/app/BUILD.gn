@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:tab_opening",
@@ -184,6 +185,33 @@ source_set("safe_mode_app_state_agent") {
   ]
 }
 
+source_set("enterprise_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_app_agent.h",
+    "enterprise_app_agent.mm",
+  ]
+
+  deps = [
+    ":enterprise_app_agent_ui",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
+source_set("enterprise_app_agent_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_loading_screen_view_controller.h",
+    "enterprise_loading_screen_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
 source_set("first_run_app_state_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -236,6 +264,7 @@ source_set("app_internal") {
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":content_suggestions_scheduler_app_state_agent",
+    ":enterprise_app_agent",
     ":first_run_app_state_agent",
     ":mode",
     ":safe_mode_app_state_agent",

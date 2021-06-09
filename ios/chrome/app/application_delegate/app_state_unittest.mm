@@ -21,6 +21,7 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
+#import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #include "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -91,6 +92,8 @@
     case InitStageBrowserBasic:
       break;
     case InitStageSafeMode:
+      break;
+    case InitStageEnterprise:
       break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [appState queueTransitionToNextInitStage];
@@ -366,6 +369,13 @@ class AppStateTest : public BlockCleanupTest {
     return safe_mode_app_agent_;
   }
 
+  EnterpriseAppAgent* getEnterpriseAppAgent() {
+    if (!enterprise_app_agent_) {
+      enterprise_app_agent_ = [[EnterpriseAppAgent alloc] init];
+    }
+    return enterprise_app_agent_;
+  }
+
   AppState* getAppStateWithMock(bool with_safe_mode_agent) {
     if (!app_state_) {
       // The swizzle block needs the scene state before app_state is create, but
@@ -392,6 +402,10 @@ class AppStateTest : public BlockCleanupTest {
         [getSafeModeAppAgent() appState:app_state_
                          sceneConnected:main_scene_state_];
       }
+
+      // Add the enterprise agent for the app to boot past the enterprise init
+      // stage.
+      [app_state_ addAgent:getEnterpriseAppAgent()];
 
       [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
     }
@@ -421,6 +435,10 @@ class AppStateTest : public BlockCleanupTest {
       [window makeKeyAndVisible];
 
       [app_state_ addAgent:getSafeModeAppAgent()];
+
+      // Add the enterprise agent for the app to boot past the enterprise init
+      // stage.
+      [app_state_ addAgent:getEnterpriseAppAgent()];
 
       [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
 
@@ -453,6 +471,7 @@ class AppStateTest : public BlockCleanupTest {
   AppState* app_state_;
   FakeSceneState* main_scene_state_;
   SafeModeAppAgent* safe_mode_app_agent_;
+  EnterpriseAppAgent* enterprise_app_agent_;
   AppStateObserverToMockMainController*
       app_state_observer_to_mock_main_controller_;
   id browser_launcher_mock_;
@@ -644,6 +663,7 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
 
   // Start init stages.
   [appState queueTransitionToFirstInitStage];
+  [appState queueTransitionToNextInitStage];
   [appState queueTransitionToNextInitStage];
 
   ASSERT_TRUE([startupInformation isColdStart]);

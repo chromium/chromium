@@ -36,6 +36,7 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -619,6 +620,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     case InitStageSafeMode:
       [self addPostSafeModeAgents];
       break;
+    case InitStageEnterprise:
+      break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [self startUpBrowserBackgroundInitialization];
       [appState queueTransitionToNextInitStage];
@@ -645,6 +648,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)addPostSafeModeAgents {
   [self.appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
+  [self.appState addAgent:[[EnterpriseAppAgent alloc] init]];
   [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
 
   FirstRunAppAgent* firstRunAppAgent = [[FirstRunAppAgent alloc] init];

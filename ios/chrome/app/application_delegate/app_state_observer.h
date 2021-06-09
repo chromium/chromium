@@ -23,6 +23,9 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // at the InitStageSafeMode stage if safe mode is needed, or will move to the
   // next stage otherwise.
   InitStageSafeMode,
+  // The app is fetching any enterprise policies. The initialization is blocked
+  // on this because the policies might have an effect on later init stages.
+  InitStageEnterprise,
   // The app is initializing the browser objects for the background handlers.
   InitStageBrowserObjectsForBackgroundHandlers,
   // The app is initializing the browser objects for the browser UI (e.g., the

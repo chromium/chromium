@@ -659,7 +659,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
-  if (appInitStage < InitStageNormalUI) {
+  if (appInitStage < InitStageFinal) {
     // Nothing per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main BrowserState.
     return;

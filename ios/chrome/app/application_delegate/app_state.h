@@ -172,6 +172,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Adds a new agent. Agents are owned by the app state.
 // This automatically sets the app state on the |agent|.
 - (void)addAgent:(id<AppStateAgent>)agent;
+// Removes an agent.
+- (void)removeAgent:(id<AppStateAgent>)agent;
 
 // Queue the transition to the next app initialization stage. Will stop
 // transitioning when the Final stage is reached.

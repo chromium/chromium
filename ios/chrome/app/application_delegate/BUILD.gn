@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//components/previous_session_info",
     "//ios/chrome/app",
     "//ios/chrome/app:app_internal",
+    "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app:mode",
     "//ios/chrome/app:safe_mode_app_state_agent",
     "//ios/chrome/app/intents",

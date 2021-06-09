@@ -557,6 +557,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [agent setAppState:self];
 }
 
+- (void)removeAgent:(id<AppStateAgent>)agent {
+  DCHECK(agent);
+  DCHECK([self.agents containsObject:agent]);
+  [self.agents removeObject:agent];
+}
+
 - (void)queueTransitionToNextInitStage {
   InitStage nextInitStage = static_cast<InitStage>(self.initStage + 1);
   DCHECK(nextInitStage <= InitStageFinal);

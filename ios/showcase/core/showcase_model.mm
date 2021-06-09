@@ -55,6 +55,12 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey : @"Credential Provider Consent UI",
     },
     @{
+      showcase::kClassForDisplayKey : @"EnterpriseLoadScreenViewController",
+      showcase::
+      kClassForInstantiationKey : @"EnterpriseLoadScreenViewController",
+      showcase::kUseCaseKey : @"Enterprise loading screen",
+    },
+    @{
       showcase::kClassForDisplayKey : @"EmptyCredentialsViewController",
       showcase::kClassForInstantiationKey : @"EmptyCredentialsViewController",
       showcase::kUseCaseKey : @"Credential Provider Empty Credentials UI",
