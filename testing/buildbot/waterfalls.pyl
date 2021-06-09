@@ -5430,12 +5430,30 @@
     'name': 'chromium.updater',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      # TODO(crbug.com/1120821): switch to new pool
-      # when arm64 device is configured.
+      'mac-arm64-updater-tester-dbg': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'arm-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-11',
+            }
+          ]
+        },
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+      },
       'mac-arm64-updater-tester-rel': {
-        'mixins': [
-            'mac_arm64_apple_dtk_experimental',
-        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'arm-64',
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-11',
+            }
+          ]
+        },
         'test_suites': {
           'gtest_tests': 'updater_gtests',
         },
