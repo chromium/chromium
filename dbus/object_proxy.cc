@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -631,6 +632,16 @@ void ObjectProxy::OnCallMethod(const std::string& interface_name,
                                ResponseCallback response_callback,
                                Response* response,
                                ErrorResponse* error_response) {
+  // Crash on null `response_callback` with details of the call.
+  // TODO(http://crbug/1211451): Remove after fix.
+  LOG_IF(FATAL, response_callback.is_null())
+      << "Null response_callback"
+      << ", method:" << interface_name << "." << method_name
+      << ", obj=" << object_path_.value();
+  DEBUG_ALIAS_FOR_CSTR(interface_name_copy, interface_name.c_str(), 64);
+  DEBUG_ALIAS_FOR_CSTR(method_name_copy, method_name.c_str(), 64);
+  DEBUG_ALIAS_FOR_CSTR(object_path_copy, object_path_.value().c_str(), 64);
+
   if (response) {
     // Method call was successful.
     std::move(response_callback).Run(response);
