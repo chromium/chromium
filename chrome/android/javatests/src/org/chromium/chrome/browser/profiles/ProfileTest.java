@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -178,10 +179,11 @@ public class ProfileTest {
     }
 
     /**
-    Tests createIfNeeded parameter of getOffTheRecordProfile.
-  */
+        Tests createIfNeeded parameter of getOffTheRecordProfile.
+    */
     @Test
     @LargeTest
+    @RequiresRestart("crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
     public void testGetOffTheRecordProfile() throws Exception {
         OTRProfileID profileID = new OTRProfileID("test::OTRProfile");
 
