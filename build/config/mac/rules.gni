@@ -408,6 +408,10 @@ set_defaults("mac_framework_bundle") {
 #         (optional) string, name of the generated app without the
 #         .app suffix. If omitted, defaults to target_name.
 #
+#     output_dir:
+#         (optional) string, a subdirectory name to place the app bundle in.
+#         If omitted, the bundle will be placed in ${root_out_dir}.
+#
 #     extra_configs:
 #         (optional) list of label, additional configs to apply to the
 #         executable target.
@@ -428,6 +432,11 @@ template("mac_app_bundle") {
   _package_type = "app"
   if (defined(invoker.package_type)) {
     _package_type = invoker.package_type
+  }
+
+  _output_dir = root_out_dir
+  if (defined(invoker.output_dir)) {
+    _output_dir += "/${invoker.output_dir}"
   }
 
   if (_package_type == "app") {
@@ -551,7 +560,7 @@ template("mac_app_bundle") {
     }
 
     product_type = _product_type
-    bundle_root_dir = "$root_out_dir/${_output_name}.${_output_extension}"
+    bundle_root_dir = "${_output_dir}/${_output_name}.${_output_extension}"
     bundle_contents_dir = "$bundle_root_dir/Contents"
     bundle_resources_dir = "$bundle_contents_dir/Resources"
     bundle_executable_dir = "$bundle_contents_dir/MacOS"

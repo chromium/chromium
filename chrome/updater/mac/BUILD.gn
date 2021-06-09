@@ -36,7 +36,8 @@ mac_app_bundle("updater_bundle") {
 
 mac_app_bundle("updater_bundle_test_v2") {
   info_plist_target = ":updater_plist"
-  output_name = updater_product_full_name + "_Test_V2"
+  output_dir = "ChromiumUpdaterTestAppV2"
+  output_name = updater_product_full_name
   extra_substitutions =
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
