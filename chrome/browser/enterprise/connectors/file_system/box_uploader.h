@@ -23,18 +23,20 @@ extern const char kUniquifierUmaLabel[];
 // file.
 class BoxUploader {
  public:
+  static const char kServiceProviderName[];
+
   static std::unique_ptr<BoxUploader> Create(
       download::DownloadItem* download_item);
 
   virtual ~BoxUploader();
 
-  using RenameHandlerCallback = base::OnceCallback<void(bool)>;
+  using UploadCompleteCallback = base::OnceCallback<void(bool)>;
 
   // Initialize with callbacks from FileSystemRenameHandler, set
   // current_api_call_ to be the first step of the whole API call workflow. Must
   // be called before calling TryTask() for the first time.
   void Init(base::RepeatingCallback<void(void)> authen_retry_callback,
-            RenameHandlerCallback download_callback,
+            UploadCompleteCallback upload_complete_cb,
             PrefService* prefs);
 
   // Kick off the workflow from the step stored in current_api_call_. Will
@@ -53,9 +55,7 @@ class BoxUploader {
   // Helper methods for unit tests.
   std::string GetFolderIdForTesting() const;
   void NotifyOAuth2ErrorForTesting();
-  void SetUploadApiCallFlowDoneForTesting(bool success);
-
-  class FileChunksHandler;  // To be moved into BoxChunkedFileUploader.
+  void SetUploadApiCallFlowDoneForTesting(bool success, std::string file_id);
 
   // The largest number of retries attempted in OnPreflightCheckResponse.
   enum UploadAttemptCount {
@@ -73,19 +73,25 @@ class BoxUploader {
 
   void TryCurrentApiCall();
   bool EnsureSuccessResponse(bool success, int response_code);
-  void OnApiCallFlowDone(bool upload_success, GURL uploaded_file_url);
+  void OnApiCallFlowDone(bool upload_success, std::string uploaded_file_id);
   void NotifyResult(bool success);
 
   // To be overridden to test API calls flow and file delete separately.
   virtual void StartCurrentApiCall();
   // Must be implemented in child classes.
   virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() = 0;
+  // After preflight check succeeds, go into either BoxDirectUploader or
+  // BoxChunkedUploader.
+  virtual void StartUpload();
   // Can be overridden to handle failure differently from simply calling
   // OnApiCallFlowDone(false).
   virtual void OnApiCallFlowFailure();
 
   const base::FilePath GetLocalFilePath() const;
-  const base::FilePath GetTargetFileName() const;
+  // Return the file name used for the upload, which, if there was naming
+  // conflict, can be formatted with suffix or timestamp and thus different from
+  // |target_file_name_|.
+  const base::FilePath GetUploadFileName() const;
   const std::string GetFolderId();
   const std::string GetFolderId() const;
   void SetFolderId(std::string folder_id);
@@ -112,19 +118,21 @@ class BoxUploader {
   // upload was done, with callback OnFileDeleted().
   void PostDeleteFileTask(bool upload_success);
   // Callback attached in PostDeleteFileTask(). Report success back to original
-  // thread via download_callback_.
+  // thread via upload_complete_cb_.
   void OnFileDeleted(bool upload_success, bool delete_success);
 
   // File details.
   const base::FilePath local_file_path_;   // Path of the local temporary file.
-  const base::FilePath target_file_name_;  // File name to be used finally.
+  const base::FilePath
+      target_file_name_;  // File name to be used for the upload.
   const base::Time download_start_time_;   // Start time of the download.
-  uint32_t
-      uniquifier_;  // Number to be appended to the filename to make it unique.
+  uint32_t uniquifier_;  // Number suffix for the filename to uniquify.
+
+  // Callback when the entire flow is completed to notify the download thread.
+  UploadCompleteCallback upload_complete_cb_;
   // Callback when API call gives Authenetication Error.
   base::RepeatingCallback<void(void)> authentication_retry_callback_;
-  // Callback when the entire flow is completed to notify the download thread.
-  RenameHandlerCallback download_callback_;
+
   // Used for OAuth2ApiCallFlow::Start():
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string access_token_;
@@ -136,10 +144,11 @@ class BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
   // Folder id used to specify the destination folder for the Service Provider.
   std::string folder_id_;
+  // File id used to open a tab to show the item on Box.
+  std::string file_id_;
   // PrefService used to store folder_id.
-  PrefService* prefs_;
-  // URL to show uploaded file.
-  GURL file_url_;
+  PrefService* prefs_ =
+      nullptr;  // Has to be initialized to nullptr for DCHECKs.
 
   base::WeakPtrFactory<BoxUploader> weak_factory_{this};
 };
@@ -157,7 +166,9 @@ class BoxDirectUploader : public BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override;
 
   // Box API call step.
-  void OnWholeFileUploadResponse(bool success, int response_code, GURL url);
+  void OnWholeFileUploadResponse(bool success,
+                                 int response_code,
+                                 const std::string& file_id);
 
   base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
 };
@@ -201,7 +212,7 @@ class BoxChunkedUploader : public BoxUploader {
   void OnCommitUploadSsessionResponse(bool success,
                                       int response_code,
                                       base::TimeDelta retry_after,
-                                      GURL file_url);
+                                      const std::string& file_id);
   void OnAbortUploadSsessionResponse(bool success, int response_code);
 
   // Callbacks for chunks_handler_.
@@ -216,6 +227,7 @@ class BoxChunkedUploader : public BoxUploader {
   PartInfo curr_part_;
   base::Value uploaded_parts_;
   std::string sha1_digest_;
+
   base::WeakPtrFactory<BoxChunkedUploader> weak_factory_{this};
 };
 

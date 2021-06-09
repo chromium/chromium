@@ -132,8 +132,8 @@ class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
 // downloads folder in box.
 class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
  public:
-  // Additional args are: url to show the uploaded item on Box.
-  using TaskCallback = base::OnceCallback<void(bool, int, GURL)>;
+  // Additional args are: file id to show the uploaded item on Box.
+  using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
   BoxWholeFileUploadApiCallFlow(TaskCallback callback,
                                 const std::string& folder_id,
                                 const base::FilePath& target_file_name,
@@ -314,10 +314,10 @@ class BoxAbortUploadSessionApiCallFlow
 class BoxCommitUploadSessionApiCallFlow
     : public BoxChunkedUploadBaseApiCallFlow {
  public:
-  // Additional args are: Retry-After header duration, and url to show the
+  // Additional args are: Retry-After header duration, and file id to show the
   // uploaded item on Box.
   using TaskCallback =
-      base::OnceCallback<void(bool, int, base::TimeDelta, GURL)>;
+      base::OnceCallback<void(bool, int, base::TimeDelta, const std::string&)>;
   BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& session_endpoint,
                                     const base::Value& parts,

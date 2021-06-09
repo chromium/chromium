@@ -60,6 +60,7 @@ void BoxUploaderTestBase::CreateTemporaryFileWithContent(std::string content) {
 
 void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
   ASSERT_TRUE(uploader);
+  ASSERT_TRUE(prefs_);
   uploader->Init(base::BindRepeating(&BoxUploaderTestBase::AuthenticationRetry,
                                      base::Unretained(this)),
                  base::BindOnce(&BoxUploaderTestBase::OnUploaderFinished,
@@ -68,6 +69,7 @@ void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
 }
 
 void BoxUploaderTestBase::InitFolderIdInPrefs(std::string folder_id) {
+  ASSERT_TRUE(prefs_);
   prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
 }
 
@@ -144,11 +146,5 @@ BoxUploaderTestBase::HttpResponse::~HttpResponse() = default;
 
 BoxUploaderTestBase::HttpResponse::HttpResponse(HttpResponse&& response)
     : head_(std::move(response.head_)), body_(std::move(response.body_)) {}
-
-////////////////////////////////////////////////////////////////////////////////
-// MockApiCallFlow
-////////////////////////////////////////////////////////////////////////////////
-MockApiCallFlow::MockApiCallFlow() = default;
-MockApiCallFlow::~MockApiCallFlow() = default;
 
 }  // namespace enterprise_connectors

@@ -7,6 +7,8 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "content/public/test/fake_download_item.h"
+#include "google_apis/gaia/oauth2_api_call_flow.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {
 
@@ -21,7 +23,32 @@ class DownloadItemForTest : public content::FakeDownloadItem {
 
  protected:
   base::ScopedTempDir tmp_dir_;
-  base::FilePath file_path_;
+  base::FilePath path_;
+};
+
+class MockApiCallFlow : public OAuth2ApiCallFlow {
+ public:
+  MockApiCallFlow();
+  ~MockApiCallFlow() override;
+
+ protected:
+  MOCK_METHOD0(CreateApiCallUrl, GURL());
+  MOCK_METHOD0(CreateApiCallBody, std::string());
+  MOCK_METHOD(void,
+              ProcessApiCallSuccess,
+              (const network::mojom::URLResponseHead*,
+               std::unique_ptr<std::string>),
+              (override));
+  MOCK_METHOD(void,
+              ProcessApiCallFailure,
+              (int,
+               const network::mojom::URLResponseHead*,
+               std::unique_ptr<std::string>),
+              (override));
+  MOCK_METHOD(net::PartialNetworkTrafficAnnotationTag,
+              GetNetworkTrafficAnnotationTag,
+              (),
+              (override));
 };
 
 }  // namespace enterprise_connectors

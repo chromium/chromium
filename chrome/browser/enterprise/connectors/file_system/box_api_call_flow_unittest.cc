@@ -353,10 +353,10 @@ class BoxWholeFileUploadApiCallFlowTest
         folder_id_, file_name_, file_path_);
   }
 
-  void OnResponse(bool success, int response_code, GURL file_url) {
+  void OnResponse(bool success, int response_code, const std::string& file_id) {
     processed_success_ = success;
     response_code_ = response_code;
-    file_url_ = file_url;
+    file_id_ = file_id;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
@@ -399,7 +399,7 @@ class BoxWholeFileUploadApiCallFlowTest
       FILE_PATH_LITERAL("box_whole_file_upload_test.txt")};
   const std::string file_content_{"<TestContent>~~~123456789~~~</TestContent>"};
 
-  GURL file_url_;
+  std::string file_id_;
 
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -448,7 +448,8 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess_EmptyBody) {
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
-  ASSERT_FALSE(file_url_.is_valid()) << file_url_;
+  ASSERT_TRUE(file_id_.empty());
+  ASSERT_EQ(BoxApiCallFlow::MakeUrlToShowFile(file_id_), GURL());
   ASSERT_TRUE(base::PathExists(file_path_))
       << "File " << file_path_
       << " must still exist / not have been deleted by another thread so that "
@@ -474,8 +475,9 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess_ValidUrl) {
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
-  ASSERT_TRUE(file_url_.is_valid()) << file_url_;
-  ASSERT_EQ(file_url_, GURL(kFileSystemBoxUploadResponseFileUrl));
+  ASSERT_FALSE(file_id_.empty());
+  ASSERT_EQ(BoxApiCallFlow::MakeUrlToShowFile(file_id_),
+            GURL(kFileSystemBoxUploadResponseFileUrl));
   ASSERT_TRUE(base::PathExists(file_path_))
       << "File " << file_path_
       << " must still exist / not have been deleted by another thread so that "
@@ -999,11 +1001,11 @@ class BoxCommitUploadSessionApiCallFlowTest
   void OnResponse(bool success,
                   int response_code,
                   base::TimeDelta retry_after,
-                  GURL file_url) {
+                  const std::string& file_id) {
     processed_success_ = success;
     response_code_ = response_code;
     retry_after_ = retry_after;
-    file_url_ = file_url;
+    file_id_ = file_id;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
@@ -1011,7 +1013,7 @@ class BoxCommitUploadSessionApiCallFlowTest
   base::Value upload_session_parts_;
   std::string expected_body_;
   base::TimeDelta retry_after_;
-  GURL file_url_;
+  std::string file_id_;
 
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
@@ -1064,7 +1066,7 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Retry) {
 }
 
 TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
-  data_decoder::test::InProcessDataDecoder decoder;  // For file url extraction.
+  data_decoder::test::InProcessDataDecoder decoder;  // For file id extraction.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
   std::string body(kFileSystemBoxUploadResponseBody);
 
@@ -1077,8 +1079,9 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(0));
-  ASSERT_TRUE(file_url_.is_valid()) << file_url_;
-  ASSERT_EQ(file_url_, GURL(kFileSystemBoxUploadResponseFileUrl));
+  ASSERT_FALSE(file_id_.empty());
+  ASSERT_EQ(BoxApiCallFlow::MakeUrlToShowFile(file_id_),
+            GURL(kFileSystemBoxUploadResponseFileUrl));
 }
 
 }  // namespace enterprise_connectors

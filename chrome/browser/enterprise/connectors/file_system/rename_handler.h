@@ -16,10 +16,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
+
 namespace content {
 class BrowserContext;
 class WebContents;
 }  // namespace content
+
 namespace enterprise_connectors {
 
 class AccessTokenFetcher;
@@ -93,13 +95,13 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
   PrefService* GetPrefs();
 
-  // Fields copied from |download_item| or from policy settings.  These are
-  // constant for the life of the rename handler.
+  // Fields copied from |download_item| or policy settings. Constant for the
+  // life of the rename handler.
   const base::FilePath target_path_;
   const FileSystemSettings settings_;
 
   // Invoked to tell the download system when the rename has completed.
-  Callback download_callback_;
+  Callback upload_complete_cb_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
   // Main uploader that manages the entire API call flow of file upload.

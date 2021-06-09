@@ -12,16 +12,25 @@ namespace enterprise_connectors {
 // DownloadItemForTest
 ////////////////////////////////////////////////////////////////////////////////
 
+const base::FilePath::StringType kCrdownload = FILE_PATH_LITERAL(".crdownload");
+
 DownloadItemForTest::DownloadItemForTest(
     base::FilePath::StringPieceType file_name,
     base::Time::Exploded start_time_exploded) {
   CHECK(file_name.size());
   CHECK(tmp_dir_.CreateUniqueTempDir());
-  file_path_ = tmp_dir_.GetPath().Append(file_name);
-  CHECK(file_path_.FinalExtension().size()) << file_name;
-  SetTargetFilePath(file_path_);
-  file_path_ = file_path_.AddExtension(FILE_PATH_LITERAL(".crdownload"));
-  CHECK(file_path_.FinalExtension() == FILE_PATH_LITERAL(".crdownload"));
+  path_ = tmp_dir_.GetPath().Append(file_name);
+
+  // For GetTargetFilePath():
+  CHECK(path_.FinalExtension().size()) << file_name;
+  CHECK(path_.FinalExtension() != kCrdownload);
+  SetTargetFilePath(path_);
+
+  // For GetFullPath():
+  path_ = path_.AddExtension(kCrdownload);
+  CHECK(path_.FinalExtension() == kCrdownload);
+
+  // For GetStartTime():
   base::Time start_time;
   DCHECK(base::Time::FromLocalExploded(start_time_exploded, &start_time));
   SetStartTime(start_time);
@@ -38,7 +47,13 @@ DownloadItemForTest::DownloadItemForTest(
 }
 
 const base::FilePath& DownloadItemForTest::GetFullPath() const {
-  return file_path_;
+  return path_;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// MockApiCallFlow
+////////////////////////////////////////////////////////////////////////////////
+MockApiCallFlow::MockApiCallFlow() = default;
+MockApiCallFlow::~MockApiCallFlow() = default;
 
 }  // namespace enterprise_connectors

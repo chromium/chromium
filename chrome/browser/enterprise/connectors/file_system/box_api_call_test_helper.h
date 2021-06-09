@@ -60,7 +60,8 @@ size_t CalculateExpectedChunkReadCount(size_t file_size, size_t chunk_size);
 // Expected response from kFileSystemBoxDirectUploadUrl or
 // kFileSystemBoxChunkedUploadCommitUrl after successful upload.
 extern const char kFileSystemBoxUploadResponseBody[];
-// Expected file url extracted from above.
+// Expected file id/url extracted from above.
+extern const char kFileSystemBoxUploadResponseFileId[];
 extern const char kFileSystemBoxUploadResponseFileUrl[];
 // Expected folder url for the uploaded file with kFileSystemBoxFolderIdInPref.
 extern const char kFileSystemBoxUploadResponseFolderUrl[];

@@ -44,6 +44,9 @@ const char kUniquifierUmaLabel[] = "Enterprise.FileSystem.Uniquifier";
 ////////////////////////////////////////////////////////////////////////////////
 
 // static
+const char BoxUploader::kServiceProviderName[] = "box";
+
+// static
 std::unique_ptr<BoxUploader> BoxUploader::Create(
     download::DownloadItem* download_item) {
   if (static_cast<size_t>(download_item->GetTotalBytes()) <
@@ -65,11 +68,12 @@ BoxUploader::~BoxUploader() = default;
 
 void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authen_retry_callback,
-    RenameHandlerCallback download_callback,
+    UploadCompleteCallback upload_complete_cb,
     PrefService* prefs) {
+  DCHECK(file_id_.empty());
   prefs_ = prefs;
   authentication_retry_callback_ = authen_retry_callback;
-  download_callback_ = std::move(download_callback);
+  upload_complete_cb_ = std::move(upload_complete_cb);
   SetCurrentApiCall(GetFolderId().empty() ? MakeFindUpstreamFolderApiCall()
                                           : MakePreflightCheckApiCall());
 }
@@ -84,7 +88,7 @@ void BoxUploader::TryTask(
 
 void BoxUploader::TryCurrentApiCall() {
   DCHECK(authentication_retry_callback_);
-  DCHECK(download_callback_);
+  DCHECK(upload_complete_cb_);
   if (!current_api_call_) {
     DLOG(ERROR) << "current_api_call_ is empty!";
     OnApiCallFlowFailure();
@@ -119,11 +123,17 @@ void BoxUploader::StartCurrentApiCall() {
   current_api_call_->Start(url_loader_factory_, access_token_);
 }
 
-void BoxUploader::OnApiCallFlowFailure() {
-  OnApiCallFlowDone(false, GURL());
+void BoxUploader::StartUpload() {
+  LogUniquifierCountToUma();
+  SetCurrentApiCall(MakeFileUploadApiCall());
+  TryCurrentApiCall();
 }
 
-void BoxUploader::OnApiCallFlowDone(bool upload_success, GURL file_url) {
+void BoxUploader::OnApiCallFlowFailure() {
+  OnApiCallFlowDone(false, {});
+}
+
+void BoxUploader::OnApiCallFlowDone(bool upload_success, std::string file_id) {
   if (!upload_success) {
     DLOG(ERROR) << "Upload failed";
     // TODO(https://crbug.com/1165972): on upload failure, decide whether to
@@ -131,15 +141,16 @@ void BoxUploader::OnApiCallFlowDone(bool upload_success, GURL file_url) {
     // for trusted testers (TT), deleting as usual for now. Need to determine
     // how to communicate the failure/error to user.
   } else {
-    DCHECK(file_url_.is_empty());
-    file_url_ = file_url;
+    DCHECK(file_id_.empty());
+    DCHECK(!file_id.empty());
+    file_id_ = file_id;
   }
 
   PostDeleteFileTask(upload_success);
 }
 
 void BoxUploader::NotifyResult(bool success) {
-  std::move(download_callback_).Run(success);
+  std::move(upload_complete_cb_).Run(success);
 }
 
 void BoxUploader::OnFindUpstreamFolderResponse(bool success,
@@ -182,11 +193,8 @@ void BoxUploader::LogUniquifierCountToUma() {
 
 void BoxUploader::OnPreflightCheckResponse(bool success, int response_code) {
   if (success) {
-    // Create an upload session with the same folder_id and name and continue
     CHECK_EQ(response_code, net::HTTP_OK);
-    LogUniquifierCountToUma();
-    SetCurrentApiCall(MakeFileUploadApiCall());
-    TryCurrentApiCall();
+    StartUpload();
     return;
   }
   switch (response_code) {
@@ -204,7 +212,7 @@ void BoxUploader::OnPreflightCheckResponse(bool success, int response_code) {
         TryCurrentApiCall();
       } else {
         // TODO(https://crbug.com/1168815): Surface this error to user.
-        DLOG(WARNING) << "Box upload failed for file " << GetTargetFileName();
+        DLOG(WARNING) << "Box upload failed for file " << target_file_name_;
         LogUniquifierCountToUma();
         OnApiCallFlowFailure();
       }
@@ -231,7 +239,7 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakePreflightCheckApiCall() {
   return std::make_unique<BoxPreflightCheckApiCallFlow>(
       base::BindOnce(&BoxUploader::OnPreflightCheckResponse,
                      weak_factory_.GetWeakPtr()),
-      GetTargetFileName(), folder_id_);
+      GetUploadFileName(), folder_id_);
 }
 
 std::unique_ptr<OAuth2ApiCallFlow>
@@ -250,7 +258,7 @@ BoxUploader::MakeCreateUpstreamFolderApiCall() {
 // Getters & Setters ///////////////////////////////////////////////////////////
 
 GURL BoxUploader::GetUploadedFileUrl() const {
-  return file_url_;
+  return BoxApiCallFlow::MakeUrlToShowFile(file_id_);
 }
 
 GURL BoxUploader::GetDestinationFolderUrl() const {
@@ -261,7 +269,7 @@ const base::FilePath BoxUploader::GetLocalFilePath() const {
   return local_file_path_;
 }
 
-const base::FilePath BoxUploader::GetTargetFileName() const {
+const base::FilePath BoxUploader::GetUploadFileName() const {
   if (uniquifier_ == UploadAttemptCount::kNotRenamed) {
     return target_file_name_;
   } else if (uniquifier_ <= UploadAttemptCount::kMaxRenamedWithSuffix) {
@@ -307,6 +315,8 @@ const std::string BoxUploader::GetFolderId() {
     DCHECK(prefs_);
     folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
   }
+  // TODO(https://crbug.com/1215847) Update to make API call to find folder id
+  // if has file id.
   return folder_id_;
 }
 
@@ -340,6 +350,7 @@ void BoxUploader::OnFileDeleted(bool upload_success, bool delete_success) {
     DLOG(ERROR) << "Failed to delete local temp file " << GetLocalFilePath();
   }
   NotifyResult(upload_success && delete_success);
+  // TODO(https://crbug.com/1168815): Update to SERVER_FAILED / FILE_FAILED.
 }
 
 // Helper methods for tests ////////////////////////////////////////////////////
@@ -352,8 +363,9 @@ void BoxUploader::NotifyOAuth2ErrorForTesting() {
   authentication_retry_callback_.Run();
 }
 
-void BoxUploader::SetUploadApiCallFlowDoneForTesting(bool success) {
-  OnApiCallFlowDone(success, {});
+void BoxUploader::SetUploadApiCallFlowDoneForTesting(bool success,
+                                                     std::string file_id) {
+  OnApiCallFlowDone(success, file_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -369,19 +381,19 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxDirectUploader::MakeFileUploadApiCall() {
   return std::make_unique<BoxWholeFileUploadApiCallFlow>(
       base::BindOnce(&BoxDirectUploader::OnWholeFileUploadResponse,
                      weak_factory_.GetWeakPtr()),
-      GetFolderId(), GetTargetFileName(), GetLocalFilePath());
+      GetFolderId(), GetUploadFileName(), GetLocalFilePath());
 }
 
 void BoxDirectUploader::OnWholeFileUploadResponse(bool success,
                                                   int response_code,
-                                                  GURL uploaded_file_url) {
+                                                  const std::string& file_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
     SetCurrentApiCall(MakeFileUploadApiCall());
     return;
   }
 
   // Report upload success back to the download thread.
-  OnApiCallFlowDone(success, uploaded_file_url);
+  OnApiCallFlowDone(success, file_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -404,7 +416,7 @@ BoxChunkedUploader::MakeCreateUploadSessionApiCall() {
   return std::make_unique<BoxCreateUploadSessionApiCallFlow>(
       base::BindOnce(&BoxChunkedUploader::OnCreateUploadSessionResponse,
                      weak_factory_.GetWeakPtr()),
-      GetFolderId(), file_size_, GetTargetFileName());
+      GetFolderId(), file_size_, GetUploadFileName());
 }
 
 std::unique_ptr<OAuth2ApiCallFlow>
@@ -501,7 +513,7 @@ void BoxChunkedUploader::OnCommitUploadSsessionResponse(
     bool success,
     int response_code,
     base::TimeDelta retry_after,
-    GURL file_url) {
+    const std::string& file_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
     if (response_code == net::HTTP_UNAUTHORIZED) {
       SetCurrentApiCall(MakeCommitUploadSessionApiCall());
@@ -516,7 +528,7 @@ void BoxChunkedUploader::OnCommitUploadSsessionResponse(
                        weak_factory_.GetWeakPtr(), sha1_digest_),
         retry_after);
   } else {
-    OnApiCallFlowDone(success, file_url);
+    OnApiCallFlowDone(success, file_id);
   }
 }
 
@@ -528,7 +540,7 @@ void BoxChunkedUploader::OnAbortUploadSsessionResponse(bool success,
   } else {
     // OnApiCallFlowFailure() already triggered in EnsureSuccessResponse().
     LOG(ERROR) << "Unexpected response after aborting upload session for "
-               << GetTargetFileName();
+               << GetUploadFileName();
   }
 }
 

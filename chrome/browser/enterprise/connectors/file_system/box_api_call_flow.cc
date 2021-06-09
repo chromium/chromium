@@ -127,24 +127,23 @@ bool ExtractEntriesList(const Box::ParseResult& result,
   return true;
 }
 
-GURL ExtractUploadedFileUrl(const Box::ParseResult& result) {
+std::string ExtractUploadedFileId(const Box::ParseResult& result) {
   base::Value::ConstListView list;
   std::string file_id;
   if (ExtractEntriesList(result, &list) && !list.empty()) {
     file_id = ExtractId(list.front());
   }
-  LOG_PARSE_FAIL_IF(file_id.empty(), ERROR, "ExtractUploadedFileUrl", result);
-  return file_id.empty() ? GURL() : Box::MakeUrlToShowFile(file_id);
+  LOG_PARSE_FAIL_IF(file_id.empty(), ERROR, "ExtractUploadedFileId", result);
+  return file_id;
 }
 
-void ProcessUploadSuccessResponse(const network::mojom::URLResponseHead* head,
-                                  std::unique_ptr<std::string> body,
-                                  base::OnceCallback<void(GURL)> callback) {
+void ProcessUploadSuccessResponse(
+    std::unique_ptr<std::string> body,
+    base::OnceCallback<void(const std::string&)> callback) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       *body, base::BindOnce(
                  [](decltype(callback) cb, Box::ParseResult result) {
-                   auto url = ExtractUploadedFileUrl(result);
-                   std::move(cb).Run(url);
+                   std::move(cb).Run(ExtractUploadedFileId(result));
                  },
                  std::move(callback)));
 }
@@ -208,8 +207,8 @@ std::string BoxApiCallFlow::FormatSHA1Digest(const std::string& sha_digest) {
 
 // static
 GURL BoxApiCallFlow::MakeUrlToShowFile(const std::string& file_id) {
-  DCHECK(file_id.size());
-  return GURL("https://app.box.com/file/").Resolve(file_id);
+  return file_id.empty() ? GURL()
+                         : GURL("https://app.box.com/file/").Resolve(file_id);
 }
 
 // static
@@ -449,7 +448,7 @@ void BoxWholeFileUploadApiCallFlow::OnFileRead(
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
     // TODO(https://crbug.com/1165972): error handling
-    std::move(callback_).Run(false, 0, GURL());
+    std::move(callback_).Run(false, 0, std::string());
     return;
   }
   DCHECK_LE(file_read->content.size(), kWholeFileUploadMaxSize);
@@ -505,7 +504,7 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
     std::unique_ptr<std::string> body) {
   DCHECK_EQ(head->headers->response_code(), net::HTTP_CREATED);
   ProcessUploadSuccessResponse(
-      head, std::move(body),
+      std::move(body),
       base::BindOnce(std::move(callback_), true, net::HTTP_CREATED));
 }
 
@@ -515,7 +514,7 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
     std::unique_ptr<std::string> body) {
   LOG_API_FAIL(ERROR, "WholeFileUpload", net_error, head->headers, body);
   auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, GURL());
+  std::move(callback_).Run(false, response_code, std::string());
 }
 
 void BoxWholeFileUploadApiCallFlow::SetFileReadForTesting(
@@ -798,10 +797,11 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
   auto response_code = head->headers->response_code();
 
   if (response_code == net::HTTP_CREATED) {
+    DCHECK(body);
+    DCHECK(body->size());
     auto created_cb = base::BindOnce(std::move(callback_), true, response_code,
                                      base::TimeDelta());
-    return ProcessUploadSuccessResponse(head, std::move(body),
-                                        std::move(created_cb));
+    return ProcessUploadSuccessResponse(std::move(body), std::move(created_cb));
   }
 
   bool success = false;
@@ -815,7 +815,7 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
   }
 
   DCHECK(success) << head->headers->raw_headers();
-  std::move(callback_).Run(success, response_code, retry_after, GURL());
+  std::move(callback_).Run(success, response_code, retry_after, std::string());
 }
 
 void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
@@ -824,7 +824,8 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
     std::unique_ptr<std::string> body) {
   LOG_API_FAIL(ERROR, "CommitUploadSession", net_error, head->headers, body);
   auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, base::TimeDelta(), GURL());
+  std::move(callback_).Run(false, response_code, base::TimeDelta(),
+                           std::string());
 }
 
 }  // namespace enterprise_connectors

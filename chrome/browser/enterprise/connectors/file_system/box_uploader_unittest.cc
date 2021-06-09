@@ -69,7 +69,7 @@ class BoxUploaderForTest : public BoxUploader {
                               base::OnceCallback<void(void)> preupload_cb)
       : BoxUploader(download_item), preupload_cb_(std::move(preupload_cb)) {}
 
-  using BoxUploader::GetTargetFileName;
+  using BoxUploader::GetUploadFileName;
 
  protected:
   // These 2 methods are overridden to intercept the upload API call to test the
@@ -94,7 +94,7 @@ class BoxUploaderForTest : public BoxUploader {
 class BoxUploaderTest : public BoxUploaderTestBase {
  public:
   BoxUploaderTest()
-      : BoxUploaderTestBase(FILE_PATH_LITERAL("box_uploader_test.txt")),
+      : BoxUploaderTestBase(kUploadFileName),
         uploader_(std::make_unique<BoxUploaderForTest>(
             &test_item_,
             base::BindOnce(&BoxUploaderTest::InterceptedPreUpload,
@@ -122,7 +122,12 @@ class BoxUploaderTest : public BoxUploaderTestBase {
 
   bool upload_initiated_ = false;
   std::unique_ptr<BoxUploaderForTest> uploader_;
+
+  static const base::FilePath::StringType kUploadFileName;
 };
+
+const base::FilePath::StringType BoxUploaderTest::kUploadFileName(
+    FILE_PATH_LITERAL("box_uploader_test.txt"));
 
 TEST_F(BoxUploaderTest, HasExistingFolderOnBox) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
@@ -135,6 +140,7 @@ TEST_F(BoxUploaderTest, HasExistingFolderOnBox) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
+  EXPECT_EQ(uploader_->GetUploadFileName().value(), kUploadFileName);
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -152,6 +158,7 @@ TEST_F(BoxUploaderTest, NoExistingFolderOnBox_CreatFolder) {
   EXPECT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxCreateFolderResponseFolderId);
+  EXPECT_EQ(uploader_->GetUploadFileName().value(), kUploadFileName);
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
   EXPECT_FALSE(upload_success_);
@@ -181,6 +188,7 @@ TEST_F(BoxUploaderTest, AuthenticationRetry) {
   ASSERT_EQ(authentication_retry_, 1);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
+  EXPECT_EQ(uploader_->GetUploadFileName().value(), kUploadFileName);
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -243,7 +251,8 @@ TEST_F(BoxUploader_PreflightCheckTest, Success) {
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  EXPECT_EQ(kFileSystemBoxFolderIdInPref, uploader_->GetFolderIdForTesting());
+  EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -278,7 +287,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictAndSuccessAfterkMaxUniqueTries) {
       exploded.minute, exploded.second, exploded.millisecond);
   // ---------------------------------------------------------------------------
 
-  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(), expected_name);
+  EXPECT_EQ(uploader_->GetUploadFileName().MaybeAsASCII(), expected_name);
   histogram_tester.ExpectUniqueSample(
       kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kTimestampBasedName,
       1);
@@ -302,7 +311,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictEvenWithTimestamp) {
   ASSERT_FALSE(upload_initiated_);
 
   // The last tried filename is timestamp based even though it also fails.
-  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(),
+  EXPECT_EQ(uploader_->GetUploadFileName().MaybeAsASCII(),
             "box_uploader_test.abandoned.txt");
   histogram_tester.ExpectUniqueSample(
       kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kAbandonedUpload,
@@ -330,7 +339,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictThenSuccess) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
   ASSERT_TRUE(upload_initiated_);
-  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(),
+  EXPECT_EQ(uploader_->GetUploadFileName().MaybeAsASCII(),
             "box_uploader_test (2).txt");
   histogram_tester.ExpectUniqueSample(kUniquifierUmaLabel, 2, 1);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
@@ -361,6 +370,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404_ButFound) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
+  EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -393,6 +403,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404) {
   EXPECT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxCreateFolderResponseFolderId);
+  EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -407,6 +418,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
 
   // Need to retry authentication, so no report via callback yet.
   ASSERT_EQ(authentication_retry_, 1);
+  ASSERT_FALSE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);
   EXPECT_FALSE(upload_success_);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
@@ -420,6 +432,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
 
   ASSERT_EQ(authentication_retry_, 1);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -441,7 +454,7 @@ class BoxUploaderForFileDeleteTest : public BoxUploader {
     return std::make_unique<MockApiCallFlow>();
   }
   void StartCurrentApiCall() override {
-    OnApiCallFlowDone(true, GURL(kFileSystemBoxUploadResponseFileUrl));
+    OnApiCallFlowDone(true, kFileSystemBoxUploadResponseFileId);
   }
 };
 
@@ -482,7 +495,7 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
   // Make sure file doesn't exist.
   ASSERT_FALSE(base::PathExists(GetFilePath()));
 
-  uploader_->OnApiCallFlowDone(true, GURL(kFileSystemBoxUploadResponseFileUrl));
+  uploader_->OnApiCallFlowDone(true, kFileSystemBoxUploadResponseFileId);
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath())) << "No file should be created.";
@@ -492,7 +505,7 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
 TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
   CreateTemporaryFile();
 
-  uploader_->OnApiCallFlowDone(false, GURL());
+  uploader_->OnApiCallFlowDone(false, std::string());
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
@@ -653,8 +666,9 @@ TEST_F(BoxChunkedUploaderTest, SuccessfulUpload) {
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
   // Upload parts:
   AddUploadSuccessFetchResults();
-  // Commit upload session (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED);
+  // Commit upload session:
+  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
@@ -704,8 +718,9 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringCreateSession) {
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
   // Upload parts:
   AddUploadSuccessFetchResults();
-  // Commit upload session (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED);
+  // Commit upload session:
+  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -727,8 +742,9 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringUploadPart) {
 
   // Upload parts:
   AddUploadSuccessFetchResults();
-  // Commit upload session (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED);
+  // Commit upload session:
+  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -750,8 +766,9 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringCommitSession) {
   ASSERT_EQ(authentication_retry_, 1);
   ASSERT_FALSE(upload_success_);
 
-  // Commit upload session (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED);
+  // Commit upload session:
+  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -823,9 +840,9 @@ TEST_F(BoxChunkedUploaderTest, CommitRetryAfter) {
   header->headers->AddHeader("Retry-After", "1");
   AddSequentialFetchResult(kFileSystemBoxChunkedUploadCommitUrl,
                            std::move(header));
-  // Commit upload session succeeded (empty body since not reading from body):
+  // Commit upload session succeeded after retry:
   AddSequentialFetchResult(kFileSystemBoxChunkedUploadCommitUrl,
-                           net::HTTP_CREATED);
+                           net::HTTP_CREATED, kFileSystemBoxUploadResponseBody);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();

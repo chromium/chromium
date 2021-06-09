@@ -104,13 +104,13 @@ FileSystemRenameHandler::FileSystemRenameHandler(
       target_path_(download_item->GetTargetFilePath()),
       settings_(std::move(settings)),
       uploader_(BoxUploader::Create(download_item)) {
-  DCHECK_EQ(settings_.service_provider, "box");
+  DCHECK_EQ(BoxUploader::kServiceProviderName, settings_.service_provider);
 }
 
 FileSystemRenameHandler::~FileSystemRenameHandler() = default;
 
 void FileSystemRenameHandler::Start(Callback callback) {
-  download_callback_ = std::move(callback);
+  upload_complete_cb_ = std::move(callback);
   uploader_->Init(
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
@@ -299,12 +299,8 @@ void FileSystemRenameHandler::NotifyResultToDownloadThread(bool success) {
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
   // Make sure target_path_ has been initialized.
   DCHECK(!target_path_.empty());
-  // TODO(https://crbug.com/1206299): Returns the uploaded file URL here using
-  // uploader_->GetUploadedFileUrl() instead, but make sure the download UI
-  // displays the uploaded status properly. Currently, upon opening the
-  // item/folder for the first time, DownloadItem detects that the file is
-  // deleted and turns the menu bar grey.
-  std::move(download_callback_).Run(reason, target_path_);
+  // TODO(https://crbug.com/1203753): Returns the final file name here.
+  std::move(upload_complete_cb_).Run(reason, target_path_);
 }
 
 PrefService* FileSystemRenameHandler::GetPrefs() {

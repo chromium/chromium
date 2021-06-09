@@ -224,6 +224,7 @@ const char kFileSystemBoxUploadResponseBody[] = R"({
 })";
 
 // File id should match up id extracted from above.
+const char kFileSystemBoxUploadResponseFileId[] = "314159";
 const char kFileSystemBoxUploadResponseFileUrl[] =
     "https://app.box.com/file/314159";
 
