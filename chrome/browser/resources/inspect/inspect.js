@@ -1082,8 +1082,12 @@ function populatePortStatus(devicesStatusMap) {
       // status === 0 is the default (connected) state.
       if (status === -1 || status === -2) {
         portIcon.classList.add('transient');
+        portIcon.title = 'Attempting to forward port';
       } else if (status < 0) {
         portIcon.classList.add('error');
+        portIcon.title = 'Port forwarding failed';
+      } else {
+        portIcon.title = 'Successfully forwarded port';
       }
       devicePorts.appendChild(portIcon);
 
