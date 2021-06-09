@@ -24,10 +24,10 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 
 /**
- * Unit tests for {@link AccountInfoService}.
+ * Unit tests for {@link AccountInfoServiceImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountInfoServiceTest {
+public class AccountInfoServiceImplTest {
     private static final String ACCOUNT_EMAIL = "test@gmail.com";
 
     @Rule
@@ -46,23 +46,23 @@ public class AccountInfoServiceTest {
             new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
                     "full name", "given name", mock(Bitmap.class));
 
-    private AccountInfoService mService;
+    private AccountInfoServiceImpl mService;
 
     @Before
     public void setUp() {
-        AccountInfoService.init(mIdentityManagerMock, mAccountTrackerServiceMock);
-        mService = AccountInfoService.get();
+        AccountInfoServiceImpl.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        mService = (AccountInfoServiceImpl) AccountInfoServiceImpl.get();
     }
 
     @After
     public void tearDown() {
-        AccountInfoService.resetForTests();
+        AccountInfoServiceImpl.resetForTests();
     }
 
     @Test(expected = RuntimeException.class)
     public void testGetInstanceBeforeInitialization() {
-        AccountInfoService.resetForTests();
-        AccountInfoService.get();
+        AccountInfoServiceImpl.resetForTests();
+        AccountInfoServiceImpl.get();
     }
 
     @Test

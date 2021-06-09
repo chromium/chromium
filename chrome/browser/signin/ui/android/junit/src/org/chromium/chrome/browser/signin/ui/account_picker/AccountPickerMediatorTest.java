@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerPropert
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.identitymanager.AccountInfoService;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -74,7 +74,7 @@ public class AccountPickerMediatorTest {
 
     @Before
     public void setUp() {
-        AccountInfoService.init(mock(IdentityManager.class), mock(AccountTrackerService.class));
+        AccountInfoServiceImpl.init(mock(IdentityManager.class), mock(AccountTrackerService.class));
     }
 
     @After
@@ -82,7 +82,7 @@ public class AccountPickerMediatorTest {
         if (mMediator != null) {
             mMediator.destroy();
         }
-        AccountInfoService.resetForTests();
+        AccountInfoServiceImpl.resetForTests();
     }
 
     @Test

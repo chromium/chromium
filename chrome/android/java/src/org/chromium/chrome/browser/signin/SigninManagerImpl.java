@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoService;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -111,7 +111,7 @@ class SigninManagerImpl
                 accountTrackerService, identityManager, identityMutator, AndroidSyncSettings.get());
 
         identityManager.addObserver(signinManager);
-        AccountInfoService.init(identityManager, accountTrackerService);
+        AccountInfoServiceImpl.init(identityManager, accountTrackerService);
         accountTrackerService.addObserver(signinManager);
 
         identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
@@ -142,7 +142,7 @@ class SigninManagerImpl
     @CalledByNative
     void destroy() {
         mAccountTrackerService.removeObserver(this);
-        AccountInfoService.get().destroy();
+        AccountInfoServiceImpl.get().destroy();
         mIdentityManager.removeObserver(this);
         mNativeSigninManagerAndroid = 0;
     }
@@ -292,7 +292,7 @@ class SigninManagerImpl
     @Override
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
-        AccountInfoService.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
+        AccountInfoServiceImpl.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
             signinInternal(
                     SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
         });

@@ -45,7 +45,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.identitymanager.AccountInfoService;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -405,14 +405,16 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
-        AccountInfoService.get().getAccountInfoByEmail(mSelectedAccountName).then(accountInfo -> {
-            assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
-            mConsentTextTracker.recordConsent(accountInfo.getId(),
-                    ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
-            if (isResumed()) {
-                runStateMachineAndSignin(settingsClicked);
-            }
-        });
+        AccountInfoServiceImpl.get()
+                .getAccountInfoByEmail(mSelectedAccountName)
+                .then(accountInfo -> {
+                    assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
+                    mConsentTextTracker.recordConsent(accountInfo.getId(),
+                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
+                    if (isResumed()) {
+                        runStateMachineAndSignin(settingsClicked);
+                    }
+                });
     }
 
     private void runStateMachineAndSignin(boolean settingsClicked) {
