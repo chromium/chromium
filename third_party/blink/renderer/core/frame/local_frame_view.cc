@@ -783,7 +783,16 @@ void LocalFrameView::PerformLayout() {
         analyzer_->Increment(LayoutAnalyzer::kPerformLayoutRootLayoutObjects,
                              layout_subtree_root_list_.size());
       }
-      HashSet<LayoutBlock*> fragment_tree_spines;
+      // This map will be used to avoid rebuilding several times the fragment
+      // tree spine of a common ancestor.
+      HashMap<const LayoutBlock*, unsigned> fragment_tree_spines;
+      for (auto& root : layout_subtree_root_list_.Ordered()) {
+        const LayoutBlock* cb = root->ContainingBlock();
+        if (cb->PhysicalFragmentCount()) {
+          auto add_result = fragment_tree_spines.insert(cb, 0);
+          ++add_result.stored_value->value;
+        }
+      }
       for (auto& root : layout_subtree_root_list_.Ordered()) {
         {
 #if DCHECK_IS_ON()
@@ -791,18 +800,19 @@ void LocalFrameView::PerformLayout() {
           // hits.
           NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
 #endif
+          LayoutBlock* cb = root->ContainingBlock();
+          auto it = fragment_tree_spines.find(cb);
+          DCHECK(it == fragment_tree_spines.end() || it->value > 0);
+          // Ensure fragment-tree consistency just after all the cb's
+          // descendants have completed their subtree layout.
+          bool should_rebuild_fragments =
+              it != fragment_tree_spines.end() && --it->value == 0;
+
           if (!LayoutFromRootObject(*root))
             continue;
-        }
 
-        // TODO(jfernandez): Perhaps we should store the whole spine instead of
-        // the immediate ancestor, so that we could avoid rebuilding the common
-        // ancestors fragments.
-        if (To<LayoutBox>(*root).PhysicalFragmentCount()) {
-          LayoutBlock* cb = root->ContainingBlock();
-          if (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
-            fragment_tree_spines.insert(cb);
-          }
+          if (should_rebuild_fragments)
+            cb->RebuildFragmentTreeSpine();
         }
 
         // We need to ensure that we mark up all layoutObjects up to the
@@ -812,15 +822,15 @@ void LocalFrameView::PerformLayout() {
           container->SetShouldCheckForPaintInvalidation();
       }
       layout_subtree_root_list_.Clear();
-      // Ensure fragment-tree consistency after a subtree layout.
-      for (auto* cb : fragment_tree_spines)
-        cb->RebuildFragmentTreeSpine();
 #if DCHECK_IS_ON()
-      for (auto* cb : fragment_tree_spines) {
+      // Ensure fragment-tree consistency after a subtree layout.
+      for (const auto& p : fragment_tree_spines) {
         // |LayoutNGMixin::UpdateInFlowBlockLayout| may |SetNeedsLayout| to its
         // containing block. Don't check if it will be re-laid out.
-        if (!cb->NeedsLayout())
-          cb->AssertFragmentTree();
+        if (!p.key->NeedsLayout()) {
+          p.key->AssertFragmentTree();
+        }
+        DCHECK_EQ(p.value, 0u);
       }
 #endif
       fragment_tree_spines.clear();

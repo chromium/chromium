@@ -2312,7 +2312,7 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
 }
 
 void LayoutBlock::RebuildFragmentTreeSpine() {
-  DCHECK(PhysicalFragmentCount() && NGBlockNode::CanUseNewLayout(*this));
+  DCHECK(PhysicalFragmentCount());
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
   LayoutBlock* cb = this;
