@@ -81,6 +81,13 @@ import shutil
 import subprocess
 import urllib2
 
+import six
+
+if six.PY2:
+  from urllib2 import urlopen
+else:
+  from urllib.request import urlopen
+
 sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.path.pardir, os.path.pardir,
@@ -154,8 +161,9 @@ def _ConfigureLLVMCoverageTools(args):
     LLVM_COV_PATH = os.path.join(llvm_bin_dir, 'llvm-cov')
     LLVM_PROFDATA_PATH = os.path.join(llvm_bin_dir, 'llvm-profdata')
   else:
-    subprocess.check_call(
-        ['tools/clang/scripts/update.py', '--package', 'coverage_tools'])
+    subprocess.check_call([
+        'python', 'tools/clang/scripts/update.py', '--package', 'coverage_tools'
+    ])
 
   if coverage_utils.GetHostPlatform() == 'win':
     LLVM_COV_PATH += '.exe'
@@ -997,8 +1005,9 @@ def Main():
   # Setup coverage binaries even when script is called with empty params. This
   # is used by coverage bot for initial setup.
   if len(sys.argv) == 1:
-    subprocess.check_call(
-        ['tools/clang/scripts/update.py', '--package', 'coverage_tools'])
+    subprocess.check_call([
+        'python', 'tools/clang/scripts/update.py', '--package', 'coverage_tools'
+    ])
     print(__doc__)
     return
 
@@ -1087,7 +1096,7 @@ def Main():
       args.ignore_filename_regex, args.format)
   component_mappings = None
   if not args.no_component_view:
-    component_mappings = json.load(urllib2.urlopen(COMPONENT_MAPPING_URL))
+    component_mappings = json.load(urlopen(COMPONENT_MAPPING_URL))
 
   # Call prepare here.
   processor = coverage_utils.CoverageReportPostProcessor(
