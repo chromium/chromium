@@ -426,6 +426,18 @@ consoles.console_view(
     ("clang-tot-device", "iOS|internal", "dev"),
 )]
 
+# The sheriff.fuchsia console includes some entries for builders from the chrome project
+[branches.console_view_entry(
+    builder = "chrome:ci/{}".format(name),
+    console_view = "sheriff.fuchsia",
+    category = category,
+    short_name = short_name,
+) for name, category, short_name in (
+    ("fuchsia-fyi-arm64-size", "fyi", "a64-size"),
+    ("fuchsia-perf-fyi", "fyi", "perf"),
+    ("fuchsia-x64", "ci", "x64-chrome"),
+)]
+
 # The main console includes some entries for builders from the chrome project
 [branches.console_view_entry(
     builder = "chrome:ci/{}".format(name),
