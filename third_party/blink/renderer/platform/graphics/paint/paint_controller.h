@@ -31,8 +31,6 @@
 
 namespace blink {
 
-class PaintUnderInvalidationChecker;
-
 enum class PaintBenchmarkMode {
   kNormal,
   kForceRasterInvalidationAndConvert,
@@ -105,7 +103,6 @@ class PLATFORM_EXPORT PaintController {
   void EnsureChunk();
 
   void SetShouldComputeContentsOpaque(bool should_compute) {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     paint_chunker_.SetShouldComputeContentsOpaque(should_compute);
   }
 
@@ -154,11 +151,13 @@ class PLATFORM_EXPORT PaintController {
   // true. Otherwise returns false.
   bool UseCachedSubsequenceIfPossible(const DisplayItemClient&);
 
-  // Returns the index of the new subsequence.
-  wtf_size_t BeginSubsequence(const DisplayItemClient&);
+  void BeginSubsequence(wtf_size_t& subsequence_index,
+                        wtf_size_t& start_chunk_index);
   // The |start| parameter should be the return value of the corresponding
   // BeginSubsequence().
-  void EndSubsequence(wtf_size_t subsequence_index);
+  void EndSubsequence(const DisplayItemClient&,
+                      wtf_size_t subsequence_index,
+                      wtf_size_t start_chunk_index);
 
   void BeginSkippingCache() {
     if (usage_ == kTransient)
@@ -276,7 +275,6 @@ class PLATFORM_EXPORT PaintController {
  private:
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
-  friend class PaintUnderInvalidationChecker;
   friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
   // True if all display items associated with the client are validly cached.
@@ -354,6 +352,27 @@ class PLATFORM_EXPORT PaintController {
                                  wtf_size_t start_chunk_index,
                                  wtf_size_t end_chunk_index);
 
+  // Resets the indices (e.g. next_item_to_match_) of
+  // current_paint_artifact_.GetDisplayItemList() to their initial values. This
+  // should be called when the DisplayItemList in current_paint_artifact_ is
+  // newly created, or is changed causing the previous indices to be invalid.
+  void ResetCurrentListIndices();
+
+  // The following two methods are for checking under-invalidations
+  // (when RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled).
+  void ShowUnderInvalidationError(const char* reason,
+                                  const DisplayItem& new_item,
+                                  const DisplayItem* old_item) const;
+
+  void ShowSequenceUnderInvalidationError(const char* reason,
+                                          const DisplayItemClient&);
+
+  void CheckUnderInvalidation();
+  bool IsCheckingUnderInvalidation() const {
+    return under_invalidation_checking_end_ >
+           under_invalidation_checking_begin_;
+  }
+
   struct SubsequenceMarkers {
     const DisplayItemClient* client = nullptr;
     // The start and end (not included) index of paint chunks in this
@@ -367,9 +386,6 @@ class PLATFORM_EXPORT PaintController {
       const DisplayItemClient&) const;
 
   void ValidateNewChunkId(const PaintChunk::Id&);
-
-  PaintUnderInvalidationChecker& EnsureUnderInvalidationChecker();
-  ALWAYS_INLINE bool IsCheckingUnderInvalidation() const;
 
 #if DCHECK_IS_ON()
   void ShowDebugDataInternal(DisplayItemList::JsonFlags) const;
@@ -443,7 +459,16 @@ class PLATFORM_EXPORT PaintController {
   IdIndexMap new_paint_chunk_id_index_map_;
 #endif
 
-  std::unique_ptr<PaintUnderInvalidationChecker> under_invalidation_checker_;
+  // These are set in UseCachedItemIfPossible() and
+  // UseCachedSubsequenceIfPossible() when we could use cached drawing or
+  // subsequence and under-invalidation checking is on, indicating the begin and
+  // end of the cached drawing or subsequence in the current list. The functions
+  // return false to let the client do actual painting, and PaintController will
+  // check if the actual painting results are the same as the cached.
+  wtf_size_t under_invalidation_checking_begin_ = 0;
+  wtf_size_t under_invalidation_checking_end_ = 0;
+
+  String under_invalidation_message_prefix_;
 
   struct SubsequencesData {
     // Map a client to the index into |tree|.

@@ -9,10 +9,10 @@
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -111,7 +111,8 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
   if (!ClientCacheIsValid(client))
     return false;
 
-  if (IsCheckingUnderInvalidation()) {
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      IsCheckingUnderInvalidation()) {
     // We are checking under-invalidation of a subsequence enclosing this
     // display item. Let the client continue to actually paint the display item.
     return false;
@@ -132,7 +133,11 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
     next_item_to_index_ = next_item_to_match_;
 
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-    EnsureUnderInvalidationChecker().WouldUseCachedItem(cached_item);
+    if (!IsCheckingUnderInvalidation()) {
+      under_invalidation_checking_begin_ = cached_item;
+      under_invalidation_checking_end_ = cached_item + 1;
+      under_invalidation_message_prefix_ = "";
+    }
     // Return false to let the painter actually paint. We will check if the new
     // painting is the same as the cached one.
     return false;
@@ -155,7 +160,8 @@ bool PaintController::UseCachedSubsequenceIfPossible(
   if (!ClientCacheIsValid(client))
     return false;
 
-  if (IsCheckingUnderInvalidation()) {
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      IsCheckingUnderInvalidation()) {
     // We are checking under-invalidation of an ancestor subsequence enclosing
     // this one. The ancestor subsequence is supposed to have already "copied",
     // so we should let the client continue to actually paint the descendant
@@ -201,7 +207,11 @@ bool PaintController::UseCachedSubsequenceIfPossible(
   ++num_cached_new_subsequences_;
 
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-    EnsureUnderInvalidationChecker().WouldUseCachedSubsequence(client);
+    DCHECK(!IsCheckingUnderInvalidation());
+    under_invalidation_checking_begin_ = start_item_index;
+    under_invalidation_checking_end_ = end_item_index;
+    under_invalidation_message_prefix_ =
+        "(In cached subsequence for " + client.DebugName() + ")";
     // Return false to let the painter actually paint. We will check if the new
     // painting is the same as the cached one.
     return false;
@@ -229,27 +239,58 @@ PaintController::GetSubsequenceMarkers(const DisplayItemClient& client) const {
   return &current_subsequences_.tree[index];
 }
 
-wtf_size_t PaintController::BeginSubsequence(const DisplayItemClient& client) {
+void PaintController::BeginSubsequence(wtf_size_t& subsequence_index,
+                                       wtf_size_t& start_chunk_index) {
   // Force new paint chunk which is required for subsequence caching.
   SetWillForceNewChunk(true);
-  new_subsequences_.tree.push_back(SubsequenceMarkers{&client, NumNewChunks()});
-  return new_subsequences_.tree.size() - 1;
+  subsequence_index = new_subsequences_.tree.size();
+  new_subsequences_.tree.emplace_back();
+  start_chunk_index = NumNewChunks();
 }
 
-void PaintController::EndSubsequence(wtf_size_t subsequence_index) {
-  auto& markers = new_subsequences_.tree[subsequence_index];
+void PaintController::EndSubsequence(const DisplayItemClient& client,
+                                     wtf_size_t subsequence_index,
+                                     wtf_size_t start_chunk_index) {
+  wtf_size_t end_chunk_index = NumNewChunks();
 
-  if (IsCheckingUnderInvalidation()) {
-    under_invalidation_checker_->WillEndSubsequence(*markers.client,
-                                                    markers.start_chunk_index);
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      IsCheckingUnderInvalidation()) {
+    const SubsequenceMarkers* markers = GetSubsequenceMarkers(client);
+    if (!markers) {
+      if (start_chunk_index != end_chunk_index) {
+        ShowSequenceUnderInvalidationError(
+            "under-invalidation : unexpected subsequence", client);
+        CHECK(false);
+      }
+    } else {
+      if (markers->end_chunk_index - markers->start_chunk_index !=
+          end_chunk_index - start_chunk_index) {
+        ShowSequenceUnderInvalidationError(
+            "under-invalidation: new subsequence wrong length", client);
+        CHECK(false);
+      }
+      auto old_chunk_index = markers->start_chunk_index;
+      for (auto new_chunk_index = start_chunk_index;
+           new_chunk_index < end_chunk_index;
+           ++new_chunk_index, ++old_chunk_index) {
+        const auto& old_chunk =
+            current_paint_artifact_->PaintChunks()[old_chunk_index];
+        const auto& new_chunk =
+            new_paint_artifact_->PaintChunks()[new_chunk_index];
+        if (!old_chunk.EqualsForUnderInvalidationChecking(new_chunk)) {
+          ShowSequenceUnderInvalidationError(
+              "under-invalidation: chunk changed", client);
+          CHECK(false) << "Changed chunk: " << new_chunk;
+        }
+      }
+    }
   }
 
-  wtf_size_t end_chunk_index = NumNewChunks();
-  if (markers.start_chunk_index == end_chunk_index) {
-    // Omit the empty subsequence. The WillForceNewChunk flag set in
-    // BeginSubsequence() still applies, but it's useful to reduce churns of
-    // raster invalidation and compositing when the subsequence switches between
-    // empty and non-empty.
+  if (start_chunk_index == end_chunk_index) {
+    // Omit the empty subsequence. The forcing-new-chunk flag set by
+    // BeginSubsequence() still applies, but this not a big deal because empty
+    // subsequences are not common. Also we should not clear the flag because
+    // there might be unhandled flag that was set before this empty subsequence.
     new_subsequences_.tree.pop_back();
     return;
   }
@@ -258,23 +299,24 @@ void PaintController::EndSubsequence(wtf_size_t subsequence_index) {
   SetWillForceNewChunk(true);
 
 #if DCHECK_IS_ON()
-  DCHECK(!new_subsequences_.map.Contains(markers.client))
-      << "Multiple subsequences for client: " << markers.client->DebugName();
+  DCHECK(!new_subsequences_.map.Contains(&client))
+      << "Multiple subsequences for client: " << client.DebugName();
 
   // Check tree integrity.
   if (subsequence_index > 0) {
-    DCHECK_GE(markers.start_chunk_index,
+    DCHECK_GE(start_chunk_index,
               new_subsequences_.tree[subsequence_index - 1].end_chunk_index);
   }
   for (auto i = subsequence_index + 1; i < new_subsequences_.tree.size(); i++) {
     auto& child_markers = new_subsequences_.tree[i];
-    DCHECK_GE(child_markers.start_chunk_index, markers.start_chunk_index);
+    DCHECK_GE(child_markers.start_chunk_index, start_chunk_index);
     DCHECK_LE(child_markers.end_chunk_index, end_chunk_index);
   }
 #endif
 
-  new_subsequences_.map.insert(markers.client, subsequence_index);
-  markers.end_chunk_index = end_chunk_index;
+  new_subsequences_.map.insert(&client, subsequence_index);
+  new_subsequences_.tree[subsequence_index] =
+      SubsequenceMarkers{&client, start_chunk_index, end_chunk_index};
 }
 
 void PaintController::CheckNewItem(DisplayItem& display_item) {
@@ -299,8 +341,8 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
   }
 #endif
 
-  if (IsCheckingUnderInvalidation())
-    under_invalidation_checker_->CheckNewItem();
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
+    CheckUnderInvalidation();
 }
 
 void PaintController::ProcessNewItem(DisplayItem& display_item) {
@@ -333,9 +375,6 @@ void PaintController::CheckNewChunk() {
                     new_paint_chunk_id_index_map_);
   }
 #endif
-
-  if (IsCheckingUnderInvalidation())
-    under_invalidation_checker_->CheckNewChunk();
 }
 
 void PaintController::InvalidateAllForTesting() {
@@ -449,22 +488,26 @@ wtf_size_t PaintController::FindOutOfOrderCachedItemForward(
     }
   }
 
-#if DCHECK_IS_ON()
   // The display item newly appears while the client is not invalidated. The
   // situation alone (without other kinds of under-invalidations) won't corrupt
   // rendering, but causes AddItemToIndexIfNeeded() for all remaining display
   // item, which is not the best for performance. In this case, the caller
   // should fall back to repaint the display item.
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+#if DCHECK_IS_ON()
+    ShowDebugData();
+#endif
     // Ensure our paint invalidation tests don't trigger the less performant
     // situation which should be rare.
     DLOG(WARNING) << "Can't find cached display item: " << id;
-    ShowDebugData();
   }
-#endif
   return kNotFound;
 }
 
+// Moves a cached subsequence from current list to the new list.
+// When PaintUnderInvaldiationCheckingEnabled() we'll not actually
+// move the subsequence, but mark the begin and end of the subsequence for
+// under-invalidation checking.
 void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
                                                 wtf_size_t subsequence_index,
                                                 wtf_size_t start_chunk_index,
@@ -476,8 +519,9 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
   auto properties_before_subsequence = CurrentPaintChunkProperties();
 #endif
 
-  auto new_start_chunk_index = NumNewChunks();
-  auto new_subsequence_index = BeginSubsequence(client);
+  wtf_size_t new_start_chunk_index;
+  wtf_size_t new_subsequence_index;
+  BeginSubsequence(new_subsequence_index, new_start_chunk_index);
 
   auto& current_chunks = current_paint_artifact_->PaintChunks();
   for (auto chunk_index = start_chunk_index; chunk_index < end_chunk_index;
@@ -522,11 +566,18 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
     ++num_cached_new_subsequences_;
   }
 
-  EndSubsequence(new_subsequence_index);
+  EndSubsequence(client, new_subsequence_index, new_start_chunk_index);
 
 #if DCHECK_IS_ON()
   DCHECK_EQ(properties_before_subsequence, CurrentPaintChunkProperties());
 #endif
+}
+
+void PaintController::ResetCurrentListIndices() {
+  next_item_to_match_ = 0;
+  next_item_to_index_ = 0;
+  under_invalidation_checking_begin_ = 0;
+  under_invalidation_checking_end_ = 0;
 }
 
 DISABLE_CFI_PERF
@@ -553,8 +604,6 @@ void PaintController::CommitNewDisplayItems() {
   cache_is_all_invalid_ = false;
   committed_ = true;
 
-  under_invalidation_checker_.reset();
-
   DCHECK_EQ(new_subsequences_.map.size(), new_subsequences_.tree.size());
   current_subsequences_.map.clear();
   current_subsequences_.tree.clear();
@@ -571,8 +620,7 @@ void PaintController::CommitNewDisplayItems() {
     paint_chunker_.ResetChunks(nullptr);
   }
 
-  next_item_to_match_ = 0;
-  next_item_to_index_ = 0;
+  ResetCurrentListIndices();
   out_of_order_item_id_index_map_.clear();
 
 #if DCHECK_IS_ON()
@@ -661,22 +709,89 @@ size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   return memory_usage;
 }
 
-PaintUnderInvalidationChecker&
-PaintController::EnsureUnderInvalidationChecker() {
-  DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
-  if (!under_invalidation_checker_) {
-    under_invalidation_checker_ =
-        std::make_unique<PaintUnderInvalidationChecker>(*this);
-  }
-  return *under_invalidation_checker_;
+void PaintController::ShowUnderInvalidationError(
+    const char* reason,
+    const DisplayItem& new_item,
+    const DisplayItem* old_item) const {
+  LOG(ERROR) << under_invalidation_message_prefix_ << " " << reason;
+#if DCHECK_IS_ON()
+  LOG(ERROR) << "New display item: " << new_item.AsDebugString();
+  LOG(ERROR) << "Old display item: "
+             << (old_item ? old_item->AsDebugString() : "None");
+  LOG(ERROR) << "See http://crbug.com/619103.";
+
+  const PaintRecord* new_record = nullptr;
+  if (auto* new_drawing = DynamicTo<DrawingDisplayItem>(new_item))
+    new_record = new_drawing->GetPaintRecord().get();
+  const PaintRecord* old_record = nullptr;
+  if (auto* old_drawing = DynamicTo<DrawingDisplayItem>(old_item))
+    old_record = old_drawing->GetPaintRecord().get();
+  LOG(INFO) << "new record:\n"
+            << (new_record ? RecordAsDebugString(*new_record).Utf8() : "None");
+  LOG(INFO) << "old record:\n"
+            << (old_record ? RecordAsDebugString(*old_record).Utf8() : "None");
+
+  ShowDebugData();
+#else
+  LOG(ERROR) << "Run a build with DCHECK on to get more details.";
+  LOG(ERROR) << "See http://crbug.com/619103.";
+#endif
 }
 
-bool PaintController::IsCheckingUnderInvalidation() const {
-  if (under_invalidation_checker_) {
-    DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
-    return under_invalidation_checker_->IsChecking();
+void PaintController::ShowSequenceUnderInvalidationError(
+    const char* reason,
+    const DisplayItemClient& client) {
+  LOG(ERROR) << under_invalidation_message_prefix_ << " " << reason;
+  LOG(ERROR) << "Subsequence client: " << client.DebugName();
+#if DCHECK_IS_ON()
+  ShowDebugData();
+#else
+  LOG(ERROR) << "Run a build with DCHECK on to get more details.";
+#endif
+  LOG(ERROR) << "See http://crbug.com/619103.";
+}
+
+void PaintController::CheckUnderInvalidation() {
+  DCHECK_EQ(usage_, kMultiplePaints);
+  DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
+
+  if (!IsCheckingUnderInvalidation())
+    return;
+
+  if (IsSkippingCache()) {
+    // We allow cache skipping and temporary under-invalidation in cached
+    // subsequences. See the usage of DisplayItemCacheSkipper in BoxPainter.
+    under_invalidation_checking_end_ = 0;
+    // Match the remaining display items in the subsequence normally.
+    next_item_to_match_ = next_item_to_index_ =
+        under_invalidation_checking_begin_;
+    return;
   }
-  return false;
+
+  DisplayItem& new_item = new_paint_artifact_->GetDisplayItemList().back();
+  auto old_item_index = under_invalidation_checking_begin_;
+  DisplayItem* old_item =
+      old_item_index < current_paint_artifact_->GetDisplayItemList().size()
+          ? &current_paint_artifact_->GetDisplayItemList()[old_item_index]
+          : nullptr;
+
+  if (!old_item || !new_item.EqualsForUnderInvalidation(*old_item)) {
+    // If we ever skipped reporting any under-invalidations, report the earliest
+    // one.
+    ShowUnderInvalidationError("under-invalidation: display item changed",
+                               new_item, old_item);
+    CHECK(false);
+  }
+
+  // Discard the forced repainted display item and move the cached item into
+  // new_display_item_list_. This is to align with the
+  // non-under-invalidation-checking path to empty the original cached slot,
+  // leaving only disappeared or invalidated display items in the old list after
+  // painting.
+  new_paint_artifact_->GetDisplayItemList().ReplaceLastByMoving(
+      current_paint_artifact_->GetDisplayItemList()[old_item_index]);
+
+  ++under_invalidation_checking_begin_;
 }
 
 void PaintController::SetFirstPainted() {
