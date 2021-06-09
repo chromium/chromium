@@ -1635,9 +1635,6 @@ config("default_warnings") {
 
         if (enable_wmax_tokens) {
           cflags += [ "-Wmax-tokens" ]
-        } else {
-          # TODO(https://crbug.com/1049569): Remove after Clang 87b235db.
-          cflags += [ "-Wno-max-tokens" ]
         }
       }
     }
