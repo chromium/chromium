@@ -236,8 +236,7 @@ void SpeechSynthesis::SentenceBoundaryEventOccurred(
 }
 
 void SpeechSynthesis::VoicesDidChange() {
-  if (GetSupplementable()->GetFrame())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
+  DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
 }
 
 void SpeechSynthesis::StartSpeakingImmediately() {
