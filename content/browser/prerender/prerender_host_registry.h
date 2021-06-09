@@ -66,6 +66,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // For triggers.
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
+  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
+  // PrerenderAttributesPtr.
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
                          RenderFrameHostImpl& initiator_render_frame_host);
 

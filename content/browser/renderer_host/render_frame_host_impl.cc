@@ -90,8 +90,8 @@
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_service_impl.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"
-#include "content/browser/prerender/prerender_processor.h"
 #include "content/browser/presentation/presentation_service_impl.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -8521,13 +8521,6 @@ void RenderFrameHostImpl::BindScreenEnumerationReceiver(
   if (!screen_enumeration_impl_)
     screen_enumeration_impl_ = std::make_unique<ScreenEnumerationImpl>(this);
   screen_enumeration_impl_->Bind(std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindPrerenderProcessor(
-    mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver) {
-  DCHECK(blink::features::IsPrerender2Enabled());
-  prerender_processor_receivers_.Add(
-      std::make_unique<PrerenderProcessor>(*this), std::move(pending_receiver));
 }
 
 void RenderFrameHostImpl::CancelPrerendering(

@@ -136,6 +136,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   void CreatePageHolder(WebContentsImpl& web_contents);
 
+  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
+  // PrerenderAttributesPtr.
   const blink::mojom::PrerenderAttributesPtr attributes_;
   const url::Origin initiator_origin_;
   const int initiator_process_id_;

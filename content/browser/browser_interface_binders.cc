@@ -840,11 +840,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                             base::Unretained(host)));
   }
 
-  if (blink::features::IsPrerender2Enabled()) {
-    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
-        &RenderFrameHostImpl::BindPrerenderProcessor, base::Unretained(host)));
-  }
-
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebNfc)) {
     map->Add<device::mojom::NFC>(base::BindRepeating(

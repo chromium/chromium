@@ -19,16 +19,13 @@ namespace content {
 class RenderFrameHostImpl;
 
 // Prerender2:
-// PrerenderProcessor implements blink::mojom::PrerenderProcessor and works as
-// the browser-side entry point of prerendering. This is created per prerender
-// request (see comments on the mojom interface for details) and owned by the
-// initiator RenderFrameHostImpl's mojo::UniqueReceiverSet.
+// PrerenderProcessor works as the browser-side entry point of prerendering.
+// This is created per prerender request and owned by SpeculationHostImpl.
 //
-// When Start() is called from a renderer process, this asks
-// PrerenderHostRegistry to create a PrerenderHost and start prerendering.
+// When Start() is called, this asks PrerenderHostRegistry to create a
+// PrerenderHost and start prerendering.
 class CONTENT_EXPORT PrerenderProcessor final
-    : public blink::mojom::PrerenderProcessor,
-      public PrerenderHostRegistry::Observer {
+    : public PrerenderHostRegistry::Observer {
  public:
   explicit PrerenderProcessor(RenderFrameHostImpl& initiator_render_frame_host);
   ~PrerenderProcessor() override;
@@ -38,9 +35,9 @@ class CONTENT_EXPORT PrerenderProcessor final
   PrerenderProcessor(PrerenderProcessor&&) = delete;
   PrerenderProcessor& operator=(PrerenderProcessor&&) = delete;
 
-  // blink::mojom::PrerenderProcessor implementation:
-  void Start(blink::mojom::PrerenderAttributesPtr attributes) override;
-  void Cancel() override;
+  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
+  // PrerenderAttributesPtr.
+  void Start(blink::mojom::PrerenderAttributesPtr attributes);
 
   // PrerenderHostRegistry::Observer implementation:
   void OnRegistryDestroyed() override;
@@ -48,7 +45,9 @@ class CONTENT_EXPORT PrerenderProcessor final
  private:
   void CancelPrerendering();
 
-  // The initiator render frame host owns `this`, so the reference is safe.
+  // SpeculationHostImpl, which inherits DocumentServiceBase and is tied with
+  // the lifetime of the initiator RenderFrameHostImpl, owns `this`, so the
+  // reference is safe.
   RenderFrameHostImpl& initiator_render_frame_host_;
 
   // The origin of the initiator render frame host. This could be different from

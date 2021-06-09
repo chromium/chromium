@@ -1604,9 +1604,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindScreenEnumerationReceiver(
       mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver);
 
-  void BindPrerenderProcessor(
-      mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver);
-
   // Prerender2:
   // Tells PrerenderHostRegistry to cancel the prerendering of the page this
   // frame is in, which destroys this frame.
@@ -3703,18 +3700,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // PolicyContainer. Cf. the documentation string of the PolicyContainerHost
   // class for more information.
   scoped_refptr<PolicyContainerHost> policy_container_host_;
-
-  // Prerender2:
-  // Receivers for PrerenderProcessor that handle prerendering requests from a
-  // renderer process. These receivers are disconnected when the document
-  // explicitly cancels prerendering or the document gets destroyed.
-  // There are two types of RenderFrameHosts during prerendering.
-  // - Initiator RenderFrameHost: (if any) it triggers a prerendering
-  // navigation, e.g., by <link rel="prerender">.
-  // - Prerendered RenderFrameHost: it is for a prerendering page.
-  // Note that it is the initiator RenderFrameHost that stores these receivers.
-  mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
-      prerender_processor_receivers_;
 
   // Prerender2:
   // This is true while notifying the frame in the renderer of activation for
