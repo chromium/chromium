@@ -499,6 +499,12 @@ void TestingProfile::FinishInit() {
   if (profile_manager)
     profile_manager->InitProfileUserPrefs(this);
 
+  if (original_profile_) {
+    DCHECK(!delegate_) << "Not expecting a delegate for an OTR profile";
+    original_profile_->NotifyOffTheRecordProfileCreated(this);
+    return;
+  }
+
   if (delegate_) {
     delegate_->OnProfileCreationFinished(this, CREATE_MODE_ASYNCHRONOUS, true,
                                          false);
@@ -510,9 +516,6 @@ void TestingProfile::FinishInit() {
     // initialization.
     signin_util::EnsureUserSignoutAllowedIsInitializedForProfile(this);
   }
-
-  if (original_profile_)
-    original_profile_->NotifyOffTheRecordProfileCreated(this);
 }
 
 TestingProfile::~TestingProfile() {
