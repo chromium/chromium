@@ -16,6 +16,11 @@
 namespace content {
 class NavigationHandle;
 }
+namespace ukm {
+namespace builders {
+class AmpPageLoad;
+}  // namespace builders
+}  // namespace ukm
 
 // Observer responsible for recording metrics for AMP documents. This includes
 // both AMP documents loaded in the main frame, and AMP documents loaded in a
@@ -59,6 +64,8 @@ class AMPPageLoadMetricsObserver
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness) override;
   void OnSubFrameRenderDataUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::FrameRenderDataUpdate& render_data)
@@ -106,6 +113,9 @@ class AMPPageLoadMetricsObserver
     page_load_metrics::PageRenderData render_data;
     page_load_metrics::LayoutShiftNormalization layout_shift_normalization;
 
+    // MobileFriendliness metrics observed in the AMP iframe.
+    blink::MobileFriendliness mobile_friendliness;
+
     // Whether an AMP document was loaded, based on observed
     // LoadingBehaviorFlags for this frame.
     bool amp_document_loaded = false;
@@ -115,6 +125,7 @@ class AMPPageLoadMetricsObserver
 
   void ProcessMainFrameNavigation(content::NavigationHandle* navigation_handle);
   void MaybeRecordAmpDocumentMetrics();
+  void RecordMobileFriendliness(ukm::builders::AmpPageLoad& builder);
 
   // Information about the currently active AMP navigation in the main
   // frame. Will be null if there isn't an active AMP navigation in the main

@@ -497,12 +497,13 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
     UpdateMainFrameRenderData(*render_data);
+    UpdateMainFrameMobileFriendliness(mobile_friendliness);
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
+    UpdateSubFrameMobileFriendliness(mobile_friendliness);
   }
   UpdatePageInputTiming(*input_timing_delta);
-  UpdateMobileFriendliness(mobile_friendliness);
   UpdatePageRenderData(*render_data);
   if (!is_main_frame) {
     // This path is just for the AMP metrics.
@@ -621,6 +622,17 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
   MaybeUpdateFrameIntersection(render_frame_host, subframe_metadata);
 }
 
+void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMobileFriendliness(
+    const blink::MobileFriendliness& mobile_friendliness) {
+  mobile_friendliness_ = mobile_friendliness;
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMobileFriendliness(
+    const blink::MobileFriendliness& mobile_friendliness) {
+  mobile_friendliness_ = mobile_friendliness;
+  client_->OnSubFrameMobileFriendlinessChanged(mobile_friendliness);
+}
+
 void PageLoadMetricsUpdateDispatcher::MaybeUpdateFrameIntersection(
     content::RenderFrameHost* render_frame_host,
     const mojom::FrameMetadataPtr& frame_metadata) {
@@ -726,11 +738,6 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
   page_input_timing_.total_input_delay += input_timing_delta.total_input_delay;
   page_input_timing_.total_adjusted_input_delay +=
       input_timing_delta.total_adjusted_input_delay;
-}
-
-void PageLoadMetricsUpdateDispatcher::UpdateMobileFriendliness(
-    const blink::MobileFriendliness& mobile_friendliness) {
-  mobile_friendliness_ = mobile_friendliness;
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(

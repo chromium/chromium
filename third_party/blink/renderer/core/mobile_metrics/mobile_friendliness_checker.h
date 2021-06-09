@@ -33,7 +33,7 @@ class CORE_EXPORT MobileFriendlinessChecker
   const blink::MobileFriendliness& GetMobileFriendliness() const {
     return mobile_friendliness_;
   }
-  void NotifyDocumentUnload();
+  void EvaluateNow();
 
   void Trace(Visitor* visitor) const;
   struct TextAreaWithFontSize {

@@ -31,6 +31,14 @@ class RenderFrameHost;
 
 namespace page_load_metrics {
 
+// Get bucketed value of viewport initial scale from given MobileFriendliness
+// metrics.
+int GetBucketedViewportInitialScale(const blink::MobileFriendliness& mf);
+
+// Get bucketed value of hardcoded viewport width from given MobileFriendliness
+// metrics.
+int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf);
+
 // Struct for storing per-frame memory update data.
 struct MemoryUpdate {
   content::GlobalFrameRoutingId routing_id;
@@ -369,6 +377,9 @@ class PageLoadMetricsObserver {
   // If |subframe_rfh| is nullptr, the update took place in the main frame.
   virtual void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                               const mojom::PageLoadTiming& timing) {}
+
+  virtual void OnMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness) {}
 
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the

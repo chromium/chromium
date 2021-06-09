@@ -787,6 +787,13 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
+void PageLoadTracker::OnSubFrameMobileFriendlinessChanged(
+    const blink::MobileFriendliness& mobile_friendliness) {
+  for (const auto& observer : observers_) {
+    observer->OnMobileFriendlinessUpdate(mobile_friendliness);
+  }
+}
+
 void PageLoadTracker::BroadcastEventToObservers(PageLoadMetricsEvent event) {
   for (const auto& observer : observers_) {
     observer->OnEventOccurred(event);

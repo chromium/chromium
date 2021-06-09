@@ -94,6 +94,9 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing);
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing,
                                  content::RenderFrameHost* rfh);
+  void SimulateMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness,
+      content::RenderFrameHost* rfh);
   void SimulateTimingAndMetadataUpdate(const mojom::PageLoadTiming& timing,
                                        const mojom::FrameMetadata& metadata);
   void SimulateMetadataUpdate(const mojom::FrameMetadata& metadata,

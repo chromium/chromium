@@ -59,20 +59,6 @@
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
-namespace internal {
-
-int BucketWithOffsetAndUnit(int num, int offset, int unit) {
-  // Bucketing raw number with `offset` centered.
-  const int grid = (num - offset) / unit;
-  const int bucketed =
-      grid == 0 ? 0
-                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
-                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
-  return bucketed * unit + offset;
-}
-
-}  // namespace internal
-
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
@@ -1168,6 +1154,7 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   ukm::builders::MobileFriendliness builder(GetDelegate().GetPageUkmSourceId());
   const blink::MobileFriendliness& mf = GetDelegate().GetMobileFriendliness();
+
   if (mf.viewport_device_width == blink::mojom::ViewportStatus::kYes)
     builder.SetViewportDeviceWidth(true);
   else if (mf.viewport_device_width == blink::mojom::ViewportStatus::kNo)
@@ -1181,19 +1168,19 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   if (mf.small_text_ratio != -1)
     builder.SetSmallTextRatio(mf.small_text_ratio);
 
-  if (mf.viewport_initial_scale_x10 != -1) {
-    builder.SetViewportInitialScaleX10(internal::BucketWithOffsetAndUnit(
-        mf.viewport_initial_scale_x10, 10, 2));
-  }
+  if (mf.viewport_initial_scale_x10 != -1)
+    builder.SetViewportInitialScaleX10(
+        page_load_metrics::GetBucketedViewportInitialScale(mf));
 
-  if (mf.viewport_hardcoded_width != -1) {
-    builder.SetViewportHardcodedWidth(internal::BucketWithOffsetAndUnit(
-        mf.viewport_hardcoded_width, 500, 10));
-  }
+  if (mf.viewport_hardcoded_width != -1)
+    builder.SetViewportHardcodedWidth(
+        page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+
   if (mf.text_content_outside_viewport_percentage != -1) {
     builder.SetTextContentOutsideViewportPercentage(
         mf.text_content_outside_viewport_percentage);
   }
+
   if (mf.bad_tap_targets_ratio != -1)
     builder.SetBadTapTargetsRatio(mf.bad_tap_targets_ratio);
 

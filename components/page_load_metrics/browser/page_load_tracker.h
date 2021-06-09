@@ -193,6 +193,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameMetadataChanged() override;
   void OnSubframeMetadataChanged(content::RenderFrameHost* rfh,
                                  const mojom::FrameMetadata& metadata) override;
+  void OnSubFrameMobileFriendlinessChanged(
+      const blink::MobileFriendliness&) override;
   void UpdateFeaturesUsage(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& new_features) override;

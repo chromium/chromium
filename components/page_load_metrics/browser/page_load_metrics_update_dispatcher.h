@@ -124,6 +124,8 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubFrameRenderDataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameRenderDataUpdate& render_data) = 0;
+    virtual void OnSubFrameMobileFriendlinessChanged(
+        const blink::MobileFriendliness& mobile_friendliness) = 0;
     virtual void UpdateFeaturesUsage(
         content::RenderFrameHost* rfh,
         const std::vector<blink::UseCounterFeature>& new_features) = 0;
@@ -227,14 +229,17 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateSubFrameMetadata(content::RenderFrameHost* render_frame_host,
                               mojom::FrameMetadataPtr subframe_metadata);
 
+  void UpdateMainFrameMobileFriendliness(
+      const blink::MobileFriendliness& mobile_friendliness);
+  void UpdateSubFrameMobileFriendliness(
+      const blink::MobileFriendliness& mobile_friendliness);
+
   void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
   void MaybeUpdateFrameIntersection(
       content::RenderFrameHost* render_frame_host,
       const mojom::FrameMetadataPtr& frame_metadata);
 
   void UpdatePageRenderData(const mojom::FrameRenderDataUpdate& render_data);
-  void UpdateMobileFriendliness(
-      const blink::MobileFriendliness& mobile_friendliness);
   void UpdateMainFrameRenderData(
       const mojom::FrameRenderDataUpdate& render_data);
   void OnSubFrameRenderDataChanged(

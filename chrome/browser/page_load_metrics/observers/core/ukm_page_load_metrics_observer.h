@@ -30,13 +30,6 @@ class PageLoad;
 }
 }  // namespace ukm
 
-namespace internal {
-
-// Exposed for tests.
-int BucketWithOffsetAndUnit(int num, int offset, int unit);
-
-}  // namespace internal
-
 // This enum represents the type of page load: abort, non-abort, or neither.
 // A page is of type NEVER_FOREGROUND if it was never in the foreground.
 // A page is of type ABORT if it was in the foreground at some point but did not

@@ -3745,7 +3745,7 @@ void Document::DispatchUnloadEvents(
 
   GetFrame()->Loader().SaveScrollAnchor();
   if (auto* mf_checker = View()->GetMobileFriendlinessChecker())
-    mf_checker->NotifyDocumentUnload();
+    mf_checker->EvaluateNow();
 
   // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
   VLOG(1) << "Actually dispatching an UnloadEvent: URL = " << Url();

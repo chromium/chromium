@@ -151,6 +151,18 @@ void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
   SimulateInputTimingUpdate(input_timing, web_contents()->GetMainFrame());
 }
 
+void PageLoadMetricsObserverTester::SimulateMobileFriendlinessUpdate(
+    const blink::MobileFriendliness& mobile_friendliness,
+    content::RenderFrameHost* rfh) {
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  SimulatePageLoadTimingUpdate(
+      timing, mojom::FrameMetadata(),
+      /* new_features= */ {}, mojom::FrameRenderDataUpdate(),
+      mojom::CpuTiming(), mojom::DeferredResourceCounts(), mojom::InputTiming(),
+      mobile_friendliness, rfh);
+}
+
 void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
     const mojom::InputTiming& input_timing,
     content::RenderFrameHost* rfh) {

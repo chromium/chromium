@@ -523,6 +523,49 @@ be describing additional metrics about the same event.
       was not prerendered.
     </summary>
   </metric>
+  <metric name="SubFrame.MobileFriendliness.AllowUserZoom" enum="Boolean">
+    <summary>
+      Whether the page allows the user to zoom in/out, in the AMP subframe.
+    </summary>
+  </metric>
+  <metric name="SubFrame.MobileFriendliness.BadTapTargetsRatio">
+    <summary>
+      Percentage of tap targets whose center position is within another tap
+      target (expanded by a margin), in the AMP subframe. The detail of the
+      algorithm is go/bad-tap-target-ukm. If evaluation time budget exceeded,
+      this will be is -2.
+    </summary>
+  </metric>
+  <metric name="SubFrame.MobileFriendliness.SmallTextRatio">
+    <summary>
+      Percentage of small font text area in total text area, in the AMP
+      subframe.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.MobileFriendliness.TextContentOutsideViewportPercentage">
+    <summary>
+      Percentage of pixels of text and images horizontally outside the viewport,
+      relative to the frame width, in the AMP subframe.
+    </summary>
+  </metric>
+  <metric name="SubFrame.MobileFriendliness.ViewportDeviceWidth" enum="Boolean">
+    <summary>
+      Whether the width of the viewport is specified as device-width or not, in
+      the AMP subframe.
+    </summary>
+  </metric>
+  <metric name="SubFrame.MobileFriendliness.ViewportHardcodedWidth">
+    <summary>
+      Specified hardcoded viewport width in CSS pixels, in the AMP subframe.
+    </summary>
+  </metric>
+  <metric name="SubFrame.MobileFriendliness.ViewportInitialScaleX10">
+    <summary>
+      Specified initial viewport scaling, in the AMP subframe, multiplied by 10.
+      1 means 0.1, 100 means 10. [1-100].
+    </summary>
+  </metric>
   <metric
       name="SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint">
     <obsolete>

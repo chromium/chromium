@@ -2303,32 +2303,69 @@ TEST_F(CLSUkmPageLoadMetricsObserverTest, BeforeInputOrScroll_Sub) {
   RunBeforeInputOrScrollCase(true);
 }
 
-TEST_F(UkmPageLoadMetricsObserverTest, BucketWithOffsetAndUnit) {
-  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(500, 500, 10));
+void TestViewportInitialScale(int expected, int input) {
+  blink::MobileFriendliness mf;
+  mf.viewport_initial_scale_x10 = input;
+  EXPECT_EQ(expected, page_load_metrics::GetBucketedViewportInitialScale(mf));
+}
 
-  // large num
-  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(501, 500, 10));
-  EXPECT_EQ(510, internal::BucketWithOffsetAndUnit(510, 500, 10));
-  EXPECT_EQ(520, internal::BucketWithOffsetAndUnit(525, 500, 10));
-  EXPECT_EQ(540, internal::BucketWithOffsetAndUnit(550, 500, 10));
-  EXPECT_EQ(820, internal::BucketWithOffsetAndUnit(1000, 500, 10));
-  EXPECT_EQ(1780, internal::BucketWithOffsetAndUnit(2000, 500, 10));
+TEST_F(UkmPageLoadMetricsObserverTest, BucketingViewportInitialScale) {
+  // Default value to be ignored.
+  TestViewportInitialScale(-1, -1);
 
-  // small num
-  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(499, 500, 10));
-  EXPECT_EQ(490, internal::BucketWithOffsetAndUnit(490, 500, 10));
-  EXPECT_EQ(480, internal::BucketWithOffsetAndUnit(475, 500, 10));
-  EXPECT_EQ(460, internal::BucketWithOffsetAndUnit(450, 500, 10));
-  EXPECT_EQ(180, internal::BucketWithOffsetAndUnit(100, 500, 10));
-  EXPECT_EQ(180, internal::BucketWithOffsetAndUnit(0, 500, 10));
+  // Typical case initail-scale=1.0.
+  TestViewportInitialScale(10, 10);
 
-  // different offset
-  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1000, 1000, 10));
-  EXPECT_EQ(1010, internal::BucketWithOffsetAndUnit(1010, 1000, 10));
-  EXPECT_EQ(1080, internal::BucketWithOffsetAndUnit(1100, 1000, 10));
+  // Bigger number cases.
+  TestViewportInitialScale(12, 12);
+  TestViewportInitialScale(14, 15);
+  TestViewportInitialScale(14, 15);
+  TestViewportInitialScale(14, 17);
+  TestViewportInitialScale(18, 18);
+  TestViewportInitialScale(18, 25);
+  TestViewportInitialScale(26, 26);
 
-  // different unit
-  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1000, 1000, 100));
-  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1010, 1000, 100));
-  EXPECT_EQ(1100, internal::BucketWithOffsetAndUnit(1100, 1000, 100));
+  // Smaller number cases.
+  TestViewportInitialScale(10, 9);
+  TestViewportInitialScale(8, 8);
+  TestViewportInitialScale(8, 7);
+  TestViewportInitialScale(6, 6);
+  TestViewportInitialScale(6, 3);
+  TestViewportInitialScale(2, 1);
+  TestViewportInitialScale(2, 0);
+}
+
+void TestViewportHardcodedWidth(int expected, int input) {
+  blink::MobileFriendliness mf;
+  mf.viewport_hardcoded_width = input;
+  EXPECT_EQ(expected, page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, BucketingViewportHardcodedWidth) {
+  // Default value to be ignored.
+  TestViewportHardcodedWidth(-1, -1);
+
+  // Middle case.
+  TestViewportHardcodedWidth(500, 500);
+
+  // Bigger number cases.
+  TestViewportHardcodedWidth(500, 509);
+
+  TestViewportHardcodedWidth(510, 510);
+  TestViewportHardcodedWidth(510, 519);
+  TestViewportHardcodedWidth(520, 520);
+  TestViewportHardcodedWidth(520, 539);
+  TestViewportHardcodedWidth(540, 540);
+  TestViewportHardcodedWidth(540, 579);
+  TestViewportHardcodedWidth(580, 580);
+  TestViewportHardcodedWidth(580, 640);
+  TestViewportHardcodedWidth(820, 1000);
+  TestViewportHardcodedWidth(1780, 2000);
+
+  // Smaller number cases.
+  TestViewportHardcodedWidth(500, 491);
+  TestViewportHardcodedWidth(490, 490);
+  TestViewportHardcodedWidth(480, 480);
+  TestViewportHardcodedWidth(460, 421);
+  TestViewportHardcodedWidth(180, 180);
 }

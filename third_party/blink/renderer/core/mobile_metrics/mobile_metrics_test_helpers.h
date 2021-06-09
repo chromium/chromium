@@ -7,21 +7,33 @@
 
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace mobile_metrics_test_helpers {
 
-class TestWebFrameClient : public frame_test_helpers::TestWebFrameClient {
- public:
-  void DidChangeMobileFriendliness(const MobileFriendliness& mf) override {
-    mobile_friendliness_ = mf;
-  }
-  const MobileFriendliness& GetMobileFriendliness() const {
-    return mobile_friendliness_;
-  }
+// Collect MobileFriendliness metrics with tree structure which reflects
+// tree structure of subframe.
+struct MobileFriendlinessTree {
+  MobileFriendliness mf;
+  WTF::Vector<MobileFriendlinessTree> children;
 
- private:
-  MobileFriendliness mobile_friendliness_;
+  static MobileFriendlinessTree GetMobileFriendlinessTree(
+      LocalFrameView* view) {
+    mobile_metrics_test_helpers::MobileFriendlinessTree result;
+    view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kTest);
+    view->GetMobileFriendlinessChecker()->NotifyFirstContentfulPaint();
+    view->GetMobileFriendlinessChecker()->EvaluateNow();
+    result.mf = view->GetMobileFriendlinessChecker()->GetMobileFriendliness();
+    for (Frame* child = view->GetFrame().FirstChild(); child;
+         child = child->NextSibling()) {
+      if (LocalFrame* local_frame = DynamicTo<LocalFrame>(child)) {
+        result.children.push_back(
+            GetMobileFriendlinessTree(local_frame->View()));
+      }
+    }
+    return result;
+  }
 };
 
 }  // namespace mobile_metrics_test_helpers
