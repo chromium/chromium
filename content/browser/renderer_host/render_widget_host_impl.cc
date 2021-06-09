@@ -2497,7 +2497,10 @@ void RenderWidgetHostImpl::RequestClosePopup() {
 
 void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
                                           SetPopupBoundsCallback callback) {
-  if (view_)
+  // If the browser changes bounds, do not allow renderer changing bounds at the
+  // same time until it acked the changes. Otherwise, if they simultaneously
+  // change bounds, browser's bounds can be clobbered.
+  if (view_ && !waiting_for_screen_rects_ack_)
     view_->SetBounds(bounds);
   std::move(callback).Run();
 }

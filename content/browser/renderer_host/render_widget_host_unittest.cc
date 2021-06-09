@@ -812,6 +812,67 @@ class RenderWidgetHostWithSourceTest
 
 // -----------------------------------------------------------------------------
 
+// Tests that renderer doesn't change bounds while browser has its
+// bounds changed (and until bounds are acked), which might be a result
+// of a system's display compositor/server changing bounds of an
+// application.
+TEST_F(RenderWidgetHostTest, DoNotAcceptPopupBoundsUntilScreenRectsAcked) {
+  // The host should wait for the screen rects ack now as SendScreenRects were
+  // called during the initialization step.
+  EXPECT_TRUE(host_->waiting_for_screen_rects_ack_);
+
+  // Execute pending callbacks and clear screen rects.
+  ClearScreenRects();
+
+  // Lets mojo to pass the message from the renderer to the browser (from widget
+  // to host).
+  base::RunLoop().RunUntilIdle();
+
+  // The host shouldn't wait for ack now as it has received it.
+  EXPECT_FALSE(host_->waiting_for_screen_rects_ack_);
+
+  // Change the bounds of the view and send screen rects.
+  view_->SetBounds({10, 20, 300, 200});
+  // Pass updated bounds from the browser to the renderer.
+  host_->SendScreenRects();
+
+  // The host should wait for the screen rects ack now.
+  EXPECT_TRUE(host_->waiting_for_screen_rects_ack_);
+
+  // Store the current view's bounds and pretend popup bounds are
+  // being changed. However, they mustn't be changed as the host is still
+  // waiting for the screen rects ack. This ensures that the renderer
+  // doesn't clobber browser's bounds.
+  auto old_view_bounds = view_->GetViewBounds();
+  auto new_popup_view_bounds = gfx::Rect(5, 5, 20, 20);
+  // Act like a renderer sending new bounds to the browser.
+  static_cast<blink::mojom::PopupWidgetHost*>(host_.get())
+      ->SetPopupBounds(new_popup_view_bounds, base::DoNothing());
+  // The view still has the old bounds...
+  EXPECT_EQ(old_view_bounds, view_->GetViewBounds());
+  // which are not the same as the new bounds that were tried to be
+  // set.
+  EXPECT_NE(view_->GetViewBounds(), new_popup_view_bounds);
+
+  // Clear the screen rects and send the ack callback back to the host.
+  ClearScreenRects();
+
+  // Allows mojo to pass the message from the renderer to the browser
+  // (ClearScreenRects executed a callback via mojo that notifies the browser
+  // that the renderer completed processing the new rects).
+  base::RunLoop().RunUntilIdle();
+
+  // The change must have been acked by now.
+  EXPECT_FALSE(host_->waiting_for_screen_rects_ack_);
+
+  // Pretend that the renderer changes the popup bounds again...
+  static_cast<blink::mojom::PopupWidgetHost*>(host_.get())
+      ->SetPopupBounds(new_popup_view_bounds, base::DoNothing());
+  // And the host must accept them now as the screen rects have been
+  // acked.
+  EXPECT_EQ(new_popup_view_bounds, view_->GetViewBounds());
+}
+
 TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   ClearVisualProperties();
 

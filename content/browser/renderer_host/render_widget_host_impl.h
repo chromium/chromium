@@ -905,6 +905,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
+                           DoNotAcceptPopupBoundsUntilScreenRectsAcked);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            DontPostponeInputEventAckTimeout);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, PendingUserActivationTimeout);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, RendererExitedNoDrag);
