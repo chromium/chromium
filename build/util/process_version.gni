@@ -114,7 +114,11 @@ template("process_version") {
 
   if (!process_only) {
     source_set(source_set_name) {
-      forward_variables_from(invoker, [ "visibility" ])
+      forward_variables_from(invoker,
+                             [
+                               "visibility",
+                               "deps",
+                             ])
       sources = get_target_outputs(":$action_name")
       public_deps = [ ":$action_name" ]
     }

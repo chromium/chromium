@@ -288,14 +288,14 @@ if (is_win || is_mac) {
 
   process_version("updater_version_cc") {
     sources = [ "//chrome/VERSION" ]
-
+    deps = [ ":version_header" ]
     template_file = "updater_version.cc.in"
     output = "$target_gen_dir/updater_version.cc"
   }
 
   process_version("updater_version_cc_offset") {
     sources = [ "//chrome/VERSION" ]
-
+    deps = [ ":version_header" ]
     template_file = "updater_version_offset.cc.in"
     output = "$target_gen_dir/updater_version_offset.cc"
   }
