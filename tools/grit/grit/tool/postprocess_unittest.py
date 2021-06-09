@@ -57,7 +57,7 @@ class DummyPostProcessor(grit.tool.postprocess_interface.PostProcessor):
       name_attr = node.attrs['name']
       m = smarter.search(name_attr)
       if m:
-         node.attrs['name'] = 'SMART' + m.group(2)
+        node.attrs['name'] = 'SMART' + m.group(2)
     return grdnode
 
 if __name__ == '__main__':

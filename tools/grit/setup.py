@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     author='The Chromium Authors',
     author_email='chromium-dev@chromium.org',
-    description='Google Resource and Internationalization Tool for managing '
-                'translations & resource files',
+    description=('Google Resource and Internationalization Tool for managing '
+                 'translations & resource files'),
     license='BSD-3',
     url='https://chromium.googlesource.com/chromium/src/tools/grit/',
     classifiers=[

@@ -458,7 +458,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
   # - then escape all character entities in text in-between placeholders
 
   parts = []  # List of strings (for text chunks) and tuples (ID, original)
-              # for placeholders
+  # for placeholders
 
   count_names = {}  # Map of base names to number of times used
   end_names = {}  # Map of base names to stack of end tags (for correct nesting)

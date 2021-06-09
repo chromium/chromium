@@ -76,4 +76,3 @@ END'''), 'IDD_SIDEBAR_RSS_PANEL_PROPPAGE')
 
     warnings = shortcuts.GenerateDuplicateShortcutsWarnings(self.uq, 'PROJECT')
     self.failUnless(len(warnings) == 0)
-
