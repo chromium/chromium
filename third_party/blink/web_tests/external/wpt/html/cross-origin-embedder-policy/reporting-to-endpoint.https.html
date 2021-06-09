@@ -21,6 +21,9 @@
 // .
 const { REMOTE_ORIGIN } = get_host_info();
 const BASE = new URL("resources", location).pathname
+const FRAME_URL = `resources/reporting-empty-frame.html` +
+  `?pipe=header(cross-origin-embedder-policy,require-corp;report-to="endpoint")` +
+  `|header(cross-origin-embedder-policy-report-only,require-corp;report-to="report-only-endpoint")`;
 
 function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
@@ -65,7 +68,6 @@ async function checkNavigationReportExistence(endpoint, blockedUrl, contextUrl, 
   const retryDelay = 200;
   for (let i = 0; i * retryDelay < timeout; i++) {
     const reports = await fetchReports(endpoint);
-
     for (const report of reports) {
       if (report.type !== 'coep' || report.url !== contextUrl ||
           report.body.type !== 'navigation') {
@@ -85,7 +87,7 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   t.add_cleanup(() => iframe.remove());
 
-  iframe.src = `resources/reporting-empty-frame.html`
+  iframe.src = FRAME_URL
   document.body.appendChild(iframe);
   await new Promise(resolve => {
     iframe.addEventListener('load', resolve, {once: true});
@@ -106,7 +108,7 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   t.add_cleanup(() => iframe.remove());
 
-  iframe.src = `resources/reporting-empty-frame.html`
+  iframe.src = FRAME_URL
   document.body.appendChild(iframe);
   await new Promise(resolve => {
     iframe.addEventListener('load', resolve, {once: true});
@@ -135,7 +137,7 @@ promise_test(async (t) => {
   const iframe = document.createElement('iframe');
   t.add_cleanup(() => iframe.remove());
 
-  iframe.src = 'resources/reporting-empty-frame.html';
+  iframe.src = FRAME_URL;
   const targetUrl = `/common/blank.html?${token()}`;
   iframe.addEventListener('load', t.step_func(() => {
     const nested = iframe.contentDocument.createElement('iframe');
