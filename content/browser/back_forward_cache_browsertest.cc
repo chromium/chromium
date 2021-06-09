@@ -166,6 +166,8 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(
         features::kBackForwardCache, "skip_same_site_if_unload_exists",
         skip_same_site_if_unload_exists_ ? "true" : "false");
+    EnableFeatureAndSetParams(features::kBackForwardCache, "unload_support",
+                              unload_support_);
     EnableFeatureAndSetParams(
         features::kBackForwardCache, "check_eligibility_after_pagehide",
         check_eligibility_after_pagehide_ ? "true" : "false");
@@ -449,6 +451,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool same_site_back_forward_cache_enabled_ = true;
   bool skip_same_site_if_unload_exists_ = false;
   bool check_eligibility_after_pagehide_ = false;
+  std::string unload_support_ = "always";
 
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
@@ -11666,8 +11669,7 @@ class BackForwardCacheUnloadStrategyBrowserTest
       public testing::WithParamInterface<std::string> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache, "unload_support",
-                              GetParam());
+    unload_support_ = GetParam();
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 

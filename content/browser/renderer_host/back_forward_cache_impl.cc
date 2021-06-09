@@ -154,10 +154,12 @@ constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
 };
 
 BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
-  // TODO(crbug.com/1201653): Make the default "kNo" for desktops once
-  //                          the experiment config is updated.
   constexpr auto kDefaultStrategy =
+#if defined(OS_ANDROID)
       BackForwardCacheImpl::UnloadSupportStrategy::kAlways;
+#else
+      BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired;
+#endif
 
   if (!IsBackForwardCacheEnabled())
     return kDefaultStrategy;
