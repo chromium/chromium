@@ -132,8 +132,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
-  // Initializes the main `PDFiumEngine`. Any existing engine will be replaced.
-  void InitializeEngine(PDFiumFormFiller::ScriptOption script_option);
+  // Initializes the main `PDFiumEngine` with `engine`. Any existing engine will
+  // be replaced. `engine` must not be nullptr.
+  void InitializeEngine(std::unique_ptr<PDFiumEngine> engine);
 
   // Destroys the main `PDFiumEngine`. Subclasses should call this method in
   // their destructor to ensure the engine is destroyed first.

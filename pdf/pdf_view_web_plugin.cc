@@ -220,7 +220,8 @@ bool PdfViewWebPlugin::InitializeCommon(
     stream_url = original_url;
 
   PerProcessInitializer::GetInstance().Acquire();
-  InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  InitializeEngine(std::make_unique<PDFiumEngine>(
+      this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
   LoadUrl(stream_url, /*is_print_preview=*/false);
   set_url(original_url);
   post_message_sender_.set_container(Container());

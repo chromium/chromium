@@ -518,9 +518,9 @@ void PdfViewPluginBase::HandleAccessibilityAction(
   engine_->HandleAccessibilityAction(action_data);
 }
 
-void PdfViewPluginBase::InitializeEngine(
-    PDFiumFormFiller::ScriptOption script_option) {
-  engine_ = std::make_unique<PDFiumEngine>(this, script_option);
+void PdfViewPluginBase::InitializeEngine(std::unique_ptr<PDFiumEngine> engine) {
+  DCHECK(engine);
+  engine_ = std::move(engine);
 }
 
 void PdfViewPluginBase::DestroyEngine() {

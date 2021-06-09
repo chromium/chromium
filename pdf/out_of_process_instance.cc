@@ -546,7 +546,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   if (!stream_url)
     stream_url = original_url;
 
-  InitializeEngine(script_option);
+  InitializeEngine(std::make_unique<PDFiumEngine>(this, script_option));
 
   // If we're in print preview mode we don't need to load the document yet.
   // A `kJSResetPrintPreviewModeType` message will be sent to the plugin letting
@@ -1033,7 +1033,8 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   set_document_load_state(DocumentLoadState::kLoading);
   LoadUrl(GetURL(), /*is_print_preview=*/false);
   preview_engine_.reset();
-  InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  InitializeEngine(std::make_unique<PDFiumEngine>(
+      this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(GetURL().c_str(), /*headers=*/nullptr);
 
