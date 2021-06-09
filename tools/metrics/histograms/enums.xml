@@ -75260,6 +75260,24 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Unknown response code"/>
 </enum>
 
+<enum name="SurveyDownloadResponseCodes2">
+<!-- This enum allocations are not without meaning. Thus, these allocations
+     should never be changed, and new possible return values should be appended
+     as new items with new values.
+  -->
+
+  <summary>
+    Results when download survey response is available. Used by
+    Android.Survey.SurveyDownloadResponseCodes2.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Backend timeout"/>
+  <int value="2" label="Failed to fetch survey"/>
+  <int value="3" label="No available survey"/>
+  <int value="4" label="Trigger Id not set"/>
+  <int value="5" label="Unsupported Cronet engine"/>
+</enum>
+
 <enum name="SurveyFilteringResult">
   <int value="0" label="Survey info bar already displayed"/>
   <int value="1" label="Chrome Home enabled for less than one week [removed]"/>

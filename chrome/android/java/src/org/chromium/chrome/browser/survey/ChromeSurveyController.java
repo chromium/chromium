@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.infobar.SurveyInfoBar;
 import org.chromium.chrome.browser.infobar.SurveyInfoBarDelegate;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -51,15 +53,15 @@ import java.util.Random;
  */
 public class ChromeSurveyController implements InfoBarAnimationListener {
     private static final String TAG = "ChromeSurveyCtrler";
-    private static final long REQUIRED_VISIBILITY_DURATION_MS = 5000;
 
+    @VisibleForTesting
+    static final long REQUIRED_VISIBILITY_DURATION_MS = 5000;
     @VisibleForTesting
     public static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
     @VisibleForTesting
     static final String MAX_NUMBER = "max-number";
     @VisibleForTesting
     static final String SITE_ID_PARAM_NAME = "site-id";
-
     private static boolean sForceUmaEnabledForTesting;
 
     /**
@@ -108,12 +110,15 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
     private final String mTriggerId;
     private final String mPrefKeyPromptDisplayed;
+    private final @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @VisibleForTesting
-    ChromeSurveyController(String triggerId) {
+    ChromeSurveyController(
+            String triggerId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
         mTriggerId = triggerId;
         mPrefKeyPromptDisplayed =
                 ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(mTriggerId);
+        mLifecycleDispatcher = lifecycleDispatcher;
     }
 
     /**
@@ -121,11 +126,12 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      * @param tabModelSelector The tab model selector to access the tab on which the survey will be
      *                         shown.
      */
-    public static void initialize(TabModelSelector tabModelSelector) {
+    public static void initialize(TabModelSelector tabModelSelector,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
         assert tabModelSelector != null;
         if (!isSurveyEnabled() || TextUtils.isEmpty(getTriggerId())) return;
         new StartDownloadIfEligibleTask(
-                new ChromeSurveyController(getTriggerId()), tabModelSelector)
+                new ChromeSurveyController(getTriggerId(), lifecycleDispatcher), tabModelSelector)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -386,6 +392,11 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             public String getSurveyPromptString() {
                 return ContextUtils.getApplicationContext().getString(
                         R.string.chrome_survey_prompt);
+            }
+
+            @Override
+            public ActivityLifecycleDispatcher getLifecycleDispatcher() {
+                return mLifecycleDispatcher;
             }
         };
     }

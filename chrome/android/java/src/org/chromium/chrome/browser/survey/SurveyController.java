@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.survey;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
  * Class that controls retrieving and displaying surveys. Clients should call #downloadSurvey() and
@@ -72,15 +74,26 @@ public class SurveyController {
             Runnable onFailureRunnable) {}
 
     /**
+     * @deprecated Use #showSurveyIfAvailable(Activity, String, boolean, int,
+     *         ActivityLifecycleDispatcher).
+     */
+    @Deprecated
+    public void showSurveyIfAvailable(
+            Activity activity, String siteId, boolean showAsBottomSheet, int displayLogoResId) {}
+
+    /**
      * Show the survey.
      * @param activity The client activity for the survey request.
      * @param siteId The id of the site from where the survey will be downloaded.
      * @param showAsBottomSheet Whether the survey should be presented as a bottom sheet or not.
      * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
      *                         Pass 0 for no logo.
+     * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
      */
-    public void showSurveyIfAvailable(
-            Activity activity, String siteId, boolean showAsBottomSheet, int displayLogoResId) {}
+    public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
+            int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+        this.showSurveyIfAvailable(activity, siteId, showAsBottomSheet, displayLogoResId);
+    }
 
     /**
      * Clears the survey cache containing responses and history.
