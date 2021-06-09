@@ -241,12 +241,6 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Flag to enable stereo channel mirroring.
   bool audio_mirroring_;
 
-  // Typing detector. |typing_detected_| is used to show the result of typing
-  // detection. It can be accessed by the capture audio thread and by the
-  // libjingle thread which calls GetStats().
-  std::unique_ptr<webrtc::TypingDetection> typing_detector_;
-  base::subtle::Atomic32 typing_detected_;
-
   // Communication with browser for AEC dump.
   std::unique_ptr<AecDumpAgentImpl> aec_dump_agent_impl_;
 

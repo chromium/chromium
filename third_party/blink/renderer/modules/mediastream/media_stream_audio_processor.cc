@@ -43,7 +43,6 @@
 #include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing_statistics.h"
-#include "third_party/webrtc/modules/audio_processing/typing_detection.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace WTF {
@@ -302,7 +301,6 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
       audio_mirroring_(false),
-      typing_detected_(false),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),
       stopped_(false),
       use_capture_multi_channel_processing_(
@@ -480,8 +478,7 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
 #endif
 
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
-  if (properties.goog_experimental_echo_cancellation ||
-      properties.goog_typing_noise_detection) {
+  if (properties.goog_experimental_echo_cancellation) {
     return true;
   }
 #endif
@@ -558,7 +555,6 @@ void MediaStreamAudioProcessor::OnRenderThreadChanged() {
 webrtc::AudioProcessorInterface::AudioProcessorStatistics
 MediaStreamAudioProcessor::GetStats(bool has_remote_tracks) {
   AudioProcessorStatistics stats;
-  stats.typing_noise_detected = base::subtle::Acquire_Load(&typing_detected_);
   stats.apm_statistics = audio_processing_->GetStatistics(has_remote_tracks);
   return stats;
 }
@@ -576,19 +572,16 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
 
 #if defined(OS_ANDROID)
   const bool goog_experimental_aec = false;
-  const bool goog_typing_detection = false;
 #else
   const bool goog_experimental_aec =
       properties.goog_experimental_echo_cancellation;
-  const bool goog_typing_detection = properties.goog_typing_noise_detection;
 #endif
 
   // Return immediately if none of the goog constraints requiring
   // webrtc::AudioProcessing are enabled.
   if (!properties.EchoCancellationIsWebRtcProvided() &&
       !goog_experimental_aec && !properties.goog_noise_suppression &&
-      !properties.goog_highpass_filter && !goog_typing_detection &&
-      !properties.goog_auto_gain_control &&
+      !properties.goog_highpass_filter && !properties.goog_auto_gain_control &&
       !properties.goog_experimental_noise_suppression) {
     // Sanity-check: WouldModifyAudio() should return true iff
     // |audio_mirroring_| is true.
@@ -674,13 +667,6 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   ConfigAutomaticGainControl(properties, hybrid_agc_params,
                              clipping_control_params,
                              gain_control_compression_gain_db, apm_config);
-
-  if (goog_typing_detection) {
-    // TODO(xians): Remove this |typing_detector_| after the typing suppression
-    // is enabled by default.
-    typing_detector_ = std::make_unique<webrtc::TypingDetection>();
-    EnableTypingDetection(&apm_config, typing_detector_.get());
-  }
 
   // Ensure that 48 kHz APM processing is always active. This overrules the
   // default setting in WebRTC of 32 kHz for ARM platforms.
@@ -870,16 +856,6 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
       memcpy(&output_ptrs[1][0], &output_ptrs[0][0],
              output_format_.frames_per_buffer() * sizeof(output_ptrs[0][0]));
     }
-  }
-
-  if (typing_detector_) {
-    // Ignore remote tracks to avoid unnecessary stats computation.
-    auto voice_detected =
-        ap->GetStatistics(false /* has_remote_tracks */).voice_detected;
-    DCHECK(voice_detected.has_value());
-    bool typing_detected =
-        typing_detector_->Process(key_pressed, *voice_detected);
-    base::subtle::Release_Store(&typing_detected_, typing_detected);
   }
 
   PostCrossThreadTask(

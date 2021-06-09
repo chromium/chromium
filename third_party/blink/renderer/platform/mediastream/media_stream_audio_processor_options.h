@@ -95,17 +95,11 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 #else
       true;
 #endif
-  bool goog_typing_noise_detection = false;
   bool goog_noise_suppression = true;
   bool goog_experimental_noise_suppression = true;
   bool goog_highpass_filter = true;
   bool goog_experimental_auto_gain_control = true;
 };
-
-// Enables the typing detection with the given detector.
-PLATFORM_EXPORT void EnableTypingDetection(
-    AudioProcessing::Config* apm_config,
-    webrtc::TypingDetection* typing_detector);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

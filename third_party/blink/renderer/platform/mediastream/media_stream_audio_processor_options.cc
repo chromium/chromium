@@ -20,7 +20,6 @@
 #include "media/base/audio_parameters.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
-#include "third_party/webrtc/modules/audio_processing/typing_detection.h"
 
 namespace blink {
 namespace {
@@ -93,7 +92,6 @@ void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
   goog_auto_gain_control = false;
   goog_experimental_echo_cancellation = false;
-  goog_typing_noise_detection = false;
   goog_noise_suppression = false;
   goog_experimental_noise_suppression = false;
   goog_highpass_filter = false;
@@ -121,7 +119,6 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          goog_auto_gain_control == other.goog_auto_gain_control &&
          goog_experimental_echo_cancellation ==
              other.goog_experimental_echo_cancellation &&
-         goog_typing_noise_detection == other.goog_typing_noise_detection &&
          goog_noise_suppression == other.goog_noise_suppression &&
          goog_experimental_noise_suppression ==
              other.goog_experimental_noise_suppression &&
@@ -158,15 +155,7 @@ AudioProcessingProperties::ToAudioProcessingSettings() const {
                  : media::AutomaticGainControlType::kDefault)
           : media::AutomaticGainControlType::kDisabled;
   out.high_pass_filter = goog_highpass_filter;
-  out.typing_detection = goog_typing_noise_detection;
   return out;
-}
-
-void EnableTypingDetection(AudioProcessing::Config* apm_config,
-                           webrtc::TypingDetection* typing_detector) {
-  apm_config->voice_detection.enabled = true;
-  // Configure the update period to 1s (100 * 10ms) in the typing detector.
-  typing_detector->SetParameters(0, 0, 0, 0, 0, 100);
 }
 
 void StartEchoCancellationDump(AudioProcessing* audio_processing,
