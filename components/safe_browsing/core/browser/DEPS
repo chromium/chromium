@@ -2,9 +2,6 @@ include_rules = [
   "+components/history/core/browser",
   "+components/safe_browsing/core/proto/csd.pb.h",
   "+components/sessions/core/session_id.h",
-  # TODO(crbug.com/1216341): Eliminate the need for these.
-  "!content/public/browser/network_context_client_base.h",
-  "!content/public/browser/network_service_instance.h",
   "+ipc/ipc_message.h",
   "+net/cookies",
   "+net/extras",

@@ -20,7 +20,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/db/v4_local_database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/browser/browser_thread.h"

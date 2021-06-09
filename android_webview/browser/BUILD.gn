@@ -242,7 +242,6 @@ source_set("browser") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:ping_manager",
     "//components/safe_browsing/core/browser",
-    "//components/safe_browsing/core/browser:network_context",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:safebrowsing_proto",

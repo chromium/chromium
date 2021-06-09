@@ -706,7 +706,6 @@ source_set("weblayer_lib_base") {
       "//components/safe_browsing/core:ping_manager",
       "//components/safe_browsing/core:verdict_cache_manager",
       "//components/safe_browsing/core/browser",
-      "//components/safe_browsing/core/browser:network_context",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/db:allowlist_checker_client",

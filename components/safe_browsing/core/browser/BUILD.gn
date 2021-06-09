@@ -34,24 +34,6 @@ source_set("browser") {
   }
 }
 
-# TODO(crbug.com/1028755): Remove this condition once there are no longer any
-# dependencies on content/.
-if (!is_ios) {
-  source_set("network_context") {
-    sources = [
-      "safe_browsing_network_context.cc",
-      "safe_browsing_network_context.h",
-    ]
-
-    deps = [
-      "//components/safe_browsing/core/common:common",
-      "//components/safe_browsing/core/common:thread_utils",
-      "//content/public/browser:browser",
-      "//net:extras",
-    ]
-  }
-}
-
 source_set("safe_browsing_url_checker_unittest") {
   testonly = true
   sources = [ "safe_browsing_url_checker_impl_unittest.cc" ]
