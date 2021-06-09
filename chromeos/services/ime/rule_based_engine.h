@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_IME_RULE_BASED_ENGINE_H_
 
 #include "chromeos/services/ime/input_engine.h"
+#include "chromeos/services/ime/public/cpp/rulebased/engine.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,10 +15,6 @@
 
 namespace chromeos {
 namespace ime {
-
-namespace rulebased {
-class Engine;
-}
 
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
@@ -34,35 +31,37 @@ class RuleBasedEngine : public InputEngine, public mojom::InputChannel {
   ~RuleBasedEngine() override;
 
   // mojom::InputChannel overrides:
+  // Most of these methods are deliberately empty because rule-based input
+  // methods do not need to listen to these events.
   void ProcessMessage(const std::vector<uint8_t>& message,
-                      ProcessMessageCallback callback) override;
-  void OnInputMethodChanged(const std::string& engine_id) override;
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
-  void OnBlur() override;
+                      ProcessMessageCallback callback) override {}
+  void OnInputMethodChanged(const std::string& engine_id) override {}
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override {}
+  void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
-      mojom::SelectionRangePtr selection_range) override;
+      mojom::SelectionRangePtr selection_range) override {}
   void OnCompositionCanceledBySystem() override;
   void ProcessKeypressForRulebased(
       mojom::PhysicalKeyEventPtr event,
       ProcessKeypressForRulebasedCallback callback) override;
   void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) override;
+                  OnKeyEventCallback callback) override {}
   void CommitText(const std::string& text,
-                  mojom::CommitTextCursorBehavior cursor_behavior) override;
-  void SetComposition(const std::string& text) override;
+                  mojom::CommitTextCursorBehavior cursor_behavior) override {}
+  void SetComposition(const std::string& text) override {}
   void SetCompositionRange(uint32_t start_byte_index,
-                           uint32_t end_byte_index) override;
-  void FinishComposition() override;
+                           uint32_t end_byte_index) override {}
+  void FinishComposition() override {}
   void DeleteSurroundingText(uint32_t num_bytes_before_cursor,
-                             uint32_t num_bytes_after_cursor) override;
-  void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override;
+                             uint32_t num_bytes_after_cursor) override {}
+  void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
-                          RequestSuggestionsCallback callback) override;
+                          RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
-      const std::vector<TextSuggestion>& suggestions) override;
-  void RecordUkm(mojom::UkmEntryPtr entry) override;
+      const std::vector<TextSuggestion>& suggestions) override {}
+  void RecordUkm(mojom::UkmEntryPtr entry) override {}
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
@@ -71,10 +70,10 @@ class RuleBasedEngine : public InputEngine, public mojom::InputChannel {
                   mojo::PendingReceiver<mojom::InputChannel> receiver);
 
   mojo::Receiver<mojom::InputChannel> receiver_;
-  std::unique_ptr<rulebased::Engine> engine_;
+  rulebased::Engine engine_;
 
-  // Whether the AltRight key is held down or not. Only used for rule-based.
-  bool isAltRightDown_ = false;
+  // Whether the AltRight key is held down or not.
+  bool is_alt_right_key_down_ = false;
 };
 
 }  // namespace ime

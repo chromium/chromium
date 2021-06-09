@@ -8,7 +8,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/services/ime/public/cpp/rulebased/engine.h"
 
 namespace chromeos {
 namespace ime {
@@ -24,11 +23,11 @@ std::string GetIdFromImeSpec(const std::string& ime_spec) {
 
 uint8_t GenerateModifierValueForRulebased(
     const mojom::ModifierStatePtr& modifier_state,
-    bool isAltRightDown) {
+    bool is_alt_right_key_down) {
   uint8_t modifiers = 0;
   if (modifier_state->shift)
     modifiers |= rulebased::MODIFIER_SHIFT;
-  if (modifier_state->alt_graph || isAltRightDown)
+  if (modifier_state->alt_graph || is_alt_right_key_down)
     modifiers |= rulebased::MODIFIER_ALTGR;
   if (modifier_state->caps_lock)
     modifiers |= rulebased::MODIFIER_CAPSLOCK;
@@ -85,37 +84,9 @@ std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
 
 RuleBasedEngine::~RuleBasedEngine() = default;
 
-void RuleBasedEngine::ProcessMessage(const std::vector<uint8_t>& message,
-                                     ProcessMessageCallback callback) {
-  NOTIMPLEMENTED();  // Protobuf message is not used in the rulebased engine.
-}
-
-void RuleBasedEngine::OnInputMethodChanged(const std::string& engine_id) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::OnBlur() {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::OnSurroundingTextChanged(
-    const std::string& text,
-    uint32_t offset,
-    mojom::SelectionRangePtr selection_range) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
 void RuleBasedEngine::OnCompositionCanceledBySystem() {
-  // TODO(https://crbug.com/1633694) Handle the case when the engine is not
-  // defined
-  if (engine_) {
-    engine_->Reset();
-  }
-  isAltRightDown_ = false;
+  engine_.Reset();
+  is_alt_right_key_down_ = false;
 }
 
 void RuleBasedEngine::ProcessKeypressForRulebased(
@@ -131,16 +102,16 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
   // TODO(https://crbug.com/1014778): Change the base layouts for the
   // rule-based input methods so that |altKey| is false when AltGr is pressed.
   if (event->code == "AltRight") {
-    isAltRightDown_ = event->type == mojom::KeyEventType::kKeyDown;
+    is_alt_right_key_down_ = event->type == mojom::KeyEventType::kKeyDown;
   }
 
-  const bool isAltDown = event->modifier_state->alt && !isAltRightDown_;
+  const bool isAltDown = event->modifier_state->alt && !is_alt_right_key_down_;
 
   // - Shift/AltRight/Caps/Ctrl are modifier keys for the characters which the
   // Mojo service may accept, but don't send the keys themselves to Mojo.
   // - Ctrl+? and Alt+? are shortcut keys, so don't send them to the rule based
   // engine.
-  if (!engine_ || event->type != mojom::KeyEventType::kKeyDown ||
+  if (event->type != mojom::KeyEventType::kKeyDown ||
       (IsModifierKey(event->code) || event->modifier_state->control ||
        isAltDown)) {
     std::move(callback).Run(mojom::KeypressResponseForRulebased::New(
@@ -148,70 +119,22 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
     return;
   }
 
-  rulebased::ProcessKeyResult process_key_result = engine_->ProcessKey(
+  rulebased::ProcessKeyResult process_key_result = engine_.ProcessKey(
       event->code, GenerateModifierValueForRulebased(event->modifier_state,
-                                                     isAltRightDown_));
+                                                     is_alt_right_key_down_));
   mojom::KeypressResponseForRulebasedPtr keypress_response =
       GenerateKeypressResponseForRulebased(process_key_result);
 
   std::move(callback).Run(std::move(keypress_response));
 }
 
-void RuleBasedEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                                 OnKeyEventCallback callback) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::CommitText(
-    const std::string& text,
-    mojom::CommitTextCursorBehavior cursor_behavior) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::SetComposition(const std::string& text) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::SetCompositionRange(uint32_t start, uint32_t end) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::FinishComposition() {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::DeleteSurroundingText(uint32_t num_bytes_before_cursor,
-                                            uint32_t num_bytes_after_cursor) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::HandleAutocorrect(
-    mojom::AutocorrectSpanPtr autocorrect_span) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::RequestSuggestions(mojom::SuggestionsRequestPtr request,
-                                         RequestSuggestionsCallback callback) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::DisplaySuggestions(
-    const std::vector<TextSuggestion>& suggestions) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
-void RuleBasedEngine::RecordUkm(mojom::UkmEntryPtr entry) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> receiver)
-    : receiver_(this, std::move(receiver)),
-      engine_(std::make_unique<rulebased::Engine>()) {
+    : receiver_(this, std::move(receiver)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 
-  engine_->Activate(GetIdFromImeSpec(ime_spec));
+  engine_.Activate(GetIdFromImeSpec(ime_spec));
 
   // TODO(https://crbug.com/837156): Registry connection error handler.
 }
