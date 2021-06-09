@@ -84,6 +84,8 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
   void ScheduleFetchBackupImages() {
     photo_controller()->ScheduleFetchBackupImages();
   }
+
+  void Init() { photo_controller()->Init(); }
 };
 
 // Test that topics are downloaded when starting screen update.
@@ -218,7 +220,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   WriteCacheDataBlocking(/*cache_index=*/0, &data);
 
   // Reset variables in photo controller.
-  photo_controller()->StopScreenUpdate();
+  Init();
   FetchImage();
   FastForwardToNextImage();
   image = photo_controller()->ambient_backend_model()->GetCurrentImage();
@@ -240,7 +242,7 @@ TEST_F(AmbientPhotoControllerTest,
   WriteCacheDataBlocking(/*cache_index=*/99, &data);
 
   // Reset variables in photo controller.
-  photo_controller()->StopScreenUpdate();
+  Init();
   FetchImage();
   FastForwardToNextImage();
   image = photo_controller()->ambient_backend_model()->GetCurrentImage();
@@ -262,7 +264,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   WriteCacheDataBlocking(/*cache_index=*/0, &data);
 
   // Reset variables in photo controller.
-  photo_controller()->StopScreenUpdate();
+  Init();
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache.
@@ -285,7 +287,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   WriteCacheDataBlocking(/*cache_index=*/0, &data, &details);
 
   // Reset variables in photo controller.
-  photo_controller()->StopScreenUpdate();
+  Init();
   FetchImage();
   FastForwardToNextImage();
   image = photo_controller()->ambient_backend_model()->GetCurrentImage();

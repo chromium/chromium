@@ -80,6 +80,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   friend class AmbientAshTestBase;
   friend class AmbientPhotoControllerTest;
 
+  // Initialize variables.
+  void Init();
+
   void FetchTopics();
 
   void FetchWeather();

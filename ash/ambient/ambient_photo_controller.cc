@@ -116,7 +116,15 @@ AmbientPhotoController::AmbientPhotoController()
 
 AmbientPhotoController::~AmbientPhotoController() = default;
 
+void AmbientPhotoController::Init() {
+  topic_index_ = 0;
+  image_refresh_started_ = false;
+  retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
+  backup_retries_to_read_from_cache_ = GetBackupPhotoUrls().size();
+}
+
 void AmbientPhotoController::StartScreenUpdate() {
+  Init();
   FetchTopics();
   FetchWeather();
   weather_refresh_timer_.Start(
@@ -134,10 +142,6 @@ void AmbientPhotoController::StartScreenUpdate() {
 void AmbientPhotoController::StopScreenUpdate() {
   photo_refresh_timer_.Stop();
   weather_refresh_timer_.Stop();
-  topic_index_ = 0;
-  image_refresh_started_ = false;
-  retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
-  backup_retries_to_read_from_cache_ = GetBackupPhotoUrls().size();
   fetch_topic_retry_backoff_.Reset();
   resume_fetch_image_backoff_.Reset();
   ambient_backend_model_.Clear();

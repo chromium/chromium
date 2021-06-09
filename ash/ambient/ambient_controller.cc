@@ -173,6 +173,7 @@ AmbientController::AmbientController(
 
 AmbientController::~AmbientController() {
   CloseAllWidgets(/*immediately=*/true);
+  CloseUi();
 }
 
 void AmbientController::OnAmbientUiVisibilityChanged(
