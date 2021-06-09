@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class MerchantTrustSignalsCoordinator {
     private final MerchantTrustSignalsMediator mMediator;
     private final MerchantTrustMessageScheduler mMessageScheduler;
-    private final MerchantTrustDetailsTabCoordinator mDetailsTabCoordinator;
+    private final MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
@@ -51,7 +51,7 @@ public class MerchantTrustSignalsCoordinator {
         this(context, windowAndroid, bottomSheetController, layoutView, tabModelSelector,
                 new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
                 new MerchantTrustSignalsDataProvider(), metrics,
-                new MerchantTrustDetailsTabCoordinator(context, windowAndroid,
+                new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics),
                 profileSupplier, new MerchantTrustSignalsStorageFactory(profileSupplier));
     }
@@ -61,7 +61,7 @@ public class MerchantTrustSignalsCoordinator {
             BottomSheetController bottomSheetController, View layoutView,
             TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler,
             Supplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
-            MerchantTrustMetrics metrics, MerchantTrustDetailsTabCoordinator detailsTabCoordinator,
+            MerchantTrustMetrics metrics, MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
             ObservableSupplier<Profile> profileSupplier,
             MerchantTrustSignalsStorageFactory storageFactory) {
         mContext = context;

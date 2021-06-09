@@ -135,7 +135,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     private MerchantTrustSignalsEvent mMockMerchantTrustSignalsEvent;
 
     @Mock
-    private MerchantTrustDetailsTabCoordinator mMockDetailsTabCoordinator;
+    private MerchantTrustBottomSheetCoordinator mMockDetailsTabCoordinator;
 
     @Captor
     private ArgumentCaptor<Callback> mOnMessageEnqueuedCallbackCaptor;
