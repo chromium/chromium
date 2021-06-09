@@ -58,17 +58,6 @@
 
 namespace blink {
 
-class DSFStateTestingPlatformSupport : public TestingPlatformSupport {
- public:
-  bool IsUseZoomForDSFEnabled() override { return use_zoom_for_dsf_; }
-  void SetUseZoomForDSF(bool use_zoom_for_dsf) {
-    use_zoom_for_dsf_ = use_zoom_for_dsf;
-  }
-
- private:
-  bool use_zoom_for_dsf_ = false;
-};
-
 class ViewportTest : public testing::Test {
  protected:
   ViewportTest()
@@ -107,7 +96,7 @@ class ViewportTest : public testing::Test {
   std::string chrome_url_;
 
  private:
-  ScopedTestingPlatformSupport<DSFStateTestingPlatformSupport> platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 static void SetViewportSettings(WebSettings* settings) {
