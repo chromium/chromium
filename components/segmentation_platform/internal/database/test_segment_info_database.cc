@@ -4,8 +4,12 @@
 
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 
+#include <algorithm>
+
 #include "base/metrics/metrics_hashes.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -72,14 +76,18 @@ void TestSegmentInfoDatabase::SaveSegmentResult(OptimizationTarget segment_id,
   std::move(callback).Run(true);
 }
 
-void TestSegmentInfoDatabase::AddUserAction(
+void TestSegmentInfoDatabase::AddUserActionFeature(
     OptimizationTarget segment_id,
-    const std::string& user_action_name) {
+    const std::string& user_action_name,
+    int64_t length,
+    proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
   proto::Feature* feature = metadata->add_features();
   proto::UserActionFeature* user_action = feature->mutable_user_action();
   user_action->set_user_action_hash(base::HashMetricName(user_action_name));
+  feature->set_length(length);
+  feature->set_aggregation(aggregation);
 }
 
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
@@ -106,6 +114,14 @@ void TestSegmentInfoDatabase::AddDiscreteMapping(OptimizationTarget segment_id,
     entry->set_min_result(pair[0]);
     entry->set_rank(pair[1]);
   }
+}
+
+void TestSegmentInfoDatabase::SetBucketDuration(OptimizationTarget segment_id,
+                                                int64_t bucket_duration,
+                                                proto::TimeUnit time_unit) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  info->mutable_model_metadata()->set_bucket_duration(bucket_duration);
+  info->mutable_model_metadata()->set_time_unit(time_unit);
 }
 
 proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(

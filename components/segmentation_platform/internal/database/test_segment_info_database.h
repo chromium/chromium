@@ -5,7 +5,13 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_TEST_SEGMENT_INFO_DATABASE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_TEST_SEGMENT_INFO_DATABASE_H_
 
+#include <utility>
+#include <vector>
+
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/proto/aggregation.pb.h"
+#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 
 namespace segmentation_platform {
 
@@ -30,14 +36,19 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                          SuccessCallback callback) override;
 
   // Test helper methods.
-  void AddUserAction(OptimizationTarget segment_id,
-                     const std::string& user_action);
+  void AddUserActionFeature(OptimizationTarget segment_id,
+                            const std::string& user_action,
+                            int64_t length,
+                            proto::Aggregation aggregation);
   void AddPredictionResult(OptimizationTarget segment_id,
                            float score,
                            base::Time timestamp);
   void AddDiscreteMapping(OptimizationTarget segment_id,
                           float mappings[][2],
                           int num_pairs);
+  void SetBucketDuration(OptimizationTarget segment_id,
+                         int64_t bucket_duration,
+                         proto::TimeUnit time_unit);
 
   // Finds a segment with given |segment_id|. Creates one if it doesn't exist.
   proto::SegmentInfo* FindOrCreateSegment(OptimizationTarget segment_id);

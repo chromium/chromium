@@ -11,7 +11,7 @@ namespace segmentation_platform {
 enum ModelExecutionStatus {
   SUCCESS = 0,
   EXECUTION_ERROR = 1,
-  HANDLER_NOT_FOUND_ERROR = 2,
+  INVALID_METADATA = 2,
 };
 
 }  // namespace segmentation_platform
