@@ -13,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
 
 namespace content {
 
