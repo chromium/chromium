@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -65,11 +66,7 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
 }
 
 unsigned RemoteFrameClientImpl::BackForwardLength() {
-  // TODO(creis,japhet): This method should return the real value for the
-  // session history length. For now, return static value for the initial
-  // navigation and the subsequent one moving the frame out-of-process.
-  // See https://crbug.com/501116.
-  return 2;
+  return To<WebViewImpl>(web_frame_->View())->HistoryListLength();
 }
 
 AssociatedInterfaceProvider*

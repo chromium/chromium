@@ -215,6 +215,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void IncreaseHistoryListFromNavigation() override;
   int32_t HistoryBackListCount() const override;
   int32_t HistoryForwardListCount() const override;
+  int32_t HistoryListLength() const { return history_list_length_; }
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
 
   // Functions to add and remove observers for this object.
@@ -894,6 +895,13 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   base::ObserverList<WebViewObserver> observers_;
 
   base::WeakPtrFactory<WebViewImpl> weak_ptr_factory_{this};
+};
+
+// WebView is always implemented by WebViewImpl, so explicitly allow the
+// downcast.
+template <>
+struct DowncastTraits<WebViewImpl> {
+  static bool AllowFrom(const WebView& web_view) { return true; }
 };
 
 }  // namespace blink

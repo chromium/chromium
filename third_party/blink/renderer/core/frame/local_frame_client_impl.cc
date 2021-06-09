@@ -917,10 +917,7 @@ void LocalFrameClientImpl::DispatchDidChangeManifest() {
 
 unsigned LocalFrameClientImpl::BackForwardLength() {
   WebViewImpl* webview = web_frame_->ViewImpl();
-  if (!webview)
-    return 0;
-  return webview->HistoryBackListCount() + 1 +
-         webview->HistoryForwardListCount();
+  return webview ? webview->HistoryListLength() : 0;
 }
 
 BlameContext* LocalFrameClientImpl::GetFrameBlameContext() {

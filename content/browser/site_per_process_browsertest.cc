@@ -14909,6 +14909,37 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           "from accessing a cross-origin frame."));
 }
 
+// Make sure that a popup with a cross site subframe can be closed from the
+// subframe.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CloseNoopenerWindow) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Open a same site popup with a subframe using the noopener ref.
+  GURL popup_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_blank_iframe.html"));
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("popup = window.open($1,'_blank','noopener');", popup_url)));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_web_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  FrameTreeNode* popup_root = popup_web_contents->GetFrameTree()->root();
+  EXPECT_TRUE(WaitForLoadStop(popup_web_contents));
+
+  // Navigate the popup subframe cross site to b.com.
+  FrameTreeNode* child = popup_root->child_at(0);
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, cross_origin_url));
+
+  // Check that the popup successfully closes from the subframe.
+  WebContentsDestroyedWatcher destroyed_watcher(popup->web_contents());
+  EXPECT_TRUE(ExecJs(child, "window.parent.close()"));
+  destroyed_watcher.Wait();
+}
+
 class SitePerProcessCompositorViewportBrowserTest
     : public SitePerProcessBrowserTestBase,
       public testing::WithParamInterface<double> {
