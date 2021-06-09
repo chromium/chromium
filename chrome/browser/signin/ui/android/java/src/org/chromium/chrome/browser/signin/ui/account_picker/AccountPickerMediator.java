@@ -22,6 +22,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
 
         mAccountManagerFacade.addObserver(this);
         mProfileDataCache.addObserver(this);
-        onAccountsChanged();
+        updateAccounts(mAccountManagerFacade.getGoogleAccounts().or(Collections.emptyList()));
     }
 
     /**
