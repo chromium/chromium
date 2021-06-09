@@ -137,10 +137,10 @@ const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence{
     "AutofillSortSuggestionsBasedOnOfferPresence",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, merchant bound virtual cards will be suggested only if we
+// When enabled, merchant bound virtual cards will be suggested even if we don't
 // detect all of the card number, exp date and CVC fields in the payment form.
-const base::Feature kAutofillSuggestVirtualCardsOnlyOnFullFormDetection{
-    "AutofillSuggestVirtualCardsOnlyOnFullFormDetection",
+const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm{
+    "AutofillSuggestVirtualCardsOnIncompleteForm",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, if the Autofill Assistant is running, credit card save (both

@@ -95,8 +95,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
               features::kAutofillEnableMerchantBoundVirtualCards) &&
           credit_card->virtual_card_enrollment_state() ==
               CreditCard::ENROLLED &&
-          (!base::FeatureList::IsEnabled(
-               features::kAutofillSuggestVirtualCardsOnlyOnFullFormDetection) ||
+          (base::FeatureList::IsEnabled(
+               features::kAutofillSuggestVirtualCardsOnIncompleteForm) ||
            IsCompleteCreditCardFormIncludingCvcField(form_structure))) {
         suggestions.push_back(CreateCreditCardSuggestion(
             *credit_card, type, prefix_matched_suggestion,

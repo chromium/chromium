@@ -396,7 +396,7 @@
     "expiry_milestone": 86
   },
   {
-    "name":"autofill-suggest-virtual-cards-only-on-full-form-detection",
+    "name":"autofill-suggest-virtual-cards-on-incomplete-form",
     "owners": ["siashah", "siyua"],
     "expiry_milestone":98
   },

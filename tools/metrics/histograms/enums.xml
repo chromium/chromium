@@ -46532,8 +46532,6 @@ from previous Chrome versions.
   <int value="-853594220" label="disable-new-avatar-menu"/>
   <int value="-853455968"
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
-  <int value="-852828854"
-      label="AutofillSuggestVirtualCardsOnlyOnFullFormDetection:enabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
@@ -46668,6 +46666,8 @@ from previous Chrome versions.
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
+  <int value="-726844226"
+      label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
   <int value="-726567328" label="disable-virtual-keyboard"/>
   <int value="-725264428" label="CompositingBasedThrottling:enabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>
@@ -48082,8 +48082,6 @@ from previous Chrome versions.
   <int value="517429103" label="AutofillImportDynamicForms:enabled"/>
   <int value="517568645" label="AnimatedAppMenuIcon:disabled"/>
   <int value="518419320" label="RemoteCopyProgressNotification:disabled"/>
-  <int value="519028964"
-      label="AutofillSuggestVirtualCardsOnlyOnFullFormDetection:disabled"/>
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
@@ -49501,6 +49499,8 @@ from previous Chrome versions.
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
   <int value="1741855651"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:disabled"/>
+  <int value="1741958365"
+      label="AutofillSuggestVirtualCardsOnIncompleteForm:disabled"/>
   <int value="1742398600"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:enabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>

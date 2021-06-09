@@ -199,9 +199,8 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 
-extern const char kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionName[];
-extern const char
-    kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionDescription[];
+extern const char kAutofillSuggestVirtualCardsOnIncompleteFormName[];
+extern const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[];
 
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];

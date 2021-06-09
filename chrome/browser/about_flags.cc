@@ -7109,14 +7109,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAutoTriggerManualFallbackForCards)},
 
-    {"autofill-suggest-virtual-cards-only-on-full-form-detection",
-     flag_descriptions::kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionName,
-     flag_descriptions::
-         kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionDescription,
+    {"autofill-suggest-virtual-cards-on-incomplete-form",
+     flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormName,
+     flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillSuggestVirtualCardsOnlyOnFullFormDetection)},
+         autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
 
     {"enable-penetrating-image-selection",
      flag_descriptions::kEnablePenetratingImageSelectionName,
