@@ -104,6 +104,9 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
     "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
   ]
@@ -124,10 +127,14 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
     "//components/embedder_support/android:browser_context_java",
+    "//components/language/android:language_bridge_java",
+    "//components/language/android:language_bridge_javatests",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -137,9 +144,11 @@ android_library("javatests") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

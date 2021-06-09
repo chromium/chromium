@@ -1349,8 +1349,6 @@ android_library("chrome_test_java") {
     "//components/infobars/core:infobar_enums_java",
     "//components/installedapp/android:javatests",
     "//components/javascript_dialogs/android:java",
-    "//components/language/android:language_bridge_java",
-    "//components/language/android:language_bridge_javatests",
     "//components/location/android:location_java",
     "//components/media_router/browser/android:java",
     "//components/media_router/browser/android:test_support_java",
