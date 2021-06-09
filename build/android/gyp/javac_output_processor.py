@@ -37,6 +37,12 @@ class JavacOutputProcessor:
                                 r'(?P<full_message> (?P<message>.*))$')
     self._marker_re = re.compile(r'\s*(?P<marker>\^)\s*$')
 
+    # Matches output modification performed by _ElaborateLineForUnknownSymbol()
+    # so that it can be colorized.
+    # Example: org.chromium.base.Log found in dep //base:base_java.
+    self._found_in_dep_re = re.compile(
+        r'(?P<full_message>[\w.]+ found in dep //[\w/:]+.)$')
+
     # First element in pair is bool which indicates whether the missing
     # class/package is part of the error message.
     self._symbol_not_found_re_list = [
@@ -107,6 +113,8 @@ class JavacOutputProcessor:
       line = self._Colorize(line, self._warning_re, self._warning_color)
     elif self._error_re.match(line):
       line = self._Colorize(line, self._error_re, self._error_color)
+    elif self._found_in_dep_re.match(line):
+      line = self._Colorize(line, self._found_in_dep_re, self._error_color)
     elif self._marker_re.match(line):
       line = self._Colorize(line, self._marker_re, self._marker_color)
     return line
