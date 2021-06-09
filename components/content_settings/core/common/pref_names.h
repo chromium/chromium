@@ -33,7 +33,6 @@ extern const char kManagedDefaultWebUsbGuardSetting[];
 extern const char kManagedDefaultFileHandlingGuardSetting[];
 extern const char kManagedDefaultFileSystemReadGuardSetting[];
 extern const char kManagedDefaultFileSystemWriteGuardSetting[];
-extern const char kManagedDefaultLegacyCookieAccessSetting[];
 extern const char kManagedDefaultSerialGuardSetting[];
 extern const char kManagedDefaultInsecurePrivateNetworkSetting[];
 

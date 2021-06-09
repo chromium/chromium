@@ -51,8 +51,6 @@ const char kManagedDefaultFileSystemReadGuardSetting[] =
     "profile.managed_default_content_settings.file_system_read_guard";
 const char kManagedDefaultFileSystemWriteGuardSetting[] =
     "profile.managed_default_content_settings.file_system_write_guard";
-const char kManagedDefaultLegacyCookieAccessSetting[] =
-    "profile.managed_default_content_settings.legacy_cookie_access";
 const char kManagedDefaultSerialGuardSetting[] =
     "profile.managed_default_content_settings.serial_guard";
 const char kManagedDefaultInsecurePrivateNetworkSetting[] =
