@@ -210,9 +210,6 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) = 0;
 
-  virtual Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module>) = 0;
-
   virtual ModuleType ModuleTypeFromRequest(
       const ModuleRequest& module_request) const = 0;
 

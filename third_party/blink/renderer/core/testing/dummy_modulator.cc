@@ -162,12 +162,6 @@ ScriptValue DummyModulator::InstantiateModule(v8::Local<v8::Module>,
   return ScriptValue();
 }
 
-Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
-    v8::Local<v8::Module>) {
-  NOTREACHED();
-  return Vector<ModuleRequest>();
-}
-
 ModuleType DummyModulator::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();

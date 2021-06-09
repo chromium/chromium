@@ -265,12 +265,6 @@ ScriptValue ModulatorImplBase::InstantiateModule(
   return ModuleRecord::Instantiate(script_state_, module_record, source_url);
 }
 
-Vector<ModuleRequest> ModulatorImplBase::ModuleRequestsFromModuleRecord(
-    v8::Local<v8::Module> module_record) {
-  ScriptState::Scope scope(script_state_);
-  return ModuleRecord::ModuleRequests(script_state_, module_record);
-}
-
 ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();
@@ -323,7 +317,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
   module_script->ProduceCache();
 
   Vector<ModuleRequest> child_specifiers =
-      ModuleRequestsFromModuleRecord(record);
+      ModuleRecord::ModuleRequests(GetScriptState(), record);
 
   for (const auto& module_request : child_specifiers) {
     KURL child_url =

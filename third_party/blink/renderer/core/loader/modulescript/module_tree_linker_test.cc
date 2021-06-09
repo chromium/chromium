@@ -162,12 +162,6 @@ class ModuleTreeLinkerTestModulator final : public DummyModulator {
     return ScriptValue();
   }
 
-  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module> module_record) override {
-    ScriptState::Scope scope(script_state_);
-    return ModuleRecord::ModuleRequests(script_state_, module_record);
-  }
-
   Member<ScriptState> script_state_;
   HeapHashMap<KURL, Member<SingleModuleClient>> pending_clients_;
   HeapHashMap<KURL, Member<ModuleScript>> module_map_;

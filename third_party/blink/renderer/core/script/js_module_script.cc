@@ -76,7 +76,7 @@ JSModuleScript* JSModuleScript::Create(
   // <spec step="9">For each string requested of
   // result.[[RequestedModules]]:</spec>
   for (const auto& requested :
-       modulator->ModuleRequestsFromModuleRecord(result)) {
+       ModuleRecord::ModuleRequests(script_state, result)) {
     // <spec step="9.1">Let url be the result of resolving a module specifier
     // given script's base URL and requested.</spec>
     //

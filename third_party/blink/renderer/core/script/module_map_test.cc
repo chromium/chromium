@@ -138,11 +138,6 @@ class ModuleMapTestModulator final : public DummyModulator {
     return MakeGarbageCollected<TestModuleScriptFetcher>(this, pass_key);
   }
 
-  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module>) override {
-    return Vector<ModuleRequest>();
-  }
-
   base::SingleThreadTaskRunner* TaskRunner() override {
     return Thread::Current()->GetTaskRunner().get();
   }

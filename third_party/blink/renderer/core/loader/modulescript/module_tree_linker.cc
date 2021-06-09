@@ -369,14 +369,14 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
 void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   DCHECK(module_script);
 
-  v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  v8::HandleScope scope(isolate);
   // [nospec] Abort the steps if the browsing context is discarded.
   if (!modulator_->HasValidContext()) {
     result_ = nullptr;
     AdvanceState(State::kFinished);
     return;
   }
+  ScriptState* script_state = modulator_->GetScriptState();
+  v8::HandleScope scope(script_state->GetIsolate());
 
   // <spec step="2">Let record be module script's record.</spec>
   v8::Local<v8::Module> record = module_script->V8Module();
@@ -409,7 +409,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   // <spec step="5">For each ModuleRequest Record requested of
   // record.[[RequestedModules]],</spec>
   Vector<ModuleRequest> record_requested_modules =
-      modulator_->ModuleRequestsFromModuleRecord(record);
+      ModuleRecord::ModuleRequests(script_state, record);
 
   for (const auto& requested : record_requested_modules) {
     // <spec step="5.1">Let url be the result of resolving a module specifier
@@ -606,7 +606,7 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
   // <spec step="5.1">Let childSpecifiers be the value of moduleScript's
   // record's [[RequestedModules]] internal slot.</spec>
   Vector<ModuleRequest> child_specifiers =
-      modulator_->ModuleRequestsFromModuleRecord(record);
+      ModuleRecord::ModuleRequests(modulator_->GetScriptState(), record);
 
   for (const auto& module_request : child_specifiers) {
     // <spec step="5.2">Let childURLs be the list obtained by calling resolve a

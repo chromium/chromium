@@ -32,14 +32,9 @@ namespace {
 
 class ModuleScriptTestModulator final : public DummyModulator {
  public:
-  ModuleScriptTestModulator(ScriptState* script_state)
+  explicit ModuleScriptTestModulator(ScriptState* script_state)
       : script_state_(script_state) {}
   ~ModuleScriptTestModulator() override = default;
-
-  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module>) override {
-    return Vector<ModuleRequest>();
-  }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
