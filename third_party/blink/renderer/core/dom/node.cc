@@ -3086,8 +3086,15 @@ HTMLSlotElement* Node::AssignedSlot() const {
   // dirty. RecalcAssignment() is almost no-op if we don't need to recalc.
   root->GetSlotAssignment().RecalcAssignment();
   if (FlatTreeNodeData* data = GetFlatTreeNodeData()) {
-    DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot())
-        << "Assigned slot mismatch for node " << this;
+#if DCHECK_IS_ON()
+    // User agent shadow slot assignment (FindSlotInUserAgentShadow()) will
+    // re-check the DOM tree, and if we're in the process of removing nodes
+    // from the tree, there could be a mismatch here.
+    if (root->SupportsNameBasedSlotAssignment()) {
+      DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot())
+          << "Assigned slot mismatch for node " << this;
+    }
+#endif
     return data->AssignedSlot();
   }
   return nullptr;
