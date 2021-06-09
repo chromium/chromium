@@ -1582,6 +1582,9 @@
             "experiments": [
                 {
                     "name": "ChimeAndroidSDK",
+                    "params": {
+                        "always_register": "true"
+                    },
                     "enable_features": [
                         "UseChimeAndroidSdk"
                     ]
