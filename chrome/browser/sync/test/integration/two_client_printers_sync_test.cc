@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // We must wait until the sync cycle is completed before client 0 goes online
   // in order to make the outcome of conflict resolution deterministic (needed
   // due to lack of a strong consistency model on the server).
-  ProfileSyncServiceHarness::AwaitQuiescence({GetClient(1)});
+  SyncServiceImplHarness::AwaitQuiescence({GetClient(1)});
 
   ASSERT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);

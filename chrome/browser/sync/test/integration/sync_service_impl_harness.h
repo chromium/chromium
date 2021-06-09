@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_PROFILE_SYNC_SERVICE_HARNESS_H_
-#define CHROME_BROWSER_SYNC_TEST_INTEGRATION_PROFILE_SYNC_SERVICE_HARNESS_H_
+#ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_
+#define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -30,7 +29,7 @@ class SyncSigninDelegate;
 // profile passed to it on construction and automates certain things like setup
 // and authentication. It provides ways to "wait" adequate periods of time for
 // several clients to get to the same state.
-class ProfileSyncServiceHarness {
+class SyncServiceImplHarness {
  public:
   // The type of profile signin method to authenticate a profile.
   enum class SigninType {
@@ -40,12 +39,15 @@ class ProfileSyncServiceHarness {
     UI_SIGNIN
   };
 
-  static std::unique_ptr<ProfileSyncServiceHarness> Create(
+  static std::unique_ptr<SyncServiceImplHarness> Create(
       Profile* profile,
       const std::string& username,
       const std::string& password,
       SigninType signin_type);
-  ~ProfileSyncServiceHarness();
+  ~SyncServiceImplHarness();
+
+  SyncServiceImplHarness(const SyncServiceImplHarness&) = delete;
+  SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
   // Signs in to a primary account without actually enabling sync the feature.
   bool SignInPrimaryAccount();
@@ -117,14 +119,14 @@ class ProfileSyncServiceHarness {
   // from the message queue. Returns true if two sync cycles have completed.
   // Note: Use this method when exactly one client makes local change(s), and
   // exactly one client is waiting to receive those changes.
-  bool AwaitMutualSyncCycleCompletion(ProfileSyncServiceHarness* partner);
+  bool AwaitMutualSyncCycleCompletion(SyncServiceImplHarness* partner);
 
   // Blocks the caller until every client in |clients| completes its ongoing
   // sync cycle and all the clients' progress markers match.  Note: Use this
   // method when more than one client makes local change(s), and more than one
   // client is waiting to receive those changes.
   static bool AwaitQuiescence(
-      const std::vector<ProfileSyncServiceHarness*>& clients);
+      const std::vector<SyncServiceImplHarness*>& clients);
 
   // Blocks the caller until the sync engine is initialized or some end state
   // (e.g., auth error) is reached. Returns true only if the engine initialized
@@ -176,10 +178,10 @@ class ProfileSyncServiceHarness {
                     // turning on custom passphrase encryption on the client.
   };
 
-  ProfileSyncServiceHarness(Profile* profile,
-                            const std::string& username,
-                            const std::string& password,
-                            SigninType signin_type);
+  SyncServiceImplHarness(Profile* profile,
+                         const std::string& username,
+                         const std::string& password,
+                         SigninType signin_type);
 
   // Sets up sync with custom passphrase support as specified by
   // |encryption_mode|.
@@ -221,8 +223,6 @@ class ProfileSyncServiceHarness {
 
   // Delegate to sign-in the test account across platforms.
   std::unique_ptr<SyncSigninDelegate> signin_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileSyncServiceHarness);
 };
 
-#endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_PROFILE_SYNC_SERVICE_HARNESS_H_
+#endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_

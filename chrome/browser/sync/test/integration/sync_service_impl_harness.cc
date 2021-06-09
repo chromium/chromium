@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 
 #include <cstddef>
 #include <sstream>
@@ -172,20 +172,19 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
 }  // namespace
 
 // static
-std::unique_ptr<ProfileSyncServiceHarness> ProfileSyncServiceHarness::Create(
+std::unique_ptr<SyncServiceImplHarness> SyncServiceImplHarness::Create(
     Profile* profile,
     const std::string& username,
     const std::string& password,
     SigninType signin_type) {
   return base::WrapUnique(
-      new ProfileSyncServiceHarness(profile, username, password, signin_type));
+      new SyncServiceImplHarness(profile, username, password, signin_type));
 }
 
-ProfileSyncServiceHarness::ProfileSyncServiceHarness(
-    Profile* profile,
-    const std::string& username,
-    const std::string& password,
-    SigninType signin_type)
+SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
+                                               const std::string& username,
+                                               const std::string& password,
+                                               SigninType signin_type)
     : profile_(profile),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfile(profile)),
       username_(username),
@@ -194,9 +193,9 @@ ProfileSyncServiceHarness::ProfileSyncServiceHarness(
       profile_debug_name_(profile->GetDebugName()),
       signin_delegate_(CreateSyncSigninDelegate()) {}
 
-ProfileSyncServiceHarness::~ProfileSyncServiceHarness() = default;
+SyncServiceImplHarness::~SyncServiceImplHarness() = default;
 
-bool ProfileSyncServiceHarness::SignInPrimaryAccount() {
+bool SyncServiceImplHarness::SignInPrimaryAccount() {
   // TODO(crbug.com/871221): This function should distinguish primary account
   // (aka sync account) from secondary accounts (content area signin). Let's
   // migrate tests that exercise transport-only sync to secondary accounts.
@@ -217,7 +216,7 @@ bool ProfileSyncServiceHarness::SignInPrimaryAccount() {
   return false;
 }
 
-void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
+void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
   syncer::SyncTransportDataPrefs transport_data_prefs(profile_->GetPrefs());
   // Generate the https url.
   // CLEAR_SERVER_DATA isn't enabled on the prod Sync server,
@@ -241,26 +240,26 @@ void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void ProfileSyncServiceHarness::SignOutPrimaryAccount() {
+void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
   signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
 }
 #endif  // !OS_CHROMEOS
 
-void ProfileSyncServiceHarness::EnterSyncPausedStateForPrimaryAccount() {
+void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
   DCHECK(service_->IsSyncFeatureActive());
   signin::SetInvalidRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_));
 }
 
-void ProfileSyncServiceHarness::ExitSyncPausedStateForPrimaryAccount() {
+void SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   signin::SetRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_));
   // The engine was off in the sync-paused state, so wait for it to start.
   AwaitSyncSetupCompletion();
 }
 
-bool ProfileSyncServiceHarness::SetupSync() {
+bool SyncServiceImplHarness::SetupSync() {
   bool result =
       SetupSyncNoWaitForCompletion(
           service()->GetUserSettings()->GetRegisteredSelectableTypes()) &&
@@ -274,13 +273,13 @@ bool ProfileSyncServiceHarness::SetupSync() {
   return result;
 }
 
-bool ProfileSyncServiceHarness::SetupSyncNoWaitForCompletion(
+bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
     syncer::UserSelectableTypeSet selected_types) {
   return SetupSyncImpl(selected_types, EncryptionSetupMode::kNoEncryption,
                        /*encryption_passphrase=*/absl::nullopt);
 }
 
-bool ProfileSyncServiceHarness::
+bool SyncServiceImplHarness::
     SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
         syncer::UserSelectableTypeSet selected_types,
         const std::string& passphrase) {
@@ -288,7 +287,7 @@ bool ProfileSyncServiceHarness::
                        passphrase);
 }
 
-bool ProfileSyncServiceHarness::
+bool SyncServiceImplHarness::
     SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
         syncer::UserSelectableTypeSet selected_types,
         const std::string& passphrase) {
@@ -296,7 +295,7 @@ bool ProfileSyncServiceHarness::
                        passphrase);
 }
 
-bool ProfileSyncServiceHarness::SetupSyncImpl(
+bool SyncServiceImplHarness::SetupSyncImpl(
     syncer::UserSelectableTypeSet selected_types,
     EncryptionSetupMode encryption_mode,
     const absl::optional<std::string>& passphrase) {
@@ -347,23 +346,23 @@ bool ProfileSyncServiceHarness::SetupSyncImpl(
   return true;
 }
 
-void ProfileSyncServiceHarness::FinishSyncSetup() {
+void SyncServiceImplHarness::FinishSyncSetup() {
   sync_blocker_.reset();
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 }
 
-void ProfileSyncServiceHarness::StopSyncServiceAndClearData() {
+void SyncServiceImplHarness::StopSyncServiceAndClearData() {
   DVLOG(1) << "Requesting stop for service and clearing data.";
   service()->StopAndClear();
 }
 
-void ProfileSyncServiceHarness::StopSyncServiceWithoutClearingData() {
+void SyncServiceImplHarness::StopSyncServiceWithoutClearingData() {
   DVLOG(1) << "Requesting stop for service without clearing data.";
   service()->GetUserSettings()->SetSyncRequested(false);
 }
 
-bool ProfileSyncServiceHarness::StartSyncService() {
+bool SyncServiceImplHarness::StartSyncService() {
   std::unique_ptr<syncer::SyncSetupInProgressHandle> blocker =
       service()->GetSetupInProgressHandle();
   DVLOG(1) << "Requesting start for service";
@@ -394,29 +393,29 @@ bool ProfileSyncServiceHarness::StartSyncService() {
   return true;
 }
 
-bool ProfileSyncServiceHarness::AwaitMutualSyncCycleCompletion(
-    ProfileSyncServiceHarness* partner) {
-  std::vector<ProfileSyncServiceHarness*> harnesses;
+bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
+    SyncServiceImplHarness* partner) {
+  std::vector<SyncServiceImplHarness*> harnesses;
   harnesses.push_back(this);
   harnesses.push_back(partner);
   return AwaitQuiescence(harnesses);
 }
 
 // static
-bool ProfileSyncServiceHarness::AwaitQuiescence(
-    const std::vector<ProfileSyncServiceHarness*>& clients) {
+bool SyncServiceImplHarness::AwaitQuiescence(
+    const std::vector<SyncServiceImplHarness*>& clients) {
   if (clients.empty()) {
     return true;
   }
 
   std::vector<SyncServiceImpl*> services;
-  for (const ProfileSyncServiceHarness* harness : clients) {
+  for (const SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }
   return QuiesceStatusChangeChecker(services).Wait();
 }
 
-bool ProfileSyncServiceHarness::AwaitEngineInitialization() {
+bool SyncServiceImplHarness::AwaitEngineInitialization() {
   if (!EngineInitializeChecker(service()).Wait()) {
     LOG(ERROR) << "EngineInitializeChecker timed out.";
     return false;
@@ -440,7 +439,7 @@ bool ProfileSyncServiceHarness::AwaitEngineInitialization() {
   return true;
 }
 
-bool ProfileSyncServiceHarness::AwaitSyncSetupCompletion() {
+bool SyncServiceImplHarness::AwaitSyncSetupCompletion() {
   CHECK(service()->GetUserSettings()->IsFirstSetupComplete())
       << "Waiting for setup completion can only succeed after the first setup "
       << "got marked complete. Did you call SetupSync on this client?";
@@ -458,7 +457,7 @@ bool ProfileSyncServiceHarness::AwaitSyncSetupCompletion() {
   return true;
 }
 
-bool ProfileSyncServiceHarness::AwaitSyncTransportActive() {
+bool SyncServiceImplHarness::AwaitSyncTransportActive() {
   if (!SyncSetupChecker(service(), SyncSetupChecker::State::kTransportActive)
            .Wait()) {
     LOG(ERROR) << "SyncSetupChecker timed out.";
@@ -473,7 +472,7 @@ bool ProfileSyncServiceHarness::AwaitSyncTransportActive() {
   return true;
 }
 
-bool ProfileSyncServiceHarness::EnableSyncForType(
+bool SyncServiceImplHarness::EnableSyncForType(
     syncer::UserSelectableType type) {
   DVLOG(1) << GetClientInfoString(
       "EnableSyncForType(" +
@@ -514,7 +513,7 @@ bool ProfileSyncServiceHarness::EnableSyncForType(
   return false;
 }
 
-bool ProfileSyncServiceHarness::DisableSyncForType(
+bool SyncServiceImplHarness::DisableSyncForType(
     syncer::UserSelectableType type) {
   DVLOG(1) << GetClientInfoString(
       "DisableSyncForType(" +
@@ -547,7 +546,7 @@ bool ProfileSyncServiceHarness::DisableSyncForType(
   return false;
 }
 
-bool ProfileSyncServiceHarness::EnableSyncForRegisteredDatatypes() {
+bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
   DVLOG(1) << GetClientInfoString("EnableSyncForRegisteredDatatypes");
 
   if (!IsSyncEnabledByUser()) {
@@ -576,7 +575,7 @@ bool ProfileSyncServiceHarness::EnableSyncForRegisteredDatatypes() {
   return false;
 }
 
-bool ProfileSyncServiceHarness::DisableSyncForAllDatatypes() {
+bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
   DVLOG(1) << GetClientInfoString("DisableSyncForAllDatatypes");
 
   if (service() == nullptr) {
@@ -591,7 +590,7 @@ bool ProfileSyncServiceHarness::DisableSyncForAllDatatypes() {
   return true;
 }
 
-SyncCycleSnapshot ProfileSyncServiceHarness::GetLastCycleSnapshot() const {
+SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
   DCHECK(service() != nullptr) << "Sync service has not yet been set up.";
   if (service()->IsSyncFeatureActive()) {
     return service()->GetLastCycleSnapshotForDebugging();
@@ -599,7 +598,7 @@ SyncCycleSnapshot ProfileSyncServiceHarness::GetLastCycleSnapshot() const {
   return SyncCycleSnapshot();
 }
 
-std::string ProfileSyncServiceHarness::GetServiceStatus() {
+std::string SyncServiceImplHarness::GetServiceStatus() {
   // This method is only used in test code for debugging purposes, so it's fine
   // to include sensitive data in ConstructAboutInformation().
   std::unique_ptr<base::DictionaryValue> value(
@@ -614,7 +613,7 @@ std::string ProfileSyncServiceHarness::GetServiceStatus() {
 
 // TODO(sync): Clean up this method in a separate CL. Remove all snapshot fields
 // and log shorter, more meaningful messages.
-std::string ProfileSyncServiceHarness::GetClientInfoString(
+std::string SyncServiceImplHarness::GetClientInfoString(
     const std::string& message) const {
   std::stringstream os;
   os << profile_debug_name_ << ": " << message << ": ";
@@ -643,7 +642,7 @@ std::string ProfileSyncServiceHarness::GetClientInfoString(
   return os.str();
 }
 
-bool ProfileSyncServiceHarness::IsSyncEnabledByUser() const {
+bool SyncServiceImplHarness::IsSyncEnabledByUser() const {
   return service()->GetUserSettings()->IsFirstSetupComplete() &&
          !service()->HasDisableReason(
              SyncServiceImpl::DISABLE_REASON_USER_CHOICE);

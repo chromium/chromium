@@ -21,7 +21,7 @@
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
   Profile* test_profile = ProfileManager::GetActiveUserProfile();
 
   // Enable sync for the test profile.
-  std::unique_ptr<ProfileSyncServiceHarness> harness =
+  std::unique_ptr<SyncServiceImplHarness> harness =
       test::InitializeProfileForSync(test_profile,
                                      GetFakeServer()->AsWeakPtr());
   harness->SetupSync();

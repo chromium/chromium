@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -79,10 +79,10 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
       username = "user@example.com";
     }
 
-    std::unique_ptr<ProfileSyncServiceHarness> harness =
-        ProfileSyncServiceHarness::Create(
+    std::unique_ptr<SyncServiceImplHarness> harness =
+        SyncServiceImplHarness::Create(
             browser()->profile(), username, "password",
-            ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+            SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
     // Sign the profile in.
     ASSERT_TRUE(harness->SignInPrimaryAccount());

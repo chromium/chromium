@@ -6,7 +6,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"

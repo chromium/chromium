@@ -7,7 +7,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"

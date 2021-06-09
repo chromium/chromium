@@ -29,9 +29,9 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -546,9 +546,9 @@ class ProfileMenuClickTestBase : public SyncTest,
     sync_service()->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
             GetFakeServer()->AsWeakPtr()));
-    sync_harness_ = ProfileSyncServiceHarness::Create(
+    sync_harness_ = SyncServiceImplHarness::Create(
         browser()->profile(), "user@example.com", "password",
-        ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+        SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   }
 
   signin::IdentityManager* identity_manager() {
@@ -560,7 +560,7 @@ class ProfileMenuClickTestBase : public SyncTest,
         browser()->profile());
   }
 
-  ProfileSyncServiceHarness* sync_harness() { return sync_harness_.get(); }
+  SyncServiceImplHarness* sync_harness() { return sync_harness_.get(); }
 
  protected:
   void AdvanceFocus(int count) {
@@ -576,7 +576,7 @@ class ProfileMenuClickTestBase : public SyncTest,
 
   base::HistogramTester histogram_tester_;
 
-  std::unique_ptr<ProfileSyncServiceHarness> sync_harness_;
+  std::unique_ptr<SyncServiceImplHarness> sync_harness_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileMenuClickTestBase);
 };

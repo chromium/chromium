@@ -16,7 +16,7 @@
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
@@ -94,7 +94,7 @@ class PrivacyBudgetBrowserTest : public SyncTest {
   PrefService* local_state() const { return g_browser_process->local_state(); }
 
   void EnableSyncForProfile(Profile* profile) {
-    std::unique_ptr<ProfileSyncServiceHarness> harness =
+    std::unique_ptr<SyncServiceImplHarness> harness =
         metrics::test::InitializeProfileForSync(profile,
                                                 GetFakeServer()->AsWeakPtr());
     EXPECT_TRUE(harness->SetupSync());

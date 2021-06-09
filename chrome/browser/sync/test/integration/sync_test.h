@@ -59,7 +59,7 @@
 #define E2E_ONLY(test_name) MACRO_CONCAT(DISABLED_E2ETest, test_name)
 #define E2E_ENABLED(test_name) MACRO_CONCAT(test_name, E2ETest)
 
-class ProfileSyncServiceHarness;
+class SyncServiceImplHarness;
 
 namespace arc {
 class SyncArcPackageHelper;
@@ -222,10 +222,10 @@ class SyncTest : public PlatformBrowserTest {
 
   // Returns a pointer to a particular sync client. Callee owns the object
   // and manages its lifetime.
-  ProfileSyncServiceHarness* GetClient(int index);
+  SyncServiceImplHarness* GetClient(int index);
 
   // Returns a list of the collection of sync clients.
-  std::vector<ProfileSyncServiceHarness*> GetSyncClients();
+  std::vector<SyncServiceImplHarness*> GetSyncClients();
 
   // Returns a SyncServiceImpl at the given index.
   syncer::SyncServiceImpl* GetSyncService(int index);
@@ -495,7 +495,7 @@ class SyncTest : public PlatformBrowserTest {
   // Collection of sync clients used by a test. A sync client is associated
   // with a sync profile, and implements methods that sync the contents of the
   // profile with the server.
-  std::vector<std::unique_ptr<ProfileSyncServiceHarness>> clients_;
+  std::vector<std::unique_ptr<SyncServiceImplHarness>> clients_;
 
   // Mapping from client indexes to encryption passphrases to use for them.
   std::map<int, std::string> client_encryption_passphrases_;

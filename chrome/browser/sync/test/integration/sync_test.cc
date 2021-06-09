@@ -36,11 +36,11 @@
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -533,7 +533,7 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
 }
 #endif
 
-ProfileSyncServiceHarness* SyncTest::GetClient(int index) {
+SyncServiceImplHarness* SyncTest::GetClient(int index) {
   if (clients_.empty())
     LOG(FATAL) << "SetupClients() has not yet been called.";
   if (index < 0 || index >= static_cast<int>(clients_.size()))
@@ -541,8 +541,8 @@ ProfileSyncServiceHarness* SyncTest::GetClient(int index) {
   return clients_[index].get();
 }
 
-std::vector<ProfileSyncServiceHarness*> SyncTest::GetSyncClients() {
-  std::vector<ProfileSyncServiceHarness*> clients(clients_.size());
+std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
+  std::vector<SyncServiceImplHarness*> clients(clients_.size());
   for (size_t i = 0; i < clients_.size(); ++i)
     clients[i] = clients_[i].get();
   return clients;
@@ -689,7 +689,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 #endif
 
   // Make sure the SyncServiceImpl has been created before creating the
-  // ProfileSyncServiceHarness - some tests expect the SyncServiceImpl to
+  // SyncServiceImplHarness - some tests expect the SyncServiceImpl to
   // already exist.
   SyncServiceImpl* sync_service_impl =
       SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
@@ -700,14 +700,13 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
             GetFakeServer()->AsWeakPtr()));
   }
 
-  ProfileSyncServiceHarness::SigninType singin_type =
-      UsingExternalServers()
-          ? ProfileSyncServiceHarness::SigninType::UI_SIGNIN
-          : ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN;
+  SyncServiceImplHarness::SigninType singin_type =
+      UsingExternalServers() ? SyncServiceImplHarness::SigninType::UI_SIGNIN
+                             : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
 
   DCHECK(!clients_[index]);
-  clients_[index] = ProfileSyncServiceHarness::Create(
-      GetProfile(index), username_, password_, singin_type);
+  clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
+                                                   password_, singin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
   InitializeInvalidations(index);
 
@@ -842,7 +841,7 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
 
   // Sync each of the profiles.
   for (int client_index = 0; client_index < num_clients_; client_index++) {
-    ProfileSyncServiceHarness* client = GetClient(client_index);
+    SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
 
     auto decryption_passphrase_it =
@@ -1098,7 +1097,7 @@ void SyncTest::ResetSyncForPrimaryAccount() {
     num_clients_ = 1;
     // Do not wait for sync complete. Some tests set passphrase and sync
     // will fail. NO_WAITING mode gives access token and birthday so
-    // ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() can succeed.
+    // SyncServiceImplHarness::ResetSyncForPrimaryAccount() can succeed.
     // The passphrase will be reset together with the rest of the sync data
     // clearing.
     SetupSyncNoWaitingForCompletion();
@@ -1261,7 +1260,7 @@ bool SyncTest::TestUsesSelfNotifications() {
 }
 
 bool SyncTest::AwaitQuiescence() {
-  return ProfileSyncServiceHarness::AwaitQuiescence(GetSyncClients());
+  return SyncServiceImplHarness::AwaitQuiescence(GetSyncClients());
 }
 
 bool SyncTest::UsingExternalServers() {

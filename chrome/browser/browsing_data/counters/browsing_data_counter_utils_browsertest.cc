@@ -6,7 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -48,10 +48,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   if (username.empty())
     username = "user@gmail.com";
 
-  std::unique_ptr<ProfileSyncServiceHarness> harness =
-      ProfileSyncServiceHarness::Create(
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      SyncServiceImplHarness::Create(
           profile, username, "unused" /* password */,
-          ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+          SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
   // By default, a fresh profile is not signed in, nor syncing, so no cookie
   // exception should be shown.

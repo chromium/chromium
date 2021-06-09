@@ -11,7 +11,7 @@
 // Helpers to support sync in metrics browser tests.
 
 class Profile;
-class ProfileSyncServiceHarness;
+class SyncServiceImplHarness;
 
 namespace fake_server {
 class FakeServer;
@@ -21,7 +21,7 @@ namespace metrics {
 namespace test {
 
 // Initializes and enables the test Sync service of the |profile|.
-std::unique_ptr<ProfileSyncServiceHarness> InitializeProfileForSync(
+std::unique_ptr<SyncServiceImplHarness> InitializeProfileForSync(
     Profile* profile,
     base::WeakPtr<fake_server::FakeServer> fake_server);
 
