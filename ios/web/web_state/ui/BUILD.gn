@@ -21,6 +21,7 @@ source_set("ui") {
     "//base",
     "//base/ios",
     "//build:branding_buildflags",
+    "//components/autofill/core/common:features",
     "//ios/net",
     "//ios/third_party/webkit",
     "//ios/web:core",

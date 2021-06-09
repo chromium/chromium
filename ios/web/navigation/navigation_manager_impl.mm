@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #include "ios/web/navigation/navigation_item_impl_list.h"
@@ -262,6 +263,8 @@ void NavigationManagerImpl::AddPendingItem(
   }
 
   bool is_form_post =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAddressProfileSavePrompt) &&
       is_post_navigation &&
       (navigation_type & ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT);
   if (proxy.backForwardList.currentItem && isCurrentURLSameAsPending &&
@@ -278,10 +281,13 @@ void NavigationManagerImpl::AddPendingItem(
       current_item = pending_item_.get();
       SetNavigationItemInWKItem(current_wk_item, std::move(pending_item_));
     }
-    // Updating the transition type of the item is needed, for example when
-    // doing a FormSubmit with a GET method on the same URL. See
-    // crbug.com/1211879.
-    current_item->SetTransitionType(transition);
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillAddressProfileSavePrompt)) {
+      // Updating the transition type of the item is needed, for example when
+      // doing a FormSubmit with a GET method on the same URL. See
+      // crbug.com/1211879.
+      current_item->SetTransitionType(transition);
+    }
 
     pending_item_.reset();
   }

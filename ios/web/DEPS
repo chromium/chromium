@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/autofill/core/common/autofill_features.h",
   "+components/url_formatter",
   "+components/leveldb_proto/public",
   "+components/shared_highlighting/core/common",

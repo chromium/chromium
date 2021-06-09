@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/common/autofill_features.h"
 #import "ios/net/http_response_headers_util.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/net/url_scheme_util.h"
@@ -164,8 +165,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         navigationItem];
     if (item) {
       item->SetUserAgentType(userAgentType);
-      if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-        self.webStateImpl->SetUserAgent(userAgentType);
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAddressProfileSavePrompt)) {
+        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+          self.webStateImpl->SetUserAgent(userAgentType);
+        }
       }
     }
   }

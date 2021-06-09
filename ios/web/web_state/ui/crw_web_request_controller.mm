@@ -12,6 +12,7 @@
 #import "base/ios/block_types.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/referrer_util.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
@@ -319,9 +320,13 @@ enum class BackForwardNavigationType {
       self.navigationManagerImpl->UpdatePendingItemUrl(requestURL);
     }
   } else {
-    BOOL isPostNavigation =
-        [self.navigationHandler.pendingNavigationInfo.HTTPMethod
-            isEqual:@"POST"];
+    BOOL isPostNavigation = NO;
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillAddressProfileSavePrompt)) {
+      isPostNavigation =
+          [self.navigationHandler.pendingNavigationInfo.HTTPMethod
+              isEqual:@"POST"];
+    }
     self.navigationManagerImpl->AddPendingItem(
         requestURL, referrer, transition,
         rendererInitiated ? web::NavigationInitiationType::RENDERER_INITIATED

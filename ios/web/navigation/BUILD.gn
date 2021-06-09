@@ -17,6 +17,7 @@ source_set("navigation") {
     ":core",
     ":navigation_manager_util",
     "//base",
+    "//components/autofill/core/common:features",
     "//ios/net",
     "//ios/web:core",
     "//ios/web/common",
@@ -75,6 +76,7 @@ source_set("navigation") {
 source_set("core") {
   deps = [
     "//base",
+    "//components/autofill/core/common:features",
     "//components/url_formatter:url_formatter",
     "//ios/web/common:features",
     "//ios/web/common:user_agent",

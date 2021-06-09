@@ -239,6 +239,7 @@ source_set("ios_web_navigation_unittests") {
     ":web",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common:features",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
