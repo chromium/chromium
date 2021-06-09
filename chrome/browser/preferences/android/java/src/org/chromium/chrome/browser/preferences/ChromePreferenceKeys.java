@@ -124,6 +124,9 @@ public final class ChromePreferenceKeys {
      */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
+    /** Number of attempts that have been made to download a survey. */
+    public static final KeyPrefix CHROME_SURVEY_DOWNLOAD_ATTEMPTS =
+            new KeyPrefix("Chrome.Survey.DownloadAttempts.*");
     /**
      * Key prefix used to indicate the timestamps when the survey info bar is displayed for a
      * certain survey.
@@ -1010,6 +1013,7 @@ public final class ChromePreferenceKeys {
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
+                CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,

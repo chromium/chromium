@@ -144,7 +144,8 @@ public class ChromeSurveyControllerFlowTest {
 
     private final TestSurveyController mTestSurveyController = new TestSurveyController();
 
-    private String mPrefKey;
+    private String mPrefKeyPromptShown;
+    private String mPrefKeyDownloadAttempts;
     private SharedPreferencesManager mSharedPreferencesManager;
 
     private TabModelSelectorObserver mTabModelSelectorObserver;
@@ -155,7 +156,8 @@ public class ChromeSurveyControllerFlowTest {
         ShadowChromeFeatureList.sEnableSurvey = true;
         ShadowChromeFeatureList.sParamValues.put(
                 ChromeSurveyController.SITE_ID_PARAM_NAME, TEST_TRIGGER_ID);
-        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_NUMBER, "99");
+        // By setting MAX_NUMBER to 1, #isRandomSelectedBySurvey is always true.
+        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_NUMBER, "1");
         ShadowInfoBarContainer.sInfoBarContainer = mMockInfoBarContainer;
         ShadowSurveyInfoBar.sShowInfoBarCallback = new PayloadCallbackHelper<>();
 
@@ -166,8 +168,11 @@ public class ChromeSurveyControllerFlowTest {
         SurveyController.setInstanceForTesting(mTestSurveyController);
 
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
-        mPrefKey = ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(
-                TEST_TRIGGER_ID);
+        mPrefKeyPromptShown =
+                ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(
+                        TEST_TRIGGER_ID);
+        mPrefKeyDownloadAttempts =
+                ChromePreferenceKeys.CHROME_SURVEY_DOWNLOAD_ATTEMPTS.createKey(TEST_TRIGGER_ID);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
     }
 
@@ -176,6 +181,7 @@ public class ChromeSurveyControllerFlowTest {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowChromeFeatureList.sEnableSurvey = false;
+        ShadowRecordHistogram.reset();
 
         CommandLine.getInstance().removeSwitch(ChromeSurveyController.COMMAND_LINE_PARAM_NAME);
         CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
@@ -210,31 +216,27 @@ public class ChromeSurveyControllerFlowTest {
 
     @Test
     public void testStartDownloadIfEligibleTask() {
+        assertDownloadAttempted(false);
         initializeChromeSurveyController();
-
-        Assert.assertEquals("Download should be triggered.", 1,
-                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+        assertDownloadAttempted(true);
     }
 
     @Test
     public void testStartDownloadIfEligibleTask_ShowedBefore() {
         CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-        mSharedPreferencesManager.writeLong(mPrefKey, 1000L);
+        mSharedPreferencesManager.writeLong(mPrefKeyPromptShown, 1000L);
 
         initializeChromeSurveyController();
-
-        Assert.assertEquals("Download should not trigger for user that has seen the survey prompt.",
-                0, mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+        assertDownloadAttempted(false);
     }
 
     @Test
     public void testStartDownloadIfEligibleTask_ShowedBefore_ForceEnabled() {
-        mSharedPreferencesManager.writeLong(mPrefKey, 1000L);
+        mSharedPreferencesManager.writeLong(mPrefKeyPromptShown, 1000L);
 
+        assertDownloadAttempted(false);
         initializeChromeSurveyController();
-
-        Assert.assertEquals("Download should be triggered.", 1,
-                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+        assertDownloadAttempted(true);
     }
 
     @Test
@@ -244,9 +246,7 @@ public class ChromeSurveyControllerFlowTest {
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
 
         initializeChromeSurveyController();
-
-        Assert.assertEquals("Download should not be triggered.", 0,
-                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+        assertDownloadAttempted(false);
     }
 
     @Test
@@ -255,10 +255,49 @@ public class ChromeSurveyControllerFlowTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, true);
 
+        assertDownloadAttempted(false);
         initializeChromeSurveyController();
+        assertDownloadAttempted(true);
+    }
 
-        Assert.assertEquals("Download should not be triggered.", 1,
+    @Test
+    public void testStartDownloadIfEligibleTask_DownloadCapZero() {
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
+        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+
+        initializeChromeSurveyController();
+        assertDownloadAttempted(true);
+    }
+
+    @Test
+    public void testStartDownloadIfEligibleTask_DownloadWithinCap() {
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
+        ShadowChromeFeatureList.sParamValues.put(
+                ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "99");
+
+        assertDownloadAttempted(false);
+        initializeChromeSurveyController();
+        assertDownloadAttempted(true);
+    }
+
+    @Test
+    public void testStartDownloadIfEligibleTask_DownloadReachCap() {
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
+        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "2");
+        mSharedPreferencesManager.writeInt(mPrefKeyDownloadAttempts, 2);
+
+        initializeChromeSurveyController();
+        Assert.assertEquals("Download should not be triggered.", 0,
                 mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+    }
+
+    @Test
+    public void testStartDownloadIfEligibleTask_DownloadCapZero_ForceEnable() {
+        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+
+        assertDownloadAttempted(false);
+        initializeChromeSurveyController();
+        assertDownloadAttempted(true);
     }
 
     @Test
@@ -353,6 +392,22 @@ public class ChromeSurveyControllerFlowTest {
 
         surveyInfoBarDelegate.onSurveyTriggered();
         assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+        assertDownloadAttemptRecordedWithSample(1);
+        assertInfoBarDisplayedRecorded();
+    }
+
+    @Test
+    public void testSurveyInfoBarDelegate_onSurveyTriggered_DownloadBefore() {
+        final int downloadAttempted = 3;
+        mSharedPreferencesManager.writeInt(mPrefKeyDownloadAttempts, downloadAttempted);
+
+        presentSurveyInfoBarInValidTab();
+        SurveyInfoBarDelegate surveyInfoBarDelegate =
+                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
+
+        surveyInfoBarDelegate.onSurveyTriggered();
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+        assertDownloadAttemptRecordedWithSample(downloadAttempted + 1);
         assertInfoBarDisplayedRecorded();
     }
 
@@ -499,11 +554,29 @@ public class ChromeSurveyControllerFlowTest {
 
     private void assertInfoBarDisplayedRecorded() {
         Assert.assertTrue("SharedPreference for InfoBarShown is not recorded.",
-                mSharedPreferencesManager.contains(mPrefKey));
+                SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
     }
 
     private void assertInfoBarDisplayedNotRecorded(String reason) {
-        Assert.assertFalse(reason, mSharedPreferencesManager.contains(mPrefKey));
+        Assert.assertFalse(
+                reason, SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
+    }
+
+    private void assertDownloadAttempted(boolean attempted) {
+        int expectedCount = attempted ? 1 : 0;
+        Assert.assertEquals("Times of download triggered does not match.", expectedCount,
+                mTestSurveyController.downloadIfApplicableCallback.getCallCount());
+        Assert.assertEquals("Download attempt count is not recorded as expected.", expectedCount,
+                mSharedPreferencesManager.readInt(mPrefKeyDownloadAttempts));
+    }
+
+    private void assertDownloadAttemptRecordedWithSample(int sample) {
+        Assert.assertEquals(String.format("<Android.Survey.DownloadAttemptsBeforeAccepted> "
+                                            + "with sample <%d> is not recorded.",
+                                    sample),
+                1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Survey.DownloadAttemptsBeforeAccepted", sample));
     }
 
     private static class TestSurveyController extends SurveyController {
