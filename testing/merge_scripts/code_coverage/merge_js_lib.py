@@ -8,6 +8,12 @@ import json
 import os
 import sys
 
+_HERE_PATH = os.path.dirname(__file__)
+_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
+
+sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
+import node
+
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',
                     level=logging.DEBUG)
 
@@ -265,18 +271,18 @@ def write_parsed_scripts(task_output_dir):
 
   Args:
     task_output_dir (str): The output directory for the sharded task. This will
-        contain the raw JavaScript v8 coverage files that are identified by
+        contain the raw JavaScript v8 parsed files that are identified by
         their ".js.json" suffix.
 
   Returns:
-    The absolute file path to the raw parsed scripts.
+    The absolute file path to the raw parsed scripts or None if no parsed
+    scripts were identified.
   """
   scripts = _get_paths_with_suffix(task_output_dir, '.js.json')
   output_dir = os.path.join(task_output_dir, 'parsed_scripts')
 
   if not scripts:
-    logging.info('No raw scripts found in %s', task_output_dir)
-    return
+    return None
 
   for file_path in scripts:
     script_data = _parse_json_file(file_path)
@@ -296,5 +302,42 @@ def write_parsed_scripts(task_output_dir):
     with open(os.path.join(output_dir, source_path), 'w') as f:
       f.write(script_data['text'].encode('utf8'))
 
-  logging.info('Raw parsed scripts written out to %s', output_dir)
   return output_dir
+
+
+def get_raw_coverage_dirs(task_output_dir):
+  """Returns a list of directories containing raw v8 coverage.
+
+  Args:
+    task_output_dir (str): The output directory for the sharded task. This will
+        contain the raw JavaScript v8 coverage files that are identified by
+        their ".cov.json" suffix.
+  """
+  coverage_directories = set()
+  for dir_path, _sub_dirs, file_names in os.walk(task_output_dir):
+    for name in file_names:
+      if name.endswith('.cov.json'):
+        coverage_directories.add(dir_path)
+        continue
+
+  return coverage_directories
+
+
+def convert_raw_coverage_to_istanbul(
+    raw_coverage_dirs, source_dir, task_output_dir):
+  """Calls the node helper script convert_to_istanbul.js
+
+  Args:
+    raw_coverage_dirs (list): Directory that contains raw v8 code coverage.
+    source_dir (str): Root directory containing the instrumented source.
+  """
+  try:
+    output = node.RunNode(
+        [os.path.join(_HERE_PATH, 'convert_to_istanbul.js'),
+            '--source-dir', source_dir,
+            '--output-dir', task_output_dir,
+            '--raw-coverage-dirs', ' '.join(raw_coverage_dirs),
+        ])
+    logging.info(output)
+  except RuntimeError as e:
+    logging.warn(e.message)

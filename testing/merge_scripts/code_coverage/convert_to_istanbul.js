@@ -36,6 +36,8 @@ async function extractCoverage(
     const contents = await readFile(filePath, 'utf-8');
 
     const {result: scriptCoverages} = JSON.parse(contents);
+    if (!scriptCoverages)
+      throw new Error(`result key missing for file: ${filePath}`);
 
     for (const coverage of scriptCoverages) {
       // URLs with a "// #sourceURL=..." comment are rewritten by DevTools and
@@ -82,13 +84,15 @@ function createSHA1HashFromFileContents(contents) {
 /**
  * The entry point to the function to enable the async functionality throughout.
  * @param {Object} args The parsed CLI arguments.
+ * @return {!Promise<string>} Directory containing istanbul reports.
  */
 async function main(args) {
-  for (const coverageDir of args.raw_coverage_dirs) {
-    const outputDir = join(args.output_dir, 'istanbul')
-        await mkdir(outputDir, {recursive: true});
+  const outputDir = join(args.output_dir, 'istanbul')
+  await mkdir(outputDir, {recursive: true});
+  for (const coverageDir of args.raw_coverage_dirs)
     await extractCoverage(coverageDir, args.source_dir, outputDir);
-  }
+
+  return outputDir;
 }
 
 const parser = new ArgumentParser({
@@ -115,8 +119,8 @@ parser.addArgument(['-c', '--raw-coverage-dirs'], {
 
 const args = parser.parseArgs();
 main(args)
-    .then(() => {
-      console.log('Successfully converted from v8 to IstanbulJS');
+    .then(outputDir => {
+      console.log(`Successfully converted from v8 to IstanbulJS: ${outputDir}`);
     })
     .catch(error => {
       console.error(error);
