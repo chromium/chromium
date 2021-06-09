@@ -24425,6 +24425,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'per_profile': False,
         'dynamic_refresh': True,
       },
+      'deprecated': True,
       'default': True,
       'example_value': True,
       'id': 725,
@@ -24436,7 +24437,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       If this policy is enabled or not set the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature is enabled. If the policy is disabled the feature is unavailable.
 
-      This enterprise policy is for short-term adaptation purposes and will be available at least until Chrome 93.''',
+      This enterprise policy is for short-term adaptation purposes and will be removed in Chrome 94.''',
     },
     {
       'name': 'SuggestedContentEnabled',
