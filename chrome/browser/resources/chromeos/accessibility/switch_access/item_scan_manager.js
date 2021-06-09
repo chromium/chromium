@@ -384,8 +384,14 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
   /** @private */
   init_() {
-    this.group_.onFocus();
-    this.node_.onFocus();
+    chrome.automation.getFocus(focus => {
+      if (focus && this.history_.buildFromAutomationNode(focus)) {
+        this.restoreFromHistory_();
+      } else {
+        this.group_.onFocus();
+        this.node_.onFocus();
+      }
+    });
 
     new RepeatedEventHandler(
         this.desktop_, chrome.automation.EventType.FOCUS,

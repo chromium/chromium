@@ -17,6 +17,8 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
       await importModule(
           ['KeyboardNode', 'KeyboardRootNode'],
           '/switch_access/nodes/keyboard_node.js');
+      await importModule(
+          'ItemScanManager', '/switch_access/item_scan_manager.js');
       await importModule('SACache', '/switch_access/cache.js');
       await importModule(
           'SwitchAccessMenuAction',
@@ -481,3 +483,23 @@ TEST_F(
         assertEquals(slider, Navigator.byItem.node_);
       });
     });
+
+TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', function() {
+  const website = `<input></input><button autofocus></button>`;
+  this.runWithLoadedTree(website, async (root) => {
+    // The button should have initial focus. This ensures we move past the focus
+    // event below.
+    const button =
+        await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
+
+    // Build a new ItemScanManager to see what it sets as the initial node.
+    const desktop = root.parent.root;
+    assertEquals(
+        chrome.automation.RoleType.DESKTOP, desktop.role,
+        `Unexpected desktop ${desktop.toString()}`);
+    const manager = new ItemScanManager(desktop);
+    assertEquals(
+        button.automationNode, manager.node_.automationNode,
+        `Unexpected focus ${manager.node_.debugString()}`);
+  });
+});

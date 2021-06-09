@@ -163,7 +163,7 @@ E2ETestBase = class extends testing.Test {
 
         desktop.removeEventListener('focus', listener, true);
         desktop.removeEventListener('loadComplete', listener, true);
-        callback && callback(event.target);
+        callback && callback(event.target.root);
         callback = null;
       };
 
