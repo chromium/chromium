@@ -365,7 +365,7 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewBaseDestroyed(
   if (view == mouse_capture_target_)
     mouse_capture_target_ = nullptr;
 
-  if (view == touchscreen_gesture_target_)
+  if (view == touchscreen_gesture_target_.get())
     SetTouchscreenGestureTarget(nullptr);
 
   if (view == touchpad_gesture_target_)
@@ -1129,7 +1129,7 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     // If target_view has unrelated gesture events in progress, do
     // not proceed. This could cause confusion between independent
     // scrolls.
-    if (target_view == touchscreen_gesture_target_ ||
+    if (target_view == touchscreen_gesture_target_.get() ||
         target_view == touchpad_gesture_target_ ||
         target_view == touch_target_) {
       return false;
@@ -1458,11 +1458,12 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     const absl::optional<gfx::PointF>& target_location) {
   if (gesture_event.GetType() ==
       blink::WebInputEvent::Type::kGesturePinchBegin) {
-    if (root_view == touchscreen_gesture_target_) {
+    if (root_view == touchscreen_gesture_target_.get()) {
       // If the root view is the current gesture target, there is no need to
       // wrap the pinch events ourselves.
       touchscreen_pinch_state_.DidStartPinchInRoot();
-    } else if (IsPinchCurrentlyAllowedInTarget(touchscreen_gesture_target_)) {
+    } else if (IsPinchCurrentlyAllowedInTarget(
+                   touchscreen_gesture_target_.get())) {
       // If pinch is not allowed in the child, don't do any diverting of the
       // pinch events to the root. Have the events go to the child whose
       // TouchActionFilter will discard them.
@@ -1574,8 +1575,10 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   // If we set a target and it's not in the map, we won't get notified if the
   // target goes away, so drop the target and the resulting events.
-  if (touchscreen_gesture_target_ && !IsViewInMap(touchscreen_gesture_target_))
+  if (touchscreen_gesture_target_ &&
+      !IsViewInMap(touchscreen_gesture_target_.get())) {
     SetTouchscreenGestureTarget(nullptr);
+  }
 
   if (!touchscreen_gesture_target_) {
     root_view->GestureEventAck(
@@ -1610,7 +1613,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
   touchscreen_gesture_target_->ProcessGestureEvent(event, latency);
 
   if (gesture_event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart)
-    last_fling_start_target_ = touchscreen_gesture_target_;
+    last_fling_start_target_ = touchscreen_gesture_target_.get();
 
   // If we have one of the following events, then the user has lifted their
   // last finger.
@@ -1825,7 +1828,7 @@ void RenderWidgetHostInputEventRouter::SetEventsBeingFlushed(
 void RenderWidgetHostInputEventRouter::SetTouchscreenGestureTarget(
     RenderWidgetHostViewBase* target,
     bool moved_recently) {
-  touchscreen_gesture_target_ = target;
+  touchscreen_gesture_target_ = target ? target->GetWeakPtr() : nullptr;
   touchscreen_gesture_target_moved_recently_ = moved_recently;
 }
 

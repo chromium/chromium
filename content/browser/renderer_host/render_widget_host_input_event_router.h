@@ -335,7 +335,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   FrameSinkIdOwnerMap owner_map_;
   TargetMap touchscreen_gesture_target_map_;
   RenderWidgetHostViewBase* touch_target_ = nullptr;
-  RenderWidgetHostViewBase* touchscreen_gesture_target_ = nullptr;
+  base::WeakPtr<RenderWidgetHostViewBase> touchscreen_gesture_target_;
   bool touchscreen_gesture_target_moved_recently_ = false;
   RenderWidgetHostViewBase* touchpad_gesture_target_ = nullptr;
   RenderWidgetHostViewBase* bubbling_gesture_scroll_target_ = nullptr;

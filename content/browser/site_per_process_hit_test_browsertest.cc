@@ -5143,7 +5143,7 @@ uint32_t SendTouchTapWithExpectedTarget(
 void SendGestureTapSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    RenderWidgetHostViewBase*& router_gesture_target,
+    base::WeakPtr<RenderWidgetHostViewBase>& router_gesture_target,
     const RenderWidgetHostViewBase* expected_target,
     const uint32_t unique_touch_event_id) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
@@ -5165,7 +5165,7 @@ void SendGestureTapSequenceWithExpectedTarget(
       gesture_tap_down_details, unique_touch_event_id);
   UpdateEventRootLocation(&gesture_tap_down_event, root_view_aura);
   root_view_aura->OnGestureEvent(&gesture_tap_down_event);
-  EXPECT_EQ(expected_target, router_gesture_target);
+  EXPECT_EQ(expected_target, router_gesture_target.get());
 
   ui::GestureEventDetails gesture_show_press_details(ui::ET_GESTURE_SHOW_PRESS);
   gesture_show_press_details.set_device_type(
@@ -5175,7 +5175,7 @@ void SendGestureTapSequenceWithExpectedTarget(
       gesture_show_press_details, unique_touch_event_id);
   UpdateEventRootLocation(&gesture_show_press_event, root_view_aura);
   root_view_aura->OnGestureEvent(&gesture_show_press_event);
-  EXPECT_EQ(expected_target, router_gesture_target);
+  EXPECT_EQ(expected_target, router_gesture_target.get());
 
   ui::GestureEventDetails gesture_tap_details(ui::ET_GESTURE_TAP);
   gesture_tap_details.set_device_type(
@@ -5186,7 +5186,7 @@ void SendGestureTapSequenceWithExpectedTarget(
                                      unique_touch_event_id);
   UpdateEventRootLocation(&gesture_tap_event, root_view_aura);
   root_view_aura->OnGestureEvent(&gesture_tap_event);
-  EXPECT_EQ(nullptr, router_gesture_target);
+  EXPECT_EQ(nullptr, router_gesture_target.get());
 
   ui::GestureEventDetails gesture_end_details(ui::ET_GESTURE_END);
   gesture_end_details.set_device_type(
@@ -5196,7 +5196,7 @@ void SendGestureTapSequenceWithExpectedTarget(
                                      unique_touch_event_id);
   UpdateEventRootLocation(&gesture_end_event, root_view_aura);
   root_view_aura->OnGestureEvent(&gesture_end_event);
-  EXPECT_EQ(nullptr, router_gesture_target);
+  EXPECT_EQ(nullptr, router_gesture_target.get());
 }
 
 void SendTouchpadPinchSequenceWithExpectedTarget(
