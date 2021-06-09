@@ -91,7 +91,8 @@ PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings) {
 
       // Page numbers are 1-based in the dictionary.
       // Page numbers are 0-based for the printing context.
-      page_ranges.push_back(PageRange{from.value() - 1, to.value() - 1});
+      page_ranges.push_back(PageRange{static_cast<uint32_t>(from.value() - 1),
+                                      static_cast<uint32_t>(to.value() - 1)});
     }
   }
   return page_ranges;
