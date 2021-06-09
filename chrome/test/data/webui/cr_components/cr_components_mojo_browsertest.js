@@ -38,7 +38,14 @@ var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   }
 };
 
-// The test is failing on dbg builds: https://crbug.com/1216019
-TEST_F('CrComponentsMostVisitedTest', 'DISABLED_All', function() {
-  mocha.run();
+TEST_F('CrComponentsMostVisitedTest', 'General', function() {
+  runMochaSuite('General');
+});
+
+TEST_F('CrComponentsMostVisitedTest', 'Modification', function() {
+  runMochaSuite('Modification');
+});
+
+TEST_F('CrComponentsMostVisitedTest', 'Theming', function() {
+  runMochaSuite('Theming');
 });

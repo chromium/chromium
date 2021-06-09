@@ -18,160 +18,162 @@ import {eventToPromise, flushTasks} from '../test_util.m.js';
 
 import {$$, assertNotStyle, assertStyle, keydown} from './most_visited_test_support.js';
 
-suite('CrComponentsMostVisitedTest', () => {
-  /** @type {!MostVisitedElement} */
-  let mostVisited;
+/** @type {!MostVisitedElement} */
+let mostVisited;
 
-  /** @extends {TestBrowserProxy} */
-  let windowProxy;
+/** @extends {TestBrowserProxy} */
+let windowProxy;
 
-  /** @extends {TestBrowserProxy} */
-  let handler;
+/** @extends {TestBrowserProxy} */
+let handler;
 
-  /** @extends {TestBrowserProxy} */
-  let callbackRouterRemote;
+/** @extends {TestBrowserProxy} */
+let callbackRouterRemote;
 
-  /** @type {!MediaQueryList} */
-  let mediaListenerWideWidth;
+/** @type {!MediaQueryList} */
+let mediaListenerWideWidth;
 
-  /** @type {!MediaQueryList} */
-  let mediaListenerMediumWidth;
+/** @type {!MediaQueryList} */
+let mediaListenerMediumWidth;
 
-  /** @type {!Function} */
-  let mediaListener;
+/** @type {!Function} */
+let mediaListener;
 
-  /**
-   * @param {string} q
-   * @return {!Array<!Element>}
-   */
-  function queryAll(q) {
-    return Array.from(mostVisited.shadowRoot.querySelectorAll(q));
-  }
+/**
+ * @param {string} q
+ * @return {!Array<!Element>}
+ */
+function queryAll(q) {
+  return Array.from(mostVisited.shadowRoot.querySelectorAll(q));
+}
 
-  /** @return {!Array<!Element>} */
-  function queryTiles() {
-    return queryAll('.tile');
-  }
+/** @return {!Array<!Element>} */
+function queryTiles() {
+  return queryAll('.tile');
+}
 
-  /** @return {!Array<!Element>} */
-  function queryHiddenTiles() {
-    return queryAll('.tile[hidden]');
-  }
+/** @return {!Array<!Element>} */
+function queryHiddenTiles() {
+  return queryAll('.tile[hidden]');
+}
 
-  /** @param {number} length */
-  function assertTileLength(length) {
-    assertEquals(length, queryTiles().length);
-  }
+/** @param {number} length */
+function assertTileLength(length) {
+  assertEquals(length, queryTiles().length);
+}
 
-  /** @param {number} length */
-  function assertHiddenTileLength(length) {
-    assertEquals(length, queryHiddenTiles().length);
-  }
+/** @param {number} length */
+function assertHiddenTileLength(length) {
+  assertEquals(length, queryHiddenTiles().length);
+}
 
-  /**
-   * @param {number|!Array} n
-   * @param {boolean=} customLinksEnabled
-   * @param {boolean=} visible
-   * @return {!Promise<void>}
-   */
-  async function addTiles(n, customLinksEnabled = true, visible = true) {
-    const tiles = Array.isArray(n) ? n : Array(n).fill(0).map((x, i) => {
-      const char = String.fromCharCode(i + /* 'a' */ 97);
-      return {
-        title: char,
-        titleDirection: TextDirection.LEFT_TO_RIGHT,
-        url: {url: `https://${char}/`},
-        source: i,
-        titleSource: i,
-        isQueryTile: false,
-        dataGenerationTime: {internalValue: BigInt(0)},
-      };
-    });
-    const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);
-    callbackRouterRemote.setMostVisitedInfo({
-      customLinksEnabled,
-      tiles,
-      visible,
-    });
-    await callbackRouterRemote.$.flushForTesting();
-    await tilesRendered;
-  }
-
-  function assertAddShortcutHidden() {
-    assertTrue($$(mostVisited, '#addShortcut').hidden);
-  }
-
-  function assertAddShortcutShown() {
-    assertFalse($$(mostVisited, '#addShortcut').hidden);
-  }
-
-  /**
-   * @param {boolean} isWide
-   * @param {boolean} isMedium
-   */
-  function updateScreenWidth(isWide, isMedium) {
-    assertTrue(!!mediaListenerWideWidth);
-    assertTrue(!!mediaListenerMediumWidth);
-    mediaListenerWideWidth.matches = isWide;
-    mediaListenerMediumWidth.matches = isMedium;
-    mediaListener();
-  }
-
-  function wide() {
-    updateScreenWidth(true, true);
-  }
-
-  function leaveUrlInput() {
-    $$(mostVisited, '#dialogInputUrl').dispatchEvent(new Event('blur'));
-  }
-
-  suiteSetup(() => {
-    loadTimeData.overrideValues({
-      invalidUrl: 'Type a valid URL',
-      linkAddedMsg: 'Shortcut added',
-      linkCantCreate: 'Can\'t create shortcut',
-      linkEditedMsg: 'Shortcut edited',
-      restoreDefaultLinks: 'Restore default shortcuts',
-      shortcutAlreadyExists: 'Shortcut already exists',
-    });
+/**
+ * @param {number|!Array} n
+ * @param {boolean=} customLinksEnabled
+ * @param {boolean=} visible
+ * @return {!Promise<void>}
+ */
+async function addTiles(n, customLinksEnabled = true, visible = true) {
+  const tiles = Array.isArray(n) ? n : Array(n).fill(0).map((x, i) => {
+    const char = String.fromCharCode(i + /* 'a' */ 97);
+    return {
+      title: char,
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://${char}/`},
+      source: i,
+      titleSource: i,
+      isQueryTile: false,
+      dataGenerationTime: {internalValue: BigInt(0)},
+    };
   });
+  const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);
+  callbackRouterRemote.setMostVisitedInfo({
+    customLinksEnabled,
+    tiles,
+    visible,
+  });
+  await callbackRouterRemote.$.flushForTesting();
+  await tilesRendered;
+}
 
+function assertAddShortcutHidden() {
+  assertTrue($$(mostVisited, '#addShortcut').hidden);
+}
+
+function assertAddShortcutShown() {
+  assertFalse($$(mostVisited, '#addShortcut').hidden);
+}
+
+/**
+ * @suppress {checkTypes}
+ */
+function createBrowserProxy() {
+  handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
+  const callbackRouter = new MostVisitedPageCallbackRouter();
+  MostVisitedBrowserProxy.setInstance(
+      new MostVisitedBrowserProxy(handler, callbackRouter));
+  callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
+
+  handler.setResultFor('addMostVisitedTile', Promise.resolve({
+    success: true,
+  }));
+  handler.setResultFor('updateMostVisitedTile', Promise.resolve({
+    success: true,
+  }));
+}
+
+/**
+ * @suppress {checkTypes}
+ */
+function createWindowProxy() {
+  windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy);
+  windowProxy.setResultMapperFor('matchMedia', query => {
+    const mediaListenerList = /** @type {!MediaQueryList} */ ({
+      matches: false,  // Used to determine the screen width.
+      media: query,
+      addListener(listener) {
+        mediaListener = listener;
+      },
+      removeListener() {},
+    });
+    if (query === '(min-width: 672px)') {
+      mediaListenerWideWidth = mediaListenerList;
+    } else if (query === '(min-width: 560px)') {
+      mediaListenerMediumWidth = mediaListenerList;
+    } else {
+      assertTrue(false);
+    }
+    return mediaListenerList;
+  });
+  MostVisitedWindowProxy.setInstance(windowProxy);
+}
+
+/**
+ * @param {boolean} isWide
+ * @param {boolean} isMedium
+ */
+function updateScreenWidth(isWide, isMedium) {
+  assertTrue(!!mediaListenerWideWidth);
+  assertTrue(!!mediaListenerMediumWidth);
+  mediaListenerWideWidth.matches = isWide;
+  mediaListenerMediumWidth.matches = isMedium;
+  mediaListener();
+}
+
+function wide() {
+  updateScreenWidth(true, true);
+}
+
+function leaveUrlInput() {
+  $$(mostVisited, '#dialogInputUrl').dispatchEvent(new Event('blur'));
+}
+
+suite('General', () => {
   setup(/** @suppress {checkTypes} */ () => {
     document.innerHTML = '';
 
-    handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
-    const callbackRouter = new MostVisitedPageCallbackRouter();
-    MostVisitedBrowserProxy.setInstance(
-        new MostVisitedBrowserProxy(handler, callbackRouter));
-    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
-
-    handler.setResultFor('addMostVisitedTile', Promise.resolve({
-      success: true,
-    }));
-    handler.setResultFor('updateMostVisitedTile', Promise.resolve({
-      success: true,
-    }));
-
-    windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy);
-    windowProxy.setResultMapperFor('matchMedia', query => {
-      const mediaListenerList = /** @type {!MediaQueryList} */ ({
-        matches: false,  // Used to determine the screen width.
-        media: query,
-        addListener(listener) {
-          mediaListener = listener;
-        },
-        removeListener() {},
-      });
-      if (query === '(min-width: 672px)') {
-        mediaListenerWideWidth = mediaListenerList;
-      } else if (query === '(min-width: 560px)') {
-        mediaListenerMediumWidth = mediaListenerList;
-      } else {
-        assertTrue(false);
-      }
-      return mediaListenerList;
-    });
-    MostVisitedWindowProxy.setInstance(windowProxy);
+    createBrowserProxy();
+    createWindowProxy();
 
     mostVisited = new MostVisitedElement();
     document.body.appendChild(mostVisited);
@@ -321,13 +323,6 @@ suite('CrComponentsMostVisitedTest', () => {
     assertFalse($$(mostVisited, '#container').hidden);
   });
 
-  test('dialog opens when add shortcut clicked', () => {
-    const dialog = $$(mostVisited, '#dialog');
-    assertFalse(dialog.open);
-    $$(mostVisited, '#addShortcut').click();
-    assertTrue(dialog.open);
-  });
-
   suite('test various widths', () => {
     function medium() {
       updateScreenWidth(false, true);
@@ -405,6 +400,100 @@ suite('CrComponentsMostVisitedTest', () => {
     });
   });
 
+  test('rendering tiles logs event', async () => {
+    // Arrange.
+    windowProxy.setResultFor('now', 123);
+
+    // Act.
+    await addTiles(2);
+
+    // Assert.
+    const [tiles, time] =
+        await handler.whenCalled('onMostVisitedTilesRendered');
+    assertEquals(time, 123);
+    assertEquals(tiles.length, 2);
+    assertDeepEquals(tiles[0], {
+      title: 'a',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: 'https://a/'},
+      source: 0,
+      titleSource: 0,
+      isQueryTile: false,
+      dataGenerationTime: {internalValue: BigInt(0)},
+    });
+    assertDeepEquals(tiles[1], {
+      title: 'b',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: 'https://b/'},
+      source: 1,
+      titleSource: 1,
+      isQueryTile: false,
+      dataGenerationTime: {internalValue: BigInt(0)},
+    });
+  });
+
+  test('clicking tile logs event', async () => {
+    // Arrange.
+    await addTiles(1);
+
+    // Act.
+    const tileLink = queryTiles()[0];
+    // Prevent triggering a navigation, which would break the test.
+    tileLink.href = '#';
+    tileLink.click();
+
+    // Assert.
+    const [tile, index] =
+        await handler.whenCalled('onMostVisitedTileNavigation');
+    assertEquals(index, 0);
+    assertDeepEquals(tile, {
+      title: 'a',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: 'https://a/'},
+      source: 0,
+      titleSource: 0,
+      isQueryTile: false,
+      dataGenerationTime: {internalValue: BigInt(0)},
+    });
+  });
+
+  test('making tab visible refreshes most visited tiles', () => {
+    // Arrange.
+    handler.resetResolver('updateMostVisitedInfo');
+
+    // Act.
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
+  });
+});
+
+suite('Modification', () => {
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      invalidUrl: 'Type a valid URL',
+      linkAddedMsg: 'Shortcut added',
+      linkCantCreate: 'Can\'t create shortcut',
+      linkEditedMsg: 'Shortcut edited',
+      restoreDefaultLinks: 'Restore default shortcuts',
+      shortcutAlreadyExists: 'Shortcut already exists',
+    });
+  });
+
+  setup(/** @suppress {checkTypes} */ () => {
+    document.innerHTML = '';
+
+    createBrowserProxy();
+    createWindowProxy();
+
+    mostVisited = new MostVisitedElement();
+    document.body.appendChild(mostVisited);
+    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
+    assertEquals(2, windowProxy.getCallCount('matchMedia'));
+    wide();
+  });
+
   suite('add dialog', () => {
     let dialog;
     let inputName;
@@ -420,6 +509,7 @@ suite('CrComponentsMostVisitedTest', () => {
       cancelButton = dialog.querySelector('.cancel-button');
 
       $$(mostVisited, '#addShortcut').click();
+      assertTrue(dialog.open);
     });
 
     test('inputs are initially empty', () => {
@@ -933,6 +1023,21 @@ suite('CrComponentsMostVisitedTest', () => {
     assertEquals('https://a/', newFirst.href);
     assertEquals('https://b/', newSecond.href);
   });
+});
+
+suite('Theming', () => {
+  setup(/** @suppress {checkTypes} */ () => {
+    document.innerHTML = '';
+
+    createBrowserProxy();
+    createWindowProxy();
+
+    mostVisited = new MostVisitedElement();
+    document.body.appendChild(mostVisited);
+    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
+    assertEquals(2, windowProxy.getCallCount('matchMedia'));
+    wide();
+  });
 
   test('RIGHT_TO_LEFT tile title text direction', async () => {
     await addTiles([{
@@ -1006,73 +1111,5 @@ suite('CrComponentsMostVisitedTest', () => {
       assertStyle(tile, 'text-shadow', 'none');
       assertStyle(tile, 'color', 'rgb(60, 64, 67)');
     });
-  });
-
-  test('rendering tiles logs event', async () => {
-    // Arrange.
-    windowProxy.setResultFor('now', 123);
-
-    // Act.
-    await addTiles(2);
-
-    // Assert.
-    const [tiles, time] =
-        await handler.whenCalled('onMostVisitedTilesRendered');
-    assertEquals(time, 123);
-    assertEquals(tiles.length, 2);
-    assertDeepEquals(tiles[0], {
-      title: 'a',
-      titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://a/'},
-      source: 0,
-      titleSource: 0,
-      isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
-    });
-    assertDeepEquals(tiles[1], {
-      title: 'b',
-      titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://b/'},
-      source: 1,
-      titleSource: 1,
-      isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
-    });
-  });
-
-  test('clicking tile logs event', async () => {
-    // Arrange.
-    await addTiles(1);
-
-    // Act.
-    const tileLink = queryTiles()[0];
-    // Prevent triggering a navigation, which would break the test.
-    tileLink.href = '#';
-    tileLink.click();
-
-    // Assert.
-    const [tile, index] =
-        await handler.whenCalled('onMostVisitedTileNavigation');
-    assertEquals(index, 0);
-    assertDeepEquals(tile, {
-      title: 'a',
-      titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://a/'},
-      source: 0,
-      titleSource: 0,
-      isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
-    });
-  });
-
-  test('making tab visible refreshes most visited tiles', () => {
-    // Arrange.
-    handler.resetResolver('updateMostVisitedInfo');
-
-    // Act.
-    document.dispatchEvent(new Event('visibilitychange'));
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
   });
 });
