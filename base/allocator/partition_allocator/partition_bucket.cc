@@ -290,7 +290,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     int offset = 0;
     while (ptr_start < ptr_end) {
       PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd());
-      PA_DCHECK(offset < kOffsetTagNotInDirectMap);
+      PA_DCHECK(offset < kOffsetTagNormalBuckets);
       *offset_ptr++ = offset++;
       ptr_start += kSuperPageSize;
     }
@@ -536,10 +536,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   if (UNLIKELY(!super_page))
     return nullptr;
 
-  // Set the reservation offset table entry to NotInDirectMapOffsetTag, to
-  // indicate that it isn't direct-map allocated.
   *ReservationOffsetPointer(reinterpret_cast<uintptr_t>(super_page)) =
-      kOffsetTagNotInDirectMap;
+      kOffsetTagNormalBuckets;
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);

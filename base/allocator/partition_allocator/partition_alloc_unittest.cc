@@ -3037,12 +3037,11 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 TEST_F(PartitionAllocTest, ReservationOffset) {
-  // For normal buckets, offset should be kOffsetTagNotInDirectMap.
+  // For normal buckets, offset should be kOffsetTagNormalBuckets.
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-  EXPECT_EQ(kOffsetTagNotInDirectMap,
-            *ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(kOffsetTagNormalBuckets, *ReservationOffsetPointer(ptr_as_uintptr));
   allocator.root()->Free(ptr);
 
   // For not yet allocated memory, offset should be kOffsetTagNotAllocated.

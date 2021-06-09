@@ -21,7 +21,7 @@ namespace internal {
 
 static constexpr uint16_t kOffsetTagNotAllocated =
     std::numeric_limits<uint16_t>::max();
-static constexpr uint16_t kOffsetTagNotInDirectMap =
+static constexpr uint16_t kOffsetTagNormalBuckets =
     std::numeric_limits<uint16_t>::max() - 1;
 
 // The main purpose of the reservation offset table is to easily locate the
@@ -50,7 +50,7 @@ static constexpr uint16_t kOffsetTagNotInDirectMap =
 //   ((Z >> kSuperPageShift) - (the entry for Z)) << kSuperPageShift
 //
 // kOffsetTagNotAllocated is a special tag denoting that the super page isn't
-// allocated by PartitionAlloc and kOffsetTagNotInDirectMap denotes that it is
+// allocated by PartitionAlloc and kOffsetTagNormalBuckets denotes that it is
 // used for a normal-bucket allocation, not for a direct-map allocation.
 //
 // *) In 32-bit mode, Y is not used by PartitionAlloc, and cannot be used
@@ -75,8 +75,8 @@ class BASE_EXPORT ReservationOffsetTable {
   static constexpr size_t kReservationOffsetTableLength =
       4 * kGiB / kSuperPageSize;
 #endif
-  static_assert(kReservationOffsetTableLength < kOffsetTagNotInDirectMap,
-                "Offsets should be smaller than kOffsetTagNotInDirectMap.");
+  static_assert(kReservationOffsetTableLength < kOffsetTagNormalBuckets,
+                "Offsets should be smaller than kOffsetTagNormalBuckets.");
 
   static struct _ReservationOffsetTable {
     // Thenumber of table elements is less than MAX_UINT16, so the element type
@@ -123,7 +123,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(ptr_as_uintptr);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  if (*offset_ptr == kOffsetTagNotInDirectMap)
+  if (*offset_ptr == kOffsetTagNormalBuckets)
     return 0;
   uintptr_t reservation_start =
       (ptr_as_uintptr & kSuperPageBaseMask) -
@@ -157,7 +157,7 @@ ALWAYS_INLINE bool IsReservationStart(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  return ((*offset_ptr == kOffsetTagNotInDirectMap) || (*offset_ptr == 0)) &&
+  return ((*offset_ptr == kOffsetTagNormalBuckets) || (*offset_ptr == 0)) &&
          (address_as_uintptr % kSuperPageSize == 0);
 }
 
@@ -167,7 +167,7 @@ ALWAYS_INLINE bool IsManagedByNormalBuckets(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  return *offset_ptr == kOffsetTagNotInDirectMap;
+  return *offset_ptr == kOffsetTagNormalBuckets;
 }
 
 // Returns true if |address| belongs to a direct map region.
@@ -176,7 +176,7 @@ ALWAYS_INLINE bool IsManagedByDirectMap(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  return *offset_ptr != kOffsetTagNotInDirectMap;
+  return *offset_ptr != kOffsetTagNormalBuckets;
 }
 
 }  // namespace internal
