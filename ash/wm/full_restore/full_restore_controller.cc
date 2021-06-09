@@ -29,7 +29,6 @@
 #include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
-#include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
@@ -228,11 +227,6 @@ void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
   SaveAllWindows();
 }
 
-void FullRestoreController::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  // TODO(crbug.com/1164472): Register and the check the pref service.
-}
-
 void FullRestoreController::OnTabletModeStarted() {
   SaveAllWindows();
 }
@@ -420,8 +414,9 @@ void FullRestoreController::SaveWindowImpl(
 
   // Do not save window data if the setting is turned off by active user.
   if (!full_restore::FullRestoreInfo::GetInstance()->ShouldRestore(
-          Shell::Get()->session_controller()->GetActiveAccountId()))
+          Shell::Get()->session_controller()->GetActiveAccountId())) {
     return;
+  }
 
   int window_activation_index;
   if (activation_index) {

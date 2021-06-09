@@ -6,7 +6,6 @@
 #define ASH_WM_FULL_RESTORE_FULL_RESTORE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/cancelable_callback.h"
@@ -17,8 +16,6 @@
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/window_info.h"
 #include "ui/aura/window_observer.h"
-
-class PrefService;
 
 namespace aura {
 class Window;
@@ -33,8 +30,7 @@ namespace ash {
 class WindowState;
 
 class ASH_EXPORT FullRestoreController
-    : public SessionObserver,
-      public TabletModeObserver,
+    : public TabletModeObserver,
       public full_restore::FullRestoreInfo::Observer,
       public aura::WindowObserver {
  public:
@@ -70,9 +66,6 @@ class ASH_EXPORT FullRestoreController
   // not done as an observer to ensure changes to the MRU list get handled first
   // before this is called.
   void OnWindowActivated(aura::Window* gained_active);
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -150,8 +143,6 @@ class ASH_EXPORT FullRestoreController
   // track of these posted tasks so we can cancel them upon window deletion.
   std::map<aura::Window*, base::CancelableOnceClosure>
       restore_property_clear_callbacks_;
-
-  ScopedSessionObserver scoped_session_observer_{this};
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
