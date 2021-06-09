@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -38,12 +40,6 @@ namespace history_clusters {
 
 namespace {
 
-// Returns a Time that's `milliseconds` milliseconds after Windows epoch.
-base::Time IntToTime(int milliseconds) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(milliseconds));
-}
-
 class HistoryClustersServiceTest : public testing::Test {
  public:
   HistoryClustersServiceTest()
@@ -60,7 +56,7 @@ class HistoryClustersServiceTest : public testing::Test {
         history_service_.get(), shared_url_loader_factory_);
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
-            history_clusters_service_.get());
+            history_clusters_service_.get(), history_service_.get());
   }
 
   HistoryClustersServiceTest(const HistoryClustersServiceTest&) = delete;
@@ -87,13 +83,6 @@ class HistoryClustersServiceTest : public testing::Test {
             },
         },
         {});
-  }
-
-  void AddVisit(int time, const GURL& url) {
-    history::AnnotatedVisit visit;
-    visit.url_row.set_url(url);
-    visit.visit_row.visit_time = IntToTime(time);
-    AddVisit(visit);
   }
 
   void AddVisit(history::URLID url_id,
@@ -144,33 +133,47 @@ class HistoryClustersServiceTest : public testing::Test {
     return std::string(element.As<network::DataElementBytes>().AsStringPiece());
   }
 
+  void AddHardcodedTestDataToHistoryService() {
+    AddVisit(1, GURL{"https://google.com/"}, u"Google title", 1, visit_1_time_,
+             3, absl::nullopt);
+    AddVisit(2, GURL{"https://github.com/"}, u"Github title", 2, visit_2_time_,
+             5, 1);
+  }
+
   // Verifies that that a particular hardcoded request is in a pending request
   // within the URL loader.
   void VerifyHardcodedTestDataInUrlLoaderRequest(
       const std::string& expected_experiment_name = "") {
     EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(GetPendingRequestBody());
+    ASSERT_TRUE(value);
+    std::string* encoded = value->FindStringKey("data");
+    ASSERT_TRUE(encoded);
+
+    std::string decoded;
+    ASSERT_TRUE(base::Base64Decode(*encoded, &decoded));
+
     proto::GetClustersRequest request;
-    request.set_experiment_name(expected_experiment_name);
-    auto* visit = request.add_visits();
-    visit->set_visit_id(2);
-    visit->set_navigation_time_ms(2);
-    visit->set_origin("https://google.com/");
-    visit->set_page_end_reason(3);
-    visit->set_url("https://google.com/");
-    visit = request.add_visits();
-    visit->set_visit_id(4);
-    visit->set_navigation_time_ms(4);
-    visit->set_origin("https://github.com/");
-    visit->set_page_end_reason(5);
-    visit->set_url("https://github.com/");
-    visit->set_referring_visit_id(2);
+    ASSERT_TRUE(request.ParseFromString(decoded));
 
-    std::string encoded;
-    base::Base64Encode(request.SerializeAsString(), &encoded);
-    std::string expected_request_body =
-        base::StringPrintf("{\"data\":\"%s\"}", encoded.c_str());
-
-    EXPECT_EQ(GetPendingRequestBody(), expected_request_body);
+    EXPECT_EQ(request.experiment_name(), expected_experiment_name);
+    ASSERT_EQ(request.visits_size(), 2);
+    auto visit = request.visits().at(0);
+    EXPECT_EQ(visit.visit_id(), 2);
+    EXPECT_EQ(visit.navigation_time_ms(),
+              visit_2_time_.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    EXPECT_EQ(visit.url(), "https://github.com/");
+    EXPECT_EQ(visit.page_end_reason(), 5);
+    visit = request.visits().at(1);
+    EXPECT_EQ(visit.visit_id(), 1);
+    EXPECT_EQ(visit.navigation_time_ms(),
+              visit_1_time_.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    EXPECT_EQ(visit.url(), "https://google.com/");
+    EXPECT_EQ(visit.page_end_reason(), 3);
+    // TODO(tommycli): Add back visit.referring_visit_id() check after updating
+    //  the HistoryService test methods to support that field.
   }
 
   // Fakes a particular partly hardcoded response from the URL loader.
@@ -214,6 +217,10 @@ class HistoryClustersServiceTest : public testing::Test {
   base::RunLoop run_loop_;
   base::RepeatingClosure run_loop_quit_;
 
+  // Must not be too old otherwise the history layer will ignore the visit.
+  base::Time visit_1_time_ = base::Time::Now() - base::TimeDelta::FromDays(2);
+  base::Time visit_2_time_ = base::Time::Now() - base::TimeDelta::FromDays(1);
+
   // Tracks the next available navigation ID to be associated with visits.
   int64_t next_navigation_id_ = 0;
 };
@@ -224,11 +231,7 @@ constexpr char HistoryClustersServiceTest::kFakeEndpoint[];
 TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
   std::string experiment_name = "someExperiment";
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
-
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3,
-           absl::nullopt);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5,
-           2);
+  AddHardcodedTestDataToHistoryService();
 
   struct TestData {
     std::string query;
@@ -280,13 +283,13 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
                 const auto& cluster = response.clusters[0];
                 EXPECT_FALSE(cluster->id.is_empty());
                 ASSERT_EQ(cluster->top_visits.size(), 2u);
-                EXPECT_EQ(cluster->top_visits[0]->id, 2);
+                EXPECT_EQ(cluster->top_visits[0]->id, 1);
                 EXPECT_EQ(cluster->top_visits[0]->url, "https://google.com/");
-                EXPECT_EQ(cluster->top_visits[0]->time, IntToTime(2));
+                EXPECT_EQ(cluster->top_visits[0]->time, visit_1_time_);
                 EXPECT_EQ(cluster->top_visits[0]->page_title, "Google title");
-                EXPECT_EQ(cluster->top_visits[1]->id, 4);
+                EXPECT_EQ(cluster->top_visits[1]->id, 2);
                 EXPECT_EQ(cluster->top_visits[1]->url, "https://github.com/");
-                EXPECT_EQ(cluster->top_visits[1]->time, IntToTime(4));
+                EXPECT_EQ(cluster->top_visits[1]->time, visit_2_time_);
                 EXPECT_EQ(cluster->top_visits[1]->page_title, "Github title");
                 ASSERT_EQ(cluster->keywords.size(), 2u);
                 EXPECT_EQ(cluster->keywords[0], u"apples");
@@ -299,9 +302,9 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
                                           : response.clusters[0];
                 EXPECT_FALSE(cluster->id.is_empty());
                 ASSERT_EQ(cluster->top_visits.size(), 1u);
-                EXPECT_EQ(cluster->top_visits[0]->id, 4);
+                EXPECT_EQ(cluster->top_visits[0]->id, 2);
                 EXPECT_EQ(cluster->top_visits[0]->url, "https://github.com/");
-                EXPECT_EQ(cluster->top_visits[0]->time, IntToTime(4));
+                EXPECT_EQ(cluster->top_visits[0]->time, visit_2_time_);
                 EXPECT_EQ(cluster->top_visits[0]->page_title, "Github title");
                 EXPECT_TRUE(cluster->keywords.empty());
               }
@@ -310,8 +313,9 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
             }),
         &task_tracker_);
 
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
     VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
-    InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
+    InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
     // Verify the callback is invoked.
     run_loop.Run();
@@ -343,9 +347,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyVisits) {
 
 TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyEndpoint) {
   EnableMemoriesWithEndpoint("");
-
-  AddVisit(1, GURL{"google.com"});
-  AddVisit(2, GURL{"github.com"});
+  AddHardcodedTestDataToHistoryService();
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   history_clusters_service_->QueryMemories(
@@ -369,9 +371,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyEndpoint) {
 
 TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyResponse) {
   EnableMemoriesWithEndpoint();
-
-  AddVisit(1, GURL{"google.com"});
-  AddVisit(2, GURL{"github.com"});
+  AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
@@ -387,6 +387,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyResponse) {
       &task_tracker_);
 
   // Verify a request is made.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake an empty but valid response from the endpoint.
@@ -400,9 +401,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyResponse) {
 
 TEST_F(HistoryClustersServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   EnableMemoriesWithEndpoint();
-
-  AddVisit(1, GURL{"google.com"});
-  AddVisit(2, GURL{"github.com"});
+  AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
@@ -418,6 +417,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithInvalidJsonResponse) {
       &task_tracker_);
 
   // Verify a request is made.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake a junk response from the endpoint.
@@ -431,9 +431,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithInvalidJsonResponse) {
 
 TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   EnableMemoriesWithEndpoint();
-
-  AddVisit(1, GURL{"google.com"});
-  AddVisit(2, GURL{"github.com"});
+  AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
@@ -449,6 +447,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyJsonResponse) {
       &task_tracker_);
 
   // Verify a request is made.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake an empty but valid response from the endpoint.
@@ -462,9 +461,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyJsonResponse) {
 
 TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
   EnableMemoriesWithEndpoint();
-
-  AddVisit(1, GURL{"google.com"});
-  AddVisit(2, GURL{"github.com"});
+  AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
@@ -479,10 +476,10 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
       &task_tracker_);
 
   // Verify there's a single request to the endpoint.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -496,6 +493,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
       &task_tracker_);
 
   // Verify there are two requests to the endpoint.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
 
@@ -508,137 +506,6 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify both callbacks are invoked.
-  run_loop_.Run();
-}
-
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithHistoryDb) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {
-              kMemories,
-              {{"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
-          },
-          {
-              kRemoteModelForDebugging,
-              {{"MemoriesRemoteModelEndpoint", kFakeEndpoint}},
-          },
-      },
-      {});
-
-  // Must not be too old otherwise the history layer will ignore the visit.
-  const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
-  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3,
-           absl::nullopt);
-  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5, 2);
-
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-
-  history_clusters_service_->QueryMemories(
-      mojom::QueryParams::New(),
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
-            // Verify the parsed response.
-            ASSERT_EQ(response.clusters.size(), 2u);
-            EXPECT_FALSE(response.clusters[0]->id.is_empty());
-            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 1);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
-                      "https://google.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, visit_time);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
-                      "Google title");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 2);
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
-                      "https://github.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, visit_time);
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
-                      "Github title");
-            ASSERT_EQ(response.clusters[1]->top_visits.size(), 1u);
-            EXPECT_FALSE(response.clusters[1]->id.is_empty());
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->id, 2);
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->url,
-                      "https://github.com/");
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->time, visit_time);
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->page_title,
-                      "Github title");
-            run_loop_quit_.Run();
-          }),
-      &task_tracker_);
-
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-
-  // Verify there's a single request to the endpoint.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Fake a response from the endpoint with two clusters.
-  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
-
-  // Verify the callback is invoked.
-  run_loop_.Run();
-}
-
-TEST_F(HistoryClustersServiceTest,
-       QueryMemoriesWithHistoryDbWithPendingRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {
-              kMemories,
-              {{"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
-          },
-          {
-              kRemoteModelForDebugging,
-              {{"MemoriesRemoteModelEndpoint", kFakeEndpoint}},
-          },
-      },
-      {});
-
-  // Must not be too old otherwise the history layer will ignore the visit.
-  const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
-  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3,
-           absl::nullopt);
-  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5, 2);
-
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
-            ADD_FAILURE() << "This should not be reached.";
-          }),
-      &task_tracker_);
-
-  // Verify there are no requests to the endpoint just yet.
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-
-  // Cancel pending queries, if any.
-  task_tracker_.TryCancelAll();
-
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
-            // Verify the parsed response.
-            EXPECT_EQ(response.clusters.size(), 2u);
-            run_loop_quit_.Run();
-          }),
-      &task_tracker_);
-
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-
-  // Verify there's a single request to the endpoint.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Fake a response from the endpoint with two clusters.
-  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
-
-  // Verify the last callback is invoked.
   run_loop_.Run();
 }
 
@@ -726,56 +593,64 @@ TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
 
 TEST_F(HistoryClustersServiceTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureDisabled) {
-  {
-    // When the feature is disabled, the `IncompleteVisitContextAnnotations`
-    // should be removed but not added to visits.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kMemories);
-    auto& incomplete_visit_context_annotations =
-        history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
-            0);
-    incomplete_visit_context_annotations.status = {true, true, true};
-    history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
-    EXPECT_FALSE(
-        history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
-    EXPECT_TRUE(history_clusters_service_test_api_->GetVisits().empty());
-  }
+  history_service_->AddPageWithDetails(GURL("https://fake.com"), u"Test 1", 1,
+                                       1, base::Time::Now(), false,
+                                       history::SOURCE_BROWSED);
 
-  {
-    // When the feature is enabled, the `IncompleteVisitContextAnnotations`
-    // should be removed and added to visits.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kMemories);
-    auto& incomplete_visit_context_annotations =
-        history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
-            0);
-    incomplete_visit_context_annotations.status = {true, true, true};
-    history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
-    EXPECT_FALSE(
-        history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
-    EXPECT_EQ(history_clusters_service_test_api_->GetVisits().size(), 1u);
-  }
+  // When the feature is disabled, the `IncompleteVisitContextAnnotations`
+  // should be removed but not added to visits.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          kMemories,
+          kPersistContextAnnotationsInHistoryDb,
+      });
+  auto& incomplete_visit_context_annotations =
+      history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
+          0);
+  incomplete_visit_context_annotations.url_row.set_id(1);
+  incomplete_visit_context_annotations.visit_row.visit_id = 1;
+  incomplete_visit_context_annotations.status = {true, true, true};
+  history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
+  EXPECT_FALSE(
+      history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
+  EXPECT_TRUE(history_clusters_service_test_api_->GetVisits().empty());
+}
+
+TEST_F(HistoryClustersServiceTest,
+       CompleteVisitContextAnnotationsIfReadyWhenFeatureEnabled) {
+  history_service_->AddPageWithDetails(GURL("https://fake.com"), u"Test 1", 1,
+                                       1, base::Time::Now(), false,
+                                       history::SOURCE_BROWSED);
+
+  // When the feature is enabled, the `IncompleteVisitContextAnnotations`
+  // should be removed and added to visits.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMemories);
+  auto& incomplete_visit_context_annotations =
+      history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
+          0);
+  incomplete_visit_context_annotations.url_row.set_id(1);
+  incomplete_visit_context_annotations.visit_row.visit_id = 1;
+  incomplete_visit_context_annotations.status = {true, true, true};
+  history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
+  EXPECT_FALSE(
+      history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
+  EXPECT_EQ(history_clusters_service_test_api_->GetVisits().size(), 1u);
 }
 
 TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EnableMemoriesWithEndpoint();
-
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3,
-           absl::nullopt);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5,
-           2);
+  AddHardcodedTestDataToHistoryService();
 
   // Verify that initially, the test keyword doesn't match anything, but this
   // query should have kicked off a cache population request.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
 
   // Providing the response and running the task loop should populate the cache.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   VerifyHardcodedTestDataInUrlLoaderRequest("");
-  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
-  history_clusters_service_test_api_->GetCacheQueryTaskTracker().PostTask(
-      task_environment_.GetMainThreadTaskRunner().get(), FROM_HERE,
-      run_loop_quit_);
-  run_loop_.Run();
+  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
   // Now the query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));

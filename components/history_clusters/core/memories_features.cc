@@ -22,9 +22,6 @@ GURL RemoteModelEndpoint() {
 const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName{
     &kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName", ""};
 
-const base::FeatureParam<bool> kPersistContextAnnotationsInHistoryDb{
-    &kMemories, "MemoriesPersistContextAnnotationsInHistoryDb", false};
-
 const base::FeatureParam<int> kMaxVisitsToCluster{
     &kMemories, "MemoriesMaxVisitsToCluster", 1000};
 
@@ -40,5 +37,9 @@ const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPersistContextAnnotationsInHistoryDb{
+    "MemoriesPersistContextAnnotationsInHistoryDb",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace history_clusters

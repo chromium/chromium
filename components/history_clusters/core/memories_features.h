@@ -23,12 +23,6 @@ GURL RemoteModelEndpoint();
 // remote model debug endpoint is disabled.
 extern const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName;
 
-// If enabled, completed visits context annotations are persisted to the history
-// DB and read back when clustering. If disabled, completed visit context
-// annotations are kept in-memory and used these in-memory visits are used when
-// clustering.
-extern const base::FeatureParam<bool> kPersistContextAnnotationsInHistoryDb;
-
 // The max number of visits to use for each clustering iteration. When using the
 // remote model, this limits the number of visits sent.  Only applies when using
 // persisted visit context annotations; i.e.
@@ -58,6 +52,15 @@ extern const base::Feature kDebug;
 // Enables using a remote model endpoint for Memories clustering for debugging
 // purposes. This should not be ever enabled in production.
 extern const base::Feature kRemoteModelForDebugging;
+
+// Enables persisting context annotations in the History DB. They are always
+// calculated anyways. This just enables storing them. This is expected to be
+// enabled for all users shortly. This just provides a killswitch.
+
+// This flag is to enable us to turn on persisting context annotations WITHOUT
+// exposing the Memories UI in general. If EITHER this flag or `kMemories` is
+// enabled, users will have context annotations persisted into their History DB.
+extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 
 }  // namespace history_clusters
 

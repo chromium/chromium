@@ -49,6 +49,7 @@ proto::GetClustersRequest CreateRequestProto(
       debug_visit.SetStringKey("visitId",
                                base::NumberToString(request_visit->visit_id()));
       debug_visit.SetStringKey("url", request_visit->url());
+      debug_visit.SetStringKey("origin", request_visit->origin());
       debug_visit.SetStringKey(
           "navigationTimeMs",
           base::NumberToString(request_visit->navigation_time_ms()));

@@ -7,7 +7,10 @@
 
 #include <vector>
 
+#include "base/test/bind.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 
 namespace history_clusters {
@@ -15,18 +18,30 @@ namespace history_clusters {
 class HistoryClustersServiceTestApi {
  public:
   explicit HistoryClustersServiceTestApi(
-      HistoryClustersService* history_clusters_service)
-      : history_clusters_service_(history_clusters_service) {}
+      HistoryClustersService* history_clusters_service,
+      history::HistoryService* history_service)
+      : history_clusters_service_(history_clusters_service),
+        history_service_(history_service) {}
 
-  std::vector<history::AnnotatedVisit> GetVisits() const {
-    return history_clusters_service_->visits_;
+  // Gets the annotated visits from HistoryService synchronously for testing.
+  std::vector<history::AnnotatedVisit> GetVisits() {
+    std::vector<history::AnnotatedVisit> result;
+
+    base::CancelableTaskTracker tracker;
+    history_service_->GetAnnotatedVisits(
+        1000,  // Getting 1000 clusters for testing is a reasonable fake value.
+        base::BindLambdaForTesting(
+            [&](std::vector<history::AnnotatedVisit> visits) {
+              result = std::move(visits);
+            }),
+        &tracker);
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_);
+
+    return result;
   }
 
-  base::CancelableTaskTracker& GetCacheQueryTaskTracker() {
-    return history_clusters_service_->cache_query_task_tracker_;
-  }
-
-  HistoryClustersService* history_clusters_service_;
+  HistoryClustersService* const history_clusters_service_;
+  history::HistoryService* const history_service_;
 };
 
 }  // namespace history_clusters

@@ -85,7 +85,7 @@ class HistoryClustersService : public KeyedService {
   // along with continuation query params meant to be used in the follow-up
   // request to load older Memories.
   // Note: At the moment, this method asks `remote_model_helper_` to construct
-  // Memories from `visits_`.
+  // Memories.
   void QueryMemories(mojom::QueryParamsPtr query_params,
                      base::OnceCallback<void(QueryMemoriesResponse)> callback,
                      base::CancelableTaskTracker* task_tracker);
@@ -111,15 +111,9 @@ class HistoryClustersService : public KeyedService {
   //  we refactor the `QueryMemories()` interface.
   void PopulateClusterKeywordCache(QueryMemoriesResponse response);
 
-  // If the Memories flag is enabled, this contains all the visits in-memory
-  // during the Profile lifetime. If the `kPersistContextAnnotationsInHistoryDb`
-  // param is true, this will be empty.
-  // TODO(tommycli): Hide this better behind a new debug flag.
-  std::vector<history::AnnotatedVisit> visits_;
-
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
-  // placed in `incomplete_visit_context_annotations_` and moved either to
-  // `visits_` or the history database once completed.
+  // placed in `incomplete_visit_context_annotations_` and saved to the history
+  // database once completed (if persistence is enabled).
   std::map<int64_t, IncompleteVisitContextAnnotations>
       incomplete_visit_context_annotations_;
 

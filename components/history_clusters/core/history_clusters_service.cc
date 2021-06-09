@@ -172,16 +172,13 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
       visit_context_annotations.status.navigation_end_signals &&
       (visit_context_annotations.status.ukm_page_end_signals ||
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
-    if (base::FeatureList::IsEnabled(kMemories)) {
-      if (kPersistContextAnnotationsInHistoryDb.Get())
-        history_service_->AddContextAnnotationsForVisit(
-            visit_context_annotations.visit_row.visit_id,
-            visit_context_annotations.context_annotations);
-      else
-        visits_.push_back({visit_context_annotations.url_row,
-                           visit_context_annotations.visit_row,
-                           visit_context_annotations.context_annotations,
-                           {}});
+    // If the main kMemories feature is enabled, we want to persist visits.
+    // And if the persist-only switch is enabled, we also want to persist them.
+    if (base::FeatureList::IsEnabled(kMemories) ||
+        base::FeatureList::IsEnabled(kPersistContextAnnotationsInHistoryDb)) {
+      history_service_->AddContextAnnotationsForVisit(
+          visit_context_annotations.visit_row.visit_id,
+          visit_context_annotations.context_annotations);
     }
     incomplete_visit_context_annotations_.erase(nav_id);
   }
@@ -208,17 +205,14 @@ void HistoryClustersService::QueryMemories(
                                               std::move(query_params)))
                          .Then(std::move(callback)));
 
-  if (kPersistContextAnnotationsInHistoryDb.Get()) {
-    history_service_->GetAnnotatedVisits(
-        kMaxVisitsToCluster.Get(),
-        base::BindOnce(
-            // This echo callback is necessary to copy the `AnnotatedVisit`
-            // refs.
-            [](std::vector<history::AnnotatedVisit> visits) { return visits; })
-            .Then(std::move(on_visits_callback)),
-        task_tracker);
-  } else
-    std::move(on_visits_callback).Run(visits_);
+  history_service_->GetAnnotatedVisits(
+      kMaxVisitsToCluster.Get(),
+      base::BindOnce(
+          // This echo callback is necessary to copy the `AnnotatedVisit`
+          // refs.
+          [](std::vector<history::AnnotatedVisit> visits) { return visits; })
+          .Then(std::move(on_visits_callback)),
+      task_tracker);
 }
 
 void HistoryClustersService::RemoveVisits(
@@ -259,7 +253,6 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 void HistoryClustersService::PopulateClusterKeywordCache(
     QueryMemoriesResponse response) {
   all_keywords_cache_.clear();
-
   for (auto& cluster : response.clusters) {
     for (auto& keyword : cluster->keywords) {
       // Each `keyword` may itself have multiple terms that we need to extract.
