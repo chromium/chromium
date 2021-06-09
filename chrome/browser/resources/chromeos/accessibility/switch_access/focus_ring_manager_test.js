@@ -47,3 +47,24 @@ TEST_F('FocusRingManagerTest', 'BackButtonFocus', function() {
     assertEquals(1, preview.rects.length);
   });
 });
+
+TEST_F('FocusRingManagerTest', 'ButtonFocus', function() {
+  const site = '<button>Test</button>';
+  this.runWithLoadedTree(site, async (root) => {
+    const button =
+        root.find({attributes: {role: chrome.automation.RoleType.BUTTON}});
+    Navigator.byItem.moveTo_(button);
+    const rings = FocusRingManager.instance.rings_;
+    const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
+    const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+    assertEquals(1, primary.rects.length);
+    assertEquals(0, preview.rects.length);
+    // Primary focus should be on the button.
+    const focusLocation = primary.rects[0];
+    const buttonLocation = button.location;
+    assertEquals(buttonLocation.top, focusLocation.top);
+    assertEquals(buttonLocation.left, focusLocation.left);
+    assertEquals(buttonLocation.width, focusLocation.width);
+    assertEquals(buttonLocation.height, focusLocation.height);
+  });
+});
