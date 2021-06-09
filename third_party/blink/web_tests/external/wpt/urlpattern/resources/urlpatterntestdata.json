@@ -1795,5 +1795,45 @@
   {
     "pattern": [ "(café)://foo" ],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [ "https://example.com/foo?bar#baz" ],
+    "inputs": [{ "protocol": "https:",
+                 "search": "?bar",
+                 "hash": "#baz",
+                 "baseURL": "http://example.com/foo" }],
+    "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/foo",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/foo", "groups": {} },
+      "search": { "input": "bar", "groups": {} },
+      "hash": { "input": "baz", "groups": {} }
+    }
+  },
+  {
+    "pattern": [{ "protocol": "http{s}?:",
+                  "search": "?bar",
+                  "hash": "#baz" }],
+    "inputs": [ "http://example.com/foo?bar#baz" ],
+    "expected_obj": {
+      "protocol": "http{s}?",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "example.com", "groups": { "0": "example.com" }},
+      "pathname": { "input": "/foo", "groups": { "0": "/foo" }},
+      "search": { "input": "bar", "groups": {} },
+      "hash": { "input": "baz", "groups": {} }
+    }
   }
 ]

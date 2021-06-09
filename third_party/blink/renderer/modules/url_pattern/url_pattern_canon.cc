@@ -16,6 +16,18 @@ namespace url_pattern {
 
 namespace {
 
+String MaybeStripPrefix(const String& value, StringView prefix) {
+  if (value.StartsWith(prefix))
+    return value.Substring(1, value.length() - 1);
+  return value;
+}
+
+String MaybeStripSuffix(const String& value, StringView suffix) {
+  if (value.EndsWith(suffix))
+    return value.Substring(0, value.length() - 1);
+  return value;
+}
+
 String StringFromCanonOutput(const url::CanonOutput& output,
                              const url::Component& component) {
   return String::FromUTF8(output.data() + component.begin, component.len);
@@ -193,27 +205,31 @@ absl::StatusOr<std::string> HashEncodeCallback(absl::string_view input) {
 String CanonicalizeProtocol(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
+  // We allow the protocol input to optionally contain a ":" suffix.  Strip
+  // this for both URL and pattern protocols.
+  String stripped = MaybeStripSuffix(input, ":");
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
-    return input;
+    return stripped;
   }
 
   bool result = false;
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  if (input.Is8Bit()) {
-    StringUTF8Adaptor utf8(input);
+  if (stripped.Is8Bit()) {
+    StringUTF8Adaptor utf8(stripped);
     result = url::CanonicalizeScheme(
         utf8.data(), url::Component(0, utf8.size()), &canon_output, &component);
   } else {
-    result = url::CanonicalizeScheme(input.Characters16(),
-                                     url::Component(0, input.length()),
+    result = url::CanonicalizeScheme(stripped.Characters16(),
+                                     url::Component(0, stripped.length()),
                                      &canon_output, &component);
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid protocol '" + input + "'.");
+    exception_state.ThrowTypeError("Invalid protocol '" + stripped + "'.");
     return String();
   }
 
@@ -391,21 +407,25 @@ String CanonicalizePathname(const String& protocol,
 String CanonicalizeSearch(const String& input,
                           ValueType type,
                           ExceptionState& exception_state) {
+  // We allow the search input to optionally contain a "?" prefix.  Strip
+  // this for both URL and pattern protocols.
+  String stripped = MaybeStripPrefix(input, "?");
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
-    return input;
+    return stripped;
   }
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  if (input.Is8Bit()) {
-    StringUTF8Adaptor utf8(input);
+  if (stripped.Is8Bit()) {
+    StringUTF8Adaptor utf8(stripped);
     url::CanonicalizeQuery(utf8.data(), url::Component(0, utf8.size()),
                            /*converter=*/nullptr, &canon_output, &component);
   } else {
-    url::CanonicalizeQuery(input.Characters16(),
-                           url::Component(0, input.length()),
+    url::CanonicalizeQuery(stripped.Characters16(),
+                           url::Component(0, stripped.length()),
                            /*converter=*/nullptr, &canon_output, &component);
   }
 
@@ -415,21 +435,25 @@ String CanonicalizeSearch(const String& input,
 String CanonicalizeHash(const String& input,
                         ValueType type,
                         ExceptionState& exception_state) {
+  // We allow the hash input to optionally contain a "#" prefix.  Strip
+  // this for both URL and pattern protocols.
+  String stripped = MaybeStripPrefix(input, "#");
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
-    return input;
+    return stripped;
   }
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  if (input.Is8Bit()) {
-    StringUTF8Adaptor utf8(input);
+  if (stripped.Is8Bit()) {
+    StringUTF8Adaptor utf8(stripped);
     url::CanonicalizeRef(utf8.data(), url::Component(0, utf8.size()),
                          &canon_output, &component);
   } else {
-    url::CanonicalizeRef(input.Characters16(),
-                         url::Component(0, input.length()), &canon_output,
+    url::CanonicalizeRef(stripped.Characters16(),
+                         url::Component(0, stripped.length()), &canon_output,
                          &component);
   }
 
