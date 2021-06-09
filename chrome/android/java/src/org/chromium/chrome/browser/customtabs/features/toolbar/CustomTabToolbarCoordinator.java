@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
@@ -149,6 +150,7 @@ public class CustomTabToolbarCoordinator {
         Resources resources = mActivity.getResources();
         if (mIntentDataProvider.shouldEnableEmbeddedMediaExperience()
                 && TextUtils.equals(params.getDescription(), resources.getString(R.string.share))) {
+            ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
             RecordUserAction.record("CustomTabsCustomActionButtonClick.DownloadsUI.Share");
         }
     }
