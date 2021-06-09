@@ -27,26 +27,28 @@ void Parser::Parse(ExceptionState& exception_state) {
     return;
   }
 
+  DCHECK_EQ(token_index_, 0u);
   token_list_ = std::move(tokenize_result.value());
   result_ = MakeGarbageCollected<URLPatternInit>();
+
+  // When constructing a pattern using structured input like
+  // `new URLPattern({ pathname: 'foo' })` any missing components will be
+  // defaulted to wildcards.  In the constructor string case, however, all
+  // components are precisely defined as either empty string or a longer
+  // value.  This is due to there being no way to simply "leave out" a
+  // component when writing a URL.  The behavior also matches the URL
+  // constructor.
+  //
+  // To implement this we initialize components to the empty string in advance.
+  //
+  // We can't, however, do this immediately for all components.  We want to
+  // allow the baseURL to provide information for relative URLs, so we only
+  // want to set the default empty string values for components following the
+  // first component in the relative URL.
 
   // We start in relative mode by default.  If we find a protocol `:` later,
   // we will update the starting state to expect an absolute URL pattern.
   DCHECK_EQ(state_, StringParseState::kPathname);
-
-  // When constructing a pattern using structured input like
-  // `new URLPattern({ pathname: 'foo' })` any missing components will be
-  // defaulted to wildcards.  In this case, however, we default any missing
-  // components to the empty string.  This is due to there being no way to
-  // simply "leave out" a component when writing a URL.  The behavior also
-  // matches the URL constructor.
-  //
-  // To that end we initialize components that would be set for a relative
-  // pattern to the empty string default.  We don't do this for other
-  // components right now so that any base URL value can set those components.
-  result_->setPathname(g_empty_string);
-  result_->setSearch(g_empty_string);
-  result_->setHash(g_empty_string);
 
   // Scan for protocol `:` terminator.  This should be an invalid pattern
   // character.  This automatically works for "https://" because a name
@@ -60,17 +62,39 @@ void Parser::Parse(ExceptionState& exception_state) {
       // Now that we are in absolute mode we know values will not be inherited
       // from a base URL.  Therefore initialize the rest of the components to
       // the empty string.
-      result_->setProtocol(g_empty_string);
       result_->setUsername(g_empty_string);
       result_->setPassword(g_empty_string);
       result_->setHostname(g_empty_string);
       result_->setPort(g_empty_string);
+      result_->setPathname(g_empty_string);
+      result_->setSearch(g_empty_string);
+      result_->setHash(g_empty_string);
       break;
     }
   }
 
+  // If we failed to find a protocol terminator then we are still in relative
+  // mode.  We now need to determine the first component of the relative URL.
+  if (state_ == StringParseState::kPathname) {
+    // If the string begins with `?` then its a relative search component.  If
+    // it starts with `#` then its a relative hash component.  Otherwise its
+    // a relative pathname.
+    //
+    // In each case we initialize any components following the initial
+    // component to be empty string.
+    if (IsHashPrefix()) {
+      ChangeStateWithoutSettingComponent(StringParseState::kHash, Skip(1));
+    } else if (IsSearchPrefix()) {
+      ChangeStateWithoutSettingComponent(StringParseState::kSearch, Skip(1));
+      result_->setHash(g_empty_string);
+    } else {
+      result_->setSearch(g_empty_string);
+      result_->setHash(g_empty_string);
+    }
+  }
+
   // Iterate through the list of tokens and update our state machine as we go.
-  for (token_index_ = 0; token_index_ < token_list_.size(); ++token_index_) {
+  for (; token_index_ < token_list_.size(); ++token_index_) {
     // All states must respect the end of the token list.  The liburlpattern
     // tokenizer guarantees that the last token will have the type `kEnd`.
     if (token_list_[token_index_].type == liburlpattern::TokenType::kEnd) {
@@ -102,12 +126,14 @@ void Parser::Parse(ExceptionState& exception_state) {
           // First we eagerly compile the protocol pattern and use it to
           // compute if this entire URLPattern should be treated as a
           // "standard" URL.  If any of the special schemes, like `https`,
-          // match the protocol pattern then we treat it as standard.  This
-          // also forces the default pathname to be `/` instead of the empty
-          // string.
+          // match the protocol pattern then we treat it as standard.
           ComputeShouldTreatAsStandardURL(exception_state);
           if (exception_state.HadException())
             return;
+
+          // Standard URLs default to `/` for the pathname.
+          if (should_treat_as_standard_url_)
+            result_->setPathname("/");
 
           // Next, if there are authority slashes, like `https://`, then
           // we must transition to the authority section of the URLPattern.
@@ -214,7 +240,11 @@ void Parser::ChangeState(StringParseState new_state, Skip skip) {
       break;
   }
 
-  // Next move to the new state.
+  ChangeStateWithoutSettingComponent(new_state, skip);
+}
+
+void Parser::ChangeStateWithoutSettingComponent(StringParseState new_state,
+                                                Skip skip) {
   state_ = new_state;
 
   // Now update `component_start_` to point to the new component.  The `skip`
@@ -336,10 +366,8 @@ void Parser::ComputeShouldTreatAsStandardURL(ExceptionState& exception_state) {
   protocol_component_ =
       Component::Compile(MakeComponentString(), Component::Type::kProtocol,
                          /*protocol_component=*/nullptr, exception_state);
-  if (protocol_component_ && protocol_component_->ShouldTreatAsStandardURL()) {
+  if (protocol_component_ && protocol_component_->ShouldTreatAsStandardURL())
     should_treat_as_standard_url_ = true;
-    result_->setPathname("/");
-  }
 }
 
 }  // namespace url_pattern

@@ -54,8 +54,7 @@ function runTests(data) {
           //  1. If the original input explicitly provided a pattern, then
           //     echo that back as the expected value.
           //  2. If the baseURL exists and provides a component value then
-          //     use that for the expected pattern.  Note, the baseURL
-          //     does not provide search/hash component values.
+          //     use that for the expected pattern.
           //  3. Otherwise fall back on the default pattern of `*` for an
           //     empty component pattern.
           if (entry.exactly_empty_components &&
@@ -64,13 +63,14 @@ function runTests(data) {
           } else if (typeof entry.pattern[0] === 'object' &&
               entry.pattern[0][component]) {
             expected = entry.pattern[0][component];
-          } else if (baseURL &&
-                     component !== 'search' && component !== 'hash') {
+          } else if (baseURL) {
             let base_value = baseURL[component];
-            // Unfortunately the URL() protocol getter includes a trailing `:`
-            // that is not used by URLPattern.  Strip that off in necessary.
+            // Unfortunately some URL() getters include separator chars; e.g.
+            // the trailing `:` for the protocol.  Strip those off if necessary.
             if (component === 'protocol')
               base_value = base_value.substring(0, base_value.length - 1);
+            else if (component === 'search' || component === 'hash')
+              base_value = base_value.substring(1, base_value.length);
             expected = base_value;
           } else {
             expected = '*';

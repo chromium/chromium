@@ -111,9 +111,9 @@ void ApplyInit(const URLPatternInit* init,
     port =
         base_url.Port() > 0 ? String::Number(base_url.Port()) : g_empty_string;
     pathname = base_url.GetPath() ? base_url.GetPath() : g_empty_string;
-
-    // Do no propagate search or hash from the base URL.  This matches the
-    // behavior when resolving a relative URL against a base URL.
+    search = base_url.Query() ? base_url.Query() : g_empty_string;
+    hash = base_url.HasFragmentIdentifier() ? base_url.FragmentIdentifier()
+                                            : g_empty_string;
   }
 
   // Apply the URLPatternInit component values on top of the default and

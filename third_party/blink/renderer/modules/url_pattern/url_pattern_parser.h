@@ -68,6 +68,11 @@ class Parser final {
   // many tokens the `skip` argument indicates should be ignored.
   void ChangeState(StringParseState new_state, Skip skip);
 
+  // A utility function to move to `new_state`.  This is like `ChangeState()`,
+  // but does not automatically set the component string for the current state.
+  void ChangeStateWithoutSettingComponent(StringParseState new_state,
+                                          Skip skip);
+
   // Attempt to access the Token at the given `index`.  If the `index` is out
   // of bounds for the `token_list_`, then the last Token in the list is
   // returned.  This will always be a `TokenType::kEnd` token.

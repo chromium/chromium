@@ -81,6 +81,15 @@
     "inputs": [{ "protocol": "https", "hostname": "example.com",
                  "pathname": "/foo/bar" }],
     "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com" }],
+    "inputs": [{ "protocol": "https", "hostname": "example.com",
+                 "pathname": "/foo/bar" }],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
     "expected_match": {
       "hostname": { "input": "example.com", "groups": {} },
       "pathname": { "input": "/foo/bar", "groups": {} },
@@ -89,7 +98,7 @@
   },
   {
     "pattern": [{ "pathname": "/foo/bar",
-                 "baseURL": "https://example.com?query#hash" }],
+                 "baseURL": "https://example.com" }],
     "inputs": [{ "protocol": "https", "hostname": "example.com",
                  "pathname": "/foo/bar/baz" }],
     "expected_match": null
@@ -101,12 +110,31 @@
                  "pathname": "/foo/bar", "search": "otherquery",
                  "hash": "otherhash" }],
     "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com" }],
+    "inputs": [{ "protocol": "https", "hostname": "example.com",
+                 "pathname": "/foo/bar", "search": "otherquery",
+                 "hash": "otherhash" }],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?otherquery#otherhash" }],
+    "inputs": [{ "protocol": "https", "hostname": "example.com",
+                 "pathname": "/foo/bar", "search": "otherquery",
+                 "hash": "otherhash" }],
+    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
-      "hash": { "input": "otherhash", "groups": { "0": "otherhash" } },
+      "hash": { "input": "otherhash", "groups": {} },
       "hostname": { "input": "example.com", "groups": {} },
       "pathname": { "input": "/foo/bar", "groups": {} },
       "protocol": { "input": "https", "groups": {} },
-      "search": { "input": "otherquery", "groups": { "0": "otherquery" } }
+      "search": { "input": "otherquery", "groups": {} }
     }
   },
   {
@@ -114,23 +142,26 @@
                  "baseURL": "https://example.com?query#hash" }],
     "inputs": [ "https://example.com/foo/bar" ],
     "exactly_empty_components": [ "username", "password", "port" ],
-    "expected_match": {
-      "hostname": { "input": "example.com", "groups": {} },
-      "pathname": { "input": "/foo/bar", "groups": {} },
-      "protocol": { "input": "https", "groups": {} }
-    }
+    "expected_match": null
   },
   {
     "pattern": [{ "pathname": "/foo/bar",
                  "baseURL": "https://example.com?query#hash" }],
     "inputs": [ "https://example.com/foo/bar?otherquery#otherhash" ],
     "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" }],
+    "inputs": [ "https://example.com/foo/bar?query#hash" ],
+    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
-      "hash": { "input": "otherhash", "groups": { "0": "otherhash" } },
+      "hash": { "input": "hash", "groups": {} },
       "hostname": { "input": "example.com", "groups": {} },
       "pathname": { "input": "/foo/bar", "groups": {} },
       "protocol": { "input": "https", "groups": {} },
-      "search": { "input": "otherquery", "groups": { "0": "otherquery" } }
+      "search": { "input": "query", "groups": {} }
     }
   },
   {
@@ -156,10 +187,20 @@
                  "baseURL": "https://example.com?query#hash" }],
     "inputs": [{ "pathname": "/foo/bar", "baseURL": "https://example.com" }],
     "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" }],
+    "inputs": [{ "pathname": "/foo/bar",
+                 "baseURL": "https://example.com?query#hash" }],
+    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
+      "hash": { "input": "hash", "groups": {} },
       "hostname": { "input": "example.com", "groups": {} },
       "pathname": { "input": "/foo/bar", "groups": {} },
-      "protocol": { "input": "https", "groups": {} }
+      "protocol": { "input": "https", "groups": {} },
+      "search": { "input": "query", "groups": {} }
     }
   },
   {
@@ -1155,10 +1196,11 @@
   {
     "pattern": [{ "pathname": "./foo/bar", "baseURL": "https://example.com" }],
     "inputs": [{ "pathname": "foo/bar", "baseURL": "https://example.com" }],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
     "expected_obj": {
       "pathname": "/foo/bar"
     },
-    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
       "protocol": { "input": "https", "groups": {}},
       "hostname": { "input": "example.com", "groups": {}},
@@ -1173,10 +1215,11 @@
   {
     "pattern": [{ "pathname": "foo/bar", "baseURL": "https://example.com" }],
     "inputs": [ "https://example.com/foo/bar" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
     "expected_obj": {
       "pathname": "/foo/bar"
     },
-    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
       "protocol": { "input": "https", "groups": {}},
       "hostname": { "input": "example.com", "groups": {}},
@@ -1186,10 +1229,11 @@
   {
     "pattern": [{ "pathname": ":name.html", "baseURL": "https://example.com" }],
     "inputs": [ "https://example.com/foo.html"] ,
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
     "expected_obj": {
       "pathname": "/:name.html"
     },
-    "exactly_empty_components": [ "username", "password", "port" ],
     "expected_match": {
       "protocol": { "input": "https", "groups": {}},
       "hostname": { "input": "example.com", "groups": {}},
@@ -1833,6 +1877,78 @@
       "hostname": { "input": "example.com", "groups": { "0": "example.com" }},
       "pathname": { "input": "/foo", "groups": { "0": "/foo" }},
       "search": { "input": "bar", "groups": {} },
+      "hash": { "input": "baz", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "?bar#baz", "https://example.com/foo" ],
+    "inputs": [ "?bar#baz", "https://example.com/foo" ],
+    "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/foo",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/foo", "groups": {} },
+      "search": { "input": "bar", "groups": {} },
+      "hash": { "input": "baz", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "?bar", "https://example.com/foo#baz" ],
+    "inputs": [ "?bar", "https://example.com/foo#snafu" ],
+    "exactly_empty_components": [ "username", "password", "port", "hash" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/foo",
+      "search": "bar"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/foo", "groups": {} },
+      "search": { "input": "bar", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "#baz", "https://example.com/foo?bar" ],
+    "inputs": [ "#baz", "https://example.com/foo?bar" ],
+    "exactly_empty_components": [ "username", "password", "port" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/foo",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/foo", "groups": {} },
+      "search": { "input": "bar", "groups": {} },
+      "hash": { "input": "baz", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "#baz", "https://example.com/foo" ],
+    "inputs": [ "#baz", "https://example.com/foo" ],
+    "exactly_empty_components": [ "username", "password", "port", "search" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/foo",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/foo", "groups": {} },
       "hash": { "input": "baz", "groups": {} }
     }
   }
