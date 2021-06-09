@@ -950,6 +950,12 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
 
 const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
     {
+        "Visit Limit 200",
+        (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "200"}},
+        1,
+        nullptr,
+    },
+    {
         "Visit Limit 10k",
         (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "10000"}},
         1,
