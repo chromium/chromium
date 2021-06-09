@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -54,6 +55,9 @@ public class MerchantTrustSignalsDataProviderTest {
 
     @Mock
     private Profile mMockProfile;
+
+    @Mock
+    private NavigationHandle mNavigationHandle;
 
     @Mock
     private OptimizationGuideBridge.Natives mMockOptimizationGuideBridgeJni;
@@ -77,6 +81,8 @@ public class MerchantTrustSignalsDataProviderTest {
         doReturn(1L).when(mMockOptimizationGuideBridgeJni).init();
         doReturn(false).when(mMockProfile).isOffTheRecord();
         Profile.setLastUsedProfileForTesting(mMockProfile);
+        doReturn(mMockDestinationGurl).when(mNavigationHandle).getUrl();
+        doReturn(true).when(mNavigationHandle).isInMainFrame();
     }
 
     @Test
@@ -89,7 +95,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.FALSE, ANY_MERHCANT_TRUST_SIGNALS);
-        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -104,7 +110,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(
                 mMockOptimizationGuideBridgeJni, OptimizationGuideDecision.TRUE, null);
-        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -119,7 +125,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.TRUE, Any.getDefaultInstance());
-        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -134,7 +140,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.TRUE, ANY_MERHCANT_TRUST_SIGNALS);
-        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         MerchantTrustSignals result = callbackHelper.getMerchantTrustSignalsResult();
