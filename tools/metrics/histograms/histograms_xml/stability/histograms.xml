@@ -424,8 +424,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.IOS.Experimental.Counts"
-    enum="IOSStabilityUserVisibleTerminationType" expires_after="2021-06-15">
-  <owner>eugenebut@google.com</owner>
+    enum="IOSStabilityUserVisibleTerminationType" expires_after="2022-06-15">
+  <owner>ajuma@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Recorded when iOS app has started after a crash caused by system signal or
