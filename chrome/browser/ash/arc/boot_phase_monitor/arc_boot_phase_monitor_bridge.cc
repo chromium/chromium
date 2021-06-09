@@ -109,21 +109,6 @@ void ArcBootPhaseMonitorBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMAInternal() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (first_app_launch_delay_recorded_)
-    return;
-  first_app_launch_delay_recorded_ = true;
-
-  if (boot_completed_) {
-    VLOG(2) << "ARC has already fully started. Recording the UMA now.";
-    if (delegate_)
-      delegate_->RecordFirstAppLaunchDelayUMA(base::TimeDelta());
-    return;
-  }
-  app_launch_time_ = base::TimeTicks::Now();
-}
-
 void ArcBootPhaseMonitorBridge::OnBootCompleted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(2) << "OnBootCompleted";
@@ -151,15 +136,30 @@ void ArcBootPhaseMonitorBridge::OnArcSessionRestarting() {
   Reset();
 }
 
+void ArcBootPhaseMonitorBridge::SetDelegateForTesting(
+    std::unique_ptr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
+void ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMAInternal() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (first_app_launch_delay_recorded_)
+    return;
+  first_app_launch_delay_recorded_ = true;
+
+  if (boot_completed_) {
+    VLOG(2) << "ARC has already fully started. Recording the UMA now.";
+    if (delegate_)
+      delegate_->RecordFirstAppLaunchDelayUMA(base::TimeDelta());
+    return;
+  }
+  app_launch_time_ = base::TimeTicks::Now();
+}
+
 void ArcBootPhaseMonitorBridge::Reset() {
   app_launch_time_ = base::TimeTicks();
   first_app_launch_delay_recorded_ = false;
   boot_completed_ = false;
-}
-
-void ArcBootPhaseMonitorBridge::SetDelegateForTesting(
-    std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
 }
 
 }  // namespace arc
