@@ -200,6 +200,11 @@ template("fuchsia_package_runner") {
       _pkg_shortname,
     ]
 
+    if (defined(invoker.use_run_test_component) &&
+        invoker.use_run_test_component) {
+      executable_args += [ "--use-run-test-component" ]
+    }
+
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
       executable_args += [ "--enable-test-server" ]
     }

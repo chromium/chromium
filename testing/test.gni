@@ -331,6 +331,7 @@ template("test") {
       is_test_exe = true
       forward_variables_from(invoker,
                              [
+                               "use_run_test_component",
                                "use_test_server",
                                "package_deps",
                                "visibility",
