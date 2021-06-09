@@ -524,6 +524,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>rohitrao@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
+    Prefer to use IOS.IsDefaultBrowser21 as this metric is based in a 7 days
+    look back window, which appears to be too small. As of iOS14, users will be
+    able to set a default browser other than Safari. When Chrome is the default
+    browser, it will receive all URL opens, which is likely to change certain
+    stability metrics. Thus, it will be good to filter those metrics by default
+    browser status. This metrics records whether the user was deemed to have set
+    Chrome as the device's default browser. This metric will be logged once per
+    metrics log upload. As long as a link is opened in Chrome in the last 7
+    days, the user will be considered a default user.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IsDefaultBrowser21" enum="Boolean" expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
     As of iOS14, users will be able to set a default browser other than Safari.
     When Chrome is the default browser, it will receive all URL opens, which is
     likely to change certain stability metrics. Thus, it will be good to filter
@@ -531,7 +550,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     user was deemed to have set Chrome as the device's default browser. This
     metric will be logged once per metrics log upload. As long as link is opened
     in Chrome in the last 21 days, the user will be considered a default user.
-    Before M93 instead of 21 days, 7 days was used.
   </summary>
 </histogram>
 

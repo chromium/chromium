@@ -292,6 +292,20 @@ void LogUserInteractionWithNonModalPromo() {
                        forKey:kLastTimeUserInteractedWithPromo];
 }
 
+bool IsChromeLikelyDefaultBrowser7Days() {
+  NSDate* lastURLOpen =
+      [[NSUserDefaults standardUserDefaults] objectForKey:kLastHTTPURLOpenTime];
+  if (!lastURLOpen) {
+    return false;
+  }
+  NSTimeInterval sevenDays = 7 * 24 * 60 * 60;
+  NSDate* sevenDaysAgoDate = [NSDate dateWithTimeIntervalSinceNow:-sevenDays];
+  if ([lastURLOpen laterDate:sevenDaysAgoDate] == sevenDaysAgoDate) {
+    return false;
+  }
+  return true;
+}
+
 bool IsChromeLikelyDefaultBrowser() {
   NSDate* lastURLOpen =
       [[NSUserDefaults standardUserDefaults] objectForKey:kLastHTTPURLOpenTime];
@@ -299,9 +313,9 @@ bool IsChromeLikelyDefaultBrowser() {
     return false;
   }
 
-  NSDate* sevenDaysAgoDate =
+  NSDate* lookBackDate =
       [NSDate dateWithTimeIntervalSinceNow:-kLatestURLOpenForDefaultBrowser];
-  if ([lastURLOpen laterDate:sevenDaysAgoDate] == sevenDaysAgoDate) {
+  if ([lastURLOpen laterDate:lookBackDate] == lookBackDate) {
     return false;
   }
   return true;

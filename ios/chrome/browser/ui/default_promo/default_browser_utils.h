@@ -131,6 +131,10 @@ void LogUserInteractionWithNonModalPromo();
 // indicate Chrome is likely still the default browser. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser();
 
+// Do not use. Only for backward compatibility
+// Returns true if the last URL open is within 7 days. Returns false otherwise.
+bool IsChromeLikelyDefaultBrowser7Days();
+
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
 // default browser for the passed |type|. Returns false otherwise.
