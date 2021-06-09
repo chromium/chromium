@@ -7,7 +7,7 @@
 
 namespace blink {
 
-// TODO(https://crbug.com/1116920): Move back into WebMediaPlayer after
+// TODO(https://crbug.com/1198341): Move back into WebMediaPlayer after
 // onion-souping media/blink.
 enum class DisplayType {
   // Playback is happening inline.

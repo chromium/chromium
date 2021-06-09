@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/blink/webmediaplayer_impl.h"
+#include "third_party/blink/public/platform/media/web_media_player_impl.h"
 
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -40,12 +41,6 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
-#include "media/blink/mock_resource_fetch_context.h"
-#include "media/blink/mock_webassociatedurlloader.h"
-#include "media/blink/resource_multibuffer_data_provider.h"
-#include "media/blink/video_decode_stats_reporter.h"
-#include "media/blink/webcontentdecryptionmodule_impl.h"
-#include "media/blink/webmediaplayer_params.h"
 #include "media/filters/pipeline_controller.h"
 #include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
@@ -58,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/media/web_media_player_params.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -73,6 +69,11 @@
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
+#include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
+#include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
+#include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
+#include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 

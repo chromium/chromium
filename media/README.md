@@ -106,9 +106,9 @@ pipeline.
 As a case study we'll consider the playback of a video through the `<video>` tag.
 
 `<video>` (and `<audio>`) starts in `blink::HTMLMediaElement` in
-third_party/WebKit/ and reaches media/blink in `media::WebMediaPlayerImpl`
-after a brief hop through `content::MediaFactory`. Each
-`blink::HTMLMediaElement` owns a `media::WebMediaPlayerImpl` for handling
+third_party/blink/ and reaches third_party/blink/public/platform/media/ in
+`media::WebMediaPlayerImpl` after a brief hop through `content::MediaFactory`.
+Each `blink::HTMLMediaElement` owns a `media::WebMediaPlayerImpl` for handling
 things like play, pause, seeks, and volume changes (among other things).
 
 `media::WebMediaPlayerImpl` handles or delegates media loading over the network

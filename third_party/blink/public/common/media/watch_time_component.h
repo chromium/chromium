@@ -25,7 +25,7 @@ namespace blink {
 // time, flip the actual value, and then start recording from that previous
 // finalize time. They may also clear the pending value flip if the value
 // changes back to the previous value.
-// TODO(https://crbug.com/1116920): Move to renderer/platform/media once its
+// TODO(https://crbug.com/1198341): Move to renderer/platform/media once its
 // dependencies are moved to Blink.
 template <typename T>
 class WatchTimeComponent {

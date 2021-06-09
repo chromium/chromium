@@ -1273,7 +1273,9 @@
       'filepath': 'chrome/browser/media/cast_remoting'\
                   '|media/blink/webmediaplayer_'\
                   '|media/mojo/mojom/remoting.mojom'\
-                  '|media/remoting/',
+                  '|media/remoting/'\
+                  '|third_party/blink/public/platform/media/web_media_player_'\
+                  '|third_party/blink/renderer/platform/media/web_media_player_',
     },
     'media_router': {
       'filepath': 'chrome/app/media_router_strings.grdp' \
@@ -1604,10 +1606,11 @@
       'filepath': 'chrome/android/features/media_router/java/src/org/chromium/chrome/browser/media/router/FlingingController' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/media/remote/' \
                   '|chrome/browser/media/android/remote/' \
-                  '|media/blink/remote_playback' \
                   '|media/renderers/remote_playback' \
+                  '|third_party/blink/public/platform/media/remote_playback' \
                   '|third_party/blink/public/platform/modules/remoteplayback/' \
                   '|third_party/blink/renderer/core/html/media/remote_playback' \
+                  '|third_party/blink/renderer/platform/media/remote_playback' \
                   '|third_party/blink/renderer/modules/remoteplayback/' \
                   '|third_party/blink/web_tests/media/remoteplayback/' \
                   '|third_party/blink/web_tests/virtual/new-remote-playback-pipeline/'

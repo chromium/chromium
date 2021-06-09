@@ -7,107 +7,10 @@ import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
-component("blink") {
-  output_name = "media_blink"
-
-  sources = [
-    "buffered_data_source_host_impl.cc",
-    "buffered_data_source_host_impl.h",
-    "cache_util.cc",
-    "cache_util.h",
-    "cdm_result_promise.h",
-    "cdm_result_promise_helper.cc",
-    "cdm_result_promise_helper.h",
-    "cdm_session_adapter.cc",
-    "cdm_session_adapter.h",
-    "interval_map.h",
-    "key_system_config_selector.cc",
-    "key_system_config_selector.h",
-    "learning_experiment_helper.cc",
-    "learning_experiment_helper.h",
-    "lru.h",
-    "media_blink_export.h",
-    "multibuffer.cc",
-    "multibuffer.h",
-    "multibuffer_data_source.cc",
-    "multibuffer_data_source.h",
-    "multibuffer_reader.cc",
-    "multibuffer_reader.h",
-    "new_session_cdm_result_promise.cc",
-    "new_session_cdm_result_promise.h",
-    "power_status_helper.cc",
-    "power_status_helper.h",
-    "remote_playback_client_wrapper_impl.cc",
-    "remote_playback_client_wrapper_impl.h",
-    "resource_fetch_context.h",
-    "resource_multibuffer_data_provider.cc",
-    "resource_multibuffer_data_provider.h",
-    "smoothness_helper.cc",
-    "smoothness_helper.h",
-    "texttrack_impl.cc",
-    "texttrack_impl.h",
-    "url_index.cc",
-    "url_index.h",
-    "video_decode_stats_reporter.cc",
-    "video_decode_stats_reporter.h",
-    "video_frame_compositor.cc",
-    "video_frame_compositor.h",
-    "webcontentdecryptionmodule_impl.cc",
-    "webcontentdecryptionmodule_impl.h",
-    "webcontentdecryptionmoduleaccess_impl.cc",
-    "webcontentdecryptionmoduleaccess_impl.h",
-    "webcontentdecryptionmodulesession_impl.cc",
-    "webcontentdecryptionmodulesession_impl.h",
-    "webencryptedmediaclient_impl.cc",
-    "webencryptedmediaclient_impl.h",
-    "webinbandtexttrack_impl.cc",
-    "webinbandtexttrack_impl.h",
-    "webmediaplayer_params.cc",
-    "webmediaplayer_params.h",
-    "webmediasource_impl.cc",
-    "webmediasource_impl.h",
-    "websourcebuffer_impl.cc",
-    "websourcebuffer_impl.h",
-  ]
-
-  defines = [ "MEDIA_BLINK_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//cc",
-    "//components/viz/common",
-    "//gpu",
-    "//media",
-    "//media:shared_memory_support",
-    "//media/learning/common",
-    "//media/learning/mojo/public/cpp:cpp",
-    "//media/mojo/mojom",
-    "//net",
-    "//services/device/public/mojom",
-    "//services/network/public/cpp:cpp",
-    "//services/service_manager/public/cpp:cpp",
-    "//third_party/blink/public:blink",
-    "//third_party/blink/public/strings:strings_grit",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-    "//url",
-  ]
-
-  if (media_use_ffmpeg || !is_android) {
-    sources += [
-      "webmediaplayer_impl.cc",
-      "webmediaplayer_impl.h",
-    ]
-
-    deps += [ "//media/remoting:remoting_constants" ]
-  }
-}
-
 test("media_blink_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   deps = [
-    ":blink",
     "//base",
     "//base/test:test_support",
     "//cc",
@@ -123,6 +26,9 @@ test("media_blink_unittests") {
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_support",
+    "//third_party/blink/public/platform/media",
+    "//third_party/blink/renderer/platform/media",
+    "//third_party/blink/renderer/platform/media:test_support",
     "//tools/v8_context_snapshot",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
@@ -140,28 +46,7 @@ test("media_blink_unittests") {
   sources = [
     "blink_platform_with_task_environment.cc",
     "blink_platform_with_task_environment.h",
-    "buffered_data_source_host_impl_unittest.cc",
-    "cache_util_unittest.cc",
-    "interval_map_unittest.cc",
-    "key_system_config_selector_unittest.cc",
-    "learning_experiment_helper_unittest.cc",
-    "lru_unittest.cc",
-    "mock_resource_fetch_context.cc",
-    "mock_resource_fetch_context.h",
-    "mock_webassociatedurlloader.cc",
-    "mock_webassociatedurlloader.h",
-    "multibuffer_data_source_unittest.cc",
-    "multibuffer_unittest.cc",
-    "power_status_helper_unittest.cc",
-    "resource_multibuffer_data_provider_unittest.cc",
     "run_all_unittests.cc",
-    "smoothness_helper_unittest.cc",
-    "test_response_generator.cc",
-    "test_response_generator.h",
-    "url_index_unittest.cc",
-    "video_decode_stats_reporter_unittest.cc",
-    "video_frame_compositor_unittest.cc",
-    "watch_time_reporter_unittest.cc",
     "webmediaplayer_impl_unittest.cc",
   ]
 
