@@ -65,6 +65,13 @@ enum class LocationPermissionsUI {
 // Coordinator of the new First Run UI.
 @property(nonatomic, strong) FirstRunCoordinator* firstRunCoordinator;
 
+// The current browser interface of the scene that presents the FRE UI.
+@property(nonatomic, weak) id<BrowserInterface> presentingInterface;
+
+// Main browser used for browser operations that are not related to UI
+// (e.g., authentication).
+@property(nonatomic, assign) Browser* mainBrowser;
+
 @end
 
 @implementation FirstRunAppAgent {
@@ -131,6 +138,10 @@ enum class LocationPermissionsUI {
   // Select the first scene that the app declares as initialized to present
   // the FRE UI on.
   self.presentingSceneState = sceneState;
+  self.presentingInterface =
+      self.presentingSceneState.interfaceProvider.currentInterface;
+  self.mainBrowser =
+      self.presentingSceneState.interfaceProvider.mainInterface.browser;
 
   if (self.appState.initStage != InitStageFirstRun) {
     return;
@@ -144,16 +155,27 @@ enum class LocationPermissionsUI {
   [self showFirstRunUI];
 }
 
+#pragma mark - Getters and Setters
+
+- (id<BrowserInterface>)presentingInterface {
+  if (_presentingInterface) {
+    // Check that the current interface hasn't changed because it must not be
+    // changed during FRE.
+    DCHECK(self.presentingSceneState.interfaceProvider.currentInterface ==
+           _presentingInterface);
+  }
+
+  return _presentingInterface;
+}
+
 #pragma mark - internal
 
 - (void)setUpPolicyWatcher {
   _policyWatcherObserverBridge =
       std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
 
-  Browser* mainBrowser =
-      self.presentingSceneState.interfaceProvider.mainInterface.browser;
   PolicyWatcherBrowserAgent* policyWatcherAgent =
-      PolicyWatcherBrowserAgent::FromBrowser(mainBrowser);
+      PolicyWatcherBrowserAgent::FromBrowser(self.mainBrowser);
 
   // Sanity check that there is a PolicyWatcherBrowserAgent agent stashed in
   // the browser. This considers that the main browser for the scene was
@@ -164,8 +186,7 @@ enum class LocationPermissionsUI {
 }
 
 - (void)tearDownPolicyWatcher {
-  PolicyWatcherBrowserAgent::FromBrowser(
-      self.presentingSceneState.interfaceProvider.mainInterface.browser)
+  PolicyWatcherBrowserAgent::FromBrowser(self.mainBrowser)
       ->RemoveObserver(_policyWatcherObserverBridge.get());
 }
 
@@ -177,6 +198,7 @@ enum class LocationPermissionsUI {
   // There must be a designated presenting scene before showing the first run
   // UI.
   DCHECK(self.presentingSceneState);
+  DCHECK(self.mainBrowser);
 
   [self setUpPolicyWatcher];
 
@@ -207,17 +229,14 @@ enum class LocationPermissionsUI {
              name:kChromeFirstRunUIDidFinishNotification
            object:nil];
 
-  Browser* browser =
-      self.presentingSceneState.interfaceProvider.mainInterface.browser;
   id<ApplicationCommands, BrowsingDataCommands> welcomeHandler =
       static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
-          browser->GetCommandDispatcher());
+          self.mainBrowser->GetCommandDispatcher());
 
   WelcomeToChromeViewController* welcomeToChrome =
       [[WelcomeToChromeViewController alloc]
-          initWithBrowser:browser
-                presenter:self.presentingSceneState.interfaceProvider
-                              .currentInterface.bvc
+          initWithBrowser:self.mainBrowser
+                presenter:self.presentingInterface.bvc
                dispatcher:welcomeHandler];
   self.welcomeToChromeController = welcomeToChrome;
   UINavigationController* navController =
@@ -227,10 +246,9 @@ enum class LocationPermissionsUI {
   navController.modalPresentationStyle = UIModalPresentationFullScreen;
   CGRect appFrame = [[UIScreen mainScreen] bounds];
   [[navController view] setFrame:appFrame];
-  [self.presentingSceneState.interfaceProvider.currentInterface.viewController
-      presentViewController:navController
-                   animated:NO
-                 completion:nil];
+  [self.presentingInterface.viewController presentViewController:navController
+                                                        animated:NO
+                                                      completion:nil];
 }
 
 // Shows the new first run UI.
@@ -242,12 +260,9 @@ enum class LocationPermissionsUI {
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
-      initWithBaseViewController:self.presentingSceneState.interfaceProvider
-                                     .mainInterface.bvc
-                         browser:self.presentingSceneState.interfaceProvider
-                                     .mainInterface.browser
-                   syncPresenter:self.presentingSceneState.interfaceProvider
-                                     .mainInterface.bvc
+      initWithBaseViewController:self.presentingInterface.bvc
+                         browser:self.mainBrowser
+                   syncPresenter:self.presentingInterface.bvc
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
   [self.firstRunCoordinator start];
@@ -323,11 +338,9 @@ enum class LocationPermissionsUI {
   if (!actionsTriggered &&
       location_permissions_field_trial::IsInFirstRunModalGroup()) {
     id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
-        self.presentingSceneState.interfaceProvider.mainInterface.browser
-            ->GetCommandDispatcher());
-    [handler showLocationPermissionsFromViewController:self.presentingSceneState
-                                                           .interfaceProvider
-                                                           .mainInterface.bvc];
+        self.mainBrowser->GetCommandDispatcher());
+    [handler
+        showLocationPermissionsFromViewController:self.presentingInterface.bvc];
   }
   if (![self ignoreFirstRunStageForTesting]) {
     [self.appState queueTransitionToNextInitStage];
