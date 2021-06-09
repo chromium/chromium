@@ -65,6 +65,7 @@ export const State = {
   TIMER_10SEC: 'timer-10s',
   TIMER_3SEC: 'timer-3s',
   TIMER: 'timer',
+  USE_FAKE_CAMERA: 'use-fake-camera',
 };
 
 /**

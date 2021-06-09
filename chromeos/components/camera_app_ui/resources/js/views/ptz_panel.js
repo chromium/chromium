@@ -19,7 +19,7 @@ import {View} from './view.js';
 /**
  * A set of vid:pid of digital zoom cameras whose PT control is disabled when
  * all zooming out.
- * @const
+ * @const {!Set<string>}
  */
 const digitalZoomCameras = new Set([
   '046d:0809',
@@ -462,7 +462,8 @@ export class PTZPanel extends View {
     this.panel_.style.left = `${right + 6}px`;
     const oldTrack = this.track_;
     this.track_ = assertInstanceof(stream, MediaStream).getVideoTracks()[0];
-    this.isDigitalZoom_ = digitalZoomCameras.has(vidPid);
+    this.isDigitalZoom_ = state.get(state.State.USE_FAKE_CAMERA) ||
+        (vidPid !== null && digitalZoomCameras.has(vidPid));
 
     let updatingDefault = Promise.resolve();
     if (oldTrack === null ||

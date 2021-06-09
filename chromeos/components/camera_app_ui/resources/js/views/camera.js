@@ -683,6 +683,7 @@ export class Camera extends View {
    */
   async startWithMode_(deviceId, mode) {
     const deviceOperator = await DeviceOperator.getInstance();
+    state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
     let resolCandidates;
     if (deviceOperator) {
       resolCandidates =
