@@ -44,8 +44,13 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
+#if defined(OS_CHROMEOS)
+      // Allow odd size for CrOS. https://crbug.com/1208788
+      return true;
+#else
       // U and V planes are subsampled by a factor of 2.
       return size.width() % 2 == 0 && size.height() % 2 == 0;
+#endif  // defined(OS_CHROMEOS)
   }
 
   NOTREACHED();
