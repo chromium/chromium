@@ -186,6 +186,11 @@ class CORE_EXPORT NGFragmentItem {
   // RectInContainerFragment() for other types.
   FloatRect ObjectBoundingBox() const;
 
+  // Returns true if |position|, which is a point in the IFC's coordinate
+  // system, is in the transformed rectangle of this item.
+  // This works only for kSvgText type.
+  bool Contains(const FloatPoint& position) const;
+
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
   }

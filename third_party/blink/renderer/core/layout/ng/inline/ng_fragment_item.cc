@@ -343,6 +343,22 @@ FloatRect NGFragmentItem::ObjectBoundingBox() const {
   return item_rect;
 }
 
+bool NGFragmentItem::Contains(const FloatPoint& position) const {
+  if (Type() != kSvgText)
+    return FloatRect(rect_).Contains(position);
+  const float scaling_factor =
+      To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
+  DCHECK_GT(scaling_factor, 0.0f);
+  FloatPoint scaled_position = position;
+  scaled_position.Scale(scaling_factor, scaling_factor);
+  FloatRect item_rect = SvgFragmentData()->rect;
+  if (!HasSvgTransformForBoundingBox())
+    return item_rect.Contains(scaled_position);
+  return BuildSvgTransformForBoundingBox()
+      .MapQuad(FloatQuad(item_rect))
+      .ContainsPoint(scaled_position);
+}
+
 bool NGFragmentItem::HasNonVisibleOverflow() const {
   if (const NGPhysicalBoxFragment* fragment = BoxFragment())
     return fragment->HasNonVisibleOverflow();

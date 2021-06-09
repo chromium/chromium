@@ -33,7 +33,7 @@ unsigned CodePointLength(StringView string) {
 }
 
 std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
-FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
+FragmentItemsInVisualOrder(const LayoutObject& query_root) {
   Vector<const NGFragmentItem*> item_list;
   const NGFragmentItems* items = nullptr;
   if (query_root.IsNGSVGText()) {
@@ -58,12 +58,19 @@ FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
         item_list.push_back(&item);
     }
   }
+  return std::tie(item_list, items);
+}
+
+std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
+FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
+  auto items_tuple = FragmentItemsInVisualOrder(query_root);
+  auto& item_list = std::get<0>(items_tuple);
   // Sort |item_list| in the logical order.
   std::sort(item_list.begin(), item_list.end(),
             [](const NGFragmentItem* a, const NGFragmentItem* b) {
               return a->StartOffset() < b->StartOffset();
             });
-  return std::tie(item_list, items);
+  return items_tuple;
 }
 
 const NGFragmentItem* FindFragmentItemForAddressableCharacterIndex(
@@ -184,6 +191,40 @@ FloatRect NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
   if (item->IsHiddenForPaint())
     return FloatRect();
   return item->ObjectBoundingBox();
+}
+
+// https://svgwg.org/svg2-draft/text.html#__svg__SVGTextContentElement__getCharNumAtPosition
+int NGSvgTextQuery::CharacterNumberAtPosition(
+    const FloatPoint& position) const {
+  // The specification says we should do hit-testing in logical order.
+  // However, this does it in visual order in order to match to the legacy SVG
+  // <text> behavior.
+  Vector<const NGFragmentItem*> item_list;
+  const NGFragmentItems* items;
+  std::tie(item_list, items) = FragmentItemsInVisualOrder(query_root_);
+
+  const NGFragmentItem* hit_item = nullptr;
+  for (const auto* item : item_list) {
+    if (!item->IsHiddenForPaint() && item->Contains(position)) {
+      hit_item = item;
+      break;
+    }
+  }
+  if (!hit_item)
+    return -1;
+
+  // Count code points before |hit_item|.
+  std::sort(item_list.begin(), item_list.end(),
+            [](const NGFragmentItem* a, const NGFragmentItem* b) {
+              return a->StartOffset() < b->StartOffset();
+            });
+  unsigned addressable_character_count = 0;
+  for (const auto* item : item_list) {
+    if (item == hit_item)
+      break;
+    addressable_character_count += CodePointLength(item->Text(*items));
+  }
+  return addressable_character_count;
 }
 
 }  // namespace blink

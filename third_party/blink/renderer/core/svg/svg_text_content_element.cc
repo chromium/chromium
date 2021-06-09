@@ -245,8 +245,10 @@ int SVGTextContentElement::getCharNumAtPosition(
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
   auto* layout_object = GetLayoutObject();
-  if (IsNGTextOrInline(layout_object))
-    return 0;  // TODO(1179585): Implement this.
+  if (IsNGTextOrInline(layout_object)) {
+    return NGSvgTextQuery(*layout_object)
+        .CharacterNumberAtPosition(point->Target()->Value());
+  }
   return SVGTextQuery(layout_object)
       .CharacterNumberAtPosition(point->Target()->Value());
 }

@@ -26,6 +26,7 @@ class NGSvgTextQuery {
   FloatPoint StartPositionOfCharacter(unsigned index) const;
   FloatPoint EndPositionOfCharacter(unsigned index) const;
   FloatRect ExtentOfCharacter(unsigned index) const;
+  int CharacterNumberAtPosition(const FloatPoint& position) const;
 
  private:
   LayoutObject& query_root_;
