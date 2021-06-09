@@ -364,7 +364,8 @@ class RealboxElement extends mixinBehaviors
           'text/plain', this.selectedMatch_.destinationUrl.url);
       e.preventDefault();
       if (e.type === 'cut') {
-        this.$.input.value = '';
+        this.updateInput_({text: '', inline: ''});
+        this.clearAutocompleteMatches_();
       }
     }
   }

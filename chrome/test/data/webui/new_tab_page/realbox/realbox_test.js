@@ -1966,6 +1966,33 @@ suite('NewTabPageRealboxTest', () => {
       });
 
   test(
+      'realbox icons is updated when url match is cut from realbox',
+      async () => {
+        realbox.$.input.value = 'www.test.com';
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+        const matches = [createUrlMatch(
+            {allowedToBeDefaultMatch: true, iconUrl: 'page.svg'})];
+
+        testProxy.callbackRouterRemote.autocompleteResultChanged({
+          input: mojoString16(realbox.$.input.value.trimLeft()),
+          matches,
+          suggestionGroupsMap: {},
+        });
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+
+        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
+        // Select the entire input.
+        realbox.$.input.setSelectionRange(0, realbox.$.input.value.length);
+
+        let cutEvent = createClipboardEvent('cut');
+        realbox.$.input.dispatchEvent(cutEvent);
+        assertTrue(cutEvent.defaultPrevented);
+
+        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
+      });
+
+  test(
       'match icons are updated when entity images become available',
       async () => {
         const imageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC=';
