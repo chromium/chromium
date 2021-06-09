@@ -11,11 +11,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -37,7 +39,9 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
@@ -77,6 +81,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8.h"
 
 using network::mojom::CredentialsMode;
 using network::mojom::FetchResponseType;
@@ -257,14 +262,19 @@ class FetchManager::Loader final
 
  private:
   void PerformSchemeFetch();
-  void PerformNetworkError(const String& message);
+  void PerformNetworkError(
+      const String& message,
+      absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
   void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
                                        int64_t identifier);
   void PerformHTTPFetch();
   void PerformDataFetch();
   // If |dom_exception| is provided, throws the specified DOMException instead
   // of the usual "Failed to fetch" TypeError.
-  void Failed(const String& message, DOMException* dom_exception);
+  void Failed(const String& message,
+              DOMException* dom_exception,
+              absl::optional<String> devtools_request_id = absl::nullopt,
+              absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
   void NotifyFinished();
   ExecutionContext* GetExecutionContext() { return execution_context_; }
 
@@ -500,15 +510,22 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
   if (error.TrustTokenOperationError() !=
       network::mojom::blink::TrustTokenOperationStatus::kOk) {
     Failed(String(),
-           TrustTokenErrorToDOMException(error.TrustTokenOperationError()));
+           TrustTokenErrorToDOMException(error.TrustTokenOperationError()),
+           IdentifiersFactory::SubresourceRequestId(identifier));
     return;
   }
 
-  Failed(String(), nullptr);
+  auto issue_id = error.CorsErrorStatus()
+                      ? absl::optional<base::UnguessableToken>(
+                            error.CorsErrorStatus()->issue_id)
+                      : absl::nullopt;
+  Failed(String(), nullptr,
+         IdentifiersFactory::SubresourceRequestId(identifier), issue_id);
 }
 
 void FetchManager::Loader::DidFailRedirectCheck(uint64_t identifier) {
-  Failed(String(), nullptr);
+  Failed(String(), nullptr,
+         IdentifiersFactory::SubresourceRequestId(identifier));
 }
 
 void FetchManager::Loader::Start() {
@@ -665,45 +682,56 @@ void FetchManager::Loader::PerformSchemeFetch() {
 void FetchManager::Loader::FileIssueAndPerformNetworkError(
     RendererCorsIssueCode network_error,
     int64_t identifier) {
+  auto issue_id = base::UnguessableToken::Create();
   switch (network_error) {
-    case RendererCorsIssueCode::kCorsDisabledScheme:
+    case RendererCorsIssueCode::kCorsDisabledScheme: {
+      AuditsIssue::ReportCorsIssue(
+          GetExecutionContext(), identifier, network_error,
+          fetch_request_data_->Url().GetString(),
+          fetch_request_data_->Origin()->ToString(),
+          fetch_request_data_->Url().Protocol(), issue_id);
+      PerformNetworkError(
+          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
+              ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
+              "\" is not supported.",
+          issue_id);
+      break;
+    }
+    case RendererCorsIssueCode::kDisallowedByMode: {
       AuditsIssue::ReportCorsIssue(GetExecutionContext(), identifier,
                                    network_error,
                                    fetch_request_data_->Url().GetString(),
                                    fetch_request_data_->Origin()->ToString(),
-                                   fetch_request_data_->Url().Protocol());
+                                   WTF::g_empty_string, issue_id);
       PerformNetworkError(
           "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-          ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
-          "\" is not supported.");
-      break;
-    case RendererCorsIssueCode::kDisallowedByMode:
-      AuditsIssue::ReportCorsIssue(
-          GetExecutionContext(), identifier, network_error,
-          fetch_request_data_->Url().GetString(),
-          fetch_request_data_->Origin()->ToString(), WTF::g_empty_string);
-      PerformNetworkError("Fetch API cannot load " +
-                          fetch_request_data_->Url().GetString() +
-                          ". Request mode is \"same-origin\" but the URL\'s "
-                          "origin is not same as the request origin " +
-                          fetch_request_data_->Origin()->ToString() + ".");
+              ". Request mode is \"same-origin\" but the URL\'s "
+              "origin is not same as the request origin " +
+              fetch_request_data_->Origin()->ToString() + ".",
+          issue_id);
 
       break;
-    case RendererCorsIssueCode::kNoCorsRedirectModeNotFollow:
-      AuditsIssue::ReportCorsIssue(
-          GetExecutionContext(), identifier, network_error,
-          fetch_request_data_->Url().GetString(),
-          fetch_request_data_->Origin()->ToString(), WTF::g_empty_string);
-      PerformNetworkError("Fetch API cannot load " +
-                          fetch_request_data_->Url().GetString() +
-                          ". Request mode is \"no-cors\" but the redirect mode "
-                          "is not \"follow\".");
+    }
+    case RendererCorsIssueCode::kNoCorsRedirectModeNotFollow: {
+      AuditsIssue::ReportCorsIssue(GetExecutionContext(), identifier,
+                                   network_error,
+                                   fetch_request_data_->Url().GetString(),
+                                   fetch_request_data_->Origin()->ToString(),
+                                   WTF::g_empty_string, issue_id);
+      PerformNetworkError(
+          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
+              ". Request mode is \"no-cors\" but the redirect mode "
+              "is not \"follow\".",
+          issue_id);
       break;
+    }
   }
 }
 
-void FetchManager::Loader::PerformNetworkError(const String& message) {
-  Failed(message, nullptr);
+void FetchManager::Loader::PerformNetworkError(
+    const String& message,
+    absl::optional<base::UnguessableToken> issue_id) {
+  Failed(message, nullptr, absl::nullopt, issue_id);
 }
 
 void FetchManager::Loader::PerformHTTPFetch() {
@@ -846,8 +874,11 @@ void FetchManager::Loader::PerformDataFetch() {
   threadable_loader_->Start(std::move(request));
 }
 
-void FetchManager::Loader::Failed(const String& message,
-                                  DOMException* dom_exception) {
+void FetchManager::Loader::Failed(
+    const String& message,
+    DOMException* dom_exception,
+    absl::optional<String> devtools_request_id,
+    absl::optional<base::UnguessableToken> issue_id) {
   if (failed_ || finished_)
     return;
   failed_ = true;
@@ -864,8 +895,23 @@ void FetchManager::Loader::Failed(const String& message,
     if (dom_exception) {
       resolver_->Reject(dom_exception);
     } else {
-      resolver_->Reject(V8ThrowException::CreateTypeError(state->GetIsolate(),
-                                                          "Failed to fetch"));
+      v8::Local<v8::Value> value = V8ThrowException::CreateTypeError(
+          state->GetIsolate(), "Failed to fetch");
+      ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
+      if (devtools_request_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "requestId"),
+            V8String(state->GetIsolate(), *devtools_request_id));
+      }
+      if (issue_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "issueId"),
+            V8String(state->GetIsolate(),
+                     IdentifiersFactory::IdFromToken(*issue_id)));
+      }
+      resolver_->Reject(value);
     }
   }
   NotifyFinished();
