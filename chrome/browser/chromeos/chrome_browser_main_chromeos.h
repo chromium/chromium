@@ -24,6 +24,8 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_manager.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
@@ -98,10 +100,6 @@ class DBusServices;
 namespace platform_keys {
 class KeyPermissionsManager;
 }
-
-namespace power {
-class SmartChargingManager;
-}  // namespace power
 
 namespace system {
 class DarkResumeController;

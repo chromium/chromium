@@ -7,7 +7,7 @@
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 class UserChargingEvent;
 
@@ -21,6 +21,6 @@ class SmartChargingUkmLogger {
   void LogEvent(const UserChargingEvent& user_charging_event) const;
 };
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_

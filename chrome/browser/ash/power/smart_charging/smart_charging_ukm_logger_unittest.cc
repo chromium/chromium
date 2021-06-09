@@ -10,12 +10,11 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 
 namespace {
 using UkmEntry = ukm::builders::SmartCharging;
-
 }  // namespace
 
 class SmartChargingUkmLoggerTest : public ChromeRenderViewHostTestHarness {
@@ -105,4 +104,4 @@ TEST_F(SmartChargingUkmLoggerTest, TestRecordCorrectly) {
 }
 
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

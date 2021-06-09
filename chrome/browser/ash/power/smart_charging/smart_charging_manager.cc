@@ -29,7 +29,7 @@
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 
 namespace {
@@ -203,7 +203,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
   // TODO(crbug.com/1028853): we are collecting data from Chromebook only. Since
   // this action is discouraged, we will modify the condition latter using dbus
   // calls.
-  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
+  if (GetDeviceType() != DeviceType::kChromebook)
     return nullptr;
 
   ui::UserActivityDetector* const detector = ui::UserActivityDetector::Get();
@@ -634,4 +634,4 @@ std::tuple<PastEvent, PastEvent> SmartChargingManager::GetLastChargeEvents() {
 }
 
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
