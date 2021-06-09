@@ -10,6 +10,7 @@ import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/resource_format.mojom";
 import "skia/public/mojom/image_info.mojom";
 import "skia/public/mojom/surface_origin.mojom";
@@ -200,6 +201,15 @@ interface GpuChannel {
   [Sync, NoInterrupt] WaitForGetOffsetInRange(
       int32 routing_id, uint32 set_get_buffer_count, int32 start, int32 end)
       => (CommandBufferState state);
+
+  [EnableIf=is_fuchsia]
+  RegisterSysmemBufferCollection(
+      mojo_base.mojom.UnguessableToken id, handle<platform> token,
+      gfx.mojom.BufferFormat format, gfx.mojom.BufferUsage usage,
+      bool register_with_image_pipe);
+
+  [EnableIf=is_fuchsia]
+  ReleaseSysmemBufferCollection(mojo_base.mojom.UnguessableToken id);
 };
 
 struct CreateImageParams {
@@ -352,9 +362,16 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageWithDataParams.
   CreateSharedImageWithDataParams create_shared_image_with_data;
 
+  // See CreateGMBSharedImageParams.
+  CreateGMBSharedImageParams create_gmb_shared_image;
+
   // See CreateSharedImageWithAHBParams.
   [EnableIf=is_android]
   CreateSharedImageWithAHBParams create_shared_image_with_ahb;
+
+  // Registers a new shared memory region to share with the GPU process for
+  // uploading shared image data.
+  mojo_base.mojom.ReadOnlySharedMemoryRegion register_upload_buffer;
 
   // See UpdateSharedImageParams.
   UpdateSharedImageParams update_shared_image;
@@ -454,6 +471,40 @@ struct CreateSharedImageWithDataParams {
   // If `true`, this is the last usage of the current image upload shared memory
   // region, so the region can be discarded after servicing this request.
   bool done_with_shm;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+};
+
+// Creates a new shared image from an existing GPU memory buffer.
+struct CreateGMBSharedImageParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // A handle to the existing GPU memory buffer.
+  gfx.mojom.GpuMemoryBufferHandle buffer_handle;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Format of pixels in the buffer.
+  gfx.mojom.BufferFormat format;
+
+  // Image plane represented by the buffer.
+  gfx.mojom.BufferPlane plane;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
 
   // Which corner is considered the origin of the new image.
   skia.mojom.SurfaceOrigin surface_origin;

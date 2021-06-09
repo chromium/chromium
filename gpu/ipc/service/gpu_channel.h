@@ -198,6 +198,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void DestroyCommandBuffer(int32_t routing_id);
   bool CreateStreamTexture(int32_t stream_id);
 
+#if defined(OS_FUCHSIA)
+  void RegisterSysmemBufferCollection(const base::UnguessableToken& id,
+                                      mojo::PlatformHandle token,
+                                      gfx::BufferFormat format,
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe);
+  void ReleaseSysmemBufferCollection(const base::UnguessableToken& id);
+#endif  // defined(OS_FUCHSIA)
+
  private:
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,

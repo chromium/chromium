@@ -170,6 +170,37 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       int32_t start,
       int32_t end,
       WaitForGetOffsetInRangeCallback callback) override;
+#if defined(OS_FUCHSIA)
+  void RegisterSysmemBufferCollection(const base::UnguessableToken& id,
+                                      mojo::PlatformHandle token,
+                                      gfx::BufferFormat format,
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe) override {
+    base::AutoLock lock(gpu_channel_lock_);
+    if (!gpu_channel_)
+      return;
+
+    scheduler_->ScheduleTask(Scheduler::Task(
+        gpu_channel_->shared_image_stub()->sequence(),
+        base::BindOnce(&gpu::GpuChannel::RegisterSysmemBufferCollection,
+                       gpu_channel_->AsWeakPtr(), id, std::move(token), format,
+                       usage, register_with_image_pipe),
+        std::vector<SyncToken>()));
+  }
+
+  void ReleaseSysmemBufferCollection(
+      const base::UnguessableToken& id) override {
+    base::AutoLock lock(gpu_channel_lock_);
+    if (!gpu_channel_)
+      return;
+
+    scheduler_->ScheduleTask(Scheduler::Task(
+        gpu_channel_->shared_image_stub()->sequence(),
+        base::BindOnce(&gpu::GpuChannel::ReleaseSysmemBufferCollection,
+                       gpu_channel_->AsWeakPtr(), id),
+        std::vector<SyncToken>()));
+  }
+#endif  // defined(OS_FUCHSIA)
 
   IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
@@ -785,7 +816,6 @@ bool GpuChannel::CreateSharedImageStub() {
     return false;
 
   filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
-  router_.AddRoute(shared_image_route_id, shared_image_stub_.get());
   return true;
 }
 
@@ -998,6 +1028,24 @@ bool GpuChannel::CreateStreamTexture(int32_t stream_id) {
   return false;
 #endif
 }
+
+#if defined(OS_FUCHSIA)
+void GpuChannel::RegisterSysmemBufferCollection(
+    const base::UnguessableToken& id,
+    mojo::PlatformHandle token,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    bool register_with_image_pipe) {
+  shared_image_stub_->RegisterSysmemBufferCollection(
+      id, zx::channel(token.TakeHandle()), format, usage,
+      register_with_image_pipe);
+}
+
+void GpuChannel::ReleaseSysmemBufferCollection(
+    const base::UnguessableToken& id) {
+  shared_image_stub_->ReleaseSysmemBufferCollection(id);
+}
+#endif  // defined(OS_FUCHSIA)
 
 void GpuChannel::CacheShader(const std::string& key,
                              const std::string& shader) {

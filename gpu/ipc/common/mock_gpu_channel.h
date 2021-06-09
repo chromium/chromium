@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_COMMON_MOCK_GPU_CHANNEL_H_
 #define GPU_IPC_COMMON_MOCK_GPU_CHANNEL_H_
 
+#include "build/build_config.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,6 +58,16 @@ class MockGpuChannel : public mojom::GpuChannel {
                     int32_t,
                     int32_t,
                     WaitForGetOffsetInRangeCallback));
+#if defined(OS_FUCHSIA)
+  MOCK_METHOD5(RegisterSysmemBufferCollection,
+               void(const base::UnguessableToken&,
+                    mojo::PlatformHandle,
+                    gfx::BufferFormat,
+                    gfx::BufferUsage,
+                    bool));
+  MOCK_METHOD1(ReleaseSysmemBufferCollection,
+               void(const base::UnguessableToken&));
+#endif  // defined(OS_FUCHSIA)
 };
 
 }  // namespace gpu

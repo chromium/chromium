@@ -86,6 +86,10 @@ void SharedImageStub::ExecuteDeferredRequest(
           std::move(request->get_create_shared_image_with_data()));
       break;
 
+    case mojom::DeferredSharedImageRequest::Tag::kCreateGmbSharedImage:
+      OnCreateGMBSharedImage(std::move(request->get_create_gmb_shared_image()));
+      break;
+
 #if defined(OS_ANDROID)
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithAhb: {
       auto& create_request = *request->get_create_shared_image_with_ahb();
@@ -95,6 +99,11 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
     }
 #endif  // defined(OS_ANDROID)
+
+    case mojom::DeferredSharedImageRequest::Tag::kRegisterUploadBuffer:
+      OnRegisterSharedImageUploadBuffer(
+          std::move(request->get_register_upload_buffer()));
+      break;
 
     case mojom::DeferredSharedImageRequest::Tag::kUpdateSharedImage: {
       auto& update = *request->get_update_shared_image();
@@ -118,24 +127,6 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
 #endif  // defined(OS_WIN)
   }
-}
-
-bool SharedImageStub::OnMessageReceived(const IPC::Message& msg) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(SharedImageStub, msg)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateGMBSharedImage,
-                        OnCreateGMBSharedImage)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_RegisterSharedImageUploadBuffer,
-                        OnRegisterSharedImageUploadBuffer)
-#if defined(OS_FUCHSIA)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_RegisterSysmemBufferCollection,
-                        OnRegisterSysmemBufferCollection)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_ReleaseSysmemBufferCollection,
-                        OnReleaseSysmemBufferCollection)
-#endif  // OS_FUCHSIA
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
@@ -307,23 +298,23 @@ void SharedImageStub::OnCreateSharedImageWithData(
 }
 
 void SharedImageStub::OnCreateGMBSharedImage(
-    GpuChannelMsg_CreateGMBSharedImage_Params params) {
+    mojom::CreateGMBSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateGMBSharedImage", "width",
-               params.size.width(), "height", params.size.height());
+               params->size.width(), "height", params->size.height());
   // TODO(piman): add support for SurfaceHandle (for backbuffers for ozone/drm).
   constexpr SurfaceHandle surface_handle = kNullSurfaceHandle;
-  if (!CreateSharedImage(params.mailbox, channel_->client_id(),
-                         std::move(params.handle), params.format, params.plane,
-                         surface_handle, params.size, params.color_space,
-                         params.surface_origin, params.alpha_type,
-                         params.usage)) {
+  if (!CreateSharedImage(params->mailbox, channel_->client_id(),
+                         std::move(params->buffer_handle), params->format,
+                         params->plane, surface_handle, params->size,
+                         params->color_space, params->surface_origin,
+                         params->alpha_type, params->usage)) {
     return;
   }
 
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
-                       params.release_id);
-  sync_point_client_state_->ReleaseFenceSync(params.release_id);
+                       params->release_id);
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
 void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
@@ -435,7 +426,7 @@ void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
-void SharedImageStub::OnRegisterSysmemBufferCollection(
+void SharedImageStub::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
     gfx::BufferFormat format,
@@ -452,7 +443,7 @@ void SharedImageStub::OnRegisterSysmemBufferCollection(
   }
 }
 
-void SharedImageStub::OnReleaseSysmemBufferCollection(
+void SharedImageStub::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   if (!factory_->ReleaseSysmemBufferCollection(id)) {
     DLOG(ERROR) << "SharedImageStub: Trying to release unknown "

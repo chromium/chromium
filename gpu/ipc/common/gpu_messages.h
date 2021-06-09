@@ -55,40 +55,9 @@
 
 #define IPC_MESSAGE_START GpuChannelMsgStart
 
-IPC_ENUM_TRAITS_MAX_VALUE(GrSurfaceOrigin, kBottomLeft_GrSurfaceOrigin)
-
-IPC_STRUCT_BEGIN(GpuChannelMsg_CreateGMBSharedImage_Params)
-  IPC_STRUCT_MEMBER(gpu::Mailbox, mailbox)
-  IPC_STRUCT_MEMBER(gfx::GpuMemoryBufferHandle, handle)
-  IPC_STRUCT_MEMBER(gfx::Size, size)
-  IPC_STRUCT_MEMBER(gfx::BufferFormat, format)
-  IPC_STRUCT_MEMBER(gfx::BufferPlane, plane)
-  IPC_STRUCT_MEMBER(gfx::ColorSpace, color_space)
-  IPC_STRUCT_MEMBER(uint32_t, usage)
-  IPC_STRUCT_MEMBER(uint32_t, release_id)
-  IPC_STRUCT_MEMBER(GrSurfaceOrigin, surface_origin)
-  IPC_STRUCT_MEMBER(SkAlphaType, alpha_type)
-IPC_STRUCT_END()
-
 //------------------------------------------------------------------------------
 // GPU Channel Messages
 // These are messages from a renderer process to the GPU process.
-
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateGMBSharedImage,
-                    GpuChannelMsg_CreateGMBSharedImage_Params /* params */)
-
-#if defined(OS_FUCHSIA)
-IPC_MESSAGE_ROUTED5(GpuChannelMsg_RegisterSysmemBufferCollection,
-                    gfx::SysmemBufferCollectionId /* id */,
-                    zx::channel /* token */,
-                    gfx::BufferFormat /* format */,
-                    gfx::BufferUsage /* usage */,
-                    bool /* register_with_image_pipe */)
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_ReleaseSysmemBufferCollection,
-                    gfx::SysmemBufferCollectionId /* id */)
-#endif  // OS_FUCHSIA
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
-                    base::ReadOnlySharedMemoryRegion /* shm */)
 
 #if defined(OS_ANDROID)
 //------------------------------------------------------------------------------
