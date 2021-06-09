@@ -5,6 +5,3 @@ per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_O
 
 # Primary
 wanderview@chromium.org
-
-# Secondary
-pwnall@chromium.org
