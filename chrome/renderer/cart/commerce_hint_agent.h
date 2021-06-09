@@ -37,6 +37,10 @@ class CommerceHintAgent
   static bool IsPurchase(base::StringPiece button_text);
   // Whether the product should be skipped, based on product name.
   static bool ShouldSkip(base::StringPiece product_name);
+  // Whether the request with navigation URL as |navigation_url| and request URL
+  // as |request_url| should be skipped for AddToCart detection.
+  static bool ShouldSkipAddToCartRequest(const GURL& navigation_url,
+                                         const GURL& request_url);
 
   void ExtractProducts();
   void OnProductsExtracted(std::unique_ptr<base::Value> result);

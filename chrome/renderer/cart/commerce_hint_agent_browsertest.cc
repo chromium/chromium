@@ -642,4 +642,33 @@ IN_PROC_BROWSER_TEST_F(CommerceHintImprovementTest, ExtractCart) {
   WaitForProductCount(kExpectedExampleWithProductsWithoutSaved);
 }
 
+class CommerceHintSkippAddToCartTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"skip-add-to-cart-mapping", R"({"guitarcenter.com": ".*"})"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintSkippAddToCartTest, AddToCartByForm) {
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+  WaitForCartCount(kEmptyExpected);
+
+  // Test AddToCart that is supposed to be skipped based on resources is now
+  // overwritten.
+  const cart_db::ChromeCartContentProto qvc_cart =
+      BuildProto("qvc.com", "https://www.qvc.com/checkout/cart.html");
+  const ShoppingCarts result = {{"qvc.com", qvc_cart}};
+  NavigateToURL("https://www.qvc.com/");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+  WaitForCartCount(result);
+}
+
 }  // namespace

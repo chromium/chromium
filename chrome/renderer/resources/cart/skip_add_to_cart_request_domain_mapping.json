@@ -1,0 +1,7 @@
+{
+"electronicexpress.com": ".*",
+"costco.com": "clicktale\\.net",
+"hsn.com": "granify\\.com",
+"lululemon.com": "launchdarkly\\.com",
+"qvc.com": ".*"
+}
