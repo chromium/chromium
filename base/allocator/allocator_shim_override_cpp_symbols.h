@@ -37,7 +37,7 @@
 #else
 #define ALIGN_VAL_T size_t
 #define ALIGN_LINKAGE extern "C"
-#if defined(OS_APPLE) || defined(OS_WIN)
+#if defined(OS_WIN)
 #error "Mangling is different on these platforms."
 #else
 #define ALIGN_NEW _ZnwmSt11align_val_t
