@@ -41,6 +41,10 @@
     transform: rotate(0);
   }
 
+  :host-context([dir='rtl']) #arrowIcon:not([open]) {
+    transform: rotate(90deg);
+  }
+
   .icon {
     background-position: left center;
     background-repeat: no-repeat;
