@@ -42,6 +42,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -847,7 +848,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",
       pref_service_->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed));
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
 
   html_source->AddBoolean(
       "driveSuggestAvailable",

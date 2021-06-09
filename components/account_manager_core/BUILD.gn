@@ -19,6 +19,8 @@ component("account_manager_core") {
     "account_manager_facade_impl.h",
     "account_manager_util.cc",
     "account_manager_util.h",
+    "pref_names.cc",
+    "pref_names.h",
   ]
 
   deps = [

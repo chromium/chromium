@@ -77,6 +77,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/arc/arc_prefs.h"
 #include "ui/chromeos/events/pref_names.h"
 #endif
@@ -454,8 +455,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::kAccountsPrefUsers] =
       settings_api::PrefType::PREF_TYPE_LIST;
-  (*s_allowlist)[chromeos::prefs::kSecondaryGoogleAccountSigninAllowed] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
   // kEnableAutoScreenLock is read-only.
   (*s_allowlist)[ash::prefs::kEnableAutoScreenLock] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

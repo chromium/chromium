@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/components/account_manager/tokens.pb.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -27,6 +26,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
@@ -276,7 +276,7 @@ AccountManager::AccountManager() = default;
 // static
 void AccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
       true /* default_value */);
 }
 
@@ -655,7 +655,7 @@ void AccountManager::UpsertAccountInternal(
     // turn guarantees that |pref_service_| is not null.
     DCHECK(pref_service_);
     if (!pref_service_->GetBoolean(
-            chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+            ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
       // Secondary Account additions are disabled by policy and all flows for
       // adding a Secondary Account are already blocked.
       CHECK(accounts_.empty());

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -44,7 +45,7 @@ void AccountManagerPolicyController::Start() {
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
       base::BindRepeating(&AccountManagerPolicyController::
                               OnSecondaryAccountsSigninAllowedPrefChanged,
                           weak_factory_.GetWeakPtr()));
@@ -108,7 +109,7 @@ void AccountManagerPolicyController::
     OnSecondaryAccountsSigninAllowedPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (profile_->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     return;
   }
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/login/secondary_google_account_signin_policy_handler.h"
 
-#include "ash/constants/ash_pref_names.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -33,8 +33,8 @@ void SecondaryGoogleAccountSigninPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  prefs->SetBoolean(chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
-                    false);
+  prefs->SetBoolean(
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, false);
 }
 
 }  // namespace policy

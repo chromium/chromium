@@ -6,9 +6,9 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/policy/login/secondary_google_account_signin_policy_handler.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -37,14 +37,14 @@ class SecondaryGoogleAccountSigninPolicyHandlerTest : public testing::Test {
   bool GetSecondaryGoogleAccountSigninAllowedPref() {
     bool pref = false;
     bool success = prefs_.GetBoolean(
-        chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, &pref);
+        ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, &pref);
     EXPECT_TRUE(success);
     return pref;
   }
 
   void SetSecondaryGoogleAccountSigninPref(bool pref) {
-    prefs_.SetBoolean(chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
-                      pref);
+    prefs_.SetBoolean(
+        ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, pref);
   }
 
  private:

@@ -49,8 +49,6 @@ extern const char kDeviceWiFiFastTransitionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInputNoiseCancellationEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kSecondaryGoogleAccountSigninAllowed[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordModifiedTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordExpirationTime[];

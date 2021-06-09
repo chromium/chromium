@@ -28,7 +28,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_pref_names.h"
+#include "components/account_manager_core/pref_names.h"
 #endif
 
 namespace signin {
@@ -74,7 +74,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_secondary_account_addition_allowed = true;
   if (!prefs->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     is_secondary_account_addition_allowed = false;
   }
 #endif

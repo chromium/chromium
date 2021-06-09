@@ -39,6 +39,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -591,7 +592,7 @@ void AccountManagerMigrator::AddMigrationSteps() {
 
   const bool is_secondary_google_account_signin_allowed =
       profile_->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed);
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed);
 
   if (is_secondary_google_account_signin_allowed) {
     migration_runner_->AddStep(std::make_unique<ContentAreaAccountsMigration>(

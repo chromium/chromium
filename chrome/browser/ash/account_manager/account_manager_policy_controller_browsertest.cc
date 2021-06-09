@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/components/account_manager/account_manager_factory.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
   // Use default policy value for |kSecondaryGoogleAccountSigninAllowed|
   // (|true|).
   profile()->GetPrefs()->SetBoolean(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, true);
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, true);
   ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(false);
 
   base::RunLoop().RunUntilIdle();
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Disallow secondary account sign-ins.
   profile()->GetPrefs()->SetBoolean(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, false);
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, false);
 
   base::RunLoop().RunUntilIdle();
 

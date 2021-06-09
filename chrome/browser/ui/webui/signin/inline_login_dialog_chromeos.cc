@@ -24,6 +24,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -74,7 +75,7 @@ GURL GetInlineLoginUrl(const std::string& email) {
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
   }
   if (!ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     // Addition of secondary Google Accounts is not allowed.
     return GURL(chrome::kChromeUIAccountManagerErrorURL);
   }
