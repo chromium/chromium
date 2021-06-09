@@ -30,6 +30,8 @@ class CONTENT_EXPORT InterestGroupStorage {
       base::TimeDelta::FromDays(30);
   static constexpr base::TimeDelta kMaintenanceInterval =
       base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kIdlePeriod =
+      base::TimeDelta::FromSeconds(30);
 
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the
@@ -75,6 +77,8 @@ class CONTENT_EXPORT InterestGroupStorage {
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
   GetAllInterestGroupsUnfilteredForTesting();
 
+  base::Time GetLastMaintenanceTimeForTesting() const;
+
  private:
   bool EnsureDBInitialized();
   bool InitializeDB();
@@ -82,12 +86,14 @@ class CONTENT_EXPORT InterestGroupStorage {
   void PerformDBMaintenance();
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
-  base::OneShotTimer db_maintenance_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::FilePath path_to_database_;
 
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::Time last_access_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const base::FilePath path_to_database_;
+  base::DelayTimer db_maintenance_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Time last_access_time_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::Time::Min();
+  base::Time last_maintenance_time_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::Time::Min();
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -325,6 +325,10 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
+  base::Time original_maintenance_time =
+      storage->GetLastMaintenanceTimeForTesting();
+  EXPECT_EQ(base::Time::Min(), original_maintenance_time);
+
   storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"));
   for (const auto& origin : test_origins)
     storage->JoinInterestGroup(NewInterestGroup(origin, "discard"));
@@ -335,10 +339,34 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   std::vector<BiddingInterestGroupPtr> interest_groups =
       storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(2u, interest_groups.size());
+  base::Time next_maintenance_time =
+      base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+
+  //  Maintenance should not have run yet as we are not idle.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+            original_maintenance_time);
+
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod -
+                                   base::TimeDelta::FromSeconds(1));
+
+  //  Maintenance should not have run yet as we are not idle.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+            original_maintenance_time);
+
+  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(2));
+  // Verify that maintenance has run.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
+  original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
 
   task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
                                    base::TimeDelta::FromDays(1));
+  // Verify that maintenance has not run. It's been long enough, but we haven't
+  // made any calls.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+            original_maintenance_time);
+
   storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"));
+  next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
@@ -346,10 +374,18 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(2u, interest_groups.size());
 
-  // Advance to expiration and check that even without DB maintenance the
-  // outdated entries are not reported.
+  //  Maintenance should not have run since we have not been idle.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+            original_maintenance_time);
+
+  // Advance past expiration and check that since DB maintenance last ran before
+  // the expiration the outdated entries are present but not reported.
   task_environment().FastForwardBy(base::TimeDelta::FromDays(1) +
                                    base::TimeDelta::FromSeconds(1));
+
+  // Verify that maintenance has run.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
+  original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
@@ -359,6 +395,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   EXPECT_EQ("keep", interest_groups[0]->group->name);
   EXPECT_EQ(1, interest_groups[0]->signals->join_count);
   EXPECT_EQ(0, interest_groups[0]->signals->bid_count);
+  next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
 
   // All the groups should still be in the database since they shouldn't have
   // been cleaned up yet.
@@ -367,6 +404,10 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   // Wait an hour to perform DB maintenance.
   task_environment().FastForwardBy(InterestGroupStorage::kMaintenanceInterval);
+
+  // Verify that maintenance has run.
+  EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
+  original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
 
   // Verify that the database only contains unexpired entries.
   origins = storage->GetAllInterestGroupOwners();

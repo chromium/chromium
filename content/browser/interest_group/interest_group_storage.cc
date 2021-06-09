@@ -42,8 +42,6 @@ using blink::mojom::InterestGroupPtr;
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
 
-constexpr base::TimeDelta kIdlePeriod = base::TimeDelta::FromSeconds(30);
-
 // Version number of the database.
 //
 // Version 1 - 2021/03 - crrev.com/c/2757425
@@ -842,10 +840,15 @@ base::FilePath DBPath(const base::FilePath& base) {
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
 constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
+constexpr base::TimeDelta InterestGroupStorage::kIdlePeriod;
 
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
-    : db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
-      path_to_database_(DBPath(path)) {
+    : path_to_database_(DBPath(path)),
+      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
+      db_maintenance_timer_(FROM_HERE,
+                            kIdlePeriod,
+                            this,
+                            &InterestGroupStorage::PerformDBMaintenance) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -855,7 +858,14 @@ InterestGroupStorage::~InterestGroupStorage() {
 
 bool InterestGroupStorage::EnsureDBInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  last_access_time_ = base::Time::Now();
+  base::Time now = base::Time::Now();
+  if (now > last_maintenance_time_ + kMaintenanceInterval) {
+    // Schedule maintenance for next idle period. If maintenance already
+    // scheduled this delays it further (we're not idle).
+    db_maintenance_timer_.Reset();
+  }
+
+  last_access_time_ = now;
   if (db_ && db_->is_open())
     return true;
   return InitializeDB();
@@ -893,7 +903,6 @@ bool InterestGroupStorage::InitializeDB() {
     return false;
   }
 
-  PerformDBMaintenance();
   return true;
 }
 
@@ -1043,27 +1052,9 @@ void InterestGroupStorage::DeleteInterestGroupData(
 
 void InterestGroupStorage::PerformDBMaintenance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // We can use base::Unretained(this) in the timer's closure because the timer
-  // takes ownership of the callback we create here. The timer is guaranteed to
-  // last the lifetime of this.
-  base::Time now = base::Time::Now();
-  if (now - last_access_time_ < kIdlePeriod) {
-    // We're probably still in use. Let's try again in a bit.
-    db_maintenance_timer_.Start(
-        FROM_HERE, kIdlePeriod,
-        base::BindOnce(&InterestGroupStorage::PerformDBMaintenance,
-                       base::Unretained(this)));
-    return;
-  }
-
-  // Schedule next run
-  db_maintenance_timer_.Start(
-      FROM_HERE, kMaintenanceInterval,
-      base::BindOnce(&InterestGroupStorage::PerformDBMaintenance,
-                     base::Unretained(this)));
-
+  last_maintenance_time_ = base::Time::Now();
   if (EnsureDBInitialized()) {
-    DoPerformDatabaseMaintenance(*db_, now);
+    DoPerformDatabaseMaintenance(*db_, last_maintenance_time_);
   }
 }
 
@@ -1084,6 +1075,11 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
               std::back_inserter(result));
   }
   return result;
+}
+
+base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return last_maintenance_time_;
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
