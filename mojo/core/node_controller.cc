@@ -17,8 +17,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/configuration.h"
@@ -197,7 +195,6 @@ void NodeController::AcceptBrokerClientInvitation(
     // Use the bootstrap channel for the broker and receive the node's channel
     // synchronously as the first message from the broker.
     DCHECK(connection_params.endpoint().is_valid());
-    base::ElapsedTimer timer;
     broker_ = std::make_unique<Broker>(
         connection_params.TakeEndpoint().TakePlatformHandle(),
         /*wait_for_channel_handle=*/true);
