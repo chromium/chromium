@@ -56,6 +56,14 @@ component("color") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "color_test_ids.h" ]
+
+  deps = [ ":color_headers" ]
+}
+
 test("color_unittests") {
   testonly = true
 
@@ -64,7 +72,6 @@ test("color_unittests") {
     "color_provider_manager_unittest.cc",
     "color_provider_unittest.cc",
     "color_recipe_unittest.cc",
-    "color_test_ids.h",
     "color_transform_unittest.cc",
     "run_all_unittests.cc",
   ]
@@ -72,6 +79,7 @@ test("color_unittests") {
   deps = [
     ":color",
     ":mixers",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]

@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <utility>
 
-#include "apps/ui/views/app_window_frame_view.h"
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"

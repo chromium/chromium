@@ -13,7 +13,11 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/platform_util_internal.h"
-#include "components/dbus/thread_linux/dbus_thread_linux.h"
+// This file gets pulled in in Chromecast builds, which causes "gn check" to
+// complain as Chromecast doesn't use (or depend on) //components/dbus.
+// TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
+// on Chromecast and remove the nogncheck below.
+#include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

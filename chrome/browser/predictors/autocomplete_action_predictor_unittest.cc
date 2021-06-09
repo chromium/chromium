@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
