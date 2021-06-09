@@ -259,6 +259,9 @@ void KioskLaunchController::OnConfigureNetwork() {
 }
 
 void KioskLaunchController::OnCancelAppLaunch() {
+  if (cleaned_up_)
+    return;
+
   if (KioskAppManager::Get()->GetDisableBailoutShortcut())
     return;
 
@@ -306,6 +309,9 @@ bool KioskLaunchController::IsNetworkRequired() {
 }
 
 void KioskLaunchController::CleanUp() {
+  DCHECK(!cleaned_up_);
+  cleaned_up_ = true;
+
   extension_wait_timer_.Stop();
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
@@ -330,6 +336,8 @@ void KioskLaunchController::OnTimerFire() {
 }
 
 void KioskLaunchController::CloseSplashScreen() {
+  if (cleaned_up_)
+    return;
   CleanUp();
 }
 
@@ -439,6 +447,9 @@ bool KioskLaunchController::ShouldSkipAppInstallation() const {
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
+  if (cleaned_up_)
+    return;
+
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
