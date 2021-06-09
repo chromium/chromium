@@ -104,14 +104,17 @@ std::u16string GetSyncErrorButtonText(sync_ui_util::AvatarSyncErrorType error) {
   }
 }
 
-std::u16string GetSyncErrorDescription(
-    sync_ui_util::AvatarSyncErrorType error) {
+std::u16string GetAvatarSyncErrorDescription(
+    sync_ui_util::AvatarSyncErrorType error,
+    bool is_sync_feature_enabled) {
   switch (error) {
     case sync_ui_util::AUTH_ERROR:
       return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
       return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE);
+          is_sync_feature_enabled
+              ? IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE
+              : IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY);
     case sync_ui_util::
         TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
       return l10n_util::GetStringUTF16(
@@ -212,17 +215,18 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   if (profile->IsOffTheRecord())
     return gfx::ImageSkia();
 
-  if (!IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync)) {
-    return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
-  }
-
   absl::optional<sync_ui_util::AvatarSyncErrorType> error =
       sync_ui_util::GetAvatarSyncErrorType(profile);
   if (!error) {
-    return ColoredImageForMenu(kSyncCircleIcon,
-                               GetNativeTheme()->GetSystemColor(
-                                   ui::NativeTheme::kColorId_AlertSeverityLow));
+    // There's no error, so just show the sync on/off icon depending on whether
+    // sync-the-feature is enabled.
+    if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+            signin::ConsentLevel::kSync)) {
+      return ColoredImageForMenu(
+          kSyncCircleIcon, GetNativeTheme()->GetSystemColor(
+                               ui::NativeTheme::kColorId_AlertSeverityLow));
+    }
+    return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
   }
 
   ui::NativeTheme::ColorId color_id =
@@ -529,43 +533,45 @@ void ProfileMenuView::BuildAutofillButtons() {
 
 void ProfileMenuView::BuildSyncInfo() {
   Profile* profile = browser()->profile();
-  // Only show the sync info if signin and sync are allowed.
-  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) ||
-      !SyncServiceFactory::IsSyncAllowed(profile)) {
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
     return;
-  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // Show sync state.
-    const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
-        sync_ui_util::GetAvatarSyncErrorType(browser()->profile());
-    if (error) {
-      BuildSyncInfoWithCallToAction(
-          GetSyncErrorDescription(*error), GetSyncErrorButtonText(*error),
-          error == sync_ui_util::AUTH_ERROR
-              ? ui::NativeTheme::kColorId_SyncInfoContainerPaused
-              : ui::NativeTheme::kColorId_SyncInfoContainerError,
-          base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
-                              base::Unretained(this), *error),
-          /*show_badge=*/true);
-    } else {
-      BuildSyncInfoWithoutCallToAction(
-          l10n_util::GetStringUTF16(IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON),
-          base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
-                              base::Unretained(this)));
-    }
+  bool is_sync_feature_enabled =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  // First, check for sync errors. They may exist even if sync-the-feature is
+  // disabled and only sync-the-transport is running.
+  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
+      sync_ui_util::GetAvatarSyncErrorType(profile);
+  if (error) {
+    BuildSyncInfoWithCallToAction(
+        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
+        GetSyncErrorButtonText(*error),
+        error == sync_ui_util::AUTH_ERROR
+            ? ui::NativeTheme::kColorId_SyncInfoContainerPaused
+            : ui::NativeTheme::kColorId_SyncInfoContainerError,
+        base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
+                            base::Unretained(this), *error),
+        /*show_badge=*/true);
     return;
   }
 
-  // Show sync promos.
-  CoreAccountInfo unconsented_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfo(unconsented_account);
+  // If there's no error and sync-the-feature is enabled, the text says
+  // everything is fine and the button simply opens sync settings.
+  if (is_sync_feature_enabled) {
+    BuildSyncInfoWithoutCallToAction(
+        l10n_util::GetStringUTF16(IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON),
+        base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
+                            base::Unretained(this)));
+    return;
+  }
 
+  // If there's no error and sync-the-feature is disabled, show a sync promo.
+  // For a signed-in user, the promo just opens the "turn on sync" dialog.
+  // For a signed-out user, it prompts for sign-in first.
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   if (!account_info.IsEmpty()) {
     BuildSyncInfoWithCallToAction(
         l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE),

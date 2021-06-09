@@ -74,7 +74,8 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  DCHECK(sync_ui_util::ShouldShowSyncKeysMissingError(sync_service));
+  DCHECK(sync_ui_util::ShouldShowSyncKeysMissingError(sync_service,
+                                                      profile->GetPrefs()));
 
   BubbleViewParameters params;
   params.message_id =
@@ -114,7 +115,8 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   const bool should_display_notification =
       sync_ui_util::ShouldShowPassphraseError(sync_service_) ||
-      sync_ui_util::ShouldShowSyncKeysMissingError(sync_service_);
+      sync_ui_util::ShouldShowSyncKeysMissingError(service,
+                                                   profile_->GetPrefs());
 
   if (should_display_notification == notification_displayed_) {
     return;

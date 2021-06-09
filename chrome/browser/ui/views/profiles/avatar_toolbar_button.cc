@@ -284,6 +284,11 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
     case State::kAnimatedUserIdentity:
       return delegate_->GetShortProfileName();
     case State::kPasswordsOnlySyncError:
+      // TODO(crbug.com/1191411): Instead of having separate tooltip strings for
+      // kPasswordsOnlySyncError and kSyncError, just reuse the one describing
+      // the error in the menu (ProfileMenuView). This guarantees the tooltip is
+      // accurate. Today the degraded recoverability tooltip is incorrect
+      // because it says "Sync isn't working".
       return l10n_util::GetStringFUTF16(
           IDS_AVATAR_BUTTON_SYNC_ERROR_PASSWORDS_TOOLTIP,
           delegate_->GetProfileName());
@@ -317,6 +322,8 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     case State::kAnimatedUserIdentity:
     case State::kPasswordsOnlySyncError:
     case State::kSyncError:
+    // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
+    // be different.
     case State::kSyncPaused:
     case State::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(

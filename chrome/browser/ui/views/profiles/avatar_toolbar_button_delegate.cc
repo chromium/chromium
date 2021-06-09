@@ -170,17 +170,10 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (profile_->IsOffTheRecord())
     return AvatarToolbarButton::State::kIncognitoProfile;
 
-  if (identity_animation_state_ == IdentityAnimationState::kShowing) {
+  if (identity_animation_state_ == IdentityAnimationState::kShowing)
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
-  }
 
-  if (!SyncServiceFactory::IsSyncAllowed(profile_) ||
-      !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync)) {
-    return AvatarToolbarButton::State::kNormal;
-  }
-
-  // Show any existing sync errors.
+  // Show any existing sync errors (sync-the-feature or sync-the-transport).
   const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
       sync_ui_util::GetAvatarSyncErrorType(profile_);
   if (!error)

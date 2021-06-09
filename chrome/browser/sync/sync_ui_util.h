@@ -12,6 +12,7 @@
 class Browser;
 class GURL;
 class Profile;
+class PrefService;
 
 namespace signin {
 class IdentityManager;
@@ -61,6 +62,8 @@ enum AvatarSyncErrorType {
   // Unrecoverable error for regular users.
   UNRECOVERABLE_ERROR,
   // Authentication error.
+  // TODO(crbug.com/1156584): Rename to SYNC_PAUSED. That's how it's treated by
+  // the UI, and it should eventually match SyncService::TransportState::PAUSED.
   AUTH_ERROR,
   // Out-of-date client error.
   UPGRADE_CLIENT_ERROR,
@@ -102,8 +105,12 @@ StatusLabels GetStatusLabels(Profile* profile);
 // actual labels, only in the return value.
 MessageType GetStatus(Profile* profile);
 
-// Gets the error type (if any) that should be exposed to the user through the
-// titlebar avatar button.
+// Gets the error in the sync machinery (if any) that should be exposed to the
+// user through the titlebar avatar button. If absl::nullopt is returned, this
+// does NOT mean sync-the-feature/sync-the-transport is enabled, simply that
+// there's no error. Furthermore, an error may be returned even if only
+// sync-the-transport is running. One such case is when the user wishes to run
+// an encrypted data type on transport mode and must first go through a reauth.
 absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 
 // Whether sync is currently blocked from starting because the sync
@@ -117,12 +124,14 @@ bool ShouldShowPassphraseError(const syncer::SyncService* service);
 
 // Returns whether missing trusted vault keys is preventing sync from starting
 // up encrypted datatypes.
-bool ShouldShowSyncKeysMissingError(const syncer::SyncService* service);
+bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
+                                    const PrefService* pref_service);
 
 // Returns whether user action is required to improve the recoverability of the
 // trusted vault.
 bool ShouldShowTrustedVaultDegradedRecoverabilityError(
-    const syncer::SyncService* service);
+    const syncer::SyncService* sync_service,
+    const PrefService* pref_service);
 
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.
