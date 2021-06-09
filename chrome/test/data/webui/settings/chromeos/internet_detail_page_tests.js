@@ -419,9 +419,10 @@ suite('InternetDetailPage', function() {
 
   suite('DetailsPageCellular', function() {
     async function expandConfigurableSection() {
-      const configurableSetions = internetDetailPage.$$('#configurableSetions');
-      assertTrue(!!configurableSetions);
-      configurableSetions.click();
+      const configurableSections =
+          internetDetailPage.$$('#configurableSections');
+      assertTrue(!!configurableSections);
+      configurableSections.click();
       await flushAsync();
       assertTrue(internetDetailPage.showConfigurableSections_);
     }
