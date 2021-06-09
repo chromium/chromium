@@ -5081,6 +5081,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "unified-password-manager-android",
+    "owners": [ "fhorschig", "vasilii" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,

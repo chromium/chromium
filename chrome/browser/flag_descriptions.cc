@@ -2523,6 +2523,12 @@ const char kTurnOffStreamingMediaCachingAlwaysDescription[] =
     "Reduces disk activity during media playback, which can result in "
     "power savings.";
 
+const char kUnifiedPasswordManagerAndroidName[] = "Unified Password Manager";
+const char kUnifiedPasswordManagerAndroidDescription[] =
+    "Uses Google Mobile Services to store and retrieve passwords."
+    "Warning: Highly experimental. May lead to loss of passwords and "
+    "impact performance.";
+
 const char kUnsafeWebGPUName[] = "Unsafe WebGPU";
 const char kUnsafeWebGPUDescription[] =
     "Enables access to the experimental WebGPU API. Warning: As GPU sandboxing "

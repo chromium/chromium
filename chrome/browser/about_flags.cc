@@ -7208,6 +7208,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacyReviewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyReview)},
 
+#if defined(OS_ANDROID)
+    {"unified-password-manager-android",
+     flag_descriptions::kUnifiedPasswordManagerAndroidName,
+     flag_descriptions::kUnifiedPasswordManagerAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerAndroid)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

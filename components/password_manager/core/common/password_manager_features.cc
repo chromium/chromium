@@ -148,6 +148,11 @@ const base::Feature kSyncingCompromisedCredentials = {
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables use of Google Mobile Services for password storage. Chrome's local
+// database will be unused but kept in sync for local passwords.
+const base::Feature kUnifiedPasswordManagerAndroid{
+    "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether we should use the new header images for the legacy save
 // password bubble.
 const base::Feature kUseNewHeaderForLegacySavePasswordBubble{
