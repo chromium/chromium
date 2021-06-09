@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
@@ -86,6 +87,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
                     PolicySource::POLICY_SOURCE_CLOUD_FROM_ASH,
                     PolicyScope::POLICY_SCOPE_USER, &policy_map,
                     PolicyPerProfileFilter::kFalse);
+  SetEnterpriseUsersSystemWideDefaults(&policy_map);
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);
   return bundle;

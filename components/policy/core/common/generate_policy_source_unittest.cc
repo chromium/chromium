@@ -207,7 +207,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   // than 0, once a type 'external' policy is added.
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST(GeneratePolicySource, SetEnterpriseDefaults) {
   PolicyMap policy_map;
 
@@ -228,6 +228,60 @@ TEST(GeneratePolicySource, SetEnterpriseDefaults) {
       policy_map.GetValue(key::kChromeOsMultiProfileUserBehavior);
   expected = base::Value("test_value");
   EXPECT_TRUE(expected.Equals(multiprof_behavior));
+}
+
+TEST(GeneratePolicySource, SetEnterpriseSystemWideDefaults) {
+  PolicyMap policy_map;
+
+  // If policy not configured yet, set the enterprise system-wide default.
+  SetEnterpriseUsersSystemWideDefaults(&policy_map);
+
+  const base::Value* pin_unlock_autosubmit_enabled =
+      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  ASSERT_TRUE(pin_unlock_autosubmit_enabled);
+  EXPECT_FALSE(pin_unlock_autosubmit_enabled->GetBool());
+  const base::Value* allow_dinosaur_easter_egg =
+      policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  EXPECT_EQ(nullptr, allow_dinosaur_easter_egg);
+
+  // If policy already configured, it's not changed to enterprise defaults.
+  policy_map.Set(key::kPinUnlockAutosubmitEnabled, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+                 nullptr);
+  SetEnterpriseUsersSystemWideDefaults(&policy_map);
+  pin_unlock_autosubmit_enabled =
+      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  ASSERT_TRUE(pin_unlock_autosubmit_enabled);
+  EXPECT_TRUE(pin_unlock_autosubmit_enabled->GetBool());
+  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  EXPECT_EQ(nullptr, allow_dinosaur_easter_egg);
+}
+
+TEST(GeneratePolicySource, SetEnterpriseProfileDefaults) {
+  PolicyMap policy_map;
+
+  // If policy not configured yet, set the enterprise profile default.
+  SetEnterpriseUsersProfileDefaults(&policy_map);
+
+  const base::Value* allow_dinosaur_easter_egg =
+      policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  ASSERT_TRUE(allow_dinosaur_easter_egg);
+  EXPECT_FALSE(allow_dinosaur_easter_egg->GetBool());
+  const base::Value* pin_unlock_autosubmit_enabled =
+      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  EXPECT_EQ(nullptr, pin_unlock_autosubmit_enabled);
+
+  // If policy already configured, it's not changed to enterprise defaults.
+  policy_map.Set(key::kAllowDinosaurEasterEgg, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+                 nullptr);
+  SetEnterpriseUsersProfileDefaults(&policy_map);
+  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  ASSERT_TRUE(allow_dinosaur_easter_egg);
+  EXPECT_TRUE(allow_dinosaur_easter_egg->GetBool());
+  pin_unlock_autosubmit_enabled =
+      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  EXPECT_EQ(nullptr, pin_unlock_autosubmit_enabled);
 }
 #endif
 

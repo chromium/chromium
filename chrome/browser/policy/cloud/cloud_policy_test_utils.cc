@@ -19,6 +19,8 @@ void GetExpectedDefaultPolicy(PolicyMap* policy_map) {
                   base::Value(false), nullptr);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   SetEnterpriseUsersDefaults(policy_map);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  SetEnterpriseUsersProfileDefaults(policy_map);
 #endif
 }
 

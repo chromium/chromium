@@ -4,7 +4,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -77,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                blacklist.Clone(), nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::SetEnterpriseUsersDefaults(&policies);
+#if defined(OS_CHROMEOS)
+  policy::SetEnterpriseUsersProfileDefaults(&policies);
 #endif
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop loop;

@@ -477,7 +477,6 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
 #include <cstdint>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -495,19 +494,24 @@ struct SchemaData;
             'configuration resides.\n'
             'extern const wchar_t kRegistryChromePolicyKey[];\n')
 
-  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
-          '// Sets default values for enterprise users.\n'
-          'void SetEnterpriseUsersDefaults(PolicyMap* policy_map);\n'
-          '#endif\n'
-          '\n'
-          '// Returns the PolicyDetails for |policy| if |policy| is a known\n'
-          '// Chrome policy, otherwise returns nullptr.\n'
-          'const PolicyDetails* GetChromePolicyDetails('
-          'const std::string& policy);\n'
-          '\n'
-          '// Returns the schema data of the Chrome policy schema.\n'
-          'const internal::SchemaData* GetChromeSchemaData();\n'
-          '\n')
+  f.write('''#if defined(OS_CHROMEOS)
+// Sets default profile policies values for enterprise users.
+void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map);
+// Sets default system-wide policies values for enterprise users.
+void SetEnterpriseUsersSystemWideDefaults(PolicyMap* policy_map);
+// Sets all default values for enterprise users.
+void SetEnterpriseUsersDefaults(PolicyMap* policy_map);
+#endif
+
+// Returns the PolicyDetails for |policy| if |policy| is a known
+// Chrome policy, otherwise returns nullptr.
+const PolicyDetails* GetChromePolicyDetails(
+const std::string& policy);
+
+// Returns the schema data of the Chrome policy schema.
+const internal::SchemaData* GetChromeSchemaData();
+
+''')
   f.write('// Key names for the policy settings.\n' 'namespace key {\n\n')
   for policy in policies:
     # TODO(joaodasilva): Include only supported policies in
@@ -1081,7 +1085,7 @@ namespace policy {
   # is no policy.
   f.write(
       '''const __attribute__((unused)) PolicyDetails kChromePolicyDetails[] = {
-//  is_deprecated is_future is_device_policy  id  max_external_data_size, risk tags
+// is_deprecated is_future is_device_policy id max_external_data_size, risk tags
 ''')
   for policy in policies:
     if policy.is_supported:
@@ -1131,36 +1135,60 @@ namespace policy {
             'L"' + CHROMIUM_POLICY_KEY + '";\n'
             '#endif\n\n')
 
-  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
-          'void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {\n')
+  # Setting enterprise defaults code generation.
+  profile_policy_enterprise_defaults = ""
+  system_wide_policy_enterprise_defaults = ""
 
   for policy in policies:
     if policy.has_enterprise_default and policy.is_supported:
       declare_default_stmts, fetch_default = _GenerateDefaultValue(
           policy.enterprise_default)
       if not fetch_default:
-        raise RuntimeError(
-            'Type %s of policy %s is not supported at '
-            'enterprise defaults' % (policy.policy_type, policy.name))
+        raise RuntimeError('Type %s of policy %s is not supported at '
+                           'enterprise defaults' %
+                           (policy.policy_type, policy.name))
 
-      # Convert declare_default_stmts to a string with the correct identation.
+      # Convert declare_default_stmts to a string with the correct indentation.
       if declare_default_stmts:
         declare_default = '    %s\n' % '\n    '.join(declare_default_stmts)
       else:
         declare_default = ''
 
-      f.write(
-          '  if (!policy_map->Get(key::k%s)) {\n'
-          '%s'
-          '    policy_map->Set(key::k%s,\n'
-          '                    POLICY_LEVEL_MANDATORY,\n'
-          '                    POLICY_SCOPE_USER,\n'
-          '                    POLICY_SOURCE_ENTERPRISE_DEFAULT,\n'
-          '                    %s,\n'
-          '                    nullptr);\n'
-          '  }\n' % (policy.name, declare_default, policy.name, fetch_default))
+      setting_enterprise_default = '''  if (!policy_map->Get(key::k%s)) {
+    %s
+    policy_map->Set(key::k%s,
+                    POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_USER,
+                    POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                    %s,
+                    nullptr);
+  }
+''' % (policy.name, declare_default, policy.name, fetch_default)
 
-  f.write('}\n' '#endif\n\n')
+      if policy.per_profile:
+        profile_policy_enterprise_defaults += setting_enterprise_default
+      else:
+        system_wide_policy_enterprise_defaults += setting_enterprise_default
+
+  f.write('#if defined(OS_CHROMEOS)')
+  f.write('''
+void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map) {
+%s
+}
+''' % profile_policy_enterprise_defaults)
+  f.write('''
+void SetEnterpriseUsersSystemWideDefaults(PolicyMap* policy_map) {
+%s
+}
+''' % system_wide_policy_enterprise_defaults)
+
+  f.write('''
+void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
+  SetEnterpriseUsersProfileDefaults(policy_map);
+  SetEnterpriseUsersSystemWideDefaults(policy_map);
+}
+''')
+  f.write('#endif\n\n')
 
   f.write('const PolicyDetails* GetChromePolicyDetails('
           'const std::string& policy) {\n')
