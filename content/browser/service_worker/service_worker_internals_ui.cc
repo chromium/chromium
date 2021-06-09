@@ -427,7 +427,12 @@ void ServiceWorkerInternalsHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-ServiceWorkerInternalsHandler::~ServiceWorkerInternalsHandler() = default;
+ServiceWorkerInternalsHandler::~ServiceWorkerInternalsHandler() {
+  // ServiceWorkerInternalsHandler can be destroyed without
+  // OnJavascriptDisallowed() ever being called (https://crbug.com/1199198).
+  // Call it to ensure that `this` is removed as an observer.
+  OnJavascriptDisallowed();
+}
 
 void ServiceWorkerInternalsHandler::OnRunningStateChanged() {
   FireWebUIListener("running-state-changed");
