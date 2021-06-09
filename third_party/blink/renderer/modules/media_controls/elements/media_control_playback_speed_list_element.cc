@@ -109,6 +109,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
 
     double playback_rate =
         To<Element>(target)->GetFloatingPointAttribute(PlaybackRateAttrName());
+    MediaElement().setDefaultPlaybackRate(playback_rate);
     MediaElement().setPlaybackRate(playback_rate);
 
     // Close the playback speed list.
