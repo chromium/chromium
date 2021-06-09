@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 IconSet::IconSet() = default;
@@ -28,4 +28,4 @@ const GURL& IconSet::GetIcon(IconSize size) const {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

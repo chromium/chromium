@@ -13,7 +13,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class ProvidedFileSystemInterface;
@@ -75,17 +75,18 @@ class LocalPathParser {
 
   DISALLOW_COPY_AND_ASSIGN(LocalPathParser);
 };
-}  // namespace util
-}  // namespace file_system_provider
-}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-namespace util {
-using ::chromeos::file_system_provider::util::FileSystemURLParser;
 }  // namespace util
 }  // namespace file_system_provider
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+namespace util {
+using ::ash::file_system_provider::util::GetMountPath;
+}  // namespace util
+}  // namespace file_system_provider
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_MOUNT_PATH_UTIL_H_

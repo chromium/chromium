@@ -81,7 +81,7 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
     return;
   }
 
-  chromeos::file_system_provider::MountOptions mo;
+  file_system_provider::MountOptions mo;
   mo.display_name = mount_name.empty() ? mount_url : mount_name;
   mo.writable = true;
 

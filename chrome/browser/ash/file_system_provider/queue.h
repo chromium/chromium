@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Queues arbitrary tasks. At most |max_in_parallel_| tasks will be running at
@@ -92,6 +92,6 @@ class Queue {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_QUEUE_H_

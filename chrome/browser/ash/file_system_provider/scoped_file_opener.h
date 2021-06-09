@@ -12,7 +12,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Opens files and guarantees that they will be closed when the object gets out
@@ -32,13 +32,6 @@ class ScopedFileOpener {
   scoped_refptr<Runner> runner_;
 };
 
-}  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::ScopedFileOpener;
 }  // namespace file_system_provider
 }  // namespace ash
 

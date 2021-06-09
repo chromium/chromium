@@ -62,13 +62,12 @@ class ArcFileSystemBridgeTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile(kTestingProfileName);
     auto fake_provider =
-        chromeos::file_system_provider::FakeExtensionProvider::Create(
-            kExtensionId);
+        ash::file_system_provider::FakeExtensionProvider::Create(kExtensionId);
     const auto kProviderId = fake_provider->GetId();
-    auto* service = chromeos::file_system_provider::Service::Get(profile_);
+    auto* service = ash::file_system_provider::Service::Get(profile_);
     service->RegisterProvider(std::move(fake_provider));
     service->MountFileSystem(kProviderId,
-                             chromeos::file_system_provider::MountOptions(
+                             ash::file_system_provider::MountOptions(
                                  kFileSystemId, "Test FileSystem"));
 
     arc_file_system_bridge_ =

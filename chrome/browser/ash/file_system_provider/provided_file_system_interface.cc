@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 EntryMetadata::EntryMetadata() {}
@@ -22,4 +22,4 @@ OpenedFile::~OpenedFile() {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

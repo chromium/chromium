@@ -16,7 +16,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -257,4 +257,4 @@ void RequestManager::DestroyRequest(int request_id) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

@@ -60,15 +60,14 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(profile);
 
-    auto* service = chromeos::file_system_provider::Service::Get(profile);
+    auto* service = ash::file_system_provider::Service::Get(profile);
     service->RegisterProvider(
-        chromeos::file_system_provider::FakeExtensionProvider::Create(
-            kExtensionId));
+        ash::file_system_provider::FakeExtensionProvider::Create(kExtensionId));
     const auto kProviderId =
-        chromeos::file_system_provider::ProviderId::CreateFromExtensionId(
+        ash::file_system_provider::ProviderId::CreateFromExtensionId(
             kExtensionId);
     service->MountFileSystem(kProviderId,
-                             chromeos::file_system_provider::MountOptions(
+                             ash::file_system_provider::MountOptions(
                                  kFileSystemId, "Test FileSystem"));
 
     // Create the URLLoaderFactory.

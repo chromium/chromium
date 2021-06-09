@@ -452,7 +452,7 @@ class FileManagerPrivateInternalGetCustomActionsFunction
 
  private:
   ResponseAction Run() override;
-  void OnCompleted(const chromeos::file_system_provider::Actions& actions,
+  void OnCompleted(const ash::file_system_provider::Actions& actions,
                    base::File::Error result);
 };
 

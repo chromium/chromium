@@ -12,7 +12,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // static
@@ -56,4 +56,4 @@ content::BrowserContext* ServiceFactory::GetBrowserContextToUse(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

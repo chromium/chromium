@@ -98,7 +98,7 @@ class SingleEntryPropertiesGetterForDriveFs {
 
 // Fills out IDL IconSet struct with the provided icon set.
 void FillIconSet(extensions::api::file_manager_private::IconSet* output,
-                 const chromeos::file_system_provider::IconSet& input);
+                 const ash::file_system_provider::IconSet& input);
 
 // Converts the |volume| to VolumeMetadata to communicate with JavaScript via
 // private API.

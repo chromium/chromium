@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Handles notifications related to provided the file system.
@@ -36,6 +36,6 @@ class NotificationManagerInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_INTERFACE_H_

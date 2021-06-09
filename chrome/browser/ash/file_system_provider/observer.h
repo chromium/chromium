@@ -7,7 +7,7 @@
 
 #include "base/files/file.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class ProvidedFileSystemInfo;
@@ -38,6 +38,6 @@ class Observer {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OBSERVER_H_

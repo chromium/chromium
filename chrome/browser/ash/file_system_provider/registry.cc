@@ -24,7 +24,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 const char kPrefKeyFileSystemId[] = "file-system-id";
@@ -285,4 +285,4 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

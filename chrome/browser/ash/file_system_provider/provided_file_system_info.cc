@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 ProviderId::ProviderId(const std::string& internal_id,
@@ -140,4 +140,4 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
 ProvidedFileSystemInfo::~ProvidedFileSystemInfo() {}
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

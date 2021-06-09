@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/provided_file_system_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 ProvidedFileSystemObserver::Change::Change()
@@ -15,4 +15,4 @@ ProvidedFileSystemObserver::Change::~Change() {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

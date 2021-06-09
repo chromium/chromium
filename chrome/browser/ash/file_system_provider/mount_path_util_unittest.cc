@@ -30,7 +30,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace util {
 
@@ -309,4 +309,4 @@ TEST_F(FileSystemProviderMountPathUtilTest, LocalPathParser_WrongPath) {
 
 }  // namespace util
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

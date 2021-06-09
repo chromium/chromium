@@ -293,8 +293,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
-    const chromeos::file_system_provider::ProvidedFileSystemInfo&
-        file_system_info,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     MountContext mount_context) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->file_system_id_ = file_system_info.file_system_id();
@@ -413,10 +412,9 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
   volume->watchable_ = false;
   volume->volume_id_ = arc::GetDocumentsProviderVolumeId(authority, root_id);
   if (!icon_url.is_empty()) {
-    chromeos::file_system_provider::IconSet icon_set;
-    icon_set.SetIcon(
-        chromeos::file_system_provider::IconSet::IconSize::SIZE_32x32,
-        icon_url);
+    ash::file_system_provider::IconSet icon_set;
+    icon_set.SetIcon(ash::file_system_provider::IconSet::IconSize::SIZE_32x32,
+                     icon_url);
     volume->icon_set_ = icon_set;
   }
   return volume;
@@ -480,7 +478,7 @@ VolumeManager::VolumeManager(
     drive::DriveIntegrationService* drive_integration_service,
     chromeos::PowerManagerClient* power_manager_client,
     chromeos::disks::DiskMountManager* disk_mount_manager,
-    chromeos::file_system_provider::Service* file_system_provider_service,
+    ash::file_system_provider::Service* file_system_provider_service,
     GetMtpStorageInfoCallback get_mtp_storage_info_callback)
     : profile_(profile),
       drive_integration_service_(drive_integration_service),
@@ -544,7 +542,7 @@ void VolumeManager::Initialize() {
   // Subscribe to FileSystemProviderService and register currently mounted
   // volumes for the profile.
   if (file_system_provider_service_) {
-    using chromeos::file_system_provider::ProvidedFileSystemInfo;
+    using ash::file_system_provider::ProvidedFileSystemInfo;
     file_system_provider_service_->AddObserver(this);
 
     std::vector<ProvidedFileSystemInfo> file_system_info_list =
@@ -1031,16 +1029,15 @@ void VolumeManager::OnRenameEvent(
 }
 
 void VolumeManager::OnProvidedFileSystemMount(
-    const chromeos::file_system_provider::ProvidedFileSystemInfo&
-        file_system_info,
-    chromeos::file_system_provider::MountContext context,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+    ash::file_system_provider::MountContext context,
     base::File::Error error) {
   MountContext volume_context = MOUNT_CONTEXT_UNKNOWN;
   switch (context) {
-    case chromeos::file_system_provider::MOUNT_CONTEXT_USER:
+    case ash::file_system_provider::MOUNT_CONTEXT_USER:
       volume_context = MOUNT_CONTEXT_USER;
       break;
-    case chromeos::file_system_provider::MOUNT_CONTEXT_RESTORE:
+    case ash::file_system_provider::MOUNT_CONTEXT_RESTORE:
       volume_context = MOUNT_CONTEXT_AUTO;
       break;
   }
@@ -1067,8 +1064,7 @@ void VolumeManager::OnProvidedFileSystemMount(
 }
 
 void VolumeManager::OnProvidedFileSystemUnmount(
-    const chromeos::file_system_provider::ProvidedFileSystemInfo&
-        file_system_info,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     base::File::Error error) {
   // TODO(mtomasz): Introduce own type, and avoid using MountError internally,
   // since it is related to cros disks only.

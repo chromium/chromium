@@ -186,14 +186,13 @@ TEST_F(FileManagerFileAPIUtilTest,
   Profile* const profile = GetProfile();
   const std::string extension_id = "abc";
   auto fake_provider =
-      chromeos::file_system_provider::FakeExtensionProvider::Create(
-          extension_id);
+      ash::file_system_provider::FakeExtensionProvider::Create(extension_id);
   const auto kProviderId = fake_provider->GetId();
-  auto* service = chromeos::file_system_provider::Service::Get(profile);
+  auto* service = ash::file_system_provider::Service::Get(profile);
   service->RegisterProvider(std::move(fake_provider));
-  service->MountFileSystem(kProviderId,
-                           chromeos::file_system_provider::MountOptions(
-                               file_system_id_, "Test FileSystem"));
+  service->MountFileSystem(
+      kProviderId, ash::file_system_provider::MountOptions(file_system_id_,
+                                                           "Test FileSystem"));
 
   // Obtain the file system context.
   content::StoragePartition* const partition =

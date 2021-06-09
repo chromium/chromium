@@ -20,7 +20,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -178,4 +178,4 @@ void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

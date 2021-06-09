@@ -26,7 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -820,4 +820,4 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

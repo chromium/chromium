@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Holds a parsed value returned by a file system provider. Each accessor can
@@ -127,13 +127,6 @@ class RequestValue {
   DISALLOW_COPY_AND_ASSIGN(RequestValue);
 };
 
-}  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::RequestValue;
 }  // namespace file_system_provider
 }  // namespace ash
 

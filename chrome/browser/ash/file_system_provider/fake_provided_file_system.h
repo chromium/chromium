@@ -35,7 +35,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class RequestManager;
@@ -190,15 +190,6 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   DISALLOW_COPY_AND_ASSIGN(FakeProvidedFileSystem);
 };
 
-}  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::FakeEntry;
-using ::chromeos::file_system_provider::FakeProvidedFileSystem;
-using ::chromeos::file_system_provider::kFakeFilePath;
 }  // namespace file_system_provider
 }  // namespace ash
 

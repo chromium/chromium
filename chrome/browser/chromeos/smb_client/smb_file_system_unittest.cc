@@ -49,14 +49,16 @@ class SmbFileSystemTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
   void SetUp() override {
-    ProvidedFileSystemInfo file_system_info(
+    file_system_provider::ProvidedFileSystemInfo file_system_info(
         kProviderId, {}, base::FilePath(kSharePath), false /* configurable */,
         false /* watchable */, extensions::SOURCE_NETWORK,
-        chromeos::file_system_provider::IconSet());
+        file_system_provider::IconSet());
     file_system_ = std::make_unique<SmbFileSystem>(
         file_system_info,
         base::BindRepeating(
-            [](const ProvidedFileSystemInfo&) { return kMountId; }),
+            [](const file_system_provider::ProvidedFileSystemInfo&) {
+              return kMountId;
+            }),
         SmbFileSystem::UnmountCallback(),
         SmbFileSystem::RequestCredentialsCallback(),
         SmbFileSystem::RequestUpdatedSharePathCallback());

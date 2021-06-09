@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Remembers and restores file systems in a persistent storage.
@@ -59,6 +59,6 @@ class RegistryInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REGISTRY_INTERFACE_H_

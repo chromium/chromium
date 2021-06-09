@@ -25,7 +25,7 @@ SmbProvider::SmbProvider(
     UnmountCallback unmount_callback,
     SmbFileSystem::RequestCredentialsCallback request_creds_callback,
     SmbFileSystem::RequestUpdatedSharePathCallback request_path_callback)
-    : provider_id_(ProviderId::CreateFromNativeId("smb")),
+    : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
       capabilities_(false /* configurable */,
                     false /* watchable */,
                     true /* multiple_mounts */,
@@ -35,29 +35,29 @@ SmbProvider::SmbProvider(
       unmount_callback_(std::move(unmount_callback)),
       request_creds_callback_(std::move(request_creds_callback)),
       request_path_callback_(std::move(request_path_callback)) {
-  icon_set_.SetIcon(IconSet::IconSize::SIZE_16x16,
+  icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_16x16,
                     GURL("chrome://theme/IDR_SMB_ICON"));
-  icon_set_.SetIcon(IconSet::IconSize::SIZE_32x32,
+  icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_32x32,
                     GURL("chrome://theme/IDR_SMB_ICON@2x"));
 }
 
 SmbProvider::~SmbProvider() = default;
 
-std::unique_ptr<ProvidedFileSystemInterface>
+std::unique_ptr<file_system_provider::ProvidedFileSystemInterface>
 SmbProvider::CreateProvidedFileSystem(
     Profile* profile,
-    const ProvidedFileSystemInfo& file_system_info) {
+    const file_system_provider::ProvidedFileSystemInfo& file_system_info) {
   DCHECK(profile);
   return std::make_unique<SmbFileSystem>(
       file_system_info, mount_id_callback_, unmount_callback_,
       request_creds_callback_, request_path_callback_);
 }
 
-const Capabilities& SmbProvider::GetCapabilities() const {
+const file_system_provider::Capabilities& SmbProvider::GetCapabilities() const {
   return capabilities_;
 }
 
-const ProviderId& SmbProvider::GetId() const {
+const file_system_provider::ProviderId& SmbProvider::GetId() const {
   return provider_id_;
 }
 
@@ -65,7 +65,7 @@ const std::string& SmbProvider::GetName() const {
   return name_;
 }
 
-const IconSet& SmbProvider::GetIconSet() const {
+const file_system_provider::IconSet& SmbProvider::GetIconSet() const {
   return icon_set_;
 }
 

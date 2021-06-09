@@ -11,7 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 Queue::Task::Task() : token(0) {
@@ -107,4 +107,4 @@ void Queue::Abort(size_t token) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

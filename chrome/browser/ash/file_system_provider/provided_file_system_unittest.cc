@@ -35,7 +35,7 @@
 #include "storage/browser/file_system/watcher_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -942,4 +942,4 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, OpenedFile_ClosingFailure) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

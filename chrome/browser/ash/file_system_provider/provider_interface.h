@@ -15,11 +15,11 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
-// TODO(https://crbug.com/1164001): forward declare ProviderId when moved ash
 class ProvidedFileSystemInterface;
+class ProviderId;
 
 struct Capabilities {
   Capabilities(bool configurable,
@@ -73,6 +73,15 @@ class ProviderInterface {
   virtual bool RequestMount(Profile* profile) = 0;
 };
 
+}  // namespace file_system_provider
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::Capabilities;
+using ::ash::file_system_provider::ProvidedFileSystemInterface;
+using ::ash::file_system_provider::ProviderInterface;
 }  // namespace file_system_provider
 }  // namespace chromeos
 

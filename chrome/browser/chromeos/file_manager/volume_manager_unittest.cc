@@ -229,7 +229,7 @@ class VolumeManagerTest : public testing::Test {
           extension_registry_(
               std::make_unique<extensions::ExtensionRegistry>(profile_.get())),
           file_system_provider_service_(
-              std::make_unique<chromeos::file_system_provider::Service>(
+              std::make_unique<ash::file_system_provider::Service>(
                   profile_.get(),
                   extension_registry_.get())),
           drive_integration_service_(
@@ -272,7 +272,7 @@ class VolumeManagerTest : public testing::Test {
 
     std::unique_ptr<TestingProfile> profile_;
     std::unique_ptr<extensions::ExtensionRegistry> extension_registry_;
-    std::unique_ptr<chromeos::file_system_provider::Service>
+    std::unique_ptr<ash::file_system_provider::Service>
         file_system_provider_service_;
     std::unique_ptr<drive::DriveIntegrationService> drive_integration_service_;
     std::unique_ptr<VolumeManager> volume_manager_;

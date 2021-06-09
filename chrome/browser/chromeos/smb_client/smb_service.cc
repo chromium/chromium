@@ -145,7 +145,7 @@ bool SmbService::disable_share_discovery_for_testing_ = false;
 
 SmbService::SmbService(Profile* profile,
                        std::unique_ptr<base::TickClock> tick_clock)
-    : provider_id_(ProviderId::CreateFromNativeId("smb")),
+    : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
       profile_(profile),
       tick_clock_(std::move(tick_clock)),
       registry_(profile) {
@@ -562,7 +562,8 @@ void SmbService::OnProviderMountDone(
   std::move(callback).Run(SmbMountResult::kSuccess, mount_path);
 }
 
-int32_t SmbService::GetMountId(const ProvidedFileSystemInfo& info) const {
+int32_t SmbService::GetMountId(
+    const file_system_provider::ProvidedFileSystemInfo& info) const {
   const auto iter = mount_id_map_.find(info.file_system_id());
   if (iter == mount_id_map_.end()) {
     // Either the mount process has not yet completed, or it failed to provide
@@ -598,8 +599,9 @@ SmbProviderClient* SmbService::GetSmbProviderClient() const {
 }
 
 void SmbService::RestoreMounts() {
-  std::vector<ProvidedFileSystemInfo> provided_file_systems =
-      GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
+  std::vector<file_system_provider::ProvidedFileSystemInfo>
+      provided_file_systems =
+          GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
 
   std::vector<SmbUrl> preconfigured_shares =
       GetPreconfiguredSharePathsForPremount();
@@ -621,7 +623,8 @@ void SmbService::RestoreMounts() {
 }
 
 void SmbService::OnHostsDiscovered(
-    const std::vector<ProvidedFileSystemInfo>& file_systems,
+    const std::vector<file_system_provider::ProvidedFileSystemInfo>&
+        file_systems,
     const std::vector<SmbShareInfo>& saved_smbfs_shares,
     const std::vector<SmbUrl>& preconfigured_shares) {
   for (const auto& file_system : file_systems) {
@@ -647,7 +650,8 @@ void SmbService::OnHostsDiscoveredForUpdateSharePath(
   }
 }
 
-void SmbService::Remount(const ProvidedFileSystemInfo& file_system_info) {
+void SmbService::Remount(
+    const file_system_provider::ProvidedFileSystemInfo& file_system_info) {
   const base::FilePath share_path =
       GetSharePathFromFileSystemId(file_system_info.file_system_id());
   const bool is_kerberos_chromad =
@@ -877,7 +881,7 @@ bool SmbService::IsNTLMAuthenticationEnabled() const {
 }
 
 bool SmbService::IsShareMounted(const SmbUrl& share) const {
-  std::vector<ProvidedFileSystemInfo> file_systems =
+  std::vector<file_system_provider::ProvidedFileSystemInfo> file_systems =
       GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
 
   for (const auto& info : file_systems) {
@@ -1016,7 +1020,7 @@ void SmbService::OnNetworkChanged(
 }
 
 void SmbService::RecordMountCount() const {
-  const std::vector<ProvidedFileSystemInfo> file_systems =
+  const std::vector<file_system_provider::ProvidedFileSystemInfo> file_systems =
       GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
   UMA_HISTOGRAM_COUNTS_100("NativeSmbFileShare.MountCount",
                            file_systems.size() + smbfs_shares_.size());

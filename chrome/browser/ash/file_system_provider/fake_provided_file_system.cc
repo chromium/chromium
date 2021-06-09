@@ -14,7 +14,7 @@
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -457,4 +457,4 @@ void FakeProvidedFileSystem::AbortMany(const std::vector<int>& task_ids) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

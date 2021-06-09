@@ -39,8 +39,6 @@ class PrefRegistrySyncable;
 namespace chromeos {
 namespace smb_client {
 
-using file_system_provider::ProvidedFileSystemInfo;
-
 class SmbKerberosCredentialsUpdater;
 class SmbShareInfo;
 
@@ -164,7 +162,8 @@ class SmbService : public KeyedService,
                         SmbMountResult result);
 
   // Retrieves the mount_id for |file_system_info|.
-  int32_t GetMountId(const ProvidedFileSystemInfo& info) const;
+  int32_t GetMountId(
+      const file_system_provider::ProvidedFileSystemInfo& info) const;
 
   // Calls file_system_provider::Service::UnmountFileSystem().
   base::File::Error Unmount(
@@ -180,7 +179,8 @@ class SmbService : public KeyedService,
   void RestoreMounts();
 
   void OnHostsDiscovered(
-      const std::vector<ProvidedFileSystemInfo>& file_systems,
+      const std::vector<file_system_provider::ProvidedFileSystemInfo>&
+          file_systems,
       const std::vector<SmbShareInfo>& saved_smbfs_shares,
       const std::vector<SmbUrl>& preconfigured_shares);
 
@@ -192,7 +192,8 @@ class SmbService : public KeyedService,
       StartReadDirIfSuccessfulCallback reply);
 
   // Attempts to remount a share with the information in |file_system_info|.
-  void Remount(const ProvidedFileSystemInfo& file_system_info);
+  void Remount(
+      const file_system_provider::ProvidedFileSystemInfo& file_system_info);
 
   // Handles the response from attempting to remount the file system. If
   // remounting fails, this logs and removes the file_system from the volume

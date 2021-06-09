@@ -127,8 +127,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
       break;
     }
     case file_manager::VOLUME_TYPE_PROVIDED: {
-      chromeos::file_system_provider::Service* service =
-          chromeos::file_system_provider::Service::Get(browser_context());
+      auto* service =
+          ash::file_system_provider::Service::Get(browser_context());
       DCHECK(service);
       // TODO(mtomasz): Pass a more detailed error than just a bool.
       if (!service->RequestUnmount(volume->provider_id(),

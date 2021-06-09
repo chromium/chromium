@@ -137,7 +137,7 @@ std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
 bool ConvertURLsToProvidedInfo(
     const scoped_refptr<storage::FileSystemContext>& file_system_context,
     const std::vector<std::string>& urls,
-    chromeos::file_system_provider::ProvidedFileSystemInterface** file_system,
+    ash::file_system_provider::ProvidedFileSystemInterface** file_system,
     std::vector<base::FilePath>* paths,
     std::string* error) {
   DCHECK(file_system);
@@ -153,7 +153,7 @@ bool ConvertURLsToProvidedInfo(
     const storage::FileSystemURL file_system_url(
         file_system_context->CrackURL(GURL(url)));
 
-    chromeos::file_system_provider::util::FileSystemURLParser parser(
+    ash::file_system_provider::util::FileSystemURLParser parser(
         file_system_url);
     if (!parser.Parse()) {
       *error = "Related provided file system not found.";
@@ -608,11 +608,11 @@ FileManagerPrivateGetProvidersFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetProvidersFunction::Run() {
-  using chromeos::file_system_provider::Capabilities;
-  using chromeos::file_system_provider::IconSet;
-  using chromeos::file_system_provider::ProviderId;
-  using chromeos::file_system_provider::ProviderInterface;
-  using chromeos::file_system_provider::Service;
+  using ash::file_system_provider::Capabilities;
+  using ash::file_system_provider::IconSet;
+  using ash::file_system_provider::ProviderId;
+  using ash::file_system_provider::ProviderInterface;
+  using ash::file_system_provider::Service;
   const Service* const service = Service::Get(browser_context());
 
   using api::file_manager_private::Provider;
@@ -658,9 +658,9 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  using chromeos::file_system_provider::Service;
-  using chromeos::file_system_provider::ProvidingExtensionInfo;
-  using chromeos::file_system_provider::ProviderId;
+  using ash::file_system_provider::ProviderId;
+  using ash::file_system_provider::ProvidingExtensionInfo;
+  using ash::file_system_provider::Service;
   Service* const service = Service::Get(browser_context());
 
   if (!service->RequestMount(ProviderId::FromString(params->provider_id)))
@@ -691,11 +691,11 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
 
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_PROVIDED: {
-      using chromeos::file_system_provider::Service;
+      using ash::file_system_provider::Service;
       Service* const service = Service::Get(browser_context());
       DCHECK(service);
 
-      using chromeos::file_system_provider::ProvidedFileSystemInterface;
+      using ash::file_system_provider::ProvidedFileSystemInterface;
       ProvidedFileSystemInterface* const file_system =
           service->GetProvidedFileSystem(volume->provider_id(),
                                          volume->file_system_id());
@@ -1016,8 +1016,7 @@ FileManagerPrivateInternalGetCustomActionsFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   std::vector<base::FilePath> paths;
-  chromeos::file_system_provider::ProvidedFileSystemInterface* file_system =
-      nullptr;
+  ash::file_system_provider::ProvidedFileSystemInterface* file_system = nullptr;
   std::string error;
 
   if (!ConvertURLsToProvidedInfo(file_system_context, params->urls,
@@ -1035,7 +1034,7 @@ FileManagerPrivateInternalGetCustomActionsFunction::Run() {
 }
 
 void FileManagerPrivateInternalGetCustomActionsFunction::OnCompleted(
-    const chromeos::file_system_provider::Actions& actions,
+    const ash::file_system_provider::Actions& actions,
     base::File::Error result) {
   if (result != base::File::FILE_OK) {
     Respond(Error("Failed to fetch actions."));
@@ -1071,8 +1070,7 @@ FileManagerPrivateInternalExecuteCustomActionFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   std::vector<base::FilePath> paths;
-  chromeos::file_system_provider::ProvidedFileSystemInterface* file_system =
-      nullptr;
+  ash::file_system_provider::ProvidedFileSystemInterface* file_system = nullptr;
   std::string error;
 
   if (!ConvertURLsToProvidedInfo(file_system_context, params->urls,

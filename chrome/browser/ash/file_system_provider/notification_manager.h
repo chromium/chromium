@@ -25,7 +25,7 @@ class Image;
 class ImageSkia;
 }  // message gfx
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Provided file systems's manager for showing notifications. Shows always
@@ -78,6 +78,6 @@ class NotificationManager : public NotificationManagerInterface,
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_H_

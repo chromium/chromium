@@ -31,7 +31,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class Queue;
@@ -151,6 +151,6 @@ class ThrottledFileSystem : public ProvidedFileSystemInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_THROTTLED_FILE_SYSTEM_H_

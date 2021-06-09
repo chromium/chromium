@@ -16,7 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class FakeExtensionProvider : public ProviderInterface {
@@ -48,13 +48,6 @@ class FakeExtensionProvider : public ProviderInterface {
   IconSet icon_set_;
 };
 
-}  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::FakeExtensionProvider;
 }  // namespace file_system_provider
 }  // namespace ash
 

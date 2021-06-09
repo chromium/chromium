@@ -32,7 +32,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class ProvidedFileSystemInfo;
@@ -282,19 +282,18 @@ class ProvidedFileSystemInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::Action;
-using ::chromeos::file_system_provider::Actions;
-using ::chromeos::file_system_provider::EntryMetadata;
-using ::chromeos::file_system_provider::OPEN_FILE_MODE_READ;
-using ::chromeos::file_system_provider::OPEN_FILE_MODE_WRITE;
-using ::chromeos::file_system_provider::OpenFileMode;
-using ::chromeos::file_system_provider::ProvidedFileSystemInterface;
-}  // namespace file_system_provider
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::Action;
+using ::ash::file_system_provider::EntryMetadata;
+using ::ash::file_system_provider::OPEN_FILE_MODE_READ;
+using ::ash::file_system_provider::OPEN_FILE_MODE_WRITE;
+using ::ash::file_system_provider::OpenedFiles;
+using ::ash::file_system_provider::OpenFileMode;
+}  // namespace file_system_provider
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_INTERFACE_H_

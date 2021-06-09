@@ -52,7 +52,7 @@ void GetMimeTypeAfterGetMetadata(
 // the mime type from the passed metadata from a providing extension.
 void GetMimeTypeAfterGetMetadataForProvidedFileSystem(
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
-    std::unique_ptr<chromeos::file_system_provider::EntryMetadata> metadata,
+    std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -194,9 +194,8 @@ void GetNonNativeLocalPathMimeType(
     return;
   }
 
-  if (chromeos::file_system_provider::util::IsFileSystemProviderLocalPath(
-          path)) {
-    chromeos::file_system_provider::util::LocalPathParser parser(profile, path);
+  if (ash::file_system_provider::util::IsFileSystemProviderLocalPath(path)) {
+    ash::file_system_provider::util::LocalPathParser parser(profile, path);
     if (!parser.Parse()) {
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
@@ -205,7 +204,7 @@ void GetNonNativeLocalPathMimeType(
 
     parser.file_system()->GetMetadata(
         parser.file_path(),
-        chromeos::file_system_provider::ProvidedFileSystemInterface::
+        ash::file_system_provider::ProvidedFileSystemInterface::
             METADATA_FIELD_MIME_TYPE,
         base::BindOnce(&GetMimeTypeAfterGetMetadataForProvidedFileSystem,
                        std::move(callback)));

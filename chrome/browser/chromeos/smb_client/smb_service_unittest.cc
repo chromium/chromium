@@ -321,7 +321,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<SmbService> smb_service_;
 
-  chromeos::file_system_provider::MountOptions mount_options_;
+  file_system_provider::MountOptions mount_options_;
 };
 
 TEST_F(SmbServiceWithSmbfsTest, InvalidUrls) {

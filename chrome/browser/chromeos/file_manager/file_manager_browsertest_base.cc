@@ -1538,7 +1538,7 @@ class SmbfsTestVolume : public LocalTestVolume {
         &SmbfsTestVolume::CreateMounter, base::Unretained(this)));
 
     bool success = false;
-    chromeos::file_system_provider::MountOptions mount_options;
+    ash::file_system_provider::MountOptions mount_options;
     mount_options.display_name = "SMB Share";
     base::RunLoop run_loop;
     smb_service->Mount(

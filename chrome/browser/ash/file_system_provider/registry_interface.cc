@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 RegistryInterface::~RegistryInterface() {
@@ -20,4 +20,4 @@ RegistryInterface::RestoredFileSystem::~RestoredFileSystem() {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

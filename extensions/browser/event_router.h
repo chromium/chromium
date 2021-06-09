@@ -41,13 +41,13 @@ class GURL;
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 class FileSystemProviderProvidedFileSystemTest;
-}
-}  // namespace chromeos
+}  // namespace file_system_provider
+}  // namespace ash
 
 namespace extensions {
 class Extension;
@@ -325,7 +325,7 @@ class EventRouter : public KeyedService,
  private:
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
-  friend class chromeos::file_system_provider::
+  friend class ash::file_system_provider::
       FileSystemProviderProvidedFileSystemTest;
   friend class UpdateInstallGateTest;
   friend class DownloadExtensionTest;

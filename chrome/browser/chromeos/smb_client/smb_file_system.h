@@ -18,6 +18,8 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to ash.
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_task_queue.h"
@@ -34,8 +36,6 @@ class IOBuffer;
 namespace chromeos {
 namespace smb_client {
 
-class RequestManager;
-
 // SMB provided file system implementation. For communication with SMB
 // filesystems.
 // SMB is an application level protocol used by Windows and Samba fileservers.
@@ -43,8 +43,8 @@ class RequestManager;
 class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
                       public base::SupportsWeakPtr<SmbFileSystem> {
  public:
-  using MountIdCallback =
-      base::RepeatingCallback<int32_t(const ProvidedFileSystemInfo&)>;
+  using MountIdCallback = base::RepeatingCallback<int32_t(
+      const file_system_provider::ProvidedFileSystemInfo&)>;
   using UnmountCallback = base::OnceCallback<base::File::Error(
       const std::string&,
       file_system_provider::Service::UnmountReason)>;

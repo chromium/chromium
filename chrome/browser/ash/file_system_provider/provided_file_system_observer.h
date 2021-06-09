@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class ProvidedFileSystemInfo;
@@ -56,6 +56,13 @@ class ProvidedFileSystemObserver {
       const Watchers& watchers) = 0;
 };
 
+}  // namespace file_system_provider
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::ProvidedFileSystemObserver;
 }  // namespace file_system_provider
 }  // namespace chromeos
 

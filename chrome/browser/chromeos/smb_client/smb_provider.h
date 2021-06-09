@@ -19,14 +19,7 @@ class Profile;
 namespace chromeos {
 namespace smb_client {
 
-using file_system_provider::Capabilities;
-using file_system_provider::IconSet;
-using file_system_provider::ProvidedFileSystemInfo;
-using file_system_provider::ProvidedFileSystemInterface;
-using file_system_provider::ProviderId;
-using file_system_provider::ProviderInterface;
-
-class SmbProvider : public ProviderInterface {
+class SmbProvider : public file_system_provider::ProviderInterface {
  public:
   using MountIdCallback = SmbFileSystem::MountIdCallback;
   using UnmountCallback = base::RepeatingCallback<base::File::Error(
@@ -42,21 +35,22 @@ class SmbProvider : public ProviderInterface {
   SmbProvider& operator=(const SmbProvider&) = delete;
   ~SmbProvider() override;
 
-  // ProviderInterface overrides.
-  std::unique_ptr<ProvidedFileSystemInterface> CreateProvidedFileSystem(
-      Profile* profile,
-      const ProvidedFileSystemInfo& file_system_info) override;
-  const Capabilities& GetCapabilities() const override;
-  const ProviderId& GetId() const override;
+  // file_system_provider::ProviderInterface overrides.
+  std::unique_ptr<file_system_provider::ProvidedFileSystemInterface>
+  CreateProvidedFileSystem(Profile* profile,
+                           const file_system_provider::ProvidedFileSystemInfo&
+                               file_system_info) override;
+  const file_system_provider::Capabilities& GetCapabilities() const override;
+  const file_system_provider::ProviderId& GetId() const override;
   const std::string& GetName() const override;
-  const IconSet& GetIconSet() const override;
+  const file_system_provider::IconSet& GetIconSet() const override;
   bool RequestMount(Profile* profile) override;
 
  private:
-  ProviderId provider_id_;
-  Capabilities capabilities_;
+  file_system_provider::ProviderId provider_id_;
+  file_system_provider::Capabilities capabilities_;
   std::string name_;
-  IconSet icon_set_;
+  file_system_provider::IconSet icon_set_;
 
   MountIdCallback mount_id_callback_;
   UnmountCallback unmount_callback_;

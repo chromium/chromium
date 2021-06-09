@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -326,4 +326,4 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

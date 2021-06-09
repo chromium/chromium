@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 RequestValue::RequestValue() {
@@ -80,4 +80,4 @@ std::unique_ptr<RequestValue> RequestValue::CreateForTesting(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

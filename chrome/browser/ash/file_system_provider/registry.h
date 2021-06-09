@@ -18,7 +18,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Key names for preferences.
@@ -60,6 +60,6 @@ class Registry : public RegistryInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REGISTRY_H_

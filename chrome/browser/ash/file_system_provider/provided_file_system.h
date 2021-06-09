@@ -39,7 +39,7 @@ namespace extensions {
 class EventRouter;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class NotificationManagerInterface;
@@ -256,6 +256,6 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_H_

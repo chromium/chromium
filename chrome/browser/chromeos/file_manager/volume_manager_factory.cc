@@ -48,7 +48,7 @@ KeyedService* VolumeManagerFactory::BuildServiceInstanceFor(
       profile, drive::DriveIntegrationServiceFactory::GetForProfile(profile),
       chromeos::PowerManagerClient::Get(),
       chromeos::disks::DiskMountManager::GetInstance(),
-      chromeos::file_system_provider::ServiceFactory::Get(context),
+      ash::file_system_provider::ServiceFactory::Get(context),
       VolumeManager::GetMtpStorageInfoCallback());
   instance->Initialize();
   return instance;
@@ -59,7 +59,7 @@ VolumeManagerFactory::VolumeManagerFactory()
           "VolumeManagerFactory",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
-  DependsOn(chromeos::file_system_provider::ServiceFactory::GetInstance());
+  DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());
 }
 
 VolumeManagerFactory::~VolumeManagerFactory() = default;

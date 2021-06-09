@@ -30,7 +30,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -452,4 +452,4 @@ ProviderInterface* Service::GetProvider(const ProviderId& provider_id) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

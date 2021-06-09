@@ -10,7 +10,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 class Service;
@@ -44,6 +44,13 @@ class ServiceFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(ServiceFactory);
 };
 
+}  // namespace file_system_provider
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::ServiceFactory;
 }  // namespace file_system_provider
 }  // namespace chromeos
 

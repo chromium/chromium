@@ -21,7 +21,7 @@ namespace extensions {
 class ExtensionRegistry;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Holds information for a providing extension.
@@ -71,6 +71,6 @@ class ExtensionProvider : public ProviderInterface,
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EXTENSION_PROVIDER_H_

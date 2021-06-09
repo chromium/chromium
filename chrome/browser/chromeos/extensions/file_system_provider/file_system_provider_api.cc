@@ -23,15 +23,15 @@
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
-using chromeos::file_system_provider::MountOptions;
-using chromeos::file_system_provider::OpenedFiles;
-using chromeos::file_system_provider::ProvidedFileSystemInfo;
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::ProvidedFileSystemObserver;
-using chromeos::file_system_provider::ProviderId;
-using chromeos::file_system_provider::RequestValue;
-using chromeos::file_system_provider::Service;
-using chromeos::file_system_provider::Watchers;
+using ash::file_system_provider::MountOptions;
+using ash::file_system_provider::OpenedFiles;
+using ash::file_system_provider::ProvidedFileSystemInfo;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::ProvidedFileSystemObserver;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::RequestValue;
+using ash::file_system_provider::Service;
+using ash::file_system_provider::Watchers;
 
 namespace extensions {
 namespace {
@@ -102,11 +102,11 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
     opened_file_item.open_request_id = opened_file.first;
     opened_file_item.file_path = opened_file.second.file_path.value();
     switch (opened_file.second.mode) {
-      case chromeos::file_system_provider::OPEN_FILE_MODE_READ:
+      case ash::file_system_provider::OPEN_FILE_MODE_READ:
         opened_file_item.mode =
             extensions::api::file_system_provider::OPEN_FILE_MODE_READ;
         break;
-      case chromeos::file_system_provider::OPEN_FILE_MODE_WRITE:
+      case ash::file_system_provider::OPEN_FILE_MODE_WRITE:
         opened_file_item.mode =
             extensions::api::file_system_provider::OPEN_FILE_MODE_WRITE;
         break;
@@ -198,9 +198,9 @@ ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
   for (const auto& file_system_info : file_systems) {
     FileSystemInfo item;
 
-    chromeos::file_system_provider::ProvidedFileSystemInterface* const
-        file_system = service->GetProvidedFileSystem(
-            file_system_info.provider_id(), file_system_info.file_system_id());
+    ProvidedFileSystemInterface* const file_system =
+        service->GetProvidedFileSystem(file_system_info.provider_id(),
+                                       file_system_info.file_system_id());
 
     DCHECK(file_system);
 
@@ -226,8 +226,8 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
       Service::Get(Profile::FromBrowserContext(browser_context()));
   DCHECK(service);
 
-  chromeos::file_system_provider::ProvidedFileSystemInterface* const
-      file_system = service->GetProvidedFileSystem(
+  ProvidedFileSystemInterface* const file_system =
+      service->GetProvidedFileSystem(
           ProviderId::CreateFromExtensionId(extension_id()),
           params->file_system_id);
 

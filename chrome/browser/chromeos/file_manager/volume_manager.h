@@ -99,8 +99,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       const chromeos::disks::DiskMountManager::MountPointInfo& mount_point,
       const chromeos::disks::Disk* disk);
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
-      const chromeos::file_system_provider::ProvidedFileSystemInfo&
-          file_system_info,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       MountContext mount_context);
   static std::unique_ptr<Volume> CreateForMTP(const base::FilePath& mount_path,
                                               const std::string& label,
@@ -140,7 +139,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   // Getters for all members. See below for details.
   const std::string& volume_id() const { return volume_id_; }
   const std::string& file_system_id() const { return file_system_id_; }
-  const chromeos::file_system_provider::ProviderId& provider_id() const {
+  const ash::file_system_provider::ProviderId& provider_id() const {
     return provider_id_;
   }
   Source source() const { return source_; }
@@ -175,7 +174,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   bool watchable() const { return watchable_; }
   const std::string& file_system_type() const { return file_system_type_; }
   const std::string& drive_label() const { return drive_label_; }
-  const chromeos::file_system_provider::IconSet& icon_set() const {
+  const ash::file_system_provider::IconSet& icon_set() const {
     return icon_set_;
   }
 
@@ -191,7 +190,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
 
   // The ID of an extension or native provider providing the file system. If
   // other type, then equal to a ProviderId of the type INVALID.
-  chromeos::file_system_provider::ProviderId provider_id_;
+  ash::file_system_provider::ProviderId provider_id_;
 
   // The source of the volume's data.
   Source source_;
@@ -257,7 +256,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   std::string file_system_type_;
 
   // Volume icon set.
-  chromeos::file_system_provider::IconSet icon_set_;
+  ash::file_system_provider::IconSet icon_set_;
 
   // Device label of a physical removable device. Removable partitions
   // belonging to the same device share the same device label.
@@ -279,7 +278,7 @@ class VolumeManager : public KeyedService,
                       public arc::ArcSessionManagerObserver,
                       public drive::DriveIntegrationServiceObserver,
                       public chromeos::disks::DiskMountManager::Observer,
-                      public chromeos::file_system_provider::Observer,
+                      public ash::file_system_provider::Observer,
                       public storage_monitor::RemovableStorageObserver,
                       public DocumentsProviderRootManager::Observer {
  public:
@@ -297,7 +296,7 @@ class VolumeManager : public KeyedService,
       drive::DriveIntegrationService* drive_integration_service,
       chromeos::PowerManagerClient* power_manager_client,
       chromeos::disks::DiskMountManager* disk_mount_manager,
-      chromeos::file_system_provider::Service* file_system_provider_service,
+      ash::file_system_provider::Service* file_system_provider_service,
       GetMtpStorageInfoCallback get_mtp_storage_info_callback);
   ~VolumeManager() override;
 
@@ -407,15 +406,13 @@ class VolumeManager : public KeyedService,
                      const std::string& device_path,
                      const std::string& device_label) override;
 
-  // chromeos::file_system_provider::Observer overrides.
+  // ash::file_system_provider::Observer overrides.
   void OnProvidedFileSystemMount(
-      const chromeos::file_system_provider::ProvidedFileSystemInfo&
-          file_system_info,
-      chromeos::file_system_provider::MountContext context,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      ash::file_system_provider::MountContext context,
       base::File::Error error) override;
   void OnProvidedFileSystemUnmount(
-      const chromeos::file_system_provider::ProvidedFileSystemInfo&
-          file_system_info,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       base::File::Error error) override;
 
   // arc::ArcSessionManagerObserver overrides.
@@ -479,7 +476,7 @@ class VolumeManager : public KeyedService,
   chromeos::disks::DiskMountManager* disk_mount_manager_;      // Not owned.
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;
-  chromeos::file_system_provider::Service*
+  ash::file_system_provider::Service*
       file_system_provider_service_;  // Not owned by this class.
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
   std::map<std::string, std::unique_ptr<Volume>> mounted_volumes_;

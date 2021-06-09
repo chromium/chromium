@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 FakeRegistry::FakeRegistry() {}
@@ -72,4 +72,4 @@ const Watchers* FakeRegistry::watchers() const {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

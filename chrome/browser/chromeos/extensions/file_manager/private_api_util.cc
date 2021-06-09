@@ -380,9 +380,9 @@ void SingleEntryPropertiesGetterForDriveFs::CompleteGetEntryProperties(
 }
 
 void FillIconSet(file_manager_private::IconSet* output,
-                 const chromeos::file_system_provider::IconSet& input) {
+                 const ash::file_system_provider::IconSet& input) {
   DCHECK(output);
-  using chromeos::file_system_provider::IconSet;
+  using ash::file_system_provider::IconSet;
   if (input.HasIcon(IconSet::IconSize::SIZE_16x16)) {
     output->icon16x16_url = std::make_unique<std::string>(
         input.GetIcon(IconSet::IconSize::SIZE_16x16).spec());

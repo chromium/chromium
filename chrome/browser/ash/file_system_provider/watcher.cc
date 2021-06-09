@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 WatcherKey::WatcherKey(const base::FilePath& entry_path, bool recursive)
@@ -38,4 +38,4 @@ Watcher::~Watcher() {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

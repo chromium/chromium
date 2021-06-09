@@ -14,7 +14,7 @@
 #include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 struct Watcher;
@@ -80,6 +80,13 @@ struct Watcher {
   std::string last_tag;
 };
 
+}  // namespace file_system_provider
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::Watchers;
 }  // namespace file_system_provider
 }  // namespace chromeos
 

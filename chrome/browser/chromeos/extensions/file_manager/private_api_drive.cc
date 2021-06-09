@@ -69,9 +69,9 @@
 
 using content::BrowserThread;
 
-using chromeos::file_system_provider::EntryMetadata;
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::util::FileSystemURLParser;
+using ash::file_system_provider::EntryMetadata;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::util::FileSystemURLParser;
 using extensions::api::file_manager_private::EntryProperties;
 using extensions::api::file_manager_private::EntryPropertyName;
 using file_manager::util::EntryDefinition;

@@ -28,15 +28,15 @@
 namespace extensions {
 namespace {
 
-using chromeos::file_system_provider::MountContext;
-using chromeos::file_system_provider::NotificationManagerInterface;
-using chromeos::file_system_provider::Observer;
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::ProvidedFileSystemInfo;
-using chromeos::file_system_provider::RequestManager;
-using chromeos::file_system_provider::RequestType;
-using chromeos::file_system_provider::RequestValue;
-using chromeos::file_system_provider::Service;
+using ash::file_system_provider::MountContext;
+using ash::file_system_provider::NotificationManagerInterface;
+using ash::file_system_provider::Observer;
+using ash::file_system_provider::ProvidedFileSystemInfo;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::RequestManager;
+using ash::file_system_provider::RequestType;
+using ash::file_system_provider::RequestValue;
+using ash::file_system_provider::Service;
 
 // Clicks the default button on the notification as soon as request timeouts
 // and a unresponsiveness notification is shown.

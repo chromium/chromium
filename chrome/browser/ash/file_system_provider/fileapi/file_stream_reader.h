@@ -12,8 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): forward declare EntryMetaData when moved ash
-#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -25,6 +23,8 @@ class FileSystemContext;
 
 namespace ash {
 namespace file_system_provider {
+
+struct EntryMetadata;
 
 // Implements a streamed file reader. It is lazily initialized by the first call
 // to Read().

@@ -9,11 +9,11 @@
 
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Holds urls to icons with multiple dimensions.
-// TODO(mtomasz): Move this to chrome/browser/chromeos so it can be reused
+// TODO(mtomasz): Move this to chrome/browser/ash so it can be reused
 // by other components.
 class IconSet {
  public:
@@ -42,13 +42,13 @@ class IconSet {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::IconSet;
-}  // namespace file_system_provider
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::IconSet;
+}  // namespace file_system_provider
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_ICON_SET_H_

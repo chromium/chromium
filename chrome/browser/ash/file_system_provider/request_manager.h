@@ -22,7 +22,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
@@ -192,13 +192,13 @@ class RequestManager {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace file_system_provider {
-using ::chromeos::file_system_provider::RequestManager;
-}  // namespace file_system_provider
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace file_system_provider {
+using ::ash::file_system_provider::RequestManager;
+}  // namespace file_system_provider
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_MANAGER_H_

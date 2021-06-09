@@ -354,7 +354,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
-  using chromeos::file_system_provider::IconSet;
+  using ash::file_system_provider::IconSet;
   profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive, true);
 
   // Add a provided file system, to test passing the |configurable| and
@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
                    GURL("chrome://resources/testing-provider-id-16.jpg"));
   icon_set.SetIcon(IconSet::IconSize::SIZE_32x32,
                    GURL("chrome://resources/testing-provider-id-32.jpg"));
-  chromeos::file_system_provider::ProvidedFileSystemInfo info(
-      "testing-provider-id", chromeos::file_system_provider::MountOptions(),
+  ash::file_system_provider::ProvidedFileSystemInfo info(
+      "testing-provider-id", ash::file_system_provider::MountOptions(),
       base::FilePath(), true /* configurable */, false /* watchable */,
       extensions::SOURCE_NETWORK, icon_set);
 

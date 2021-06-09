@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/logging_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 LoggingObserver::LoggingObserver() {}
@@ -26,4 +26,4 @@ void LoggingObserver::OnProvidedFileSystemUnmount(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
