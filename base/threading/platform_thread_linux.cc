@@ -218,8 +218,15 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
   FilePath latency_sensitive_file = FilePath(thread_dir + "latency_sensitive");
 
-  if (!PathExists(latency_sensitive_file))
-    return;
+  if (PathExists(latency_sensitive_file)) {
+    if (is_urgent && latency_sensitive_urgent) {
+      PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "1", 1))
+          << "Failed to write latency file.\n";
+    } else {
+      PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "0", 1))
+          << "Failed to write latency file.\n";
+    }
+  }
 
   // Silently ignore if getattr fails due to sandboxing.
   if (sched_getattr(thread_id, &attr, sizeof(attr), 0) == -1 ||
@@ -237,14 +244,6 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     case ThreadPriority::REALTIME_AUDIO:
       is_urgent = true;
       break;
-  }
-
-  if (is_urgent && latency_sensitive_urgent) {
-    PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "1", 1))
-        << "Failed to write latency file.\n";
-  } else {
-    PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "0", 1))
-        << "Failed to write latency file.\n";
   }
 
   attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MIN;
