@@ -354,8 +354,7 @@ views::View* HoldingSpaceItemView::AddPrimaryAction(views::View* parent,
           base::BindRepeating(&HoldingSpaceItemView::OnPrimaryActionPressed,
                               base::Unretained(this))));
   primary_action_cancel_->SetID(kHoldingSpaceItemCancelButtonId);
-  primary_action_cancel_->SetFocusBehavior(
-      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  primary_action_cancel_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   primary_action_cancel_->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   primary_action_cancel_->SetImageVerticalAlignment(
@@ -368,8 +367,7 @@ views::View* HoldingSpaceItemView::AddPrimaryAction(views::View* parent,
           base::BindRepeating(&HoldingSpaceItemView::OnPrimaryActionPressed,
                               base::Unretained(this))));
   primary_action_pin_->SetID(kHoldingSpaceItemPinButtonId);
-  primary_action_pin_->SetFocusBehavior(
-      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  primary_action_pin_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   primary_action_pin_->SetImageHorizontalAlignment(
       views::ToggleImageButton::HorizontalAlignment::ALIGN_CENTER);
   primary_action_pin_->SetImageVerticalAlignment(

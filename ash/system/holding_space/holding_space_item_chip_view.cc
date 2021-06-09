@@ -7,9 +7,12 @@
 #include <algorithm>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -18,11 +21,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -37,6 +42,7 @@ constexpr gfx::Insets kLabelMargins(0, 0, 0, /*right=*/2);
 constexpr gfx::Insets kPadding(8, 8, 8, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
+constexpr int kSecondaryActionIconSize = 16;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -82,13 +88,13 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 
-  auto* image_and_checkmark_container =
+  auto* image_checkmark_and_secondary_action_container =
       AddChildView(std::make_unique<views::View>());
-  image_and_checkmark_container->SetLayoutManager(
+  image_checkmark_and_secondary_action_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
 
   // Image.
-  image_ = image_and_checkmark_container->AddChildView(
+  image_ = image_checkmark_and_secondary_action_container->AddChildView(
       std::make_unique<RoundedImageView>(
           kHoldingSpaceChipIconSize / 2,
           RoundedImageView::Alignment::kLeading));
@@ -102,7 +108,43 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   UpdateImage();
 
   // Checkmark.
-  AddCheckmark(/*parent=*/image_and_checkmark_container);
+  AddCheckmark(/*parent=*/image_checkmark_and_secondary_action_container);
+
+  // Secondary action.
+  secondary_action_container_ =
+      image_checkmark_and_secondary_action_container->AddChildView(
+          std::make_unique<views::View>());
+  secondary_action_container_->SetID(
+      kHoldingSpaceItemSecondaryActionContainerId);
+  secondary_action_container_->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+  secondary_action_container_->SetVisible(false);
+
+  // Pause.
+  secondary_action_pause_ = secondary_action_container_->AddChildView(
+      std::make_unique<views::ImageButton>(base::BindRepeating(
+          &HoldingSpaceItemChipView::OnSecondaryActionPressed,
+          base::Unretained(this))));
+  secondary_action_pause_->SetID(kHoldingSpaceItemPauseButtonId);
+  secondary_action_pause_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  secondary_action_pause_->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+  secondary_action_pause_->SetImageVerticalAlignment(
+      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  secondary_action_pause_->SetVisible(false);
+
+  // Resume.
+  secondary_action_resume_ = secondary_action_container_->AddChildView(
+      std::make_unique<views::ImageButton>(base::BindRepeating(
+          &HoldingSpaceItemChipView::OnSecondaryActionPressed,
+          base::Unretained(this))));
+  secondary_action_resume_->SetID(kHoldingSpaceItemResumeButtonId);
+  secondary_action_resume_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  secondary_action_resume_->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+  secondary_action_resume_->SetImageVerticalAlignment(
+      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  secondary_action_resume_->SetVisible(false);
 
   auto* label_and_primary_action_container =
       AddChildView(std::make_unique<views::View>());
@@ -154,8 +196,10 @@ views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
-  if (this->item() == item)
+  if (this->item() == item) {
     label_->SetText(item->text());
+    UpdateSecondaryAction();
+  }
 }
 
 void HoldingSpaceItemChipView::OnPrimaryActionVisibilityChanged(bool visible) {
@@ -166,18 +210,38 @@ void HoldingSpaceItemChipView::OnPrimaryActionVisibilityChanged(bool visible) {
 
 void HoldingSpaceItemChipView::OnSelectionUiChanged() {
   HoldingSpaceItemView::OnSelectionUiChanged();
-
-  const bool multiselect = delegate()->selection_ui() ==
-                           HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
-
-  image_->SetVisible(!selected() || !multiselect);
   UpdateLabel();
+  UpdateSecondaryAction();
+}
+
+void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
+  HoldingSpaceItemView::OnMouseEvent(event);
+  switch (event->type()) {
+    case ui::ET_MOUSE_ENTERED:
+    case ui::ET_MOUSE_EXITED:
+      UpdateSecondaryAction();
+      break;
+    default:
+      break;
+  }
 }
 
 void HoldingSpaceItemChipView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
   UpdateImage();
   UpdateLabel();
+
+  // Pause.
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  secondary_action_pause_->SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(kPauseIcon, kSecondaryActionIconSize, icon_color));
+
+  // Resume.
+  secondary_action_resume_->SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(kResumeIcon, kSecondaryActionIconSize, icon_color));
 }
 
 void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
@@ -205,6 +269,20 @@ void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
   canvas->DrawRect(label_->GetLocalBounds(), flags);
 }
 
+void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
+  DCHECK_NE(secondary_action_pause_->GetVisible(),
+            secondary_action_resume_->GetVisible());
+
+  // Pause.
+  if (secondary_action_pause_->GetVisible()) {
+    HoldingSpaceController::Get()->client()->PauseItems({item()});
+    return;
+  }
+
+  // Resume.
+  HoldingSpaceController::Get()->client()->ResumeItems({item()});
+}
+
 void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
@@ -221,6 +299,25 @@ void HoldingSpaceItemChipView::UpdateLabel() {
           ? GetMultiSelectTextColor()
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
+}
+
+void HoldingSpaceItemChipView::UpdateSecondaryAction() {
+  const bool has_secondary_action =
+      !checkmark()->GetVisible() && item()->IsInProgress() && IsMouseHovered();
+
+  if (!has_secondary_action) {
+    image_->SetVisible(!checkmark()->GetVisible());
+    secondary_action_container_->SetVisible(false);
+    return;
+  }
+
+  // Pause/resume.
+  const bool is_item_paused = item()->IsPaused();
+  secondary_action_pause_->SetVisible(!is_item_paused);
+  secondary_action_resume_->SetVisible(is_item_paused);
+
+  image_->SetVisible(false);
+  secondary_action_container_->SetVisible(true);
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)

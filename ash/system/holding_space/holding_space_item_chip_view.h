@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
+class ImageButton;
 class Label;
 }  // namespace views
 
@@ -38,6 +39,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
   void OnPrimaryActionVisibilityChanged(bool visible) override;
   void OnSelectionUiChanged() override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
 
   // Invoked during `label_`'s paint sequence to paint its optional mask. Note
@@ -45,12 +47,20 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   // avoid overlapping.
   void OnPaintLabelMask(gfx::Canvas* canvas);
 
+  // Invoked when the secondary action is pressed. This will be one of either
+  // `secondary_action_pause_` or `secondary_action_resume_`.
+  void OnSecondaryActionPressed();
+
   void UpdateImage();
   void UpdateLabel();
+  void UpdateSecondaryAction();
 
   // Owned by view hierarchy.
   RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
+  views::View* secondary_action_container_ = nullptr;
+  views::ImageButton* secondary_action_pause_ = nullptr;
+  views::ImageButton* secondary_action_resume_ = nullptr;
 
   base::CallbackListSubscription image_subscription_;
 };
