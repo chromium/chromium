@@ -263,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.Interaction" enum="SafetyTipInteraction"
-    expires_after="2021-10-25">
+    expires_after="2021-12-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.Dismiss" units="ms"
-    expires_after="2021-10-25">
+    expires_after="2021-12-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -403,7 +403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="2021-10-25">
+    expires_after="2021-12-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>
@@ -412,15 +412,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Security.SafetyTips.SafetyTipShown_AfterFlag"
-    enum="SafetyTipStatus" expires_after="2021-10-25">
+<histogram name="Security.SafetyTips.SafetyTipShown_AfterFlag"
+    enum="SafetyTipStatus" expires_after="2021-12-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
-    TEMPORARY histogram that records the Safety Tip status of a page after
-    navigation commit or page visibility change. This is the same as
-    SafetyTipShown, but records *after* the flag is checked to evaluate the
-    impact of starts_active.
+    Records the Safety Tip status of a page after navigation commit or page
+    visibility change. This is the same as SafetyTipShown, but records *after*
+    the flag is checked to evaluate the impact of starts_active.
   </summary>
 </histogram>
 
