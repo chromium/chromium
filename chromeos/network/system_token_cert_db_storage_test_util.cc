@@ -47,4 +47,18 @@ void GetSystemTokenCertDbCallbackWrapper::OnDbRetrieved(
   run_loop_.Quit();
 }
 
+FakeSystemTokenCertDbStorageObserver::FakeSystemTokenCertDbStorageObserver() =
+    default;
+
+FakeSystemTokenCertDbStorageObserver::~FakeSystemTokenCertDbStorageObserver() =
+    default;
+
+bool FakeSystemTokenCertDbStorageObserver::HasBeenNotified() {
+  return has_been_notified_;
+}
+
+void FakeSystemTokenCertDbStorageObserver::OnSystemTokenCertDbDestroyed() {
+  has_been_notified_ = true;
+}
+
 }  // namespace chromeos
