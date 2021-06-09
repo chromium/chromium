@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.Action.{Action}"
-    units="notifications" expires_after="M93">
+    units="notifications" expires_after="M96">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -118,7 +118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ActionTiming.{Action}"
-    units="ms" expires_after="M93">
+    units="ms" expires_after="M96">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
