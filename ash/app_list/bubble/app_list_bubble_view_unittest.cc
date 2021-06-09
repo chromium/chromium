@@ -99,5 +99,33 @@ TEST_F(AppListBubbleViewTest, BubbleOpensInBottomRightForBottomShelfRTL) {
                      GetPrimaryDisplay().work_area().bottom_right()));
 }
 
+TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
+  UpdateDisplay("800x800");
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  views::View* client_view = presenter->bubble_view_for_test()->parent();
+
+  // Check that the AppListBubble has the initial default bounds.
+  EXPECT_EQ(544, client_view->bounds().width());
+  EXPECT_EQ(688, client_view->bounds().height());
+
+  // Check that the space between the top of the AppListBubble and the top of
+  // the screen is greater than the shelf size.
+  EXPECT_GE(client_view->GetBoundsInScreen().y(),
+            ShelfConfig::Get()->shelf_size());
+
+  // Change the display height to be smaller than 800.
+  UpdateDisplay("800x600");
+  presenter->Dismiss();
+  presenter->Show(GetPrimaryDisplay().id());
+  client_view = presenter->bubble_view_for_test()->parent();
+
+  // With a smaller display, check that the space between the top of the
+  // AppListBubble and the top of the screen is greater than the shelf size.
+  EXPECT_GE(client_view->GetBoundsInScreen().y(),
+            ShelfConfig::Get()->shelf_size());
+}
+
 }  // namespace
 }  // namespace ash

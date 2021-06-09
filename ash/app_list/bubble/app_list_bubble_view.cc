@@ -9,6 +9,7 @@
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 #include "ash/app_list/bubble/app_list_bubble_search_page.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
@@ -30,6 +31,13 @@ using views::BubbleBorder;
 
 namespace ash {
 namespace {
+
+constexpr int kDefaultHeight = 688;
+constexpr int kDefaultWidth = 544;
+
+// Space between the AppListBubbleView and the top of the screen should be at
+// least this value plus the shelf height.
+constexpr int kExtraTopOfScreenSpacing = 16;
 
 // Returns the point on the screen to which the bubble is anchored.
 gfx::Point GetAnchorPointInScreen(aura::Window* root_window,
@@ -111,9 +119,21 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 AppListBubbleView::~AppListBubbleView() = default;
 
 gfx::Size AppListBubbleView::CalculatePreferredSize() const {
-  constexpr gfx::Size kDefaultSizeDips(600, 550);
-  // TODO(https://crbug.com/1210522): Adjust size based on screen resolution.
-  return kDefaultSizeDips;
+  int height = kDefaultHeight - margins().height();
+  int width = kDefaultWidth - margins().width();
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          GetWidget()->GetNativeWindow());
+
+  // TODO(https://crbug.com/1210522): When display height is greater than 1200
+  // then the height can be geater than kDefaultHeight. Make sure in this case
+  // that the height is limited by the number of apps.
+  if (display.bounds().height() < 800) {
+    height = display.work_area().height() - margins().height() -
+             ShelfConfig::Get()->shelf_size() - kExtraTopOfScreenSpacing;
+  }
+
+  return gfx::Size(width, height);
 }
 
 void AppListBubbleView::FlipPage() {
