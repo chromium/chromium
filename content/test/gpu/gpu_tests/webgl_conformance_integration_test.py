@@ -369,6 +369,9 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # TODO(http://crbug.com/832952): Remove this when WebXR spec is more
         # stable and setCompatibleXRDevice is part of the conformance test.
         '--disable-blink-features=WebXR',
+        # Force-enable SharedArrayBuffer to be able to test its
+        # support in WEBGL_multi_draw.
+        '--enable-blink-features=SharedArrayBuffer',
     ])
     # Note that the overriding of the default --js-flags probably
     # won't interact well with RestartBrowserIfNecessaryWithArgs, but

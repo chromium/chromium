@@ -7,36 +7,36 @@
 [LegacyNoInterfaceObject]
 interface WebGLMultiDraw {
   void multiDrawArraysWEBGL(GLenum mode,
-                            (Int32Array or sequence<long>) firstsList,
+                            ([AllowShared] Int32Array or sequence<long>) firstsList,
                             GLuint firstsOffset,
-                            (Int32Array or sequence<long>) countsList,
+                            ([AllowShared] Int32Array or sequence<long>) countsList,
                             GLuint countsOffset,
                             GLsizei drawcount);
 
   void multiDrawElementsWEBGL(GLenum mode,
-                              (Int32Array or sequence<long>) countsList,
+                              ([AllowShared] Int32Array or sequence<long>) countsList,
                               GLuint countsOffset,
                               GLenum type,
-                              (Int32Array or sequence<long>) offsetsList,
+                              ([AllowShared] Int32Array or sequence<long>) offsetsList,
                               GLuint offsetsOffset,
                               GLsizei drawcount);
 
   void multiDrawArraysInstancedWEBGL(GLenum mode,
-                                     (Int32Array or sequence<long>) firstsList,
+                                     ([AllowShared] Int32Array or sequence<long>) firstsList,
                                      GLuint firstsOffset,
-                                     (Int32Array or sequence<long>) countsList,
+                                     ([AllowShared] Int32Array or sequence<long>) countsList,
                                      GLuint countsOffset,
-                                     (Int32Array or sequence<long>) instanceCountsList,
+                                     ([AllowShared] Int32Array or sequence<long>) instanceCountsList,
                                      GLuint instanceCountsOffset,
                                      GLsizei drawcount);
 
   void multiDrawElementsInstancedWEBGL(GLenum mode,
-                                       (Int32Array or sequence<long>) countsList,
+                                       ([AllowShared] Int32Array or sequence<long>) countsList,
                                        GLuint countsOffset,
                                        GLenum type,
-                                       (Int32Array or sequence<long>) offsetsList,
+                                       ([AllowShared] Int32Array or sequence<long>) offsetsList,
                                        GLuint offsetsOffset,
-                                       (Int32Array or sequence<long>) instanceCountsList,
+                                       ([AllowShared] Int32Array or sequence<long>) instanceCountsList,
                                        GLuint instanceCountsOffset,
                                        GLsizei drawcount);
 };

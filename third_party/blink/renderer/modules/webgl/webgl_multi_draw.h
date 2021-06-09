@@ -22,22 +22,23 @@ class WebGLMultiDraw final : public WebGLExtension,
   explicit WebGLMultiDraw(WebGLRenderingContextBase*);
   WebGLExtensionName GetName() const override;
 
-  void multiDrawArraysWEBGL(GLenum mode,
-                            const V8UnionInt32ArrayOrLongSequence* firstsList,
-                            GLuint firstsOffset,
-                            const V8UnionInt32ArrayOrLongSequence* countsList,
-                            GLuint countsOffset,
-                            GLsizei drawcount) {
+  void multiDrawArraysWEBGL(
+      GLenum mode,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* firstsList,
+      GLuint firstsOffset,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* countsList,
+      GLuint countsOffset,
+      GLsizei drawcount) {
     multiDrawArraysImpl(mode, MakeSpan(firstsList), firstsOffset,
                         MakeSpan(countsList), countsOffset, drawcount);
   }
 
   void multiDrawElementsWEBGL(
       GLenum mode,
-      const V8UnionInt32ArrayOrLongSequence* countsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* countsList,
       GLuint countsOffset,
       GLenum type,
-      const V8UnionInt32ArrayOrLongSequence* offsetsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* offsetsList,
       GLuint offsetsOffset,
       GLsizei drawcount) {
     multiDrawElementsImpl(mode, MakeSpan(countsList), countsOffset, type,
@@ -46,11 +47,11 @@ class WebGLMultiDraw final : public WebGLExtension,
 
   void multiDrawArraysInstancedWEBGL(
       GLenum mode,
-      const V8UnionInt32ArrayOrLongSequence* firstsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* firstsList,
       GLuint firstsOffset,
-      const V8UnionInt32ArrayOrLongSequence* countsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* countsList,
       GLuint countsOffset,
-      const V8UnionInt32ArrayOrLongSequence* instanceCountsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instanceCountsList,
       GLuint instanceCountsOffset,
       GLsizei drawcount) {
     multiDrawArraysInstancedImpl(mode, MakeSpan(firstsList), firstsOffset,
@@ -61,12 +62,12 @@ class WebGLMultiDraw final : public WebGLExtension,
 
   void multiDrawElementsInstancedWEBGL(
       GLenum mode,
-      const V8UnionInt32ArrayOrLongSequence* countsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* countsList,
       GLuint countsOffset,
       GLenum type,
-      const V8UnionInt32ArrayOrLongSequence* offsetsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* offsetsList,
       GLuint offsetsOffset,
-      const V8UnionInt32ArrayOrLongSequence* instanceCountsList,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instanceCountsList,
       GLuint instanceCountsOffset,
       GLsizei drawcount) {
     multiDrawElementsInstancedImpl(mode, MakeSpan(countsList), countsOffset,

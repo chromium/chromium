@@ -26,13 +26,14 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
 
   void multiDrawArraysInstancedBaseInstanceWEBGL(
       GLenum mode,
-      const V8UnionInt32ArrayOrLongSequence* firsts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* firsts_list,
       GLuint firsts_offset,
-      const V8UnionInt32ArrayOrLongSequence* counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* counts_list,
       GLuint counts_offset,
-      const V8UnionInt32ArrayOrLongSequence* instance_counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instance_counts_list,
       GLuint instance_counts_offset,
-      const V8UnionUint32ArrayOrUnsignedLongSequence* baseinstances_list,
+      const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence*
+          baseinstances_list,
       GLuint baseinstances_offset,
       GLsizei drawcount) {
     multiDrawArraysInstancedBaseInstanceImpl(
@@ -43,16 +44,17 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
 
   void multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
       GLenum mode,
-      const V8UnionInt32ArrayOrLongSequence* counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* counts_list,
       GLuint counts_offset,
       GLenum type,
-      const V8UnionInt32ArrayOrLongSequence* offsets_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* offsets_list,
       GLuint offsets_offset,
-      const V8UnionInt32ArrayOrLongSequence* instance_counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instance_counts_list,
       GLuint instance_counts_offset,
-      const V8UnionInt32ArrayOrLongSequence* basevertices_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* basevertices_list,
       GLuint basevertices_offset,
-      const V8UnionUint32ArrayOrUnsignedLongSequence* baseinstances_list,
+      const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence*
+          baseinstances_list,
       GLuint baseinstances_offset,
       GLsizei drawcount) {
     multiDrawElementsInstancedBaseVertexBaseInstanceImpl(
