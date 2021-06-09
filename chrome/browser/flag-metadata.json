@@ -4623,12 +4623,12 @@
   {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "scrollable-tabstrip-buttons",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "sct-auditing",
@@ -4933,17 +4933,17 @@
   {
     "name": "tab-groups-auto-create",
     "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "tab-groups-collapse-freezing",
     "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "tab-groups-feedback",
     "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "tab-groups-new-badge-promo",
