@@ -10,7 +10,11 @@ android_library("public_java") {
 }
 
 android_library_factory("factory_java") {
-  deps = [ ":public_java" ]
+  deps = [
+    ":public_java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+  ]
 
   sources = [ "//chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java" ]
 }

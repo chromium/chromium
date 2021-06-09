@@ -19,9 +19,19 @@ public class TopBarView extends FrameLayout {
         super(context, attrs);
     }
 
-    // Set listener for close button.
+    /**
+     * Set listener for close button.
+     */
     void setOnCloseListener(Runnable listener) {
         View button = findViewById(R.id.close);
+        button.setOnClickListener(v -> listener.run());
+    }
+
+    /**
+     * Set listener for next button.
+     */
+    void setOnNextListener(Runnable listener) {
+        View button = findViewById(R.id.next);
         button.setOnClickListener(v -> listener.run());
     }
 }

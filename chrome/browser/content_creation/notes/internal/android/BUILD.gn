@@ -23,6 +23,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequest.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceResponse.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarDelegate.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarView.java",
   ]
 
@@ -31,6 +32,9 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/content_creation/notes/android:public_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/notes/android:java",
     "//content/public/android:content_java_resources",

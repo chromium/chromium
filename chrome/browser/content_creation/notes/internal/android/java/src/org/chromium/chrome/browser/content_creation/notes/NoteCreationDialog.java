@@ -34,6 +34,7 @@ public class NoteCreationDialog extends DialogFragment {
 
     private View mContentView;
     private String mSelectedText;
+    private int mSelectedItemIndex;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -80,13 +81,30 @@ public class NoteCreationDialog extends DialogFragment {
                 LinearLayoutManager layoutManager =
                         (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager.findFirstCompletelyVisibleItemPosition() < 0) return;
-                int selectedItem = layoutManager.findFirstCompletelyVisibleItemPosition();
+                mSelectedItemIndex = layoutManager.findFirstCompletelyVisibleItemPosition();
                 ((TextView) mContentView.findViewById(R.id.title))
-                        .setText(carouselItems.get(selectedItem)
+                        .setText(carouselItems.get(mSelectedItemIndex)
                                          .model.get(NoteProperties.TEMPLATE)
                                          .localizedName);
             }
         });
+    }
+
+    /**
+     * Returns the index of the currently selected item.
+     */
+    public int getSelectedItemIndex() {
+        return this.mSelectedItemIndex;
+    }
+
+    /**
+     * Returns the View instance for a note at |index|.
+     */
+    public View getNoteViewAt(int index) {
+        RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
+        View noteContainerView = layoutManager.findViewByPosition(index);
+        return noteContainerView == null ? null : noteContainerView.findViewById(R.id.background);
     }
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {

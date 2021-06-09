@@ -12,8 +12,9 @@ import org.chromium.chrome.browser.content_creation.internal.R;
  * Coordinator for the TopBar.
  */
 public class TopBarCoordinator {
-    public TopBarCoordinator(Context context, View parentView, Runnable closeButtonRunnable) {
+    public TopBarCoordinator(Context context, View parentView, TopBarDelegate delegate) {
         TopBarView topBarView = (TopBarView) parentView.findViewById(R.id.top_bar);
-        topBarView.setOnCloseListener(closeButtonRunnable);
+        topBarView.setOnCloseListener(delegate::dismiss);
+        topBarView.setOnNextListener(delegate::executeAction);
     }
 }

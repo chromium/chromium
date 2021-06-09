@@ -442,8 +442,9 @@ class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.webnote, R.string.sharing_webnotes_stylized)
                 .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
                 .setOnClickCallback((view) -> {
-                    NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create(
-                            mActivity, mShareParams.getText());
+                    NoteCreationCoordinator coordinator =
+                            NoteCreationCoordinatorFactory.create(mActivity, mTabProvider.get(),
+                                    mUrl, mShareParams.getText(), mChromeOptionShareCallback);
                     coordinator.showDialog();
                 })
                 .build();

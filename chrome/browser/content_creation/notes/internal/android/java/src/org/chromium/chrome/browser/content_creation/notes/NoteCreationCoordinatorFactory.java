@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.content_creation.notes;
 import android.app.Activity;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Factory for creating instances of the NoteCreationCoordinatorImpl.
@@ -15,9 +17,11 @@ public class NoteCreationCoordinatorFactory {
     /**
      * @return a NoteCreationCoordinator instance.
      */
-    public static NoteCreationCoordinator create(Activity activity, String selectedText) {
+    public static NoteCreationCoordinator create(Activity activity, Tab tab, String shareUrl,
+            String selectedText, ChromeOptionShareCallback chromeOptionShareCallback) {
         Profile profile = Profile.getLastUsedRegularProfile();
-        return new NoteCreationCoordinatorImpl(
-                activity, NoteServiceFactory.getForProfile(profile), selectedText);
+        return new NoteCreationCoordinatorImpl(activity, tab,
+                NoteServiceFactory.getForProfile(profile), chromeOptionShareCallback, shareUrl,
+                selectedText);
     }
 }
