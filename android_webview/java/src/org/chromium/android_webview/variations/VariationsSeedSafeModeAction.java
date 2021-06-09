@@ -35,8 +35,14 @@ public class VariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     private static void deleteIfExists(File file) {
-        if (file.exists() && !file.delete()) {
-            Log.e(TAG, "Failed to delete " + file);
+        if (!file.exists()) {
+            Log.i(TAG, "File does not exist (skipping): %s", file);
+            return;
+        }
+        if (file.delete()) {
+            Log.i(TAG, "Successfully deleted %s", file);
+        } else {
+            Log.e(TAG, "Failed to delete %s", file);
         }
     }
 }
