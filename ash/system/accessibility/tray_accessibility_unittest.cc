@@ -15,8 +15,11 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/macros.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer_impl_chromeos.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -103,9 +106,18 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   void SetUp() override {
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->AddObserver(this);
+    // Since this test suite is part of ash unit tests, the
+    // SodaInstallerImplChromeOS is never created (it's normally created when
+    // ChromeBrowserMainPartsChromeos initializes). Create it here so that
+    // calling speech::SodaInstaller::GetInstance() returns a valid instance.
+    soda_installer_impl_ =
+        std::make_unique<speech::SodaInstallerImplChromeOS>();
+    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
   }
 
   void TearDown() override {
+    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+    soda_installer_impl_.reset();
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
     AshTestBase::TearDown();
   }
@@ -361,6 +373,22 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     return detailed_menu_->GetClassName();
   }
 
+  void OnSodaInstalled() { detailed_menu_->OnSodaInstalled(); }
+
+  void OnSodaError() { detailed_menu_->OnSodaError(); }
+
+  void OnSodaProgress(int progress) {
+    detailed_menu_->OnSodaProgress(progress);
+  }
+
+  void SetDictationViewSubtitleText(std::u16string text) {
+    detailed_menu_->SetDictationViewSubtitleTextForTesting(text);
+  }
+
+  std::u16string GetDictationViewSubtitleText() {
+    return detailed_menu_->GetDictationViewSubtitleTextForTesting();
+  }
+
  private:
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override {
@@ -373,6 +401,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<tray::AccessibilityDetailedView> detailed_menu_;
+  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityTest);
 };
@@ -622,6 +651,67 @@ TEST_F(TrayAccessibilityTest, GetClassName) {
   CreateDetailedMenu();
   EXPECT_EQ(tray::AccessibilityDetailedView::kClassName,
             GetDetailedViewClassName());
+}
+
+// Ensures that the dictation subtitle text is changed to the correct value
+// when calling various methods.
+TEST_F(TrayAccessibilityTest, SodaDownloadUnitTest) {
+  CreateDetailedMenu();
+  // We need to set the subtitle text before we try to retrieve it.
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  OnSodaInstalled();
+  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
+
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  OnSodaError();
+  EXPECT_EQ(u"Can't download speech files. Try again later.",
+            GetDictationViewSubtitleText());
+
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  OnSodaProgress(50);
+  EXPECT_EQ(u"Downloading speech recognition files… 50%",
+            GetDictationViewSubtitleText());
+}
+
+// Ensures that we don't respond to soda download updates when dictation is off.
+TEST_F(TrayAccessibilityTest, SodaDownloadDictationDisabled) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationOffline);
+  CreateDetailedMenu();
+  EnableDictation(false);
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+}
+
+// Ensures that we respond to soda download updates when dictation is on.
+// For this test, we enable dictation before the menu is created.
+TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledBeforeMenuCreated) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationOffline);
+  EnableDictation(true);
+  CreateDetailedMenu();
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
+}
+
+// Ensures that we respond to soda download updates when dictation is on.
+// For this test, we enable dictation after the menu is created.
+TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledAfterMenuCreated) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationOffline);
+  CreateDetailedMenu();
+  EnableDictation(true);
+  SetDictationViewSubtitleText(u"This is a test");
+  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
 }
 
 class TrayAccessibilityLoginScreenTest : public TrayAccessibilityTest {

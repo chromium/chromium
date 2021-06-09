@@ -25,8 +25,10 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 
 namespace ash {
@@ -77,6 +79,12 @@ AccessibilityDetailedView::AccessibilityDetailedView(
   AppendAccessibilityList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE);
   Layout();
+  UpdateSodaInstallerObserverStatus();
+}
+
+AccessibilityDetailedView::~AccessibilityDetailedView() {
+  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
@@ -102,6 +110,7 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
     dictation_enabled_ = controller->dictation().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(dictation_view_,
                                               dictation_enabled_);
+    UpdateSodaInstallerObserverStatus();
   }
 
   if (high_contrast_view_ && controller->IsHighContrastSettingVisibleInTray()) {
@@ -524,6 +533,63 @@ void AccessibilityDetailedView::ShowHelp() {
     CloseBubble();  // Deletes |this|.
     Shell::Get()->system_tray_model()->client()->ShowAccessibilityHelp();
   }
+}
+
+void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
+  if (!::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+    return;
+
+  bool dictation_enabled =
+      Shell::Get()->accessibility_controller()->dictation().enabled();
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!dictation_enabled)
+    soda_installer->RemoveObserver(this);
+
+  if (dictation_enabled && !soda_installer->IsSodaInstalled()) {
+    // Make sure this view observes SODA installation. We only want to update
+    // the user of the installation status if dictation is enabled.
+    soda_installer->AddObserver(this);
+  }
+}
+
+// SodaInstaller::Observer:
+void AccessibilityDetailedView::OnSodaInstalled() {
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
+    dictation_view_->SetSubText(l10n_util::GetStringUTF16(
+        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE));
+  }
+}
+
+void AccessibilityDetailedView::OnSodaError() {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
+    dictation_view_->SetSubText(l10n_util::GetStringUTF16(
+        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR));
+  }
+}
+
+void AccessibilityDetailedView::OnSodaProgress(int combined_progress) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
+    dictation_view_->SetSubText(l10n_util::GetStringFUTF16Int(
+        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
+        combined_progress));
+  }
+}
+
+void AccessibilityDetailedView::SetDictationViewSubtitleTextForTesting(
+    std::u16string text) {
+  dictation_view_->SetSubText(text);
+}
+
+std::u16string
+AccessibilityDetailedView::GetDictationViewSubtitleTextForTesting() {
+  return dictation_view_->sub_text_label()->GetText();
 }
 
 }  // namespace tray

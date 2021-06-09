@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/macros.h"
+#include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -35,12 +36,14 @@ class TrayAccessibilityTest;
 namespace tray {
 
 // Create the detailed view of accessibility tray.
-class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
+class ASH_EXPORT AccessibilityDetailedView
+    : public TrayDetailedView,
+      public speech::SodaInstaller::Observer {
  public:
   static constexpr char kClassName[] = "AccessibilityDetailedView";
 
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
-  ~AccessibilityDetailedView() override {}
+  ~AccessibilityDetailedView() override;
 
   void OnAccessibilityStatusChanged();
 
@@ -64,6 +67,22 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
 
   // Add the accessibility feature list.
   void AppendAccessibilityList();
+
+  void UpdateSodaInstallerObserverStatus();
+
+  // SodaInstaller::Observer:
+  void OnSodaInstalled() override;
+  void OnSodaLanguagePackInstalled(
+      speech::LanguageCode language_code) override {}
+  void OnSodaError() override;
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
+  void OnSodaProgress(int combined_progress) override;
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override {
+  }
+
+  void SetDictationViewSubtitleTextForTesting(std::u16string text);
+  std::u16string GetDictationViewSubtitleTextForTesting();
 
   HoverHighlightView* spoken_feedback_view_ = nullptr;
   HoverHighlightView* select_to_speak_view_ = nullptr;

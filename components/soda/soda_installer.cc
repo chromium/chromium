@@ -114,6 +114,11 @@ void SodaInstaller::NotifySodaInstalledForTesting() {
   NotifyOnSodaInstalled();
 }
 
+void SodaInstaller::UninstallSodaForTesting() {
+  soda_binary_installed_ = false;
+  language_installed_ = false;
+}
+
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.

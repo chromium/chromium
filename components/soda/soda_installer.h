@@ -107,6 +107,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   void NotifySodaInstalledForTesting();
 
+  void UninstallSodaForTesting();
+
  protected:
   // Registers the preference tracking the installed SODA language packs.
   static void RegisterRegisteredLanguagePackPref(PrefRegistrySimple* registry);
