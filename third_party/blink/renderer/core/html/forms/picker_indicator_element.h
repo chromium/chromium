@@ -52,7 +52,7 @@ class PickerIndicatorElement final : public HTMLDivElement,
     virtual Element& PickerOwnerElement() const = 0;
     virtual bool SetupDateTimeChooserParameters(DateTimeChooserParameters&) = 0;
     virtual void DidEndChooser() = 0;
-    virtual String AriaRoleForPickerIndicator() const = 0;
+    virtual String AriaLabelForPickerIndicator() const = 0;
   };
 
   PickerIndicatorElement(Document&, PickerIndicatorOwner&);

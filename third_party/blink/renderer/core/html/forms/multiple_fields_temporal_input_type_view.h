@@ -85,7 +85,7 @@ class MultipleFieldsTemporalInputTypeView final
   Element& PickerOwnerElement() const final;
   bool SetupDateTimeChooserParameters(DateTimeChooserParameters&) final;
   void DidEndChooser() final;
-  String AriaRoleForPickerIndicator() const final;
+  String AriaLabelForPickerIndicator() const final;
 
   // ClearButtonElement::ClearButtonOwner functions.
   void FocusAndSelectClearButtonOwner() override;

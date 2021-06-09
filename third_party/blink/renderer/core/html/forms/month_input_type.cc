@@ -169,7 +169,7 @@ bool MonthInputType::IsValidFormat(bool has_year,
   return has_year && has_month;
 }
 
-String MonthInputType::AriaRoleForPickerIndicator() const {
+String MonthInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_MONTH_PICKER);
 }
 

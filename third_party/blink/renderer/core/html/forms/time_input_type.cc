@@ -174,7 +174,7 @@ bool TimeInputType::IsValidFormat(bool has_year,
   return has_hour && has_minute && has_ampm;
 }
 
-String TimeInputType::AriaRoleForPickerIndicator() const {
+String TimeInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_TIME_PICKER);
 }
 

@@ -62,7 +62,7 @@ class TimeInputType final : public BaseTemporalInputType {
                      bool has_hour,
                      bool has_minute,
                      bool has_second) const override;
-  String AriaRoleForPickerIndicator() const override;
+  String AriaLabelForPickerIndicator() const override;
   String ReversedRangeOutOfRangeText(const Decimal& minimum,
                                      const Decimal& maximum) const override;
 };

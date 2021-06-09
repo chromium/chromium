@@ -346,8 +346,9 @@ void MultipleFieldsTemporalInputTypeView::DidEndChooser() {
   GetElement().EnqueueChangeEvent();
 }
 
-String MultipleFieldsTemporalInputTypeView::AriaRoleForPickerIndicator() const {
-  return input_type_->AriaRoleForPickerIndicator();
+String MultipleFieldsTemporalInputTypeView::AriaLabelForPickerIndicator()
+    const {
+  return input_type_->AriaLabelForPickerIndicator();
 }
 
 MultipleFieldsTemporalInputTypeView::MultipleFieldsTemporalInputTypeView(

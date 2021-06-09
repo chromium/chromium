@@ -191,7 +191,7 @@ bool DateTimeLocalInputType::IsValidFormat(bool has_year,
   return has_year && has_month && has_day && has_ampm && has_hour && has_minute;
 }
 
-String DateTimeLocalInputType::AriaRoleForPickerIndicator() const {
+String DateTimeLocalInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_DATE_TIME_LOCAL_PICKER);
 }
 

@@ -66,7 +66,7 @@ class MonthInputType final : public BaseTemporalInputType {
                      bool has_hour,
                      bool has_minute,
                      bool has_second) const override;
-  String AriaRoleForPickerIndicator() const override;
+  String AriaLabelForPickerIndicator() const override;
 };
 
 }  // namespace blink

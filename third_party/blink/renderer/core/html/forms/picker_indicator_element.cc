@@ -175,7 +175,7 @@ void PickerIndicatorElement::DidNotifySubtreeInsertionsToDocument() {
   setAttribute(
       html_names::kAriaLabelAttr,
       AtomicString(
-          this->picker_indicator_owner_->AriaRoleForPickerIndicator()));
+          this->picker_indicator_owner_->AriaLabelForPickerIndicator()));
 }
 
 void PickerIndicatorElement::Trace(Visitor* visitor) const {
