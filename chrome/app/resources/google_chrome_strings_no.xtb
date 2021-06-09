@@ -35,6 +35,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sørg for at du er logget på Chrome på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="1807517590912578995">Vil du opprette din egen Chrome-profil?</translation>
+<translation id="1810203443153428607">Når Chrome OS installeres, blir alle dataene på enheten din overskrevet.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
@@ -55,6 +56,16 @@
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
 <translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv igjen senere.</translation>
 <translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Tøm harddisken og installer Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Vi er klare til å installere Chrome OS! Når du fortsetter, skjer følgende:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Filer, data, og det nåværende operativsystemet ditt blir slettet.
+          <ph name="LIST_ITEM" />Chrome OS blir installert.
+          <ph name="LIST_ITEM" />Enheten din slår seg av når installasjonen er fullført.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Én siste påminnelse: Installasjonen kommer til å tømme hele harddisken din. Forsikre deg om at du har sikkerhetskopiert eventuelle data du bryr deg om.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Når installasjonen er startet, kan den ikke avbrytes.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="2467438592969358367">Google Chrome forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -166,6 +177,10 @@
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5434383153637353914">På denne siden kan du administrere de påloggede Google-kontoene dine. Kontoene blir tilgjengelige i apper i Chrome-nettleseren og Play-butikken samt tjenester som Gmail, Disk og YouTube. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Før vi setter i gang, må du forsikre deg om at du har en oppdatert sikkerhetskopi av dataene dine. Når Chrome OS installeres, blir alle dataene på harddisken din overskrevet.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google tar intet ansvar for eventuelle tap av data og stiller ingen garanti for at Chrome OS fungerer på ikke-sertifiserte modeller. Gå til [TBD] for å finne ut mer om sertifiserte modeller.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Finn ut mer om installering av Chrome OS og sletting av data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Hvis du er klar til å fortsette, klikker du på «Installer Chrome OS», så veileder vi deg gjennom installasjonen på bare noen få enkle trinn. Du får en ny mulighet til å bekrefte før vi gjør endringer på datamaskinen din.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome prøver å vise passord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
@@ -201,6 +216,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for utviklere</translation>
 <translation id="6566149418543181476">Oppdaterer Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-systemet</translation>
+<translation id="664235759707825982">Klar til å installere Chrome OS</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
 <translation id="6679975945624592337">La Google Chrome kjøre i bakgrunnen</translation>
 <translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
@@ -220,6 +236,7 @@
 <translation id="7155997830309522122">I så fall bør du endre det lagrede passordet i Chrome så det samsvarer med det nye passordet.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Installasjonen av Chrome OS pågår</translation>
 <translation id="7295052994004373688">Dette språket brukes for UI-et i Google Chrome</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
 <translation id="7303916856901595720">Vil du flytte kontoen til en ny Chrome-profil?</translation>

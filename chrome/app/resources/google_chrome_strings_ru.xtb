@@ -35,6 +35,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Убедитесь, что вы вошли в Chrome на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
 <translation id="1807517590912578995">Использовать отдельный профиль Chrome?</translation>
+<translation id="1810203443153428607">При установке Chrome OS все данные на устройстве будут перезаписаны.</translation>
 <translation id="1812689907177901597">Отключив эту функцию, вы сможете входить в систему на сайтах Google (например, Gmail) без необходимости выполнять вход в Chrome.</translation>
 <translation id="1860536484129686729">Для этого сайта Chrome запрашивает доступ к камере.</translation>
 <translation id="1873233029667955273">Google Chrome не является браузером по умолчанию.</translation>
@@ -55,6 +56,16 @@
 <translation id="2348335408836342058">Для этого сайта Chrome запрашивает доступ к камере и микрофону.</translation>
 <translation id="234869673307233423">Не удается запустить проверку паролей в Chrome. Повторите попытку позже.</translation>
 <translation id="235650106824528204">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chrome при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Удалить все данные с жесткого диска и установить Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Вы можете приступить к установке Chrome OS. Когда вы запустите ее, произойдет следующее:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Файлы, данные и текущая операционная система будут удалены.
+          <ph name="LIST_ITEM" />Будет установлена система Chrome OS.
+          <ph name="LIST_ITEM" />По окончании установки устройство будет выключено.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Ещё раз обращаем ваше внимание на то, что при установке с жесткого диска будет удалена вся информация. Убедитесь, что вы сохранили резервные копии нужных данных.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome не удалось синхронизировать данные, поскольку служба Sync недоступна для вашего домена.</translation>
 <translation id="2467438592969358367">Чтобы экспортировать пароли из Google Chrome, введите пароль своего аккаунта Windows.</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -166,6 +177,10 @@
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
 <translation id="5430073640787465221">Файл настроек поврежден или недействителен. Google Chrome не может восстановить ваши параметры.</translation>
 <translation id="5434383153637353914">На этой странице можно управлять аккаунтами Google, в которые выполнен вход. Они будут доступны в Chrome, Google Play и других сервисах (например, Gmail, Диск и YouTube). <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Перед началом установки убедитесь, что для всех данных созданы резервные копии. При установке Chrome OS все данные на жестком диске будут перезаписаны.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Компания Google не несет ответственности за потерю данных при установке ОС и не гарантирует, что Chrome OS будет работать на несертифицированных устройствах. Узнать, какие модели сертифицированы, можно на сайте [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Подробнее об установке Chrome OS и удалении данных с устройства: [TBD URL].<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Если все готово, нажмите "Установить Chrome OS" и следуйте инструкциям на экране. У вас будет возможность подтвердить установку перед тем, как она начнется.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Установить Chrome OS</translation>
 <translation id="556024056938947818">Вводимые пароли будут отображаться в Google Chrome.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -200,6 +215,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome для разработчиков</translation>
 <translation id="6566149418543181476">Обновление Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6568793831116033768">Chrome OS</translation>
+<translation id="664235759707825982">Устройство готово к установке Chrome OS</translation>
 <translation id="6676384891291319759">Доступ в Интернет</translation>
 <translation id="6679975945624592337">Разрешить Google Chrome работать в фоновом режиме</translation>
 <translation id="6739177684496155661">Продолжить работу в новом профиле Chrome?</translation>
@@ -219,6 +235,7 @@
 <translation id="7155997830309522122">Если да, то вам нужно сменить пароль, сохраненный в Chrome, на новый.</translation>
 <translation id="7161904924553537242">Добро пожаловать в Google Chrome</translation>
 <translation id="7242029209006116544">Выполнив вход в управляемый аккаунт, вы предоставляете администратору право контролировать настройки вашего профиля Google Chrome. Ваши данные Chrome (приложения, закладки, история, пароли и другие настройки) будут временно связаны с аккаунтом <ph name="USER_NAME" />. Эти данные можно удалить в Личном кабинете Google, но их нельзя связать с другим аккаунтом. Чтобы сохранить данные Chrome отдельно, создайте новый профиль. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Выполняется установка Chrome OS</translation>
 <translation id="7295052994004373688">На этом языке отображается интерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Использование и безопасность</translation>
 <translation id="7303916856901595720">Перенести аккаунт в новый профиль Chrome?</translation>

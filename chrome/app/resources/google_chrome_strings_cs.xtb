@@ -40,6 +40,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do Chromu, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="1807517590912578995">Oddělit profil Chrome?</translation>
+<translation id="1810203443153428607">Při instalaci systému Chrome OS se v zařízení přepíšou všechna data.</translation>
 <translation id="1812689907177901597">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do Chromu</translation>
 <translation id="1860536484129686729">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
 <translation id="1873233029667955273">Google Chrome není vaším výchozím prohlížečem</translation>
@@ -60,6 +61,16 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2348335408836342058">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="234869673307233423">Chrome nemůže zkontrolovat vaše hesla. Zkuste to později.</translation>
 <translation id="235650106824528204">Veškerá data prohlížeče Chrome vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Vymazat pevný disk a nainstalovat Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Jsme připraveni nainstalovat systém Chrome OS. Pokud budete pokračovat:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Budou vymazány soubory, data a váš současný operační systém.
+          <ph name="LIST_ITEM" />Nainstaluje se systém Chrome OS.
+          <ph name="LIST_ITEM" />Po dokončení instalace se zařízení vypne.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Ještě poslední připomenutí: Při instalaci bude zcela vymazán pevný disk. Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
@@ -175,6 +186,10 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5434383153637353914">Na této stránce můžete spravovat účty Google, do kterých jste přihlášeni. Tyto účty budou k dispozici v prohlížeči Chrome a Obchodě Play a také ve službách, jako jsou Gmail, Disk a YouTube. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Před zahájením si vytvořte aktuální zálohu dat. Při instalaci systému Chrome OS se všechna data na pevném disku přepíšou.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Společnost Google nenese odpovědnost za ztrátu dat a nezaručuje, že systém Chrome OS bude fungovat na necertifikovaných modelech. Další informace o certifikovaných modelech najdete na stránce [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Informace ohledně instalace systému Chrome OS a smazání dat: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Pokud jste připraveni pokračovat, klikněte na Nainstalovat Chrome OS. Instalace zahrnuje pouze několik jednoduchých kroků, kterými vás provedeme. Před provedením jakýchkoliv změn na počítači vás ještě jednou požádáme o potvrzení.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Nainstalovat Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome se pokouší zobrazit hesla.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -209,6 +224,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Aktualizace prohlížeče Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Systém Chrome OS</translation>
+<translation id="664235759707825982">Jsme připraveni nainstalovat Chrome OS</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
 <translation id="6679975945624592337">Nechat Google Chrome běžet na pozadí</translation>
 <translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>
@@ -228,6 +244,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7155997830309522122">Pokud ano, upravte uložené heslo v prohlížeči Chrome tak, aby odpovídalo novému heslu.</translation>
 <translation id="7161904924553537242">Vítá vás Google Chrome</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Probíhá instalace systému Chrome OS</translation>
 <translation id="7295052994004373688">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Google Chrome</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7303916856901595720">Přesunout účet do nového profilu Chrome?</translation>

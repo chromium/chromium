@@ -36,6 +36,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="1807517590912578995">‏نمایه Chrome جدا شود؟</translation>
+<translation id="1810203443153428607">‏با نصب Chrome OS، همه داده‌های موجود در دستگاه رونویسی خواهد شد.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
@@ -56,6 +57,16 @@
 <translation id="2348335408836342058">‏Chrome برای این سایت به مجوز دسترسی به دوربین و میکروفون نیاز دارد</translation>
 <translation id="234869673307233423">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="235650106824528204">‏سرپرست نمایه کاری می‌تواند داده‌های Chrome را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">‏پاک کردن دیسک سخت و نصب کردن Chrome OS</translation>
+<translation id="2417565246123344595">‏<ph name="BEGIN_PARAGRAPH1" />آماده‌ایم Chrome OS را نصب کنیم! اگر ادامه دهید:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />فایل‌ها، داده‌ها، و سیستم‌عامل کنونی پاک خواهد شد.
+          <ph name="LIST_ITEM" />Chrome OS نصب خواهد شد.
+          <ph name="LIST_ITEM" />وقتی نصب تکمیل شود، دستگاهتان خاموش خواهد شد.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />آخرین یادآوری: درصورت نصب کردن، کل دیسک سخت پاک خواهد شد. لطفاً مطمئن شوید همه داده‌های مهمتان را پشتیبان‌گیری کرده باشید.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">‏Google Chrome قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
 <translation id="2467438592969358367">‏Google Chrome می‌خواهد گذرواژه‌های شما را صادر کند. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -167,6 +178,10 @@
 <translation id="5394833366792865639">‏هم‌رسانی برگه Chrome</translation>
 <translation id="5430073640787465221">‏فایل اولویت‌های شما خراب یا نامعتبر است. Google Chrome نمی‌تواند تنظیمات شما را بازیابی کند.</translation>
 <translation id="5434383153637353914">‏این صفحه به شما امکان می‌دهد حساب‌های Google خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. این حساب‌ها در مرورگر Chrome و برنامه‌های «فروشگاه Play»، و همچنین سرویس‌هایی مثل Gmail،‏ Drive، و YouTube دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />قبل‌از شروع کار، لطفاً مطمئن شوید که نسخه پشتیبان به‌روزی از داده‌هایتان داشته باشید. با نصب Chrome OS، همه داده‌های موجود در دیسک سخت رونویسی خواهد شد.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google مسئولیت ازدست رفتن داده‌ها را برعهده نمی‌گیرد و تضمین نمی‌کند که Chrome OS در مدل‌های تأییدنشده کار کند. لطفاً برای دریافت اطلاعات بیشتر درباره مدل‌های تأییدشده، به [TBD] مراجعه کنید.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />درباره نصب Chrome OS و پاک شدن داده‌ها بیشتر بدانید: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />اگر آماده‌اید ادامه دهید، روی «نصب Chrome OS» کلیک کنید تا در تنها چند مرحله ساده درطول فرایند نصب شما را راهنمایی کنیم. قبل‌از اینکه تغییری در رایانه‌تان ایجاد کنیم، فرصت دیگری برای تأیید خواهید داشت.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">‏نصب Chrome OS</translation>
 <translation id="556024056938947818">‏Google Chrome می‌خواهد گذرواژه‌ها را نمایش دهد.</translation>
 <translation id="5566025111015594046">‏Google Chrome (ورودی mDNS)</translation>
@@ -202,6 +217,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">‏درحال به‌روزرسانی Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">‏سیستم Chrome OS</translation>
+<translation id="664235759707825982">‏آماده برای نصب Chrome OS</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="6679975945624592337">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="6739177684496155661">‏در نمایه جدیدی از Chrome ادامه می‌دهید؟</translation>
@@ -221,6 +237,7 @@
 <translation id="7155997830309522122">‏در این صورت، لطفاً گذرواژه ذخیره‌شده در Chrome را ویرایش کنید تا با گذرواژه جدیدتان مطابقت داشته باشد.</translation>
 <translation id="7161904924553537242">‏به Google Chrome خوش آمدید</translation>
 <translation id="7242029209006116544">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Google Chrome خود را می‌دهید. داده‌های Chrome شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. در صورت تمایل برای ذخیره داده‌های Chrome موجود به صورت جداگانه می‌توانید نمایه جدیدی ایجاد کنید. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">‏نصب Chrome OS درحال انجام است</translation>
 <translation id="7295052994004373688">‏از این زبان برای نمایش میانای کاربر Google Chrome استفاده می‌شود</translation>
 <translation id="7296210096911315575">اطلاعات مهم درباره استفاده و ایمنی</translation>
 <translation id="7303916856901595720">‏حساب به نمایه جدیدی از Chrome منتقل شود؟</translation>

@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">Отмена</translation>
 <translation id="8668210798914567634">Страница сохранена в список для чтения.</translation>
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
+<translation id="8691262314411702087">Выбрать объекты для синхронизации</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копировать ссылку</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9152539721251340337">Создать QR-код</translation>
 <translation id="9157836665414082580">Блокировать диалоговые окна</translation>
+<translation id="9183059292653643328">Этим браузером управляет ваша организация.</translation>
 <translation id="9188680907066685419">Выход из управляемого аккаунта</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. назад</translation>
 <translation id="9203116392574189331">Handoff</translation>

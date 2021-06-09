@@ -37,6 +37,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chrome'i sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="1807517590912578995">Kas eraldada Chrome'i profiil?</translation>
+<translation id="1810203443153428607">Chrome OS-i installimisel kirjutatakse üle kõik teie seadmes olevad andmed.</translation>
 <translation id="1812689907177901597">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chrome'i sisse logimata</translation>
 <translation id="1860536484129686729">Chrome vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
 <translation id="1873233029667955273">Google Chrome ei ole vaikebrauser</translation>
@@ -57,6 +58,16 @@
 <translation id="2348335408836342058">Chrome vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
 <translation id="234869673307233423">Chrome ei saa teie paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="235650106824528204">Kõik Chrome'i andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Tühjenda kõvaketas ja installi Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Oleme Chrome OS-i installimiseks valmis! Jätkamisel toimub järgmine.
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Kustutatakse failid, andmed ja praegune operatsioonisüsteem.
+          <ph name="LIST_ITEM" />Installitakse Chrome OS.
+          <ph name="LIST_ITEM" />Kui installimine on lõpetatud, lülitub teie seade välja.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Viimane meeldetuletus: installimisel tühjendatakse kogu kõvaketas. Veenduge, et oleksite kõik olulised andmed varundanud.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Pärast alustamist ei saa installimist tühistada.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome ei saa teie andmeid sünkroonida, sest sünkroonimine pole teie domeenil saadaval.</translation>
 <translation id="2467438592969358367">Google Chrome soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -170,6 +181,10 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5394833366792865639">Chrome’i vahelehe jagamine</translation>
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5434383153637353914">See leht võimaldab teil hallata oma Google'i kontosid, millele olete sisse logitud. Need kontod on saadaval Chrome'i brauseris, Play poe rakendustes ning teenustes, nagu Gmail, Drive ja YouTube. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Enne alustamist veenduge, et teil oleks oma andmetest ajakohane varukoopia. Chrome OS-i installimisel kirjutatakse üle kõik teie kõvakettal olevad andmed.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google ei vastuta andmekao eest ja ei garanteeri, et Chrome OS toimib sertifitseerimata mudelitel. Külastage lehte [TBD], et leida teavet sertifitseeritud mudelite kohta.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Lisateave Chrome OS-i installimise ja andmete kustutamise kohta: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Kui olete valmis jätkama, klõpsake käsul „Installi Chrome OS” ja juhendame teid installimisel, milleks on vaja vaid paar lihtsat toimingut teha. Enne, kui teie arvutis muudatusi teeme, on teil veel üks võimalus meelt muuta.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installi Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome püüab näidata paroole.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -205,6 +220,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome'i värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-i süsteem</translation>
+<translation id="664235759707825982">Chrome OS-i installimiseks valmis</translation>
 <translation id="6676384891291319759">Pääs Internetti</translation>
 <translation id="6679975945624592337">Luba Google Chrome'il taustal töötada</translation>
 <translation id="6739177684496155661">Kas jätkata uuel Chrome'i profiilil?</translation>
@@ -224,6 +240,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7155997830309522122">Sellisel juhul muutke Chrome'is oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
 <translation id="7161904924553537242">Tere tulemast Google Chrome'i</translation>
 <translation id="7242029209006116544">Logite sisse hallatud kontoga ja annate selle administraatorile üle oma Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Toimub Chrome OS-i installimine</translation>
 <translation id="7295052994004373688">Seda keelt kasutatakse Google Chrome’i UI kuvamiseks</translation>
 <translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>
 <translation id="7303916856901595720">Kas teisaldada konto uuele Chrome'i profiilile?</translation>

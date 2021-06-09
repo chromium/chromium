@@ -1677,6 +1677,7 @@
 <translation id="2755349111255270002">אתחול של מכשיר <ph name="DEVICE_TYPE" /> זה</translation>
 <translation id="2755367719610958252">ניהול תכונות נגישות</translation>
 <translation id="275662540872599901">מסך כבוי</translation>
+<translation id="2757161511365746634">הצגת המדפסת</translation>
 <translation id="2757338480560142065">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">לא ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="2764786626780673772">‏פרטי VPN</translation>
@@ -1719,6 +1720,7 @@
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2800760947029405028">העלאת תמונה</translation>
 <translation id="2801954693771979815">גודל תצוגה במסך</translation>
+<translation id="2802557211515765772">אין מדפסות מנוהלות.</translation>
 <translation id="2803313416453193357">פתיחת התיקייה</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
 <translation id="2804043232879091219">לא ניתן לפתוח את הדפדפן החלופי</translation>
@@ -3831,7 +3833,6 @@
 <translation id="512903556749061217">מחובר</translation>
 <translation id="5130675701626084557">לא ניתן היה להוריד את הפרופיל. יש לנסות שוב מאוחר יותר או לפנות לספק לקבלת עזרה.</translation>
 <translation id="5131591206283983824">הקשה וגרירה בלוח מגע</translation>
-<translation id="5133483819862530305">מהשקיעה ועד לזריחה</translation>
 <translation id="5135085122826131075">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant.</translation>
 <translation id="5135533361271311778">לא ניתן ליצור פריט סימנייה.</translation>
 <translation id="5136343472380336530">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="5171343362375269016">זיכרון מוחלף</translation>
+<translation id="5172855596271336236">קיימת מדפסת מנוהלת אחת.</translation>
 <translation id="5173668317844998239">הוספה ומחיקה של טביעות אצבע שנשמרו במפתח האבטחה</translation>
 <translation id="5175379009094579629">שם המכשיר לא חוקי. יש להזין שם מכשיר חוקי כדי לנסות שוב.</translation>
 <translation id="5177479852722101802">להמשיך לחסום גישה אל המצלמה והמיקרופון</translation>
@@ -6130,6 +6132,7 @@
 <translation id="7674542105240814168">הגישה למיקום נדחתה</translation>
 <translation id="7676119992609591770">נמצאו <ph name="NUM" /> כרטיסיות עבור '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">‏שליחת הקלטה של הקול שלך אל Google מאפשרת הכתבה בכל תיבת טקסט.</translation>
+<translation id="7679171213002716280">קיימות <ph name="PRINTER_COUNT" /> מדפסות מנוהלות</translation>
 <translation id="7680416688940118410">כיול מסך מגע</translation>
 <translation id="7681095912841365527">‏האתר רשאי להשתמש ב-Bluetooth</translation>
 <translation id="7681597159868843240">בדרך כלל, אתרים משתמשים בחיישני התנועה של המכשיר כדי לתמוך בתכונות כמו מציאות מדומה או מעקב אחר כושר</translation>
@@ -7613,6 +7616,7 @@
 <translation id="965211523698323809">אפשר לשלוח ולקבל הודעות טקסט דרך ה-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">‏לאף אתר אין גישה להתקני HID</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
+<translation id="96774243435178359">מדפסות מנוהלות</translation>
 <translation id="968000525894980488">‏מפעילים את שירותי Google Play.</translation>
 <translation id="968037381421390582">הד&amp;בקה וחיפוש של "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">מטמון של יישום</translation>

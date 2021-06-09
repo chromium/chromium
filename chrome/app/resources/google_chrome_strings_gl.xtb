@@ -39,6 +39,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asegúrate de ter a sesión iniciada en Chrome no <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="1807517590912578995">Queres utilizar un perfil de Chrome independente?</translation>
+<translation id="1810203443153428607">Ao instalar Chrome OS sobrescribiranse todos os datos que teñas no dispositivo.</translation>
 <translation id="1812689907177901597">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -59,6 +60,16 @@
 <translation id="2348335408836342058">Chrome necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Borrar unidade de disco duro e instalar Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Está todo listo para instalar Chrome OS! Ao continuar:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Borraranse os ficheiros, os datos e o teu sistema operativo actual.
+          <ph name="LIST_ITEM" />Instalarase Chrome OS.
+          <ph name="LIST_ITEM" />O dispositivo apagarase en canto remate a instalación.
+          <ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Non esquezas que coa instalación borrarase toda a unidade de disco duro. Asegúrate de ter unha copia de seguranza dos datos que sexan importantes.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />En canto se inicia a instalación non se pode cancelar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -174,6 +185,10 @@
 
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5434383153637353914">Desde esta páxina podes xestionar as contas de Google coas que teñas a sesión iniciada. Estas contas estarán dispoñibles no navegador Chrome e nas aplicacións de Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Antes de comezar, asegúrate de ter unha copia de seguranza actualizada dos teus datos. Ao instalar Chrome OS sobrescribiranse todos os datos que teñas na unidade de disco duro.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google non é responsable das perdas de datos nin tampouco garante que Chrome OS funcione en modelos que non estean aprobados. Visita [TBD] para obter máis información sobre os modelos aprobados.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Máis información sobre como instalar Chrome OS e o borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
+<ph name="BEGIN_PARAGRAPH4" />Se tes todo listo para continuar, fai clic en Instalar Chrome OS e recibirás instrucións para realizar a instalación en tan só un par de pasos sinxelos. Terás outra oportunidade de confirmar a acción antes de que fagamos cambios no ordenador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -209,6 +224,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
+<translation id="664235759707825982">Todo listo para instalar Chrome OS</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
@@ -228,6 +244,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7161904924553537242">Dámosche a benvida a Google Chrome</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">A instalación de Chrome OS está en curso</translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7303916856901595720">Queres pasar esta conta a un perfil de Chrome novo?</translation>

@@ -1675,6 +1675,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2755349111255270002">Vratite uređaj <ph name="DEVICE_TYPE" /> na zadano</translation>
 <translation id="2755367719610958252">Upravljajte funkcijama pristupačnosti</translation>
 <translation id="275662540872599901">ekran je isključen</translation>
+<translation id="2757161511365746634">Prikaz štampača</translation>
 <translation id="2757338480560142065">Provjerite podudara li se lozinka koju želite sačuvati s lozinkom za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera je blokirana</translation>
 <translation id="2764786626780673772">Detalji o VPN-u</translation>
@@ -1717,6 +1718,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2800760947029405028">Otpremite sliku</translation>
 <translation id="2801954693771979815">Veličina ekrana</translation>
+<translation id="2802557211515765772">Nema upravljanih štampača.</translation>
 <translation id="2803313416453193357">Otvori folder</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2804043232879091219">Otvaranje alternativnog preglednika nije uspjelo</translation>
@@ -3829,7 +3831,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="512903556749061217">povezano</translation>
 <translation id="5130675701626084557">Preuzimanje profila nije uspjelo. Pokušajte ponovo kasnije ili za pomoć kontaktirajte mobilnog operatera.</translation>
 <translation id="5131591206283983824">Prevlačenje dodirom na dodirnoj podlozi</translation>
-<translation id="5133483819862530305">Od sutona do svitanja</translation>
 <translation id="5135085122826131075">Pristupite Asistentu izgovaranjem "Ok Google"</translation>
 <translation id="5135533361271311778">Oznaka nije kreirana.</translation>
 <translation id="5136343472380336530">Provjerite jesu li oba uređaja otključana, jedan blizu drugoga i je li na njima uključen Bluetooth. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -3866,6 +3867,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
 <translation id="5171343362375269016">Zamijenjena memorija</translation>
+<translation id="5172855596271336236">Postoji 1 upravljani štampač.</translation>
 <translation id="5173668317844998239">Dodajte i izbrišite otiske prsta koji su sačuvani na sigurnosnom ključu</translation>
 <translation id="5175379009094579629">Naziv uređaja je nevažeći. Unesite važeći naziv uređaja da pokušate ponovo.</translation>
 <translation id="5177479852722101802">Nastavi blokirati pristup kameri i mikrofonu</translation>
@@ -6128,6 +6130,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7674542105240814168">Pristup lokaciji je odbijen</translation>
 <translation id="7676119992609591770">Za upit "<ph name="SEARCH_TEXT" />" je pronađen sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Pošaljite Googleu svoj glas da dozvolite diktiranje u bilo koje tekstualno polje.</translation>
+<translation id="7679171213002716280">Postoji sljedeći broj upravljanih štampača: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Kalibracija ekrana na dodir</translation>
 <translation id="7681095912841365527">Web lokacija može koristiti bluetooth</translation>
 <translation id="7681597159868843240">Web lokacije obično koriste senzore kretanja vašeg uređaja radi funkcija kao što je virtuelna realnost ili praćenje fitnesa</translation>
@@ -7610,6 +7613,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="965211523698323809">Šaljite i primajte SMS-ove s uređaja <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Onemogući svim web lokacijama pristup HID uređajima</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
+<translation id="96774243435178359">Upravljani štampači</translation>
 <translation id="968000525894980488">Uključite Google Play usluge.</translation>
 <translation id="968037381421390582">Zalije&amp;pi i pretraži “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Predmemorija aplikacije</translation>

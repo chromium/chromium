@@ -36,6 +36,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Assegura't que tinguis la sessió iniciada a Chrome a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="1807517590912578995">Vols separar el perfil de Chrome?</translation>
+<translation id="1810203443153428607">La instal·lació de Chrome OS sobreescriurà totes les dades del dispositiu.</translation>
 <translation id="1812689907177901597">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chrome</translation>
 <translation id="1860536484129686729">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera</translation>
 <translation id="1873233029667955273">Google Chrome no és el navegador predeterminat</translation>
@@ -56,6 +57,16 @@
 <translation id="2348335408836342058">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera i al micròfon</translation>
 <translation id="234869673307233423">Chrome no pot comprovar les teves contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="235650106824528204">L'administrador del perfil de treball pot suprimir qualsevol dada de Chrome que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Esborra la unitat de disc dur i instal·la Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Estem a punt per instal·lar Chrome OS. Quan continuïs:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />S'esborraran els fitxers, les dades i el sistema operatiu actual.
+          <ph name="LIST_ITEM" />S'instal·larà Chrome OS.
+          <ph name="LIST_ITEM" />S'apagarà el dispositiu quan es completi la instal·lació.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Un últim recordatori: la instal·lació esborrarà tota la unitat de disc dur. Assegura't que hagis fet una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Un cop comenci la instal·lació, no es pondrà cancel·lar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome no ha pogut sincronitzar les dades perquè la sincronització no està disponible per al vostre domini.</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -167,6 +178,10 @@
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5434383153637353914">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. Aquests comptes estaran disponibles al navegador Chrome i a les aplicacions de Play Store, i també en serveis com ara Gmail, Drive i YouTube. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Abans de començar, assegura't que tinguis una còpia de seguretat actualitzada de les teves dades. La instal·lació de Chrome OS sobreescriurà totes les dades de la unitat de disc dur.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google no es fa responsable de cap pèrdua de dades ni garanteix que Chrome OS funcioni en models no certificats. Visita [TBD] per obtenir més informació sobre els models certificats.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Obtén més informació sobre com pots instal·lar Chrome OS i sobre l'esborrament de dades: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Si ho tens tot preparat per continuar, fes clic a "Instal·la Chrome OS" i et guiarem per la instal·lació amb un parell de passos senzills. Tindràs una altra oportunitat per confirmar la instal·lació abans que fem cap canvi a l'ordinador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instal·la Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome està provant de mostrar les contrasenyes.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -201,6 +216,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">S'està actualitzant Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
+<translation id="664235759707825982">A punt per instal·lar Chrome OS</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
 <translation id="6679975945624592337">Permet que Google Chrome s'executi en segon pla</translation>
 <translation id="6739177684496155661">Vols continuar en un perfil de Chrome nou?</translation>
@@ -220,6 +236,7 @@
 <translation id="7155997830309522122">Si ja ho has fet, edita la contrasenya desada a Chrome perquè coincideixi amb la contrasenya nova.</translation>
 <translation id="7161904924553537242">Us donem la benvinguda a Google Chrome.</translation>
 <translation id="7242029209006116544">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Google Chrome a l'administrador corresponent. Les vostres dades de Chrome, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chrome a part. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">La instal·lació de Chrome OS està en curs</translation>
 <translation id="7295052994004373688">És l'idioma en què es mostra la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7303916856901595720">Vols moure el compte a un perfil de Chrome nou?</translation>

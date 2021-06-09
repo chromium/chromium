@@ -768,6 +768,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8668210798914567634">Denne siden er lagret i leselisten din.</translation>
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
+<translation id="8691262314411702087">Velg hva som skal synkroniseres</translation>
 <translation id="8693663554456874301">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="8706588385081740091">Passord</translation>
 <translation id="8717864919010420084">Kopiér linken</translation>
@@ -810,6 +811,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9152539721251340337">Lag en QR-kode</translation>
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
+<translation id="9183059292653643328">Denne nettleseren administreres av organisasjonen din</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>
 <translation id="9200875785104711666">for <ph name="TIME" /> d siden</translation>
 <translation id="9203116392574189331">Handoff</translation>

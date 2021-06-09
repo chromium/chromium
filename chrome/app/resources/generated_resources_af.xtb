@@ -1677,6 +1677,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2755349111255270002">Stel hierdie <ph name="DEVICE_TYPE" /> terug</translation>
 <translation id="2755367719610958252">Bestuur toeganklikheidkenmerke</translation>
 <translation id="275662540872599901">skerm af</translation>
+<translation id="2757161511365746634">Bekyk drukker</translation>
 <translation id="2757338480560142065">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera word geblokkeer</translation>
 <translation id="2764786626780673772">VPN-besonderhede</translation>
@@ -1719,6 +1720,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2800760947029405028">Laai 'n prent op</translation>
 <translation id="2801954693771979815">Skermgrootte</translation>
+<translation id="2802557211515765772">Daar is geen bestuurde drukkers nie.</translation>
 <translation id="2803313416453193357">Maak vouer oop</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
 <translation id="2804043232879091219">Die alternatiewe blaaier kon nie oopgemaak word nie</translation>
@@ -3831,7 +3833,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="512903556749061217">aangeheg</translation>
 <translation id="5130675701626084557">Profiel kon nie afgelaai word nie. Probeer asseblief later weer of kontak diensverskaffer vir hulp.</translation>
 <translation id="5131591206283983824">Raakpaneeltiksleep</translation>
-<translation id="5133483819862530305">Sonsondergang tot sonsopkoms</translation>
 <translation id="5135085122826131075">Gaan na jou Assistent toe wanneer jy "Ok Google" sê.</translation>
 <translation id="5135533361271311778">Kon nie boekmerkitem skep nie.</translation>
 <translation id="5136343472380336530">Maak seker dat albei toestelle ontsluit is, naby mekaar is, en dat Bluetooth aangeskakel is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5171045022955879922">Soek of tik URL in</translation>
 <translation id="5171343362375269016">Het geheue geruil</translation>
+<translation id="5172855596271336236">Daar is 1 bestuurde drukker.</translation>
 <translation id="5173668317844998239">Voeg vingerafdrukke by wat op jou sekuriteitsleutel geberg is en vee hulle uit</translation>
 <translation id="5175379009094579629">Die toestelnaam is ongeldig. Voer 'n geldige toestelnaam in en probeer weer.</translation>
 <translation id="5177479852722101802">Hou aan om kamera- en mikrofoontoegang te blokkeer</translation>
@@ -6131,6 +6133,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7674542105240814168">Liggingtoegang is geweier</translation>
 <translation id="7676119992609591770">Het <ph name="NUM" /> oortjie vir "<ph name="SEARCH_TEXT" />" gekry</translation>
 <translation id="7676867886086876795">Stuur jou stem na Google om diktee in enige teksveld moontlik te maak.</translation>
+<translation id="7679171213002716280">Daar is <ph name="PRINTER_COUNT" /> bestuurde drukkers.</translation>
 <translation id="7680416688940118410">Raakskermkalibrasie</translation>
 <translation id="7681095912841365527">Werf kan Bluetooth gebruik</translation>
 <translation id="7681597159868843240">Werwe gebruik gewoonlik jou toestel se bewegingsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
@@ -7610,6 +7613,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="965211523698323809">Stuur en ontvang SMS'e van jou <ph name="DEVICE_TYPE" /> af. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Moenie enige werwe toegang tot HID-toestelle gee nie</translation>
 <translation id="967624055006145463">Data geberg</translation>
+<translation id="96774243435178359">Bestuurde drukkers</translation>
 <translation id="968000525894980488">Skakel Google Play Dienste aan.</translation>
 <translation id="968037381421390582">Plak en soek vir “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Programkas</translation>

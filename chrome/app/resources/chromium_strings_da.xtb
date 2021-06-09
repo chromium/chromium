@@ -74,11 +74,13 @@
 <translation id="3350761136195634146">Der findes allerede en Chromium-profil med denne konto</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
 <translation id="3430503420100763906">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
+<translation id="3433271666494956603">Installationen af Chromium OS er i gang</translation>
 <translation id="347328004046849135">Chromium giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan skifte mellem Chromium-profiler</translation>
 <translation id="3509308970982693815">Luk alle Chromium-vinduer, og prøv igen.</translation>
 <translation id="3575459661164320785">Der er skadelig software på din computer. Chromium kan fjerne den, gendanne dine indstillinger og deaktivere udgivelser, så din browser fungerer normalt igen.</translation>
+<translation id="3610776674893128619">Ryd harddisk, og installer Chromium OS</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3651803019964686660">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
@@ -162,6 +164,15 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er skadelig, så Chromium har blokeret den.</translation>
 <translation id="6134968993075716475">Beskyttet browsing er deaktiveret. Chromium anbefaler, at du aktiverer funktionen.</translation>
 <translation id="6145820983052037069">Her kan du skifte mellem Chromium-profiler</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Vi er klar til at installere Chromium OS. Når du fortsætter, sker følgende:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Filer, data og dit aktuelle operativsystem ryddes.
+          <ph name="LIST_ITEM" />Chromium OS installeres.
+          <ph name="LIST_ITEM" />Din enhed slukker, når installationen er gennemført.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />En sidste påmindelse: Når du installerer, ryddes hele din harddisk. Sørg for, at du har sikkerhedskopieret alle dine vigtigste data.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Når installationen er gået i gang, kan den ikke annulleres.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
@@ -179,6 +190,7 @@
 <translation id="6434250628340475518">Chromium OS-system</translation>
 <translation id="6455857529632101747">Velkommen til Chromium-profiler</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
+<translation id="646620589868199210">Chromium OS er klar til at blive installeret</translation>
 <translation id="6475912303565314141">Den styrer også, hvilken side der vises, når du åbner Chromium.</translation>
 <translation id="6510925080656968729">Afinstaller Chromium</translation>
 <translation id="6542839706527980775">Hver profil har sine egne Chromium-oplysninger som f.eks. bogmærker, historik, adgangskoder m.m.</translation>
@@ -193,6 +205,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6734291798041940871">Chromium er allerede installeret for alle brugere på computeren.</translation>
 <translation id="673636774878526923">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="6774082503108938489">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6827182711503025204">Når du installerer Chromium OS, overskrives alle dataene på din enhed.</translation>
 <translation id="6847869444787758381">Chromium giver dig besked, hvis dine adgangskoder kompromitteres</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>
@@ -227,6 +240,10 @@ Chromium kan ikke gendanne dine præferencer.</translation>
       indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Før vi går i gang, skal du sørge for, at du har en opdateret backup af dine data. Når du installerer Chromium OS, overskrives alle dataene på din harddisk.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google er ikke ansvarlig for datatab og garanterer ikke, at Chromium OS vil fungere på ikke-certificerede modeller. Gå til [TBD] for at få flere oplysninger om certificerede modeller.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Få flere oplysninger om installation af Chromium OS og rydning af data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Hvis du er klar til at fortsætte, skal du klikke på "Installer Chromium OS", så guider vi dig nemt igennem installationen. Inden vi foretager ændringer på din computer, vil du have mulighed for at bekræfte dette igen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>
 <translation id="7689606757190482937">Synkroniser og tilpas Chromium på alle dine enheder</translation>
 <translation id="7729447699958282447">Chromium kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>

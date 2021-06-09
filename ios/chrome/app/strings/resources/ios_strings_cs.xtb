@@ -768,6 +768,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8654802032646794042">Zrušit</translation>
 <translation id="8668210798914567634">Tato stránka byla uložena do seznamu četby.</translation>
 <translation id="8680787084697685621">Přihlašovací údaje k účtu jsou zastaralé.</translation>
+<translation id="8691262314411702087">Zvolte typy dat, která chcete synchronizovat</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zavřít kartu}few{Zavřít karty}many{Zavřít karty}other{Zavřít karty}}</translation>
 <translation id="8706588385081740091">Hesla</translation>
 <translation id="8717864919010420084">Kopírovat odkaz</translation>
@@ -810,6 +811,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9148126808321036104">Znovu přihlásit</translation>
 <translation id="9152539721251340337">Vytvořit QR kód</translation>
 <translation id="9157836665414082580">Potlačit dialogová okna</translation>
+<translation id="9183059292653643328">Váš prohlížeč spravuje vaše organizace</translation>
 <translation id="9188680907066685419">Odhlásit se ze spravovaného účtu</translation>
 <translation id="9200875785104711666">před <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>

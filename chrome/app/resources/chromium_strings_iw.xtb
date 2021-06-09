@@ -72,11 +72,13 @@
 <translation id="3350761136195634146">‏כבר קיים פרופיל Chromium עם החשבון הזה</translation>
 <translation id="3406848076815591792">‏לעבור לפרופיל קיים של Chromium?</translation>
 <translation id="3430503420100763906">‏באמצעות פרופילים ב-Chromium, מפרידים את כל הפריטים ב-Chromium. יוצרים פרופילים המיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
+<translation id="3433271666494956603">‏ההתקנה של מערכת ההפעלה Chromium מתבצעת</translation>
 <translation id="347328004046849135">‏אם מערכת Chromium תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="3474745554856756813">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">‏ניתן לעבור בין פרופילים של Chromium באמצעות <ph name="SHORTCUT" /></translation>
 <translation id="3509308970982693815">‏יש לסגור את כל חלונות Chromium ולנסות שוב.</translation>
 <translation id="3575459661164320785">‏יש במחשב שלך תוכנה מזיקה. Chromium יכול להסיר אותה, לשחזר את ההגדרות שלך ולהשבית תוספים כדי שהדפדפן יחזור שוב לפעולה רגילה.</translation>
+<translation id="3610776674893128619">‏מחיקת הכונן הקשיח והתקנת מערכת ההפעלה Chromium</translation>
 <translation id="3639635944603682591">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chromium בתור <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון האנונימי לא ייפתח מחדש.}two{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}many{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3651803019964686660">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android שלך, צריך להיכנס אל Chromium בשני המכשירים.</translation>
@@ -160,6 +162,15 @@
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chromium חסם אותו.</translation>
 <translation id="6134968993075716475">‏הגלישה הבטוחה כבויה. ההמלצה של Chromium היא להפעיל אותה.</translation>
 <translation id="6145820983052037069">‏כאן ניתן לעבור בין פרופילים של Chromium</translation>
+<translation id="61577490437262925">‏<ph name="BEGIN_PARAGRAPH1" />הכל מוכן להתקנת מערכת ההפעלה Chromium! לאחר ההתקדמות בתהליך ההתקנה:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />הקבצים, הנתונים ומערכת ההפעלה שלך יימחקו.
+          <ph name="LIST_ITEM" />תושלם ההתקנה של מערכת ההפעלה Chromium.
+          <ph name="LIST_ITEM" />המכשיר ייכבה לאחר השלמת ההתקנה.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />תזכורת בפעם האחרונה: ההתקנה תוביל למחיקת הכונן הקשיח במלואו. חשוב לוודא שגיבית את הנתונים שחשובים לך.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}two{‏Chromium יופעל מחדש בעוד # שניות}many{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
@@ -177,6 +188,7 @@
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
 <translation id="6455857529632101747">‏ברוך בואך לפרופילים של Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}many{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
+<translation id="646620589868199210">‏הכל מוכן להתקנת מערכת ההפעלה Chromium</translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="6542839706527980775">‏בכל פרופיל מאוחסנים נתוני Chromium משלו כמו סימניות, היסטוריה, סיסמאות ועוד</translation>
@@ -191,6 +203,7 @@
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="673636774878526923">‏כדי לקבל גישה אל הפריטים שלך ב-Chromium בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="6774082503108938489">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6827182711503025204">‏התקנת מערכת ההפעלה Chromium תוביל להחלפת כל הנתונים שבמכשיר.</translation>
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>
@@ -225,6 +238,10 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 בהגדרות ה-OS של Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">‏Chromium משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="7617377681829253106">‏Chromium השתפר</translation>
+<translation id="7627575518938382525">‏<ph name="BEGIN_PARAGRAPH1" />לפני שנתחיל, חשוב לוודא שיש לך גיבוי עדכני של הנתונים שלך. התקנת מערכת ההפעלה Chromium תוביל להחלפת כל הנתונים שבכונן הקשיח.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />‏Google לא נושאת באחריות לאובדן נתונים כלשהו. בנוסף, היא לא מבטיחה שמערכת ההפעלה Chromium תפעל בדגמים שאינם מאושרים. מידע נוסף לגבי דגמים מאושרים זמין ב-[TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />פרטים נוספים על התקנת מערכת ההפעלה Chromium ומחיקת נתונים: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />אם ברצונך להמשיך, עליך ללחוץ על "התקנת מערכת ההפעלה Chromium" ומשם נדריך אותך לאורך תהליך ההתקנה במספר שלבים פשוטים. תהיה לך אפשרות לאשר פעם נוספת לפני שנבצע שינויים במחשב.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">‏Chromium אינו דפדפן ברירת המחדל שלך</translation>
 <translation id="7689606757190482937">‏סנכרון והתאמה אישית של Chromium בכל המכשירים שברשותך</translation>
 <translation id="7729447699958282447">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>

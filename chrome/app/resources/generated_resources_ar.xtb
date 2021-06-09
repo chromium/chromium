@@ -1667,6 +1667,7 @@
 <translation id="2755367719610958252">إدارة ميزات تسهيل الاستخدام
 </translation>
 <translation id="275662540872599901">الشاشة متوقفة</translation>
+<translation id="2757161511365746634">عرض الطابعة</translation>
 <translation id="2757338480560142065">يُرجى التأكد من أن كلمة المرور التي تحتفظ بها تُطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
 <translation id="2764786626780673772">‏تفاصيل الشبكة الافتراضية الخاصة (VPN)</translation>
@@ -1709,6 +1710,7 @@
 <translation id="2799223571221894425">إعادة تشغيل</translation>
 <translation id="2800760947029405028">تحميل صورة</translation>
 <translation id="2801954693771979815">حجم الشاشة</translation>
+<translation id="2802557211515765772">ما مِن طابعات مُدارة.</translation>
 <translation id="2803313416453193357">فتح المجلد</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
 <translation id="2804043232879091219">تعذَّر فتح المتصفّح البديل</translation>
@@ -3818,7 +3820,6 @@
 <translation id="512903556749061217">متصل</translation>
 <translation id="5130675701626084557">تعذَّر تنزيل الملف الشخصي. يُرجى إعادة المحاولة لاحقًا أو التواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="5131591206283983824">السحب بعد النقر على لوحة اللمس</translation>
-<translation id="5133483819862530305">من غروب الشمس إلى شروقها</translation>
 <translation id="5135085122826131075">‏الوصول إلى "مساعد Google" عند قول "Ok Google"</translation>
 <translation id="5135533361271311778">تعذر إنشاء عنصر إشارة.</translation>
 <translation id="5136343472380336530">تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -3855,6 +3856,7 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5171045022955879922">‏البحث أو إدخال عنوان URL</translation>
 <translation id="5171343362375269016">ذاكرة مساحة التبديل</translation>
+<translation id="5172855596271336236">تتوفّر طابعة واحدة مُدارة.</translation>
 <translation id="5173668317844998239">يمكنك إضافة بصمات الأصابع المحفوظة على مفتاح الأمان وحذفها.</translation>
 <translation id="5175379009094579629">اسم الجهاز غير صالح. يُرجى إدخال اسم جهاز صالح لإعادة المحاولة.</translation>
 <translation id="5177479852722101802">متابعة حظر الدخول إلى الكاميرا والميكروفون</translation>
@@ -6117,6 +6119,7 @@
 <translation id="7674542105240814168">تم رفض الوصول إلى الموقع الجغرافي</translation>
 <translation id="7676119992609591770">تم العثور على <ph name="NUM" /> علامة تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="7676867886086876795">‏يمكنك إرسال صوتك إلى Google للسماح بالإملاء في أي حقل نصي.</translation>
+<translation id="7679171213002716280">تتوفّر <ph name="PRINTER_COUNT" /> طابعة مُدارة.</translation>
 <translation id="7680416688940118410">معايرة الشاشة التي تعمل باللمس</translation>
 <translation id="7681095912841365527">يمكن للموقع الإلكتروني استخدام البلوتوث.</translation>
 <translation id="7681597159868843240">تستخدم المواقع الإلكترونية عادةً مستشعرات الحركة في جهازك لتتيح ميزات مثل الواقع الافتراضي أو تتبُّع مستوى اللياقة البدنية.</translation>
@@ -7601,6 +7604,7 @@
 <translation id="965211523698323809">إرسال رسائل نصية واستلامها من جهاز <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">‏عدم السماح لأي موقع إلكتروني بالوصول إلى أجهزة HID</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
+<translation id="96774243435178359">الطابعات المُدارة</translation>
 <translation id="968000525894980488">‏يُرجى تفعيل خدمات Google Play.</translation>
 <translation id="968037381421390582">ل&amp;صق وبحث عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">ذاكرة التخزين المؤقت للتطبيق</translation>

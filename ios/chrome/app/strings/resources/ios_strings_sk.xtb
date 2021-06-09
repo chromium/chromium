@@ -768,6 +768,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8668210798914567634">Táto stránka bola uložená do čitateľského zoznamu.</translation>
 <translation id="8680787084697685621">Informácie o prihlásení do účtu sú neaktuálne.</translation>
+<translation id="8691262314411702087">Výber typu údajov na synchronizáciu</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close Tabs}other{Zavrieť karty}}</translation>
 <translation id="8706588385081740091">Heslá</translation>
 <translation id="8717864919010420084">Kopírovať odkaz</translation>
@@ -810,6 +811,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9152539721251340337">Vytvoriť QR kód</translation>
 <translation id="9157836665414082580">Obmedziť dialógové okná</translation>
+<translation id="9183059292653643328">Tento prehliadač spravuje vaša organizácia</translation>
 <translation id="9188680907066685419">Odhlásenie zo spravovaného účtu</translation>
 <translation id="9200875785104711666">Pred <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>

@@ -1664,6 +1664,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2755349111255270002">Atiestatiet šo <ph name="DEVICE_TYPE" /> ierīci</translation>
 <translation id="2755367719610958252">Pārvaldīt pieejamības funkcijas</translation>
 <translation id="275662540872599901">ekrāns izslēgts</translation>
+<translation id="2757161511365746634">Skatīt printeri</translation>
 <translation id="2757338480560142065">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="WEBSITE" /> izmantotajai parolei.</translation>
 <translation id="2762441749940182211">Kameras lietošana ir bloķēta</translation>
 <translation id="2764786626780673772">VPN dati</translation>
@@ -1706,6 +1707,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2800760947029405028">Augšupielādēt attēlu</translation>
 <translation id="2801954693771979815">Attēlojuma lielums ekrānā</translation>
+<translation id="2802557211515765772">Nav neviena pārvaldīta printera.</translation>
 <translation id="2803313416453193357">Atvērt mapi</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
 <translation id="2804043232879091219">Nevarēja atvērt citu pārlūkprogrammu</translation>
@@ -3817,7 +3819,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="512903556749061217">pievienota</translation>
 <translation id="5130675701626084557">Profilu nevarēja lejupielādēt. Lūdzu, vēlāk mēģiniet vēlreiz vai sazinieties ar mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="5131591206283983824">Vilkšana, pieskaroties skārienpanelim</translation>
-<translation id="5133483819862530305">No saulrieta līdz saullēktam</translation>
 <translation id="5135085122826131075">Piekļūt Asistentam, kad sakāt: “Ok Google.”</translation>
 <translation id="5135533361271311778">Nevarēja izveidot grāmatzīmes vienumu.</translation>
 <translation id="5136343472380336530">Abām ierīcēm ir jābūt atbloķētām un jāatrodas blakus, turklāt tajās jābūt ieslēgtai tehnoloģijai Bluetooth. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -3854,6 +3855,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
 <translation id="5171343362375269016">Apmainītā atmiņa</translation>
+<translation id="5172855596271336236">Viens pārvaldīts printeris</translation>
 <translation id="5173668317844998239">Pievienojiet un dzēsiet drošības atslēgā saglabātos pirkstu nospiedumus.</translation>
 <translation id="5175379009094579629">Šis ierīces nosaukums nav derīgs. Ievadiet derīgu ierīces nosaukumu, lai mēģinātu vēlreiz.</translation>
 <translation id="5177479852722101802">Turpināt piekļuves bloķēšanu kamerai un mikrofonam</translation>
@@ -6113,6 +6115,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7674542105240814168">Liegta piekļuve atrašanās vietas datiem</translation>
 <translation id="7676119992609591770">Atrasta <ph name="NUM" /> cilne, kas atbilst meklēšanas vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Nosūtiet savus balss datus Google serveriem, lai atļautu diktēšanu jebkurā teksta laukā.</translation>
+<translation id="7679171213002716280">Pārvaldīto printeru skaits: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Skārienekrāna kalibrēšana</translation>
 <translation id="7681095912841365527">Vietne var izmantot Bluetooth savienojumu.</translation>
 <translation id="7681597159868843240">Parasti vietnēs ierīces kustību sensori tiek izmantoti, lai nodrošinātu noteiktas funkcijas, piemēram, virtuālo realitāti vai fizisko aktivitāšu uzskaiti.</translation>
@@ -7594,6 +7597,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="965211523698323809">Izmantojiet <ph name="DEVICE_TYPE" /> ierīci, lai sūtītu un saņemtu īsziņas. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Neatļaut nevienai vietnei piekļūt HID ierīcēm</translation>
 <translation id="967624055006145463">Dati saglabāti</translation>
+<translation id="96774243435178359">Pārvaldītie printeri</translation>
 <translation id="968000525894980488">Ieslēdziet Google Play pakalpojumus.</translation>
 <translation id="968037381421390582">Ielīmēt un meklēt “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Lietojumprogrammas kešatmiņa</translation>

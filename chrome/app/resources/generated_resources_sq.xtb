@@ -1659,6 +1659,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2755349111255270002">Rivendose këtë <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Menaxho veçoritë e qasshmërisë</translation>
 <translation id="275662540872599901">ekrani joaktiv</translation>
+<translation id="2757161511365746634">Shiko printerinView printer</translation>
 <translation id="2757338480560142065">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kamera është bllokuar</translation>
 <translation id="2764786626780673772">Detajet e lidhjes VPN</translation>
@@ -1701,6 +1702,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2800760947029405028">Ngarko imazh</translation>
 <translation id="2801954693771979815">Madhësia e ekranit</translation>
+<translation id="2802557211515765772">Nuk ka printerë të menaxhuar.</translation>
 <translation id="2803313416453193357">Hap dosjen</translation>
 <translation id="2803375539583399270">Fut kodin PIN</translation>
 <translation id="2804043232879091219">Shfletuesi alternativ nuk mund të hapej</translation>
@@ -3812,7 +3814,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="512903556749061217">e lidhur</translation>
 <translation id="5130675701626084557">Profili nuk mund të shkarkohej. Provo përsëri më vonë ose kontakto me operatorin celular për ndihmë.</translation>
 <translation id="5131591206283983824">Zvarritja me trokitje e bllokut me prekje</translation>
-<translation id="5133483819862530305">Nga perëndimi në agim</translation>
 <translation id="5135085122826131075">Hap "Asistentin" kur thua "Ok Google".</translation>
 <translation id="5135533361271311778">Artikulli i faqeshënuesve nuk mund të krijohej.</translation>
 <translation id="5136343472380336530">Sigurohu që të dyja pajisjet të jenë të shkyçura, pranë njëra-tjetrës, si dhe të kenë të aktivizuar Bluetooth-in. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -3849,6 +3850,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
 <translation id="5171343362375269016">Memoria e shkëmbyer</translation>
+<translation id="5172855596271336236">Ka 1 printer të menaxhuar.</translation>
 <translation id="5173668317844998239">Shto dhe fshi gjurmët e gishtave të ruajtura në çelësin tënd të sigurisë</translation>
 <translation id="5175379009094579629">Emri i pajisjes është i pavlefshëm. Fut një emër të vlefshëm pajisjeje për të provuar sërish.</translation>
 <translation id="5177479852722101802">Vazhdo bllokimin e qasjes te kamera dhe mikrofoni</translation>
@@ -6111,6 +6113,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7674542105240814168">Qasja te vendndodhja u refuzua</translation>
 <translation id="7676119992609591770">U gjet <ph name="NUM" /> skedë për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Dërgoja zërin Google për të lejuar diktimin në çfarëdo fushe teksti.</translation>
+<translation id="7679171213002716280">Ka <ph name="PRINTER_COUNT" /> printerë të menaxhuar.</translation>
 <translation id="7680416688940118410">Kalibrimi i ekranit me prekje</translation>
 <translation id="7681095912841365527">Sajti mund të përdorë Bluetooth-in</translation>
 <translation id="7681597159868843240">Sajtet përdorin zakonisht sensorët e lëvizjes të pajisjes për veçoritë si realiteti virtual ose monitorimi i fitnesit</translation>
@@ -7588,6 +7591,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="965211523698323809">Dërgo dhe merr mesazhe me tekst nga pajisja jote <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Mos lejo asnjë sajt të ketë qasje në pajisjet HID</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>
+<translation id="96774243435178359">Printerët e menaxhuar</translation>
 <translation id="968000525894980488">Aktivizo shërbimet e Google Play.</translation>
 <translation id="968037381421390582">Ngj&amp;it dhe kërko për “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Memoria specifike e aplikacionit</translation>

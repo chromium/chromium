@@ -75,11 +75,13 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3350761136195634146">Un profil Chromium existe déjà pour ce compte</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant ?</translation>
 <translation id="3430503420100763906">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Créez des profils pour vos amis et votre famille, ou créez un profil pour travailler et un autre pour vous divertir.</translation>
+<translation id="3433271666494956603">Installation de Chromium OS en cours</translation>
 <translation id="347328004046849135">Chromium vous avertira si vous vous connectez avec un mot de passe compromis</translation>
 <translation id="3474745554856756813">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet de passer d'un profil Chromium à un autre</translation>
 <translation id="3509308970982693815">Veuillez fermer toutes les fenêtres de Chromium, puis réessayer.</translation>
 <translation id="3575459661164320785">Un logiciel malveillant a été détecté sur votre ordinateur. Chromium peut le supprimer, restaurer vos paramètres et désactiver les extensions pour que votre navigateur fonctionne de nouveau normalement.</translation>
+<translation id="3610776674893128619">Effacer le disque dur et installer Chromium OS</translation>
 <translation id="3639635944603682591">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3651803019964686660">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chromium sur les deux appareils.</translation>
@@ -163,6 +165,15 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6129621093834146363">Chromium a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="6134968993075716475">La navigation sécurisée étant désactivée, Chromium vous recommande de l'activer.</translation>
 <translation id="6145820983052037069">Vous pouvez passer d'un profil Chromium à un autre ici</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chromium OS ! Si vous poursuivez l'opération :
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les fichiers, les données ainsi que votre système d'exploitation actuel seront supprimés.
+          <ph name="LIST_ITEM" />Chromium OS sera installé.
+          <ph name="LIST_ITEM" />Votre appareil s'éteindra une fois l'installation terminée.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Un dernier rappel : l'installation effacera la totalité de votre disque dur. Assurez-vous que toutes vos données importantes sont sauvegardées.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Une fois commencée, l'installation ne peut être annulée.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
@@ -180,6 +191,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6434250628340475518">Système Chromium OS</translation>
 <translation id="6455857529632101747">Bienvenue sur la page de profils Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium va redémarrer dans 1 seconde}one{Chromium va redémarrer dans # seconde}other{Chromium va redémarrer dans # secondes}}</translation>
+<translation id="646620589868199210">Chromium OS est prêt à être installé</translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="6542839706527980775">Chaque profil possède ses propres informations Chromium, comme des favoris, un historique, des mots de passe, etc.</translation>
@@ -194,6 +206,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6734291798041940871">Chromium est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="673636774878526923">Pour retrouver vos réglages Chromium sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>
 <translation id="6774082503108938489">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chromium. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6827182711503025204">L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre appareil.</translation>
 <translation id="6847869444787758381">Chromium vous indique si vos mots de passe ont été piratés</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
@@ -227,6 +240,10 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7585853947355360626">Si un paramètre ne s'affiche pas sur cette page, accédez aux <ph name="LINK_BEGIN" />paramètres Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
 <translation id="7617377681829253106">Chromium s'est amélioré</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chromium OS aura pour effet d'écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google n'est pas responsable de la perte de données et ne garantit pas que Chromium OS fonctionnera sur les modèles non certifiés. Consultez [à déterminer] pour en savoir plus sur les modèles certifiés.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />En savoir plus sur l'installation de Chromium OS et l'effacement des données : [URL à déterminer]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Lorsque vous êtes prêt à continuer, cliquez sur "Installer Chromium OS". Nous vous guiderons lors de l'installation (deux étapes simples). Vous pourrez confirmer chaque modification apportée à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="7729447699958282447">Impossible de synchroniser vos données dans Chromium, car la synchronisation n'est pas disponible pour votre domaine.</translation>

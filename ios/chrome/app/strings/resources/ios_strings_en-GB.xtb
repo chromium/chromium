@@ -768,6 +768,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8668210798914567634">This page has been saved to your Reading List.</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
+<translation id="8691262314411702087">Choose What to Sync</translation>
 <translation id="8693663554456874301">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="8706588385081740091">Passwords</translation>
 <translation id="8717864919010420084">Copy link</translation>
@@ -810,6 +811,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9152539721251340337">Create a QR code</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
+<translation id="9183059292653643328">This browser is managed by your organisation</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>

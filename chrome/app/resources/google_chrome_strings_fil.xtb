@@ -40,6 +40,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Tiyaking naka-sign in ka sa Chrome sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
 <translation id="1807517590912578995">Ihiwalay ang profile sa Chrome?</translation>
+<translation id="1810203443153428607">Kapag na-install ang Chrome OS, mao-overwrite ang lahat ng data sa iyong device.</translation>
 <translation id="1812689907177901597">Kapag na-off ito, maaari kang mag-sign in sa mga site ng Google tulad ng Gmail nang hindi nagsa-sign in sa Chrome</translation>
 <translation id="1860536484129686729">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
@@ -60,6 +61,16 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2348335408836342058">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="234869673307233423">Hindi masuri ng Chrome ang iyong mga password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="235650106824528204">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chrome na nabuo sa panahon ng paggamit sa profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Burahin ang Hard Drive at I-install ang Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Handa na kaming i-install ang Chrome OS! Kapag nagpatuloy ka:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Mabubura ang mga file, data, at ang iyong kasalukuyang operating system.
+          <ph name="LIST_ITEM" />Mai-install ang Chrome OS.
+          <ph name="LIST_ITEM" />Magsha-shut down ang iyong device kapag nakumpleto na ang pag-install.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Huling paalala: mabubura ng pag-install ang buong hard drive mo. Pakitiyak na may back up na ang anumang data na mahalaga sa iyo.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kapag nagsimula na ang pag-install, hindi na ito makakansela.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Hindi mai-sync ng Google Chrome ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="2467438592969358367">Gustong i-export ng Google Chrome ang iyong mga password. I-type ang password mo sa Windows para payagan ito.</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
@@ -175,6 +186,10 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 
 Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5434383153637353914">Binibigyang-daan ka ng page na ito na pamahalaan ang iyong mga naka-sign in na Google account. Magiging available ang mga account na ito sa Chrome browser at mga Play Store app, pati na rin sa mga serbisyong tulad ng Gmail, Drive, at YouTube. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Bago tayo magsimula, pakitiyak na mayroon kang up-to-date na backup ng iyong data. Kapag na-install ang Chrome OS, mao-overwrite ang lahat ng data sa iyong hard drive.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Hindi mananagot ang Google para sa anumang pagkawala ng data, at hindi nito ginagarantiyang gagana ang Chrome OS sa mga modelong hindi certified. Pakibisita ang [TBD] para matuto pa tungkol sa mga certified na modelo.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Matuto pa tungkol sa pag-i-install ng Chrome OS at pagbura ng data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Kung handa ka nang magpatuloy, i-click ang “I-install ang Chrome OS” at gagabayan ka namin sa proseso ng pag-install sa ilang madadaling hakbang lang. Magkakaroon ka ng isa pang pagkakataong magkumpirma bago kami gumawa ng anumang pagbabago sa iyong computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">I-install ang Chrome OS</translation>
 <translation id="556024056938947818">Sinusubukan ng Google Chrome na magpakita ng mga password.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,6 +225,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Ina-update ang Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
+<translation id="664235759707825982">Handa nang i-install ang Chrome OS</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
 <translation id="6679975945624592337">Hayaang Tumakbo sa Background ang Google Chrome</translation>
 <translation id="6739177684496155661">Magpatuloy sa bagong profile sa Chrome?</translation>
@@ -229,6 +245,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7155997830309522122">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chrome para tumugma ito sa bago mong password.</translation>
 <translation id="7161904924553537242">Maligayang pagdating sa Google Chrome</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Kasalukuyang ini-install ang Chrome OS</translation>
 <translation id="7295052994004373688">Ginagamit ang wikang ito para ipakita ang Google Chrome UI</translation>
 <translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>
 <translation id="7303916856901595720">Ilipat ang account sa bagong profile sa Chrome?</translation>

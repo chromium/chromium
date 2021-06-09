@@ -112,6 +112,7 @@
             * digest
             * ntlm
             Membiarkan opsi ini kosong akan memungkinkan ketiga skema digunakan.</translation>
+<translation id="1153306961094113710">Mengizinkan proses debug jarak jauh</translation>
 <translation id="1158844608156732189">Konfigurasi Kerberos (satu baris per item array), lihat https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Izinkan protokol QUIC</translation>
 <translation id="1160939557934457296">Menonaktifkan untuk melanjutkan dari halaman peringatan Safe Browsing</translation>
@@ -2330,6 +2331,15 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, tombol lekat mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="3932553013632130433">
+      Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi
+      lintas asal. Chrome akan memerlukan isolasi lintas asal saat menggunakan
+      SharedArrayBuffer mulai dari Chrome 91 dan selanjutnya (25-05-2021) untuk alasan
+      Kompatibilitas Web. Detail tambahan dapat ditemukan di:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+      Jika disetel ke Benar (True), situs dapat menggunakan SharedArrayBuffer tanpa batasan.
+      Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat menggunakan SharedArrayBuffer saat
+      diisolasi lintas asal.</translation>
 <translation id="3942041691320538491">Jika kebijakan ditetapkan ke 0 (default), Anda akan dapat mengakses alat developer dan konsol JavaScript, tetapi bukan dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 1, Anda akan dapat mengakses alat developer dan konsol JavaScript di semua konteks, termasuk yang berasal dari ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 2, Anda tidak akan dapat mengakses alat developer, dan Anda tidak dapat memeriksa elemen situs.
 
       Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.</translation>
@@ -3264,6 +3274,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan ini disetel ke False, pengguna tidak akan dapat mentransmisikan konten ke perangkat mereka. Jika kebijakan ini disetel ke True, pengguna diizinkan untuk mentransmisikan konten. Jika kebijakan ini tidak disetel, pengguna tidak diizinkan untuk mentransmisikan konten ke perangkat Chrome OS yang terdaftar, namun dapat mentransmisikan ke perangkat yang tidak terdaftar.</translation>
 <translation id="5323200200131319468">Mengaktifkan masukan lisan di layar login</translation>
 <translation id="532848608876725157">Aktifkan DNS-over-HTTPS dengan fallback yang tidak aman</translation>
+<translation id="5328965694451556034">Melaporkan login/logout</translation>
 <translation id="5329007337159326804">Peringatan: Kebijakan versi TLS maksimum akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> mulai sekitar versi 75 (sekitar bulan Juni 2019).
 
       Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan menggunakan versi maksimum default.
@@ -3586,6 +3597,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Nilai kebijakan ini hanya akan berlaku jika kebijakan <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> diaktifkan, dan tidak berlaku jika sebaliknya.</translation>
 <translation id="5697306356229823047">Laporkan pengguna perangkat</translation>
+<translation id="5699770471852263667">Jika kebijakan disetel ke Aktif, penampil PDF internal di <ph name="PRODUCT_NAME" /> akan dinonaktifkan, file PDF akan dianggap sebagai hasil download, dan pengguna akan diizinkan membuka PDF dengan aplikasi default.
+
+      Jika kebijakan disetel ke Nonaktif, file PDF akan dibuka kecuali jika pengguna menonaktifkan plugin PDF.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih apakah akan membuka PDF secara eksternal atau tidak.</translation>
 <translation id="570062449808736508">Jika kebijakan ini disetel ke string yang tidak kosong, WebView akan membaca batasan URL dari penyedia konten dengan nama otoritas yang diberikan.</translation>
 <translation id="5708969689202733975">Mengonfigurasi mode buka kunci cepat yang diizinkan</translation>
 <translation id="5715617256528927547">Menyetel kebijakan akan menentukan masa berlaku cache Objek Kebijakan Grup (GPO) dalam hitungan jam. GPO dengan durasi maksimum dapat digunakan kembali sebelum didownload ulang. Daripada mendownload ulang GPO pada setiap pengambilan kebijakan, sistem akan menggunakan kembali GPO yang di-cache selama versinya tidak berubah.
@@ -5204,6 +5220,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7709470712369261710">Jangan gunakan layanan Google untuk memberikan deskripsi gambar otomatis</translation>
 <translation id="7712109699186360774">Tanyakan setiap kali situs ingin mengakses kamera dan/atau mikrofon</translation>
 <translation id="7713608076604149344">Batasan download</translation>
+<translation id="7713845740295404764">Laporkan peristiwa login/logout</translation>
 <translation id="7715711044277116530">Persentase yang digunakan untuk menskalakan penundaan layar redup dalam mode presentasi</translation>
 <translation id="7716020145539921591">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
@@ -5436,6 +5453,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik penyimpanan.</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>
+<translation id="804619600634661088">Izinkan penggunaan proses debug jarak jauh</translation>
 <translation id="8049769137921877885">Kebijakan ini mengontrol apakah data kebijakan dan waktu pengambilan kebijakan akan dilaporkan atau tidak.
 
       Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -6022,6 +6040,11 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Menimpa permintaan penghentian yang muncul saat situs dirender oleh <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="886645881209114007">Mengizinkan pengguna menggunakan <ph name="PLUGIN_VM_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8867894831390233044">Mengontrol apakah pengguna dapat menggunakan proses debug jarak jauh.
+
+      Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna dapat menggunakan proses debug jarak jauh dengan menentukan tombol command line --remote-debugging-port dan --remote-debugging-pipe.
+
+      Jika kebijakan ini disetel ke Nonaktif, pengguna tidak diizinkan menggunakan proses debug jarak jauh.</translation>
 <translation id="8871974300055371298">Setelan konten</translation>
 <translation id="8872402969096027761">Mengaktifkan fitur aksesibilitas klik otomatis di layar login.
 
@@ -6210,6 +6233,10 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan merekam atau melaporkan waktu aktivitas.</translation>
 <translation id="9077227880520270584">Timer login otomatis akun lokal perangkat</translation>
 <translation id="9084985621503260744">Tentukan apakah aktivitas video memengaruhi pengelolaan daya</translation>
+<translation id="9087434639296483430">Melaporkan peristiwa login/logout pengguna di perangkat terdaftar termasuk login yang gagal.
+
+      Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
+      Jika disetel ke benar (true), peristiwa login/logout perangkat akan dilaporkan.</translation>
 <translation id="9088191250434406767">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan menelusuri dengan kameranya menggunakan <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran saat penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>
@@ -6306,6 +6333,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="9197740283131855199">Persentase yang digunakan untuk menskalakan penundaan layar redup jika pengguna aktif setelah peredupan</translation>
 <translation id="9200828125069750521">Parameter untuk URL gambar yang menggunakan POST</translation>
 <translation id="9204863016826119209">Kunci perusahaan dapat digunakan oleh aplikasi Android yang diinstal dan dicantumkan dalam kebijakan ini.</translation>
+<translation id="9207596996305971030">Jangan laporkan peristiwa login/logout</translation>
 <translation id="9213751049772256263">Nonaktifkan semua variasi</translation>
 <translation id="9217154963008402249">Frekuensi paket jaringan pemantauan</translation>
 <translation id="922540222991413931">Konfigurasi sumber pemasangan skrip pengguna, aplikasi, dan ekstensi</translation>
@@ -6338,6 +6366,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Catatan: Memblokir URL chrome://* internal dapat menyebabkan error tak terduga.</translation>
 <translation id="957778406002650056">URL tempat gambar <ph name="PLUGIN_VM_NAME" /> dapat didownload.</translation>
 <translation id="974349541138387272">Menentukan template URI pada resolver DNS-over-HTTPS yang diinginkan</translation>
+<translation id="979467274961593903">Jangan izinkan penggunaan proses debug jarak jauh</translation>
 <translation id="980218166381006412">Jika kebijakan disetel ke Aktif, mode latar belakang akan aktif. Dalam mode latar belakang, proses <ph name="PRODUCT_NAME" /> dimulai saat login OS dan terus berjalan saat jendela browser terakhir ditutup sehingga aplikasi latar belakang dan sesi penjelajahan dapat tetap aktif. Proses latar belakang menampilkan ikon di baki sistem dan selalu dapat ditutup dari sana.
 
       Jika kebijakan disetel ke Nonaktif, mode latar belakang menjadi nonaktif.

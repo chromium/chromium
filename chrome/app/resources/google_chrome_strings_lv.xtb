@@ -37,6 +37,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Ierīcē <ph name="TARGET_DEVICE_NAME" /> pierakstieties pārlūkā Chrome un pēc tam vēlreiz mēģiniet veikt sūtīšanu.</translation>
 <translation id="1807517590912578995">Vai izveidot atsevišķu Chrome profilu?</translation>
+<translation id="1810203443153428607">Instalējot operētājsistēmu Chrome OS, tiks pārrakstīti visi dati jūsu ierīcē.</translation>
 <translation id="1812689907177901597">Ja izslēgsiet šo iestatījumu, varēsiet pierakstīties Google vietnēs, piemēram, pakalpojumā Gmail, nepierakstoties pārlūkā Chrome.</translation>
 <translation id="1860536484129686729">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai šajā vietnē.</translation>
 <translation id="1873233029667955273">Google Chrome nav jūsu noklusējuma pārlūks.</translation>
@@ -57,6 +58,16 @@
 <translation id="2348335408836342058">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
 <translation id="234869673307233423">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="235650106824528204">Darba profila administrators var noņemt šī profila lietošanas laikā ģenerētos Chrome datus (piemēram, grāmatzīmes, vēsturi, paroles un citus iestatījumus). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Dzēst datus cietajā diskā un instalēt Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Viss ir sagatavots Chrome OS instalēšanai! Paveicot nākamas darbības, sagaidāmas tālāk norādītās izmaiņas.
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Faili, dati un pašreizējā operētājsistēma tiks dzēsta.
+          <ph name="LIST_ITEM" />Tiks instalēta operētājsistēma Chrome OS.
+          <ph name="LIST_ITEM" />Kad instalēšana būs pabeigta, ierīce tiks izslēgta.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Atgādinām, ka instalēšanas laikā tiks izdzēsti visi dati cietajā diskā. Pārliecinieties, ka esat dublējis visus jums vajadzīgos datus.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kad instalēšana būs sākta, to nevarēs atcelt.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome nevarēja sinhronizēt jūsu datus, jo jūsu domēnam nav pieejama sinhronizācija.</translation>
 <translation id="2467438592969358367">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -170,6 +181,10 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5394833366792865639">Chrome cilnes kopīgošana</translation>
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5434383153637353914">Šajā lapā varat pārvaldīt Google kontus, kuros esat pierakstījies. Šie konti būs pieejami pārlūkā Chrome un Play veikala lietotnēs, kā arī tādos pakalpojumos kā Gmail, Disks un YouTube. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Pirms darba sākšanas pārliecinieties, ka jums ir atjaunināts jūsu datu dublējums. Instalējot operētājsistēmu Chrome OS, tiks pārrakstīti visi dati cietajā diskā.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google neuzņemas atbildību par datu zudumu un negarantē, ka operētājsistēma Chrome OS darbosies nesertificētos modeļos. Lai uzzinātu vairāk par sertificētajiem modeļiem, apmeklējiet vietni [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Vairāk par Chrome OS instalēšanu un datu dzēšanu varat uzzināt vietnē [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Ja esat gatavs turpināt, noklikšķiniet uz vienuma ”Instalēt Chrome OS” — pēc tam tiks parādīti norādījumi ar dažām vienkāršām instalēšanas darbībām. Pirms izmaiņu veikšanas datorā jums būs vēl viena iespēja apstiprināt savu izvēli.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instalēt Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome mēģina rādīt paroles.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS ienākošā datplūsma)</translation>
@@ -205,6 +220,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="6566149418543181476">Notiek Google Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistēma</translation>
+<translation id="664235759707825982">Sagatavotība Chrome OS instalēšanai</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
 <translation id="6679975945624592337">Ļaut pārlūkam Google Chrome darboties fonā</translation>
 <translation id="6739177684496155661">Vai turpināt jaunā Chrome profilā?</translation>
@@ -224,6 +240,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7155997830309522122">Ja tā ir, lūdzu, rediģējiet saglabāto paroli pārlūkprogrammā Chrome, lai tā atbilstu jūsu jaunajai parolei.</translation>
 <translation id="7161904924553537242">Laipni lūdzam Google Chrome</translation>
 <translation id="7242029209006116544">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chrome datus. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Notiek operētājsistēmas Chrome OS instalēšana</translation>
 <translation id="7295052994004373688">Šī valoda tiek izmantota, lai attēlotu Google Chrome lietotāja saskarni</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7303916856901595720">Vai pārvietot kontu uz jaunu Chrome profilu?</translation>

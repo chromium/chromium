@@ -1671,6 +1671,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2755349111255270002">Tilbakestill <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Administrer tilgjengelighetsfunksjoner</translation>
 <translation id="275662540872599901">skjerm av</translation>
+<translation id="2757161511365746634">Vis skriver</translation>
 <translation id="2757338480560142065">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kameraet er blokkert</translation>
 <translation id="2764786626780673772">VPN-detaljer</translation>
@@ -1713,6 +1714,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2800760947029405028">Last opp et bilde</translation>
 <translation id="2801954693771979815">Skjermstørrelse</translation>
+<translation id="2802557211515765772">Det er ingen administrerte skrivere.</translation>
 <translation id="2803313416453193357">Åpne mappen</translation>
 <translation id="2803375539583399270">Skriv inn PIN-koden</translation>
 <translation id="2804043232879091219">Kunne ikke åpne den alternative nettleseren</translation>
@@ -3822,7 +3824,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="512903556749061217">vedlagt</translation>
 <translation id="5130675701626084557">Profilen kunne ikke lastes ned. Prøv på nytt senere, eller kontakt operatøren for å få hjelp.</translation>
 <translation id="5131591206283983824">Trykk og dra med styreflaten</translation>
-<translation id="5133483819862530305">Solnedgang til soloppgang</translation>
 <translation id="5135085122826131075">Få tilgang til assistenten når du sier «Ok Google».</translation>
 <translation id="5135533361271311778">Kan ikke opprette bokmerkeelement.</translation>
 <translation id="5136343472380336530">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -3859,6 +3860,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5171343362375269016">Virtuelt minne</translation>
+<translation id="5172855596271336236">Det er 1 administrert skriver.</translation>
 <translation id="5173668317844998239">Legg til og slett fingeravtrykk som er lagret på sikkerhetsnøkkelen</translation>
 <translation id="5175379009094579629">Dette enhetsnavnet er ugyldig. Skriv inn et nytt enhetsnavn for å prøve på nytt.</translation>
 <translation id="5177479852722101802">Fortsett blokkering av kamera- og mikrofontilgang</translation>
@@ -6121,6 +6123,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7674542105240814168">Posisjonstilgang er nektet</translation>
 <translation id="7676119992609591770">Fant <ph name="NUM" /> fane for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="7676867886086876795">Send stemmen din til Google for å tillate diktat til hvilket som helst tekstfelt.</translation>
+<translation id="7679171213002716280">Det er <ph name="PRINTER_COUNT" /> administrerte skrivere.</translation>
 <translation id="7680416688940118410">Kalibrering av berøringsskjerm</translation>
 <translation id="7681095912841365527">Nettstedet kan bruke Bluetooth</translation>
 <translation id="7681597159868843240">Nettsteder bruker vanligvis bevegelsessensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>
@@ -7600,6 +7603,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="965211523698323809">Send og motta SMS-er fra <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Ikke gi noen nettsteder tilgang til HID-enheter</translation>
 <translation id="967624055006145463">Lagrede data</translation>
+<translation id="96774243435178359">Administrerte skrivere</translation>
 <translation id="968000525894980488">Slå på Google Play Tjenester.</translation>
 <translation id="968037381421390582">&amp;Lim inn og søk etter «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="968174221497644223">Programbuffer</translation>

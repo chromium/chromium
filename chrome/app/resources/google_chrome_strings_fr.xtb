@@ -39,6 +39,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Vérifiez si vous êtes bien connecté à Chrome sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="1807517590912578995">Créer un profil Chrome séparé ?</translation>
+<translation id="1810203443153428607">L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre appareil.</translation>
 <translation id="1812689907177901597">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chrome</translation>
 <translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
@@ -59,6 +60,16 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="234869673307233423">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="235650106824528204">Toutes les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe etc.) peuvent être supprimées par l'administrateur du profil professionnel. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Effacer le disque dur et installer Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chrome OS ! Si vous poursuivez l'opération :
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les fichiers, les données ainsi que votre système d'exploitation actuel seront supprimés.
+          <ph name="LIST_ITEM" />Chrome OS sera installé.
+          <ph name="LIST_ITEM" />Votre appareil s'éteindra une fois l'installation terminée.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Un dernier rappel : l'installation effacera la totalité de votre disque dur. Assurez-vous que toutes vos données importantes sont sauvegardées.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Une fois commencée, l'installation ne peut être annulée.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Impossible de synchroniser vos données dans Google Chrome, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="2467438592969358367">Google Chrome veut exporter vos mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -174,6 +185,10 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5434383153637353914">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. Ils seront accessibles depuis le navigateur Chrome et l'appli Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google n'est pas responsable de la perte de données et ne garantit pas que Chrome OS fonctionnera sur les modèles non certifiés. Consultez [à déterminer] pour en savoir plus sur les modèles certifiés.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />En savoir plus sur l'installation de Chrome OS et l'effacement des données : [URL à déterminer]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Lorsque vous êtes prêt à continuer, cliquez sur "Installer Chrome OS". Nous vous guiderons lors de l'installation (deux étapes simples). Vous pourrez confirmer chaque modification apportée à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Tentative d'affichage des mots de passe dans Google Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -208,6 +223,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6566149418543181476">Mise à jour de Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6568793831116033768">Système Chrome OS</translation>
+<translation id="664235759707825982">Chrome OS est prêt à être installé</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="6679975945624592337">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome ?</translation>
@@ -227,6 +243,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7155997830309522122">Si oui, veuillez modifier votre mot de passe enregistré dans Chrome pour qu'il corresponde à votre nouveau mot de passe.</translation>
 <translation id="7161904924553537242">Bienvenue dans Google Chrome</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Google Chrome à son administrateur. Vos données Chrome, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chrome séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Installation de Chrome OS en cours</translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour l'UI de Google Chrome</translation>
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7303916856901595720">Associer le compte à un nouveau profil Chrome ?</translation>

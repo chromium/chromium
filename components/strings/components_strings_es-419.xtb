@@ -763,6 +763,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
 <translation id="3760561303380396507">¿Deseas usar Windows Hello en lugar de CVC?</translation>
+<translation id="3761171036307311438">Nombre en la tarjeta:</translation>
 <translation id="3761718714832595332">Ocultar estado</translation>
 <translation id="3765032636089507299">La página de Navegación segura está en construcción.</translation>
 <translation id="3765588406864124894">Buzón 9</translation>
@@ -1704,6 +1705,7 @@ Detalles adicionales:
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Se afilió:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7359588939039777303">Se bloquearon anuncios.</translation>
 <translation id="7363096869660964304">Sin embargo, no vas a pasar completamente desapercibido. El modo Incógnito no oculta tu información de navegación de un empleador, del proveedor de servicios de Internet ni de los sitios web que visitas.</translation>

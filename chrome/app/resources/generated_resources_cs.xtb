@@ -1662,6 +1662,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2755349111255270002">Resetujte toto zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Spravovat funkce přístupnosti</translation>
 <translation id="275662540872599901">obrazovka je vypnutá</translation>
+<translation id="2757161511365746634">Zobrazit tiskárnu</translation>
 <translation id="2757338480560142065">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kamera je blokována</translation>
 <translation id="2764786626780673772">Podrobnosti sítě VPN</translation>
@@ -1704,6 +1705,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2800760947029405028">Nahrát obrázek</translation>
 <translation id="2801954693771979815">Velikost obrazovky</translation>
+<translation id="2802557211515765772">Nejsou k dispozici žádné spravované tiskárny.</translation>
 <translation id="2803313416453193357">Otevřít složku</translation>
 <translation id="2803375539583399270">Zadejte kód PIN</translation>
 <translation id="2804043232879091219">Alternativní prohlížeč se nepodařilo otevřít</translation>
@@ -3813,7 +3815,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="512903556749061217">připojeno</translation>
 <translation id="5130675701626084557">Profil se nepodařilo stáhnout. Zkuste to znovu později nebo požádejte o pomoc operátora.</translation>
 <translation id="5131591206283983824">Přetažení klepnutím na touchpad</translation>
-<translation id="5133483819862530305">Od soumraku do úsvitu</translation>
 <translation id="5135085122826131075">Aktivovat Asistenta, když řeknete „Ok Google“</translation>
 <translation id="5135533361271311778">Záložku nelze vytvořit.</translation>
 <translation id="5136343472380336530">Obě zařízení musí být odemknutá, blízko u sebe a musí v nich být zapnuto Bluetooth. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -3850,6 +3851,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
 <translation id="5171343362375269016">Stránkovaná paměť</translation>
+<translation id="5172855596271336236">Je k dispozici 1 spravovaná tiskárna.</translation>
 <translation id="5173668317844998239">Přidat nebo vymazat otisky prstů uložené na bezpečnostním klíči</translation>
 <translation id="5175379009094579629">Název zařízení je neplatný. Chcete-li to zkusit znovu, zadejte platný název zařízení.</translation>
 <translation id="5177479852722101802">Blokovat přístup k webové kameře a mikrofonu i nadále</translation>
@@ -6110,6 +6112,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7674542105240814168">Přístup k poloze byl odepřen</translation>
 <translation id="7676119992609591770">Pro dotaz <ph name="SEARCH_TEXT" /> bylo nalezeno karet: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Odesílat hlasové údaje do Googlu, aby bylo možné diktovat do libovolného textového pole.</translation>
+<translation id="7679171213002716280">Je k dispozici tento počet spravovaných tiskáren: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Kalibrace dotykové obrazovky</translation>
 <translation id="7681095912841365527">Web může použít Bluetooth</translation>
 <translation id="7681597159868843240">Weby obvykle používají senzory pohybu na zařízení kvůli funkcím, jako je virtuální realita nebo sledování fitness aktivit</translation>
@@ -7586,6 +7589,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="965211523698323809">Odesílejte a přijímejte na zařízení <ph name="DEVICE_TYPE" /> textové zprávy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Nepovolovat žádným webům přístup k zařízením HID</translation>
 <translation id="967624055006145463">Uložená data</translation>
+<translation id="96774243435178359">Spravované tiskárny</translation>
 <translation id="968000525894980488">Zapněte Služby Google Play.</translation>
 <translation id="968037381421390582">Vl&amp;ožit a vyhledat výraz „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Mezipaměť aplikace</translation>

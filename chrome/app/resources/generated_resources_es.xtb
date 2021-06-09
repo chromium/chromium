@@ -1662,6 +1662,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2755349111255270002">Restablecer <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gestionar funciones de accesibilidad</translation>
 <translation id="275662540872599901">pantalla apagada</translation>
+<translation id="2757161511365746634">Ver impresora</translation>
 <translation id="2757338480560142065">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
 <translation id="2764786626780673772">Detalles de la red VPN</translation>
@@ -1704,6 +1705,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800760947029405028">Subir una imagen</translation>
 <translation id="2801954693771979815">Tamaño de la pantalla</translation>
+<translation id="2802557211515765772">No hay impresoras gestionadas.</translation>
 <translation id="2803313416453193357">Abrir carpeta</translation>
 <translation id="2803375539583399270">Introducir PIN</translation>
 <translation id="2804043232879091219">No se ha podido abrir el navegador alternativo</translation>
@@ -3814,7 +3816,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="512903556749061217">conectado</translation>
 <translation id="5130675701626084557">No se ha podido descargar el perfil. Vuelve a intentarlo más tarde o ponte en contacto con tu operador para obtener ayuda.</translation>
 <translation id="5131591206283983824">Tocar y arrastrar en el panel táctil</translation>
-<translation id="5133483819862530305">Del anochecer al amanecer</translation>
 <translation id="5135085122826131075">Accede al Asistente cuando digas "Ok Google".</translation>
 <translation id="5135533361271311778">No se ha podido crear un elemento de marcador.</translation>
 <translation id="5136343472380336530">Asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Busca o escribe una URL</translation>
 <translation id="5171343362375269016">Memoria trasladada al espacio de reserva</translation>
+<translation id="5172855596271336236">Hay 1 impresora gestionada.</translation>
 <translation id="5173668317844998239">Añade y borra las huellas dactilares guardadas en tu llave de seguridad</translation>
 <translation id="5175379009094579629">El nombre del dispositivo no es válido. Introduce uno válido para intentarlo de nuevo.</translation>
 <translation id="5177479852722101802">Seguir bloqueando el acceso a la cámara y al micrófono</translation>
@@ -6113,6 +6115,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7674542105240814168">Acceso a la ubicación rechazado</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestaña encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para utilizar el dictado en cualquier campo de texto.</translation>
+<translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras gestionadas.</translation>
 <translation id="7680416688940118410">Calibración de pantalla táctil</translation>
 <translation id="7681095912841365527">El sitio web puede usar el Bluetooth</translation>
 <translation id="7681597159868843240">Los sitios suelen usar los sensores de movimiento del dispositivo en funciones como la realidad virtual o el seguimiento de actividad física</translation>
@@ -7593,6 +7596,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="965211523698323809">Envía y recibe mensajes de texto con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">No permitir que ningún sitio web acceda a los dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
+<translation id="96774243435178359">Impresoras gestionadas</translation>
 <translation id="968000525894980488">Activa los Servicios de Google Play.</translation>
 <translation id="968037381421390582">Pe&amp;gar y buscar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Caché de aplicación</translation>

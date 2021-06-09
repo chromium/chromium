@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8668210798914567634">Тази страница е запазена в списъка ви за четене.</translation>
 <translation id="8680787084697685621">Данните за вход в профила ви не са актуални.</translation>
+<translation id="8691262314411702087">Изберете какво да синхронизирате</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9152539721251340337">Създаване на QR код</translation>
 <translation id="9157836665414082580">Диалогови прозорци: Блокиране</translation>
+<translation id="9183059292653643328">Браузърът се управлява от организацията ви</translation>
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
 <translation id="9200875785104711666">Преди <ph name="TIME" /> дни</translation>
 <translation id="9203116392574189331">Handoff</translation>

@@ -1662,6 +1662,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2755349111255270002">Restableix aquest dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gestiona les funcions d'accessibilitat</translation>
 <translation id="275662540872599901">pantalla desactivada</translation>
+<translation id="2757161511365746634">Consulta la impressora</translation>
 <translation id="2757338480560142065">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">La càmera està bloquejada</translation>
 <translation id="2764786626780673772">Detalls de la VPN</translation>
@@ -1704,6 +1705,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2799223571221894425">Reinicia</translation>
 <translation id="2800760947029405028">Penja una imatge</translation>
 <translation id="2801954693771979815">Mida de la pantalla</translation>
+<translation id="2802557211515765772">No hi ha cap impressora gestionada.</translation>
 <translation id="2803313416453193357">Obre la carpeta</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2804043232879091219">No s'ha pogut obrir el navegador alternatiu</translation>
@@ -3814,7 +3816,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="512903556749061217">connectat</translation>
 <translation id="5130675701626084557">No s'ha pogut baixar el perfil. Torna-ho a provar més tard o contacta amb l'operador per obtenir ajuda.</translation>
 <translation id="5131591206283983824">Toca i arrossega amb el ratolí tàctil</translation>
-<translation id="5133483819862530305">De la posta de sol a l'alba</translation>
 <translation id="5135085122826131075">Accedeix a l'Assistent quan diguis "Ok Google".</translation>
 <translation id="5135533361271311778">No s'ha pogut crear l'element d'adreça d'interès.</translation>
 <translation id="5136343472380336530">Comprova que els dos dispositius estiguin desbloquejats, l'un a prop de l'altre i amb el Bluetooth activat. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
 <translation id="5171343362375269016">Memòria intercanviada</translation>
+<translation id="5172855596271336236">Hi ha 1 impressora gestionada.</translation>
 <translation id="5173668317844998239">Suprimeix empremtes digitals desades a la clau de seguretat i afegeix-ne</translation>
 <translation id="5175379009094579629">El nom del dispositiu no és vàlid. Introdueix-ne un de vàlid per tornar-ho a provar.</translation>
 <translation id="5177479852722101802">Continua bloquejant l'accés a la càmera i al micròfon</translation>
@@ -6115,6 +6117,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7674542105240814168">S'ha denegat l'accés a la ubicació</translation>
 <translation id="7676119992609591770">S'ha trobat <ph name="NUM" /> pestanya per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envia la teva veu a Google per permetre els dictats en qualsevol camp de text.</translation>
+<translation id="7679171213002716280">Hi ha <ph name="PRINTER_COUNT" /> impressores gestionades.</translation>
 <translation id="7680416688940118410">Calibratge de la pantalla tàctil</translation>
 <translation id="7681095912841365527">El lloc web pot utilitzar el Bluetooth</translation>
 <translation id="7681597159868843240">Els llocs web solen utilitzar els sensors de moviment del dispositiu per a funcions com ara la realitat virtual o el seguiment de fitnes</translation>
@@ -7595,6 +7598,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="965211523698323809">Envia i rep missatges de text amb el dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">No permetis que cap lloc web accedeixi als dispositius d'interfície humana</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
+<translation id="96774243435178359">Impressores gestionades</translation>
 <translation id="968000525894980488">Activa Serveis de Google Play.</translation>
 <translation id="968037381421390582">Engan&amp;xa i cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Memòria cau de l'aplicació</translation>

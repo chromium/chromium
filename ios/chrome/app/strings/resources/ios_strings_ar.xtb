@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">إلغاء</translation>
 <translation id="8668210798914567634">تم حفظ هذه الصفحة في قائمة القراءة.</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
+<translation id="8691262314411702087">اختر ما تريد مزامنته</translation>
 <translation id="8693663554456874301">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="8706588385081740091">كلمات المرور</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
 <translation id="9152539721251340337">إنشاء رمز استجابة سريعة</translation>
 <translation id="9157836665414082580">إيقاف مربعات الحوار</translation>
+<translation id="9183059292653643328">تتولّى مؤسستك إدارة هذا المتصفّح.</translation>
 <translation id="9188680907066685419">تسجيل الخروج من الحساب المُدار</translation>
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
 <translation id="9203116392574189331">Handoff</translation>

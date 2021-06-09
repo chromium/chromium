@@ -769,6 +769,7 @@
 <translation id="8654802032646794042">Ακύρωση</translation>
 <translation id="8668210798914567634">Αυτή η σελίδα αποθηκεύτηκε στη λίστα ανάγνωσης</translation>
 <translation id="8680787084697685621">Τα στοιχεία σύνδεσης λογαριασμού έχουν λήξει.</translation>
+<translation id="8691262314411702087">Επιλέξτε τύπους δεδομένων για συγχρονισμό</translation>
 <translation id="8693663554456874301">{count,plural, =1{Κλείσιμο καρτέλας}other{Κλείσιμο καρτελών}}</translation>
 <translation id="8706588385081740091">Κωδικοί πρόσβασης</translation>
 <translation id="8717864919010420084">Αντιγραφή συνδέσμου</translation>
@@ -811,6 +812,7 @@
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9152539721251340337">Δημιουργία κωδικού QR</translation>
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
+<translation id="9183059292653643328">Η διαχείριση αυτού του προγράμματος περιήγησης πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
 <translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>

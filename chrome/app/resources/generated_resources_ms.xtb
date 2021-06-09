@@ -1677,6 +1677,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2755349111255270002">Tetapkan semula <ph name="DEVICE_TYPE" /> ini</translation>
 <translation id="2755367719610958252">Urus ciri kebolehaksesan</translation>
 <translation id="275662540872599901">skrin dimatikan</translation>
+<translation id="2757161511365746634">Lihat pencetak</translation>
 <translation id="2757338480560142065">Pastikan kata laluan yang anda simpan sepadan dengan kata laluan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera disekat</translation>
 <translation id="2764786626780673772">Butiran VPN</translation>
@@ -1719,6 +1720,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2800760947029405028">Muat naik imej</translation>
 <translation id="2801954693771979815">Saiz skrin</translation>
+<translation id="2802557211515765772">Tiada pencetak terurus.</translation>
 <translation id="2803313416453193357">Buka folder</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2804043232879091219">Penyemak imbas alternatif tidak boleh dibuka</translation>
@@ -3831,7 +3833,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="512903556749061217">dipasang</translation>
 <translation id="5130675701626084557">Profil tidak dapat dimuat turun. Sila cuba sebentar lagi atau hubungi pembawa untuk mendapatkan bantuan.</translation>
 <translation id="5131591206283983824">Penyeretan ketikan pad sentuh</translation>
-<translation id="5133483819862530305">Matahari Terbenam hingga Terbit</translation>
 <translation id="5135085122826131075">Akses Assistant anda apabila anda menyebut "Ok Google".</translation>
 <translation id="5135533361271311778">Tidak dapat mencipta item penanda halaman.</translation>
 <translation id="5136343472380336530">Pastikan kedua-dua peranti dibuka dikunci, berada rapat di antara satu sama lain dan Bluetooth telah dihidupkan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5171045022955879922">Buat carian atau taipkan URL</translation>
 <translation id="5171343362375269016">Memori Ditukar</translation>
+<translation id="5172855596271336236">Terdapat 1 pencetak terurus.</translation>
 <translation id="5173668317844998239">Tambah dan padam cap jari yang disimpan pada kunci keselamatan anda</translation>
 <translation id="5175379009094579629">Nama peranti tidak sah. Masukkan nama peranti yang sah untuk mencuba sekali lagi.</translation>
 <translation id="5177479852722101802">Teruskan menyekat akses kamera dan mikrofon</translation>
@@ -6130,6 +6132,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7674542105240814168">Akses lokasi ditolak</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="7676867886086876795">Hantar suara anda kepada Google untuk membolehkan pengimlakan dalam mana-mana medan teks.</translation>
+<translation id="7679171213002716280">Terdapat <ph name="PRINTER_COUNT" /> pencetak terurus.</translation>
 <translation id="7680416688940118410">Penentukuran skrin sentuh</translation>
 <translation id="7681095912841365527">Tapak boleh menggunakan bluetooth</translation>
 <translation id="7681597159868843240">Laman biasanya menggunakan penderia gerakan peranti anda untuk ciri seperti realiti maya atau penjejakan kecergasan</translation>
@@ -7611,6 +7614,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="965211523698323809">Hantar dan terima mesej teks daripada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Jangan benarkan mana-mana tapak mengakses peranti HID</translation>
 <translation id="967624055006145463">Data disimpan</translation>
+<translation id="96774243435178359">Pencetak terurus</translation>
 <translation id="968000525894980488">Hidupkan perkhidmatan Google Play.</translation>
 <translation id="968037381421390582">Ta&amp;mpal dan Cari “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Cache aplikasi</translation>

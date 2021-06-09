@@ -1661,6 +1661,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> cihazını sıfırla</translation>
 <translation id="2755367719610958252">Erişilebilirlik özelliklerini yönet</translation>
 <translation id="275662540872599901">ekran kapalı</translation>
+<translation id="2757161511365746634">Yazıcıyı göster</translation>
 <translation id="2757338480560142065">Kaydettiğiniz şifrenin <ph name="WEBSITE" /> için kullandığınız şifreyle eşleştiğinden emin olun</translation>
 <translation id="2762441749940182211">Kamera engellendi</translation>
 <translation id="2764786626780673772">VPN ayrıntıları</translation>
@@ -1703,6 +1704,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2800760947029405028">Resim yükle</translation>
 <translation id="2801954693771979815">Ekran boyutu</translation>
+<translation id="2802557211515765772">Yönetilen yazıcı yok.</translation>
 <translation id="2803313416453193357">Klasörü aç</translation>
 <translation id="2803375539583399270">PIN girin</translation>
 <translation id="2804043232879091219">Alternatif tarayıcı açılamadı</translation>
@@ -3814,7 +3816,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="512903556749061217">eklendi</translation>
 <translation id="5130675701626084557">Profil indirilemedi. Lütfen daha sonra tekrar deneyin veya yardım için operatörle iletişim kurun.</translation>
 <translation id="5131591206283983824">Dokunmatik alana dokunarak sürükleme</translation>
-<translation id="5133483819862530305">Güneşin Batışından Doğuşuna</translation>
 <translation id="5135085122826131075">Asistanınıza "Ok Google" diyerek erişin.</translation>
 <translation id="5135533361271311778">Yer işareti öğesi oluşturulamadı.</translation>
 <translation id="5136343472380336530">Her iki cihazın da kilidinin açık ve birbirine yakın olduğundan, Bluetooth ayarlarının etkin olduğundan emin olun. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5171045022955879922">Arayın veya URL'yi yazın</translation>
 <translation id="5171343362375269016">Değiştirilmiş Bellek</translation>
+<translation id="5172855596271336236">1 adet yönetilen yazıcı var.</translation>
 <translation id="5173668317844998239">Güvenlik anahtarınızda kayıtlı parmak izlerini ekleme ve silme</translation>
 <translation id="5175379009094579629">Cihaz adı geçersiz. Tekrar denemek için geçerli bir cihaz adı girin.</translation>
 <translation id="5177479852722101802">Kamera ve mikrofon erişimini engellemeye devam et</translation>
@@ -6113,6 +6115,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7674542105240814168">Konum erişimi reddedildi</translation>
 <translation id="7676119992609591770">"<ph name="SEARCH_TEXT" />" İçin <ph name="NUM" /> Sekme Bulundu</translation>
 <translation id="7676867886086876795">Dikte özelliğiyle metin alanına herhangi bir şey yazabilmek için sesinizi Google'a gönderin.</translation>
+<translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> adet yönetilen yazıcı var.</translation>
 <translation id="7680416688940118410">Dokunmatik ekran kalibrasyonu</translation>
 <translation id="7681095912841365527">Site, Bluetooth'u kullanabilir</translation>
 <translation id="7681597159868843240">Sanal gerçeklik veya fitness takibi gibi özelliklerin kullanılması için siteler genellikle cihazınızın hareket sensörlerini kullanır</translation>
@@ -7591,6 +7594,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> cihazınızdan kısa mesaj gönderin ve alın <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Hiçbir sitenin HID cihazlara erişmesine izin verme</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
+<translation id="96774243435178359">Yönetilen yazıcılar</translation>
 <translation id="968000525894980488">Google Play hizmetlerini açın.</translation>
 <translation id="968037381421390582">Ya&amp;pıştır ve “<ph name="SEARCH_TERMS" />” Sorgusunu Ara</translation>
 <translation id="968174221497644223">Uygulama önbelleği</translation>

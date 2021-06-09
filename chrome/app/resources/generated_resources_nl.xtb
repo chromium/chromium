@@ -1661,6 +1661,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
 <translation id="2755367719610958252">Toegankelijkheidsfuncties beheren</translation>
 <translation id="275662540872599901">scherm uit</translation>
+<translation id="2757161511365746634">Printer bekijken</translation>
 <translation id="2757338480560142065">Zorg ervoor dat het wachtwoord dat je opslaat, overeenkomt met je wachtwoord voor <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Camera geblokkeerd</translation>
 <translation id="2764786626780673772">VPN-gegevens</translation>
@@ -1703,6 +1704,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2800760947029405028">Een afbeelding uploaden</translation>
 <translation id="2801954693771979815">Schermgrootte</translation>
+<translation id="2802557211515765772">Er zijn geen beheerde printers.</translation>
 <translation id="2803313416453193357">Map openen</translation>
 <translation id="2803375539583399270">Pincode opgeven</translation>
 <translation id="2804043232879091219">De alternatieve browser kan niet worden geopend</translation>
@@ -3812,7 +3814,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="512903556749061217">aangesloten</translation>
 <translation id="5130675701626084557">Het profiel kan niet worden gedownload. Probeer het later opnieuw of neem contact op met je provider voor hulp.</translation>
 <translation id="5131591206283983824">Tikken en slepen op touchpad</translation>
-<translation id="5133483819862530305">Zonsondergang tot zonsopgang</translation>
 <translation id="5135085122826131075">Activeer je Assistent als je 'Oké Google' zegt.</translation>
 <translation id="5135533361271311778">Kan bookmarkitem niet maken.</translation>
 <translation id="5136343472380336530">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -3849,6 +3850,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
 <translation id="5171343362375269016">Wisselgeheugen</translation>
+<translation id="5172855596271336236">Er is 1 beheerde printer.</translation>
 <translation id="5173668317844998239">Vingerafdrukken toevoegen en verwijderen die zijn opgeslagen op je beveiligingssleutel</translation>
 <translation id="5175379009094579629">De apparaatnaam is ongeldig. Geef een geldige apparaatnaam op of probeer het opnieuw.</translation>
 <translation id="5177479852722101802">Toegang tot de camera en microfoon blijven blokkeren</translation>
@@ -6111,6 +6113,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7674542105240814168">Toegang tot locatie geweigerd</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> tabblad gevonden voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Verzend je stem naar Google zodat je kunt dicteren in tekstvelden.</translation>
+<translation id="7679171213002716280">Er zijn <ph name="PRINTER_COUNT" /> beheerde printers.</translation>
 <translation id="7680416688940118410">Kalibratie touchscreen</translation>
 <translation id="7681095912841365527">Site kan Bluetooth gebruiken</translation>
 <translation id="7681597159868843240">Sites gebruiken de bewegingssensoren van je apparaat meestal voor functies zoals virtual reality of fitnesstracking</translation>
@@ -7590,6 +7593,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="965211523698323809">Sms'jes verzenden en ontvangen op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Sites geen toegang tot HID-apparaten geven</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
+<translation id="96774243435178359">Beheerde printers</translation>
 <translation id="968000525894980488">Zet Google Play-services aan.</translation>
 <translation id="968037381421390582">Pl&amp;akken en zoeken naar '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="968174221497644223">Applicatiecache</translation>

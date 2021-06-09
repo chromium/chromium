@@ -768,6 +768,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8654802032646794042">Anulează</translation>
 <translation id="8668210798914567634">Această pagină a fost salvată în Lista de lectură.</translation>
 <translation id="8680787084697685621">Datele de conectare la cont au expirat.</translation>
+<translation id="8691262314411702087">Alegeți elementele de sincronizat</translation>
 <translation id="8693663554456874301">{count,plural, =1{Închide fila}few{Închide filele}other{Închide filele}}</translation>
 <translation id="8706588385081740091">Parole</translation>
 <translation id="8717864919010420084">Copiază linkul</translation>
@@ -810,6 +811,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9152539721251340337">Creează un cod QR</translation>
 <translation id="9157836665414082580">Închide casetele de dialog</translation>
+<translation id="9183059292653643328">Browserul este gestionat de organizația ta</translation>
 <translation id="9188680907066685419">Deconectează-te de la contul gestionat</translation>
 <translation id="9200875785104711666">acum <ph name="TIME" /> zile</translation>
 <translation id="9203116392574189331">Handoff</translation>

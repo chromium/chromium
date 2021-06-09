@@ -1678,6 +1678,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2755349111255270002">I-reset ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="2755367719610958252">Pamahalaan ang mga feature sa accessibility</translation>
 <translation id="275662540872599901">naka-off ang screen</translation>
+<translation id="2757161511365746634">Tingnan ang printer</translation>
 <translation id="2757338480560142065">Tiyaking ang password na sine-save mo ay tumutugma sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Naka-block ang camera</translation>
 <translation id="2764786626780673772">Mga detalye ng VPN</translation>
@@ -1720,6 +1721,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2800760947029405028">Mag-upload ng larawan</translation>
 <translation id="2801954693771979815">Laki ng screen</translation>
+<translation id="2802557211515765772">Walang pinapamahalaang printer.</translation>
 <translation id="2803313416453193357">Buksan ang folder</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
 <translation id="2804043232879091219">Hindi mabuksan ang alternatibong browser</translation>
@@ -3832,7 +3834,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="512903556749061217">naka-attach</translation>
 <translation id="5130675701626084557">Hindi ma-download ang profile. Pakisubukan ulit sa ibang pagkakataon o makipag-ugnayan sa carrier para sa tulong.</translation>
 <translation id="5131591206283983824">Pag-tap para mag-drag gamit ang touchpad</translation>
-<translation id="5133483819862530305">Paglubog ng Araw hanggang Pagsikat ng Araw</translation>
 <translation id="5135085122826131075">I-access ang iyong Assistant kapag sinabi mong "Ok Google."</translation>
 <translation id="5135533361271311778">Hindi makalikha ng item ng bookmark.</translation>
 <translation id="5136343472380336530">Tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -3869,6 +3870,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5171045022955879922">Hanapin o i-type ang URL</translation>
 <translation id="5171343362375269016">Swapped Memory</translation>
+<translation id="5172855596271336236">May 1 pinapamahalaang printer.</translation>
 <translation id="5173668317844998239">Magdagdag at mag-delete ng mga fingerprint na naka-save sa iyong security key</translation>
 <translation id="5175379009094579629">Invalid ang pangalan ng device. Maglagay ng valid na pangalan ng device para subukang muli.</translation>
 <translation id="5177479852722101802">Ipagpatuloy ang pag-block ng access sa camera at mikropono</translation>
@@ -6131,6 +6133,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7674542105240814168">Tinanggihan ang access sa lokasyon</translation>
 <translation id="7676119992609591770">Nakakita ng <ph name="NUM" /> Tab Para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Ipinapadala ang iyong boses sa Google para mabigyang-daan ang dictation sa anumang field ng text.</translation>
+<translation id="7679171213002716280">May <ph name="PRINTER_COUNT" /> (na) pinapamahalaang printer.</translation>
 <translation id="7680416688940118410">Pag-calibrate sa touchscreen</translation>
 <translation id="7681095912841365527">Maaaring gumamit ng bluetooth ang site</translation>
 <translation id="7681597159868843240">Karaniwang ginagamit ng mga site ang mga sensor ng paggalaw ng iyong device para sa mga feature na tulad ng virtual reality o pag-track sa fitness</translation>
@@ -7614,6 +7617,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="965211523698323809">Magpadala at makatanggap ng mga text message mula sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Huwag payagan ang anumang site na i-access ang mga HID device</translation>
 <translation id="967624055006145463">Naka-store na data</translation>
+<translation id="96774243435178359">Mga pinapamahalaang printer</translation>
 <translation id="968000525894980488">I-on ang mga serbisyo ng Google Play.</translation>
 <translation id="968037381421390582">I-pa&amp;ste at Hanapin ang “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Cache ng application</translation>

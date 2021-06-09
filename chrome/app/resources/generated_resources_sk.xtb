@@ -1664,6 +1664,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2755349111255270002">Resetovanie tohto zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Spravovať funkcie dostupnosti</translation>
 <translation id="275662540872599901">obrazovka je vypnutá</translation>
+<translation id="2757161511365746634">Zobraziť tlačiareň</translation>
 <translation id="2757338480560142065">Ukladané heslo sa musí zhodovať s tým, ktoré používate pre web <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kamera je zablokovaná</translation>
 <translation id="2764786626780673772">Podrobnosti o sieti VPN</translation>
@@ -1706,6 +1707,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2800760947029405028">Nahrať obrázok</translation>
 <translation id="2801954693771979815">Veľkosť obrazovky</translation>
+<translation id="2802557211515765772">K dispozícii nie sú žiadne spravované tlačiarne.</translation>
 <translation id="2803313416453193357">Otvoriť priečinok</translation>
 <translation id="2803375539583399270">Zadajte kód PIN</translation>
 <translation id="2804043232879091219">Alternatívny prehliadač sa nepodarilo otvoriť</translation>
@@ -3817,7 +3819,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="512903556749061217">pripojené</translation>
 <translation id="5130675701626084557">Profil sa nedal stiahnuť. Skúste to neskôr alebo požiadajte o pomoc operátora.</translation>
 <translation id="5131591206283983824">Presun klepnutím na touchpade</translation>
-<translation id="5133483819862530305">Od západu do východu slnka</translation>
 <translation id="5135085122826131075">Aktivujte svojho Asistenta vyslovením výrazu „OK Google“.</translation>
 <translation id="5135533361271311778">Nepodarilo sa vytvoriť položku záložiek</translation>
 <translation id="5136343472380336530">Obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -3854,6 +3855,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5171045022955879922">Vyhľadajte alebo zadajte webovú adresu</translation>
 <translation id="5171343362375269016">Swapovaná pamäť</translation>
+<translation id="5172855596271336236">K dispozícii je jedna spravovaná tlačiareň.</translation>
 <translation id="5173668317844998239">Pridať a odstrániť odtlačky prstov uložené v bezpečnostnom kľúči</translation>
 <translation id="5175379009094579629">Názov zariadenia je neplatný. Skúste to znova zadaním platného názvu zariadenia.</translation>
 <translation id="5177479852722101802">Aj naďalej blokovať prístup ku kamere a mikrofónu</translation>
@@ -6116,6 +6118,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7674542105240814168">Prístup k polohe bol odmietnutý</translation>
 <translation id="7676119992609591770">Bola nájdená <ph name="NUM" /> karta pre dopyt <ph name="SEARCH_TEXT" /></translation>
 <translation id="7676867886086876795">Odošlite svoj hlas do Googlu a umožnite tak diktovanie do všetkých textových polí.</translation>
+<translation id="7679171213002716280">Počet spravovaných tlačiarní: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Kalibrácia dotykovej obrazovky</translation>
 <translation id="7681095912841365527">Web môže používať Bluetooth</translation>
 <translation id="7681597159868843240">Weby zvyčajne používajú senzory pohybu zariadenia, aby mohli poskytovať funkcie, ako je virtuálna realita alebo sledovanie kondície</translation>
@@ -7596,6 +7599,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="965211523698323809">Odosielajte a prijímajte textové správy zo svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Zakázať všetkým webom prístup k zariadeniam HID</translation>
 <translation id="967624055006145463">Uložené dáta</translation>
+<translation id="96774243435178359">Spravované tlačiarne</translation>
 <translation id="968000525894980488">Zapnite Služby Google Play</translation>
 <translation id="968037381421390582">Prilepiť a vyhľadať dopyt <ph name="SEARCH_TERMS" /></translation>
 <translation id="968174221497644223">Vyrovnávacia pamäť aplikácie</translation>

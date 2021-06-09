@@ -112,6 +112,7 @@
             * digest
             * ntlm
             如果您将此选项留空，上述三种方案都可以使用。</translation>
+<translation id="1153306961094113710">允许进行远程调试</translation>
 <translation id="1158844608156732189">Kerberos 配置（每个数组项各占 1 行），请参阅 https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html。</translation>
 <translation id="1160479894929412407">允许使用 QUIC 协议</translation>
 <translation id="1160939557934457296">禁止从安全浏览警告页面继续访问</translation>
@@ -5359,6 +5360,7 @@
       如果此政策已停用或未设置，已注册的设备将不会报告存储统计信息。</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="804619600634661088">允许进行远程调试</translation>
 <translation id="8049769137921877885">此政策旨在控制是否报告政策数据和政策提取时间。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -5945,6 +5947,11 @@
 <translation id="8860342862142842017">对于指定的一系列 subjectPublicKeyInfo 哈希，不强制执行证书透明化要求</translation>
 <translation id="8864975621965365890">浏览使用 <ph name="PRODUCT_FRAME_NAME" />呈现的网站时，阻止显示“停止支持”的提示。</translation>
 <translation id="886645881209114007">允许用户在 <ph name="PRODUCT_OS_NAME" />上使用 <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8867894831390233044">控制用户是否可以进行远程调试。
+
+      如果此政策已启用或未设置，用户便可以通过指定 --remote-debugging-port 和 --remote-debugging-pipe 命令行开关进行远程调试。
+
+      如果此政策已停用，用户将无法进行远程调试。</translation>
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8872402969096027761">在登录屏幕上启用“自动点击”无障碍功能。
 
@@ -6259,6 +6266,7 @@
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
+<translation id="979467274961593903">不允许进行远程调试</translation>
 <translation id="980218166381006412">如果此政策已启用，系统会开启后台模式。在后台模式下，<ph name="PRODUCT_NAME" /> 进程会在用户登录操作系统时启动，并会在最后一个浏览器窗口关闭后继续运行，从而使后台应用和浏览会话保持活动状态。系统任务栏中会显示该后台进程的图标，用户可以随时在此处关闭该后台进程。
 
       如果此政策已停用，系统会关闭后台模式。

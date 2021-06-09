@@ -766,6 +766,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3754210790023674521">Quitter le mode PIP (Picture-in-picture)</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
 <translation id="3760561303380396507">Utiliser Windows Hello au lieu du code CVC ?</translation>
+<translation id="3761171036307311438">Titulaire de la carte :</translation>
 <translation id="3761718714832595332">Masquer l'état</translation>
 <translation id="3765032636089507299">La page de navigation sécurisée est en cours de création.</translation>
 <translation id="3765588406864124894">Boîte aux lettres 9</translation>
@@ -1712,6 +1713,7 @@ Informations supplémentaires :
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Affilié :</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>
 <translation id="7363096869660964304">Cela ne vous rend pas invisible pour autant. Si vous passez en navigation privée, votre employeur, votre fournisseur d'accès à Internet ou les sites Web que vous consultez pourront toujours avoir accès à votre navigation.</translation>

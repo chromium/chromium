@@ -768,6 +768,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8654802032646794042">Tühista</translation>
 <translation id="8668210798914567634">See leht on jäädvustatud teie lugemisloendisse.</translation>
 <translation id="8680787084697685621">Konto sisselogimisüksikasjad on aegunud.</translation>
+<translation id="8691262314411702087">Vali sünkroonitavad andmed</translation>
 <translation id="8693663554456874301">{count,plural, =1{Sule vaheleht}other{Sule vahelehed}}</translation>
 <translation id="8706588385081740091">Paroolid</translation>
 <translation id="8717864919010420084">Kopeeri link</translation>
@@ -810,6 +811,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9152539721251340337">QR-koodi loomine</translation>
 <translation id="9157836665414082580">Blokeeri dialoogid</translation>
+<translation id="9183059292653643328">Seda brauserit haldab teie organisatsioon</translation>
 <translation id="9188680907066685419">Hallatud kontolt väljalogimine</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> p tagasi</translation>
 <translation id="9203116392574189331">Handoff</translation>

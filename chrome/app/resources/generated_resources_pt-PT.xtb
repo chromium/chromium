@@ -1662,6 +1662,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2755349111255270002">Reponha este <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gerir funcionalidades de acessibilidade</translation>
 <translation id="275662540872599901">ecrã desligado</translation>
+<translation id="2757161511365746634">Veja a impressora</translation>
 <translation id="2757338480560142065">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Câmara bloqueada</translation>
 <translation id="2764786626780673772">Detalhes da VPN</translation>
@@ -1704,6 +1705,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800760947029405028">Carregar uma imagem</translation>
 <translation id="2801954693771979815">Tamanho do ecrã</translation>
+<translation id="2802557211515765772">Não existem impressoras geridas.</translation>
 <translation id="2803313416453193357">Abrir pasta</translation>
 <translation id="2803375539583399270">Introduzir PIN</translation>
 <translation id="2804043232879091219">Não foi possível abrir o navegador alternativo.</translation>
@@ -3816,7 +3818,6 @@ Pretende pará-lo?</translation>
 <translation id="512903556749061217">ligação estabelecida</translation>
 <translation id="5130675701626084557">Não foi possível transferir o perfil. Tente novamente mais tarde ou contacte o operador para obter ajuda.</translation>
 <translation id="5131591206283983824">Arrastamento através do toque do touchpad</translation>
-<translation id="5133483819862530305">Do pôr do sol ao nascer do sol</translation>
 <translation id="5135085122826131075">Aceda ao Assistente ao dizer "Ok Google".</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
 <translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -3853,6 +3854,7 @@ Pretende pará-lo?</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5171045022955879922">Pesquise ou escreva URL</translation>
 <translation id="5171343362375269016">Memória trocada</translation>
+<translation id="5172855596271336236">Existe 1 impressora gerida.</translation>
 <translation id="5173668317844998239">Adicionar e eliminar as impressões digitais guardadas na sua chave de segurança</translation>
 <translation id="5175379009094579629">O nome do dispositivo é inválido. Introduza um nome do dispositivo válido e tente novamente.</translation>
 <translation id="5177479852722101802">Continuar a bloquear o acesso à câmara e ao microfone</translation>
@@ -6116,6 +6118,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7674542105240814168">Acesso à localização recusado</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> separador encontrado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envie a sua voz para o Google para permitir a introdução por voz em qualquer campo de texto.</translation>
+<translation id="7679171213002716280">Existem <ph name="PRINTER_COUNT" /> impressoras geridas.</translation>
 <translation id="7680416688940118410">Calibração do ecrã tátil</translation>
 <translation id="7681095912841365527">O site pode utilizar o Bluetooth.</translation>
 <translation id="7681597159868843240">Normalmente, os sites utilizam os sensores de movimentos do seu dispositivo para funcionalidades como realidade virtual ou monitorização de fitness</translation>
@@ -7595,6 +7598,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto com o <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Não permitir o acesso de sites a dispositivos HID</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
+<translation id="96774243435178359">Impressoras geridas</translation>
 <translation id="968000525894980488">Ative os Serviços do Google Play.</translation>
 <translation id="968037381421390582">Co&amp;lar e pesquisar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Cache da aplicação</translation>

@@ -1673,6 +1673,7 @@
 <translation id="2755349111255270002">Энэ <ph name="DEVICE_TYPE" />-г шинэчлэх</translation>
 <translation id="2755367719610958252">Хандалтын онцлогийг удирдах</translation>
 <translation id="275662540872599901">дэлгэц унтраалттай</translation>
+<translation id="2757161511365746634">Хэвлэгчийг харах</translation>
 <translation id="2757338480560142065">Таны хадгалж буй нууц үг <ph name="WEBSITE" />-н нууц үгтэй таарч байгаа эсэхийг шалгана уу</translation>
 <translation id="2762441749940182211">Камерыг блоклосон</translation>
 <translation id="2764786626780673772">VPN-н дэлгэрэнгүй</translation>
@@ -1715,6 +1716,7 @@
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
 <translation id="2800760947029405028">Зураг байршуулах</translation>
 <translation id="2801954693771979815">Дэлгэцийн хэмжээ</translation>
+<translation id="2802557211515765772">Удирддаг хэвлэгч байхгүй байна.</translation>
 <translation id="2803313416453193357">Хавтсыг нээ</translation>
 <translation id="2803375539583399270">ПИН оруулна уу</translation>
 <translation id="2804043232879091219">Өөр хөтчийг нээж чадсангүй</translation>
@@ -3826,7 +3828,6 @@
 <translation id="512903556749061217">Хавсаргасан</translation>
 <translation id="5130675701626084557">Профайлыг татаж чадсангүй. Дараа дахин оролдох эсвэл тусламж авахын тулд оператор компанитай холбогдоно уу.</translation>
 <translation id="5131591206283983824">Мэдрэгч самбарыг товшиж чирэх</translation>
-<translation id="5133483819862530305">Нар мандахаас нар жаргах хүртэл</translation>
 <translation id="5135085122826131075">"Ok Google" гэж хэлээд Туслахдаа хандаарай.</translation>
 <translation id="5135533361271311778">Хайлтын жагсаалтын зүйл үүсгэж чадсангүй.</translation>
 <translation id="5136343472380336530">Хоёр төхөөрөмжийн түгжээг хоёуланг нь тайлсан эсэх, хоорондоо ойрхон эсэх, Bluetooth-г нь асаасан эсэхээ шалгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -3863,6 +3864,7 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5171045022955879922">Хайх эсвэл холбоосыг бичиж оруул</translation>
 <translation id="5171343362375269016">Солилцсон санах ой</translation>
+<translation id="5172855596271336236">Удирддаг 1 хэвлэгч байна.</translation>
 <translation id="5173668317844998239">Аюулгүй байдлын түлхүүртээ хурууны хээ нэмэх, хадгалсан хурууны хээг устгах</translation>
 <translation id="5175379009094579629">Төхөөрөмжийн нэр буруу байна. Дахин оролдохын тулд төхөөрөмжийн зөв нэр оруулна уу.</translation>
 <translation id="5177479852722101802">Камер болон микрофон руу нэвтрэхийг үргэлжлүүлэн хориглох</translation>
@@ -6125,6 +6127,7 @@
 <translation id="7674542105240814168">Байршилд хандахыг зөвшөөрөөгүй</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />'-н <ph name="NUM" /> таб оллоо</translation>
 <translation id="7676867886086876795">Диктафоныг текстийн дурын талбарт зөвшөөрөхийн тулд дуу хоолойгоо Google-д илгээнэ үү.</translation>
+<translation id="7679171213002716280">Удирддаг <ph name="PRINTER_COUNT" /> хэвлэгч байна.</translation>
 <translation id="7680416688940118410">Мэдрэмтгий дэлгэцийн тохируулга</translation>
 <translation id="7681095912841365527">Сайт bluetooth-г ашиглах боломжтой</translation>
 <translation id="7681597159868843240">Сайтууд ихэвчлэн виртуал бодит байдал эсвэл фитнесийг хянах зэрэг онцлогуудад зориулж таны төхөөрөмжийн хөдөлгөөн мэдрэгчийг ашигладаг</translation>
@@ -7599,6 +7602,7 @@
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" />-с мессеж илгээх, хүлээн авах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">HID төхөөрөмжүүдэд хандахыг ямар ч сайтад бүү зөвшөөр</translation>
 <translation id="967624055006145463">Хадгалсан өгөгдөл</translation>
+<translation id="96774243435178359">Удирддаг хэвлэгч</translation>
 <translation id="968000525894980488">Google Play үйлчилгээг асаана уу.</translation>
 <translation id="968037381421390582">“<ph name="SEARCH_TERMS" />”-г буулгаад, хайх</translation>
 <translation id="968174221497644223">Аппликейшний кэш</translation>

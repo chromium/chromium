@@ -768,6 +768,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8654802032646794042">Annuller</translation>
 <translation id="8668210798914567634">Denne side er gemt på din læseliste.</translation>
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
+<translation id="8691262314411702087">Vælg, hvad der skal synkroniseres</translation>
 <translation id="8693663554456874301">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
 <translation id="8706588385081740091">Adgangskoder</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
@@ -810,6 +811,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9152539721251340337">Opret en QR-kode</translation>
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
+<translation id="9183059292653643328">Denne browser administreres af din organisation</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>
 <translation id="9200875785104711666">For <ph name="TIME" /> d. siden</translation>
 <translation id="9203116392574189331">Handoff</translation>

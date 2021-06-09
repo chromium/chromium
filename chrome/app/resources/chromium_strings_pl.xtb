@@ -72,11 +72,13 @@
 <translation id="3350761136195634146">Już istnieje profil Chromium z tym kontem</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
 <translation id="3430503420100763906">Dzięki profilom Chromium wszystkie swoje rzeczy z tej przeglądarki możesz przechowywać osobno. Utwórz profile dla znajomych i rodziny albo oddziel pracę od rozrywki.</translation>
+<translation id="3433271666494956603">Trwa instalowanie systemu operacyjnego Chromium</translation>
 <translation id="347328004046849135">Chromium powiadomi Cię w razie logowania za pomocą przejętego hasła</translation>
 <translation id="3474745554856756813">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Profile Chromium przełącza skrót <ph name="SHORTCUT" /></translation>
 <translation id="3509308970982693815">Zamknij wszystkie okna Chromium i spróbuj ponownie.</translation>
 <translation id="3575459661164320785">Masz na komputerze szkodliwe oprogramowanie. Chromium może je usunąć, przywrócić Twoje ustawienia i wyłączyć rozszerzenia, by przeglądarka znów działała normalnie.</translation>
+<translation id="3610776674893128619">Wyczyść dysk twardy i zainstaluj system operacyjny Chromium</translation>
 <translation id="3639635944603682591">Dane przeglądania tej osoby zostaną usunięte z tego urządzenia. Aby je odzyskać, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Dostępna jest aktualizacja Chromium, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji.}=1{Dostępna jest aktualizacja Chromium, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. Okno incognito nie otworzy się ponownie.}few{Dostępna jest aktualizacja Chromium, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzą się ponownie.}many{Dostępna jest aktualizacja Chromium, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okien incognito nie otworzy się ponownie.}other{Dostępna jest aktualizacja Chromium, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="3651803019964686660">Aby wysłać numer z <ph name="ORIGIN" /> na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
@@ -160,6 +162,15 @@
 <translation id="6129621093834146363">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="6134968993075716475">Bezpieczne przeglądanie jest wyłączone. Chromium zaleca jego włączenie.</translation>
 <translation id="6145820983052037069">Tu możesz przełączać się między profilami Chromium</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Możemy zainstalować system operacyjny Chromium. Jeśli przejdziesz dalej:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />pliki, dane i bieżący system operacyjny zostaną usunięte;
+          <ph name="LIST_ITEM" />zostanie zainstalowany system operacyjny Chromium;
+          <ph name="LIST_ITEM" />po zakończeniu instalacji urządzenie się wyłączy.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Ostatnie przypomnienie: instalacja wykasuje wszystkie dane z dysku twardego. Upewnij się, że masz kopię zapasową wszystkich ważnych danych.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
@@ -177,6 +188,7 @@
 <translation id="6434250628340475518">System operacyjny Chromium</translation>
 <translation id="6455857529632101747">Witamy w profilach Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium uruchomi się ponownie za sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
+<translation id="646620589868199210">Możesz zainstalować system operacyjny Chromium</translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
 <translation id="6542839706527980775">Każdy profil zawiera własne dane Chromium, takie jak zakładki, historia, hasła i inne</translation>
@@ -191,6 +203,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="673636774878526923">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację.</translation>
 <translation id="6774082503108938489">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Włączenie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
+<translation id="6827182711503025204">Instalacja systemu operacyjnego Chromium spowoduje zastąpienie wszystkich danych na urządzeniu.</translation>
 <translation id="6847869444787758381">Chromium poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopiowana do Chromium)</translation>
@@ -223,6 +236,10 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7585853947355360626">Jeśli ustawienia nie widać na tej stronie, zajrzyj do <ph name="LINK_BEGIN" />ustawień systemu operacyjnego Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>
 <translation id="7617377681829253106">Przeglądarka Chromium jest jeszcze lepsza</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Zanim zaczniemy, zrób aktualną kopię swoich danych. Instalacja systemu operacyjnego Chromium spowoduje zastąpienie wszystkich danych na dysku twardym.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google nie ponosi odpowiedzialności za utratę danych ani nie gwarantuje, że system operacyjny Chromium będzie działać na urządzeniach bez certyfikatu. Więcej informacji o certyfikowanych modelach znajdziesz na stronie [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Więcej informacji o instalowaniu systemu operacyjnego Chromium i wymazywaniu danych: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Jeśli wszystko jest gotowe, kliknij „Zainstaluj system operacyjny Chromium”, aby w kilku prostych krokach przeprowadzić instalację, korzystając z naszych instrukcji. Zanim wprowadzimy jakiekolwiek zmiany na Twoim komputerze, będziesz mieć jeszcze 1 możliwość potwierdzenia instalacji.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
 <translation id="7689606757190482937">Synchronizuj dane Chromium i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="7729447699958282447">Chromium nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>

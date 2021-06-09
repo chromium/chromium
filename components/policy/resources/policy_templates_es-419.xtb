@@ -112,6 +112,7 @@
             * digest
             * ntlm
             Si no completas esta opción, se usarán los tres esquemas.</translation>
+<translation id="1153306961094113710">Permitir la depuración remota</translation>
 <translation id="1158844608156732189">Configuración de Kerberos (una línea por cada elemento del array), consulta https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Permitir el protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilita continuar desde la página de advertencia de Navegación segura.</translation>
@@ -5417,6 +5418,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán sobre las estadísticas de almacenamiento.</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
+<translation id="804619600634661088">Permitir el uso de la depuración remota</translation>
 <translation id="8049769137921877885">Esta política controla el envío de los datos sobre la política y su marca de tiempo de recuperación.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -6025,6 +6027,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8860342862142842017">Inhabilitar la aplicación del Certificado de transparencia para una lista de hash de subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Elimina el mensaje de desactivación que aparece cuando <ph name="PRODUCT_FRAME_NAME" /> muestra un sitio.</translation>
 <translation id="886645881209114007">Permite que los usuarios utilicen <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8867894831390233044">Determina si los usuarios pueden usar la depuración remota.
+
+      Si habilitas esta política o no la estableces, los usuarios podrán usar la depuración remota. Para hacerlo, deberán especificar los interruptores --remote-debugging-port y --remote-debugging-pipe de la línea de comandos.
+
+      Si la inhabilitas, los usuarios no podrán usar la depuración remota.</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
 <translation id="8872402969096027761">Habilita la función de accesibilidad de clic automático en la pantalla de acceso.
 
@@ -6342,6 +6349,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Nota: Si bloqueas las URL internas de chrome://*, se pueden generar errores inesperados.</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
+<translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
 <translation id="980218166381006412">Si habilitas la política, se activará el modo en segundo plano. En este modo, se inicia un proceso de <ph name="PRODUCT_NAME" /> durante el acceso al SO y se mantiene en ejecución cuando se cierra la última ventana del navegador, lo que permite mantener activas las apps en segundo plano y la sesión de navegación, incluidas las cookies de sesión. En la bandeja del sistema, aparece un ícono correspondiente al proceso en segundo plano. Puedes cerrar el proceso desde allí en cualquier momento.
 
       Si inhabilitas la política, se desactivará el modo en segundo plano.

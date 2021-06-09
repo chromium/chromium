@@ -1677,6 +1677,7 @@
 <translation id="2755349111255270002">इस <ph name="DEVICE_TYPE" /> को रीसेट करें</translation>
 <translation id="2755367719610958252">सुलभता सुविधाएं प्रबंधित करें</translation>
 <translation id="275662540872599901">स्क्रीन बंद है</translation>
+<translation id="2757161511365746634">प्रिंटर देखें</translation>
 <translation id="2757338480560142065">पक्का करें कि आप जो पासवर्ड सेव कर रहे हैं वह <ph name="WEBSITE" /> के आपके पासवर्ड से मेल खाता हो</translation>
 <translation id="2762441749940182211">कैमरा ब्लॉक किया गया है</translation>
 <translation id="2764786626780673772">वीपीएन की जानकारी</translation>
@@ -1719,6 +1720,7 @@
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
 <translation id="2800760947029405028">एक इमेज अपलोड करें</translation>
 <translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
+<translation id="2802557211515765772">मैनेज किया गया कोई भी प्रिंटर नहीं है.</translation>
 <translation id="2803313416453193357">फ़ोल्डर खोलें</translation>
 <translation id="2803375539583399270">पिन डालें</translation>
 <translation id="2804043232879091219">वैकल्पिक ब्राउज़र नहीं खोला जा सका</translation>
@@ -3830,7 +3832,6 @@
 <translation id="512903556749061217">अनुलग्न</translation>
 <translation id="5130675701626084557">प्रोफ़ाइल को डाउनलोड नहीं किया जा सका. कृपया बाद में कोशिश करें या मदद के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="5131591206283983824">टचपैड पर टैप करके खींचना</translation>
-<translation id="5133483819862530305">सूर्यास्त से सूर्योदय तक</translation>
 <translation id="5135085122826131075">"Ok Google" बोलकर अपनी Assistant की सेवा ऐक्सेस करें.</translation>
 <translation id="5135533361271311778">बुकमार्क आइटम नहीं बना सका.</translation>
 <translation id="5136343472380336530">पक्का करें कि दोनों डिवाइस को अनलॉक किया गया हो और ये एक-दूसरे के पास रखे हों. साथ ही, ब्लूटूथ चालू हो. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -3867,6 +3868,7 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5171045022955879922">URL खोजें या टाइप करें</translation>
 <translation id="5171343362375269016">स्वैप की गई मेमोरी</translation>
+<translation id="5172855596271336236">मैनेज किया गया एक प्रिंटर है.</translation>
 <translation id="5173668317844998239">अपनी सुरक्षा कुंजी पर सेव किए गए फ़िंगरप्रिंट जोड़ें और मिटाएं</translation>
 <translation id="5175379009094579629">डिवाइस का नाम गलत है. फिर से कोशिश करने के लिए सही डिवाइस नाम डालें.</translation>
 <translation id="5177479852722101802">कैमरा और माइक्रोफ़ोन के एक्सेस को ब्लॉक करना जारी रखें</translation>
@@ -6129,6 +6131,7 @@
 <translation id="7674542105240814168">जगह की जानकारी का ऐक्सेस नहीं मिला</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' के लिए, <ph name="NUM" /> टैब मिला</translation>
 <translation id="7676867886086876795">किसी भी लेख फ़ील्ड में बोलकर टाइप करने की सुविधा देने के लिए आपकी आवाज़ Google को भेजी जाती है.</translation>
+<translation id="7679171213002716280">मैनेज किए गए <ph name="PRINTER_COUNT" /> प्रिंटर हैं.</translation>
 <translation id="7680416688940118410">टचस्क्रीन कैलिब्रेशन</translation>
 <translation id="7681095912841365527">साइट ब्लूटूथ का इस्तेमाल कर सकती है</translation>
 <translation id="7681597159868843240">आम तौर पर साइटें, वर्चुअल रियलिटी या फ़िटनेस ट्रैकिंग जैसी सुविधाओं के लिए आपके डिवाइस के मोशन सेंसर इस्तेमाल करती हैं</translation>
@@ -7609,6 +7612,7 @@
 <translation id="965211523698323809">अपने <ph name="DEVICE_TYPE" /> से मैसेज भेजें और पाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">किसी भी साइट को एचआईडी डिवाइस ऐक्सेस न करने दें</translation>
 <translation id="967624055006145463">डेटा संग्रहित किया गया</translation>
+<translation id="96774243435178359">मैनेज किए गए प्रिंटर</translation>
 <translation id="968000525894980488">Google Play सेवाएं चालू करें.</translation>
 <translation id="968037381421390582">चिपकाएं और “<ph name="SEARCH_TERMS" />” को खोजें</translation>
 <translation id="968174221497644223">ऐप्लिकेशन कैश</translation>

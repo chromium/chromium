@@ -112,6 +112,7 @@
             * digest
             * ntlm
             如果將這個選項留空，就表示上述三種機制皆可使用。</translation>
+<translation id="1153306961094113710">允許遠端偵錯</translation>
 <translation id="1158844608156732189">Kerberos 設定 (每個陣列項目各占一行)，詳情請參閱 https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html。</translation>
 <translation id="1160479894929412407">允許 QUIC 通訊協定</translation>
 <translation id="1160939557934457296">停用略過安全瀏覽警告網頁繼續進行</translation>
@@ -2288,6 +2289,10 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用相黏鍵功能，但使用者隨時可以啟用。</translation>
+<translation id="3932553013632130433">
+      指定 SharedArrayBuffers 是否可用於非跨來源隔離內容。由於網路相容性方面的原因，自 Chrome 91 (2021 年 5 月 25 日推出) 版本起，Chrome 會要求使用 SharedArrayBuffers 的網站進行跨來源隔離。詳情請前往：https://developer.chrome.com/blog/enabling-shared-array-buffer/。
+      如果將這項政策設為 True，網站就可以不受限制地使用 SharedArrayBuffer。
+      如果設為 False 或未設定，網站則需要進行跨來源隔離才能使用 SharedArrayBuffers。</translation>
 <translation id="3942041691320538491">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在由企業政策安裝的擴充功能中進行存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
 
       此外，用來開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。</translation>
@@ -3216,6 +3221,7 @@
           如果這項政策設為 False，使用者就無法將內容投放至自己的裝置。如果這項政策設為 True，則使用者可投放內容。如果未設定這項政策，使用者就無法將內容投放至已註冊的 Chrome 作業系統裝置，但可投放至未註冊的裝置。</translation>
 <translation id="5323200200131319468">在登入畫面上啟用互動朗讀功能</translation>
 <translation id="532848608876725157">啟用 DNS-over-HTTPS，而且可以改用不安全查詢</translation>
+<translation id="5328965694451556034">回報登入/登出情形</translation>
 <translation id="5329007337159326804">警告：自 <ph name="PRODUCT_NAME" /> 版本 75 (2019 年 6 月左右推出) 起，我們將全面移除 TLS 最高版本政策。
 
       如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會使用預設最高版本。
@@ -3537,6 +3543,11 @@
 
           這項政策的值只有在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策啟用時才適用，在其他情況下一概不適用。</translation>
 <translation id="5697306356229823047">回報裝置使用者</translation>
+<translation id="5699770471852263667">如果將這項政策設為 Enabled，系統會停用 <ph name="PRODUCT_NAME" /> 中的內部 PDF 檢視器、將 PDF 檔案視為下載內容，並且讓使用者以預設的應用程式開啟 PDF。
+
+      如果將這項政策設為 Disabled，則表示除非使用者停用 PDF 外掛程式，否則系統一律會使用 PDF 外掛程式開啟 PDF 檔案。
+
+      如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果不設定這項政策，使用者可以選擇是否要從外部開啟 PDF。</translation>
 <translation id="570062449808736508">如果將這項政策設為非空白字串，WebView 就會讀取內容提供者 (擁有指定授權單位名稱) 的網址限制設定。</translation>
 <translation id="5708969689202733975">設定允許的快速解鎖模式</translation>
 <translation id="5715617256528927547">你可以透過這項政策，指定群組政策物件 (GPO) 快取的效期 (以小時為單位)，也就是 GPO 在重新下載前可供重複使用的時間長度上限。只要快取 GPO 的版本沒有改變，系統就能重複使用這些快取 GPO，不必在每次擷取政策時重新下載 GPO。如果將這項政策設為 0，將會關閉 GPO 快取功能。在這種情況下，系統於每次擷取政策時都必須重新下載 GPO，即使 GPO 沒有更動也一樣，因此伺服器負載會增加。
@@ -5106,6 +5117,7 @@
 <translation id="7709470712369261710">不要使用 Google 服務提供自動產生的圖片說明</translation>
 <translation id="7712109699186360774">每當有任何網站要使用攝影機和/或麥克風時詢問我</translation>
 <translation id="7713608076604149344">下載限制</translation>
+<translation id="7713845740295404764">回報登入/登出事件</translation>
 <translation id="7715711044277116530">簡報模式中的螢幕調暗延遲時間延長百分比</translation>
 <translation id="7716020145539921591">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
@@ -5338,6 +5350,7 @@
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報儲存裝置統計資料。</translation>
 <translation id="8044493735196713914">回報裝置啟動模式</translation>
 <translation id="80453040817068401">將 <ph name="LACROS_NAME" /> 設為可用瀏覽器</translation>
+<translation id="804619600634661088">允許使用遠端偵錯功能</translation>
 <translation id="8049769137921877885">這項政策可控管系統是否要回報政策資料和擷取政策的時間。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。
@@ -5923,6 +5936,11 @@
 <translation id="8860342862142842017">不針對列出的 subjectPublicKeyInfo 雜湊強制執行憑證透明化政策</translation>
 <translation id="8864975621965365890">瀏覽使用 <ph name="PRODUCT_FRAME_NAME" />轉譯的網站時，隱藏停止支援提示。</translation>
 <translation id="886645881209114007">允許使用者在 <ph name="PRODUCT_OS_NAME" />上使用 <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8867894831390233044">控管使用者是否可以使用遠端偵錯功能。
+
+      如果將這項政策設為「已啟用」或不設定，使用者就能指定 --remote-debugging-port 和 --remote-debugging-pipe 指令列切換模式來使用遠端偵錯功能。
+
+      如果將這項政策設為「已停用」，使用者則無法使用遠端偵錯功能。</translation>
 <translation id="8871974300055371298">內容設定</translation>
 <translation id="8872402969096027761">在登入畫面上啟用自動點擊無障礙功能。
 
@@ -6109,6 +6127,10 @@
       如果將這項政策設為停用，已註冊的裝置不會記錄或回報活動時間。</translation>
 <translation id="9077227880520270584">裝置本機帳戶自動登入計時器</translation>
 <translation id="9084985621503260744">指定會影響電源管理的視訊活動</translation>
+<translation id="9087434639296483430">回報已註冊裝置上的使用者登入/登出事件，包括登入失敗事件。
+
+      如果將這項政策設為 False 或未設定，系統不會回報這項資訊。
+      如果設為 True，則系統會回報裝置的登入/登出事件。</translation>
 <translation id="9088191250434406767">如果將這項政策設為 Enabled 或不設定，使用者就可以使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />透過相機進行搜尋。如果將這項政策設為 Disabled，即使裝置支援 <ph name="GOOGLE_LENS_PRODUCT_NAME" />相機輔助搜尋功能，使用者在搜尋框中也不會看到 [<ph name="GOOGLE_LENS_PRODUCT_NAME" />] 按鈕。</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>
@@ -6205,6 +6227,7 @@
 <translation id="9197740283131855199">使用者在螢幕調暗後繼續使用裝置時的螢幕調暗時間延長百分比</translation>
 <translation id="9200828125069750521">使用 POST 的圖片網址參數</translation>
 <translation id="9204863016826119209">這項政策中列出的已安裝 Android 應用程式可以使用企業金鑰。</translation>
+<translation id="9207596996305971030">不回報登入/登出事件</translation>
 <translation id="9213751049772256263">停用所有變化版本</translation>
 <translation id="9217154963008402249">監控網路封包的傳送頻率</translation>
 <translation id="922540222991413931">設定擴充功能、應用程式和使用者指令碼安裝來源</translation>
@@ -6238,6 +6261,7 @@
       注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="957778406002650056">可下載 <ph name="PLUGIN_VM_NAME" /> 圖片的網址。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
+<translation id="979467274961593903">禁止使用遠端偵錯功能</translation>
 <translation id="980218166381006412">如果將這項政策設為啟用，系統會開啟背景模式。在背景模式中，<ph name="PRODUCT_NAME" /> 處理程序會在使用者登入作業系統時啟動，並在最後一個瀏覽器視窗關閉後持續執行，讓背景應用程式和瀏覽工作階段維持運作。背景處理程序會在系統匣中顯示相應圖示，使用者隨時可從該處關閉處理程序。
 
       如果將這項政策設為停用，系統將關閉背景模式。

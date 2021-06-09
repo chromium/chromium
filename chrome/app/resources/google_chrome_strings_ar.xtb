@@ -38,6 +38,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="1807517590912578995">‏هل تريد الحصول على تجربة تصفّح منفصلة باستخدام ملف شخصي على Chrome؟</translation>
+<translation id="1810203443153428607">‏سيؤدي تثبيت نظام التشغيل Chrome إلى استبدال جميع البيانات على جهازك.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
@@ -58,6 +59,16 @@
 <translation id="2348335408836342058">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="234869673307233423">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="235650106824528204">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chrome والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">‏محو بيانات محرك الأقراص الثابتة وتثبيت نظام التشغيل Chrome</translation>
+<translation id="2417565246123344595">‏<ph name="BEGIN_PARAGRAPH1" />نحن جاهزون لتثبيت نظام التشغيل Chrome. عند الاستمرار في عملية التثبيت:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />سيتم محو الملفات والبيانات ونظام التشغيل الحالي.
+          <ph name="LIST_ITEM" />سيتم تثبيت نظام التشغيل Chrome.
+          <ph name="LIST_ITEM" />سيتم إيقاف تشغيل الجهاز عند اكتمال التثبيت.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />تذكير أخير: ستؤدي عملية التثبيت إلى محو بيانات محرك الأقراص الثابتة بالكامل. يُرجى التأكّد من احتفاظك بنسخة احتياطية من أي بيانات ضرورية.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />عند بدء عملية التثبيت، لا يمكن إلغاؤها.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -171,6 +182,10 @@
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="5434383153637353914">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. وستكون هذه الحسابات متوفّرة في متصفِّح Chrome وتطبيقات "متجر Play"، بالإضافة إلى خدمات مثل Gmail وDrive وYouTube. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />قبل أن نبدأ عملية التثبيت، يُرجى التأكّد من احتفاظك بنسخة احتياطية حديثة من بياناتك. سيؤدي تثبيت نظام التشغيل Chrome إلى استبدال جميع البيانات على محرك الأقراص الثابتة.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />لا تتحمل Google أي مسؤولية عن أي فقدان للبيانات، ولا تضمن أن يعمل نظام التشغيل Chrome على طُرز أجهزة غير معتمدة. يُرجى زيارة [TBD] لمزيد من المعلومات حول طُرز الأجهزة المُعتمَدة.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />تعرّف على مزيد من المعلومات حول تثبيت نظام التشغيل Chrome ومحو البيانات: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />إذا كنت جاهزًا للاستمرار في عملية التثبيت، انقر على "تثبيت نظام التشغيل Chrome" وسوف نرشدك ببضع خطوات سهلة إلى كيفية التثبيت. وسوف تكون لديك فرصة أخرى للتأكيد قبل أن نُجري أي تغييرات على جهاز الكمبيوتر.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">‏تثبيت نظام التشغيل Chrome</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,6 +221,7 @@
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="6566149418543181476">‏جارٍ تحديث Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">‏نظام التشغيل Chrome</translation>
+<translation id="664235759707825982">‏نحن جاهزون لتثبيت نظام التشغيل Chrome</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
 <translation id="6679975945624592337">‏السماح بتشغيل Google Chrome في الخلفية</translation>
 <translation id="6739177684496155661">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
@@ -225,6 +241,7 @@
 <translation id="7155997830309522122">‏في هذه الحالة، يُرجى تعديل كلمة المرور المحفوظة في Chrome لتتطابق مع كلمة المرور الجديدة.</translation>
 <translation id="7161904924553537242">‏مرحبًا بك في Google Chrome</translation>
 <translation id="7242029209006116544">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. ويُمكنك اختيار إنشاء ملف شخصي جديد للإبقاء على بياناتك الحالية في Chrome بشكل مستقل. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">‏جارٍ تثبيت نظام التشغيل Chrome</translation>
 <translation id="7295052994004373688">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم Google Chrome</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
 <translation id="7303916856901595720">‏هل تريد نقل الحساب إلى ملف شخصي جديد على Chrome؟</translation>

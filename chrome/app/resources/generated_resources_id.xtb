@@ -1677,6 +1677,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2755349111255270002">Reset <ph name="DEVICE_TYPE" /> ini</translation>
 <translation id="2755367719610958252">Kelola fitur aksesibilitas</translation>
 <translation id="275662540872599901">layar nonaktif</translation>
+<translation id="2757161511365746634">Lihat printer</translation>
 <translation id="2757338480560142065">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera diblokir</translation>
 <translation id="2764786626780673772">Detail VPN</translation>
@@ -1719,6 +1720,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2800760947029405028">Upload gambar</translation>
 <translation id="2801954693771979815">Ukuran layar</translation>
+<translation id="2802557211515765772">Tidak ada printer terkelola.</translation>
 <translation id="2803313416453193357">Buka folder</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2804043232879091219">Browser alternatif tidak dapat dibuka</translation>
@@ -3831,7 +3833,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="512903556749061217">terpasang</translation>
 <translation id="5130675701626084557">Profil tidak dapat didownload. Coba lagi nanti atau hubungi operator untuk mendapatkan bantuan.</translation>
 <translation id="5131591206283983824">Ketuk untuk menarik touchpad</translation>
-<translation id="5133483819862530305">Matahari Terbenam sampai Matahari Terbit</translation>
 <translation id="5135085122826131075">Akses Asisten saat Anda mengucapkan "Ok Google".</translation>
 <translation id="5135533361271311778">Tidak dapat membuat item bookmark.</translation>
 <translation id="5136343472380336530">Pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5171045022955879922">Telusuri atau ketik URL</translation>
 <translation id="5171343362375269016">Memori yang Ditukar</translation>
+<translation id="5172855596271336236">Ada 1 printer terkelola.</translation>
 <translation id="5173668317844998239">Menambahkan dan menghapus sidik jari yang tersimpan di kunci keamanan Anda</translation>
 <translation id="5175379009094579629">Nama perangkat tidak valid. Masukkan nama perangkat yang valid untuk mencoba lagi.</translation>
 <translation id="5177479852722101802">Terus blokir akses mikrofon dan kamera</translation>
@@ -6130,6 +6132,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7674542105240814168">Akses lokasi ditolak</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="7676867886086876795">Kirimkan suara Anda ke Google untuk memungkinkan pengetikan dengan suara ke kolom teks.</translation>
+<translation id="7679171213002716280">Ada <ph name="PRINTER_COUNT" /> printer terkelola.</translation>
 <translation id="7680416688940118410">Kalibrasi layar sentuh</translation>
 <translation id="7681095912841365527">Situs dapat menggunakan bluetooth</translation>
 <translation id="7681597159868843240">Situs biasanya menggunakan sensor gerakan perangkat Anda untuk fitur seperti virtual reality atau pelacak kebugaran</translation>
@@ -7610,6 +7613,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="965211523698323809">Kirim dan terima SMS dari <ph name="DEVICE_TYPE" /> Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Jangan izinkan situs apa pun mengakses perangkat HID</translation>
 <translation id="967624055006145463">Data disimpan</translation>
+<translation id="96774243435178359">Printer terkelola</translation>
 <translation id="968000525894980488">Aktifkan layanan Google Play.</translation>
 <translation id="968037381421390582">Tempel dan Telusuri “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Cache aplikasi</translation>

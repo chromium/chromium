@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8668210798914567634">หน้านี้ได้รับการบันทึกลงในรายการที่จะอ่านแล้ว</translation>
 <translation id="8680787084697685621">รายละเอียดการลงชื่อเข้าใช้บัญชีเก่าเกินไป</translation>
+<translation id="8691262314411702087">เลือกสิ่งที่จะซิงค์</translation>
 <translation id="8693663554456874301">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="8706588385081740091">รหัสผ่าน</translation>
 <translation id="8717864919010420084">คัดลอกลิงก์</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9152539721251340337">สร้างคิวอาร์โค้ด</translation>
 <translation id="9157836665414082580">ระงับกล่องโต้ตอบ</translation>
+<translation id="9183059292653643328">องค์กรของคุณเป็นผู้จัดการเบราว์เซอร์นี้</translation>
 <translation id="9188680907066685419">ออกจากระบบบัญชีที่มีการจัดการ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> วันที่ผ่านมา</translation>
 <translation id="9203116392574189331">แฮนด์ออฟ</translation>

@@ -1661,6 +1661,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2755349111255270002">Resetujte ovaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Upravljaj funkcijama pristupačnosti</translation>
 <translation id="275662540872599901">ekran je isključen</translation>
+<translation id="2757161511365746634">Prikaz štampača</translation>
 <translation id="2757338480560142065">Proverite da li se lozinka koju čuvate podudara sa lozinkom za <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera je blokirana</translation>
 <translation id="2764786626780673772">Detalji o VPN-u</translation>
@@ -1703,6 +1704,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2800760947029405028">Otpremi sliku</translation>
 <translation id="2801954693771979815">Veličina ekrana</translation>
+<translation id="2802557211515765772">Nema upravljanih štampača.</translation>
 <translation id="2803313416453193357">Otvorite direktorijum</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2804043232879091219">Nismo uspeli da otvorimo alternativni pregledač</translation>
@@ -3814,7 +3816,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="512903556749061217">priključeno</translation>
 <translation id="5130675701626084557">Preuzimanje profila nije uspelo. Probajte ponovo kasnije ili zatražite pomoć od mobilnog operatera.</translation>
 <translation id="5131591206283983824">Prevlačenje dodirom po tačpedu</translation>
-<translation id="5133483819862530305">Od zalaska do izlaska sunca</translation>
 <translation id="5135085122826131075">Pristupajte Pomoćniku kada kažete „Ok Google“.</translation>
 <translation id="5135533361271311778">Nije moguće napraviti obeleživač.</translation>
 <translation id="5136343472380336530">Uverite se da su oba uređaja otključana, blizu jedan drugom i da je uključen Bluetooth. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5171045022955879922">Pretražite ili unesite URL adresu</translation>
 <translation id="5171343362375269016">Zamenjena memorija</translation>
+<translation id="5172855596271336236">Postoji 1 upravljani štampač.</translation>
 <translation id="5173668317844998239">Dodajte i brišite otiske prstiju sačuvane na bezbednosnom ključu</translation>
 <translation id="5175379009094579629">Naziv uređaja nije važeći. Unesite važeći naziv uređaja da biste probali ponovo.</translation>
 <translation id="5177479852722101802">Nastavi da blokiraš pristup kameri i mikrofonu</translation>
@@ -6111,6 +6113,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7674542105240814168">Odbijen je pristup lokaciji</translation>
 <translation id="7676119992609591770">Pronađenih kartica za „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Šaljite podatke o glasu Google-u da bi se omogućilo diktiranje u svim poljima za tekst.</translation>
+<translation id="7679171213002716280">Upravljanih štampača ima: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Kalibracija dodirnog ekrana</translation>
 <translation id="7681095912841365527">Sajt može da koristi Bluetooth</translation>
 <translation id="7681597159868843240">Sajtovi obično koriste senzore pokreta uređaja za potrebe funkcija poput virtuelne realnosti ili praćenja fitnesa</translation>
@@ -7592,6 +7595,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="965211523698323809">Šaljite i primajte SMS-ove sa uređaja <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Ne dozvoljavaj sajtovima da pristupaju uređajima sa interfejsom</translation>
 <translation id="967624055006145463">Sačuvani podaci</translation>
+<translation id="96774243435178359">Upravljani štampači</translation>
 <translation id="968000525894980488">Uključite Google Play usluge.</translation>
 <translation id="968037381421390582">Nalepi i pretraži „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Keš aplikacije</translation>

@@ -1661,6 +1661,7 @@
 <translation id="2755349111255270002">Ресетујте овај <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Управљај функцијама приступачности</translation>
 <translation id="275662540872599901">екран је искључен</translation>
+<translation id="2757161511365746634">Приказ штампача</translation>
 <translation id="2757338480560142065">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Камера је блокирана</translation>
 <translation id="2764786626780673772">Детаљи о VPN-у</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2799223571221894425">Поново покрени</translation>
 <translation id="2800760947029405028">Отпреми слику</translation>
 <translation id="2801954693771979815">Величина екрана</translation>
+<translation id="2802557211515765772">Нема управљаних штампача.</translation>
 <translation id="2803313416453193357">Отворите директоријум</translation>
 <translation id="2803375539583399270">Унесите PIN</translation>
 <translation id="2804043232879091219">Нисмо успели да отворимо алтернативни прегледач</translation>
@@ -3814,7 +3816,6 @@
 <translation id="512903556749061217">прикључено</translation>
 <translation id="5130675701626084557">Преузимање профила није успело. Пробајте поново касније или затражите помоћ од мобилног оператера.</translation>
 <translation id="5131591206283983824">Превлачење додиром по тачпеду</translation>
-<translation id="5133483819862530305">Од заласка до изласка сунца</translation>
 <translation id="5135085122826131075">Приступајте Помоћнику када кажете „Ок Google“.</translation>
 <translation id="5135533361271311778">Није могуће направити обележивач.</translation>
 <translation id="5136343472380336530">Уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5171045022955879922">Претражите или унесите URL адресу</translation>
 <translation id="5171343362375269016">Замењена меморија</translation>
+<translation id="5172855596271336236">Постоји 1 управљани штампач.</translation>
 <translation id="5173668317844998239">Додајте и бришите отиске прстију сачуване на безбедносном кључу</translation>
 <translation id="5175379009094579629">Назив уређаја није важећи. Унесите важећи назив уређаја да бисте пробали поново.</translation>
 <translation id="5177479852722101802">Настави да блокираш приступ камери и микрофону</translation>
@@ -6111,6 +6113,7 @@
 <translation id="7674542105240814168">Одбијен је приступ локацији</translation>
 <translation id="7676119992609591770">Пронађених картица за „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Шаљите податке о гласу Google-у да би се омогућило диктирање у свим пољима за текст.</translation>
+<translation id="7679171213002716280">Управљаних штампача има: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Калибрација додирног екрана</translation>
 <translation id="7681095912841365527">Сајт може да користи Bluetooth</translation>
 <translation id="7681597159868843240">Сајтови обично користе сензоре покрета уређаја за потребе функција попут виртуелне реалности или праћења фитнеса</translation>
@@ -7592,6 +7595,7 @@
 <translation id="965211523698323809">Шаљите и примајте SMS-ове са уређаја <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Не дозвољавај сајтовима да приступају уређајима са интерфејсом</translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
+<translation id="96774243435178359">Управљани штампачи</translation>
 <translation id="968000525894980488">Укључите Google Play услуге.</translation>
 <translation id="968037381421390582">Налепи и претражи „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Кеш апликације</translation>

@@ -1677,6 +1677,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> түзмөгүн баштапкы абалга келтириңиз</translation>
 <translation id="2755367719610958252">Атайын мүмкүнчүлүктөрдү башкаруу</translation>
 <translation id="275662540872599901">экран өчүк</translation>
+<translation id="2757161511365746634">Принтерди көрүү</translation>
 <translation id="2757338480560142065">Сактап жаткан сырсөзүңүз <ph name="WEBSITE" /> вебсайтындагы сырсөзгө дал келиши керек</translation>
 <translation id="2762441749940182211">Камера бөгөттөлдү</translation>
 <translation id="2764786626780673772">VPN туташуусунун чоо-жайы</translation>
@@ -1719,6 +1720,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
 <translation id="2800760947029405028">Сүрөттү жүктөп берүү</translation>
 <translation id="2801954693771979815">Экрандын өлчөмү</translation>
+<translation id="2802557211515765772">Башкарылган принтерлер жок.</translation>
 <translation id="2803313416453193357">Куржунду ачуу</translation>
 <translation id="2803375539583399270">PIN кодду киргизиңиз</translation>
 <translation id="2804043232879091219">Кошумча серепчи ачылган жок</translation>
@@ -3277,7 +3279,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4510479820467554003">Ата-эненин аккаунттарынын тизмеси</translation>
 <translation id="4510614391273086606">Linux файлдары менен колдонмолору сакталган камдык көчүрмөсүнө ылайык калыбына келтирилүүдө.</translation>
 <translation id="451102079304155829">Себеттер</translation>
-<translation id="4513275008300099962">Терезенин көзөмөлдөө каражаттарынын үстүнө коюусун өчүрүү</translation>
+<translation id="4513275008300099962">Терезенин башкаруу элементтеринин үстүнө коюусун өчүрүү</translation>
 <translation id="4513872120116766993">Сунуштар</translation>
 <translation id="4513946894732546136">Пикир билдирүү</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> аркылуу иштетилүүдө</translation>
@@ -3831,7 +3833,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="512903556749061217">тиркелген</translation>
 <translation id="5130675701626084557">Профиль жүктөлүп алынган жок. Кийинчерээк кайталаңыз же жардам алуу үчүн байланыш операторуна кайрылыңыз.</translation>
 <translation id="5131591206283983824">Тийме тактасында таптап сүйрөө</translation>
-<translation id="5133483819862530305">Күн баткандан чыкканга чейин</translation>
 <translation id="5135085122826131075">"Окей Google" деп айтып, Жардамчыңызга кайрылыңыз.</translation>
 <translation id="5135533361271311778">Кыстарма түзүлбөй койду.</translation>
 <translation id="5136343472380336530">Эки түзмөктүн тең кулпусу ачылып, бири-бирине жакын жайгашып, Bluetooth күйүп турушу керек. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5171045022955879922">URL издеңиз же териңиз</translation>
 <translation id="5171343362375269016">Жүктөлгөн эстутум</translation>
+<translation id="5172855596271336236">Башкарылган принтерлер: 1.</translation>
 <translation id="5173668317844998239">Коопсуздук ачкычыңызга сакталган манжаларыңыздын издерин кошуп, жок кылуу</translation>
 <translation id="5175379009094579629">Түзмөктүн аталышы жараксыз. Түзмөктүн аталышын туура киргизип, кайталап көрүңүз.</translation>
 <translation id="5177479852722101802">Камера менен микрофонду колдонуу мүмкүнчүлүгү бөгөттөлө берсин</translation>
@@ -5793,7 +5795,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7308643132139167865">Вебсайттын тилдери</translation>
 <translation id="7309257895202129721">&amp;Көзөмөлдөө каражаттарын көрсөтүү</translation>
 <translation id="7310598146671372464">Аккаунтка кирбей калды. Сервер Kerberos шифрлөөсүнүн мындай түрлөрүн колдоого албайт. Администраторуңузга кайрылыңыз.</translation>
-<translation id="7315168816273861089">Терезенин көзөмөлдөө каражаттарынын үстүнө коюусун иштетүү</translation>
+<translation id="7315168816273861089">Терезенин башкаруу элементтеринин үстүнө коюусун иштетүү</translation>
 <translation id="7320213904474460808">Тармакты демейки катары коюу</translation>
 <translation id="7321545336522791733">Серверге туташуу мүмкүн эмес</translation>
 <translation id="7324297612904500502">Бета форуму</translation>
@@ -6130,6 +6132,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7674542105240814168">Жайгашкан жерди көрүүгө тыюу салынды</translation>
 <translation id="7676119992609591770">"<ph name="SEARCH_TEXT" />" үчүн <ph name="NUM" /> өтмөк табылды</translation>
 <translation id="7676867886086876795">Текстти каалаган талаага үн менен жазуу үчүн үнүңүздүн үлгүсүн Google'га жөнөтөсүз.</translation>
+<translation id="7679171213002716280">Башкарылган принтерлер: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Сенсордук экранды калибрлөө</translation>
 <translation id="7681095912841365527">Сайт bluetooth'ду колдоно алат</translation>
 <translation id="7681597159868843240">Адатта сайттар түзмөгүңүздүн кыймыл сенсорлору аркылуу виртуалдык чындык же машыгууга көз салуу сыяктуу функцияларды колдонот</translation>
@@ -7609,6 +7612,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="965211523698323809">SMS билдирүүлөрүн <ph name="DEVICE_TYPE" /> түзмөгүнөн жөнөтүп, ала аласыз. <ph name="LINK_BEGIN" />Көбүрөөк билүү<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Бардык сайттарга HID түзмөктөрүн колдонууга бөгөт коюлсун</translation>
 <translation id="967624055006145463">Сакталган дайындар</translation>
+<translation id="96774243435178359">Башкарылган принтерлер</translation>
 <translation id="968000525894980488">Google Play кызматтарын күйгүзүңүз.</translation>
 <translation id="968037381421390582">"<ph name="SEARCH_TERMS" />" дегенди ча&amp;птап, издөө</translation>
 <translation id="968174221497644223">Колдонмонун кеши</translation>

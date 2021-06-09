@@ -1662,6 +1662,7 @@
 <translation id="2755349111255270002">გადააყენეთ ეს <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">მარტივი წვდომის ფუნქციების მართვა</translation>
 <translation id="275662540872599901">ეკრანი გამორთულია</translation>
+<translation id="2757161511365746634">პრინტერის ნახვა</translation>
 <translation id="2757338480560142065">დარწმუნდით, რომ პაროლი, რომლის შენახვასაც აპირებთ, ემთხვევა <ph name="WEBSITE" />-ის პაროლს</translation>
 <translation id="2762441749940182211">კამერა დაბლოკილია</translation>
 <translation id="2764786626780673772">VPN-ის დეტალები</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
 <translation id="2800760947029405028">სურათის ატვირთვა</translation>
 <translation id="2801954693771979815">ეკრანის ზომა</translation>
+<translation id="2802557211515765772">მართული პრინტერები არ არის.</translation>
 <translation id="2803313416453193357">გახსენით საქაღალდე</translation>
 <translation id="2803375539583399270">შეიყვანეთ PIN-კოდი</translation>
 <translation id="2804043232879091219">ალტერნატიული ბრაუზერის გახსნა ვერ მოხერხდა</translation>
@@ -3815,7 +3817,6 @@
 <translation id="512903556749061217">მიმაგრებულია</translation>
 <translation id="5130675701626084557">პროფილი ვერ ჩამოიტვირთა. ცადეთ მოგვიანებით, ან დაუკავშირდით ოპერატორს დახმარებისთვის.</translation>
 <translation id="5131591206283983824">სენსორული პანელზე შეხებით გადატანა</translation>
-<translation id="5133483819862530305">მზის ჩასვლიდან ამოსვლამდე</translation>
 <translation id="5135085122826131075">იქონიეთ წვდომა ასისტენტზე „Ok Google“-ის წარმოთქმით.</translation>
 <translation id="5135533361271311778">სანიშნის ელემენტი ვერ შეიქმნა.</translation>
 <translation id="5136343472380336530">დარწმუნდით, რომ ორივე მოწყობილობა განბლოკილია, ახლოსაა ერთმანეთთან და მათზე ჩართულია Bluetooth. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -3852,6 +3853,7 @@
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5171045022955879922">მოძებნეთ ან აკრიფეთ URL</translation>
 <translation id="5171343362375269016">გადატუმბული მეხსიერება</translation>
+<translation id="5172855596271336236">1 მართული პრინტერია.</translation>
 <translation id="5173668317844998239">თქვენს უსაფრთხოების გასაღებზე შენახული თითის ანაბეჭდების დამატება და წაშლა</translation>
 <translation id="5175379009094579629">მოწყობილობის სახელი არასწორია. შეიყვანეთ მოწყობილობის სწორი სახელი და ცადეთ ხელახლა.</translation>
 <translation id="5177479852722101802">გაგრძელება კამერისა და მიკროფონზე წვდომის დაბლოკვით</translation>
@@ -6114,6 +6116,7 @@
 <translation id="7674542105240814168">მდებარეობაზე წვდომა უარყოფილია</translation>
 <translation id="7676119992609591770">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="NUM" /> ჩანართი</translation>
 <translation id="7676867886086876795">ნებისმიერი ტექსტური ველის კარნახით შესავსებად თქვენი ხმა გაიგზავნება Google-ში.</translation>
+<translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> მართული პრინტერია.</translation>
 <translation id="7680416688940118410">სენსორული ეკრანის კალიბრაცია</translation>
 <translation id="7681095912841365527">საიტს შეუძლია Bluetooth-კავშირის გამოყენება</translation>
 <translation id="7681597159868843240">როგორც წესი, საიტების მიერ თქვენი მოწყობილობის მოძრაობის სენსორები გამოიყენება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, ვირტუალური რეალობა თუ ფიტნესთან დაკავშირებული აქტივობის აღნუსხვა</translation>
@@ -7591,6 +7594,7 @@
 <translation id="965211523698323809">გაგზავნეთ და მიიღეთ ტექსტური შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">საიტებისთვის HID მოწყობილობებზე წვდომის აკრძალვა</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
+<translation id="96774243435178359">მართული პრინტერები</translation>
 <translation id="968000525894980488">ჩართეთ Google Play services.</translation>
 <translation id="968037381421390582">ჩა&amp;სმა და „<ph name="SEARCH_TERMS" />“-ის ძიება</translation>
 <translation id="968174221497644223">პროგრამის ქეში</translation>

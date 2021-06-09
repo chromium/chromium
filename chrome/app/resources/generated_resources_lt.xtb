@@ -1680,6 +1680,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2755349111255270002">Nustatykite iš naujo šį „<ph name="DEVICE_TYPE" />“ įrenginį</translation>
 <translation id="2755367719610958252">Tvarkyti pritaikymo neįgaliesiems funkcijas</translation>
 <translation id="275662540872599901">ekranas išjungtas</translation>
+<translation id="2757161511365746634">Spausdintuvo informacijos peržiūra</translation>
 <translation id="2757338480560142065">Įsitikinkite, kad išsaugomas slaptažodis atitinka <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="2762441749940182211">Fotoaparatas užblokuotas</translation>
 <translation id="2764786626780673772">Išsami VPN informacija</translation>
@@ -1722,6 +1723,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2799223571221894425">Paleisti iš naujo</translation>
 <translation id="2800760947029405028">Įkelti vaizdą</translation>
 <translation id="2801954693771979815">Ekrano dydis</translation>
+<translation id="2802557211515765772">Tvarkomų spausdintuvų nėra.</translation>
 <translation id="2803313416453193357">Atidaryti aplanką</translation>
 <translation id="2803375539583399270">Įveskite PIN kodą</translation>
 <translation id="2804043232879091219">Nepavyko atidaryti alternatyvios naršyklės</translation>
@@ -3834,7 +3836,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="512903556749061217">prijungtas</translation>
 <translation id="5130675701626084557">Nepavyko atsisiųsti profilio. Vėliau bandykite dar kartą arba kreipkitės pagalbos į operatorių.</translation>
 <translation id="5131591206283983824">Vilkimas palietus jutiklinę dalį</translation>
-<translation id="5133483819862530305">Nuo saulėlydžio iki saulėtekio</translation>
 <translation id="5135085122826131075">Pasiekite Padėjėją pasakę „Ok Google“.</translation>
 <translation id="5135533361271311778">Žymės elemento sukurti nepavyko.</translation>
 <translation id="5136343472380336530">Įsitikinkite, kad abu įrenginiai yra atrakinti, vienas šalia kito ir juose įjungtas „Bluetooth“ ryšys. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -3871,6 +3872,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
 <translation id="5171343362375269016">Sukeista atmintis</translation>
+<translation id="5172855596271336236">Yra vienas tvarkomas spausdintuvas.</translation>
 <translation id="5173668317844998239">Pridedami ir ištrinami saugos rate išsaugoti kontroliniai kodai</translation>
 <translation id="5175379009094579629">Įrenginio pavadinimas netinkamas. Įveskite tinkamą įrenginio pavadinimą ir bandykite dar kartą.</translation>
 <translation id="5177479852722101802">Toliau blokuoti prieigą prie fotoaparato ir mikrofono</translation>
@@ -6134,6 +6136,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7674542105240814168">Prieiga prie vietovės informacijos atmesta</translation>
 <translation id="7676119992609591770">Rasta skirtukų: <ph name="NUM" /> pagal užklausą „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Balsas siunčiamas į sistemą „Google“, kad bet kuriame teksto lauke būtų galima diktuoti tekstą.</translation>
+<translation id="7679171213002716280">Tvarkomų spausdintuvų skaičius: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Jutiklinio ekrano kalibravimas</translation>
 <translation id="7681095912841365527">Svetainė gali naudoti „Bluetooth“</translation>
 <translation id="7681597159868843240">Paprastai svetainėse naudojami įrenginio judesio jutikliai vykdant tokias funkcijas kaip virtualioji realybė ar mankštos stebėjimas</translation>
@@ -7617,6 +7620,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="965211523698323809">Siųskite ir gaukite teksto pranešimus naudodami „<ph name="DEVICE_TYPE" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Neleisti svetainėms pasiekti HID įrenginių</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
+<translation id="96774243435178359">Tvarkomi spausdintuvai</translation>
 <translation id="968000525894980488">Įjunkite „Google Play“ paslaugas.</translation>
 <translation id="968037381421390582">Įk&amp;klijuoti ir ieškoti „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Programos talpykla</translation>

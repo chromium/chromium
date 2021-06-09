@@ -38,6 +38,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Đảm bảo bạn đã đăng nhập vào Chrome trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="1807517590912578995">Tách biệt hồ sơ trên Chrome?</translation>
+<translation id="1810203443153428607">Quá trình cài đặt Chrome OS sẽ ghi đè mọi dữ liệu trên thiết bị của bạn.</translation>
 <translation id="1812689907177901597">Bằng việc tắt tính năng này, bạn có thể đăng nhập vào các trang web của Google, chẳng hạn như Gmail mà không cần đăng nhập vào Chrome</translation>
 <translation id="1860536484129686729">Chrome cần có quyền truy cập vào máy ảnh của bạn cho trang web này</translation>
 <translation id="1873233029667955273">Google Chrome không phải là trình duyệt mặc định của bạn</translation>
@@ -58,6 +59,16 @@
 <translation id="2348335408836342058">Chrome cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
 <translation id="234869673307233423">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau.</translation>
 <translation id="235650106824528204">Quản trị viên hồ sơ công việc có thể xóa mọi dữ liệu trên Chrome được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Xóa ổ cứng và cài đặt Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chúng tôi đã sẵn sàng cài đặt Chrome OS! Một khi bạn tiếp tục:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Các tệp, dữ liệu và hệ điều hành hiện tại của bạn sẽ bị xóa.
+          <ph name="LIST_ITEM" />Chrome OS sẽ được cài đặt.
+          <ph name="LIST_ITEM" />Thiết bị của bạn sẽ tắt sau khi quá trình cài đặt hoàn tất.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Lời nhắc cuối cùng: quá trình cài đặt sẽ xóa toàn bộ ổ cứng của bạn. Hãy chắc chắn rằng bạn đã sao lưu mọi dữ liệu quan trọng.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Quá trình cài đặt không thể hủy được một khi đã bắt đầu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome không thể đồng bộ hóa dữ liệu của bạn vì Đồng bộ hóa không khả dụng cho miền của bạn.</translation>
 <translation id="2467438592969358367">Google Chrome muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
@@ -171,6 +182,10 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5394833366792865639">Chia sẻ một thẻ Chrome</translation>
 <translation id="5430073640787465221">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. Google Chrome không thể khôi phục cài đặt của bạn.</translation>
 <translation id="5434383153637353914">Trang này cho phép bạn quản lý các Tài khoản Google mà mình đã đăng nhập. Bạn có thể sử dụng các tài khoản nói trên trong trình duyệt Chrome và Cửa hàng Play, cũng như các dịch vụ như Gmail, Drive và YouTube. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Trước khi bắt đầu, hãy nhớ sao lưu dữ liệu mới nhất. Quá trình cài đặt Chrome OS sẽ ghi đè mọi dữ liệu trên ổ cứng của bạn.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google không chịu trách nhiệm về mọi dữ liệu mất mát và không đảm bảo rằng Chrome OS sẽ hoạt động trên các mẫu thiết bị chưa được chứng nhận. Vui lòng truy cập [TBD] để tìm hiểu thêm về các mẫu thiết bị được chứng nhận.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Tìm hiểu thêm về việc cài đặt Chrome OS và xóa dữ liệu: [URL TBD]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Nếu bạn đã sẵn sàng tiếp tục, hãy nhấp vào “Cài đặt Chrome OS” và chúng tôi sẽ hướng dẫn bạn cài đặt qua một vài bước đơn giản. Bạn sẽ được yêu cầu xác nhận một lần nữa trước khi chúng tôi thực hiện thay đổi trên máy tính của bạn.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Cài đặt Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome đang cố gắng hiển thị mật khẩu.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,6 +221,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome dành cho nhà phát triển</translation>
 <translation id="6566149418543181476">Đang cập nhật Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Hệ thống Chrome OS</translation>
+<translation id="664235759707825982">Sẵn sàng cài đặt Chrome OS</translation>
 <translation id="6676384891291319759">Truy cập Internet</translation>
 <translation id="6679975945624592337">Cho phép Google Chrome chạy trong nền</translation>
 <translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
@@ -225,6 +241,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7155997830309522122">Nếu vậy, vui lòng chỉnh sửa mật khẩu đã lưu trong Chrome để khớp với mật khẩu mới.</translation>
 <translation id="7161904924553537242">Chào mừng bạn đến với Google Chrome</translation>
 <translation id="7242029209006116544">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình trên Google Chrome của bạn. Dữ liệu Chrome của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. Bạn có thể tùy chọn tạo một cấu hình mới để giữ cho dữ liệu Chrome hiện có của bạn riêng biệt. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Đang cài đặt Chrome OS</translation>
 <translation id="7295052994004373688">Ngôn ngữ này dùng để hiển thị giao diện người dùng của Google Chrome</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7303916856901595720">Chuyển tài khoản sang hồ sơ mới trên Chrome?</translation>

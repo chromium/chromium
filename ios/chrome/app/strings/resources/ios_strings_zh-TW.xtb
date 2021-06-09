@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此網頁內容已儲存至你的閱讀清單。</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
+<translation id="8691262314411702087">選擇要同步處理的資料類型</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9152539721251340337">建立 QR 圖碼</translation>
 <translation id="9157836665414082580">禁止顯示對話方塊</translation>
+<translation id="9183059292653643328">這個瀏覽器是由貴機構管理</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>

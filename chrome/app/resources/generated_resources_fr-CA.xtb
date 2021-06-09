@@ -1664,6 +1664,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2755349111255270002">Réinitialiser ce <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gérer les fonctionnalités d'accessibilité</translation>
 <translation id="275662540872599901">écran désactivé</translation>
+<translation id="2757161511365746634">Afficher l'imprimante</translation>
 <translation id="2757338480560142065">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">La caméra est bloquée</translation>
 <translation id="2764786626780673772">Renseignements sur la connexion RPV</translation>
@@ -1706,6 +1707,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2799223571221894425">Redémarrer</translation>
 <translation id="2800760947029405028">Téléverser une image</translation>
 <translation id="2801954693771979815">Taille de l'écran</translation>
+<translation id="2802557211515765772">Il n'y a aucune imprimante gérée.</translation>
 <translation id="2803313416453193357">Ouvrir le dossier</translation>
 <translation id="2803375539583399270">Entrer le NIP</translation>
 <translation id="2804043232879091219">Impossible d'ouvrir le navigateur secondaire</translation>
@@ -3817,7 +3819,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="512903556749061217">connecté</translation>
 <translation id="5130675701626084557">Impossible de télécharger le profil. Veuillez réessayer plus tard ou communiquer avec votre fournisseur de services pour obtenir de l'aide.</translation>
 <translation id="5131591206283983824">Paramètres de déplacement tactile</translation>
-<translation id="5133483819862530305">Du coucher au lever du soleil</translation>
 <translation id="5135085122826131075">Accédez à l'Assistant Google lorsque vous dites « Ok Google ».</translation>
 <translation id="5135533361271311778">Impossible de créer le favori.</translation>
 <translation id="5136343472380336530">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -3854,6 +3855,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
 <translation id="5171343362375269016">Mémoire échangée</translation>
+<translation id="5172855596271336236">Il y a 1 imprimante gérée.</translation>
 <translation id="5173668317844998239">Ajoutez et supprimez des empreintes digitales enregistrées sur votre clé de sécurité</translation>
 <translation id="5175379009094579629">Le nom de l'appareil n'est pas valide. Entrez un nom d'appareil valide pour réessayer.</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au microphone</translation>
@@ -6116,6 +6118,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7674542105240814168">Accès à la position refusé</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> onglet trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="7676867886086876795">Envoyez votre voix à Google pour autoriser la dictée dans n'importe quel champ de texte.</translation>
+<translation id="7679171213002716280">Il y a <ph name="PRINTER_COUNT" /> imprimantes gérées.</translation>
 <translation id="7680416688940118410">Calibration de l'écran tactile</translation>
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7681597159868843240">Les sites utilisent généralement les capteurs de mouvement de votre appareil pour proposer des fonctionnalités comme la réalité virtuelle ou le suivi des activités physiques</translation>
@@ -7596,6 +7599,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="965211523698323809">Envoyez et recevez des messages texte à partir de votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">N'autoriser aucun site à accéder à des appareils HID</translation>
 <translation id="967624055006145463">Données stockées</translation>
+<translation id="96774243435178359">Imprimantes gérées</translation>
 <translation id="968000525894980488">Activez les services Google Play.</translation>
 <translation id="968037381421390582">Coller et rechercher « <ph name="SEARCH_TERMS" /> »</translation>
 <translation id="968174221497644223">Cache de l'application</translation>

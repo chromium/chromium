@@ -39,6 +39,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Vertu viss um að þú sért skráð(ur) inn á Chrome í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="1807517590912578995">Aðskilja Chrome prófíl?</translation>
+<translation id="1810203443153428607">Uppsetning Chrome OS skrifar yfir öll gögn í tækinu.</translation>
 <translation id="1812689907177901597">Með því að slökkva á þessu geturðu skráð þig inn á Google vefsvæði eins og Gmail án þess að skrá þig inn í Chrome</translation>
 <translation id="1860536484129686729">Chrome þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>
 <translation id="1873233029667955273">Google Chrome er ekki sjálfgefinn vafri</translation>
@@ -59,6 +60,16 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2348335408836342058">Chrome þarf leyfi til að nota myndavélina og hljóðnemann á þessu vefsvæði</translation>
 <translation id="234869673307233423">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
 <translation id="235650106824528204">Stjórnandi vinnuprófíla getur fjarlægt öll Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Eyða af harða diskinum og setja upp Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Nú er allt tilbúið fyrir uppsetningu Chrome OS! Þegar þú heldur áfram:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Verður skrám, gögnum og núverandi stýrikerfi eytt.
+          <ph name="LIST_ITEM" />Chrome OS verður sett upp.
+          <ph name="LIST_ITEM" />Slökkt verður á tækinu þegar uppsetningunni lýkur.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Ein lokaáminning: uppsetningin mun eyða öllu af harða disknum. Vertu viss um að hafa tekið afrit af öllum gögnum sem þú vilt geyma.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Þegar uppsetningin hefst er ekki hægt að hætta við hana.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="2467438592969358367">Google Chrome vill flytja út aðgangsorðin þín. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -174,6 +185,10 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5434383153637353914">Á þessari síðu geturðu haft umsjón með Google reikningunum sem þú ert skráð(ur) inn á. Reikningarnir verða tiltækir í Chrome vafranum og Play Store forritum sem og í þjónustum á borð við Gmail, Drive og YouTube. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Áður en hafist er handa skaltu tryggja að uppfært öryggisafrit sé til af gögnunum þínum. Uppsetning Chrome OS skrifar yfir öll gögn á harða disknum.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google tekur ekki ábyrgð á neinu gagnatapi og getur ekki tryggt að Chrome OS virki í óvottuðum tækjum. Farðu á [TBD] til að fá frekari upplýsingar um vottuð tæki.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Nánar um uppsetningu Chrome OS og eyðingu gagna: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Ef allt er klárt skaltu smella á „Setja upp Chrome OS“ og þér verður leiðbeint í gegnum uppsetninguna á einfaldan hátt. Þú færð annað tækifæri til að staðfesta áður en við breytum nokkru í tölvunni þinni.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Setja upp Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome er að reyna að birta aðgangsorð.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
@@ -209,6 +224,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Uppfærir Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS kerfi</translation>
+<translation id="664235759707825982">Allt klárt fyrir uppsetningu Chrome OS</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
 <translation id="6679975945624592337">Leyfa Google Chrome að keyra í bakgrunni</translation>
 <translation id="6739177684496155661">Halda áfram á nýjum Chrome prófíl?</translation>
@@ -228,6 +244,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7155997830309522122">Ef svo er skaltu breyta vistaða aðgangsorðinu í Chrome í nýja aðgangsorðið.</translation>
 <translation id="7161904924553537242">Velkomin(n) í Google Chrome</translation>
 <translation id="7242029209006116544">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. Einnig getur þú búið til nýjan prófíl til að halda eldri gögnum þínum á Chrome aðskildum. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Uppsetning Chrome OS stendur yfir</translation>
 <translation id="7295052994004373688">Þetta tungumál er notað til að birta notendaviðmót Google Chrome</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7303916856901595720">Flytja reikning á nýjan Chrome prófíl?</translation>

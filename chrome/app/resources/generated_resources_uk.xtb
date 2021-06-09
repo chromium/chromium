@@ -1680,6 +1680,7 @@
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Керувати спеціальними можливостями</translation>
 <translation id="275662540872599901">екран вимкнено</translation>
+<translation id="2757161511365746634">Переглянути принтер</translation>
 <translation id="2757338480560142065">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Заборонено використовувати камеру</translation>
 <translation id="2764786626780673772">Дані про VPN</translation>
@@ -1722,6 +1723,7 @@
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2800760947029405028">Завантажити зображення</translation>
 <translation id="2801954693771979815">Розмір екрана</translation>
+<translation id="2802557211515765772">Немає керованих принтерів.</translation>
 <translation id="2803313416453193357">Відкрити папку</translation>
 <translation id="2803375539583399270">Введіть PIN-код</translation>
 <translation id="2804043232879091219">Не вдалося відкрити альтернативний веб-переглядач</translation>
@@ -3834,7 +3836,6 @@
 <translation id="512903556749061217">підключено</translation>
 <translation id="5130675701626084557">Не вдалося завантажити профіль. Повторіть спробу пізніше або зв'яжіться з оператором.</translation>
 <translation id="5131591206283983824">Перетягування дотиком на сенсорній панелі</translation>
-<translation id="5133483819862530305">Від заходу до сходу сонця</translation>
 <translation id="5135085122826131075">Активувати Асистента командою "Ok Google".</translation>
 <translation id="5135533361271311778">Не вдалося створити закладку.</translation>
 <translation id="5136343472380336530">Переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -3871,6 +3872,7 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5171045022955879922">Знайдіть або введіть URL-адресу</translation>
 <translation id="5171343362375269016">Замінена пам’ять</translation>
+<translation id="5172855596271336236">Є 1 керований принтер.</translation>
 <translation id="5173668317844998239">Додавайте та видаляйте відбитки пальців, збережені на ключі безпеки</translation>
 <translation id="5175379009094579629">Назва пристрою недійсна. Введіть дійсну назву.</translation>
 <translation id="5177479852722101802">Продовжити блокувати доступ до камери та мікрофона</translation>
@@ -6133,6 +6135,7 @@
 <translation id="7674542105240814168">Доступ до геоданих заборонено</translation>
 <translation id="7676119992609591770">Знайдено <ph name="NUM" /> вкладку за запитом "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Надішліть зразок свого голосу в Google, щоб дозволити диктування в будь-якому текстовому полі.</translation>
+<translation id="7679171213002716280">Кількість керованих принтерів: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Калібрування сенсорного екрана</translation>
 <translation id="7681095912841365527">Сайт може використовувати Bluetooth</translation>
 <translation id="7681597159868843240">Сайти зазвичай використовують датчики руху на пристрої для роботи таких функцій, як віртуальна реальність чи відстеження фізичної активності</translation>
@@ -7616,6 +7619,7 @@
 <translation id="965211523698323809">Обмінюйтеся текстовими повідомленнями за допомогою <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Закрити всім сайтам доступ до пристроїв HID</translation>
 <translation id="967624055006145463">Збережені дані</translation>
+<translation id="96774243435178359">Керовані принтери</translation>
 <translation id="968000525894980488">Увімкніть сервіси Google Play.</translation>
 <translation id="968037381421390582">Вставити й шукати "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кеш програми</translation>

@@ -769,6 +769,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
+<translation id="8691262314411702087">Sélectionner les éléments à synchroniser</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
@@ -811,6 +812,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9152539721251340337">Créer un code QR</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
+<translation id="9183059292653643328">Ce navigateur est géré par votre organisation</translation>
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>
 <translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>

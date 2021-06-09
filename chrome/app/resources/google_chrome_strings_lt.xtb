@@ -40,6 +40,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Įsitikinkite, kad esate prisijungę prie „Chrome“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="1807517590912578995">Sukurti atskirą „Chrome“ profilį?</translation>
+<translation id="1810203443153428607">Įdiegiant „Chrome“ OS bus perrašyti visi įrenginyje esantys duomenys.</translation>
 <translation id="1812689907177901597">Jei išjungsite šį nustatymą, prie „Google“ svetainių galėsite prisijungti kaip prie „Gmail“ neprisijungę prie „Chrome“</translation>
 <translation id="1860536484129686729">„Chrome“ reikia leidimo, kad galėtų naudoti fotoaparatą šioje svetainėje</translation>
 <translation id="1873233029667955273">„Google Chrome“ nėra numatytoji naršyklė</translation>
@@ -60,6 +61,16 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2348335408836342058">„Chrome“ reikia leidimo, kad galėtų naudoti fotoaparatą ir mikrofoną šioje svetainėje</translation>
 <translation id="234869673307233423">„Chrome“ negali patikrinti jūsų slaptažodžių. Vėliau bandykite dar kartą.</translation>
 <translation id="235650106824528204">Visus „Chrome“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Ištrinti standųjį diską ir įdiegti „Chrome“ OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Esame pasiruošę įdiegti „Chrome“ OS! Atliekant diegimo procesą bus atlikti toliau nurodyti veiksmai.
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bus ištrinti failai, duomenys ir dabartinė operacinė sistema.
+          <ph name="LIST_ITEM" />Bus įdiegta „Chrome“ OS.
+          <ph name="LIST_ITEM" />Įdiegus įrenginys bus išjungtas.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Paskutinis priminimas: įdiegiant bus ištrinti visi standžiojo disko duomenys. Įsitikinkite, kad turite atsarginę svarbių duomenų kopiją.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Pradėjus diegimo procesą jo atšaukti nebegalima.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">„Google Chrome“ negali sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="2467438592969358367">„Google Chrome“ nori eksportuoti jūsų slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
@@ -175,6 +186,10 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 
 „Google Chrome“ negali atkurti nustatymų.</translation>
 <translation id="5434383153637353914">Šiame puslapyje galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Šios paskyros bus pasiekiamos „Chrome“ naršyklės ir „Play“ parduotuvės programose bei naudojant tokias paslaugas kaip „Gmail“, Diską ir „YouTube“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Prieš pradėdami įsitikinkite, kad turite naujausią atsarginę duomenų kopiją. Įdiegiant „Chrome“ OS bus perrašyti visi standžiajame diske esantys duomenys.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />„Google“ neatsako už jokius prarastus duomenis ir neužtikrina, kad „Chrome“ OS veiks nesertifikuotuose modeliuose. Norėdami sužinoti daugiau apie sertifikuotus modelius, apsilankykite adresu [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Sužinokite daugiau apie „Chrome“ OS diegimą ir duomenų ištrynimą: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Jei esate pasiruošę tęsti, spustelėkite „Įdiegti „Chrome“ OS“ ir mes padėsime atlikti diegimą keliais paprastais veiksmais. Prieš atliekant kompiuteryje pakeitimus turėsite dar kartą patvirtinti savo pasirinkimą.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Įdiegti „Chrome“ OS</translation>
 <translation id="556024056938947818">„Google Chrome“ bando rodyti slaptažodžius.</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
@@ -210,6 +225,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6515495397637126556">„<ph name="PAGE_TITLE" />“ – „Google Chrome Dev“</translation>
 <translation id="6566149418543181476">Atnaujinama „Google Chrome“ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">„Chrome“ OS sistema</translation>
+<translation id="664235759707825982">Galima įdiegti „Chrome“ OS</translation>
 <translation id="6676384891291319759">Interneto prieiga</translation>
 <translation id="6679975945624592337">„Google Chrome“ leidimas fone</translation>
 <translation id="6739177684496155661">Tęsti naudojant naują „Chrome“ profilį?</translation>
@@ -229,6 +245,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7155997830309522122">Jei taip, redaguokite išsaugotą slaptažodį naršyklėje „Chrome“, kad jis atitiktų naują.</translation>
 <translation id="7161904924553537242">Sveiki! Tai - „Google Chrome“</translation>
 <translation id="7242029209006116544">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Google Chrome“ profilį. „Chrome“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chrome“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Diegiama „Chrome“ OS</translation>
 <translation id="7295052994004373688">Ši kalba vartojama „Google Chrome“ NS pateikti</translation>
 <translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
 <translation id="7303916856901595720">Perkelti paskyrą į naują „Chrome“ profilį?</translation>

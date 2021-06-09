@@ -1664,6 +1664,7 @@
 <translation id="2755349111255270002">Скіньце гэту прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Кіраваць спецыяльнымі магчымасцямі</translation>
 <translation id="275662540872599901">экран выключаны</translation>
+<translation id="2757161511365746634">Інфармацыя аб прынтары</translation>
 <translation id="2757338480560142065">Праверце, ці супадае пароль, які вы захоўваеце, з паролем для сайта <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Камера заблакіравана</translation>
 <translation id="2764786626780673772">Звесткі пра VPN</translation>
@@ -1706,6 +1707,7 @@
 <translation id="2799223571221894425">Перазапусціць</translation>
 <translation id="2800760947029405028">Запампаваць відарыс</translation>
 <translation id="2801954693771979815">Памер экрана</translation>
+<translation id="2802557211515765772">Няма прынтараў пад кіраваннем</translation>
 <translation id="2803313416453193357">Адкрыць папку</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2804043232879091219">Не ўдалося адкрыць альтэрнатыўны браўзер</translation>
@@ -3815,7 +3817,6 @@
 <translation id="512903556749061217">далучана</translation>
 <translation id="5130675701626084557">Не ўдалося спампаваць профіль. Паўтарыце спробу пазней або звярніцеся па дапамогу да аператара.</translation>
 <translation id="5131591206283983824">Перацягванне дотыкам да сэнсарнай панэлі</translation>
-<translation id="5133483819862530305">Ад захаду сонца да світання</translation>
 <translation id="5135085122826131075">Звяртацца да Памочніка, вымавіўшы "Ok Google".</translation>
 <translation id="5135533361271311778">Не ўдалося стварыць элемент закладкі.</translation>
 <translation id="5136343472380336530">Абедзве прылады павінны быць разблакіраваны, знаходзіцца адна пры адной, і на іх павінен быць уключаны Bluetooth. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -3852,6 +3853,7 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5171045022955879922">Знайдзіце або ўвядзіце URL-адрас</translation>
 <translation id="5171343362375269016">Памяць падпампоўвання</translation>
+<translation id="5172855596271336236">Пад кіраваннем 1 прынтар.</translation>
 <translation id="5173668317844998239">Дадавайце і выдаляйце адбіткі пальцаў, захаваныя на ключы бяспекі</translation>
 <translation id="5175379009094579629">Няправільная назва прылады. Увядзіце правільную назву прылады, каб паўтарыць спробу.</translation>
 <translation id="5177479852722101802">І далей блакіраваць доступ да камеры і мікрафона</translation>
@@ -6111,6 +6113,7 @@
 <translation id="7674542105240814168">Доступ да даных геалакацыі забаронены</translation>
 <translation id="7676119992609591770">Знойдзена некалькі (<ph name="NUM" />) укладак па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Запіс вашага голасу адпраўляецца ў Google. Гэта дазваляе выкарыстоўваць галасавы ўвод для любога тэкставага поля.</translation>
+<translation id="7679171213002716280">Колькасць прынтараў пад кіраваннем: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Каліброўка сэнсарнага экрана</translation>
 <translation id="7681095912841365527">Сайт можа выкарыстоўваць Bluetooth</translation>
 <translation id="7681597159868843240">Сайты звычайна выкарыстоўваюць датчыкі руху прылады для работы такіх функцый, як віртуальная рэальнасць або адсочванне фізічнага стану</translation>
@@ -7592,6 +7595,7 @@
 <translation id="965211523698323809">Адпраўляйце і атрымлівайце тэкставыя паведамленні з прылады "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Не дазваляць сайтам атрымліваць доступ да прылад HID</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
+<translation id="96774243435178359">Прынтары пад кіраваннем</translation>
 <translation id="968000525894980488">Уключыце Сэрвісы Google Play.</translation>
 <translation id="968037381421390582">У&amp;ставіць і шукаць па запыце "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кэш праграмы</translation>

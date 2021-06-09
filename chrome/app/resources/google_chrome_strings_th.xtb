@@ -35,6 +35,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chrome ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="1807517590912578995">แยกโปรไฟล์ Chrome ไหม</translation>
+<translation id="1810203443153428607">การติดตั้ง Chrome OS จะเขียนทับข้อมูลทั้งหมดในอุปกรณ์</translation>
 <translation id="1812689907177901597">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1860536484129686729">Chrome ต้องการสิทธิ์เข้าถึงกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="1873233029667955273">Google Chrome ไม่ใช่เบราว์เซอร์เริ่มต้น</translation>
@@ -55,6 +56,16 @@
 <translation id="2348335408836342058">Chrome ต้องการสิทธิ์เข้าถึงไมโครโฟนและกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="234869673307233423">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="235650106824528204">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chrome ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">ลบฮาร์ดไดรฟ์และติดตั้ง Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />เราพร้อมติดตั้ง Chrome OS แล้ว เมื่อคุณดำเนินการต่อจะเกิดสิ่งต่อไปนี้
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ไฟล์ ข้อมูล และระบบปฏิบัติการปัจจุบันจะถูกลบ
+          <ph name="LIST_ITEM" />ระบบจะติดตั้ง Chrome OS
+          <ph name="LIST_ITEM" />อุปกรณ์จะปิดเมื่อการติดตั้งเสร็จสมบูรณ์
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />การช่วยเตือนครั้งสุดท้าย: การติดตั้งจะลบฮาร์ดไดรฟ์ทั้งหมด โปรดตรวจสอบว่าคุณสำรองข้อมูลที่สำคัญแล้ว<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากไม่สามารถใช้การซิงค์กับโดเมนของคุณ</translation>
 <translation id="2467438592969358367">Google Chrome ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
@@ -166,6 +177,10 @@
 <translation id="5394833366792865639">แชร์แท็บ Chrome</translation>
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
 <translation id="5434383153637353914">หน้านี้ช่วยให้คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชีเหล่านี้จะใช้งานได้ในเบราว์เซอร์ Chrome และแอปจาก Play Store รวมถึงบริการต่างๆ เช่น Gmail, ไดรฟ์ และ YouTube <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ก่อนที่จะเริ่ม โปรดตรวจสอบว่าคุณสำรองข้อมูลล่าสุดแล้ว การติดตั้ง Chrome OS จะเขียนทับข้อมูลทั้งหมดในฮาร์ดไดรฟ์<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google ไม่มีส่วนรับผิดชอบต่อการสูญหายของข้อมูล และไม่รับประกันว่า Chrome OS จะใช้งานได้ในรุ่นที่ไม่ผ่านการรับรอง โปรดไปที่ [TBD] เพื่อดูข้อมูลเพิ่มเติมรุ่นที่ได้รับการรับรอง<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />ดูข้อมูลเพิ่มเติมการติดตั้ง Chrome OS และการลบข้อมูล: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />หากพร้อมดำเนินการต่อ ให้คลิก "ติดตั้ง Chrome OS" แล้วเราจะแนะนำขั้นตอนการติดตั้งง่ายๆ เพียง 2-3 ขั้นตอนให้คุณ คุณจะยืนยันได้อีกครั้งก่อนที่เราจะทำการเปลี่ยนแปลงกับคอมพิวเตอร์<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">ติดตั้ง Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome กำลังพยายามแสดงรหัสผ่าน</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -200,6 +215,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">กำลังอัปเดต Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ระบบ Chrome OS</translation>
+<translation id="664235759707825982">พร้อมติดตั้ง Chrome OS แล้ว</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>
 <translation id="6679975945624592337">ให้ Google Chrome ทำงานในพื้นหลัง</translation>
 <translation id="6739177684496155661">ดำเนินการต่อในโปรไฟล์ Chrome ใหม่ไหม</translation>
@@ -219,6 +235,7 @@
 <translation id="7155997830309522122">หากเปลี่ยนแล้ว โปรดแก้ไขรหัสผ่านที่บันทึกไว้ใน Chrome ให้ตรงกับรหัสผ่านใหม่</translation>
 <translation id="7161904924553537242">ยินดีต้อนรับสู่ Google Chrome</translation>
 <translation id="7242029209006116544">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Google Chrome ของคุณ ข้อมูล Chrome เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น คุณสามารถเลือกที่จะสร้างโปรไฟล์ใหม่เพื่อแยกเก็บข้อมูล Chrome ที่มีอยู่ของคุณ <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">กำลังติดตั้ง Chrome OS</translation>
 <translation id="7295052994004373688">นี่เป็นภาษาที่ใช้ในการแสดง UI ของ Google Chrome</translation>
 <translation id="7296210096911315575">ข้อมูลสำคัญเกี่ยวกับการใช้งานและความปลอดภัย</translation>
 <translation id="7303916856901595720">ย้ายบัญชีไปยังโปรไฟล์ Chrome ใหม่ไหม</translation>

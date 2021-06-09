@@ -112,6 +112,7 @@
             * digest
             * ntlm
             Si cette option est laissée vide, ces trois méthodes peuvent être utilisées.</translation>
+<translation id="1153306961094113710">Autoriser le débogage à distance</translation>
 <translation id="1158844608156732189">Configuration Kerberos (une ligne par élément du tableau). Voir https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Autoriser le protocole QUIC</translation>
 <translation id="1160939557934457296">Désactiver l'accès au site lors de l'affichage de la page d'avertissement par le service de navigation sécurisée</translation>
@@ -2305,6 +2306,14 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
           Si cette règle n'est pas configurée, les touches persistantes sont initialement désactivées sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
+<translation id="3932553013632130433">
+      Indique si SharedArrayBuffers peut être utilisé
+      dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, Chrome nécessitera
+      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffers à partir de Chrome 91
+      (25/05/2021). Pour en savoir plus, accédez à la page
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+      Lorsque cette règle est définie sur "True", les sites peuvent utiliser SharedArrayBuffer sans aucune restriction.
+      Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser les SharedArrayBuffers que dans un contexte isolé multi-origine.</translation>
 <translation id="3942041691320538491">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 1, vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
 
       En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.</translation>
@@ -3236,6 +3245,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si cette règle est définie sur "False", les utilisateurs ne peuvent pas caster de contenu sur leur appareil. Si elle est définie sur "True", les utilisateurs sont autorisés à caster du contenu. Si elle n'est pas définie, les utilisateurs ne peuvent pas caster de contenu sur les appareils Chrome OS enregistrés, mais ils peuvent le faire sur des appareils non enregistrés.</translation>
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
+<translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
 <translation id="5329007337159326804">Avertissement : La règle relative à la version TLS maximale sera entièrement supprimée de <ph name="PRODUCT_NAME" /> à partir de la version 75 environ (autour de juin 2019).
 
       Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> utilise la version maximale par défaut.
@@ -3561,6 +3571,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           La valeur de la règle ne s'applique que si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, et pas autrement.</translation>
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
+<translation id="5699770471852263667">Si cette règle est activée, la visionneuse de PDF interne est désactivée dans <ph name="PRODUCT_NAME" />, les fichiers PDF sont téléchargés, et l'utilisateur peut les ouvrir avec l'application par défaut.
+
+      Si cette règle est désactivée, les fichiers PDF sont ouverts, sauf si les utilisateurs ont désactivé le plug-in PDF.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si la règle n'est pas configurée, les utilisateurs peuvent choisir d'ouvrir le PDF en externe ou non.</translation>
 <translation id="570062449808736508">Lorsque ce règlement est défini sur une chaîne non vide, WebView lit les restrictions d'URL depuis le fournisseur de contenu portant le nom de l'autorité indiquée.</translation>
 <translation id="5708969689202733975">Configurer les modes de déverrouillage rapide autorisés</translation>
 <translation id="5715617256528927547">Cette règle permet de spécifier la durée de mise en cache (en heures) des GPO, c'est-à-dire la durée maximale pendant laquelle les GPO peuvent être réutilisés avant d'être de nouveau téléchargés. Au lieu de les télécharger de nouveau à chaque récupération de règle, le système peut réutiliser ceux mis en cache tant que leur version ne change pas.
@@ -5178,6 +5193,7 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7709470712369261710">Ne pas utiliser les services Google pour qu'une description soit ajoutée automatiquement aux images</translation>
 <translation id="7712109699186360774">Demander chaque fois qu'un site essaie d'accéder à la caméra et/ou au microphone</translation>
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
+<translation id="7713845740295404764">Signaler les événements de connexion/déconnexion</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>
 <translation id="7716020145539921591">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
@@ -5415,6 +5431,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne fournissent pas ces statistiques.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
+<translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
 <translation id="8049769137921877885">Cette règle détermine si les données de la règle et l'heure de récupération de la règle doivent être enregistrées.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -6002,6 +6019,11 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Supprime l'invite de fermeture qui s'affiche lors du rendu d'un site par <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="886645881209114007">Autoriser les utilisateurs à utiliser <ph name="PLUGIN_VM_NAME" /> dans <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8867894831390233044">Permet de déterminer si les utilisateurs peuvent se servir ou non du débogage à distance.
+
+      Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent se servir du débogage à distance en spécifiant les boutons de ligne de commande --remote-debugging-port et --remote-debugging-pipe.
+
+      Si elle est désactivée, les utilisateurs ne peuvent pas se servir du débogage à distance.</translation>
 <translation id="8871974300055371298">Paramètres du contenu</translation>
 <translation id="8872402969096027761">Permet d'activer la fonctionnalité d'accessibilité de clic automatique sur l'écran de connexion.
 
@@ -6187,6 +6209,10 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle est désactivée, les appareils enregistrés n'enregistrent et ne communiquent pas ces périodes.</translation>
 <translation id="9077227880520270584">Minuteur de connexion automatique au compte local de l'appareil</translation>
 <translation id="9084985621503260744">Indiquer si l'activité vidéo a une incidence sur la gestion de l'alimentation</translation>
+<translation id="9087434639296483430">Signale les événements de connexion/déconnexion des utilisateurs sur les appareils enregistrés, y compris les échecs de connexion.
+
+      Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
+      Si elle est définie sur "True", les événements de connexion et de déconnexion de l'appareil seront transmis.</translation>
 <translation id="9088191250434406767">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent rechercher avec leur appareil photo à l'aide de <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche lorsque la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo est compatible.</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>
@@ -6290,6 +6316,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="9197740283131855199">Pourcentage d'adaptation du délai d'assombrissement de l'écran si l'utilisateur devient actif après la réduction de la luminosité</translation>
 <translation id="9200828125069750521">Paramètres pour l'URL d'image utilisant POST</translation>
 <translation id="9204863016826119209">Des clés d'entreprise peuvent être utilisées par les applications Android installées et identifiées dans cette règle.</translation>
+<translation id="9207596996305971030">Ne pas signaler les événements de connexion/déconnexion</translation>
 <translation id="9213751049772256263">Désactiver toutes les variantes</translation>
 <translation id="9217154963008402249">Fréquence des paquets réseau de contrôle</translation>
 <translation id="922540222991413931">Configurer les sources d'installation des extensions, des applications et des scripts d'utilisateur</translation>
@@ -6323,6 +6350,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
       Remarque : le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
+<translation id="979467274961593903">Ne pas autoriser l'utilisation du débogage à distance</translation>
 <translation id="980218166381006412">Activer cette règle active le mode arrière-plan. Dans ce mode, un processus <ph name="PRODUCT_NAME" /> est lancé lors de la connexion à l'OS. Il ne se termine que lorsque la dernière fenêtre du navigateur est fermée, ce qui permet aux applis en arrière-plan et à la session de navigation de rester actives. Le processus en arrière-plan affiche une icône dans la barre d'état système, d'où il est peut être arrêté à tout moment.
 
       Désactiver cette règle désactive le mode arrière-plan.

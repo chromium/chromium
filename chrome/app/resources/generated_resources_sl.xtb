@@ -1680,6 +1680,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2755349111255270002">Ponastavite to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2755367719610958252">Upravljanje funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="275662540872599901">zaslon je izklopljen</translation>
+<translation id="2757161511365746634">Ogled tiskalnika</translation>
 <translation id="2757338480560142065">Geslo, ki ga želite shraniti, se mora ujemati z geslom za storitev <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera je blokirana</translation>
 <translation id="2764786626780673772">Podrobnosti o navideznem zasebnem omrežju</translation>
@@ -1722,6 +1723,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
 <translation id="2800760947029405028">Naloži sliko</translation>
 <translation id="2801954693771979815">Velikost zaslona</translation>
+<translation id="2802557211515765772">Na voljo ni upravljanih tiskalnikov.</translation>
 <translation id="2803313416453193357">Odpri mapo</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
 <translation id="2804043232879091219">Nadomestnega brskalnika ni bilo mogoče odpreti</translation>
@@ -3834,7 +3836,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="512903556749061217">priključena</translation>
 <translation id="5130675701626084557">Profila ni bilo mogoče prenesti. Poskusite znova pozneje ali se obrnite na ponudnika za pomoč.</translation>
 <translation id="5131591206283983824">Vlečenje z dotikom po sledilni ploščici</translation>
-<translation id="5133483819862530305">Od sončnega zahoda do vzhoda</translation>
 <translation id="5135085122826131075">Dostopajte do Pomočnika, ko izgovorite »Ok Google«.</translation>
 <translation id="5135533361271311778">Elementa zaznamka ni bilo mogoče ustvariti.</translation>
 <translation id="5136343472380336530">Prepričajte se, da sta obe napravi odklenjeni, blizu druga druge ter imata vklopljen Bluetooth. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -3871,6 +3872,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
 <translation id="5171343362375269016">Zamenjan pomnilnik</translation>
+<translation id="5172855596271336236">Na voljo je 1 upravljan tiskalnik.</translation>
 <translation id="5173668317844998239">Dodajanje in brisanje prstnih odtisov, shranjenih v varnostnem ključu</translation>
 <translation id="5175379009094579629">Ime naprave je neveljavno. Vnesite veljavno ime naprave, če želite poskusiti znova.</translation>
 <translation id="5177479852722101802">Še naprej blokiraj dostop do kamere in mikrofona</translation>
@@ -6135,6 +6137,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7674542105240814168">Dostop do lokacije je bil zavrnjen</translation>
 <translation id="7676119992609591770">Najden je bil <ph name="NUM" /> zavihek za »<ph name="SEARCH_TEXT" />«.</translation>
 <translation id="7676867886086876795">Pošljite glas Googlu, če želite omogočiti narekovanje v poljubno besedilno polje.</translation>
+<translation id="7679171213002716280">Na voljo je toliko upravljanih tiskalnikov: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Umerjanje zaslona na dotik</translation>
 <translation id="7681095912841365527">Spletno mesto lahko uporablja Bluetooth</translation>
 <translation id="7681597159868843240">Spletna mesta običajno uporabljajo tipala gibanja v napravi zaradi funkcij, kot sta navidezna resničnost ali spremljanje telesne pripravljenosti.</translation>
@@ -7618,6 +7621,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="965211523698323809">Prejemanje in pošiljanje sporočil SMS z napravo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Spletnim mestom ne dovoli dostopa do naprav HID</translation>
 <translation id="967624055006145463">Shranjeni podatki</translation>
+<translation id="96774243435178359">Upravljani tiskalniki</translation>
 <translation id="968000525894980488">Vklopite storitve Google Play</translation>
 <translation id="968037381421390582">&amp;Prilepi in poišči »<ph name="SEARCH_TERMS" />«</translation>
 <translation id="968174221497644223">Predpomnilnik aplikacij</translation>

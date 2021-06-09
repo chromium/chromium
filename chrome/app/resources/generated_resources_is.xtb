@@ -1677,6 +1677,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2755349111255270002">Endurstilla þetta <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Stjórna aðgengiseiginleikum</translation>
 <translation id="275662540872599901">slökkt á skjánum</translation>
+<translation id="2757161511365746634">Skoða prentara</translation>
 <translation id="2757338480560142065">Gakktu úr skugga um að aðgangsorðið sem þú ert að vista passi við aðgangsorðið fyrir <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Lokað á myndavél</translation>
 <translation id="2764786626780673772">Upplýsingar um VPN-netið</translation>
@@ -1719,6 +1720,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2800760947029405028">Hlaða inn mynd</translation>
 <translation id="2801954693771979815">Skjástærð</translation>
+<translation id="2802557211515765772">Engir prentarar sem er stjórnað.</translation>
 <translation id="2803313416453193357">Opna möppu</translation>
 <translation id="2803375539583399270">Sláðu inn PIN-númer</translation>
 <translation id="2804043232879091219">Ekki var hægt að opna hinn vafrann</translation>
@@ -3831,7 +3833,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="512903556749061217">tengt</translation>
 <translation id="5130675701626084557">Ekki var hægt að sækja prófíl. Reyndu aftur síðar eða leitaðu aðstoðar hjá símafyrirtækinu.</translation>
 <translation id="5131591206283983824">Draga með snertingu á snertifleti</translation>
-<translation id="5133483819862530305">Sólsetur til sólarupprásar</translation>
 <translation id="5135085122826131075">Opnaðu hjálparann með því að segja „Ok Google“.</translation>
 <translation id="5135533361271311778">Ekki var hægt að búa til bókamerkjaatriði.</translation>
 <translation id="5136343472380336530">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -3868,6 +3869,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
 <translation id="5171343362375269016">Skiptiminni</translation>
+<translation id="5172855596271336236">1 prentari sem er stjórnað er til staðar.</translation>
 <translation id="5173668317844998239">Bæta við og eyða fingraförum sem eru vistuð á öryggislyklinum þínum</translation>
 <translation id="5175379009094579629">Heiti tækisins er ógilt. Sláðu inn gilt nafn tækis til að reyna aftur.</translation>
 <translation id="5177479852722101802">Halda áfram að útiloka aðgang að myndavél og hljóðnema</translation>
@@ -6130,6 +6132,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7674542105240814168">Aðgangi að staðsetningu hafnað</translation>
 <translation id="7676119992609591770">Fann <ph name="NUM" /> flipa fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Sendu rödd þína til Google til að bjóða upp á upplestur fyrir hvaða textareit sem er.</translation>
+<translation id="7679171213002716280">Hér eru <ph name="PRINTER_COUNT" /> prentarar sem er stjórnað.</translation>
 <translation id="7680416688940118410">Kvörðun snertiskjás</translation>
 <translation id="7681095912841365527">Vefsvæði getur notað Bluetooth</translation>
 <translation id="7681597159868843240">Yfirleitt nota vefsvæði hreyfiskynjara tækisins fyrir eiginleika á borð við sýndarveruleika eða hreystimælingar</translation>
@@ -7610,6 +7613,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="965211523698323809">Sendu og taktu á móti SMS-skilaboðum úr <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Ekki veita neinum vefsvæðum aðgang að HID-tækjum</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
+<translation id="96774243435178359">Prentarar sem er stjórnað</translation>
 <translation id="968000525894980488">Kveiktu á þjónustu Google Play.</translation>
 <translation id="968037381421390582">Lí&amp;ma og leita að „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Skyndiminni forrits</translation>

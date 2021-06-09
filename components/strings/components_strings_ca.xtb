@@ -762,6 +762,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3754210790023674521">Surt de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has informat de cap error recentment. Els errors que s'hagin produït mentre la creació d'informes d'error estava desactivada no es mostraran aquí.</translation>
 <translation id="3760561303380396507">Vols utilitzar Windows Hello en lloc del CVC?</translation>
+<translation id="3761171036307311438">Nom a la targeta:</translation>
 <translation id="3761718714832595332">Amaga l'estat</translation>
 <translation id="3765032636089507299">La pàgina Navegació segura està en construcció.</translation>
 <translation id="3765588406864124894">Bústia de correu 9</translation>
@@ -1703,6 +1704,7 @@ Detalls addicionals:
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Està afiliat:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353601530677266744">Línia d'ordres</translation>
 <translation id="7359588939039777303">S'han bloquejat els anuncis.</translation>
 <translation id="7363096869660964304">Tanmateix, no ets invisible. La teva empresa, el teu proveïdor de serveis d'Internet i els llocs web que visites poden veure la navegació d'incògnit.</translation>

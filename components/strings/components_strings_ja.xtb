@@ -762,6 +762,7 @@
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
 <translation id="3760561303380396507">CVC の代わりに Windows Hello を使用しますか？</translation>
+<translation id="3761171036307311438">名義人名:</translation>
 <translation id="3761718714832595332">ステータスを表示しない</translation>
 <translation id="3765032636089507299">セーフ ブラウジング ページは準備中です。</translation>
 <translation id="3765588406864124894">用紙受け 9</translation>
@@ -1703,6 +1704,7 @@
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">外部のユーザーかどうか:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>
 <translation id="7363096869660964304">あらゆる場所に記録が一切残らないわけではありません。シークレット モードを使っても、雇用主、インターネット サービス プロバイダ、訪問先のウェブサイトに閲覧内容が知られる可能性はあります。</translation>

@@ -768,6 +768,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8654802032646794042">Odustani</translation>
 <translation id="8668210798914567634">Ova je stranica spremljena na vaš popis za čitanje.</translation>
 <translation id="8680787084697685621">Pojedinosti prijave na račun su zastarjele.</translation>
+<translation id="8691262314411702087">Odaberite što ćete sinkronizirati</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8706588385081740091">Zaporke</translation>
 <translation id="8717864919010420084">Kopiraj vezu</translation>
@@ -810,6 +811,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
 <translation id="9152539721251340337">Izradi QR kôd</translation>
 <translation id="9157836665414082580">Izostavi dijaloge</translation>
+<translation id="9183059292653643328">Ovim preglednikom upravlja vaša organizacija</translation>
 <translation id="9188680907066685419">Odjava s upravljanog računa</translation>
 <translation id="9200875785104711666">Prije ovoliko dana: <ph name="TIME" /></translation>
 <translation id="9203116392574189331">Handoff</translation>

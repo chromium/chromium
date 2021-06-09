@@ -1663,6 +1663,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2755349111255270002">Resetează <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gestionează funcțiile de accesibilitate</translation>
 <translation id="275662540872599901">ecran dezactivat</translation>
+<translation id="2757161511365746634">Vezi imprimanta</translation>
 <translation id="2757338480560142065">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Camera foto este blocată</translation>
 <translation id="2764786626780673772">Detalii despre VPN</translation>
@@ -1705,6 +1706,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2800760947029405028">Încarcă o imagine</translation>
 <translation id="2801954693771979815">Dimensiunea ecranului</translation>
+<translation id="2802557211515765772">Nu sunt disponibile imprimante gestionate.</translation>
 <translation id="2803313416453193357">Deschideți dosarul</translation>
 <translation id="2803375539583399270">Introdu codul PIN</translation>
 <translation id="2804043232879091219">Browserul secundar nu a putut fi deschis</translation>
@@ -3816,7 +3818,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="512903556749061217">conectat</translation>
 <translation id="5130675701626084557">Profilul nu a putut fi descărcat. Încearcă din nou mai târziu sau contactează operatorul pentru ajutor.</translation>
 <translation id="5131591206283983824">Tragerea prin atingere pe touchpad</translation>
-<translation id="5133483819862530305">De la apus la răsărit</translation>
 <translation id="5135085122826131075">Accesează Asistentul rostind „Ok Google”.</translation>
 <translation id="5135533361271311778">Elementul de marcaj nu a putut fi creat.</translation>
 <translation id="5136343472380336530">Asigură-te că ambele dispozitive sunt deblocate, apropiate unul de celălalt și au activată conexiunea Bluetooth. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -3853,6 +3854,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5171045022955879922">Caută sau introdu adresa URL</translation>
 <translation id="5171343362375269016">Dimensiunea memoriei de swap</translation>
+<translation id="5172855596271336236">Este disponibilă o imprimantă gestionată.</translation>
 <translation id="5173668317844998239">Adaugă și șterge amprentele salvate pe cheia de securitate</translation>
 <translation id="5175379009094579629">Numele dispozitivului este nevalid. Introdu un nume de dispozitiv valid pentru a încerca din nou.</translation>
 <translation id="5177479852722101802">Blocați în continuare accesul la cameră și microfon</translation>
@@ -6115,6 +6117,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7674542105240814168">Accesul la locație a fost refuzat</translation>
 <translation id="7676119992609591770">S-a găsit <ph name="NUM" /> filă pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Trimite-ți vocea la Google pentru a permite dictarea în orice câmp de text.</translation>
+<translation id="7679171213002716280">Sunt disponibile <ph name="PRINTER_COUNT" /> imprimante gestionate.</translation>
 <translation id="7680416688940118410">Calibrarea ecranului tactil</translation>
 <translation id="7681095912841365527">Site-ul poate folosi Bluetooth</translation>
 <translation id="7681597159868843240">Site-urile folosesc de obicei senzorii de mișcare ai dispozitivului pentru funcții cum ar fi realitatea virtuală sau monitorizarea activității de fitness</translation>
@@ -7595,6 +7598,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="965211523698323809">Trimite și primește mesaje text pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Nu permite niciunui site să acceseze dispozitive HID</translation>
 <translation id="967624055006145463">Date stocate</translation>
+<translation id="96774243435178359">Imprimante gestionate</translation>
 <translation id="968000525894980488">Activează serviciile Google Play.</translation>
 <translation id="968037381421390582">In&amp;serează și caută „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Memoria cache a aplicației</translation>

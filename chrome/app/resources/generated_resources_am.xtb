@@ -1671,6 +1671,7 @@
 <translation id="2755349111255270002">ይህን <ph name="DEVICE_TYPE" /> ዳግም አቀናብር</translation>
 <translation id="2755367719610958252">የተደራሽነት ባህሪያትን ያቀናብሩ</translation>
 <translation id="275662540872599901">ማያ ገጽ ጠፍቷል</translation>
+<translation id="2757161511365746634">ማተሚያን አሳይ</translation>
 <translation id="2757338480560142065">እያስቀመጡት ያለው የይለፍ ቃል ከ<ph name="WEBSITE" /> ይለፍ ቃል ጋር የሚዛመድ መሆኑን ያረጋግጡ</translation>
 <translation id="2762441749940182211">ካሜራ ታግዷል</translation>
 <translation id="2764786626780673772">የቪፒኤን ዝርዝሮች</translation>
@@ -1713,6 +1714,7 @@
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
 <translation id="2800760947029405028">ምስል ስቀል</translation>
 <translation id="2801954693771979815">የማያ ገጽ መጠን</translation>
+<translation id="2802557211515765772">ምንም የሚተዳደሩ ማተሚያዎች የሉም።</translation>
 <translation id="2803313416453193357">አቃፊ ክፈት</translation>
 <translation id="2803375539583399270">ፒን ያስገቡ</translation>
 <translation id="2804043232879091219">ተለዋጩ አሳሽ ሊከፈት አይችልም</translation>
@@ -3822,7 +3824,6 @@
 <translation id="512903556749061217">ተያያዟል</translation>
 <translation id="5130675701626084557">መገለጫ ሊውረድ አይችልም። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለእርዳታ አገልግሎት አቅራቢን ያነጋግሩ።</translation>
 <translation id="5131591206283983824">የመዳሰሻ ሰሌዳን መታ አድርጎ መጎተት</translation>
-<translation id="5133483819862530305">ጸሐይ ከወጣችበት ጊዜ ጀምሮ እስክትጠልቅ ድረስ</translation>
 <translation id="5135085122826131075">«Ok Google» ሲሉ ረዳትዎን ይድረሱ።</translation>
 <translation id="5135533361271311778">የዕልባት ንጥል መፍጠር አልተቻለም።</translation>
 <translation id="5136343472380336530">ሁለቱም መሣሪያዎች እንደተከፈቱ፣ አጠገብ ለአጠገብ እንደሆኑ እና ብሉቱዝ መብራቱን ያረጋግጡ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -3859,6 +3860,7 @@
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5171045022955879922">ይፈልጉ ወይም ዩአርኤል ይጻፉ</translation>
 <translation id="5171343362375269016">የተተካ ማህደረ ትውስታ</translation>
+<translation id="5172855596271336236">1 የሚተዳደር ማተሚያ አለ</translation>
 <translation id="5173668317844998239">በደህንነት ቁልፍዎ ላይ የጣት አሻራዎችን ያክሉ እና የተቀመጡትን ይሰርዙ</translation>
 <translation id="5175379009094579629">የመሣሪያ ስሙ ልክ ያልሆነ ነው። እንደገና ለመሞከር የሚሰራ የመሣሪያ ስም ያስገቡ።</translation>
 <translation id="5177479852722101802">የካሜራ እና ማይክሮፎን መዳረሻ ማገዱን ቀጥል</translation>
@@ -6121,6 +6123,7 @@
 <translation id="7674542105240814168">የአካባቢ መዳረሻ ተከልክሏል</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ትር ለ«<ph name="SEARCH_TEXT" />» ተገኝቷል</translation>
 <translation id="7676867886086876795">ወደ ማናቸውም የጽሑፍ መስክ በቃል ማስጻፍን ለመፍቀድ ድምጽዎን ወደ Google ይላኩ።</translation>
+<translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> የሚተዳደሩ ማተሚያዎች አሉ።</translation>
 <translation id="7680416688940118410">የሚነካ ማያ መለካት</translation>
 <translation id="7681095912841365527">ጣቢያ ብሉቱዝን መጠቀም ይችላል</translation>
 <translation id="7681597159868843240">ጣቢያዎች አብዛኛውን ጊዜ እንደ ምናባዊ እውነታ ወይም የአካል ብቃት እንቅስቃሴ መከታተያ ላሉት ባህሪዎች የመሣሪያዎን እንቅስቃሴ ዳሳሾች ይጠቀማሉ</translation>
@@ -7606,6 +7609,7 @@ nil</translation>
 <translation id="965211523698323809">ከእርስዎ <ph name="DEVICE_TYPE" /> ሆነው የጽሑፍ መልዕክቶችን ይላኩ እና ይቀበሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">ማናቸውም ጣቢያዎች የHID መሣሪያዎችን እንዲደርሱ አይፍቀዱ</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>
+<translation id="96774243435178359">የሚተዳደሩ ማተሚያዎች</translation>
 <translation id="968000525894980488">Google Play አገልግሎቶችን ያብሩ።</translation>
 <translation id="968037381421390582">ይለጥፉና «<ph name="SEARCH_TERMS" />»ን ይፈልጉ</translation>
 <translation id="968174221497644223">የመተግበሪያ መሸጎጫ</translation>

@@ -1678,6 +1678,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2755349111255270002">Nulstil denne <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Administrer hjælpefunktioner</translation>
 <translation id="275662540872599901">skærmen er slukket</translation>
+<translation id="2757161511365746634">Se printer</translation>
 <translation id="2757338480560142065">Sørg for, at den adgangskode, du gemmer, er den samme som din adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Der er blokeret for adgang til kameraet</translation>
 <translation id="2764786626780673772">Info om VPN</translation>
@@ -1720,6 +1721,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2799223571221894425">Genstart</translation>
 <translation id="2800760947029405028">Upload et billede</translation>
 <translation id="2801954693771979815">Skærmstørrelse</translation>
+<translation id="2802557211515765772">Der er ingen administrerede printere.</translation>
 <translation id="2803313416453193357">Åbn mappe</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
 <translation id="2804043232879091219">Den alternative browser kunne ikke åbnes</translation>
@@ -3832,7 +3834,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="512903556749061217">tilknyttet</translation>
 <translation id="5130675701626084557">Profilen kunne ikke downloades. Prøv igen senere, eller kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="5131591206283983824">Tryk og træk på touchplade</translation>
-<translation id="5133483819862530305">Fra solnedgang til solopgang</translation>
 <translation id="5135085122826131075">Få adgang til din Google-assistent, når du siger "Hey Google".</translation>
 <translation id="5135533361271311778">Bogmærkeelementet blev ikke oprettet.</translation>
 <translation id="5136343472380336530">Sørg for, at begge enheder er låst op, er i nærheden af hinanden og har Bluetooth aktiveret. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -3869,6 +3870,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
 <translation id="5171343362375269016">Ombyttet hukommelse</translation>
+<translation id="5172855596271336236">Der er 1 administreret printer.</translation>
 <translation id="5173668317844998239">Tilføj eller slet de fingeraftryk, der er gemt på din sikkerhedsnøgle</translation>
 <translation id="5175379009094579629">Enhedsnavnet er ugyldigt. Angiv et gyldigt enhedsnavn for at prøve igen.</translation>
 <translation id="5177479852722101802">Fortsæt blokering af adgang til kamera og mikrofon</translation>
@@ -6131,6 +6133,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7674542105240814168">Placeringsadgang blev nægtet</translation>
 <translation id="7676119992609591770">Der blev fundet <ph name="NUM" /> fane for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Send din stemme til Google, så du kan diktere i ethvert tekstfelt.</translation>
+<translation id="7679171213002716280">Der er <ph name="PRINTER_COUNT" /> administrerede printere.</translation>
 <translation id="7680416688940118410">Kalibrering af touchskærm</translation>
 <translation id="7681095912841365527">Websitet kan anvende Bluetooth</translation>
 <translation id="7681597159868843240">Websites bruger normalt din enheds bevægelsessensorer til funktioner som f.eks. virtual reality eller registrering af motion</translation>
@@ -7612,6 +7615,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="965211523698323809">Send og modtag sms-beskeder fra din <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Tillad ikke, at websites kan få adgang til HID-enheder</translation>
 <translation id="967624055006145463">Lagrede data</translation>
+<translation id="96774243435178359">Administrerede printere</translation>
 <translation id="968000525894980488">Aktivér Google Play-tjenester.</translation>
 <translation id="968037381421390582">Ind&amp;sæt, og søg efter "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Applikationscache</translation>

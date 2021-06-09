@@ -40,6 +40,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Maak seker dat jy by Chrome aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="1807517590912578995">Hou Chrome-profiel apart?</translation>
+<translation id="1810203443153428607">As jy Chrome-bedryfstelsel installeer, sal alle data op jou toestel vervang word.</translation>
 <translation id="1812689907177901597">Deur dit af te skakel, kan jy by Google-werwe soos Gmail aanmeld sonder om by Chrome aan te meld</translation>
 <translation id="1860536484129686729">Chrome het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
 <translation id="1873233029667955273">Google Chrome is nie jou verstekblaaier nie</translation>
@@ -60,6 +61,16 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2348335408836342058">Chrome het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="234869673307233423">Chrome kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="235650106824528204">Enige Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Vee hardeskyf uit en installeer Chrome-bedryfstelsel</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Ons is gereed om Chrome-bedryfstelsel te installeer! Sodra jy voortgaan:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Sal lêers, data en jou huidige bedryfstelsel uitgevee word.
+          <ph name="LIST_ITEM" />Sal Chrome-bedryfstelsel geïnstalleer word.
+          <ph name="LIST_ITEM" />Sal jou toestel afskakel wanneer installasie afgehandel is.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Een laaste onthounota: Installasie sal jou hele hardeskyf uitvee. Maak asseblief seker dat alle data wat vir jou belangrik is, gerugsteun is.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Installasie kan nie gekanselleer word nadat dit begin is nie.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
@@ -175,6 +186,10 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 
 Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5434383153637353914">Met hierdie bladsy kan jy jou aangemelde Google-rekeninge bestuur. Hierdie rekeninge sal in Chrome-blaaier en Play Winkel-programme beskikbaar wees, asook in dienste soos Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Maak asseblief seker dat jy 'n bygewerkte rugsteun van jou data het voordat ons begin. As jy Chrome-bedryfstelsel installeer, sal alle data op jou hardeskryf vervang word.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google is nie vir enige dataverlies verantwoordelik nie en bied geen waarborg dat Chrome-bedryfstelsel op ongesertifiseerde modelle sal werk nie. Besoek asseblief [TBD] om meer oor gesertifiseerde modelle te wete te kom.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kom meer te wete oor die installasie van Chrome-bedryfstelsel en die uitvee van data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />As jy gereed is om voort te gaan, kan jy "Installeer Chrome-bedryfstelsel" klik en ons sal jou met 'n paar maklike stappe deur installasie begelei. Jy sal nog 'n geleentheid hê om te bevestig voordat ons enige veranderinge aan jou rekenaar maak.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installeer Chrome-bedryfstelsel</translation>
 <translation id="556024056938947818">Google Chrome probeer tans om wagwoorde te wys.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,6 +225,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Dateer Google Chrome tans op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-stelsel</translation>
+<translation id="664235759707825982">Gereed om Chrome-bedryfstelsel te installeer</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6739177684496155661">Gaan voort in 'n nuwe Chrome-profiel?</translation>
@@ -229,6 +245,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
 <translation id="7161904924553537242">Welkom by Google Chrome</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Tans besig om Chrome-bedryfstelsel te installeer</translation>
 <translation id="7295052994004373688">Hierdie taal word gebruik om die Google Chrome UI te wys</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7303916856901595720">Skuif rekening na 'n nuwe Chrome-profiel?</translation>

@@ -1663,6 +1663,7 @@
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Настроить специальные возможности</translation>
 <translation id="275662540872599901">экран выключен</translation>
+<translation id="2757161511365746634">Информация о принтере</translation>
 <translation id="2757338480560142065">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Доступ к камере запрещен</translation>
 <translation id="2764786626780673772">Сведения о VPN</translation>
@@ -1705,6 +1706,7 @@
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2800760947029405028">Загрузить изображение</translation>
 <translation id="2801954693771979815">Масштаб изображения на экране</translation>
+<translation id="2802557211515765772">Нет управляемых принтеров.</translation>
 <translation id="2803313416453193357">Открыть папку.</translation>
 <translation id="2803375539583399270">Введите PIN-код</translation>
 <translation id="2804043232879091219">Не удалось открыть альтернативный браузер.</translation>
@@ -3816,7 +3818,6 @@
 <translation id="512903556749061217">подключено</translation>
 <translation id="5130675701626084557">Не удалось скачать профиль. Повторите попытку позже или обратитесь к оператору связи.</translation>
 <translation id="5131591206283983824">Перетаскивание нажатием на сенсорную панель</translation>
-<translation id="5133483819862530305">От заката до рассвета</translation>
 <translation id="5135085122826131075">Включите, чтобы вызывать Ассистента голосовой командой "Окей, Google"</translation>
 <translation id="5135533361271311778">Не удалось создать закладку.</translation>
 <translation id="5136343472380336530">Оба устройства должны быть разблокированы и находиться рядом, также должна быть включена технология Bluetooth. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -3853,6 +3854,7 @@
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5171045022955879922">Введите запрос или URL</translation>
 <translation id="5171343362375269016">Память подкачки</translation>
+<translation id="5172855596271336236">1 управляемый принтер.</translation>
 <translation id="5173668317844998239">Добавить или удалить отпечатки пальцев, сохраненные на электронном ключе</translation>
 <translation id="5175379009094579629">Недопустимое название устройства. Введите другое название и повторите попытку.</translation>
 <translation id="5177479852722101802">Всегда блокировать доступ к веб-камере и микрофону</translation>
@@ -6115,6 +6117,7 @@
 <translation id="7674542105240814168">Запрещен доступ к геоданным</translation>
 <translation id="7676119992609591770">По запросу "<ph name="SEARCH_TEXT" />" найдена <ph name="NUM" /> вкладка</translation>
 <translation id="7676867886086876795">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
+<translation id="7679171213002716280">Количество управляемых принтеров: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Калибровка сенсорного экрана</translation>
 <translation id="7681095912841365527">Сайт может использовать Bluetooth</translation>
 <translation id="7681597159868843240">Обычно сайты используют датчики движения на устройстве, чтобы применять некоторые функции, например запускать виртуальную реальность или отслеживать физическую активность.</translation>
@@ -7596,6 +7599,7 @@
 <translation id="965211523698323809">Отправлять и получать SMS на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
 <translation id="967624055006145463">Объем памяти</translation>
+<translation id="96774243435178359">Управляемые принтеры</translation>
 <translation id="968000525894980488">Включите сервисы Google Play.</translation>
 <translation id="968037381421390582">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кеш приложения</translation>

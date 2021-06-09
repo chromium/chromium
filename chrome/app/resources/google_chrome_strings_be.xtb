@@ -39,6 +39,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Упэўніцеся, што вы ўвайшлі ў Chrome на прыладзе "<ph name="TARGET_DEVICE_NAME" />", а затым паспрабуйце ажыццявіць адпраўку яшчэ раз.</translation>
 <translation id="1807517590912578995">Стварыць асобны профіль Chrome?</translation>
+<translation id="1810203443153428607">Пры ўсталяванні Chrome OS усе даныя на прыладзе будуць перазапісаны.</translation>
 <translation id="1812689907177901597">Выключыўшы гэта, вы зможаце ўваходзіць на сайты Google, такія як Gmail, не ўваходзячы ў Chrome</translation>
 <translation id="1860536484129686729">Chrome запытвае дазвол на доступ да вашай камеры для гэтага сайта</translation>
 <translation id="1873233029667955273">Google Chrome не з'яўляецца стандартным браўзерам</translation>
@@ -59,6 +60,16 @@
 <translation id="2348335408836342058">Chrome запытвае дазвол на доступ да вашай камеры і мікрафона для гэтага сайта</translation>
 <translation id="234869673307233423">Браўзеру Chrome не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
 <translation id="235650106824528204">Любыя даныя Chrome, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Сцерці даныя на цвёрдым дыску і ўсталяваць Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Цяпер можна ўсталёўваць Chrome OS! Пасля запуску ўсталявання адбудзецца наступнае:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Файлы, даныя і бягучая аперацыйная сістэма будуць сцёрты.
+          <ph name="LIST_ITEM" />Будзе ўсталявана аперацыйная сістэма Chrome OS.
+          <ph name="LIST_ITEM" />Пасля заканчэння працэсу ўсталявання прылада завершыць працу.
+          <ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Яшчэ раз напамінаем, што пры ўсталяванні ўсе даныя на цвёрдым дыску будуць сцёрты. Упэўніцеся, што вы маеце іх рэзервовую копію.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Браўзеру Google Chrome не ўдалося сінхранізаваць даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="2467438592969358367">Google Chrome запытвае дазвол на экспартаванне вашых пароляў. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -174,6 +185,10 @@
 
 Не ўдалося аднавіць налады ў браўзеры Google Chrome.</translation>
 <translation id="5434383153637353914">На гэтай старонцы можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Іх можна будзе выкарыстоўваць у браўзеры Chrome і праграмах з Крамы Play, а таксама ў такіх сэрвісах, як Gmail, Дыск і YouTube. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Перад усталяваннем упэўніцеся, што вы маеце актуальную рэзервовую копію сваіх даных. Пры ўсталяванні Chrome OS усе даныя на цвёрдым дыску будуць перазапісаны.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Кампанія Google не нясе адказнасці за страту даных пры ўсталяванні і не гарантуе, што Chrome OS будзе працаваць на несертыфікаваных мадэлях прылад. Каб даведацца больш пра сертыфікаваныя мадэлі, наведайце старонку [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Даведацца больш пра ўсталяванне Chrome OS і выдаленне даных можна на старонцы [TBD URL].<ph name="END_PARAGRAPH3" />
+<ph name="BEGIN_PARAGRAPH4" />Калі вы гатовыя працягнуць, націсніце "Усталяваць Chrome OS" і выконвайце інструкцыі на экране. Перш чым уносіць змяненні на вашым камп'ютары, мы запытаем у вас пацвярджэнне.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Усталяваць Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome спрабуе паказаць паролі.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -209,6 +224,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
 <translation id="6566149418543181476">Google Chrome абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Сістэма Chrome OS</translation>
+<translation id="664235759707825982">Вы гатовыя да ўсталявання Chrome OS?</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="6679975945624592337">Дазволіць браўзеру Google Chrome працаваць у фонавым рэжыме</translation>
 <translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
@@ -228,6 +244,7 @@
 <translation id="7155997830309522122">Калі так, змяніце пароль, захаваны ў Chrome, каб ён супадаў з новым.</translation>
 <translation id="7161904924553537242">Вас вітае Google Chrome</translation>
 <translation id="7242029209006116544">Вы ўваходзіце праз уліковы запіс пад кіраваннем, таму адміністратар зможа кантраляваць ваш профіль Google Chrome. Даныя Chrome (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. Каб захаваць існуючыя даныя Chrome асобна, стварыце новы профіль. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Ідзе ўсталяванне Chrome OS</translation>
 <translation id="7295052994004373688">На гэтай мове паказваецца карыстальніцкі інтэрфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важныя звесткі пра выкарыстанне і бяспеку</translation>
 <translation id="7303916856901595720">Перамясціць уліковы запіс у новы профіль Chrome?</translation>

@@ -74,11 +74,13 @@
 <translation id="3350761136195634146">Chromium profils ar šādu kontu jau pastāv</translation>
 <translation id="3406848076815591792">Vai pāriet uz esošo Chromium profilu?</translation>
 <translation id="3430503420100763906">Izmantojot Chromium profilus, varat nodalīt visu savu Chromium saturu. Izveidojiet profilus draugiem un ģimenes locekļiem vai nodaliet darba un izklaides saturu.</translation>
+<translation id="3433271666494956603">Notiek operētājsistēmas Chromium OS instalēšana</translation>
 <translation id="347328004046849135">Ja pierakstīsieties ar uzlauztu paroli, pārlūkprogrammā Chromium tiks parādīts paziņojums</translation>
 <translation id="3474745554856756813">Veicot šo darbību, no šīs ierīces tiks dzēsts(-i) <ph name="ITEMS_COUNT" /> vienums(-i). Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Lai pārslēgtos starp Chromium profiliem, izmantojiet īsinājumtaustiņu <ph name="SHORTCUT" />.</translation>
 <translation id="3509308970982693815">Aizveriet visus Chromium logus un mēģiniet vēlreiz.</translation>
 <translation id="3575459661164320785">Jūsu datorā ir kaitīga programmatūra. Pārlūkprogramma Chromium var to noņemt, atjaunot jūsu iestatījumus un atspējot paplašinājumus, lai atkal pareizi darbotos.</translation>
+<translation id="3610776674893128619">Dzēst datus cietajā diskā un instalēt Chromium OS</translation>
 <translation id="3639635944603682591">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chromium kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku.}=1{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="3651803019964686660">Lai nosūtītu numuru no vietnes <ph name="ORIGIN" /> uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
@@ -162,6 +164,15 @@
 <translation id="6129621093834146363">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chromium to bloķēja.</translation>
 <translation id="6134968993075716475">Droša pārlūkošana ir izslēgta. Pārlūkā Chromium tiek ieteikts to ieslēgt.</translation>
 <translation id="6145820983052037069">Šeit varat pārslēgties starp Chromium profiliem.</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Viss ir sagatavots Chromium OS instalēšanai! Paveicot nākamas darbības, sagaidāmas tālāk norādītās izmaiņas.
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Faili, dati un pašreizējā operētājsistēma tiks dzēsta.
+          <ph name="LIST_ITEM" />Tiks instalēta operētājsistēma Chromium OS.
+          <ph name="LIST_ITEM" />Kad instalēšana būs pabeigta, ierīce tiks izslēgta.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Atgādinām, ka instalēšanas laikā tiks izdzēsti visi dati cietajā diskā. Pārliecinieties, ka esat dublējis visus jums vajadzīgos datus.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kad instalēšana būs sākta, to nevarēs atcelt.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Ierīcē <ph name="TARGET_DEVICE_NAME" /> pierakstieties pārlūkā Chromium un pēc tam vēlreiz mēģiniet veikt sūtīšanu.</translation>
 <translation id="6212496753309875659">Šim datoram jau ir jaunākā Chromium versija. Ja programmatūra nedarbojas, atinstalējiet pārlūku Chromium un mēģiniet vēlreiz.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Pārlūks Chromium tūlīt tiks restartēts}=1{Pārlūks Chromium pēc 1 sekundes tiks restartēts}zero{Pārlūks Chromium pēc # sekundēm tiks restartēts}one{Pārlūks Chromium pēc # sekundes tiks restartēts}other{Pārlūks Chromium pēc # sekundēm tiks restartēts}}</translation>
@@ -179,6 +190,7 @@
 <translation id="6434250628340475518">Chromium OS sistēma</translation>
 <translation id="6455857529632101747">Laipni lūdzam Chromium profilos!</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Pārlūks Chromium tiks restartēts pēc 1 sekundes.}zero{Pārlūks Chromium tiks restartēts pēc # sekundēm.}one{Pārlūks Chromium tiks restartēts pēc # sekundes.}other{Pārlūks Chromium tiks restartēts pēc # sekundēm.}}</translation>
+<translation id="646620589868199210">Sagatavotība Chromium OS instalēšanai</translation>
 <translation id="6475912303565314141">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium.</translation>
 <translation id="6510925080656968729">Atinstalēt Chromium</translation>
 <translation id="6542839706527980775">Katrā profilā tiek glabāta attiecīgā Chromium profila informācija, piemēram, grāmatzīmes, vēsture, paroles un citi dati.</translation>
@@ -193,6 +205,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6734291798041940871">Pārlūks Chromium jau ir instalēts visiem lietotājiem jūsu datorā.</translation>
 <translation id="673636774878526923">Lai piekļūtu savam Chromium saturam visās jūsu ierīcēs, pierakstieties un pēc tam ieslēdziet sinhronizāciju.</translation>
 <translation id="6774082503108938489">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium. Nav atļauts iespējot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6827182711503025204">Instalējot operētājsistēmu Chromium OS, tiks pārrakstīti visi jūsu ierīcē esošie dati.</translation>
 <translation id="6847869444787758381">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chromium saņemsiet paziņojumu</translation>
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopēts pārlūkā Chromium)</translation>
@@ -224,6 +237,10 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
       Chromium OS iestatījumi<ph name="LINK_END" />.</translation>
 <translation id="761356813943268536">Pārlūkā Chromium tiek izmantota jūsu kamera un mikrofons.</translation>
 <translation id="7617377681829253106">Pārlūkā Chromium ir veikti uzlabojumi</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Pirms darba sākšanas pārliecinieties, ka jums ir atjaunināts jūsu datu dublējums. Instalējot operētājsistēmu Chromium OS, tiks pārrakstīti visi cietajā diskā esošie dati.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google neuzņemas atbildību par datu zudumu un negarantē, ka operētājsistēma Chromium OS darbosies nesertificētos modeļos. Lai uzzinātu vairāk par sertificētajiem modeļiem, apmeklējiet vietni [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Vairāk par Chromium OS instalēšanu un datu dzēšanu varat uzzināt vietnē [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Ja esat gatavs turpināt, noklikšķiniet uz vienuma ”Instalēt Chromium OS” — pēc tam tiks parādīti norādījumi ar dažām vienkāršām instalēšanas darbībām. Pirms izmaiņu veikšanas datorā jums būs vēl viena iespēja apstiprināt savu izvēli.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nav jūsu noklusējuma pārlūks.</translation>
 <translation id="7689606757190482937">Chromium sinhronizēšana un personalizēšana visās savās ierīcēs</translation>
 <translation id="7729447699958282447">Chromium nevarēja sinhronizēt jūsu datus, jo jūsu domēnam nav pieejama sinhronizācija.</translation>

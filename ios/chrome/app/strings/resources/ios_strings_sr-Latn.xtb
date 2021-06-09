@@ -768,6 +768,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8654802032646794042">Otkaži</translation>
 <translation id="8668210798914567634">Ova stranica je sačuvana na Listi za čitanje.</translation>
 <translation id="8680787084697685621">Detalji za prijavljivanje na nalog su zastareli.</translation>
+<translation id="8691262314411702087">Izaberite stavke za sinhronizaciju</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8706588385081740091">Lozinke</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
@@ -810,6 +811,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
 <translation id="9152539721251340337">Napravite QR kôd</translation>
 <translation id="9157836665414082580">Spreči dijaloge</translation>
+<translation id="9183059292653643328">Ovim pregledačem upravlja vaša organizacija</translation>
 <translation id="9188680907066685419">Odjavite se sa naloga kojim se upravlja</translation>
 <translation id="9200875785104711666">pre <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>

@@ -1659,6 +1659,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2755349111255270002">Zresetuj to urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Zarządzaj ułatwieniami dostępu</translation>
 <translation id="275662540872599901">ekran wyłączony</translation>
+<translation id="2757161511365746634">Wyświetl drukarkę</translation>
 <translation id="2757338480560142065">Upewnij się, że zapisujesz hasło do witryny <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Zablokowano dostęp do kamery</translation>
 <translation id="2764786626780673772">Szczegóły sieci VPN</translation>
@@ -1701,6 +1702,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2800760947029405028">Prześlij obraz</translation>
 <translation id="2801954693771979815">Rozmiar elementów na ekranie</translation>
+<translation id="2802557211515765772">Nie ma zarządzanych drukarek.</translation>
 <translation id="2803313416453193357">Otwórz folder</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
 <translation id="2804043232879091219">Nie udało się otworzyć alternatywnej przeglądarki</translation>
@@ -3812,7 +3814,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="512903556749061217">podłączone</translation>
 <translation id="5130675701626084557">Nie udało się pobrać profilu. Spróbuj ponownie później lub skontaktuj się z operatorem, aby uzyskać pomoc.</translation>
 <translation id="5131591206283983824">Przeciąganie dotykiem na touchpadzie</translation>
-<translation id="5133483819862530305">Od zachodu do wschodu słońca</translation>
 <translation id="5135085122826131075">Uruchamiaj Asystenta, mówiąc „OK Google”.</translation>
 <translation id="5135533361271311778">Nie można utworzyć zakładki.</translation>
 <translation id="5136343472380336530">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -3849,6 +3850,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
 <translation id="5171343362375269016">Zamieniona pamięć</translation>
+<translation id="5172855596271336236">Jest 1 zarządzana drukarka.</translation>
 <translation id="5173668317844998239">Dodawanie i usuwanie odcisków palców zapisanych na kluczu bezpieczeństwa</translation>
 <translation id="5175379009094579629">Nazwa urządzenia jest nieprawidłowa. Wpisz prawidłową nazwę, by spróbować ponownie.</translation>
 <translation id="5177479852722101802">Nadal blokuj dostęp do kamery i mikrofonu</translation>
@@ -4998,7 +5000,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="645286928527869380">Przykładowe przepisy</translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
 <translation id="6453921811609336127">Aby przełączyć się na następną metodę wprowadzania, naciśnij <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />Spacja<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
-<translation id="6455264371803474013">Na określonych stronach</translation>
+<translation id="6455264371803474013">W określonych witrynach</translation>
 <translation id="6455894534188563617">&amp;Nowy folder</translation>
 <translation id="645705751491738698">Nadal blokuj wykonywanie kodu JavaScript</translation>
 <translation id="6458701200018867744">Nie udało się przesłać (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -6108,6 +6110,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7674542105240814168">Zabroniono dostępu do lokalizacji</translation>
 <translation id="7676119992609591770">Znaleziono <ph name="NUM" /> kartę dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Wysyła Twój głos do Google, by umożliwić dyktowanie w dowolnym polu tekstowym.</translation>
+<translation id="7679171213002716280">Liczba zarządzanych drukarek: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7680416688940118410">Kalibracja ekranu dotykowego</translation>
 <translation id="7681095912841365527">Strona może używać Bluetootha</translation>
 <translation id="7681597159868843240">Witryny zwykle używają czujników ruchu urządzenia, aby obsługiwać funkcje takie jak rzeczywistość wirtualna czy monitorowanie aktywności</translation>
@@ -7590,6 +7593,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="965211523698323809">Wysyłanie i odbieranie SMS-ów na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Nie zezwalaj żadnym stronom na dostęp do urządzeń HID</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
+<translation id="96774243435178359">Zarządzane drukarki</translation>
 <translation id="968000525894980488">Włącz Usługi Google Play.</translation>
 <translation id="968037381421390582">&amp;Wklej i wyszukaj „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">Pamięć podręczna aplikacji</translation>

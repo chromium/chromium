@@ -74,11 +74,13 @@
 <translation id="3350761136195634146">Profil Chromium dengan akun ini sudah ada</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3430503420100763906">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
+<translation id="3433271666494956603">Penginstalan Chromium OS sedang berlangsung</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
 <translation id="3509308970982693815">Tutup semua jendela Chromium dan coba lagi.</translation>
 <translation id="3575459661164320785">Ada software berbahaya di komputer Anda. Chromium dapat menghapusnya, memulihkan setelan Anda, dan menonaktifkan ekstensi agar browser berfungsi kembali secara normal.</translation>
+<translation id="3610776674893128619">Hapus Hard Drive &amp; Instal Chromium OS</translation>
 <translation id="3639635944603682591">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3651803019964686660">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
@@ -162,6 +164,15 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, sehingga Chromium memblokirnya.</translation>
 <translation id="6134968993075716475">Safe Browsing nonaktif. Chromium merekomendasikan untuk mengaktifkannya.</translation>
 <translation id="6145820983052037069">Anda dapat berpindah-pindah profil Chromium di sini</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Kami siap menginstal Chromium OS. Setelah Anda melanjutkan:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />File, data, dan sistem operasi saat ini akan dihapus.
+          <ph name="LIST_ITEM" />Chromium OS akan diinstal.
+          <ph name="LIST_ITEM" />Perangkat Anda akan dimatikan setelah proses penginstalan selesai.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Pengingat terakhir: penginstalan akan menghapus seluruh data di hard drive. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>
@@ -179,6 +190,7 @@
 <translation id="6434250628340475518">Sistem Chromium OS</translation>
 <translation id="6455857529632101747">Selamat datang di profil Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium akan dimulai ulang dalam 1 detik}other{Chromium akan dimulai ulang dalam # detik}}</translation>
+<translation id="646620589868199210">Siap menginstal Chromium OS</translation>
 <translation id="6475912303565314141">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium.</translation>
 <translation id="6510925080656968729">Uninstal Chromium</translation>
 <translation id="6542839706527980775">Setiap profil memiliki info Chromium tersendiri, seperti bookmark, histori, sandi, dan lainnya</translation>
@@ -193,6 +205,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="673636774878526923">Untuk mengakses aktivitas Chromium di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="6774082503108938489">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
+<translation id="6827182711503025204">Menginstal Chromium OS akan menimpa semua data di perangkat.</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>
@@ -227,6 +240,10 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
       setelan Chromium OS<ph name="LINK_END" /> Anda</translation>
 <translation id="761356813943268536">Chromium menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="7617377681829253106">Chromium menjadi lebih baik</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Sebelum dimulai, pastikan Anda telah memiliki cadangan terbaru data Anda. Menginstal Chromium OS akan menimpa semua data di hard drive.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google tidak bertanggung jawab atas hilangnya data, dan tidak menjamin bahwa Chromium OS akan berfungsi di model yang tidak besertifikasi. Buka [TBD] untuk mempelajari model besertifikasi lebih lanjut.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Pelajari lebih lanjut cara menginstal Chromium OS dan penghapusan data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Jika Anda siap melanjutkan, klik “Instal Chromium OS” dan kami akan memandu Anda melalui proses penginstalan dalam beberapa langkah mudah. Anda masih memiliki kesempatan lain untuk mengonfirmasi sebelum kami membuat perubahan pada komputer Anda.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>
 <translation id="7689606757190482937">Menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
 <translation id="7729447699958282447">Chromium tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>

@@ -1662,6 +1662,7 @@
 <translation id="2755349111255270002">รีเซ็ต <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
 <translation id="2755367719610958252">จัดการฟีเจอร์การเข้าถึง</translation>
 <translation id="275662540872599901">ปิดหน้าจอ</translation>
+<translation id="2757161511365746634">ดูเครื่องพิมพ์</translation>
 <translation id="2757338480560142065">ตรวจสอบว่ารหัสผ่านที่คุณจะบันทึกตรงกับรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">บล็อกกล้องถ่ายรูป</translation>
 <translation id="2764786626780673772">รายละเอียด VPN</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2799223571221894425">เปิดใหม่</translation>
 <translation id="2800760947029405028">อัปโหลดภาพ</translation>
 <translation id="2801954693771979815">ขนาดหน้าจอ</translation>
+<translation id="2802557211515765772">ไม่มีเครื่องพิมพ์ที่จัดการ</translation>
 <translation id="2803313416453193357">เปิดโฟลเดอร์</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
 <translation id="2804043232879091219">เปิดเบราว์เซอร์สำรองไม่ได้</translation>
@@ -3815,7 +3817,6 @@
 <translation id="512903556749061217">ที่แนบมา</translation>
 <translation id="5130675701626084557">ดาวน์โหลดโปรไฟล์ไม่ได้ โปรดลองอีกครั้งภายหลังหรือติดต่อผู้ให้บริการเพื่อรับความช่วยเหลือ</translation>
 <translation id="5131591206283983824">การแตะแล้วลากบนทัชแพด</translation>
-<translation id="5133483819862530305">อาทิตย์ตกจนอาทิตย์ขึ้น</translation>
 <translation id="5135085122826131075">เข้าถึง Assistant ได้เพียงพูดว่า "Ok Google"</translation>
 <translation id="5135533361271311778">ไม่สามารถสร้างรายการบุ๊กมาร์ก</translation>
 <translation id="5136343472380336530">ตรวจสอบว่าอุปกรณ์ทั้ง 2 เครื่องปลดล็อกแล้ว อยู่ใกล้กัน และเปิดบลูทูธอยู่ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -3852,6 +3853,7 @@
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
 <translation id="5171343362375269016">หน่วยความจำสว็อป</translation>
+<translation id="5172855596271336236">มีเครื่องพิมพ์ที่จัดการ 1 เครื่อง</translation>
 <translation id="5173668317844998239">เพิ่มและลบลายนิ้วมือที่บันทึกในคีย์ความปลอดภัย</translation>
 <translation id="5175379009094579629">ชื่ออุปกรณ์ไม่ถูกต้อง ป้อนชื่ออุปกรณ์ที่ถูกต้องเพื่อลองอีกครั้ง</translation>
 <translation id="5177479852722101802">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนต่อไป</translation>
@@ -6114,6 +6116,7 @@
 <translation id="7674542105240814168">ปฏิเสธไม่ให้เข้าถึงตำแหน่ง</translation>
 <translation id="7676119992609591770">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">ส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ตามคำบอกในช่องข้อความต่างๆ</translation>
+<translation id="7679171213002716280">มีเครื่องพิมพ์ที่จัดการ <ph name="PRINTER_COUNT" /> เครื่อง</translation>
 <translation id="7680416688940118410">การปรับเทียบหน้าจอสัมผัส</translation>
 <translation id="7681095912841365527">เว็บไซต์ใช้บลูทูธได้</translation>
 <translation id="7681597159868843240">โดยปกติแล้วเว็บไซต์จะใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวของอุปกรณ์เพื่อดำเนินการตามฟีเจอร์อย่าง Virtual Reality หรือการติดตามการออกกำลังกาย</translation>
@@ -7593,6 +7596,7 @@
 <translation id="965211523698323809">ส่งและรับ SMS จาก <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">ไม่อนุญาตให้เว็บไซต์ใดก็ตามเข้าถึงอุปกรณ์ HID</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
+<translation id="96774243435178359">เครื่องพิมพ์ที่จัดการ</translation>
 <translation id="968000525894980488">เปิดบริการ Google Play</translation>
 <translation id="968037381421390582">ว&amp;างและค้นหา “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="968174221497644223">แคชของแอปพลิเคชัน</translation>

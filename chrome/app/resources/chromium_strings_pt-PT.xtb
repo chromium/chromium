@@ -74,11 +74,13 @@
 <translation id="3350761136195634146">Já existe um perfil do Chromium com esta conta.</translation>
 <translation id="3406848076815591792">Pretende mudar para o perfil do Chromium existente?</translation>
 <translation id="3430503420100763906">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
+<translation id="3433271666494956603">Instalação do SO Chromium em curso</translation>
 <translation id="347328004046849135">O Chromium envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chromium</translation>
 <translation id="3509308970982693815">Feche todas as janelas do Chromium e tente novamente.</translation>
 <translation id="3575459661164320785">Existe software prejudicial no seu computador. O Chromium pode removê-lo, restaurar as suas definições e desativar as extensões para que o navegador volte a funcionar normalmente.</translation>
+<translation id="3610776674893128619">Apagar disco rígido e instalar SO Chromium</translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="3651803019964686660">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
@@ -162,6 +164,15 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> é perigoso, por isso o Chromium bloqueou-o.</translation>
 <translation id="6134968993075716475">A Navegação segura está desativada. O Chromium recomenda que a ative.</translation>
 <translation id="6145820983052037069">Pode alternar entre perfis do Chromium aqui</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Estamos prontos para instalar o SO Chromium! Se continuar:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Os ficheiros, os dados e o seu sistema operativo atual serão apagados.
+          <ph name="LIST_ITEM" />O SO Chromium será instalado.
+          <ph name="LIST_ITEM" />O seu dispositivo irá encerrar quando a instalação estiver concluída.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Só mais um lembrete: a instalação apaga todo o seu disco rígido. Certifique-se de que tem uma cópia de segurança dos dados importantes.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
@@ -179,6 +190,7 @@
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6455857529632101747">Damos-lhe as boas-vindas aos perfis do Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
+<translation id="646620589868199210">A postos para instalar o SO Chromium</translation>
 <translation id="6475912303565314141">Também controla a página apresentada quando inicia o Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar o Chromium</translation>
 <translation id="6542839706527980775">Cada perfil possui as suas próprias informações do Chromium, como marcadores, histórico, palavras-passe e muito mais.</translation>
@@ -193,6 +205,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
 <translation id="673636774878526923">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="6774082503108938489">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido ativar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6827182711503025204">A instalação do SO Chromium substitui todos os dados no seu dispositivo.</translation>
 <translation id="6847869444787758381">O Chromium indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>
@@ -227,6 +240,10 @@ O Chromium não consegue recuperar as suas definições.</translation>
       Definições do Chromium OS<ph name="LINK_END" />.</translation>
 <translation id="761356813943268536">O Chromium está a utilizar a câmara e o microfone.</translation>
 <translation id="7617377681829253106">O Chromium está ainda melhor</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Antes de começarmos, certifique-se de que tem uma cópia de segurança atualizada dos seus dados. A instalação do SO Chromium substitui todos os dados no seu disco rígido.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />A Google não é responsável por qualquer perda de dados e não garante que o SO Chromium irá funcionar em modelos não certificados. Visite [TBD] para saber mais acerca dos modelos certificados.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Saiba mais acerca da instalação do SO Chromium e da eliminação dos dados: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Se quiser continuar, clique em "Instalar o SO Chromium" e iremos mostrar-lhe como efetuar a instalação em apenas alguns passos simples. Terá outra oportunidade de confirmar antes de efetuarmos quaisquer alterações ao seu computador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">O Chromium não é o seu navegador predefinido.</translation>
 <translation id="7689606757190482937">Sincronizar e personalizar o Chromium em todos os dispositivos</translation>
 <translation id="7729447699958282447">O Chromium não conseguiu sincronizar os dados porque a Sincronização não está disponível para o seu domínio.</translation>

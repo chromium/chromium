@@ -42,7 +42,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1255033239764210633">Que tempo fai?</translation>
 <translation id="1266097335951928626">Iniciar cámara de autofotos</translation>
 <translation id="1267032506238418139">Cambio de atallos</translation>
-<translation id="1269405891096105529">O periférico non está dispoñible no modo de invitado</translation>
+<translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
 <translation id="1270290102613614947">Teclado en pantalla desactivado</translation>
 <translation id="1272079795634619415">Deter</translation>
 <translation id="1275285675049378717">Alimentando <ph name="POWER_SOURCE" /></translation>
@@ -85,7 +85,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1570871743947603115">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
-<translation id="159255010947577753">Marcador</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
@@ -153,7 +152,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2127372758936585790">Cargador de baixa potencia</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
-<translation id="2146800439053023141">Localización da barra de activación/desactivación</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Para saír do modo Visión xeral, pasa tres dedos cara abaixo</translation>
@@ -644,7 +642,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="607652042414456612">Os dispositivos Bluetooth situados nas proximidades poderán detectar o teu dispositivo, que aparecerá como "<ph name="NAME" />" co enderezo <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
-<translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de invitado.</translation>
+<translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6154006699632741460">O periférico non é compatible</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
@@ -911,7 +909,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8345019317483336363">Ventá seleccionada: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8371779926711439835">Avanzar unha letra</translation>
-<translation id="8371991222807690464">É posible que os periféricos teñan un rendemento limitado no modo de invitado</translation>
+<translation id="8371991222807690464">É posible que os periféricos teñan un rendemento limitado no modo de convidado</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
 <translation id="8380784334203145311">Boas noites!</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>

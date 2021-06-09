@@ -766,6 +766,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8668210798914567634">Ta strona została zapisana na Twojej liście Do przeczytania.</translation>
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
+<translation id="8691262314411702087">Wybierz elementy do synchronizacji</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8706588385081740091">Hasła</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
@@ -808,6 +809,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9152539721251340337">Utwórz kod QR</translation>
 <translation id="9157836665414082580">Ukryj okna dialogowe</translation>
+<translation id="9183059292653643328">Przeglądarką zarządza Twoja organizacja</translation>
 <translation id="9188680907066685419">Wyloguj się z konta zarządzanego</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d temu</translation>
 <translation id="9203116392574189331">Handoff</translation>

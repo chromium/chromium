@@ -1663,6 +1663,7 @@
 <translation id="2755349111255270002">Վերակայեք <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="2755367719610958252">Կառավարել մատչելիության գործառույթները</translation>
 <translation id="275662540872599901">էկրանն անջատված է</translation>
+<translation id="2757161511365746634">Տպիչի մասին</translation>
 <translation id="2757338480560142065">Ստուգեք՝ արդյոք գաղտնաբառը, որը պահում եք, համընկնում է <ph name="WEBSITE" /> ծառայության ձեր գաղտնաբառի հետ։</translation>
 <translation id="2762441749940182211">Տեսախցիկի օգտագործումն արգելված է</translation>
 <translation id="2764786626780673772">Տեղեկություններ VPN-ի մասին</translation>
@@ -1705,6 +1706,7 @@
 <translation id="2799223571221894425">Վերագործարկել</translation>
 <translation id="2800760947029405028">Վերբեռնել պատկեր</translation>
 <translation id="2801954693771979815">Էկրանի չափը</translation>
+<translation id="2802557211515765772">Կառավարվող տպիչներ չկան։</translation>
 <translation id="2803313416453193357">Բացել պանակը</translation>
 <translation id="2803375539583399270">Մուտքագրեք PIN կոդը</translation>
 <translation id="2804043232879091219">Չհաջողվեց բացել այլընտրանքային դիտարկիչը</translation>
@@ -3817,7 +3819,6 @@
 <translation id="512903556749061217">կցված</translation>
 <translation id="5130675701626084557">Չհաջողվեց ներբեռնել պրոֆիլը։ Փորձեք մի փոքր ուշ կամ օգնության համար կապվեք օպերատորի հետ։</translation>
 <translation id="5131591206283983824">Հպումով քաշում հպահարթակին</translation>
-<translation id="5133483819862530305">Մայրամուտից լուսաբաց</translation>
 <translation id="5135085122826131075">Օգտագործեք ձեր Օգնականը՝ ասելով «Ok Google»:</translation>
 <translation id="5135533361271311778">Չհաջողվեց էջանիշ ստեղծել:</translation>
 <translation id="5136343472380336530">Համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -3854,6 +3855,7 @@
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5171045022955879922">Որոնեք կամ մուտքագրեք URL-ը</translation>
 <translation id="5171343362375269016">Swap հիշողություն</translation>
+<translation id="5172855596271336236">Կա 1 կառավարվող տպիչ։</translation>
 <translation id="5173668317844998239">Ավելացնել մատնահետքեր, ինչպես նաև ջնջել ձեր անվտանգության բանալու վրա պահված մատնահետքերը</translation>
 <translation id="5175379009094579629">Սարքի անունն անվավեր է: Մուտքագրեք սարքի վավեր անուն՝ նորից փորձելու համար:</translation>
 <translation id="5177479852722101802">Շարունակել արգելափակել տեսախցիկի և խոսափողի օգտագործումը</translation>
@@ -6118,6 +6120,7 @@
 <translation id="7674542105240814168">Տեղորոշման թույլտվությունը մերժված է</translation>
 <translation id="7676119992609591770">«<ph name="SEARCH_TEXT" />» հարցումով որոնման համար գտնվել է <ph name="NUM" /> ներդիր</translation>
 <translation id="7676867886086876795">Ուղարկեք ձեր ձայնը Google-ին, որպեսզի կարողանաք թելադրելով լրացնել տեքստային դաշտերը։</translation>
+<translation id="7679171213002716280">Կա <ph name="PRINTER_COUNT" /> կառավարվող տպիչ։</translation>
 <translation id="7680416688940118410">Հպէկրանի չափաբերում</translation>
 <translation id="7681095912841365527">Կայքը կարող է օգտագործել Bluetooth-ը</translation>
 <translation id="7681597159868843240">Կայքերը սովորաբար օգտագործում են սարքի շարժման տվիչները վիրտուալ իրականության, առողջության հետագծման և նման այլ գործառույթների համար</translation>
@@ -7596,6 +7599,7 @@
 <translation id="965211523698323809">Ուղարկել և ստանալ SMS-ներ <ph name="DEVICE_TYPE" />սարքում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Արգելափակել HID սարքերի հասանելիությունը բոլոր կայքերի համար։</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
+<translation id="96774243435178359">Կառավարվող տպիչներ</translation>
 <translation id="968000525894980488">Միացրեք Google Play ծառայությունները։</translation>
 <translation id="968037381421390582">Տեղադրել և որոնել «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="968174221497644223">Հավելվածի քեշ</translation>

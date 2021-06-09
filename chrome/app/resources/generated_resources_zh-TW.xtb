@@ -1662,6 +1662,7 @@
 <translation id="2755349111255270002">重設這部 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理無障礙功能</translation>
 <translation id="275662540872599901">螢幕已關閉</translation>
+<translation id="2757161511365746634">查看印表機</translation>
 <translation id="2757338480560142065">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="2762441749940182211">無法使用攝影機</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2800760947029405028">上傳圖片</translation>
 <translation id="2801954693771979815">螢幕大小</translation>
+<translation id="2802557211515765772">沒有受管理的印表機。</translation>
 <translation id="2803313416453193357">開啟資料夾</translation>
 <translation id="2803375539583399270">輸入 PIN</translation>
 <translation id="2804043232879091219">無法開啟替代瀏覽器</translation>
@@ -3814,7 +3816,6 @@
 <translation id="512903556749061217">已附加</translation>
 <translation id="5130675701626084557">無法載入設定檔。請稍後再試，或向電信業者尋求協助。</translation>
 <translation id="5131591206283983824">觸控板輕觸拖曳</translation>
-<translation id="5133483819862530305">日落到日出</translation>
 <translation id="5135085122826131075">只要說出「Ok Google」就能存取 Google 助理。</translation>
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
 <translation id="5136343472380336530">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -3851,6 +3852,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5171343362375269016">交換的記憶體</translation>
+<translation id="5172855596271336236">有 1 部受管理的印表機。</translation>
 <translation id="5173668317844998239">新增及刪除安全金鑰上儲存的指紋</translation>
 <translation id="5175379009094579629">裝置名稱無效。請輸入有效的裝置名稱，然後再試一次。</translation>
 <translation id="5177479852722101802">繼續封鎖存取攝影機和麥克風</translation>
@@ -6113,6 +6115,7 @@
 <translation id="7674542105240814168">已拒絕提供位置資訊存取權</translation>
 <translation id="7676119992609591770">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
 <translation id="7676867886086876795">將你的語音資料傳送給 Google，讓你在任何文字欄位中使用語音輸入功能。</translation>
+<translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 部受管理的印表機。</translation>
 <translation id="7680416688940118410">觸控螢幕校正</translation>
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器提供虛擬實境或健身追蹤等功能</translation>
@@ -7592,6 +7595,7 @@
 <translation id="965211523698323809">透過你的 <ph name="DEVICE_TYPE" /> 收發簡訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">不允許任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
+<translation id="96774243435178359">受管理的印表機</translation>
 <translation id="968000525894980488">開啟 Google Play 服務。</translation>
 <translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並執行搜尋</translation>
 <translation id="968174221497644223">應用程式快取</translation>

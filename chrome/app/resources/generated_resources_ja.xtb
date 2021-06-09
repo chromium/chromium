@@ -1662,6 +1662,7 @@
 <translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
 <translation id="2755367719610958252">ユーザー補助機能の管理</translation>
 <translation id="275662540872599901">画面オフ</translation>
+<translation id="2757161511365746634">プリンタの表示</translation>
 <translation id="2757338480560142065">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
 <translation id="2762441749940182211">カメラがブロックされています</translation>
 <translation id="2764786626780673772">VPN の詳細</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2800760947029405028">画像をアップロード</translation>
 <translation id="2801954693771979815">画面サイズ</translation>
+<translation id="2802557211515765772">管理対象プリンタはありません。</translation>
 <translation id="2803313416453193357">フォルダを開く</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
 <translation id="2804043232879091219">代替ブラウザを開けませんでした</translation>
@@ -3815,7 +3817,6 @@
 <translation id="512903556749061217">接続</translation>
 <translation id="5130675701626084557">プロファイルをダウンロードできませんでした。しばらくしてからもう一度試すか、携帯通信会社にお問い合わせください。</translation>
 <translation id="5131591206283983824">タッチパッドのタップによるドラッグ</translation>
-<translation id="5133483819862530305">日の入りから日の出まで</translation>
 <translation id="5135085122826131075">「OK Google」と話すとアシスタントにアクセスできます。</translation>
 <translation id="5135533361271311778">ブックマークの項目を作成できませんでした。</translation>
 <translation id="5136343472380336530">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -3852,6 +3853,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5171343362375269016">スワップ対象メモリ</translation>
+<translation id="5172855596271336236">1 件の管理対象プリンタがあります。</translation>
 <translation id="5173668317844998239">セキュリティ キーに保存されている指紋を追加、削除できます</translation>
 <translation id="5175379009094579629">デバイス名が無効です。有効なデバイス名を入力して、もう一度お試しください。</translation>
 <translation id="5177479852722101802">カメラとマイクへのアクセスを引き続きブロックする</translation>
@@ -6114,6 +6116,7 @@
 <translation id="7674542105240814168">位置情報へのアクセスは許可されていません</translation>
 <translation id="7676119992609591770">「<ph name="SEARCH_TEXT" />」に該当するタブが <ph name="NUM" /> 個見つかりました</translation>
 <translation id="7676867886086876795">テキスト欄で音声入力できるように Google に音声を送信します。</translation>
+<translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> 件の管理対象プリンタがあります。</translation>
 <translation id="7680416688940118410">タッチスクリーンの調整</translation>
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
@@ -7593,6 +7596,7 @@
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> でテキスト メッセージを送受信します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">HID デバイスへのアクセスをどのサイトにも許可しない</translation>
 <translation id="967624055006145463">保存データ</translation>
+<translation id="96774243435178359">管理対象プリンタ</translation>
 <translation id="968000525894980488">Google Play 開発者サービスを有効にします。</translation>
 <translation id="968037381421390582">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="968174221497644223">アプリケーション キャッシュ</translation>

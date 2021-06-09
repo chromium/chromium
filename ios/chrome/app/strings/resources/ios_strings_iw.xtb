@@ -768,6 +768,7 @@
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8668210798914567634">דף זה נשמר ברשימת הקריאה שלך.</translation>
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
+<translation id="8691262314411702087">בחר מה לסנכרן</translation>
 <translation id="8693663554456874301">{count,plural, =1{סגירת הכרטיסייה}two{סגירת הכרטיסיות}many{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
 <translation id="8706588385081740091">סיסמאות</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
@@ -810,6 +811,7 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9152539721251340337">‏יצירת קוד QR</translation>
 <translation id="9157836665414082580">הסתרת תיבות דו-שיח</translation>
+<translation id="9183059292653643328">הדפדפן הזה מנוהל על ידי הארגון שלך</translation>
 <translation id="9188680907066685419">יציאה מהחשבון המנוהל</translation>
 <translation id="9200875785104711666">לפני <ph name="TIME" /> ימים</translation>
 <translation id="9203116392574189331">Handoff</translation>

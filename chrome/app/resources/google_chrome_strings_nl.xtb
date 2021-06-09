@@ -39,6 +39,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Zorg dat je bent ingelogd bij Chrome op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="1807517590912578995">Chrome-profiel scheiden?</translation>
+<translation id="1810203443153428607">Als je Chrome OS installeert, worden alle gegevens op je apparaat overschreven.</translation>
 <translation id="1812689907177901597">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chrome</translation>
 <translation id="1860536484129686729">Chrome heeft toegangsrechten voor je camera nodig voor deze site</translation>
 <translation id="1873233029667955273">Google Chrome is niet je standaardbrowser</translation>
@@ -59,6 +60,16 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2348335408836342058">Chrome heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
 <translation id="234869673307233423">Chrome kan je wachtwoorden niet checken. Probeer het later opnieuw.</translation>
 <translation id="235650106824528204">Alle Chrome-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Harde schijf wissen en Chrome OS installeren</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Je kunt Chrome OS installeren. Als je doorgaat, gebeurt het volgende:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Bestanden, gegevens en je huidige besturingssysteem worden gewist.
+          <ph name="LIST_ITEM" />Chrome OS wordt geïnstalleerd.
+          <ph name="LIST_ITEM" />Je apparaat gaat uit nadat de installatie is afgerond.
+          <ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Een laatste herinnering: tijdens de installatie wordt de hele harde schijf gewist. Zorg dat je een back-up hebt gemaakt van belangrijke gegevens.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Nadat de installatie is gestart, kun je deze niet meer annuleren.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="2467438592969358367">Google Chrome wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -172,6 +183,10 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5394833366792865639">Een Chrome-tabblad delen</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
 <translation id="5434383153637353914">Via deze pagina kun je je ingelogde Google-accounts beheren. Deze accounts zijn beschikbaar in de Chrome-browser en Play Store-apps. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Voordat we beginnen, zorg je dat je een actuele back-up van je gegevens hebt. Als je Chrome OS installeert, worden alle gegevens op de harde schijf overschreven.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google is niet verantwoordelijk voor verlies van gegevens en biedt geen garantie dat Chrome OS werkt op niet-gecertificeerde modellen. Ga naar [TBD] voor meer informatie over gecertificeerde modellen.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Meer informatie over de installatie van Chrome OS en het wissen van gegevens: [TBD URL]<ph name="END_PARAGRAPH3" />
+<ph name="BEGIN_PARAGRAPH4" />Als je wilt doorgaan, klik je op Chrome OS installeren. We leiden je in een paar makkelijke stappen door de installatie. Je krijgt nog een kans om te bevestigen voordat we wijzigingen aanbrengen op je computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS installeren</translation>
 <translation id="556024056938947818">Google Chrome probeert wachtwoorden te tonen.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,6 +221,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-systeem</translation>
+<translation id="664235759707825982">Klaar om Chrome OS te installeren</translation>
 <translation id="6676384891291319759">Verbinding maken met internet</translation>
 <translation id="6679975945624592337">Google Chrome op de achtergrond laten uitvoeren</translation>
 <translation id="6739177684496155661">Doorgaan met een nieuw Chrome-profiel?</translation>
@@ -225,6 +241,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7155997830309522122">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chrome, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
 <translation id="7161904924553537242">Welkom bij Google Chrome</translation>
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS wordt geïnstalleerd</translation>
 <translation id="7295052994004373688">Deze taal wordt gebruikt om de Google Chrome-UI weer te geven</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
 <translation id="7303916856901595720">Account verplaatsen naar een nieuw Chrome-profiel?</translation>

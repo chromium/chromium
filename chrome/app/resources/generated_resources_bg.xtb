@@ -1673,6 +1673,7 @@
 <translation id="2755349111255270002">Нулирайте настройките на <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Управление на функциите за достъпност</translation>
 <translation id="275662540872599901">екранът е изключен</translation>
+<translation id="2757161511365746634">Преглед на принтера</translation>
 <translation id="2757338480560142065">Уверете се, че запазваната парола съвпада с тази за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Достъпът до камерата е блокиран</translation>
 <translation id="2764786626780673772">Подробности за VPN</translation>
@@ -1715,6 +1716,7 @@
 <translation id="2799223571221894425">Стартиране отново</translation>
 <translation id="2800760947029405028">Качване на изображение</translation>
 <translation id="2801954693771979815">Размер на елементите на екрана</translation>
+<translation id="2802557211515765772">Няма управлявани принтери.</translation>
 <translation id="2803313416453193357">Отваряне на папката</translation>
 <translation id="2803375539583399270">Въведете ПИН кодa</translation>
 <translation id="2804043232879091219">Алтернативният браузър не можа да се отвори</translation>
@@ -3828,7 +3830,6 @@
 <translation id="512903556749061217">свързано</translation>
 <translation id="5130675701626084557">Профилът не бе изтеглен. Моля, опитайте отново по-късно или се обърнете към оператора си за помощ.</translation>
 <translation id="5131591206283983824">Преместване чрез докосване на сензорния панел</translation>
-<translation id="5133483819862530305">От залез до изгрев</translation>
 <translation id="5135085122826131075">Кажете „Ok Google“ за достъп до Асистент.</translation>
 <translation id="5135533361271311778">Елементът за отметки не можа да се създаде.</translation>
 <translation id="5136343472380336530">Уверете се, че двете устройства са отключени и са близо едно до друго, както и че функцията за Bluetooth е включена. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -3865,6 +3866,7 @@
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5171045022955879922">Търсете или въведете URL адрес</translation>
 <translation id="5171343362375269016">Резервна памет</translation>
+<translation id="5172855596271336236">Има 1 управляван принтер.</translation>
 <translation id="5173668317844998239">Добавяне и изтриване на отпечатъци, запазени в ключа ви за сигурност</translation>
 <translation id="5175379009094579629">Името на устройството е невалидно. Въведете валидно име на устройство, за да опитате отново.</translation>
 <translation id="5177479852722101802">Достъпът до камерата и микрофона да продължи да се блокира</translation>
@@ -6128,6 +6130,7 @@
 <translation id="7674542105240814168">Достъпът до местоположението е отказан</translation>
 <translation id="7676119992609591770">Беше открит <ph name="NUM" /> раздел за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Изпращане на гласа ви до Google, за да можете да диктувате във всяко текстово поле.</translation>
+<translation id="7679171213002716280">Има <ph name="PRINTER_COUNT" /> управлявани принтера.</translation>
 <translation id="7680416688940118410">Калибриране на сензорния екран</translation>
 <translation id="7681095912841365527">Сайтът може да използва Bluetooth</translation>
 <translation id="7681597159868843240">Сайтовете обикновено използват сензорите за движение на устройството ви, за да осигуряват функции като виртуална реалност или проследяване на физическата активност</translation>
@@ -7608,6 +7611,7 @@
 <translation id="965211523698323809">Изпращайте и получавайте SMS съобщения от своя <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Забраняване на сайтовете да осъществяват достъп до HID устройства</translation>
 <translation id="967624055006145463">Съхранени данни</translation>
+<translation id="96774243435178359">Управлявани принтери</translation>
 <translation id="968000525894980488">Включете услугите за Google Play.</translation>
 <translation id="968037381421390582">Пост&amp;авяне и търсене на „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="968174221497644223">Кеш на приложение</translation>

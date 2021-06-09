@@ -1665,6 +1665,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> qurilmasini tiklash</translation>
 <translation id="2755367719610958252">Maxsus imkoniyatlarni sozlash</translation>
 <translation id="275662540872599901">ekran o‘chiq</translation>
+<translation id="2757161511365746634">Printerni ochish</translation>
 <translation id="2757338480560142065">Saqlayotgan parolingiz <ph name="WEBSITE" /> uchun mos kelishini tekshiring</translation>
 <translation id="2762441749940182211">Kamera bloklandi</translation>
 <translation id="2764786626780673772">VPN axboroti</translation>
@@ -1707,6 +1708,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2800760947029405028">Rasm yuklash</translation>
 <translation id="2801954693771979815">Ekran oʻlchami</translation>
+<translation id="2802557211515765772">Boshqariladigan printerlar topilmadi.</translation>
 <translation id="2803313416453193357">Jildni ochish</translation>
 <translation id="2803375539583399270">PIN kodni kiriting</translation>
 <translation id="2804043232879091219">Muqobil brauzer ochilmadi</translation>
@@ -3819,7 +3821,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="512903556749061217">biriktirilgan</translation>
 <translation id="5130675701626084557">Profilni yuklab olinmadi. Keyinroq qayta urining yoki yordam olish uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="5131591206283983824">Sensorli panelga teginib tortish</translation>
-<translation id="5133483819862530305">Kun botishidan to chiqqunigacha</translation>
 <translation id="5135085122826131075">Asistentdan “Ok Google” deb aytib foydalanish</translation>
 <translation id="5135533361271311778">Xatcho‘p yaratib bo‘lmadi.</translation>
 <translation id="5136343472380336530">Ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -3856,6 +3857,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
 <translation id="5171343362375269016">Swap xotirasi</translation>
+<translation id="5172855596271336236">Boshqariladigan 1 ta printer bor.</translation>
 <translation id="5173668317844998239">Elektron kalitga barmoq izlari kiritish va saqlanganlarini olib tashlash</translation>
 <translation id="5175379009094579629">Qurilma nomi xato kiritilgan. Xatosiz kiriting va yana urining.</translation>
 <translation id="5177479852722101802">Kamera va mikrofonga ruxsat har doim bloklansin</translation>
@@ -6118,6 +6120,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7674542105240814168">Joylashuv axborotiga ruxsat rad etildi</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="7676867886086876795">Diktovka istalgan matn maydonida ishlatilishi uchun ovozingiz Google serverlariga yuboriladi.</translation>
+<translation id="7679171213002716280">Boshqariladigan <ph name="PRINTER_COUNT" /> ta printer bor.</translation>
 <translation id="7680416688940118410">Sensorli ekranni kalibrlash</translation>
 <translation id="7681095912841365527">Sayt Bluetooth aloqasidan foydalanishi mumkin</translation>
 <translation id="7681597159868843240">Saytlar odatda virtual reallik yoki qadam sanash kabi funksiyalar uchun qurilmadagi harakat sensorlaridan foydalanadi</translation>
@@ -7597,6 +7600,7 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> orqali SMS yuborish va qabul qilish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Saytlarga HID qurilmalardan foydalanishni taqiqlash</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
+<translation id="96774243435178359">Boshqariladigan printerlar</translation>
 <translation id="968000525894980488">Google Play xizmatlarini yoqing.</translation>
 <translation id="968037381421390582">Joyla&amp;sh va qidirish: <ph name="SEARCH_TERMS" /></translation>
 <translation id="968174221497644223">Ilova keshi</translation>

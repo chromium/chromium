@@ -40,6 +40,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Uverite se da ste prijavljeni u Chrome na uređaju <ph name="TARGET_DEVICE_NAME" /> i probajte da pošaljete ponovo.</translation>
 <translation id="1807517590912578995">Zaseban Chrome profil?</translation>
+<translation id="1810203443153428607">Instalacija Chrome OS-a će zameniti sve podatke na uređaju.</translation>
 <translation id="1812689907177901597">Kada to uključite, možete da se prijavljujete na Google sajtove, kao što je Gmail, ali se ne prijavljujete u Chrome</translation>
 <translation id="1860536484129686729">Chrome traži dozvolu da pristupi kameri za ovaj sajt</translation>
 <translation id="1873233029667955273">Google Chrome nije podrazumevani pregledač</translation>
@@ -60,6 +61,16 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2348335408836342058">Chrome traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
 <translation id="234869673307233423">Chrome ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>
 <translation id="235650106824528204">Administrator poslovnog profila može da ukloni sve podatke Chrome-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Obriši podatke sa hard-diska i instaliraj Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Spremni smo da instaliramo Chrome OS! Kad nastavite:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Fajlovi, podaci i trenutni operativni sistem će biti obrisani.
+          <ph name="LIST_ITEM" />Biće instaliran Chrome OS.
+          <ph name="LIST_ITEM" />Uređaj će se isključiti kad se instalacija završi.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Poslednji put vas podsećamo: instalacija će obrisati kompletne podatke sa hard-diska. Uverite se da imate rezervnu kopiju svih podataka koji su vam važni.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kad instalacija počne, ne može da se otkaže.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="2467438592969358367">Google Chrome želi da izveze lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -175,6 +186,10 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 
 Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5434383153637353914">Ova stranica vam omogućava da upravljate Google nalozima na koje ste prijavljeni. Nalozi će biti dostupni u Chrome pregledaču i aplikacijama iz Play prodavnice, kao i u uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Pre nego što počnemo, obavezno napravite ažurnu rezervnu kopiju podataka. Instalacija Chrome OS-a će zameniti sve podatke na hard-disku.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google nije odgovoran za gubitak podataka i ne garantuje da će Chrome OS funkcionisati na neovlašćenim modelima. Posetite [neutvrđeno] da biste saznali više o ovlašćenim modelima.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Saznajte više o instaliranju Chrome OS-a i brisanju podataka: [neutvrđeni URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Ako ste spremni da nastavite, kliknite na Instaliraj Chrome OS i provešćemo vas kroz instalaciju u samo nekoliko lakih koraka. Imaćete još jednu priliku za potvrdu pre nego što primenimo promene na računaru.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instaliraj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome pokušava da prikaže lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,6 +225,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Programerska verzija Google Chrome-a</translation>
 <translation id="6566149418543181476">Ažuriranje Google Chrome-a (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
+<translation id="664235759707825982">Sve je spremno za instaliranje Chrome OS-a</translation>
 <translation id="6676384891291319759">Pristupite Internetu</translation>
 <translation id="6679975945624592337">Neka Google Chrome radi u pozadini</translation>
 <translation id="6739177684496155661">Želite da nastavite na novom Chrome profilu?</translation>
@@ -229,6 +245,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7155997830309522122">Ako je tako, izmenite sačuvanu lozinku u Chrome-u tako da se podudara sa novom lozinkom.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7242029209006116544">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Google Chrome profilom. Chrome podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. Možete opcionalno da napravite novi profil da bi postojeći Chrome podaci ostali odvojeni. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Instalacija Chrome OS-a je u toku</translation>
 <translation id="7295052994004373688">Ovaj jezik se koristi za prikazivanje korisničkog interfejsa Google Chrome-a</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
 <translation id="7303916856901595720">Želite da premestite nalog na nov Chrome profil?</translation>

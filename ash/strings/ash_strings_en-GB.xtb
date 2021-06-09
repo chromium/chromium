@@ -85,7 +85,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
-<translation id="159255010947577753">Marker</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
 <translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
@@ -153,7 +152,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
-<translation id="2146800439053023141">Toggle bar location</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>

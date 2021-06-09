@@ -768,6 +768,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8654802032646794042">Peru</translation>
 <translation id="8668210798914567634">Sivu on tallennettu lukulistallesi.</translation>
 <translation id="8680787084697685621">Tilin kirjautumistiedot ovat vanhentuneet.</translation>
+<translation id="8691262314411702087">Valitse synkronoitavat kohteet</translation>
 <translation id="8693663554456874301">{count,plural, =1{Sulje välilehti}other{Sulje välilehdet}}</translation>
 <translation id="8706588385081740091">Salasanat</translation>
 <translation id="8717864919010420084">Kopioi linkki</translation>
@@ -810,6 +811,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9152539721251340337">Luo QR-koodi</translation>
 <translation id="9157836665414082580">Estä valintaikkunat</translation>
+<translation id="9183059292653643328">Organisaatiosi ylläpitää selainta</translation>
 <translation id="9188680907066685419">Kirjaudu ulos hallinnoidulta tililtä</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> pv sitten</translation>
 <translation id="9203116392574189331">Handoff</translation>

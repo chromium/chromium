@@ -76,11 +76,13 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3350761136195634146">'n Chromium-profiel met hierdie rekening bestaan reeds</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
 <translation id="3430503420100763906">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
+<translation id="3433271666494956603">Tans besig om Chromium-bedryfstelsel te installeer</translation>
 <translation id="347328004046849135">Chromium sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
 <translation id="3474745554856756813">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan tussen Chromium-profiele wissel</translation>
 <translation id="3509308970982693815">Maak asseblief alle Chromium-vensters toe en probeer weer.</translation>
 <translation id="3575459661164320785">Daar is skadelike sagteware op jou rekenaar. Chromium kan dit verwyder, jou instellings teruglaai en uitbreidings deaktiveer om jou blaaier weer normaal te laat werk.</translation>
+<translation id="3610776674893128619">Vee hardeskyf uit en installeer Chromium-bedryfstelsel</translation>
 <translation id="3639635944603682591">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chromium aan om die data te herwin.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="3651803019964686660">Meld op albei toestelle by Chromium aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
@@ -164,6 +166,15 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="6134968993075716475">Veiligblaai is afgeskakel. Chromium beveel aan dat jy dit aanskakel.</translation>
 <translation id="6145820983052037069">Jy kan hier tussen Chromium-profiele wissel</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Ons is gereed om Chromium-bedryfstelsel te installeer! Sodra jy voortgaan:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Sal lêers, data en jou huidige bedryfstelsel uitgevee word.
+          <ph name="LIST_ITEM" />Sal Chromium-bedryfstelsel geïnstalleer word.
+          <ph name="LIST_ITEM" />Sal jou toestel afskakel wanneer installasie afgehandel is.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Een laaste onthounota: Installasie sal jou hele hardeskyf uitvee. Maak asseblief seker dat alle data wat vir jou belangrik is, gerugsteun is.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Installasie kan nie gekanselleer word nadat dit begin is nie.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
@@ -181,6 +192,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6434250628340475518">Chromium-bedryfstelsel</translation>
 <translation id="6455857529632101747">Welkom by Chromium-profiele</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
+<translation id="646620589868199210">Gereed om Chromium-bedryfstelsel te installeer</translation>
 <translation id="6475912303565314141">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin.</translation>
 <translation id="6510925080656968729">Deïnstalleer Chromium</translation>
 <translation id="6542839706527980775">Elke profiel hou sy eie Chromium-inligting soos boekmerke, geskiedenis, wagwoorde en meer</translation>
@@ -195,6 +207,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6734291798041940871">Chromium is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="673636774878526923">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-goed te kry.</translation>
 <translation id="6774082503108938489">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chromium afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie geaktiveer word nie.</translation>
+<translation id="6827182711503025204">As jy Chromium-bedryfstelsel installeer, sal alle data op jou toestel vervang word.</translation>
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (na Chromium gekopieer)</translation>
@@ -229,6 +242,10 @@ Chromium kan nie jou instellings herwin nie.</translation>
       Chromium-bedryfstelselinstellings<ph name="LINK_END" /> kyk</translation>
 <translation id="761356813943268536">Chromium gebruik tans jou kamera en mikrofoon.</translation>
 <translation id="7617377681829253106">Chromium het pas beter geword</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Maak asseblief seker dat jy 'n bygewerkte rugsteun van jou data het voordat ons begin. As jy Chromium-bedryfstelsel installeer, sal alle data op jou hardeskryf vervang word.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google is nie vir enige dataverlies verantwoordelik nie en bied geen waarborg dat Chromium-bedryfstelsel op ongesertifiseerde modelle sal werk nie. Besoek asseblief [TBD] om meer oor gesertifiseerde modelle te wete te kom.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Kom meer te wete oor die installasie van Chromium-bedryfstelsel en die uitvee van data: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />As jy gereed is om voort te gaan, kan jy "Installeer Chromium-bedryfstelsel" klik en ons sal jou met 'n paar maklike stappe deur installasie begelei. Jy sal nog 'n geleentheid hê om te bevestig voordat ons enige veranderinge aan jou rekenaar maak.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium is nie jou verstekblaaier nie</translation>
 <translation id="7689606757190482937">Sinkroniseer en personaliseer Chromium op al jou toestelle</translation>
 <translation id="7729447699958282447">Chromium kon nie jou data sinkroniseer nie, omdat Sinkronisering nie vir jou domein beskikbaar is nie.</translation>

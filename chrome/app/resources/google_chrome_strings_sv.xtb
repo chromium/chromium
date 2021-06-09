@@ -40,6 +40,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="1807517590912578995">Vill du skapa en separat Chrome-profil?</translation>
+<translation id="1810203443153428607">All data på enheten skrivs över när du installerar Chrome OS.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
 <translation id="1860536484129686729">Du behöver ge Chrome behörighet att använda kameran på webbplatsen</translation>
 <translation id="1873233029667955273">Google Chrome är inte din standardwebbläsare</translation>
@@ -60,6 +61,16 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2348335408836342058">Du behöver ge Chrome behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="234869673307233423">Chrome kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="235650106824528204">All data i Chrome som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Rensa hårddisken och installera Chrome OS</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Vi är redo att installera Chrome OS. När du fortsätter sker följande:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Filer, data och ditt nuvarande operativsystem rensas.
+          <ph name="LIST_ITEM" />Chrome OS installeras.
+          <ph name="LIST_ITEM" />Enheten stängs av när installationen har slutförts.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />En sista påminnelse: installationen rensar hårddisken fullständigt. Se till att du har säkerhetskopierat all data som du vill behålla.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />När installationen har påbörjats går den inte att avbryta.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kunde inte synkronisera data eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="2467438592969358367">Lösenorden exporteras från Google Chrome. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
@@ -175,6 +186,10 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 
 Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5434383153637353914">På den här sidan kan du hantera alla Google-konton som du är inloggad på. Dessa konton blir tillgängliga i webbläsaren Chrome och Play Butik-appar samt tjänster som Gmail, Drive och YouTube. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Innan vi sätter igång bör du kontrollera att du har en aktuell säkerhetskopia av din data. All data på hårddisken skrivs över när du installerar Chrome OS.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google ansvarar inte för eventuell dataförlust och garanterar inte heller att Chrome OS fungerar på ocertifierade modeller. Om du vill läsa mer om certifierade modeller besöker du [TBD].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Läs mer om att installera Chrome OS och att rensa data på [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Om du är redo att fortsätta klickar du på Installera Chrome OS. Vi guidar dig genom installationen i några enkla steg. Du har möjlighet att bekräfta innan vi gör några ändringar på din dator.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installera Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome försöker visa lösenord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -211,6 +226,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-system</translation>
+<translation id="664235759707825982">Redo att installera Chrome OS</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
 <translation id="6679975945624592337">Låt Google Chrome köras i bakgrunden</translation>
 <translation id="6739177684496155661">Vill du fortsätta i en ny Chrome-profil?</translation>
@@ -230,6 +246,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7155997830309522122">Om så är fallet ska du redigera det sparade lösenordet i Chrome så att det matchar det nya lösenordet.</translation>
 <translation id="7161904924553537242">Välkommen till Google Chrome</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Installationen av Chrome OS pågår</translation>
 <translation id="7295052994004373688">Användargränssnittet i Google Chrome visas på det här språket</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7303916856901595720">Vill du flytta kontot till en ny Chrome-profil?</translation>
