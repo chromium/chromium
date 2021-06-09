@@ -15,11 +15,11 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -37,9 +37,9 @@
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
-// Navigation controller presented from the bottom.
+// Navigation controller for the consistency promo.
 @property(nonatomic, strong)
-    BottomSheetNavigationController* navigationController;
+    ConsistencySheetNavigationController* navigationController;
 // Interaction transition to swipe from left to right to pop a view controller
 // from |self.navigationController|.
 @property(nonatomic, strong)
@@ -102,7 +102,7 @@
   _identityManagerObserverBridge.reset(
       new signin::IdentityManagerObserverBridge(self.identityManager, self));
 
-  self.navigationController = [[BottomSheetNavigationController alloc]
+  self.navigationController = [[ConsistencySheetNavigationController alloc]
       initWithRootViewController:self.defaultAccountCoordinator.viewController];
   self.navigationController.delegate = self;
   UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
@@ -132,7 +132,7 @@
 
 #pragma mark - Private
 
-// Dismisses the bottom sheet view controller.
+// Dismisses the consistency sheet view controller.
 - (void)dismissNavigationViewController {
   __weak __typeof(self) weakSelf = self;
   [self.navigationController
@@ -317,7 +317,7 @@
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // Since sign-in UI blocks all other Chrome screens until it is dismissed
-      // an account change event must come from the bottomsheet.
+      // an account change event must come from the consistency sheet.
       // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
       ChromeIdentity* signedInIdentity =
           self.authenticationService->GetAuthenticatedIdentity();
@@ -377,12 +377,12 @@
     case UINavigationControllerOperationNone:
       return nil;
     case UINavigationControllerOperationPush:
-      return [[BottomSheetSlideTransitionAnimator alloc]
-             initWithAnimation:BottomSheetSlideAnimationPushing
+      return [[ConsistencySheetSlideTransitionAnimator alloc]
+             initWithAnimation:ConsistencySheetSlideAnimationPushing
           navigationController:self.navigationController];
     case UINavigationControllerOperationPop:
-      return [[BottomSheetSlideTransitionAnimator alloc]
-             initWithAnimation:BottomSheetSlideAnimationPopping
+      return [[ConsistencySheetSlideTransitionAnimator alloc]
+             initWithAnimation:ConsistencySheetSlideAnimationPopping
           navigationController:self.navigationController];
   }
   NOTREACHED();
@@ -421,9 +421,9 @@
                                 (UIViewController*)presentingViewController
                                 sourceViewController:(UIViewController*)source {
   DCHECK_EQ(self.navigationController, presentedViewController);
-  return [[BottomSheetPresentationController alloc]
-      initWithBottomSheetNavigationController:self.navigationController
-                     presentingViewController:presentingViewController];
+  return [[ConsistencySheetPresentationController alloc]
+      initWithConsistencySheetNavigationController:self.navigationController
+                          presentingViewController:presentingViewController];
 }
 
 @end

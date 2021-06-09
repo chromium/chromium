@@ -210,7 +210,7 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
       consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:self];
 }
 
-#pragma mark - ChildBottomSheetViewController
+#pragma mark - ChildConsistencySheetViewController
 
 - (CGFloat)layoutFittingHeightForWidth:(CGFloat)width {
   CGFloat contentViewWidth = width - self.view.safeAreaInsets.left -

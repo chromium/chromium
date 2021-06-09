@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
 
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,17 +17,17 @@ const CGFloat kAnimationDuration = 0.25;
 
 }  // namespace
 
-@interface BottomSheetSlideTransitionAnimator ()
+@interface ConsistencySheetSlideTransitionAnimator ()
 
-@property(nonatomic, assign, readonly) BottomSheetSlideAnimation animation;
+@property(nonatomic, assign, readonly) ConsistencySheetSlideAnimation animation;
 
 @end
 
-@implementation BottomSheetSlideTransitionAnimator
+@implementation ConsistencySheetSlideTransitionAnimator
 
-- (instancetype)initWithAnimation:(BottomSheetSlideAnimation)animation
+- (instancetype)initWithAnimation:(ConsistencySheetSlideAnimation)animation
              navigationController:
-                 (BottomSheetNavigationController*)navigationController {
+                 (ConsistencySheetNavigationController*)navigationController {
   self = [super init];
   if (self) {
     _animation = animation;
@@ -64,11 +64,11 @@ const CGFloat kAnimationDuration = 0.25;
   CGRect navigationFrameAfterAnimation = self.navigationController.view.frame;
 
   switch (self.animation) {
-    case BottomSheetSlideAnimationPopping:
+    case ConsistencySheetSlideAnimationPopping:
       toViewFrameBeforeAnimation.origin.x = -toView.frame.size.width;
       fromViewFrameAfterAnimation.origin.x = fromView.frame.size.width;
       break;
-    case BottomSheetSlideAnimationPushing:
+    case ConsistencySheetSlideAnimationPushing:
       toViewFrameBeforeAnimation.origin.x = toView.frame.size.width;
       fromViewFrameAfterAnimation.origin.x = -fromView.frame.size.width;
       break;
@@ -99,7 +99,7 @@ const CGFloat kAnimationDuration = 0.25;
       animateKeyframesWithDuration:duration
                              delay:0
                            options:
-                              UIViewKeyframeAnimationOptionCalculationModeLinear
+                               UIViewKeyframeAnimationOptionCalculationModeLinear
                         animations:animations
                         completion:completion];
 }

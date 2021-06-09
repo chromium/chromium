@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 
 #import <algorithm>
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/child_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,30 +16,31 @@
 
 namespace {
 
-// Maximum height for BottomSheetNavigationController. This is a ratio related
-// the window height.
+// Maximum height for ConsistencySheetNavigationController. This is a ratio
+// related the window height.
 CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 }  // namespace
 
-@interface BottomSheetNavigationController ()
+@interface ConsistencySheetNavigationController ()
 
 // View to get transparent blurred background.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
 
 @end
 
-@implementation BottomSheetNavigationController
+@implementation ConsistencySheetNavigationController
 
 - (CGSize)layoutFittingSize {
   CGFloat width = self.view.frame.size.width;
   UINavigationController* navigationController =
       self.childViewControllers.lastObject;
   DCHECK([navigationController
-      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
-  UIViewController<ChildBottomSheetViewController>* childNavigationController =
-      static_cast<UIViewController<ChildBottomSheetViewController>*>(
-          navigationController);
+      conformsToProtocol:@protocol(ChildConsistencySheetViewController)]);
+  UIViewController<ChildConsistencySheetViewController>*
+      childNavigationController =
+          static_cast<UIViewController<ChildConsistencySheetViewController>*>(
+              navigationController);
   CGFloat height =
       [childNavigationController layoutFittingHeightForWidth:width];
   CGFloat maxViewHeight =
@@ -76,7 +77,7 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 - (void)pushViewController:(UIViewController*)viewController
                   animated:(BOOL)animated {
   DCHECK([viewController
-      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
+      conformsToProtocol:@protocol(ChildConsistencySheetViewController)]);
   [super pushViewController:viewController animated:animated];
 }
 

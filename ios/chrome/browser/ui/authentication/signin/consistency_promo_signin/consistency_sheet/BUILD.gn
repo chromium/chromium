@@ -4,16 +4,16 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("bottom_sheet") {
+source_set("consistency_sheet") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bottom_sheet_navigation_controller.h",
-    "bottom_sheet_navigation_controller.mm",
-    "bottom_sheet_presentation_controller.h",
-    "bottom_sheet_presentation_controller.mm",
-    "bottom_sheet_slide_transition_animator.h",
-    "bottom_sheet_slide_transition_animator.mm",
-    "child_bottom_sheet_view_controller.h",
+    "child_consistency_sheet_view_controller.h",
+    "consistency_sheet_navigation_controller.h",
+    "consistency_sheet_navigation_controller.mm",
+    "consistency_sheet_presentation_controller.h",
+    "consistency_sheet_presentation_controller.mm",
+    "consistency_sheet_slide_transition_animator.h",
+    "consistency_sheet_slide_transition_animator.mm",
   ]
   deps = [
     "//ios/chrome/browser/browser_state",

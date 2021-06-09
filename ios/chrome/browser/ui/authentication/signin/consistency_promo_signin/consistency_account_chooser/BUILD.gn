@@ -29,7 +29,7 @@ source_set("consistency_account_chooser") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",

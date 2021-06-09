@@ -79,7 +79,7 @@
   return _tableViewController;
 }
 
-#pragma mark - ChildBottomSheetViewController
+#pragma mark - ChildConsistencySheetViewController
 
 - (CGFloat)layoutFittingHeightForWidth:(CGFloat)width {
   NSArray* childViewControllers =

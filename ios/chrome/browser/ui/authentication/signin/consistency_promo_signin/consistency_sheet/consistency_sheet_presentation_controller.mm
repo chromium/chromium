@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/accessibility_close_menu_button.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -22,24 +22,25 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
 }  // namespace
 
-@interface BottomSheetPresentationController ()
+@interface ConsistencySheetPresentationController ()
 
 // View controller to present.
 @property(nonatomic, strong)
-    BottomSheetNavigationController* navigationController;
+    ConsistencySheetNavigationController* navigationController;
 // YES if the presented view is presented.
 @property(nonatomic, assign) BOOL presented;
-// View to dim the UI in the background of the bottom sheet.
+// View to dim the UI in the background of the consistency sheet.
 @property(nonatomic, strong) UIView* backgroundDimmerView;
 
 @end
 
-@implementation BottomSheetPresentationController
+@implementation ConsistencySheetPresentationController
 
-- (instancetype)initWithBottomSheetNavigationController:
-                    (BottomSheetNavigationController*)navigationController
-                               presentingViewController:
-                                   (UIViewController*)presentingViewController {
+- (instancetype)initWithConsistencySheetNavigationController:
+                    (ConsistencySheetNavigationController*)navigationController
+                                    presentingViewController:
+                                        (UIViewController*)
+                                            presentingViewController {
   self = [super initWithPresentedViewController:navigationController
                        presentingViewController:presentingViewController];
   if (self) {
