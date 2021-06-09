@@ -5,6 +5,7 @@
 #include "components/content_creation/notes/core/server/notes_server_base.h"
 
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -21,23 +22,28 @@ NotesServerBase::NotesServerBase(
 NotesServerBase::~NotesServerBase() {}
 
 signin::ScopeSet NotesServerBase::GetAuthScopes() {
-  NOTIMPLEMENTED();
-
-  return {"put_real_one_here"};
+  return {GaiaConstants::kOAuth1LoginScope};
 }
 
 GURL NotesServerBase::GetNotesServerURL() {
-  NOTIMPLEMENTED();
-
-  return GURL();
+  GURL base_url("staging-gsaprototype-pa.sandbox.googleapis.com");
+  GURL::Replacements replacements;
+  replacements.SetPathStr("/v1/webnotes");
+  return base_url.ReplaceComponents(replacements);
 }
 
 std::unique_ptr<network::ResourceRequest>
 NotesServerBase::CreateNoteResourceRequest(GURL request_url,
                                            const std::string request_method) {
-  NOTIMPLEMENTED();
-
-  return std::make_unique<network::ResourceRequest>();
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = request_url;
+  resource_request->method = request_method;
+  std::string api_key = google_apis::GetAPIKey();
+  DCHECK(!api_key.empty());
+  resource_request->headers.SetHeader("x-goog-api-key", api_key);
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      "application/x-protobuf");
+  return resource_request;
 }
 
 bool NotesServerBase::HasValidNonEmptyResponse(
@@ -48,7 +54,13 @@ bool NotesServerBase::HasValidNonEmptyResponse(
 }
 
 void NotesServerBase::StartAccessTokenFetch() {
-  NOTIMPLEMENTED();
+  // It's safe to pass base::Unretained(this) since deleting the token fetcher
+  // will prevent the callback from being completed.
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+      "note", identity_manager_, GetAuthScopes(),
+      base::BindOnce(&NotesServerBase::AccessTokenFetchFinished,
+                     base::Unretained(this), base::TimeTicks::Now()),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 }  // namespace content_creation

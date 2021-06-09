@@ -21,7 +21,9 @@ NotesServerSaver::NotesServerSaver(
 NotesServerSaver::~NotesServerSaver() {}
 
 void NotesServerSaver::Start() {
-  NOTIMPLEMENTED();
+  // Start fetching the access token. This will trigger the method to save the
+  // note when done.
+  NotesServerBase::StartAccessTokenFetch();
 }
 
 void NotesServerSaver::SendSaveNoteRequest() {
@@ -37,7 +39,8 @@ void NotesServerSaver::AccessTokenFetchFinished(
     base::TimeTicks token_start_ticks,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  NOTIMPLEMENTED();
+  access_token_ = access_token_info.token;
+  SendSaveNoteRequest();
 }
 
 }  // namespace content_creation
