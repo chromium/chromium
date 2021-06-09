@@ -7,6 +7,9 @@
 #include "ash/fast_ink/fast_ink_points.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/fast_ink/laser/laser_pointer_view.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
 
 namespace ash {
 
@@ -31,6 +34,13 @@ bool LaserPointerControllerTestApi::IsShowingLaserPointer() const {
 bool LaserPointerControllerTestApi::IsFadingAway() const {
   return IsShowingLaserPointer() &&
          !instance_->GetLaserPointerView()->fadeout_done_.is_null();
+}
+
+PaletteTray* LaserPointerControllerTestApi::GetPaletteTrayOnDisplay(
+    int64_t display_id) const {
+  aura::Window* window = Shell::GetRootWindowForDisplayId(display_id);
+  DCHECK(window);
+  return Shelf::ForWindow(window)->GetStatusAreaWidget()->palette_tray();
 }
 
 const fast_ink::FastInkPoints& LaserPointerControllerTestApi::laser_points()

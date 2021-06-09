@@ -5,7 +5,9 @@
 #ifndef ASH_FAST_INK_LASER_LASER_POINTER_CONTROLLER_TEST_API_H_
 #define ASH_FAST_INK_LASER_LASER_POINTER_CONTROLLER_TEST_API_H_
 
+#include "ash/system/palette/palette_tray.h"
 #include "base/macros.h"
+#include "ui/display/display.h"
 
 namespace fast_ink {
 class FastInkPoints;
@@ -25,6 +27,7 @@ class LaserPointerControllerTestApi {
   bool IsEnabled() const;
   bool IsShowingLaserPointer() const;
   bool IsFadingAway() const;
+  PaletteTray* GetPaletteTrayOnDisplay(int64_t display_id) const;
   const fast_ink::FastInkPoints& laser_points() const;
   const fast_ink::FastInkPoints& predicted_laser_points() const;
 

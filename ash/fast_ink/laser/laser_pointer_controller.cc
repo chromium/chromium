@@ -14,6 +14,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -149,7 +150,10 @@ void LaserPointerController::DestroyPointerView() {
 bool LaserPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
   // Ignore events over the palette.
   // TODO(llin): Register palette as a excluded window instead.
-  if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  gfx::Point screen_point = event->location();
+  wm::ConvertPointToScreen(target, &screen_point);
+  if (palette_utils::PaletteContainsPointInScreen(screen_point))
     return false;
   return FastInkPointerController::CanStartNewGesture(event);
 }
