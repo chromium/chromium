@@ -142,6 +142,8 @@ source_set("first_run_ui") {
     "first_run_screen_view_controller.h",
     "first_run_screen_view_controller.mm",
     "first_run_screen_view_controller_delegate.h",
+    "highlighted_button.h",
+    "highlighted_button.mm",
   ]
   deps = [
     "//base",

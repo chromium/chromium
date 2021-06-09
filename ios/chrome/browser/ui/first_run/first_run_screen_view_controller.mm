@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#import "ios/chrome/browser/ui/first_run/highlighted_button.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -49,7 +50,7 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
 @property(nonatomic, strong) UIView* scrollContentView;
 @property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subtitleLabel;
-@property(nonatomic, strong) UIButton* primaryActionButton;
+@property(nonatomic, strong) HighlightedButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
@@ -383,7 +384,24 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
 
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    _primaryActionButton = PrimaryActionButton(YES);
+    _primaryActionButton = [[HighlightedButton alloc] initWithFrame:CGRectZero];
+    _primaryActionButton.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
+    UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
+    [_primaryActionButton setTitleColor:titleColor
+                               forState:UIControlStateNormal];
+    _primaryActionButton.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    _primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
+    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+    if (@available(iOS 13.4, *)) {
+      _primaryActionButton.pointerInteractionEnabled = YES;
+      _primaryActionButton.pointerStyleProvider =
+          CreateOpaqueButtonPointerStyleProvider();
+    }
+
     // Use |primaryActionString| even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
     // content height, so there is no way to know if scrolling is needed. This
