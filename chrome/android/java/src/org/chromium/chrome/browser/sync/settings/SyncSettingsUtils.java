@@ -200,12 +200,12 @@ public class SyncSettingsUtils {
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
             // There is no account with sync consent available.
-            return context.getString(R.string.sync_is_disabled);
+            return context.getString(R.string.sync_off);
         }
 
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null) {
-            return context.getString(R.string.sync_is_disabled);
+            return context.getString(R.string.sync_off);
         }
 
         if (!profileSyncService.isSyncAllowedByPlatform()) {
@@ -252,7 +252,7 @@ public class SyncSettingsUtils {
                     : context.getString(R.string.password_sync_error_summary);
         }
 
-        return context.getString(R.string.sync_and_services_summary_sync_on);
+        return context.getString(R.string.sync_on);
     }
 
     /**

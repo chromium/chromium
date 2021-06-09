@@ -287,9 +287,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGNIN_PREF_SUMMARY" desc="Summary for the entry in Settings to sign in to Chrome, explaining benefits of signing in.">
         Sync and personalize across devices
       </message>
-      <message name="IDS_SYNC_AND_SERVICES_SUMMARY_SYNC_ON" desc="Summary for 'Sync and Google services' preference row when sync is enabled.">
-        Sync is on
-      </message>
       <message name="IDS_SIGN_IN_TO_CHROME_DISABLED_SUMMARY" desc="A descriptive line of text that appears under the 'Sign in to Chrome' option, in Chrome Settings on Android. The text explains why 'Sign in to Chrome' is disabled. 'Administrator' refers to the IT administrator of the company/organization that owns the user’s device.">
         Disabled by the administrator of this device
       </message>
@@ -1618,8 +1615,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ANDROID_SYSTEM_SYNC_DISABLED" desc="Message to show when Android system-level sync flag is disabled">
         Android system sync disabled
       </message>
-      <message name="IDS_SYNC_IS_DISABLED" desc="Message to show when Chrome sync is disabled">
-        Sync is off
+      <message name="IDS_SYNC_ON" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is on.">
+        On
+      </message>
+      <message name="IDS_SYNC_OFF" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is off.">
+        Off
       </message>
       <message name="IDS_SYNC_DATA_TYPES_OFF" desc="Message to show when all sync data types are off">
         No data selected to sync
