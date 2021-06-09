@@ -64,7 +64,7 @@ class CreditCardAccessoryControllerImpl
       autofill::BrowserAutofillManager* af_manager,
       autofill::AutofillDriver* af_driver);
 
-  void FetchSuggestionsFromPersonalDataManager();
+  void FetchSuggestions();
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;

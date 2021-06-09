@@ -233,7 +233,7 @@ CreditCardAccessoryController* CreditCardAccessoryController::GetIfExisting(
 
 void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   if (web_contents_->GetFocusedFrame() && GetManager()) {
-    FetchSuggestionsFromPersonalDataManager();
+    FetchSuggestions();
   } else {
     cards_cache_.clear();  // If cards cannot be filled, don't show them.
     cached_server_cards_.clear();
@@ -317,25 +317,33 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     personal_data_manager_->AddObserver(this);
 }
 
-void CreditCardAccessoryControllerImpl::
-    FetchSuggestionsFromPersonalDataManager() {
+void CreditCardAccessoryControllerImpl::FetchSuggestions() {
   if (!personal_data_manager_) {
     cards_cache_.clear();  // No data available.
   } else {
     cards_cache_ = personal_data_manager_->GetCreditCardsToSuggest(
         /*include_server_cards=*/true);
   }
-  // TODO(crbug.com/1196021) Update the below logic to allow for showing only
-  // virtual cards if the kAutofillShowUnmaskedCachedCardInManualFillingView is
-  // disabled.
-  if (GetManager() && GetManager()->credit_card_access_manager() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillShowUnmaskedCachedCardInManualFillingView)) {
+  if (!GetManager() || !GetManager()->credit_card_access_manager()) {
+    cached_server_cards_.clear();  // No data available.
+  } else {
     cached_server_cards_ =
         GetManager()->credit_card_access_manager()->GetCachedUnmaskedCards();
-  } else {
-    cached_server_cards_.clear();  // No data available.
+    // If the feature to show unmasked cached cards in manual filling view is
+    // enabled, show all cached cards in the view. Even if not, still show
+    // virtual cards in the manual filling view if they exist. All other cards
+    // are dropped.
+    if (!base::FeatureList::IsEnabled(
+            autofill::features::
+                kAutofillShowUnmaskedCachedCardInManualFillingView)) {
+      auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
+        return card_info->card.record_type() != CreditCard::VIRTUAL_CARD;
+      };
+      // Remove any cards that are not virtual cards.
+      cached_server_cards_.erase(
+          base::ranges::remove_if(cached_server_cards_, not_virtual_card),
+          cached_server_cards_.end());
+    }
   }
 }
 
