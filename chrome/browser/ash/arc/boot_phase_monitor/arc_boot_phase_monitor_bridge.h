@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -68,6 +67,9 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   ArcBootPhaseMonitorBridge(content::BrowserContext* context,
                             ArcBridgeService* bridge_service);
+  ArcBootPhaseMonitorBridge(const ArcBootPhaseMonitorBridge&) = delete;
+  ArcBootPhaseMonitorBridge& operator=(const ArcBootPhaseMonitorBridge&) =
+      delete;
   ~ArcBootPhaseMonitorBridge() override;
 
   // If ARC has already been booted, OnBootCompleted() is called immediately for
@@ -106,8 +108,6 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   // This has to be the last member variable in the class.
   base::WeakPtrFactory<ArcBootPhaseMonitorBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseMonitorBridge);
 };
 
 // Singleton factory for ArcBootPhaseMonitorBridge.

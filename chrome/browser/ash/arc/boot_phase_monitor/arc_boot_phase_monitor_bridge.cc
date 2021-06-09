@@ -33,6 +33,8 @@ void OnEmitArcBooted(bool success) {
 class DefaultDelegateImpl : public ArcBootPhaseMonitorBridge::Delegate {
  public:
   DefaultDelegateImpl() = default;
+  DefaultDelegateImpl(const DefaultDelegateImpl&) = delete;
+  DefaultDelegateImpl& operator=(const DefaultDelegateImpl&) = delete;
   ~DefaultDelegateImpl() override = default;
 
   void RecordFirstAppLaunchDelayUMA(base::TimeDelta delta) override {
@@ -42,9 +44,6 @@ class DefaultDelegateImpl : public ArcBootPhaseMonitorBridge::Delegate {
                                base::TimeDelta::FromMilliseconds(1),
                                base::TimeDelta::FromMinutes(2), 50);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegateImpl);
 };
 
 }  // namespace

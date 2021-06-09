@@ -61,6 +61,10 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
         std::make_unique<TestDelegateImpl>(this));
   }
 
+  ArcBootPhaseMonitorBridgeTest(const ArcBootPhaseMonitorBridgeTest&) = delete;
+  ArcBootPhaseMonitorBridgeTest& operator=(
+      const ArcBootPhaseMonitorBridgeTest&) = delete;
+
   ~ArcBootPhaseMonitorBridgeTest() override {
     boot_phase_monitor_bridge_->Shutdown();
     testing_profile_.reset();
@@ -107,6 +111,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
    public:
     explicit TestDelegateImpl(ArcBootPhaseMonitorBridgeTest* test)
         : test_(test) {}
+    TestDelegateImpl(const TestDelegateImpl&) = delete;
+    TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
     ~TestDelegateImpl() override = default;
 
     void RecordFirstAppLaunchDelayUMA(base::TimeDelta delta) override {
@@ -116,8 +122,6 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
    private:
     ArcBootPhaseMonitorBridgeTest* const test_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestDelegateImpl);
   };
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -135,8 +139,6 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   size_t record_uma_counter_ = 0;
   base::TimeDelta last_time_delta_;
   size_t on_boot_completed_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseMonitorBridgeTest);
 };
 
 // Tests that ArcBootPhaseMonitorBridge can be constructed and destructed.
