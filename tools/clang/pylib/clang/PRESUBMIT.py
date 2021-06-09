@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnCommit(input_api, output_api):
   results = []
 
