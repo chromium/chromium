@@ -102,6 +102,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/full_restore/features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -502,6 +506,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoredTabsHaveCorrectInitialSize) {
 // not do session restore if an incognito window is already open.
 // (http://crbug.com/120927)
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
+  // When the full restore feature is enabled, session restore does occur when a
+  // user opens a browser window. So set the pref as default, open the New Tab
+  // page for this test, to verify that session restore does not occur.
+  Profile* profile = browser()->profile();
+  SessionStartupPref current_pref = SessionStartupPref::GetStartupPref(profile);
+  if (full_restore::features::IsFullRestoreEnabled()) {
+    SessionStartupPref pref(SessionStartupPref::DEFAULT);
+    SessionStartupPref::SetStartupPref(profile, pref);
+  }
+
   GURL url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
