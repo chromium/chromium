@@ -3608,6 +3608,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4901309472892185668">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, połącz</translation>
 <translation id="49027928311173603">Polityka pobrana z serwera jest nieprawidłowa: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">W trybie incognito historia nie jest zapisywana</translation>
 <translation id="4906490889887219338">Skonfiguruj sieciowe udziały plików i zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
 <translation id="4907161631261076876">Ten plik nie jest często pobierany i może być niebezpieczny.</translation>
@@ -4983,7 +4984,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="645286928527869380">Przykładowe przepisy</translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
 <translation id="6453921811609336127">Aby przełączyć się na następną metodę wprowadzania, naciśnij <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />Spacja<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
-<translation id="6455264371803474013">Na określonych stronach</translation>
+<translation id="6455264371803474013">W określonych witrynach</translation>
 <translation id="6455894534188563617">&amp;Nowy folder</translation>
 <translation id="645705751491738698">Nadal blokuj wykonywanie kodu JavaScript</translation>
 <translation id="6458701200018867744">Nie udało się przesłać (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>

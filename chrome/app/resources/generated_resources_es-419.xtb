@@ -3608,6 +3608,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">El historial no se guarda en el modo Incógnito</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, detalles</translation>
 <translation id="4907161631261076876">Este archivo no se descarga con frecuencia y podría ser peligroso.</translation>

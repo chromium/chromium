@@ -3608,6 +3608,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4901309472892185668">Wählen Sie den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus.</translation>
 <translation id="4902546322522096650">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="49027928311173603">Die vom Server heruntergeladene Richtlinie ist ungültig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Im Inkognitomodus wird der Verlauf nicht gespeichert</translation>
 <translation id="4906490889887219338">Netzwerkfreigaben einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="4907161631261076876">Diese Datei ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>

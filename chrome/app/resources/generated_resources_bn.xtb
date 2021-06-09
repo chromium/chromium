@@ -3626,6 +3626,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> এক্সপেরিমেন্টের জন্য এক্সপেরিমেন্টের স্ট্যাটাস বেছে নিন।</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="49027928311173603">সার্ভার থেকে ডাউনলোড করা নীতিটি ভুল: <ph name="VALIDATION_ERROR" />৷</translation>
+<translation id="4905269543817054577">'ছদ্মবেশী' মোডে ইতিহাস সেভ করা হয় না</translation>
 <translation id="4906490889887219338">নেটওয়ার্ক ফাইল শেয়ার (SMB) সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
 <translation id="4907161631261076876">এই ফাইলটি সাধারণভাবে ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে।</translation>

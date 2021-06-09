@@ -3627,6 +3627,7 @@
 <translation id="4901309472892185668">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="49027928311173603">המדיניות שהורדה מהשרת אינה חוקית: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">ההיסטוריה לא נשמרת במצב אנונימי</translation>
 <translation id="4906490889887219338">הגדרה או ניהול של התקני רשת לשיתוף קבצים. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />,‏ <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, עוצמת האות: %<ph name="SIGNAL_STRENGTH" />‎, סוללת הטלפון: %<ph name="BATTERY_STATUS" />, פרטים</translation>
 <translation id="4907161631261076876">הורדת הקובץ הזה אינה נפוצה והקובץ עלול להיות מסוכן.</translation>

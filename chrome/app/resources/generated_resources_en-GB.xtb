@@ -3627,6 +3627,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">History isn’t saved in Incognito</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4907161631261076876">This file is not commonly downloaded and may be dangerous.</translation>

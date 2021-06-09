@@ -1448,7 +1448,7 @@
 <translation id="252502352004572774">Chrome компьютерде зиянды бағдарламалық құралдың бар-жоғын тексеруде...</translation>
 <translation id="2526277209479171883">Орнату және жалғастыру</translation>
 <translation id="2526590354069164005">Жұмыс үстелі</translation>
-<translation id="2526619973349913024">Жаңа нұсқасының бар-жоғын тексеру</translation>
+<translation id="2526619973349913024">Жаңарту бар-жоғын тексеру</translation>
 <translation id="2527167509808613699">Байланыстың кез келген түрі</translation>
 <translation id="2530166226437958497">Ақауларды жою</translation>
 <translation id="2532589005999780174">Жоғары контраст режимі</translation>
@@ -3607,6 +3607,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз.</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="49027928311173603">Серверден жүктелген саясат жарамсыз: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Тарих инкогнито режимінде сақталмайды</translation>
 <translation id="4906490889887219338">Желінің ортақ каталогтерін реттеу немесе басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
 <translation id="4907161631261076876">Бұл файл әдетте жүктелмейді және ол қауіпті болуы мүмкін.</translation>

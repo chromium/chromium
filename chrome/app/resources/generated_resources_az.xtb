@@ -3607,6 +3607,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin.</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="49027928311173603">Serverdən endirilmiş qaydalar güvənsizdir: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Tarixçə Anonim rejimdə yadda saxlanılmır</translation>
 <translation id="4906490889887219338">Şəbəkə fayl paylaşımlarını ayarlayın və ya idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Detallar</translation>
 <translation id="4907161631261076876">Bu tətbiq adətən endirilmir və təhlükəli ola bilər.</translation>
@@ -6799,7 +6800,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8428628598981198790">Təhlükəsizlik açarından bu saytda istifadə edə bilməzsiniz</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
-<translation id="8431190899827883166">Tabları göstərin</translation>
+<translation id="8431190899827883166">Vizual reaksiya</translation>
 <translation id="8431909052837336408">SIM PIN kodu dəyişin</translation>
 <translation id="8434480141477525001">NaCl Debaq Portu</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> ilə şəxsiyyətinizi doğrulayın</translation>

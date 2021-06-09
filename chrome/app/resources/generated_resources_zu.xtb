@@ -3625,6 +3625,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4901309472892185668">Khetha isimo sokuhlola sohlolo lwe-<ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, Xhuma</translation>
 <translation id="49027928311173603">Inqubomgomo elandwe kusuka kuseva ayivumelekile: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Umlando awulondolozwanga ku-Incognito</translation>
 <translation id="4906490889887219338">Setha noma phatha ukwabelana kwefayela lenethiwekhi. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwangu-<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Amandla Esignali <ph name="SIGNAL_STRENGTH" />%, Ibhethri Lefoni <ph name="BATTERY_STATUS" />%, Imininingwane</translation>
 <translation id="4907161631261076876">Leli fayela alivamile ukulandwa futhi kungenzeka libe ingozi.</translation>

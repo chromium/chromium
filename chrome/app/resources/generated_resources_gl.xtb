@@ -866,7 +866,7 @@
 <translation id="1900305421498694955">As aplicacións de Google Play poden necesitar acceso total ao sistema de ficheiros para ler e editar ficheiros no almacenamento externo. Os ficheiros e os cartafoles creados no dispositivo son visibles para todos os usuarios da unidade externa. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar todo</translation>
 <translation id="1901396183631570154">Chrome non puido gardar estes contrasinais na túa Conta de Google. Así e todo, podes gardalos neste dispositivo.</translation>
-<translation id="1903995858055162096">Non é o teu dispositivo? Utiliza o <ph name="BEGIN_LINK" />modo de invitado<ph name="END_LINK" />.</translation>
+<translation id="1903995858055162096">Non é o teu dispositivo? Utiliza o <ph name="BEGIN_LINK" />modo de convidado<ph name="END_LINK" />.</translation>
 <translation id="1905375423839394163">Nome do dispositivo Chromebook</translation>
 <translation id="1906181697255754968">Os sitios adoitan acceder aos ficheiros e aos cartafoles do dispositivo para ofrecerche determinadas funcións (por exemplo, gardar automaticamente o teu traballo)</translation>
 <translation id="1906828677882361942">Non permitir que ningún sitio acceda aos portos de serie</translation>
@@ -1086,7 +1086,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Programación de aplicacións de Android en Linux</translation>
 <translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
-<translation id="2147151613919729065">Para borrar o historial do modo Invitados, pecha todas as ventás da sesión de invitado.</translation>
+<translation id="2147151613919729065">Para borrar o historial do modo Convidados, pecha todas as ventás da sesión de convidado.</translation>
 <translation id="2148219725039824548">Produciuse un erro ao montar a localización compartida. A localización compartida especificada non se atopou na rede.</translation>
 <translation id="2148756636027685713">Formatado finalizado</translation>
 <translation id="2148892889047469596">Emitir contido da pestana</translation>
@@ -2740,7 +2740,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3916445069167113093">Este tipo de ficheiro pode danar o teu ordenador. Queres descargar <ph name="FILE_NAME" /> igualmente?</translation>
 <translation id="3918972485393593704">Informar dos detalles a Google</translation>
 <translation id="3919145445993746351">Para dispoñer das túas extensións en todos os ordenadores, activa a sincronización</translation>
-<translation id="3919798653937160644">As páxinas que visites nesta ventá non aparecerán no historial do navegador nin deixarán outros rastros (por exemplo, cookies) no ordenador unha vez peches todas as ventás abertas da sesión de invitado. Non obstante, conservaranse todos os ficheiros que descargues.</translation>
+<translation id="3919798653937160644">As páxinas que visites nesta ventá non aparecerán no historial do navegador nin deixarán outros rastros (por exemplo, cookies) no ordenador unha vez peches todas as ventás abertas da sesión de convidado. Non obstante, conservaranse todos os ficheiros que descargues.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="392089482157167418">Activar ChromeVox (mensaxes de voz)</translation>
 <translation id="3920909973552939961">Sitios que non poden instalar controladores de pagos</translation>
@@ -3454,7 +3454,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4724450788351008910">Afiliación cambiada</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710629007580002">Recibíronse advertencias ao intentar instalar esta extensión:</translation>
-<translation id="4727847987444062305">Sesión de invitado xestionada</translation>
+<translation id="4727847987444062305">Sesión de convidado xestionada</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />O teu administrador<ph name="END_LINK" /> desactivou a comprobación de software daniño</translation>
 <translation id="4730492586225682674">Nota máis recente do lapis óptico na pantalla de inicio</translation>
@@ -3609,6 +3609,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4901309472892185668">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="49027928311173603">A política descargada do servidor non é válida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">O historial non se garda no modo de incógnito</translation>
 <translation id="4906490889887219338">Configurar ou xestionar sistemas de ficheiros compartidos en rede. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="4907161631261076876">Este ficheiro non se descarga habitualmente e pode ser perigoso.</translation>
@@ -4645,7 +4646,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6077189836672154517">Consellos e novidades sobre o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Falar para escribir</translation>
 <translation id="6078045608615316905">Crear código QR para esta imaxe</translation>
-<translation id="6078121669093215958">{0,plural, =1{Invitado}other{# ventás abertas do modo de invitado}}</translation>
+<translation id="6078121669093215958">{0,plural, =1{Invitado}other{# ventás abertas do modo de convidado}}</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6078752646384677957">Comproba os niveis de audio e do micrófono.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" quere conectarse a un dispositivo de interface humana (HID)</translation>
@@ -5735,7 +5736,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7280877790564589615">Solicitouse permiso</translation>
 <translation id="7282547042039404307">Suave</translation>
 <translation id="7282992757463864530">Barra de información</translation>
-<translation id="7283555985781738399">Modo de invitado</translation>
+<translation id="7283555985781738399">Modo de convidado</translation>
 <translation id="7284411326658527427">Cada unha delas pode personalizar a súa conta e protexer a privacidade dos seus datos.</translation>
 <translation id="7287143125007575591">Denegouse o acceso.</translation>
 <translation id="7287411021188441799">Restaurar fondo predeterminado</translation>
@@ -5956,7 +5957,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 máis}other{{NUM_DOWNLOADS} máis}}</translation>
 <translation id="7526989658317409655">Marcador de posición</translation>
 <translation id="7529411698175791732">Comproba a túa conexión a Internet. Se o problema continúa, tenta pechar sesión e volver iniciala.</translation>
-<translation id="7529876053219658589">{0,plural, =1{Pechar ventá da sesión de invitado}other{Pechar ventás da sesión de invitado}}</translation>
+<translation id="7529876053219658589">{0,plural, =1{Pechar ventá da sesión de convidado}other{Pechar ventás da sesión de convidado}}</translation>
 <translation id="7530016656428373557">Índice de descarga en watts</translation>
 <translation id="7531310913436731628">A localización está desactivada nas preferencias do sistema de Mac</translation>
 <translation id="7531771599742723865">O dispositivo está en uso</translation>
@@ -7289,7 +7290,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8948939328578167195"><ph name="WEBSITE" /> quere ver a marca e o modelo da túa chave de seguranza</translation>
 <translation id="895054485242522631">Os sitios poden usar os sensores de movemento</translation>
 <translation id="8951256747718668828">Non se puido completar a restauración debido a un erro</translation>
-<translation id="8951465597020890363">Queres saír do modo de invitado de todas formas?</translation>
+<translation id="8951465597020890363">Queres saír do modo de convidado de todas formas?</translation>
 <translation id="8952831374766033534">Non se admite a opción de configuración: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Durante a carga</translation>
 <translation id="895347679606913382">Iniciando...</translation>

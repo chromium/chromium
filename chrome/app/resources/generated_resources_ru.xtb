@@ -3612,6 +3612,7 @@
 <translation id="4901309472892185668">Выберите статус для эксперимента "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="49027928311173603">Скачанная с сервера политика недействительна: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">История не сохраняется</translation>
 <translation id="4906490889887219338">Настройте общие папки сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
 <translation id="4907161631261076876">Этот файл скачивают редко. Возможно, он вредоносный.</translation>

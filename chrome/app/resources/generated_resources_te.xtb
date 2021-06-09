@@ -3626,6 +3626,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ప్రయోగానికి ప్రయోగ స్థితిని ఎంచుకోండి.</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="49027928311173603">సర్వర్ నుండి డౌన్‌లోడ్ చేసిన విధానం చెల్లదు: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">అజ్ఞాత మోడ్‌లో హిస్టరీ సేవ్ అవ్వదు</translation>
 <translation id="4906490889887219338">నెట్‌వర్క్ ఫైల్ షేర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, వివరాలు</translation>
 <translation id="4907161631261076876">ఈ ఫైల్ సాధారణ పద్ధతిలో డౌన్‌లోడ్ కాలేదు, ఇది అపాయకరమైనది కావచ్చు.</translation>

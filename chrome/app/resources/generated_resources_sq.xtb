@@ -3608,6 +3608,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4901309472892185668">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="49027928311173603">Politika e shkarkuar nga serveri është e pavlefshme: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Historiku nuk ruhet në "I fshehtë"</translation>
 <translation id="4906490889887219338">Konfiguro ose menaxho ndarjet e skedarëve në rrjet. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="4907161631261076876">Ky skedar nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>

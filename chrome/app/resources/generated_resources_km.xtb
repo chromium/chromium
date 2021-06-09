@@ -3627,6 +3627,7 @@
 <translation id="4901309472892185668">ជ្រើសរើសស្ថានភាព​ពិសោធន៍សម្រាប់​ការពិសោធ <ph name="EXPERIMENT_NAME" />។</translation>
 <translation id="4902546322522096650">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ភ្ជាប់</translation>
 <translation id="49027928311173603">គោលការណ៍ដែលបានទាញយកពីម់ាស៊ីនមេគ្មានសុពលភាពទេ៖ <ph name="VALIDATION_ERROR" /></translation>
+<translation id="4905269543817054577">ប្រវត្តិ​មិនត្រូវបាន​រក្សាទុក​នៅក្នុងមុខងារ​ឯកជនទេ</translation>
 <translation id="4906490889887219338">រៀបចំ ឬ​គ្រប់គ្រង​ការចែក​រំលែក​ឯកសារ​តាមបណ្ដាញ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="4907161631261076876">ឯកសារនេះមិនមានការទាញយកជាទូទៅនោះទេ ហើយវាអាចនឹងបង្កគ្រោះថ្នាក់។</translation>

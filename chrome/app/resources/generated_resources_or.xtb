@@ -3609,6 +3609,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ପରୀକ୍ଷଣ ପାଇଁ ପରୀକ୍ଷଣର ସ୍ଥିତି ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="49027928311173603">ସର୍ଭର୍‌ରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ: <ph name="VALIDATION_ERROR" />।</translation>
+<translation id="4905269543817054577">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଇତିହାସ ସେଭ୍ ହୁଏ ନାହିଁ</translation>
 <translation id="4906490889887219338">ନେଟ୍‍ୱାର୍କ ଫାଇଲ୍ ସେୟାର୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ କିମ୍ବା ପରିଚାଳନା କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
 <translation id="4907161631261076876">ଏହି ଫାଇଲ୍ ସାଧାରଣତଃ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଏ ନାହିଁ ଏବଂ ଏହା ହୁଏତ ବିପଜ୍ଜନକ ହୋଇଥାଇପାରେ।</translation>

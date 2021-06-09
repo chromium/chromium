@@ -280,7 +280,7 @@
 <translation id="8394832520002899662">साइटमा फर्कन ट्याप गर्नुहोस्</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8441146129660941386">पछाडि खोज्नुहोस्</translation>
-<translation id="8444433999583714703"><ph name="APP_NAME" /> लाई आफ्नो स्थान प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई स्थानसम्बन्धी सेवा पनि अन गर्नुहोस्।</translation>
+<translation id="8444433999583714703"><ph name="APP_NAME" /> लाई आफ्नो स्थान प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई लोकेसन सर्भिस पनि अन गर्नुहोस्।</translation>
 <translation id="8447861592752582886">यन्त्र सम्बन्धी अनुमतिलाई उल्टाउनुहोस्</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एउटा कुकी प्रयोग भइरहेको छ}other{# वटा कुकी प्रयोग भइरहेका छन्}}</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>

@@ -3613,6 +3613,7 @@
 <translation id="4901309472892185668">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="49027928311173603">Палітыка, спампаваная з сервера, памылковая: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">У рэжыме інкогніта гісторыя не захоўваецца</translation>
 <translation id="4906490889887219338">Наладка сеткавых файлаабменнікаў і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
 <translation id="4907161631261076876">Гэты файл звычайна не спампоўваецца і можа быць небяспечным.</translation>

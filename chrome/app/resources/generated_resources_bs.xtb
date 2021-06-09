@@ -2189,7 +2189,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3333190335304955291">Ovu uslugu možete isključiti u Postavkama.</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
-<translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videozapis se reproducira u načinu rada slika u slici</translation>
+<translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videozapis se reproducira u načinu rada slike u slici</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
 <translation id="3336855445806447827">Ne znam</translation>
 <translation id="3337568642696914359">Nemoj dozvoliti web lokacijama upravljanje protokolima</translation>
@@ -3625,6 +3625,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="49027928311173603">Pravilo preuzeto sa servera je nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Historija se ne pohranjuje u anonimnom načinu rada</translation>
 <translation id="4906490889887219338">Postavite dijeljenje fajlova na mreži ili upravljajte njime. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
 <translation id="4907161631261076876">Ovaj fajl se ne preuzima često i može biti opasan.</translation>
@@ -6850,7 +6851,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8464132254133862871">Ovaj korisnički račun ne ispunjava uslove za ovu uslugu.</translation>
 <translation id="8465252176946159372">Nije važeće</translation>
 <translation id="8465444703385715657">Za pokretanje dodatka <ph name="PLUGIN_NAME" /> je potrebno vaše odobrenje</translation>
-<translation id="8466417995783206254">Ova kartica reproducira videozapis u načinu rada slika u slici.</translation>
+<translation id="8466417995783206254">Ova kartica reproducira videozapis u načinu rada slike u slici.</translation>
 <translation id="8467326454809944210">Odaberi drugi jezik</translation>
 <translation id="8470214316007448308">Druge osobe</translation>
 <translation id="8470513973197838199">Sačuvane lozinke za <ph name="ORIGIN" /></translation>

@@ -601,7 +601,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3209034400446768650">Nesta páxina pódense aplicar cargos</translation>
 <translation id="3212581601480735796">Estase supervisando a túa actividade en <ph name="HOSTNAME" /></translation>
-<translation id="3212623355668894776">Pecha todas as ventás do modo de invitado para eliminar a túa actividade de navegación deste dispositivo.</translation>
+<translation id="3212623355668894776">Pecha todas as ventás do modo de convidado para eliminar a túa actividade de navegación deste dispositivo.</translation>
 <translation id="3215092763954878852">Non se puido utilizar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3225919329040284222">O servidor presentou un certificado que non coincide coas expectativas integradas. Estas expectativas inclúense para determinados sitios web de alta seguranza co fin de protexerte.</translation>
@@ -1005,7 +1005,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4660119392514473465">Agora podes navegar de forma privada sen que os outros usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas, os marcadores e os elementos da lista de lectura.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
-<translation id="4675657451653251260">Non verás a información de ningún perfil de Chrome no modo de invitado. Podes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder á información (como os contrasinais e os métodos de pago) da túa conta de Google.</translation>
+<translation id="4675657451653251260">Non verás a información de ningún perfil de Chrome no modo de convidado. Podes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder á información (como os contrasinais e os métodos de pago) da túa conta de Google.</translation>
 <translation id="467662567472608290">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza contén erros. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4677585247300749148">O URL <ph name="URL" /> quere responder a eventos de accesibilidade</translation>
 <translation id="467809019005607715">Presentacións de Google</translation>
