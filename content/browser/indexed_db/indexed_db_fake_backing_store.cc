@@ -12,6 +12,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace {
@@ -27,36 +28,38 @@ TransactionalLevelDBFactory* GetTransactionalLevelDBFactory() {
 }  // namespace
 
 IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
-    : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kInMemory,
-                            GetTransactionalLevelDBFactory(),
-                            url::Origin::Create(GURL("http://localhost:81")),
-                            base::FilePath(),
-                            std::unique_ptr<TransactionalLevelDBDatabase>(),
-                            /*blob_storage_context=*/nullptr,
-                            /*file_system_access_context=*/nullptr,
-                            std::make_unique<storage::FilesystemProxy>(
-                                storage::FilesystemProxy::UNRESTRICTED,
-                                base::FilePath()),
-                            BlobFilesCleanedCallback(),
-                            ReportOutstandingBlobsCallback(),
-                            base::SequencedTaskRunnerHandle::Get()) {}
+    : IndexedDBBackingStore(
+          IndexedDBBackingStore::Mode::kInMemory,
+          GetTransactionalLevelDBFactory(),
+          blink::StorageKey::CreateFromStringForTesting("http://localhost:81"),
+          base::FilePath(),
+          std::unique_ptr<TransactionalLevelDBDatabase>(),
+          /*blob_storage_context=*/nullptr,
+          /*file_system_access_context=*/nullptr,
+          std::make_unique<storage::FilesystemProxy>(
+              storage::FilesystemProxy::UNRESTRICTED,
+              base::FilePath()),
+          BlobFilesCleanedCallback(),
+          ReportOutstandingBlobsCallback(),
+          base::SequencedTaskRunnerHandle::Get()) {}
 IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kOnDisk,
-                            GetTransactionalLevelDBFactory(),
-                            url::Origin::Create(GURL("http://localhost:81")),
-                            base::FilePath(),
-                            std::unique_ptr<TransactionalLevelDBDatabase>(),
-                            /*blob_storage_context=*/nullptr,
-                            /*file_system_access_context=*/nullptr,
-                            std::make_unique<storage::FilesystemProxy>(
-                                storage::FilesystemProxy::UNRESTRICTED,
-                                base::FilePath()),
-                            std::move(blob_files_cleaned),
-                            std::move(report_outstanding_blobs),
-                            task_runner) {}
+    : IndexedDBBackingStore(
+          IndexedDBBackingStore::Mode::kOnDisk,
+          GetTransactionalLevelDBFactory(),
+          blink::StorageKey::CreateFromStringForTesting("http://localhost:81"),
+          base::FilePath(),
+          std::unique_ptr<TransactionalLevelDBDatabase>(),
+          /*blob_storage_context=*/nullptr,
+          /*file_system_access_context=*/nullptr,
+          std::make_unique<storage::FilesystemProxy>(
+              storage::FilesystemProxy::UNRESTRICTED,
+              base::FilePath()),
+          std::move(blob_files_cleaned),
+          std::move(report_outstanding_blobs),
+          task_runner) {}
 IndexedDBFakeBackingStore::~IndexedDBFakeBackingStore() = default;
 
 leveldb::Status IndexedDBFakeBackingStore::DeleteDatabase(

@@ -19,6 +19,7 @@
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBKey;
@@ -52,8 +53,11 @@ IndexedDBCursor::IndexedDBCursor(
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<IndexedDBTransaction> transaction)
-    : origin_(
-          transaction->BackingStoreTransaction()->backing_store()->origin()),
+    : origin_(transaction->BackingStoreTransaction()
+                  ->backing_store()
+                  ->storage_key()
+                  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+                  .origin()),
       task_type_(task_type),
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),

@@ -71,7 +71,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
   TestableIndexedDBBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
       TransactionalLevelDBFactory* leveldb_factory,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
@@ -82,7 +82,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
       : IndexedDBBackingStore(backing_store_mode,
                               leveldb_factory,
-                              origin,
+                              storage_key,
                               blob_path,
                               std::move(db),
                               blob_storage_context,
@@ -154,10 +154,11 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
-        backing_store_mode, leveldb_factory, origin, blob_path, std::move(db),
-        blob_storage_context_, file_system_access_context_,
-        std::move(filesystem_proxy), std::move(blob_files_cleaned),
-        std::move(report_outstanding_blobs), std::move(idb_task_runner));
+        backing_store_mode, leveldb_factory, blink::StorageKey(origin),
+        blob_path, std::move(db), blob_storage_context_,
+        file_system_access_context_, std::move(filesystem_proxy),
+        std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
+        std::move(idb_task_runner));
   }
 
  private:

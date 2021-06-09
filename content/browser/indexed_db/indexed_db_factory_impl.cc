@@ -439,8 +439,10 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   std::string sanitized_message = base::UTF16ToUTF8(error.message());
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      path_base.AsUTF8Unsafe(), "...");
-  IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_origin,
-                                              sanitized_message);
+  IndexedDBBackingStore::RecordCorruptionInfo(
+      path_base,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(saved_origin), sanitized_message);
   HandleBackingStoreFailure(saved_origin);
   // Note: DestroyBackingStore only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
@@ -702,8 +704,10 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
                                          data_directory.AsUTF8Unsafe(), "...");
       LOG(ERROR) << "Got corruption for " << origin.Serialize() << ", "
                  << sanitized_message;
-      IndexedDBBackingStore::RecordCorruptionInfo(data_directory, origin,
-                                                  sanitized_message);
+      IndexedDBBackingStore::RecordCorruptionInfo(
+          data_directory,
+          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+          blink::StorageKey(origin), sanitized_message);
     }
   }
 
@@ -801,10 +805,12 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
         report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
-      backing_store_mode, transactional_leveldb_factory, origin, blob_path,
-      std::move(db), blob_storage_context, file_system_access_context,
-      std::move(filesystem_proxy), std::move(blob_files_cleaned),
-      std::move(report_outstanding_blobs), std::move(idb_task_runner));
+      backing_store_mode, transactional_leveldb_factory,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin), blob_path, std::move(db), blob_storage_context,
+      file_system_access_context, std::move(filesystem_proxy),
+      std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
+      std::move(idb_task_runner));
 }
 std::tuple<std::unique_ptr<IndexedDBBackingStore>,
            leveldb::Status,
