@@ -1445,7 +1445,8 @@ void InProcessCommandBuffer::DidCreateAcceleratedSurfaceChildWindow(
 #endif
 
 void InProcessCommandBuffer::DidSwapBuffersComplete(
-    SwapBuffersCompleteParams params) {
+    SwapBuffersCompleteParams params,
+    gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   auto& pending_swap = pending_swap_completed_params_.front();
@@ -1459,7 +1460,7 @@ void InProcessCommandBuffer::DidSwapBuffersComplete(
 
   PostOrRunClientCallback(base::BindOnce(
       &InProcessCommandBuffer::DidSwapBuffersCompleteOnOriginThread,
-      client_thread_weak_ptr_, std::move(params)));
+      client_thread_weak_ptr_, std::move(params), std::move(release_fence)));
 }
 
 const gles2::FeatureInfo* InProcessCommandBuffer::GetFeatureInfo() const {
@@ -1485,10 +1486,12 @@ void InProcessCommandBuffer::BufferPresented(
 }
 
 void InProcessCommandBuffer::DidSwapBuffersCompleteOnOriginThread(
-    SwapBuffersCompleteParams params) {
+    SwapBuffersCompleteParams params,
+    gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   if (gpu_control_client_)
-    gpu_control_client_->OnGpuControlSwapBuffersCompleted(params);
+    gpu_control_client_->OnGpuControlSwapBuffersCompleted(
+        params, std::move(release_fence));
 }
 
 void InProcessCommandBuffer::BufferPresentedOnOriginThread(

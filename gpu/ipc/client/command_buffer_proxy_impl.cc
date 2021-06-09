@@ -800,7 +800,8 @@ CommandBufferProxyImpl::GetUMAHistogramEnsureWorkVisibleDuration() {
 void CommandBufferProxyImpl::OnSwapBuffersCompleted(
     const SwapBuffersCompleteParams& params) {
   if (gpu_control_client_)
-    gpu_control_client_->OnGpuControlSwapBuffersCompleted(params);
+    gpu_control_client_->OnGpuControlSwapBuffersCompleted(
+        params, /*release_fence=*/gfx::GpuFenceHandle());
 }
 
 void CommandBufferProxyImpl::OnBufferPresented(

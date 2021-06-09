@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -60,7 +61,8 @@ class ContextSupport {
       bool aggressively_free_resources) = 0;
 
   using SwapCompletedCallback =
-      base::OnceCallback<void(const SwapBuffersCompleteParams&)>;
+      base::OnceCallback<void(const SwapBuffersCompleteParams&,
+                              gfx::GpuFenceHandle)>;
   using PresentationCallback =
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   virtual void Swap(uint32_t flags,

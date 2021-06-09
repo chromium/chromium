@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
 struct PresentationFeedback;
@@ -34,7 +35,8 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurfaceDelegate {
 #endif
 
   // Tells the delegate that SwapBuffers returned.
-  virtual void DidSwapBuffersComplete(SwapBuffersCompleteParams params) = 0;
+  virtual void DidSwapBuffersComplete(SwapBuffersCompleteParams params,
+                                      gfx::GpuFenceHandle release_fence) = 0;
 
   // Returns the features available for the ContextGroup.
   virtual const gles2::FeatureInfo* GetFeatureInfo() const = 0;

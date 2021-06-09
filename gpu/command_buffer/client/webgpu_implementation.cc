@@ -250,7 +250,8 @@ void WebGPUImplementation::OnGpuControlErrorMessage(const char* message,
   NOTIMPLEMENTED();
 }
 void WebGPUImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params) {
+    const SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {
   NOTIMPLEMENTED();
 }
 void WebGPUImplementation::OnSwapBufferPresented(

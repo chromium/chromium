@@ -22,6 +22,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
 class GpuMemoryBuffer;
@@ -78,7 +79,12 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // target for compositing). A zeroed mailbox is returned if there is no
   // current buffer and one could not be created. The caller needs to wait on
   // *|creation_sync_token| if non-empty before consuming the mailbox.
-  virtual gpu::Mailbox GetCurrentBuffer(gpu::SyncToken* creation_sync_token);
+  // If *|release_fence| is a valid fence, the caller must ensure that the fence
+  // is signalled before performing any writes to the underlying buffer, either
+  // by executing a CPU wait or by inserting the fence into the GPU command
+  // queue.
+  virtual gpu::Mailbox GetCurrentBuffer(gpu::SyncToken* creation_sync_token,
+                                        gfx::GpuFenceHandle* release_fence);
 
   // Returns a rectangle whose contents may have changed since the current
   // buffer was last submitted and needs to be redrawn. For partial swap,
@@ -97,7 +103,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // state of the buffers: the buffer currently marked as being displayed will
   // now marked as available, and the next buffer marked as in-flight will now
   // be marked as displayed.
-  virtual void PageFlipComplete();
+  virtual void PageFlipComplete(gfx::GpuFenceHandle release_fence);
 
   // Requests a sync token from the SyncTokenProvider passed in the constructor
   // and frees all buffers after that sync token has passed.
@@ -127,9 +133,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
     AllocatedSurface(const gpu::Mailbox& mailbox, const gfx::Rect& rect);
     ~AllocatedSurface();
 
-    // TODO(crbug.com/958670): if we can have a CreateSharedImage() that takes a
-    // SurfaceHandle, we don't have to keep track of |buffer|.
     gpu::Mailbox mailbox;
+    gfx::GpuFenceHandle release_fence;
     gfx::Rect damage;  // This is the damage for this frame from the previous.
   };
 

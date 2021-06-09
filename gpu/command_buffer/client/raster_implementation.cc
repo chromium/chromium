@@ -570,7 +570,8 @@ void RasterImplementation::OnGpuControlErrorMessage(const char* message,
 }
 
 void RasterImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params) {
+    const SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {
   NOTREACHED();
 }
 

@@ -87,6 +87,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   void SwapBuffersSkipped() override;
   void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) override;
+  void BuffersPresented() override;
 
   void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) override;
@@ -412,6 +413,11 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   OverlayResourceLockList pending_overlay_resources_;
   // Resources that should be shortly swapped by the GPU process.
   base::circular_deque<OverlayResourceLockList> swapping_overlay_resources_;
+
+  // Locks for overlays that have release fences and read lock fences.
+  base::circular_deque<OverlayResourceLockList>
+      read_lock_release_fence_overlay_locks_;
+
   // Resources that the GPU process has finished swapping. The key is the
   // texture id of the resource.
   std::map<unsigned, OverlayResourceLock> swapped_and_acked_overlay_resources_;

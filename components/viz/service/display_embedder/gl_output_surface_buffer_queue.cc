@@ -98,11 +98,18 @@ void GLOutputSurfaceBufferQueue::BindFramebuffer() {
 
   DCHECK(buffer_queue_);
   gpu::SyncToken creation_sync_token;
+  gfx::GpuFenceHandle release_fence;
   const gpu::Mailbox current_buffer =
-      buffer_queue_->GetCurrentBuffer(&creation_sync_token);
+      buffer_queue_->GetCurrentBuffer(&creation_sync_token, &release_fence);
   if (current_buffer.IsZero())
     return;
   gl->WaitSyncTokenCHROMIUM(creation_sync_token.GetConstData());
+  if (!release_fence.is_null()) {
+    auto fence = gfx::GpuFence(std::move(release_fence));
+    auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
+    gl->WaitGpuFenceCHROMIUM(id);
+    gl->DestroyGpuFenceCHROMIUM(id);
+  }
   unsigned& buffer_texture = buffer_queue_textures_[current_buffer];
   if (!buffer_texture) {
     buffer_texture =
@@ -231,7 +238,8 @@ gpu::Mailbox GLOutputSurfaceBufferQueue::GetOverlayMailbox() const {
 }
 
 void GLOutputSurfaceBufferQueue::DidReceiveSwapBuffersAck(
-    const gfx::SwapResponse& response) {
+    const gfx::SwapResponse& response,
+    gfx::GpuFenceHandle release_fence) {
   bool force_swap = false;
   if (response.result == gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     // Even through the swap failed, this is a fixable error so we can pretend
@@ -264,9 +272,9 @@ void GLOutputSurfaceBufferQueue::DidReceiveSwapBuffersAck(
     force_swap = true;
   }
 
-  buffer_queue_->PageFlipComplete();
+  buffer_queue_->PageFlipComplete(release_fence.Clone());
   client()->DidReceiveSwapBuffersAck(response.timings,
-                                     /*release_fence=*/gfx::GpuFenceHandle());
+                                     std::move(release_fence));
 
   if (force_swap)
     client()->SetNeedsRedrawRect(gfx::Rect(swap_size_));

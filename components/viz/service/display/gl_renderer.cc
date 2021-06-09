@@ -3459,7 +3459,14 @@ void GLRenderer::SwapBuffersSkipped() {
 }
 
 void GLRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
+  // Returned release fence is signalled when the latest swap is presented,
+  // and tells us we can re-use the buffers from the /previous/ swap.
+  if (swapping_overlay_resources_.size() > 1) {
+    for (auto& lock : swapping_overlay_resources_[0]) {
+      lock->SetReleaseFence(release_fence.Clone());
+    }
+  }
+
   if (settings_->release_overlay_resources_after_gpu_query) {
     // Once a resource has been swap-ACKed, send a query to the GPU process to
     // ask if the resource is no longer being consumed by the system compositor.
@@ -3502,6 +3509,19 @@ void GLRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
     // that once a swap buffer has completed we can remove the oldest buffers
     // from the queue, but only once we've swapped another frame afterward.
     if (swapping_overlay_resources_.size() > 1) {
+      auto& read_lock_release_fence_overlay_locks =
+          read_lock_release_fence_overlay_locks_.emplace_back();
+      if (!release_fence.is_null()) {
+        auto read_lock_iter = std::partition(
+            swapping_overlay_resources_.front().begin(),
+            swapping_overlay_resources_.front().end(),
+            [](auto& lock) { return !lock->HasReadLockFence(); });
+        read_lock_release_fence_overlay_locks.insert(
+            read_lock_release_fence_overlay_locks.end(),
+            std::make_move_iterator(read_lock_iter),
+            std::make_move_iterator(swapping_overlay_resources_.front().end()));
+      }
+
       DisplayResourceProviderGL::ScopedBatchReturnResources returner(
           resource_provider());
       swapping_overlay_resources_.pop_front();
@@ -3515,6 +3535,11 @@ void GLRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
     // passed.
     DCHECK(displayed_overlay_textures_.empty());
   }
+}
+
+void GLRenderer::BuffersPresented() {
+  if (!read_lock_release_fence_overlay_locks_.empty())
+    read_lock_release_fence_overlay_locks_.pop_front();
 }
 
 void GLRenderer::DidReceiveTextureInUseResponses(

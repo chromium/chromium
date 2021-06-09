@@ -198,7 +198,8 @@ class SkiaOutputSurfaceImplOnGpu
 #endif
   const gpu::gles2::FeatureInfo* GetFeatureInfo() const override;
   const gpu::GpuPreferences& GetGpuPreferences() const override;
-  void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params) override;
+  void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
+                              gfx::GpuFenceHandle release_fence) override;
   void BufferPresented(const gfx::PresentationFeedback& feedback) override;
   GpuVSyncCallback GetGpuVSyncCallback() override;
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;

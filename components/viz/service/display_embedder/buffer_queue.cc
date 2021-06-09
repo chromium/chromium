@@ -33,11 +33,13 @@ void BufferQueue::SetSyncTokenProvider(SyncTokenProvider* sync_token_provider) {
   sync_token_provider_ = sync_token_provider;
 }
 
-gpu::Mailbox BufferQueue::GetCurrentBuffer(
-    gpu::SyncToken* creation_sync_token) {
+gpu::Mailbox BufferQueue::GetCurrentBuffer(gpu::SyncToken* creation_sync_token,
+                                           gfx::GpuFenceHandle* release_fence) {
   DCHECK(creation_sync_token);
   if (!current_surface_)
     current_surface_ = GetNextSurface(creation_sync_token);
+  if (release_fence)
+    *release_fence = current_surface_->release_fence.Clone();
   return current_surface_ ? current_surface_->mailbox : gpu::Mailbox();
 }
 
@@ -98,11 +100,13 @@ void BufferQueue::SetMaxBuffers(size_t max) {
   max_buffers_ = max;
 }
 
-void BufferQueue::PageFlipComplete() {
+void BufferQueue::PageFlipComplete(gfx::GpuFenceHandle release_fence) {
   DCHECK(!in_flight_surfaces_.empty());
   if (in_flight_surfaces_.front()) {
-    if (displayed_surface_)
+    if (displayed_surface_) {
+      displayed_surface_->release_fence = std::move(release_fence);
       available_surfaces_.push_back(std::move(displayed_surface_));
+    }
     displayed_surface_ = std::move(in_flight_surfaces_.front());
   }
 

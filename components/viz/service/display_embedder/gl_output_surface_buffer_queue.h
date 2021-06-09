@@ -65,7 +65,8 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
   gpu::Mailbox GetOverlayMailbox() const override;
 
   // GLOutputSurface:
-  void DidReceiveSwapBuffersAck(const gfx::SwapResponse& response) override;
+  void DidReceiveSwapBuffersAck(const gfx::SwapResponse& response,
+                                gfx::GpuFenceHandle release_fence) override;
 
   std::unique_ptr<BufferQueue> buffer_queue_;
 

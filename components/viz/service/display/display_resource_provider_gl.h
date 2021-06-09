@@ -104,6 +104,13 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
 
     GLuint texture_id() const { return texture_id_; }
 
+    // Sets the given |release_fence| onto this resource.
+    // This is propagated to ReturnedResource when the resource is freed.
+    void SetReleaseFence(gfx::GpuFenceHandle release_fence);
+
+    // Returns true iff this resource has a read lock fence set.
+    bool HasReadLockFence() const;
+
    private:
     DisplayResourceProviderGL* const resource_provider_;
     const ResourceId resource_id_;

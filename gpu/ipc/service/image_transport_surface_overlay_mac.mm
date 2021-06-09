@@ -183,7 +183,8 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
                 gfx::SwapResult::SWAP_ACK,
                 std::make_unique<gfx::CALayerParams>(params.ca_layer_params))));
   }
-  delegate_->DidSwapBuffersComplete(std::move(params));
+  delegate_->DidSwapBuffersComplete(std::move(params),
+                                    /*release_fence=*/gfx::GpuFenceHandle());
   constexpr int64_t kRefreshIntervalInMicroseconds =
       base::Time::kMicrosecondsPerSecond / 60;
   gfx::PresentationFeedback feedback(

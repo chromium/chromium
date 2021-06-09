@@ -1672,7 +1672,8 @@ base::TimeDelta SkiaOutputSurfaceImplOnGpu::GetGpuBlockedTimeSinceLastSwap() {
 }
 
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersComplete(
-    gpu::SwapBuffersCompleteParams params) {
+    gpu::SwapBuffersCompleteParams params,
+    gfx::GpuFenceHandle release_fence) {
   // Handled by SkiaOutputDevice already.
 }
 

@@ -317,7 +317,8 @@ void PPB_Graphics3D_Impl::OnGpuControlLostContextMaybeReentrant() {
 }
 
 void PPB_Graphics3D_Impl::OnGpuControlSwapBuffersCompleted(
-    const gpu::SwapBuffersCompleteParams& params) {}
+    const gpu::SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {}
 
 void PPB_Graphics3D_Impl::OnGpuControlReturnData(
     base::span<const uint8_t> data) {

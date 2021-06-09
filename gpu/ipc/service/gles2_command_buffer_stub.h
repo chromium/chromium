@@ -48,7 +48,8 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
       SurfaceHandle parent_window,
       SurfaceHandle child_window) override;
 #endif
-  void DidSwapBuffersComplete(SwapBuffersCompleteParams params) override;
+  void DidSwapBuffersComplete(SwapBuffersCompleteParams params,
+                              gfx::GpuFenceHandle release_fence) override;
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;
   void BufferPresented(const gfx::PresentationFeedback& feedback) override;

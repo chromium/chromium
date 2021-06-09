@@ -59,7 +59,9 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
   void UpdateVSyncEnabled();
 
   void StartSwapBuffers(gfx::SwapResponse* response);
-  void FinishSwapBuffers(gfx::SwapResponse response, uint64_t local_swap_id);
+  void FinishSwapBuffers(gfx::SwapResponse response,
+                         uint64_t local_swap_id,
+                         gfx::GpuFenceHandle release_fence);
   void FinishSwapBuffersAsync(SwapCompletionCallback callback,
                               gfx::SwapResponse response,
                               uint64_t local_swap_id,

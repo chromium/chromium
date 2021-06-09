@@ -400,7 +400,9 @@ void GLES2CommandBufferStub::DidCreateAcceleratedSurfaceChildWindow(
 #endif
 
 void GLES2CommandBufferStub::DidSwapBuffersComplete(
-    SwapBuffersCompleteParams params) {
+    SwapBuffersCompleteParams params,
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
   params.swap_response.swap_id = pending_swap_completed_params_.front().swap_id;
   pending_swap_completed_params_.pop_front();
   client().OnSwapBuffersCompleted(params);
