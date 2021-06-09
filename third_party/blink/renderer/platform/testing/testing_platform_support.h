@@ -71,7 +71,7 @@ class TestingPlatformSupport : public Platform {
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);
-  void SetUseZoomForDSF(bool enabeld);
+  void SetUseZoomForDSF(bool enabled);
 
   // Overrides the handling of GetInterface on the platform's associated
   // interface provider.
