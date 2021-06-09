@@ -23,6 +23,7 @@
 
 namespace ui {
 
+class AXComputedNodeData;
 class AXTableInfo;
 struct AXLanguageInfo;
 struct AXTreeData;
@@ -63,7 +64,7 @@ class AX_EXPORT AXNode final {
 
     // See AXTree::GetAXTreeID.
     virtual AXTreeID GetAXTreeID() const = 0;
-    // See AXTree::GetTableInfo.
+    // See `AXTree::GetTableInfo`.
     virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
     // See AXTree::GetFromId.
     virtual AXNode* GetFromId(AXNodeID id) const = 0;
@@ -244,7 +245,8 @@ class AX_EXPORT AXNode final {
   // Set the index in parent, for example if siblings were inserted or deleted.
   void SetIndexInParent(size_t index_in_parent);
 
-  // Update the unignored index in parent for unignored children.
+  // When the node's `IsIgnored()` value changes, updates the cached values for
+  // the unignored index in parent and the unignored child count.
   void UpdateUnignoredCachedValues();
 
   // Swap the internal children vector with |children|. This instance
@@ -391,7 +393,7 @@ class AX_EXPORT AXNode final {
   // ATK and IAccessible2 APIs.
   //
   // TODO(nektar): Consider changing the return value to std::string.
-  std::u16string GetHypertext() const;
+  const std::u16string& GetHypertext() const;
 
   // Temporary method that marks `hypertext_` dirty. This will eventually be
   // handled by the AX tree in a followup patch.
@@ -407,7 +409,8 @@ class AX_EXPORT AXNode final {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node, is
   // not returned.
-  std::string GetInnerText() const;
+  const std::string& GetInnerText() const;
+  const std::u16string& GetInnerTextUTF16() const;
 
   // Returns the length of the text (in UTF16 code units) that is found inside
   // this node and all its descendants; including text found in embedded
@@ -419,6 +422,7 @@ class AX_EXPORT AXNode final {
   //
   // The length of the text is in UTF8 code units, not in grapheme clusters.
   int GetInnerTextLength() const;
+  int GetInnerTextLengthUTF16() const;
 
   // Returns a string representing the language code.
   //
@@ -525,6 +529,13 @@ class AX_EXPORT AXNode final {
 
   // Destroy the language info for this node.
   void ClearLanguageInfo();
+
+  // Get a reference to the cached information stored for this node.
+  const AXComputedNodeData& GetComputedNodeData() const;
+
+  // Clear the cached information stored for this node because it is
+  // out-of-date.
+  void ClearComputedNodeData();
 
   // Returns true if node is a group and is a direct descendant of a set-like
   // element.
@@ -650,12 +661,19 @@ class AX_EXPORT AXNode final {
   size_t unignored_child_count_ = 0;
   AXNode* const parent_;
   std::vector<AXNode*> children_;
+
+  // Stores information about this node that is immutable and which has been
+  // computed by the tree's source, such as `content::BlinkAXTreeSource`.
   AXNodeData data_;
 
   // See the class comment in "ax_hypertext.h" for an explanation of this
   // member.
   mutable AXHypertext hypertext_;
   mutable AXHypertext old_hypertext_;
+
+  // Stores information about this node that can be computed on demand and
+  // cached.
+  mutable std::unique_ptr<AXComputedNodeData> computed_node_data_;
 
   // Stores the detected language computed from the node's text.
   std::unique_ptr<AXLanguageInfo> language_info_;

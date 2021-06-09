@@ -107,6 +107,8 @@ component("accessibility") {
     "ax_active_popup.cc",
     "ax_active_popup.h",
     "ax_clipping_behavior.h",
+    "ax_computed_node_data.cc",
+    "ax_computed_node_data.h",
     "ax_coordinate_system.h",
     "ax_event_generator.cc",
     "ax_event_generator.h",

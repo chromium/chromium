@@ -9,11 +9,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -609,6 +611,7 @@ void AXNode::SetIndexInParent(size_t index_in_parent) {
 }
 
 void AXNode::UpdateUnignoredCachedValues() {
+  computed_node_data_.reset();
   if (!IsIgnored())
     UpdateUnignoredCachedValuesRecursive(0);
 }
@@ -726,7 +729,17 @@ void AXNode::ClearLanguageInfo() {
   language_info_.reset();
 }
 
-std::u16string AXNode::GetHypertext() const {
+const AXComputedNodeData& AXNode::GetComputedNodeData() const {
+  if (!computed_node_data_)
+    computed_node_data_ = std::make_unique<AXComputedNodeData>(*this);
+  return *computed_node_data_;
+}
+
+void AXNode::ClearComputedNodeData() {
+  computed_node_data_.reset();
+}
+
+const std::u16string& AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   // TODO(nektar): Introduce proper caching of hypertext via
   // `AXHypertext::needs_update`.
@@ -758,9 +771,8 @@ std::u16string AXNode::GetHypertext() const {
     //
     // Note that the word "hypertext" comes from the IAccessible2 Standard and
     // has nothing to do with HTML.
-    const std::u16string embedded_character_str(kEmbeddedCharacter);
-    DCHECK_EQ(static_cast<int>(embedded_character_str.length()),
-              kEmbeddedCharacterLength);
+    static const base::NoDestructor<std::u16string> embedded_character_str(
+        AXNode::kEmbeddedCharacter);
     for (size_t i = 0; i < GetUnignoredChildCountCrossingTreeBoundary(); ++i) {
       const AXNode* child = GetUnignoredChildAtIndexCrossingTreeBoundary(i);
       // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
@@ -775,7 +787,7 @@ std::u16string AXNode::GetHypertext() const {
                 character_offset, static_cast<int>(i));
         DCHECK(inserted.second) << "An embedded object at " << character_offset
                                 << " has already been encountered.";
-        hypertext_.hypertext += embedded_character_str;
+        hypertext_.hypertext += *embedded_character_str;
       }
     }
   }
@@ -807,116 +819,24 @@ const AXHypertext& AXNode::GetOldHypertext() const {
   return old_hypertext_;
 }
 
-std::string AXNode::GetInnerText() const {
+const std::string& AXNode::GetInnerText() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return GetComputedNodeData().GetOrComputeInnerTextUTF8();
+}
 
-  // Special case, if a node is hosting another accessibility tree, cross the
-  // tree boundary and return the inner text that is found in that other tree.
-  // (A node cannot be hosting an accessibility tree as well as having children
-  // of its own.)
-  const AXNode* node = this;
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*node);
-  if (child_tree_manager) {
-    node = child_tree_manager->GetRootAsAXNode();
-    DCHECK(node) << "All child trees should have a non-null rootnode.";
-  }
-
-  // If a text field has no descendants, then we compute its inner text from its
-  // value or its placeholder. Otherwise we prefer to look at its descendant
-  // text nodes because Blink doesn't always add all trailing white space to the
-  // value attribute.
-  const bool is_atomic_text_field_without_descendants =
-      (node->data().IsTextField() && !node->GetUnignoredChildCount());
-  if (is_atomic_text_field_without_descendants) {
-    std::string value =
-        node->data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
-    // If the value is empty, then there might be some placeholder text in the
-    // text field, or any other name that is derived from visible contents, even
-    // if the text field has no children.
-    if (!value.empty())
-      return value;
-  }
-
-  // Ordinarily, atomic text fields are leaves. We need to exclude them from the
-  // set of leaf nodes when they expose any descendants. This is because we want
-  // to compute their inner text from their descendant text nodes as we don't
-  // always trust the "value" attribute provided by Blink.
-  const bool is_atomic_text_field_with_descendants =
-      (node->data().IsTextField() && node->GetUnignoredChildCount());
-  if (node->IsLeaf() && !is_atomic_text_field_with_descendants) {
-    switch (node->data().GetNameFrom()) {
-      case ax::mojom::NameFrom::kNone:
-      case ax::mojom::NameFrom::kUninitialized:
-      // The accessible name is not displayed on screen, e.g. aria-label, or is
-      // not displayed directly inside the node, e.g. an associated label
-      // element.
-      case ax::mojom::NameFrom::kAttribute:
-      // The node's accessible name is explicitly empty.
-      case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
-      // The accessible name does not represent the entirety of the node's inner
-      // text, e.g. a table's caption or a figure's figcaption.
-      case ax::mojom::NameFrom::kCaption:
-      case ax::mojom::NameFrom::kRelatedElement:
-      // The accessible name is not displayed directly inside the node but is
-      // visible via e.g. a tooltip.
-      case ax::mojom::NameFrom::kTitle:
-        return std::string();
-
-      case ax::mojom::NameFrom::kContents:
-      // The placeholder text is initially displayed inside the text field and
-      // takes the place of its value.
-      case ax::mojom::NameFrom::kPlaceholder:
-      // The value attribute takes the place of the node's inner text, e.g. the
-      // value of a submit button is displayed inside the button itself.
-      case ax::mojom::NameFrom::kValue:
-        return node->data().GetStringAttribute(
-            ax::mojom::StringAttribute::kName);
-    }
-  }
-
-  std::string inner_text;
-  for (auto it = node->UnignoredChildrenBegin();
-       it != node->UnignoredChildrenEnd(); ++it) {
-    inner_text += it->GetInnerText();
-  }
-  return inner_text;
+const std::u16string& AXNode::GetInnerTextUTF16() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return GetComputedNodeData().GetOrComputeInnerTextUTF16();
 }
 
 int AXNode::GetInnerTextLength() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  // This is an optimized version of `AXNode::GetInnerText()`.length(). Instead
-  // of concatenating the strings in GetInnerText() to then get their length, we
-  // sum the lengths of the individual strings. This is faster than
-  // concatenating the strings first and then taking their length, especially
-  // when the process is recursive.
+  return GetComputedNodeData().GetOrComputeInnerTextLengthUTF8();
+}
 
-  // Special case, if a node is hosting another accessibility tree, cross the
-  // tree boundary and return the inner text that is found in that other tree.
-  // (A node cannot be hosting an accessibility tree as well as having children
-  // of its own.)
-  const AXNode* node = this;
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*node);
-  if (child_tree_manager) {
-    node = child_tree_manager->GetRootAsAXNode();
-    DCHECK(node) << "All child trees should have a non-null rootnode.";
-  }
-
-  const bool is_atomic_text_field_with_descendants =
-      (node->data().IsTextField() && node->GetUnignoredChildCount());
-  // Atomic text fields are always leaves so we need to exclude them when
-  // computing the length of their inner text if that text should be derived
-  // from their descendant nodes.
-  if (node->IsLeaf() && !is_atomic_text_field_with_descendants)
-    return static_cast<int>(node->GetInnerText().length());
-
-  int inner_text_length = 0;
-  for (auto it = node->UnignoredChildrenBegin();
-       it != node->UnignoredChildrenEnd(); ++it) {
-    inner_text_length += it->GetInnerTextLength();
-  }
-  return inner_text_length;
+int AXNode::GetInnerTextLengthUTF16() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return GetComputedNodeData().GetOrComputeInnerTextLengthUTF16();
 }
 
 std::string AXNode::GetLanguage() const {
@@ -1583,7 +1503,7 @@ bool AXNode::IsChildOfLeaf() const {
 bool AXNode::IsEmptyLeaf() const {
   if (!IsLeaf())
     return false;
-  if (GetUnignoredChildCount())
+  if (GetUnignoredChildCountCrossingTreeBoundary())
     return !GetInnerTextLength();
   // Text exposed by ignored leaf (text) nodes is not exposed to the platforms'
   // accessibility layer, hence such leaf nodes are in effect empty.
@@ -1593,7 +1513,7 @@ bool AXNode::IsEmptyLeaf() const {
 bool AXNode::IsLeaf() const {
   // A node is a leaf if it has no descendants, i.e. if it is at the bottom of
   // the tree, regardless whether it is ignored or not.
-  if (children().empty())
+  if (!GetChildCountCrossingTreeBoundary())
     return true;
 
   // Ignored nodes with any kind of descendants, (ignored or unignored), cannot
@@ -1604,7 +1524,7 @@ bool AXNode::IsLeaf() const {
     return false;
 
   // An unignored node is a leaf if all of its descendants are ignored.
-  if (!GetUnignoredChildCount())
+  if (!GetUnignoredChildCountCrossingTreeBoundary())
     return true;
 
 #if defined(OS_WIN)

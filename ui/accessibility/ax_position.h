@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/i18n/break_iterator.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -345,7 +346,7 @@ class AXPosition {
     if (!IsTextPosition() || text_offset_ > MaxTextOffset())
       return str;
 
-    const std::u16string text = GetText();
+    const std::u16string& text = GetText();
     DCHECK_GE(text_offset_, 0);
     const size_t max_text_offset = text.size();
     DCHECK_LE(text_offset_, static_cast<int>(max_text_offset)) << text;
@@ -2339,15 +2340,13 @@ class AXPosition {
       std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
           text_position->GetGraphemeIterator();
       DCHECK_GE(text_position->text_offset_, 0);
-      DCHECK_LE(text_position->text_offset_,
-                static_cast<int>(text_position->name_.length()));
-      while (!text_position->AtStartOfAnchor() &&
-             (!gfx::IsValidCodePointIndex(
-                  text_position->name_,
-                  static_cast<size_t>(text_position->text_offset_)) ||
-              (grapheme_iterator &&
-               !grapheme_iterator->IsGraphemeBoundary(
-                   static_cast<size_t>(text_position->text_offset_))))) {
+      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
+      while (
+          !text_position->AtStartOfAnchor() &&
+          (!gfx::IsValidCodePointIndex(text_position->GetText(),
+                                       size_t{text_position->text_offset_}) ||
+           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
+                                     size_t{text_position->text_offset_})))) {
         --text_position->text_offset_;
       }
       return text_position;
@@ -2391,20 +2390,17 @@ class AXPosition {
       //
       // TODO(nektar): Remove this workaround as soon as the source of the bug
       // is identified.
-      if (text_position->text_offset_ >
-          static_cast<int>(text_position->name_.length()))
+      if (text_position->text_offset_ > text_position->MaxTextOffset())
         return CreateNullPosition();
 
       DCHECK_GE(text_position->text_offset_, 0);
-      DCHECK_LE(text_position->text_offset_,
-                static_cast<int>(text_position->name_.length()));
-      while (!text_position->AtEndOfAnchor() &&
-             (!gfx::IsValidCodePointIndex(
-                  text_position->name_,
-                  static_cast<size_t>(text_position->text_offset_)) ||
-              (grapheme_iterator &&
-               !grapheme_iterator->IsGraphemeBoundary(
-                   static_cast<size_t>(text_position->text_offset_))))) {
+      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
+      while (
+          !text_position->AtEndOfAnchor() &&
+          (!gfx::IsValidCodePointIndex(text_position->GetText(),
+                                       size_t{text_position->text_offset_}) ||
+           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
+                                     size_t{text_position->text_offset_})))) {
         ++text_position->text_offset_;
       }
 
@@ -3828,9 +3824,13 @@ class AXPosition {
   // including any text found in descendant text nodes, based on the platform's
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes.
-  std::u16string GetText() const {
+  const std::u16string& GetText() const {
+    // Note that the use of `base::EmptyString16()` is a special case here. For
+    // performance reasons `base::EmptyString16()` should only be used when
+    // returning a const reference to a string and there is an error condition,
+    // not in any other case when an empty string16 is required.
     if (IsNullPosition())
-      return std::u16string();
+      return base::EmptyString16();
 
     // Special case, if a position's anchor node has only ignored descendants,
     // i.e., it appears to be empty to assistive software, on some platforms we
@@ -3838,12 +3838,14 @@ class AXPosition {
     // this by adding an embedded object character in the text representation
     // used by this class, but we don't expose that character to assistive
     // software that tries to retrieve the node's inner text.
+    static const base::NoDestructor<std::u16string> embedded_character_str(
+        AXNode::kEmbeddedCharacter);
     if (IsEmptyObjectReplacedByCharacter())
-      return AXNode::kEmbeddedCharacter;
+      return *embedded_character_str;
 
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
-        return base::UTF8ToUTF16(GetAnchor()->GetInnerText());
+        return GetAnchor()->GetInnerTextUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
         return GetAnchor()->GetHypertext();
     }
@@ -3896,10 +3898,9 @@ class AXPosition {
 
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
-        // TODO(nektar): Switch to anchor->GetInnerTextLength() after AXPosition
-        // switches to using UTF8.
-        return static_cast<int>(
-            base::UTF8ToUTF16(GetAnchor()->GetInnerText()).length());
+        // TODO(nektar): Switch to anchor->GetInnerTextLengthUTF8() after
+        // AXPosition switches to using UTF8.
+        return GetAnchor()->GetInnerTextLengthUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
         return static_cast<int>(GetAnchor()->GetHypertext().length());
     }
@@ -3977,6 +3978,10 @@ class AXPosition {
     if (!IsLeafTextPosition())
       return {};
 
+    // TODO(nektar): Remove member variable `name_` once hypertext has been
+    // migrated to AXNode. Currently, hypertext in AXNode gets updated every
+    // time the `AXNode::GetHypertext()` method is called which erroniously
+    // invalidates this AXPosition.
     name_ = GetText();
     auto grapheme_iterator = std::make_unique<base::i18n::BreakIterator>(
         name_, base::i18n::BreakIterator::BREAK_CHARACTER);
@@ -4032,8 +4037,7 @@ class AXPosition {
 
   int AnchorIndexInParent() const {
     // If this is the root tree, the index in parent will be 0.
-    return GetAnchor() ? static_cast<int>(GetAnchor()->index_in_parent())
-                       : INVALID_INDEX;
+    return GetAnchor() ? int{GetAnchor()->GetIndexInParent()} : INVALID_INDEX;
   }
 
   base::stack<AXNode*> GetAncestorAnchors() const {
@@ -4044,9 +4048,6 @@ class AXPosition {
     AXNode* current_anchor = GetAnchor();
     while (current_anchor) {
       anchors.push(current_anchor);
-      // TODO(nektar): Introduce `AXNode::GetParent()` in order to be able to
-      // cross tree boundaries and remove
-      // `AXNode::GetUnignoredParentCrossingTreeBoundaries`.
       current_anchor = current_anchor->GetParentCrossingTreeBoundary();
     }
 
@@ -4254,7 +4255,8 @@ class AXPosition {
 
     DCHECK(GetAnchor());
     return is_last_child &&
-           GetRole(GetAnchor()->parent()) == ax::mojom::Role::kStaticText;
+           GetRole(GetAnchor()->GetParentCrossingTreeBoundary()) ==
+               ax::mojom::Role::kStaticText;
   }
 
   // Uses depth-first pre-order traversal.

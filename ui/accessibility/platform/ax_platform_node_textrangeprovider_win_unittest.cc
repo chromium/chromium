@@ -1532,7 +1532,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // When using heading navigation, the empty objects (see
   // AXPosition::IsEmptyObjectReplacedByCharacter for information about empty
   // objects) sometimes cause a problem with
-  // AXPlatformNodeTextRangeProviderWin::ExpandToEnlosingUnit.
+  // AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnit.
   // With some specific AXTree (like the one used below), the empty object
   // causes ExpandToEnclosingUnit to move the range back on the heading that it
   // previously was instead of moving it forward/backward to the next heading.

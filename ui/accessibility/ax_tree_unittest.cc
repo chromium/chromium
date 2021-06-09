@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
@@ -293,7 +294,26 @@ class TestAXTreeObserver : public AXTreeObserver {
   std::vector<std::string> attribute_change_log_;
 };
 
+// UTF encodings that are tested by the `AXTreeTestWithMultipleUTFEncodings`
+// parameterized tests.
+enum class TestEncoding { kUTF8, kUTF16 };
+
+// Fixture for a test that needs to run multiple times with different UTF
+// encodings. For example, once with UTF8 encoding and once with UTF16.
+class AXTreeTestWithMultipleUTFEncodings
+    : public ::testing::TestWithParam<TestEncoding> {
+ public:
+  AXTreeTestWithMultipleUTFEncodings() = default;
+  ~AXTreeTestWithMultipleUTFEncodings() override = default;
+  AXTreeTestWithMultipleUTFEncodings(
+      const AXTreeTestWithMultipleUTFEncodings& other) = delete;
+  AXTreeTestWithMultipleUTFEncodings& operator=(
+      const AXTreeTestWithMultipleUTFEncodings& other) = delete;
+};
+
 }  // namespace
+
+using ::testing::ElementsAre;
 
 // A macro for testing that a absl::optional has both a value and that its value
 // is set to a particular expectation.
@@ -2921,7 +2941,7 @@ TEST(AXTreeTest, UnignoredSelection) {
   // |  |
   // 9  16
   tree_update.has_tree_data = true;
-  tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_update.root_id = 1;
   tree_update.nodes.resize(16);
   tree_update.nodes[0].id = 1;
@@ -3122,9 +3142,9 @@ TEST(AXTreeTest, GetChildrenOrSiblings) {
 }
 
 TEST(AXTreeTest, ChildTreeIds) {
-  ui::AXTreeID tree_id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeID tree_id_3 = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeID tree_id_1 = AXTreeID::CreateNewAXTreeID();
+  AXTreeID tree_id_2 = AXTreeID::CreateNewAXTreeID();
+  AXTreeID tree_id_3 = AXTreeID::CreateNewAXTreeID();
 
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
@@ -3168,6 +3188,213 @@ TEST(AXTreeTest, ChildTreeIds) {
   child_tree_3_nodes = tree.GetNodeIdsForChildTreeId(tree_id_3);
   EXPECT_EQ(0U, child_tree_3_nodes.size());
 }
+
+TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
+  // kRootWebArea
+  // ++kTextField (contenteditable)
+  // ++++kGenericContainer
+  // ++++++kStaticText "Line 1"
+  // ++++++kLineBreak '\n'
+  // ++++++kStaticText "Line 2"
+  // ++kParagraph
+  // ++++kGenericContainer (span) IGNORED
+  // ++++++kStaticText "span text" IGNORED
+  // ++++kLink
+  // ++++++kStaticText "Link text"
+
+  AXNodeData root;
+  root.id = 1;
+  AXNodeData rich_text_field;
+  rich_text_field.id = 2;
+  AXNodeData rich_text_field_text_container;
+  rich_text_field_text_container.id = 3;
+  AXNodeData rich_text_field_line_1;
+  rich_text_field_line_1.id = 4;
+  AXNodeData rich_text_field_line_break;
+  rich_text_field_line_break.id = 5;
+  AXNodeData rich_text_field_line_2;
+  rich_text_field_line_2.id = 6;
+  AXNodeData paragraph;
+  paragraph.id = 7;
+  AXNodeData paragraph_span;
+  paragraph_span.id = 8;
+  AXNodeData paragraph_span_text;
+  paragraph_span_text.id = 9;
+  AXNodeData paragraph_link;
+  paragraph_link.id = 10;
+  AXNodeData paragraph_link_text;
+  paragraph_link_text.id = 11;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {rich_text_field.id, paragraph.id};
+
+  rich_text_field.role = ax::mojom::Role::kTextField;
+  rich_text_field.AddState(ax::mojom::State::kEditable);
+  rich_text_field.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+  rich_text_field.SetName("Rich text field");
+  rich_text_field.SetValue("Line 1\nLine 2");
+  rich_text_field.child_ids = {rich_text_field_text_container.id};
+
+  rich_text_field_text_container.role = ax::mojom::Role::kGenericContainer;
+  rich_text_field_text_container.AddState(ax::mojom::State::kIgnored);
+  rich_text_field_text_container.child_ids = {rich_text_field_line_1.id,
+                                              rich_text_field_line_break.id,
+                                              rich_text_field_line_2.id};
+
+  rich_text_field_line_1.role = ax::mojom::Role::kStaticText;
+  rich_text_field_line_1.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_1.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_1.SetName("Line 1");
+
+  rich_text_field_line_break.role = ax::mojom::Role::kLineBreak;
+  rich_text_field_line_break.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_break.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_break.SetName("\n");
+
+  rich_text_field_line_2.role = ax::mojom::Role::kStaticText;
+  rich_text_field_line_2.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_2.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_2.SetName("Line 2");
+
+  paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.child_ids = {paragraph_span.id, paragraph_link.id};
+
+  paragraph_span.role = ax::mojom::Role::kGenericContainer;
+  paragraph_span.AddState(ax::mojom::State::kIgnored);
+  paragraph_span.child_ids = {paragraph_span_text.id};
+
+  paragraph_span_text.role = ax::mojom::Role::kStaticText;
+  paragraph_span_text.AddState(ax::mojom::State::kIgnored);
+  paragraph_span_text.SetName("span text");
+
+  paragraph_link.role = ax::mojom::Role::kLink;
+  paragraph_link.AddState(ax::mojom::State::kLinked);
+  paragraph_link.child_ids = {paragraph_link_text.id};
+
+  paragraph_link_text.role = ax::mojom::Role::kStaticText;
+  paragraph_link_text.SetName("Link text");
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.root_id = root.id;
+  update.nodes = {root,
+                  rich_text_field,
+                  rich_text_field_text_container,
+                  rich_text_field_line_1,
+                  rich_text_field_line_break,
+                  rich_text_field_line_2,
+                  paragraph,
+                  paragraph_span,
+                  paragraph_span_text,
+                  paragraph_link,
+                  paragraph_link_text};
+
+  AXTree tree(update);
+  TestAXTreeObserver test_observer(&tree);
+
+  ASSERT_NE(nullptr, tree.root());
+  ASSERT_EQ(2u, tree.root()->children().size());
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("Line 1\nLine 2Link text", tree.root()->GetInnerText());
+    EXPECT_EQ(22, tree.root()->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"Line 1\nLine 2Link text", tree.root()->GetInnerTextUTF16());
+    EXPECT_EQ(22, tree.root()->GetInnerTextLengthUTF16());
+  }
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("Line 1\nLine 2",
+              tree.root()->GetChildAtIndex(0)->GetInnerText());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"Line 1\nLine 2",
+              tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+  }
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("Link text", tree.root()->GetChildAtIndex(1)->GetInnerText());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"Link text",
+              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+  }
+
+  //
+  // Flip the ignored state of the span, the link and the line break, and delete
+  // the second line in the rich text field, all of which should change their
+  // cached inner text.
+
+  // kRootWebArea
+  // ++kTextField (contenteditable)
+  // ++++kGenericContainer
+  // ++++++kStaticText "Line 1"
+  // ++++++kLineBreak '\n' IGNORED
+  // ++kParagraph
+  // ++++kGenericContainer (span)
+  // ++++++kStaticText "span text"
+  // ++++kLink IGNORED
+  // ++++++kStaticText "Link text"
+
+  rich_text_field_line_break.AddState(ax::mojom::State::kIgnored);
+  paragraph_span.RemoveState(ax::mojom::State::kIgnored);
+  paragraph_span_text.RemoveState(ax::mojom::State::kIgnored);
+  // Do not add the ignored state to the link's text on purpose.
+  paragraph_link.AddState(ax::mojom::State::kIgnored);
+  rich_text_field_text_container.child_ids = {rich_text_field_line_1.id,
+                                              rich_text_field_line_break.id};
+
+  AXTreeUpdate update_2;
+  update_2.node_id_to_clear = rich_text_field_line_2.id;
+  update_2.nodes = {rich_text_field_text_container, rich_text_field_line_break,
+                    paragraph_span, paragraph_span_text, paragraph_link};
+
+  ASSERT_TRUE(tree.Unserialize(update_2)) << tree.error();
+  ASSERT_EQ(2u, tree.root()->children().size());
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("Line 1span textLink text", tree.root()->GetInnerText());
+    EXPECT_EQ(24, tree.root()->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"Line 1span textLink text", tree.root()->GetInnerTextUTF16());
+    EXPECT_EQ(24, tree.root()->GetInnerTextLengthUTF16());
+  }
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("Line 1", tree.root()->GetChildAtIndex(0)->GetInnerText());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"Line 1", tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+  }
+
+  if (GetParam() == TestEncoding::kUTF8) {
+    EXPECT_EQ("span textLink text",
+              tree.root()->GetChildAtIndex(1)->GetInnerText());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+  } else if (GetParam() == TestEncoding::kUTF16) {
+    EXPECT_EQ(u"span textLink text",
+              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+  }
+
+  const std::vector<std::string>& change_log =
+      test_observer.attribute_change_log();
+  EXPECT_THAT(
+      change_log,
+      ElementsAre("ignored changed to true", "ignored changed to false",
+                  "ignored changed to false", "ignored changed to true"));
+}
+
+INSTANTIATE_TEST_SUITE_P(MultipleUTFEncodingTest,
+                         AXTreeTestWithMultipleUTFEncodings,
+                         ::testing::Values(TestEncoding::kUTF8,
+                                           TestEncoding::kUTF16));
 
 // Tests GetPosInSet and GetSetSize return the assigned int attribute values.
 TEST(AXTreeTest, SetSizePosInSetAssigned) {

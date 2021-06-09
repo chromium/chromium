@@ -1136,6 +1136,19 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     changes.push_back(AXTreeObserver::Change(node, change));
   }
 
+  // Clear cached information in `AXComputedNodeData` for every node that has
+  // been changed in any way, including because of changes to one of its
+  // descendants.
+  std::set<AXNodeID> cleared_computed_node_data_ids;
+  for (AXNodeID node_id : update_state.node_data_changed_ids) {
+    AXNode* node = GetFromId(node_id);
+    while (node) {
+      if (cleared_computed_node_data_ids.insert(node->id()).second)
+        node->ClearComputedNodeData();
+      node = node->parent();
+    }
+  }
+
   // Update the unignored cached values as necessary, ensuring that we only
   // update once for each unignored node.
   // If the node is ignored, we must update from an unignored ancestor.
@@ -1164,19 +1177,19 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
       observer.OnTreeDataChanged(this, *update_state.old_tree_data, data_);
   }
 
-  // Now that the unignored cached values are up to date, update observers to
+  // Now that the unignored cached values are up to date, notify observers of
   // the nodes that were deleted from the tree but not reparented.
   for (AXNodeID node_id : update_state.removed_node_ids) {
     if (!update_state.IsCreatedNode(node_id))
       NotifyNodeHasBeenDeleted(node_id);
   }
 
-  // Now that the unignored cached values are up to date, update observers to
+  // Now that the unignored cached values are up to date, notify observers of
   // new nodes in the tree.
   for (AXNodeID node_id : update_state.new_node_ids)
     NotifyNodeHasBeenReparentedOrCreated(GetFromId(node_id), &update_state);
 
-  // Now that the unignored cached values are up to date, update observers to
+  // Now that the unignored cached values are up to date, notify observers of
   // node changes.
   for (AXNodeID node_data_changed_id : update_state.node_data_changed_ids) {
     AXNode* node = GetFromId(node_data_changed_id);
