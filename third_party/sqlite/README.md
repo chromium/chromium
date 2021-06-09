@@ -42,6 +42,8 @@ tools and is not distributed.
 
 2. Checkout the new Chromium release branch.
 
+    Get the version from the [README.chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/README.chromium).
+
     ```sh
     cd //third_party/sqlite/src
     git fetch origin
@@ -88,6 +90,8 @@ release. If these need to be brought into the current release branch do the
 following:
 
 1. Checkout the current release branch.
+
+    Get the version from the [README.chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/README.chromium).
 
     ```sh
     export VERSION=3.33.0
