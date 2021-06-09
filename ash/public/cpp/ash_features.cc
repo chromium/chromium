@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "components/full_restore/features.h"
 
 namespace ash {
 namespace features {
