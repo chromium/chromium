@@ -110,5 +110,6 @@ public class FeedSurfaceTracker {
     @VisibleForTesting
     public void resetForTest() {
         mStartupCalled = false;
+        mSetServiceBridgeDelegate = false;
     }
 }

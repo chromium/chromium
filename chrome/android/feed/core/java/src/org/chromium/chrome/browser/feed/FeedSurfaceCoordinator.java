@@ -141,6 +141,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
 
+    private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
+
     @IntDef({StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
         int FOR_YOU = 0;
@@ -247,7 +249,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
-            TabModelSelector tabModelSelector, @NewTabPageLaunchOrigin int launchOrigin) {
+            TabModelSelector tabModelSelector, @NewTabPageLaunchOrigin int launchOrigin,
+            FeedLaunchReliabilityLoggingState launchReliabilityLoggingState) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -262,6 +265,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
         mTabModelSelector = tabModelSelector;
+        mLaunchReliabilityLoggingState = launchReliabilityLoggingState;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -445,6 +449,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         if (mSurfaceScope != null) {
             mHybridListRenderer = mSurfaceScope.provideListRenderer();
+            mLaunchReliabilityLoggingState.onLoggerAvailable(
+                    mSurfaceScope.getFeedLaunchReliabilityLogger());
         } else {
             mHybridListRenderer = new NativeViewListRenderer(context);
         }

@@ -682,6 +682,10 @@ public class FeedSurfaceMediator
         if (headerList.size() > 0) {
             headerList.removeRange(0, headerList.size());
         }
+
+        if (mCoordinator.getSurfaceScope() != null) {
+            mCoordinator.getSurfaceScope().getFeedLaunchReliabilityLogger().cancelPendingEvents();
+        }
     }
 
     /**

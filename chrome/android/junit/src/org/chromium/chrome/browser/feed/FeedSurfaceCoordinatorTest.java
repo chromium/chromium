@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.feed;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -56,6 +58,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
@@ -78,6 +82,9 @@ import org.chromium.ui.base.WindowAndroid;
 @Features.DisableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
         ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY})
 public class FeedSurfaceCoordinatorTest {
+    private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
+    private static final long SURFACE_CREATION_TIME_NS = 1234L;
+
     private class TestLifecycleManager extends FeedSurfaceLifecycleManager {
         public TestLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
             super(activity, coordinator);
@@ -174,6 +181,8 @@ public class FeedSurfaceCoordinatorTest {
     private Resources mResources;
     @Mock
     private RecyclerView.Adapter mAdapter;
+    @Mock
+    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -216,12 +225,14 @@ public class FeedSurfaceCoordinatorTest {
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideListRenderer()).thenReturn(mRenderer);
         when(mRenderer.bind(mContentManagerCaptor.capture())).thenReturn(mRecyclerView);
+        when(mSurfaceScope.getFeedLaunchReliabilityLogger()).thenReturn(mLaunchReliabilityLogger);
         AppHooksImpl.setInstanceForTesting(mApphooks);
 
         mCoordinator = new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid,
                 mSnapHelper, null, mSectionHeaderView, false, new TestSurfaceDelegate(),
                 mPageNavigationDelegate, mProfileMock, false, mBottomSheetController,
-                mShareDelegateSupplier, null, mTabModelSelector, NewTabPageLaunchOrigin.UNKNOWN);
+                mShareDelegateSupplier, null, mTabModelSelector, NewTabPageLaunchOrigin.UNKNOWN,
+                new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS));
 
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -296,6 +307,12 @@ public class FeedSurfaceCoordinatorTest {
     public void testGetTabIdFromLaunchOrigin_unknown() {
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 mCoordinator.getTabIdFromLaunchOrigin(NewTabPageLaunchOrigin.UNKNOWN));
+    }
+
+    @Test
+    public void testLogUiStarting() {
+        verify(mLaunchReliabilityLogger, times(1))
+                .logUiStarting(SURFACE_TYPE, SURFACE_CREATION_TIME_NS);
     }
 
     private boolean hasStreamBound() {

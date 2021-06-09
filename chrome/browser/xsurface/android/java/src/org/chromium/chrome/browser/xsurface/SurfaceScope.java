@@ -31,8 +31,7 @@ public interface SurfaceScope {
      * doesn't exist.
      * @return The surface's FeedLaunchReliabilityLogger instance.
      */
-    @Nullable
     default FeedLaunchReliabilityLogger getFeedLaunchReliabilityLogger() {
-        return null;
+        return new FeedLaunchReliabilityLogger() {};
     }
 }

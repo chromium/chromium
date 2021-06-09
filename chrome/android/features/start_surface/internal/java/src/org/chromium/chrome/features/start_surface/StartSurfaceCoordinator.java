@@ -20,6 +20,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -132,6 +134,9 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final ObserverList<ScrollListener> mScrollListeners =
             new ObserverList<ScrollListener>();
 
+    // Stores surface creation time for Feed launch reliability logging.
+    private final FeedLaunchReliabilityLoggingState mFeedLaunchReliabilityLoggingState;
+
     @Nullable
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
 
@@ -208,6 +213,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
+        mFeedLaunchReliabilityLoggingState =
+                new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
@@ -340,11 +347,11 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mSurfaceMode == SurfaceMode.SINGLE_PANE) {
-            mExploreSurfaceCoordinator =
-                    new ExploreSurfaceCoordinator(mActivity, mTasksSurface.getBodyViewContainer(),
-                            mPropertyModel, true, mBottomSheetController, mParentTabSupplier,
-                            new ScrollableContainerDelegateImpl(), mSnackbarManager,
-                            mShareDelegateSupplier, mWindowAndroid, mTabModelSelector);
+            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
+                    mTasksSurface.getBodyViewContainer(), mPropertyModel, true,
+                    mBottomSheetController, mParentTabSupplier,
+                    new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
+                    mWindowAndroid, mTabModelSelector, mFeedLaunchReliabilityLoggingState);
         }
         mStartSurfaceMediator.initWithNative(
                 mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStubSupplier.get() : null,

@@ -33,10 +33,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -83,7 +85,8 @@ public class ExploreSurfaceViewBinderTest {
                             mActivityTestRule.getActivity().getSnackbarManager(),
                             mActivityTestRule.getActivity().getShareDelegateSupplier(),
                             mActivityTestRule.getActivity().getWindowAndroid(),
-                            mActivityTestRule.getActivity().getTabModelSelector());
+                            mActivityTestRule.getActivity().getTabModelSelector(),
+                            new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L));
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceController()
                             .createFeedSurfaceCoordinator(false, /* isPlaceholderShown= */ false,

@@ -12,7 +12,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Interface for logging latency and availability signals for feed launches. All timestamps are in
- * terms of nanoseconds since system boot.
+ * terms of nanoseconds since system boot. One instance exists per feed surface and lasts for the
+ * surface's lifetime.
  */
 public interface FeedLaunchReliabilityLogger {
     /** Type of surface the feed is being launched on. */
@@ -34,88 +35,105 @@ public interface FeedLaunchReliabilityLogger {
     }
 
     /**
-     * Sets details about the stream to be logged as metadata.
-     * @param surfaceType Whether the feed is on the new tab page or Start Surface.
-     * @param streamType Whether the feed is a "for you" feed or a "following" feed.
+     * Set details about the stream being launched and send any pending events.
+     * @param streamType Feed type (e.g. "for you" or "following").
      * @param streamId Identifier for the stream used to disambiguate events from concurrent
      *         streams.
      */
-    default void setMetadata(
-            @SurfaceType int surfaceType, @StreamType int streamType, int streamId) {}
+    default void sendPendingEvents(@StreamType int streamType, int streamId) {}
 
     /**
-     * Log when the feed is launched because the NTP or Start Surface was created.
+     * Clear any pending events and end the flow without logging any events.
+     */
+    default void cancelPendingEvents() {}
+
+    /**
+     * Returns true if logUiStarting(), logFeedReloading(), or logFeedLaunchOtherStart() have been
+     * called since the last call to logLaunchFinished().
+     * @return True if the launch flow has started but not finished.
+     */
+    default boolean isLaunchInProgress() {
+        return false;
+    }
+
+    /**
+     * Log when the feed is launched because its UI surface was created.
+     * @param surfaceType Feed surface type (e.g. new tab page or Start Surface).
      * @param timestamp Time at which the surface began to be created.
      */
-    default void logDiscoverUiStarting(long timestamp) {}
+    default void logUiStarting(@SurfaceType int surfaceType, long timestamp) {}
 
     /**
      * Log when the feed is launched because its surface was shown and cards needed to be
      * re-rendered.
      * @param timestamp Time at which the surface was shown.
      */
-    default void logDiscoverFeedReloaded(long timestamp) {}
+    default void logFeedReloading(long timestamp) {}
 
     /**
-     * Log when the feed is launched in any case not already handled by logDiscoverUiStarting() or
-     * logDiscoverFeedReloaded().
+     * Log when the feed is launched in any case not already handled by logUiStarting() or
+     * logFeedReloaded().
      * @param timestamp Time at which the feed stream was bound.
      */
-    default void logDiscoverFeedLaunchOtherStart(long timestamp) {}
+    default void logFeedLaunchOtherStart(long timestamp) {}
 
     /**
      * Log when cached feed content is about to be read.
      * @param timestamp Event time.
      */
-    default void logDiscoverCacheReadStart(long timestamp) {}
+    default void logCacheReadStart(long timestamp) {}
 
     /**
      * Log after finishing attempting to read cached feed content.
      * @param timestamp Event time.
      * @param result DiscoverCardReadCacheResult.
      */
-    default void logDiscoverCacheReadEnd(long timestamp, int result) {}
+    default void logCacheReadEnd(long timestamp, int result) {}
 
     /**
      * Log when the loading spinner is shown.
      * @param timestamp Time at which the spinner was shown.
      */
-    default void logDiscoverLoadingIndicatorShown(long timestamp) {}
+    default void logLoadingIndicatorShown(long timestamp) {}
 
     /**
      * Log when rendering of above-the-fold feed content begins.
      * @param timestamp Event time.
      */
-    default void logDiscoverAtfRenderStart(long timestamp) {}
+    default void logAtfRenderStart(long timestamp) {}
 
     /**
      * Log when rendering of above-the-fold feed content finishes.
      * @param timestamp Event time.
      * @param result DiscoverAboveTheFoldRenderResult.
      */
-    default void logDiscoverAtfRenderEnd(long timestamp, int result) {}
+    default void logAtfRenderEnd(long timestamp, int result) {}
 
     /**
      * Log when making a feed query request.
      * @param timestamp Event time.
-     * @param requestId Unique ID for this network request.
-     * @return A logger for this network request.
+     * @return A request ID that can be passed to getNetworkRequestReliabilityLogger().
      */
-    @Nullable
-    default FeedNetworkRequestReliabilityLogger logFeedQueryRequestStart(
-            long timestamp, int requestId) {
-        return null;
+    default int logFeedQueryRequestStart(long timestamp) {
+        return 0;
     }
 
     /**
      * Log just before making a feed actions upload request.
      * @param timestamp Event time.
-     * @param requestId Unique ID for this network request.
-     * @return A logger for this network request.
+     * @return A request ID that can be passed to getNetworkRequestReliabilityLogger().
+     */
+    default int logActionsUploadRequestStart(long timestamp) {
+        return 0;
+    }
+
+    /**
+     * Get the network request logger for a request by its ID.
+     * @param requestId A request ID returned by one of the network request start methods.
+     * @return A logger for the request.
      */
     @Nullable
-    default FeedNetworkRequestReliabilityLogger logActionsUploadRequestStart(
-            long timestamp, int requestId) {
+    default FeedNetworkRequestReliabilityLogger getNetworkRequestReliabilityLogger(int requestId) {
         return null;
     }
 
@@ -124,5 +142,5 @@ public interface FeedLaunchReliabilityLogger {
      * @param timestamp Event time, possibly the same as one of the other events.
      * @param result DiscoverLaunchResult.
      */
-    default void logDiscoverLaunchFinished(long timestamp, int result) {}
+    default void logLaunchFinished(long timestamp, int result) {}
 }
