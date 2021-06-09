@@ -232,6 +232,7 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/mac/keystone_glue.h"
+#include "chrome/browser/ui/ui_features.h"
 #endif  // defined(OS_MAC)
 
 // TODO(port): several win-only methods have been pulled out of this, but
@@ -1098,7 +1099,14 @@ void ChromeBrowserMainParts::PreProfileInit() {
   javascript_dialog_extensions_client::InstallClient();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(features::kViewsJSAppModalDialog))
+    InstallChromeJavaScriptAppModalDialogViewFactory();
+  else
+    InstallChromeJavaScriptAppModalDialogViewCocoaFactory();
+#else
   InstallChromeJavaScriptAppModalDialogViewFactory();
+#endif
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
 }
 

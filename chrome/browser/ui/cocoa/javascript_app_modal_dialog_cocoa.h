@@ -7,9 +7,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/remote_cocoa/app_shim/alert.h"
@@ -20,12 +17,13 @@ class PopunderPreventer;
 
 namespace javascript_dialogs {
 class AppModalDialogController;
+class AppModalDialogView;
 }
 
 class JavaScriptAppModalDialogCocoa
     : public javascript_dialogs::AppModalDialogView {
  public:
-  explicit JavaScriptAppModalDialogCocoa(
+  static javascript_dialogs::AppModalDialogView* CreateNativeJavaScriptDialog(
       javascript_dialogs::AppModalDialogController* controller);
 
   // Overridden from NativeAppModalDialog:
@@ -37,6 +35,11 @@ class JavaScriptAppModalDialogCocoa
   bool IsShowing() const override;
 
  private:
+  explicit JavaScriptAppModalDialogCocoa(
+      javascript_dialogs::AppModalDialogController* controller);
+  JavaScriptAppModalDialogCocoa(const JavaScriptAppModalDialogCocoa&) = delete;
+  JavaScriptAppModalDialogCocoa& operator=(
+      const JavaScriptAppModalDialogCocoa&) = delete;
   ~JavaScriptAppModalDialogCocoa() override;
 
   // Return the parameters to use for the alert.
@@ -61,7 +64,6 @@ class JavaScriptAppModalDialogCocoa
   bool is_showing_ = false;
 
   base::WeakPtrFactory<JavaScriptAppModalDialogCocoa> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptAppModalDialogCocoa);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_JAVASCRIPT_APP_MODAL_DIALOG_COCOA_H_

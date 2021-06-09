@@ -23,7 +23,7 @@ aura::Window* GetTopmostTransientParent(aura::Window* window) {
 
 }  // namespace
 
-JavascriptAppModalEventBlocker::JavascriptAppModalEventBlocker(
+JavascriptAppModalEventBlockerAura::JavascriptAppModalEventBlockerAura(
     aura::Window* modal_window)
     : modal_window_(modal_window), browser_view_with_modal_dialog_(nullptr) {
   aura::Window* topmost_transient_parent =
@@ -39,11 +39,11 @@ JavascriptAppModalEventBlocker::JavascriptAppModalEventBlocker(
   // WindowModalityController will cancel touches as appropriate.
 }
 
-JavascriptAppModalEventBlocker::~JavascriptAppModalEventBlocker() {
+JavascriptAppModalEventBlockerAura::~JavascriptAppModalEventBlockerAura() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
 }
 
-bool JavascriptAppModalEventBlocker::ShouldStopPropagationTo(
+bool JavascriptAppModalEventBlockerAura::ShouldStopPropagationTo(
     ui::EventTarget* target) {
   // Stop propagation if:
   // -|target| is a browser window or a transient child of a browser window.
@@ -61,12 +61,12 @@ bool JavascriptAppModalEventBlocker::ShouldStopPropagationTo(
   return browser_view && browser_view != browser_view_with_modal_dialog_;
 }
 
-void JavascriptAppModalEventBlocker::OnKeyEvent(ui::KeyEvent* event) {
+void JavascriptAppModalEventBlockerAura::OnKeyEvent(ui::KeyEvent* event) {
   if (ShouldStopPropagationTo(event->target()))
     event->StopPropagation();
 }
 
-void JavascriptAppModalEventBlocker::OnMouseEvent(ui::MouseEvent* event) {
+void JavascriptAppModalEventBlockerAura::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::ET_MOUSE_PRESSED)
@@ -75,12 +75,12 @@ void JavascriptAppModalEventBlocker::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-void JavascriptAppModalEventBlocker::OnScrollEvent(ui::ScrollEvent* event) {
+void JavascriptAppModalEventBlockerAura::OnScrollEvent(ui::ScrollEvent* event) {
   if (ShouldStopPropagationTo(event->target()))
     event->StopPropagation();
 }
 
-void JavascriptAppModalEventBlocker::OnTouchEvent(ui::TouchEvent* event) {
+void JavascriptAppModalEventBlockerAura::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() != ui::ET_TOUCH_CANCELLED &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::ET_TOUCH_PRESSED)

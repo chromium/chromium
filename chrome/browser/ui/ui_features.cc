@@ -202,6 +202,9 @@ const base::Feature kViewsFirstRunDialog{"ViewsFirstRunDialog",
 
 const base::Feature kViewsTaskManager{"ViewsTaskManager",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kViewsJSAppModalDialog{"ViewsJSAppModalDialog",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace features

@@ -4738,6 +4738,7 @@ static_library("ui") {
       "extensions/settings_overridden_dialog_controller.h",
       "extensions/settings_overridden_params_providers.cc",
       "extensions/settings_overridden_params_providers.h",
+      "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
       "views/extensions/browser_action_drag_data.h",
       "views/extensions/extension_action_platform_delegate_views.cc",
@@ -4756,6 +4757,7 @@ static_library("ui") {
       "views/extensions/media_gallery_checkbox_view.h",
       "views/extensions/settings_overridden_dialog_view.cc",
       "views/extensions/settings_overridden_dialog_view.h",
+      "views/javascript_app_modal_event_blocker.h",
       "web_applications/app_browser_controller.cc",
       "web_applications/app_browser_controller.h",
       "web_applications/draggable_region_host_impl.cc",
@@ -4791,15 +4793,18 @@ static_library("ui") {
       "webui/extensions/extension_icon_source.h",
     ]
 
-    if (!is_mac) {
+    if (is_mac) {
+      sources += [ "views/javascript_app_modal_event_blocker_mac.h" ]
+    } else {
       deps += [ "//apps/ui/views" ]
     }
+
     if (use_aura) {
       sources += [
-        "views/chrome_javascript_app_modal_view_factory_views.cc",
-        "views/javascript_app_modal_event_blocker.cc",
-        "views/javascript_app_modal_event_blocker.h",
+        "views/javascript_app_modal_event_blocker_aura.cc",
+        "views/javascript_app_modal_event_blocker_aura.h",
       ]
+
       deps += [ "//ui/wm/public" ]
     }
   }

@@ -141,6 +141,7 @@ extern const base::Feature kWebUIFeedback;
 #if defined(OS_MAC)
 extern const base::Feature kViewsFirstRunDialog;
 extern const base::Feature kViewsTaskManager;
+extern const base::Feature kViewsJSAppModalDialog;
 #endif
 
 }  // namespace features

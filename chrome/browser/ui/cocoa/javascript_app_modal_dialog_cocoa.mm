@@ -8,8 +8,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
@@ -25,7 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -34,6 +31,19 @@ using remote_cocoa::mojom::AlertDisposition;
 
 ////////////////////////////////////////////////////////////////////////////////
 // JavaScriptAppModalDialogCocoa:
+
+// static
+javascript_dialogs::AppModalDialogView*
+JavaScriptAppModalDialogCocoa::CreateNativeJavaScriptDialog(
+    javascript_dialogs::AppModalDialogController* controller) {
+  javascript_dialogs::AppModalDialogView* view =
+      new JavaScriptAppModalDialogCocoa(controller);
+  // Match Views by activating the tab during creation (rather than
+  // when showing).
+  controller->web_contents()->GetDelegate()->ActivateContents(
+      controller->web_contents());
+  return view;
+}
 
 JavaScriptAppModalDialogCocoa::JavaScriptAppModalDialogCocoa(
     javascript_dialogs::AppModalDialogController* controller)
@@ -179,16 +189,8 @@ bool JavaScriptAppModalDialogCocoa::IsShowing() const {
   return is_showing_;
 }
 
-void InstallChromeJavaScriptAppModalDialogViewFactory() {
+void InstallChromeJavaScriptAppModalDialogViewCocoaFactory() {
   javascript_dialogs::AppModalDialogManager::GetInstance()
       ->SetNativeDialogFactory(base::BindRepeating(
-          [](javascript_dialogs::AppModalDialogController* controller) {
-            javascript_dialogs::AppModalDialogView* view =
-                new JavaScriptAppModalDialogCocoa(controller);
-            // Match Views by activating the tab during creation (rather than
-            // when showing).
-            controller->web_contents()->GetDelegate()->ActivateContents(
-                controller->web_contents());
-            return view;
-          }));
+          &JavaScriptAppModalDialogCocoa::CreateNativeJavaScriptDialog));
 }
