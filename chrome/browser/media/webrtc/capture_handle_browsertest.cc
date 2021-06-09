@@ -370,9 +370,18 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
 }
 
+// TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
+#if defined(OS_MAC)
+#define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
+   DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
+#else
+#define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
+   HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted) {
+    MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted) {
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/false);
 
   const url::Origin& top_level_capturer_origin =
@@ -400,9 +409,18 @@ IN_PROC_BROWSER_TEST_F(
                                       {top_level_capturer_origin.Serialize()});
 }
 
+// TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
+#if defined(OS_MAC)
+#define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
+   DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
+#else
+#define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
+   HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted) {
+    MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted) {
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/false);
 
   const url::Origin& top_level_capturer_origin =
