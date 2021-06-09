@@ -257,7 +257,12 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
       {"manageSyncedDataTitle",
        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
-  };
+      {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
+      {"enterPassphraseLabelWithDate",
+       IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
+      {"existingPassphraseLabelWithDate",
+       IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
+      {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   std::string sync_dashboard_url =
@@ -290,6 +295,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #else
           base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
 #endif
+  html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

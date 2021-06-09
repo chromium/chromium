@@ -185,47 +185,6 @@ base::Value GetAccountValue(const AccountInfo& account) {
   return dictionary;
 }
 
-std::u16string GetEnterPassphraseBody(syncer::PassphraseType passphrase_type,
-                                      base::Time passphrase_time) {
-  DCHECK(syncer::IsExplicitPassphrase(passphrase_type));
-  switch (passphrase_type) {
-    case syncer::PassphraseType::kFrozenImplicitPassphrase:
-    case syncer::PassphraseType::kCustomPassphrase:
-      if (passphrase_time.is_null()) {
-        return GetStringUTF16(IDS_SYNC_ENTER_PASSPHRASE_BODY);
-      }
-      return GetStringFUTF16(IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE,
-                             base::ASCIIToUTF16(chrome::kSyncErrorsHelpURL),
-                             base::TimeFormatShortDate(passphrase_time));
-    case syncer::PassphraseType::kImplicitPassphrase:
-    case syncer::PassphraseType::kKeystorePassphrase:
-    case syncer::PassphraseType::kTrustedVaultPassphrase:
-      break;
-  }
-  NOTREACHED();
-  return std::u16string();
-}
-
-std::u16string GetFullEncryptionBody(syncer::PassphraseType passphrase_type,
-                                     base::Time passphrase_time) {
-  DCHECK(syncer::IsExplicitPassphrase(passphrase_type));
-  if (passphrase_time.is_null()) {
-    return GetStringUTF16(IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM);
-  }
-  switch (passphrase_type) {
-    case syncer::PassphraseType::kFrozenImplicitPassphrase:
-    case syncer::PassphraseType::kCustomPassphrase:
-      return GetStringFUTF16(IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE,
-                             base::TimeFormatShortDate(passphrase_time));
-    case syncer::PassphraseType::kImplicitPassphrase:
-    case syncer::PassphraseType::kKeystorePassphrase:
-    case syncer::PassphraseType::kTrustedVaultPassphrase:
-      break;
-  }
-  NOTREACHED();
-  return std::u16string();
-}
-
 }  // namespace
 
 namespace settings {
@@ -959,12 +918,17 @@ void PeopleHandler::PushSyncPrefs() {
   //   <data_type>Registered: true if the associated data type is supported
   //   <data_type>Synced: true if the user wants to sync that specific data type
   //   paymentsIntegrationEnabled: true if the user wants Payments integration
-  //   encryptionEnabled: true if sync supports encryption
+  //   customPassphraseAllowed: true if sync allows setting a custom passphrase
+  //                            to encrypt data.
   //   encryptAllData: true if user wants to encrypt all data (not just
   //       passwords)
   //   passphraseRequired: true if a passphrase is needed to start sync
   //   trustedVaultKeysRequired: true if trusted vault keys are needed to start
   //                             sync.
+  //   explicitPassphraseTime: the stringified time when the current explicit
+  //                   passphrase was set (in milliseconds since the Unix
+  //                   epoch); undefined if the time is unknown or no explicit
+  //                   passphrase is set.
   //
   base::DictionaryValue args;
 
@@ -1000,15 +964,10 @@ void PeopleHandler::PushSyncPrefs() {
   args.SetBoolean("trustedVaultKeysRequired",
                   sync_user_settings->IsTrustedVaultKeyRequired());
 
-  syncer::PassphraseType passphrase_type =
-      sync_user_settings->GetPassphraseType();
-  if (syncer::IsExplicitPassphrase(passphrase_type)) {
-    base::Time passphrase_time =
-        sync_user_settings->GetExplicitPassphraseTime();
-    args.SetString("enterPassphraseBody",
-                   GetEnterPassphraseBody(passphrase_type, passphrase_time));
-    args.SetString("fullEncryptionBody",
-                   GetFullEncryptionBody(passphrase_type, passphrase_time));
+  base::Time passphrase_time = sync_user_settings->GetExplicitPassphraseTime();
+  if (!passphrase_time.is_null()) {
+    args.SetString("explicitPassphraseTime",
+                   base::TimeFormatShortDate(passphrase_time));
   }
 
   FireWebUIListener("sync-prefs-changed", args);

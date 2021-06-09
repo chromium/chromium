@@ -27,6 +27,7 @@ import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
@@ -63,6 +64,7 @@ Polymer({
   behaviors: [
     WebUIListenerBehavior,
     RouteObserverBehavior,
+    I18nBehavior,
   ],
 
   properties: {
@@ -174,6 +176,20 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    enterPassphraseLabel_: {
+      type: String,
+      computed: 'computeEnterPassphraseLabel_(syncPrefs.encryptAllData,' +
+          'syncPrefs.explicitPassphraseTime)',
+    },
+
+    /** @private */
+    existingPassphraseLabel_: {
+      type: String,
+      computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
+          'syncPrefs.explicitPassphraseTime)',
+    }
   },
 
   observers: [
@@ -483,6 +499,48 @@ Polymer({
    */
   computeDataEncrypted_() {
     return !!this.syncPrefs && this.syncPrefs.encryptAllData;
+  },
+
+  /**
+   * @return  {string}
+   * @private
+   */
+  computeEnterPassphraseLabel_() {
+    if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
+      return '';
+    }
+
+    if (!this.syncPrefs.explicitPassphraseTime) {
+      // TODO(crbug.com/1207432): There's no reason why this dateless label
+      // shouldn't link to 'syncErrorsHelpUrl' like the other one.
+      return this.i18n('enterPassphraseLabel');
+    }
+
+    return this.i18nAdvanced('enterPassphraseLabelWithDate', {
+      tags: ['a'],
+      substitutions: [
+        loadTimeData.getString('syncErrorsHelpUrl'),
+        this.syncPrefs.explicitPassphraseTime
+      ]
+    });
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeExistingPassphraseLabel_() {
+    if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
+      return '';
+    }
+
+    if (!this.syncPrefs.explicitPassphraseTime) {
+      return this.i18n('existingPassphraseLabel');
+    }
+
+    return this.i18n(
+        'existingPassphraseLabelWithDate',
+        this.syncPrefs.explicitPassphraseTime);
   },
 
   /**

@@ -43,6 +43,10 @@ Polymer({
     /** @type {SyncStatus} */
     syncStatus: Object,
 
+    existingPassphraseLabel: {
+      type: String,
+    },
+
     /**
      * Whether the "create passphrase" inputs should be shown. These inputs
      * give the user the opportunity to use a custom passphrase instead of

@@ -16,6 +16,9 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
   export let StoredAccount;
 
   /**
+   * TODO(crbug.com/1107771): childUser and supervisedUser are only consumed
+   * together and the latter implies the former, so it should be enough to have
+   * only one of them here. The linked bug has other clean-up suggestions.
    * @typedef {{childUser: (boolean|undefined),
    *            disabled: (boolean|undefined),
    *            domain: (string|undefined),
@@ -67,10 +70,9 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
    *   bookmarksSynced: boolean,
    *   customPassphraseAllowed: boolean,
    *   encryptAllData: boolean,
-   *   enterPassphraseBody: (string|undefined),
+   *   explicitPassphraseTime: (string|undefined),
    *   extensionsRegistered: boolean,
    *   extensionsSynced: boolean,
-   *   fullEncryptionBody: string,
    *   passphraseRequired: boolean,
    *   passwordsRegistered: boolean,
    *   passwordsSynced: boolean,

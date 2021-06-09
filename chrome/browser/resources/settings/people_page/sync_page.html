@@ -90,7 +90,7 @@
             <div class="start cr-padded-text">
               <div>$i18n{existingPassphraseTitle}</div>
               <div class="secondary"
-                  inner-h-t-m-l="[[syncPrefs.enterPassphraseBody]]">
+                  inner-h-t-m-l="[[existingPassphraseLabel_]]">
               </div>
             </div>
         </div>
@@ -162,6 +162,7 @@
               opened="[[encryptionExpanded_]]">
             <settings-sync-encryption-options
                 sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
+                existing-passphrase-label="[[existingPassphraseLabel_]]"
                 on-passphrase-changed="onPassphraseChanged_">
             </settings-sync-encryption-options>
           </iron-collapse>

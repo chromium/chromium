@@ -349,7 +349,6 @@ suite('SyncSettingsTests', function() {
 
     // Fake backend response.
     const newPrefs = getSyncAllPrefs();
-    newPrefs.fullEncryptionBody = 'Encrypted with custom passphrase';
     newPrefs.encryptAllData = true;
     webUIListenerCallback('sync-prefs-changed', newPrefs);
 
@@ -357,7 +356,7 @@ suite('SyncSettingsTests', function() {
 
     await waitBeforeNextRender(syncPage);
     // Need to re-retrieve this, as a different show passphrase radio
-    // button is shown once |syncPrefs.fullEncryptionBody| is non-empty.
+    // button is shown for custom passphrase users.
     encryptWithPassphrase =
         encryptionElement.$$('cr-radio-button[name="encrypt-with-passphrase"]');
 
@@ -371,7 +370,6 @@ suite('SyncSettingsTests', function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     prefs.passphraseRequired = true;
-    prefs.fullEncryptionBody = 'Sync already encrypted.';
     webUIListenerCallback('sync-prefs-changed', prefs);
 
     flush();

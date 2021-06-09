@@ -31,11 +31,11 @@
           </cr-radio-button>
           <cr-radio-button name="encrypt-with-passphrase"
               class="list-item">
-            <span hidden="[[!syncPrefs.fullEncryptionBody]]">
-              [[syncPrefs.fullEncryptionBody]]
+            <span hidden="[[!existingPassphraseLabel]]">
+              [[existingPassphraseLabel]]
             </span>
             <span on-click="onLearnMoreClick_"
-                hidden="[[syncPrefs.fullEncryptionBody]]">
+                hidden="[[existingPassphraseLabel]]">
               $i18nRaw{encryptWithSyncPassphraseLabel}
             </span>
           </cr-radio-button>
