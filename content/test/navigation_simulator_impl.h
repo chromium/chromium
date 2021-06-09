@@ -210,18 +210,20 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // navigation failed synchronously.
   bool SimulateRendererInitiatedStart();
 
-  // This method will block waiting for throttle checks to complete if
-  // |auto_advance_|. Otherwise will just set up state for checking the result
-  // when the throttles end up finishing.
+  // This method will block waiting for the navigation to reach the next
+  // NavigationThrottle phase of the navigation to complete
+  // (StartRequest|Redirect|Failed|ProcessResponse) if |auto_advance_|. This
+  // waits until *after* throttle checks are run (if the navigation requires
+  // throttle checks).  If |!auto_advance_| this will just set up state for
+  // checking the result when the throttles end up finishing.
   void MaybeWaitForThrottleChecksComplete(base::OnceClosure complete_closure);
 
   // Like above but blocks waiting for the ReadyToCommit checks to complete.
   // This check calls ReadyToCommitComplete() when finished.
   void MaybeWaitForReadyToCommitCheckComplete();
 
-  // Sets |last_throttle_check_result_| and calls both the
-  // |wait_closure_| and the |throttle_checks_complete_closure_|, if they are
-  // set.
+  // Sets |last_throttle_check_result_| and calls both the |wait_closure_| and
+  // the |throttle_checks_complete_closure_|, if they are set.
   bool OnThrottleChecksComplete(NavigationThrottle::ThrottleCheckResult result);
 
   // Helper method to set the OnThrottleChecksComplete callback on the
@@ -252,7 +254,15 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // - same-document navigations
   // - about:blank navigations
   // - navigations not handled by the network stack
+  // - page activations like prerendering and back-forward cache.
   bool NeedsThrottleChecks() const;
+
+  // Whether the navigation performs CommitDeferringCondition checks before
+  // committing. i.e. if it goes through the full
+  // WillStartRequest->WillProcessResponse->etc.->Commit phases. This includes
+  // all navigations that require throttle checks plus page activations like
+  // prerendering/BFCache.
+  bool NeedsPreCommitChecks() const;
 
   enum State {
     INITIALIZATION,
@@ -366,10 +376,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // result. Calling this will quit the nested run loop.
   base::OnceClosure wait_closure_;
 
-  // This member simply ensures that we do not disconnect
-  // the NavigationClient interface, as it would be interpreted as a
-  // cancellation coming from the renderer process side. This member interface
-  // will never be bound.
+  // This member simply ensures that we do not disconnect the NavigationClient
+  // interface, as it would be interpreted as a cancellation coming from the
+  // renderer process side. This member interface will never be bound.
   mojo::PendingAssociatedReceiver<mojom::NavigationClient>
       navigation_client_receiver_;
 

@@ -4791,6 +4791,11 @@ void NavigationRequest::CancelDeferredNavigation(
 
 void NavigationRequest::RegisterThrottleForTesting(
     std::unique_ptr<NavigationThrottle> navigation_throttle) {
+  // Throttles will already have run the first time the page was navigated, we
+  // won't run them again on activation. See instead CommitDeferringCondition.
+  DCHECK(!IsPageActivation())
+      << "Attempted to register a NavigationThrottle for an activating "
+         "navigation which will not work.";
   throttle_runner_->AddThrottle(std::move(navigation_throttle));
 }
 bool NavigationRequest::IsDeferredForTesting() {
@@ -4868,7 +4873,11 @@ void NavigationRequest::WillStartRequest() {
     return;
   }
 
-  throttle_runner_->RegisterNavigationThrottles();
+  // Throttles will already have run the first time the page was navigated, we
+  // won't run them again on activation.
+  if (!IsPageActivation())
+    throttle_runner_->RegisterNavigationThrottles();
+
   commit_deferrer_->RegisterDeferringConditions(*this);
 
   // If the content/ embedder did not pass the NavigationUIData at the beginning

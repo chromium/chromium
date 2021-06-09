@@ -50,8 +50,10 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/test_content_browser_client.h"
@@ -866,6 +868,75 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // IsPrerenderedPageActivation in DidStartNavigation.
   ASSERT_TRUE(is_activation_observer.did_navigate());
   EXPECT_TRUE(is_activation_observer.was_activation());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  test::PrerenderHostObserver prerender_observer(*shell()->web_contents(),
+                                                 kPrerenderingUrl);
+
+  // Navigate to the initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  NavigationThrottle* throttle = nullptr;
+  // This will attempt to insert a throttle that DEFERs the navigation at
+  // WillStartRequest into all new navigations.
+  content::ShellContentBrowserClient::Get()
+      ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
+          [&throttle](content::NavigationHandle* handle)
+              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
+            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+
+            auto throttle_ptr =
+                std::make_unique<TestNavigationThrottle>(handle);
+            DCHECK(!throttle);
+            throttle = throttle_ptr.get();
+            throttle_ptr->SetResponse(
+                TestNavigationThrottle::WILL_START_REQUEST,
+                TestNavigationThrottle::SYNCHRONOUS, NavigationThrottle::DEFER);
+
+            throttles.push_back(std::move(throttle_ptr));
+            return throttles;
+          }));
+
+  // Start a prerender and ensure that a NavigationThrottle can defer the
+  // prerendering navigation. Then resume the navigation so the prerender
+  // navigation and load completes.
+  {
+    TestNavigationManager prerender_manager(shell()->web_contents(),
+                                            kPrerenderingUrl);
+    AddPrerenderAsync(kPrerenderingUrl);
+    prerender_manager.WaitForFirstYieldAfterDidStartNavigation();
+    ASSERT_NE(throttle, nullptr);
+
+    auto* request =
+        NavigationRequest::From(prerender_manager.GetNavigationHandle());
+    ASSERT_TRUE(request->IsDeferredForTesting());
+    EXPECT_EQ(request->GetDeferringThrottleForTesting(), throttle);
+    throttle = nullptr;
+
+    request->GetNavigationThrottleRunnerForTesting()->CallResumeForTesting();
+    prerender_manager.WaitForNavigationFinished();
+
+    auto host_id = GetHostForUrl(kPrerenderingUrl);
+    ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+    EXPECT_EQ(GetPrerenderedMainFrameHost(host_id)->GetLastCommittedURL(),
+              kPrerenderingUrl);
+  }
+
+  // Now navigate the primary page to the prerendered URL so that we activate
+  // the prerender. The throttle should not have been registered for the
+  // activating navigation.
+  {
+    NavigatePrimaryPage(kPrerenderingUrl);
+    prerender_observer.WaitForActivation();
+    EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(throttle, nullptr);
+  }
 }
 
 // Ensures that if we attempt to open a URL while prerendering with a window
@@ -2027,7 +2098,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
         kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
         WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
         /*is_renderer_initiated=*/false));
-    iframe_observer.WaitForDidStartNavigation();
+    iframe_observer.WaitForFirstYieldAfterDidStartNavigation();
     NavigationRequest* request =
         static_cast<NavigationRequest*>(iframe_observer.GetNavigationHandle());
     EXPECT_EQ(request->state(), NavigationRequest::WILL_START_REQUEST);
