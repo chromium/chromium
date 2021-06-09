@@ -1,0 +1,10 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generated sources for production
+
+generated_interface_sources_in_extensions_chromeos = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions/v8/v8_chromeos.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions/v8/v8_chromeos.cc",
+]

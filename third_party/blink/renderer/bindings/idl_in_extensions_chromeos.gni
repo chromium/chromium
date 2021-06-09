@@ -1,0 +1,13 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Statically-defined (not runtime-generated) IDL files in 'extensions_*'
+# components for production.
+#
+# CAUTION: static_idl_files_in_extensions_* is used only by a new V8 bindings
+# generator, which is under development.
+static_idl_files_in_extensions_chromeos =
+    get_path_info(
+        [ "//third_party/blink/renderer/extensions/chromeos/chromeos.idl" ],
+        "abspath")

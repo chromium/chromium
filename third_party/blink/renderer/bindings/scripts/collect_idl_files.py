@@ -15,7 +15,7 @@ import blink_idl_parser
 import utilities
 import web_idl
 
-_VALID_COMPONENTS = ('core', 'modules')
+_VALID_COMPONENTS = ('core', 'modules', 'extensions_chromeos')
 
 
 def parse_options():

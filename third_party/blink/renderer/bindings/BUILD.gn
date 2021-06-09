@@ -6,8 +6,11 @@ import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/core/v8/generated.gni")
 import("//third_party/blink/renderer/bindings/generated_in_core.gni")
+import(
+    "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni")
 import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/idl_in_core.gni")
+import("//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
 import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
@@ -117,6 +120,14 @@ collect_idl_files("web_idl_in_core_for_testing") {
   output = "${bindings_output_dir}/web_idl_in_core_for_testing.pickle"
 }
 
+collect_idl_files("web_idl_in_extensions_chromeos") {
+  component = "extensions_chromeos"
+
+  inputs = static_idl_files_in_extensions_chromeos
+
+  output = "${bindings_output_dir}/web_idl_in_extensions_chromeos.pickle"
+}
+
 collect_idl_files("web_idl_in_modules") {
   component = "modules"
 
@@ -143,7 +154,18 @@ action_with_pydeps("web_idl_database") {
                      get_target_outputs(":web_idl_in_core_for_testing") +
                      get_target_outputs(":web_idl_in_modules") +
                      get_target_outputs(":web_idl_in_modules_for_testing")
+
   runtime_enabled_features_file = "../platform/runtime_enabled_features.json5"
+  deps = [
+    ":web_idl_in_core",
+    ":web_idl_in_core_for_testing",
+    ":web_idl_in_modules",
+    ":web_idl_in_modules_for_testing",
+  ]
+  if (use_blink_extensions_chromeos) {
+    input_data_files += get_target_outputs(":web_idl_in_extensions_chromeos")
+    deps += [ ":web_idl_in_extensions_chromeos" ]
+  }
   inputs = input_data_files + [ runtime_enabled_features_file ]
   outputs = [ web_idl_database_filepath ]
 
@@ -154,13 +176,6 @@ action_with_pydeps("web_idl_database") {
            rebase_path(runtime_enabled_features_file, root_build_dir),
            "--",
          ] + rebase_path(input_data_files, root_build_dir)
-
-  deps = [
-    ":web_idl_in_core",
-    ":web_idl_in_core_for_testing",
-    ":web_idl_in_modules",
-    ":web_idl_in_modules_for_testing",
-  ]
 }
 
 template("generate_bindings") {
