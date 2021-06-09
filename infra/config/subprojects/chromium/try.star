@@ -94,6 +94,9 @@ luci.cq_group(
             groups = "project-chromium-tryjob-access",
         ),
     ],
+    additional_modes = [
+        cq.run_mode(cq.MODE_QUICK_DRY_RUN, 1, "Quick-Run", 1),
+    ],
 )
 
 # Automatically maintained consoles
@@ -1283,9 +1286,11 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        enable_for_quick_run = True,
+    ),
 )
 
 try_.chromium_linux_builder(
@@ -1573,7 +1578,9 @@ try_.chromium_mac_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        enable_for_quick_run = True,
+    ),
 )
 
 try_.chromium_mac_builder(
@@ -1867,7 +1874,9 @@ try_.chromium_win_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        enable_for_quick_run = True,
+    ),
 )
 
 try_.chromium_win_builder(
