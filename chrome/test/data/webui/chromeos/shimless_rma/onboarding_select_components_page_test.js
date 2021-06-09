@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeComponentsForRepairStateTest} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboarding_select_components_page.js';
 import {Component, ComponentRepairState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 export function onboardingSelectComponentsPageTest() {
@@ -98,9 +99,31 @@ export function onboardingSelectComponentsPageTest() {
     await clickComponentKeyboardToggle();
 
     let components = getComponentRepairStateList();
+    assertNotEquals(components, fakeComponentsForRepairStateTest);
     fakeComponentsForRepairStateTest[0].state = ComponentRepairState.kReplaced;
     assertDeepEquals(components, fakeComponentsForRepairStateTest);
   });
 
   // TODO(gavindodd): Add test of rework flow link when it does something.
+
+  test('SelectComponentsPageOnNextCallsSetComponentList', async () => {
+    const resolver = new PromiseResolver();
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+    let callCounter = 0;
+    service.setComponentList = (components) => {
+      assertDeepEquals(components, fakeComponentsForRepairStateTest);
+      callCounter++;
+      return resolver.promise;
+    };
+
+    let expectedResult = {foo: 'bar'};
+    let savedResult;
+    component.onNextButtonClick().then((result) => savedResult = result);
+    // Resolve to a distinct result to confirm it was not modified.
+    resolver.resolve(expectedResult);
+    await flushTasks();
+
+    assertEquals(callCounter, 1);
+    assertDeepEquals(savedResult, expectedResult);
+  });
 }

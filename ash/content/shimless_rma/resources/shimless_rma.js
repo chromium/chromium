@@ -81,13 +81,13 @@ const StateComponentMapping = {
   },
   [RmaState.kSelectComponents]: {
     componentIs: 'onboarding-select-components-page',
-    buttonNext: ButtonState.HIDDEN,
+    buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [RmaState.kEnterRSUWPDisableCode]: {
     componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
-    buttonNext: ButtonState.HIDDEN,
+    buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },

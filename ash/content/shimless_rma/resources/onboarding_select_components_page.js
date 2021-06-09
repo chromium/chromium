@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Component, ComponentRepairState, ComponentType, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {Component, ComponentRepairState, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @typedef {{
@@ -123,11 +123,6 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
 
   /** @protected */
   onReworkFlowButtonClicked_(e) {
-    // TODO(gavindodd): Debug, remove when onNext implemented.
-    console.log('Components repair state:');
-    this.getComponentRepairStateList_().forEach(item => {
-      console.log('Component' + item.component + ' is ' + item.state);
-    })
     e.preventDefault();
     console.log('Rework flow clicked');
     // TODO(gavindodd): call
@@ -135,10 +130,11 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
     //     => shimlessRma.loadNextState_(state));
   }
 
-  // TODO(gavindodd): call
-  // this.shimlessRmaService_.setComponentsRepairState(
-  //     this.getComponentRepairStateList()).then((stateResult)
-  //         => shimlessRma.loadNextState_(stateResult));
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.setComponentList(
+        this.getComponentRepairStateList_());
+  }
 };
 
 customElements.define(
