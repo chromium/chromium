@@ -3478,6 +3478,79 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL(), url2);
 }
 
+// 1. The browser navigates to a.html.
+// 2. The renderer uses history.pushState() to change the URL of the current
+//    document from a.html to b.html.
+// 3. The browser tries to perform a same-document navigation to a.html#foo,
+//    since it did not hear about the document's URL changing yet. When it gets
+//    to the renderer, we discover a race has happened.
+// 4. Meanwhile, the browser hears about the URL change to b.html and applies
+//    it.
+// Now - how do we resolve the race?
+// 5. We will reorder the a.html#foo navigation to start over in the browser
+//    after the b.html navigation.
+// Technically, this is still a same-document navigation! The URL changed but
+// the document did not. Currently, however, the browser only considers the URL
+// when performing a non-history navigation to decide if it's a same-document
+// navigation, so..
+// 6. The browser will perform a cross-document navigation to a.html#foo.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentNavigationRacesPushStateURLChange) {
+  WebContents* wc = shell()->web_contents();
+  GURL url0 = embedded_test_server()->GetURL("/title1.html");
+  GURL url1 = embedded_test_server()->GetURL("/title2.html");
+  GURL url2 = embedded_test_server()->GetURL("/title1.html#frag2");
+  NavigationHandleCommitObserver navigation_0(wc, url0);
+  NavigationHandleCommitObserver navigation_1(wc, url1);
+  NavigationHandleCommitObserver navigation_2(wc, url2);
+
+  // Start at `url0`.
+  EXPECT_TRUE(NavigateToURL(shell(), url0));
+
+  // Have the renderer `history.pushState()` to `url1`, which leaves it on the
+  // `url0` document, but with a different URL now.
+  ExecuteScriptAsync(shell(), JsReplace("history.pushState('', '', $1);"
+                                        "window.location.href == $1;",
+                                        url1));
+
+  // The browser didn't hear about the change yet.
+  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL(), url0);
+
+  {
+    // We will wait for 2 navigations: one will be the pushState() and the other
+    // will be the navigation to `url2` started below.
+    TestNavigationObserver nav_observer(wc, 2);
+
+    // Start a same-document navigation to url2, but it's racing with the
+    // renderer's history.pushState(). It will return false, as the navigation
+    // is restarted.
+    EXPECT_FALSE(NavigateToURL(shell(), url2));
+
+    nav_observer.Wait();
+  }
+
+  // The last navigation to resolve is the one to `url2` as it's reordered to
+  // come after the race with the already-completed history.pushState().
+  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL(), url2);
+
+  // Navigation 0 was a cross-document navigation, to initially load the
+  // document.
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+
+  // Navigation 1 was a same-document navigation, from the renderer's
+  // history.pushState() call.
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  // Navigation 2 was restarted and came after. When it restarted, it saw the
+  // URL did not match and did a cross-document navigation. Technically the same
+  // document was still loaded from `url0`, but the browser makes its choice
+  // on the document's current URL.
+  EXPECT_TRUE(navigation_2.has_committed());
+  EXPECT_FALSE(navigation_2.was_same_document());
+}
+
 class GetEffectiveUrlClient : public ContentBrowserClient {
  public:
   GURL GetEffectiveURL(content::BrowserContext* browser_context,
