@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -21,6 +20,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/shill_error.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
 namespace network_element {

@@ -27,6 +27,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace chromeos {
 

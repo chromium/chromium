@@ -500,12 +500,6 @@
   <message name="IDS_SETTINGS_PASSWORD_SEARCH" desc="Placeholder/label for the text input field that allows a user to filter saved passwords.">
     Search passwords
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_SHOW" desc="A tool tip on a button that reveals the saved password.">
-    Show password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_HIDE" desc="A tool tip on a button that hides the saved password that is being shown.">
-    Hide password
-  </message>
   <message name="IDS_SETTINGS_PASSWORDS_VIEW_DETAILS_TITLE" desc="Title for the dialog that shows password details. This dialog lets a user see a saved password and copy the username.">
     Password details
   </message>

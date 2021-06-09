@@ -1212,6 +1212,14 @@ need to be translated for each locale.-->
           Checking your internet connection
         </message>
       </if>
+
+      <!-- Settings string -->
+      <message name="IDS_SETTINGS_PASSWORD_SHOW" desc="A tool tip on a button that reveals the saved password.">
+       Show password
+      </message>
+      <message name="IDS_SETTINGS_PASSWORD_HIDE" desc="A tool tip on a button that hides the saved password that is being shown.">
+       Hide password
+      </message>
     </messages>
   </release>
 </grit>

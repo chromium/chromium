@@ -22,6 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace chromeos {

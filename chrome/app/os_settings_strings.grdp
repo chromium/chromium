@@ -2302,9 +2302,6 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_JOIN_TYPE" desc="Title for the network configuration dialog for a new network.">
     Join <ph name="TYPE">$1<ex>WiFi</ex></ph> network
   </message>
-  <message name="IDS_SETTINGS_INTERNET_MOBILE_SEARCH" desc="Settings > Internet > Message in Mobile section when searching for mobile networks.">
-    Searching for mobile networks
-  </message>
   <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS" desc="Name of the settings page which displays the list of known networks.">
     Known Networks
   </message>
@@ -2382,9 +2379,6 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_SERVICE" desc="Settings > Internet > VPN: Label for the dropdown menu determining which VPN client will be automatically started on login.">
     VPN service
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT" desc="Settings > Internet > Network details: Label for the checkbox determining whether to automatically connect to the network.">
-    Automatically connect to this network
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_HIDDEN" desc="Settings > Internet > Network details: Label for the checkbox to set a wi-fi network as hidden.">
     Hidden network
