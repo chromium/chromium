@@ -19,12 +19,10 @@
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -355,8 +353,7 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_data_dir = user_data_dir.Append(
-      chromeos::ProfileHelper::Get()->GetActiveUserProfileDir());
+  user_data_dir = user_data_dir.Append("user");
 #endif
 
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
