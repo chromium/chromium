@@ -4164,7 +4164,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-x-list-with-tspans-
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-x-list-with-tspans-3.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-x-list-with-tspans-4.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/surrogate-pair-attribute-positions.html [ Pass Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/surrogate-pair-queries.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/svgtextcontentelement-glyphqueries-rtl.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-decorations-in-scaled-pattern.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-outline-2.html [ Failure ]
