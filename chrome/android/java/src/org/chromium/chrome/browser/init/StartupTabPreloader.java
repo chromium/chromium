@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -54,7 +53,6 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     private LoadUrlParams mLoadUrlParams;
     private Tab mTab;
     private StartupTabObserver mObserver;
-    private Callback<Tab> mTabCreatedCallback;
 
     public StartupTabPreloader(Supplier<Intent> intentSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, WindowAndroid windowAndroid,
@@ -76,10 +74,6 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
         ProfileManager.removeObserver(this);
         mActivityLifecycleDispatcher.unregister(this);
-    }
-
-    public void setTabCreatedCallback(Callback<Tab> callback) {
-        mTabCreatedCallback = callback;
     }
 
     /**
@@ -109,7 +103,6 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         Tab tab = mTab;
         mTab = null;
         mLoadUrlParams = null;
-        mTabCreatedCallback = null;
         tab.removeObserver(mObserver);
         return tab;
     }
@@ -218,7 +211,6 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
                        .setWebContents(webContents)
                        .setDelegateFactory(chromeTabCreator.createDefaultTabDelegateFactory())
                        .build();
-        if (mTabCreatedCallback != null) mTabCreatedCallback.onResult(mTab);
 
         mObserver = new StartupTabObserver();
         mTab.addObserver(mObserver);

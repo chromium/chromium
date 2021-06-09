@@ -322,8 +322,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            const blink::PageState& page_state);
 
   // Like NavigationController::CreateNavigationEntry, but takes extra arguments
-  // like |source_site_instance| and |should_replace_entry|. |web_contents| is
-  // the WebContents that will contain the NavigationEntry, and may be null.
+  // like |source_site_instance| and |should_replace_entry|.
   static std::unique_ptr<NavigationEntryImpl> CreateNavigationEntry(
       const GURL& url,
       Referrer referrer,
@@ -334,8 +333,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const std::string& extra_headers,
       BrowserContext* browser_context,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      bool should_replace_entry,
-      WebContents* web_contents);
+      bool should_replace_entry);
 
   // Called just before sending the commit to the renderer. Walks the
   // session history entries for the committing FrameTreeNode, forward and
@@ -469,8 +467,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |override_user_agent|, |should_replace_current_entry| and
   // |has_user_gesture| will override the values from |load_params|. The same
   // values should be passed to CreateNavigationEntryFromLoadParams.
-  // While LoadURLParams has a ui::PageTransition this function takes a
-  // ui::PageTransition as calling code may supply a different value.
   // TODO(clamy): Remove the dependency on NavigationEntry and
   // FrameNavigationEntry.
   std::unique_ptr<NavigationRequest> CreateNavigationRequestFromLoadParams(
@@ -483,8 +479,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       blink::NavigationDownloadPolicy download_policy,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
-      FrameNavigationEntry* frame_entry,
-      ui::PageTransition transition_type);
+      FrameNavigationEntry* frame_entry);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot

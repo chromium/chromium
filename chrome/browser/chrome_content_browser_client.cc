@@ -1870,7 +1870,6 @@ bool ChromeContentBrowserClient::CanCommitURL(
 }
 
 void ChromeContentBrowserClient::OverrideNavigationParams(
-    content::WebContents* web_contents,
     SiteInstance* site_instance,
     ui::PageTransition* transition,
     bool* is_renderer_initiated,
@@ -1894,15 +1893,6 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
     *referrer = content::Referrer();
     *initiator_origin = absl::nullopt;
   }
-#if defined(OS_ANDROID)
-  if (web_contents) {
-    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-    if (tab && tab->should_add_api2_transition_to_future_navigations()) {
-      *transition = ui::PageTransitionFromInt(*transition |
-                                              ui::PAGE_TRANSITION_FROM_API_2);
-    }
-  }
-#endif
 }
 
 bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(

@@ -279,7 +279,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kAdaptiveSuggestionsCount,
     &omnibox::kClipboardSuggestionContentHidden,
     &omnibox::kCompactSuggestions,
-    &omnibox::kHideVisitsFromCct,
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &optimization_guide::features::kPushNotifications,

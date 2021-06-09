@@ -281,13 +281,6 @@ public interface Tab extends TabLifecycle {
     void setIsTabStateDirty(boolean isTabStateDirty);
 
     /**
-     * If set to true, any future navigations in the tab automatically get
-     * PageTransition.FROM_API_2 applied.
-     */
-    void setAddApi2TransitionToFutureNavigations(boolean shouldAdd);
-    boolean getAddApi2TransitionToFutureNavigations();
-
-    /**
      * Set whether {@link Tab} metadata (specifically all {@link PersistedTabData})
      * will be saved. Not all Tabs need to be persisted across restarts.
      * The default value when a Tab is initialized is false.

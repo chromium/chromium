@@ -645,23 +645,6 @@ class DomainVisit {
   base::Time visit_time_;
 };
 
-enum class UrlsModifiedReason {
-  // The title was changed.
-  kTitleChanged,
-
-  // Modified because of Sync.
-  kSync,
-
-  // Some number of visits were removed because they were old.
-  kExpired,
-
-  // The user deleted some of the visits.
-  kUserDeleted,
-
-  // Notification is the result of AndroidProviderBackend.
-  kAndroidDb,
-};
-
 // Clusters --------------------------------------------------------------------
 
 // Context annotations about a page visit collected during the page lifetime.

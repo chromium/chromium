@@ -429,10 +429,9 @@ void ExpireHistoryBackend::BroadcastNotifications(
     const DeletionTimeRange& time_range,
     absl::optional<std::set<GURL>> restrict_urls) {
   if (!effects->modified_urls.empty()) {
-    notifier_->NotifyURLsModified(effects->modified_urls,
-                                  type == DELETION_EXPIRED
-                                      ? UrlsModifiedReason::kExpired
-                                      : UrlsModifiedReason::kUserDeleted);
+    notifier_->NotifyURLsModified(
+        effects->modified_urls,
+        /*is_from_expiration=*/type == DELETION_EXPIRED);
   }
   if (!effects->deleted_urls.empty() || time_range.IsValid()) {
     notifier_->NotifyURLsDeleted(DeletionInfo(

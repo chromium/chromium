@@ -111,16 +111,11 @@ enum PageTransition {
   // Any of the core values above can be augmented by one or more qualifiers.
   // These qualifiers further define the transition.
 
-  // TODO(https://crbug.com/1141501): these are for an experiment, and will be
-  // removed once data is collected from experiment.
-  // Both of these transition types are for experiments to exclude visits from
-  // appearing in the omnibox. PAGE_TRANSITION_FROM_API_3 also makes it so
-  // the visit does not surface in the history page. Neither transition type
-  // is used with TYPED.
-  // The value 0x00200000 (PAGE_TRANSITION_FROM_API_3) was used for an
-  // experiment and was removed around 6/2021. The experiments ended well
-  // before 6/2021, but it's possible some databases still have the value.
-  PAGE_TRANSITION_FROM_API_2 = 0x00400000,
+  // The values 0x00200000 (PAGE_TRANSITION_FROM_API_3) and 0x00400000
+  // (PAGE_TRANSITION_FROM_API_2) were used for experiments and were removed
+  // around 6/2021. The experiments ended well before 6/2021, but it's possible
+  // some databases still have the values. See https://crbug.com/1141501 for
+  // more.
 
   // A managed user attempted to visit a URL but was blocked.
   PAGE_TRANSITION_BLOCKED = 0x00800000,

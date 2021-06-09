@@ -402,11 +402,6 @@ void TabAndroid::LoadOriginalImage(JNIEnv* env) {
   renderer->RequestReloadImageForContextNode();
 }
 
-void TabAndroid::SetAddApi2TransitionToFutureNavigations(JNIEnv* env,
-                                                         jboolean should_add) {
-  should_add_api2_transition_to_future_navigations_ = should_add;
-}
-
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {
   return devtools_host_;
 }

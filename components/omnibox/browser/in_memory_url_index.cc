@@ -161,35 +161,14 @@ void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
                                     const history::RedirectList& redirects,
                                     base::Time visit_time) {
   DCHECK_EQ(history_service_, history_service);
-  // If |row| is not known to URLIndexPrivateData and the row is significant,
-  // URLIndexPrivateData will index it. When excluding visits from cct, the row
-  // may be significant, but not indexed. UpdateURL() does not have the full
-  // context to know it should not index the row (it lacks visits). If |row|
-  // has not been indexed, and the visit is from cct, we know it should not be
-  // indexed and should not call to UpdateURL().
-  if (!private_data_->IsUrlRowIndexed(row) &&
-      URLIndexPrivateData::ShouldExcludeBecauseOfCctTransition(transition)) {
-    return;
-  }
   needs_to_be_cached_ |= private_data_->UpdateURL(
       history_service_, row, scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
-                                      const history::URLRows& changed_urls,
-                                      history::UrlsModifiedReason reason) {
+                                      const history::URLRows& changed_urls) {
   DCHECK_EQ(history_service_, history_service);
   for (const auto& row : changed_urls) {
-    // When hiding visits from cct, don't add the entry just because the title
-    // changed. In other words, |row| may qualify (RowQualifiesAsSignificant),
-    // but not be indexed because all visits where excluded. In this case, the
-    // row won't be indexed and we shouldn't add just because the title
-    // changed.
-    if (base::FeatureList::IsEnabled(omnibox::kHideVisitsFromCct) &&
-        !private_data_->IsUrlRowIndexed(row) &&
-        reason == history::UrlsModifiedReason::kTitleChanged) {
-      continue;
-    }
     needs_to_be_cached_ |= private_data_->UpdateURL(
         history_service_, row, scheme_allowlist_, &private_data_tracker_);
   }

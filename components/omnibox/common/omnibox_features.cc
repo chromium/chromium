@@ -319,10 +319,4 @@ const base::Feature kDefaultTypedNavigationsToHttps{
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
-// NOTE: while this is enabled by default, CCT visits are only tagged with the
-// necessary transition type if the intent launching CCT supplies the
-// appropriate parameter.
-const base::Feature kHideVisitsFromCct{"OmniboxHideVisitsFromCct",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace omnibox

@@ -110,10 +110,6 @@ class TabAndroid : public base::SupportsUserData {
   bool IsCustomTab();
   bool IsHidden();
 
-  bool should_add_api2_transition_to_future_navigations() const {
-    return should_add_api2_transition_to_future_navigations_;
-  }
-
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
@@ -150,11 +146,6 @@ class TabAndroid : public base::SupportsUserData {
       const base::android::JavaParamRef<jstring>& jtitle);
 
   void LoadOriginalImage(JNIEnv* env);
-  void SetAddApi2TransitionToFutureNavigations(JNIEnv* env,
-                                               jboolean should_add);
-  jboolean GetAddApi2TransitionToFutureNavigations(JNIEnv* env) {
-    return should_add_api2_transition_to_future_navigations_;
-  }
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
@@ -172,7 +163,6 @@ class TabAndroid : public base::SupportsUserData {
       web_contents_delegate_;
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
-  bool should_add_api2_transition_to_future_navigations_ = false;
 
   base::ObserverList<Observer> observers_;
 

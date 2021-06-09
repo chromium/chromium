@@ -204,9 +204,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
                         const RedirectList& redirects,
                         base::Time visit_time) override {}
   void NotifyURLsModified(const URLRows& rows,
-                          UrlsModifiedReason reason) override {
+                          bool is_from_expiration) override {
     urls_modified_notifications_.push_back(
-        std::make_pair(reason == UrlsModifiedReason::kExpired, rows));
+        std::make_pair(is_from_expiration, rows));
   }
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));

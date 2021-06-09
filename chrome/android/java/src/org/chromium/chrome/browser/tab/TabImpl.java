@@ -790,19 +790,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
-    public void setAddApi2TransitionToFutureNavigations(boolean shouldAdd) {
-        if (mNativeTabAndroid != 0) {
-            TabImplJni.get().setAddApi2TransitionToFutureNavigations(mNativeTabAndroid, shouldAdd);
-        }
-    }
-
-    @Override
-    public boolean getAddApi2TransitionToFutureNavigations() {
-        return (mNativeTabAndroid != 0)
-                && TabImplJni.get().getAddApi2TransitionToFutureNavigations(mNativeTabAndroid);
-    }
-
-    @Override
     public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
     }
@@ -1695,8 +1682,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 long nativeTabAndroid, WebContents webContents, int width, int height);
         void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
         void loadOriginalImage(long nativeTabAndroid);
-        void setAddApi2TransitionToFutureNavigations(long nativeTabAndroid, boolean shouldAdd);
-        boolean getAddApi2TransitionToFutureNavigations(long nativeTabAndroid);
         boolean handleNonNavigationAboutURL(GURL url);
     }
 }

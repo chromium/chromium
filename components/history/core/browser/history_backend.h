@@ -158,11 +158,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // be forwarded to the HistoryServiceObservers in the correct thread.
     virtual void NotifyURLsModified(const URLRows& changed_urls) = 0;
 
-    // TODO(https://crbug.com/1141501): this is for an experiment, and will be
-    // removed once data is collected from experiment.
-    virtual void NotifyURLsModified(const URLRows& changed_urls,
-                                    UrlsModifiedReason reason);
-
     // Notify HistoryService that some or all of the URLs have been deleted.
     // The event will be forwarded to the HistoryServiceObservers in the correct
     // thread.
@@ -709,7 +704,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                         const RedirectList& redirects,
                         base::Time visit_time) override;
   void NotifyURLsModified(const URLRows& changed_urls,
-                          UrlsModifiedReason reason) override;
+                          bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
 
   // Deleting all history ------------------------------------------------------

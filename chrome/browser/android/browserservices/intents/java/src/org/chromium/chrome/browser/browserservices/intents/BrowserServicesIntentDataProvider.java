@@ -448,11 +448,4 @@ public abstract class BrowserServicesIntentDataProvider {
     public int[] getGsaExperimentIds() {
         return null;
     }
-
-    /**
-     * Returns true if omnibox should hide cct related visits.
-     */
-    public boolean shouldHideOmniboxSuggestionsForCctVisits() {
-        return false;
-    }
 }

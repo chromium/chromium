@@ -183,20 +183,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(
                 mIntentDataProvider.getIntent(), transition));
 
-        applyExperimentsToNewTab(tab, mIntentDataProvider);
-
         tab.loadUrl(params);
-    }
-
-    /**
-     * Configures various experiments in tab based on provider. This is intended to be called when a
-     * new tab is created.
-     */
-    public static void applyExperimentsToNewTab(
-            Tab tab, BrowserServicesIntentDataProvider provider) {
-        if (provider.shouldHideOmniboxSuggestionsForCctVisits()) {
-            tab.setAddApi2TransitionToFutureNavigations(true);
-        }
     }
 
     /**
