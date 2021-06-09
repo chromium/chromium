@@ -50,11 +50,11 @@ GLImageD3D::~GLImageD3D() {
 bool GLImageD3D::Initialize() {
   DCHECK_EQ(egl_image_, EGL_NO_IMAGE_KHR);
   const EGLint attribs[] = {EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
-                            internal_format_,
+                            static_cast<EGLint>(internal_format_),
                             EGL_D3D11_TEXTURE_ARRAY_SLICE_ANGLE,
-                            array_slice_,
+                            static_cast<EGLint>(array_slice_),
                             EGL_D3D11_TEXTURE_PLANE_ANGLE,
-                            plane_index_,
+                            static_cast<EGLint>(plane_index_),
                             EGL_NONE};
   egl_image_ =
       eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(), EGL_NO_CONTEXT,

@@ -650,7 +650,7 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
   uint16_t character = ui::DomCodeToUsLayoutCharacter(
       ui::UsLayoutKeyboardCodeToDomCode(key_code), flags);
   if (is_press && character) {
-    MSG native_event = { NULL, WM_KEYDOWN, key_code, 0 };
+    MSG native_event = {NULL, WM_KEYDOWN, static_cast<UINT>(key_code), 0};
     native_event.time =
         (ui::EventTimeForNow() - base::TimeTicks()).InMilliseconds() &
         UINT32_MAX;
@@ -661,8 +661,8 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
     key_press = WM_CHAR;
     key_code = static_cast<ui::KeyboardCode>(character);
   }
-  MSG native_event =
-      { NULL, (is_press ? key_press : WM_KEYUP), key_code, 0 };
+  MSG native_event = {NULL, (is_press ? key_press : WM_KEYUP),
+                      static_cast<UINT>(key_code), 0};
   native_event.time =
       (ui::EventTimeForNow() - base::TimeTicks()).InMilliseconds() & UINT32_MAX;
   ui::KeyEvent keyev(native_event, flags);

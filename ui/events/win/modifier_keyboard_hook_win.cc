@@ -250,8 +250,8 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
           : LocatedToNonLocatedKeyboardCode(static_cast<KeyboardCode>(vk));
 
   bool is_repeat = false;
-  MSG msg = {nullptr, w_param, non_located_vk, GetLParamFromScanCode(scan_code),
-             time_stamp};
+  MSG msg = {nullptr, static_cast<UINT>(w_param), non_located_vk,
+             GetLParamFromScanCode(scan_code), time_stamp};
   EventType event_type = EventTypeFromMSG(msg);
   if (event_type == ET_KEY_PRESSED) {
     UpdateModifierState(vk, /*key_down=*/true);

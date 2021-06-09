@@ -156,7 +156,8 @@ class EditableCombobox::EditableComboboxMenuModel
         if (!filter_on_edit_ ||
             base::StartsWith(combobox_model_->GetItemAt(i), owner_->GetText(),
                              base::CompareCase::INSENSITIVE_ASCII)) {
-          items_shown_.push_back({i, combobox_model_->IsItemEnabledAt(i)});
+          items_shown_.push_back(
+              {static_cast<size_t>(i), combobox_model_->IsItemEnabledAt(i)});
         }
       }
     }

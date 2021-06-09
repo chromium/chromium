@@ -187,7 +187,7 @@ DisplaySettings GetDisplaySettingsForDevice(const wchar_t* device_name) {
   if (!::EnumDisplaySettings(device_name, ENUM_CURRENT_SETTINGS, &mode))
     return {Display::ROTATE_0, 0};
   return {OrientationToRotation(mode.dmDisplayOrientation),
-          mode.dmDisplayFrequency};
+          static_cast<int>(mode.dmDisplayFrequency)};
 }
 
 std::vector<DisplayInfo> FindAndRemoveTouchingDisplayInfos(
