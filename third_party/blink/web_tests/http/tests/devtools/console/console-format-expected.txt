@@ -524,6 +524,7 @@ console-format.js:21 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: �
     __defineSetter__: ƒ __defineSetter__()
     __lookupGetter__: ƒ __lookupGetter__()
     __lookupSetter__: ƒ __lookupSetter__()
+    __proto__: (...)
     get __proto__: ƒ __proto__()
     set __proto__: ƒ __proto__()
 console-format.js:22 [{…}]
@@ -543,6 +544,7 @@ globals[30]
     __defineSetter__: ƒ __defineSetter__()
     __lookupGetter__: ƒ __lookupGetter__()
     __lookupSetter__: ƒ __lookupSetter__()
+    __proto__: (...)
     get __proto__: ƒ __proto__()
     set __proto__: ƒ __proto__()
 console-format.js:21 ƒ ( /**/ foo/**/, /*/**/bar,
