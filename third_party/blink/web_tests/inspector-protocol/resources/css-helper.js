@@ -107,7 +107,11 @@
     var cssProperties = style.cssProperties;
     for (var i = 0; i < cssProperties.length; ++i) {
       var cssProperty = cssProperties[i];
-      var propertyLine = cssProperty.name + ': ' + cssProperty.value + ';';
+      var range = cssProperty.range;
+      var rangeText = range ? '[' + range.startLine + ':' + range.startColumn +
+                                  '-' + range.endLine + ':' + range.endColumn + ']'
+                            : '[undefined-undefined]';
+      var propertyLine = cssProperty.name + ': ' + cssProperty.value + '; @' + rangeText;
       this._indentLog(baseIndent + 4, propertyLine);
     }
   }
