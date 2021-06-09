@@ -45,7 +45,7 @@ CaptivePortalTabHelper::~CaptivePortalTabHelper() {
 void CaptivePortalTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -74,7 +74,7 @@ void CaptivePortalTabHelper::DidRedirectNavigation(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (navigation_handle != navigation_handle_)
     return;
-  DCHECK(navigation_handle->IsInMainFrame());
+  DCHECK(navigation_handle->IsInPrimaryMainFrame());
   tab_reloader_->OnRedirect(
       navigation_handle->GetURL().SchemeIsCryptographic());
 }
@@ -83,8 +83,8 @@ void CaptivePortalTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Exclude subframe navigations.
-  if (!navigation_handle->IsInMainFrame())
+  // Exclude non-primary frame and subframe navigations.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Exclude same-document navigations and aborted navigations that were not

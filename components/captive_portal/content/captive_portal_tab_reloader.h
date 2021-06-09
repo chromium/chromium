@@ -24,6 +24,7 @@ class SSLInfo;
 }
 
 class CaptivePortalBrowserTest;
+class CaptivePortalForPrerenderingTest;
 
 namespace captive_portal {
 
@@ -132,6 +133,7 @@ class CaptivePortalTabReloader {
 
  private:
   friend class ::CaptivePortalBrowserTest;
+  friend class ::CaptivePortalForPrerenderingTest;
 
   // Sets |state_| and takes any action associated with the new state.  Also
   // stops the timer, if needed. If |new_state| is STATE_MAYBE_BROKEN_BY_PORTAL,

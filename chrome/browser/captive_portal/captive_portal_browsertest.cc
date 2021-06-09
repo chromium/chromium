@@ -70,9 +70,11 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/http/transport_security_state.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -3002,4 +3004,107 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
               content::PAGE_TYPE_NORMAL);
   EXPECT_EQ(2u, browser_list_->size());
   EXPECT_EQ(2, NumTabs());
+}
+
+class CaptivePortalForPrerenderingTest : public CaptivePortalBrowserTest {
+ public:
+  CaptivePortalForPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &CaptivePortalForPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~CaptivePortalForPrerenderingTest() override = default;
+
+  void SetUpOnMainThread() override {
+    CaptivePortalBrowserTest::SetUpOnMainThread();
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    CaptivePortalBrowserTest::TearDownOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void SetState(captive_portal::CaptivePortalTabReloader::State state) {
+    captive_portal::CaptivePortalTabReloader* tab_reloader =
+        GetTabReloader(GetWebContents());
+    ASSERT_TRUE(tab_reloader);
+    tab_reloader->SetState(state);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test that CaptivePortalTabHelper doesn't allow navigating on non-primary
+// trees via Did[Start|Finish]Navigation.
+IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
+                       DontFireOnLoadStartDuringPrerendering) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  // Sets CaptivePortalTabReloader's state to STATE_TIMER_RUNNING in order to
+  // check if the state is not changed during prerendering.
+  SetState(captive_portal::CaptivePortalTabReloader::STATE_TIMER_RUNNING);
+
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Checks if the state is not changed during prerendering. This state will
+  // be set to STATE_NONE if CaptivePortalTabReloader::OnLoadStart() is called
+  // on non-SSL pages. Since the prerendering page is a non-SSL page, if
+  // OnLoadStart() was fired, this state would be STATE_NONE. The non-STATE_NONE
+  // state will prove that CaptivePortalTabHelper does not call OnLoadStart()
+  // during prerendering.
+  captive_portal::CaptivePortalTabReloader::State new_state =
+      GetStateOfTabReloader(GetWebContents());
+  EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_TIMER_RUNNING,
+            new_state);
+}
+
+// Test that CaptivePortalTabHelper does not support the redirect navigation on
+// non-primary trees.
+IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
+                       DontFireOnRedirectDuringPrerendering) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  // Use an HTTPS server for the top level page.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_render_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_render_frame_host, nullptr);
+  prerender_helper().NavigatePrerenderedPage(
+      host_id, https_server.GetURL(CreateServerRedirect(prerender_url.spec())));
+  EXPECT_EQ(prerender_url, prerender_render_frame_host->GetLastCommittedURL());
+
+  // Only the primary main frame supports the redirect navigation. So, Crash
+  // should not occur when navigating the prerendered page with the redirect
+  // URL because CaptivePortalTabHelper::DidRedirectNavigation should not be
+  // called during prerendering.
+
+  // Set CaptivePortalTabReloader's state to STATE_TIMER_RUNNING to check if
+  // the state is changed after activating the prerendered page. The state
+  // should be STATE_NONE because CaptivePortalTabHelper will call OnRedirect()
+  // after activating.
+  SetState(captive_portal::CaptivePortalTabReloader::STATE_TIMER_RUNNING);
+  // Activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(
+      https_server.GetURL(CreateServerRedirect(prerender_url.spec())));
+  captive_portal::CaptivePortalTabReloader::State new_state =
+      GetStateOfTabReloader(GetWebContents());
+  EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE, new_state);
 }
