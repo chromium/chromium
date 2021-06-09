@@ -544,8 +544,14 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (mGroupIdToGroupMap.get(groupId).size() == 1) {
                 mActualGroupCount++;
                 // TODO(crbug.com/1188370): Update UMA for Context menu creation.
-                if (mShouldRecordUma && mGroupAutoCreation
-                        && tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
+                if (mShouldRecordUma
+                        && ((mGroupAutoCreation
+                                    && tab.getLaunchType()
+                                            == TabLaunchType.FROM_LONGPRESS_BACKGROUND)
+                                || (!mGroupAutoCreation
+                                        && tab.getLaunchType()
+                                                == TabLaunchType
+                                                           .FROM_LONGPRESS_BACKGROUND_IN_GROUP))) {
                     RecordUserAction.record("TabGroup.Created.OpenInNewTab");
                 }
             }
