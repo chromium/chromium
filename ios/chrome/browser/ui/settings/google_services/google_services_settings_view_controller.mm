@@ -44,7 +44,10 @@
       [self.tableViewModel indexPathForItemType:sender.tag];
   DCHECK(indexPath);
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.serviceDelegate toggleSwitchItem:item withValue:sender.isOn];
+  CGRect targetRect = [self.view convertRect:sender.bounds fromView:sender];
+  [self.serviceDelegate toggleSwitchItem:item
+                               withValue:sender.isOn
+                              targetRect:targetRect];
 }
 
 #pragma mark - UITableViewDataSource

@@ -278,7 +278,8 @@ using signin_metrics::PromoAction;
         baseViewController:self.googleServicesSettingsViewController];
 }
 
-- (void)showSignOut:(signin_ui::CompletionCallback)completion {
+- (void)showSignOutFromTargetRect:(CGRect)targetRect
+                       completion:(signin_ui::CompletionCallback)completion {
   DCHECK(completion);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
@@ -298,7 +299,7 @@ using signin_metrics::PromoAction;
                          browser:self.browser
                            title:title
                          message:message
-                            rect:self.viewController.view.frame
+                            rect:targetRect
                             view:self.viewController.view];
 
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
@@ -313,7 +314,9 @@ using signin_metrics::PromoAction;
                   // syncing their data.
                   if (weakSelf.identityManager->HasPrimaryAccount(
                           signin::ConsentLevel::kSync)) {
-                    [weakSelf showDataRetentionOptions:completion];
+                    [weakSelf
+                        showDataRetentionOptionsWithTargetRect:targetRect
+                                                    completion:completion];
                     return;
                   }
                   [weakSelf signOutWithCompletion:completion];
@@ -331,12 +334,14 @@ using signin_metrics::PromoAction;
 }
 
 // Displays the option to keep or clear data for a syncing user.
-- (void)showDataRetentionOptions:(signin_ui::CompletionCallback)completion {
+- (void)showDataRetentionOptionsWithTargetRect:(CGRect)targetRect
+                                    completion:(signin_ui::CompletionCallback)
+                                                   completion {
   DCHECK(completion);
   self.dataRetentionStrategyCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                            rect:self.viewController.view.frame
+                            rect:targetRect
                             view:self.viewController.view];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   self.dataRetentionStrategyCoordinator.completion = ^(BOOL success) {

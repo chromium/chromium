@@ -15,7 +15,10 @@
 - (void)showSignIn;
 
 // Presents the sign-out dialog to the user.
-- (void)showSignOut:(signin_ui::CompletionCallback)completion;
+// |targetRect| rect in table view system coordinate to display the signout
+// popover dialog.
+- (void)showSignOutFromTargetRect:(CGRect)targetRect
+                       completion:(signin_ui::CompletionCallback)completion;
 
 // Opens the account setting view.
 - (void)openAccountSettings;
