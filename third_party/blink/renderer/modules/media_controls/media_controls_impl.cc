@@ -159,6 +159,17 @@ bool ShouldShowPlaybackSpeedButton(HTMLMediaElement& media_element) {
                       WebFeature::kHTMLMediaElementControlsListNoPlaybackRate);
     return false;
   }
+
+  // A MediaStream is not seekable.
+  if (media_element.GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return false;
+
+  // Don't allow for live infinite streams.
+  if (media_element.duration() == std::numeric_limits<double>::infinity() &&
+      media_element.getReadyState() > HTMLMediaElement::kHaveNothing) {
+    return false;
+  }
+
   return true;
 }
 
