@@ -34,6 +34,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/notes/android:java",

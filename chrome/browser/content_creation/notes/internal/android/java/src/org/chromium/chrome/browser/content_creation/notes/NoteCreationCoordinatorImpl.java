@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.content_creation.notes;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontService;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordinator;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarDelegate;
@@ -22,14 +24,16 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.content_creation.notes.NoteService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Responsible for notes main UI and its subcomponents.
  */
 public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, TopBarDelegate {
-    private static final String NOTE_FILENAME_PREFIX = "Note";
     private static final String PNG_MIME_TYPE = "image/PNG";
 
     private final Activity mActivity;
@@ -88,17 +92,14 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         noteView.draw(canvas);
 
         ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                NOTE_FILENAME_PREFIX, bitmap, (imageUri) -> {
-                    // TODO(crbug.com/2912180): Change to localized title with
-                    // date.
-                    final String sheetTitle = "Stylized Note";
-                    ShareParams params = new ShareParams
-                                                 .Builder(mTab.getWindowAndroid(),
-                                                         /*title=*/sheetTitle, mShareUrl)
-                                                 .setFileUris(new ArrayList<>(
-                                                         Collections.singletonList(imageUri)))
-                                                 .setFileContentType(PNG_MIME_TYPE)
-                                                 .build();
+                getNoteFilenamePrefix(), bitmap, (imageUri) -> {
+                    final String sheetTitle = getShareSheetTitle();
+                    ShareParams params =
+                            new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, mShareUrl)
+                                    .setFileUris(
+                                            new ArrayList<>(Collections.singletonList(imageUri)))
+                                    .setFileContentType(PNG_MIME_TYPE)
+                                    .build();
 
                     long shareStartTime = System.currentTimeMillis();
                     ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
@@ -116,5 +117,34 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     private void onViewCreated(View view) {
         mTopBarCoordinator = new TopBarCoordinator(mActivity, view, this);
         mDialog.createRecyclerViews(mListModel);
+    }
+
+    /**
+     * Returns the localized temporary filename's prefix. Random numbers will be
+     * appended to it when the file creation happens.
+     */
+    private String getNoteFilenamePrefix() {
+        return mActivity.getString(R.string.content_creation_note_filename_prefix);
+    }
+
+    /**
+     * Creates the share sheet title based on a localized title format and the
+     * current date formatted for the user's preferred locale.
+     */
+    private String getShareSheetTitle() {
+        Date now = new Date(System.currentTimeMillis());
+        String currentDateString =
+                DateFormat.getDateInstance(DateFormat.SHORT, getPreferredLocale()).format(now);
+        return mActivity.getString(
+                R.string.content_creation_note_title_for_share, currentDateString);
+    }
+
+    /**
+     * Retrieves the user's preferred locale from the app's configurations.
+     */
+    private Locale getPreferredLocale() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? mActivity.getResources().getConfiguration().getLocales().get(0)
+                : mActivity.getResources().getConfiguration().locale;
     }
 }

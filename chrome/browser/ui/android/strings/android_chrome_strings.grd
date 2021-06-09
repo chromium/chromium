@@ -4772,6 +4772,13 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         List of accounts to be selected is closed.
       </message>
 
+      <!-- Content Creation strings -->
+      <message name="IDS_CONTENT_CREATION_NOTE_TITLE_FOR_SHARE" desc="The title of the share sheet when sharing a stylized note. The date will be formatted according to the current locale.">
+        Stylized highlight <ph name="CURRENT_DATE">%1$s<ex>2020-09-16</ex></ph>
+      </message>
+      <message name="IDS_CONTENT_CREATION_NOTE_FILENAME_PREFIX" desc="Prefix used to name files when saving a Note's image representation. Underscores need to be used in place of whitespaces to avoid breaking the file path. Random numbers will be appended to this suffix to guarantee uniqueness.">
+        chrome_stylized_highlight_
+      </message>
     </messages>
   </release>
 </grit>
