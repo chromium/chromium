@@ -75,6 +75,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       error_callback_(BindRepeatingDawnCallback(&GPUDevice::OnUncapturedError,
                                                 WrapWeakPersistent(this))),
+      logging_callback_(BindRepeatingDawnCallback(&GPUDevice::OnLogging,
+                                                  WrapWeakPersistent(this))),
       lost_callback_(BindDawnCallback(&GPUDevice::OnDeviceLostError,
                                       WrapWeakPersistent(this))) {
   // Check is necessary because we can't assign a default in the IDL.
@@ -89,6 +91,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   GetProcs().deviceSetUncapturedErrorCallback(
       GetHandle(), error_callback_->UnboundRepeatingCallback(),
       error_callback_->AsUserdata());
+  GetProcs().deviceSetLoggingCallback(
+      GetHandle(), logging_callback_->UnboundRepeatingCallback(),
+      logging_callback_->AsUserdata());
   GetProcs().deviceSetDeviceLostCallback(GetHandle(),
                                          lost_callback_->UnboundCallback(),
                                          lost_callback_->AsUserdata());
@@ -142,6 +147,39 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
   }
   DispatchEvent(*GPUUncapturedErrorEvent::Create(
       event_type_names::kUncapturederror, init));
+}
+
+void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
+  // Callback function for WebGPU logging return command
+  mojom::blink::ConsoleMessageLevel level;
+  switch (loggingType) {
+    case (WGPULoggingType_Verbose): {
+      level = mojom::blink::ConsoleMessageLevel::kVerbose;
+      break;
+    }
+    case (WGPULoggingType_Info): {
+      level = mojom::blink::ConsoleMessageLevel::kInfo;
+      break;
+    }
+    case (WGPULoggingType_Warning): {
+      level = mojom::blink::ConsoleMessageLevel::kWarning;
+      break;
+    }
+    case (WGPULoggingType_Error): {
+      level = mojom::blink::ConsoleMessageLevel::kError;
+      break;
+    }
+    default: {
+      level = mojom::blink::ConsoleMessageLevel::kError;
+      break;
+    }
+  }
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (execution_context) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering, level, message);
+    execution_context->AddConsoleMessage(console_message);
+  }
 }
 
 void GPUDevice::OnDeviceLostError(const char* message) {

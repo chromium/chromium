@@ -134,6 +134,7 @@ class GPUDevice final : public EventTargetWithInlineData,
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
+  void OnLogging(WGPULoggingType loggingType, const char* message);
   void OnDeviceLostError(const char* message);
 
   void OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
@@ -158,6 +159,9 @@ class GPUDevice final : public EventTargetWithInlineData,
   std::unique_ptr<
       DawnCallback<base::RepeatingCallback<void(WGPUErrorType, const char*)>>>
       error_callback_;
+  std::unique_ptr<
+      DawnCallback<base::RepeatingCallback<void(WGPULoggingType, const char*)>>>
+      logging_callback_;
   // lost_callback_ is stored as a unique_ptr since it may never be called.
   // We need to be sure to free it on deletion of the device.
   // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
