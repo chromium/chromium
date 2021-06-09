@@ -94,8 +94,11 @@ export function highlight(node, ranges) {
     } else {
       const hitSpan = document.createElement('span');
       hitSpan.classList.add(HIT_CSS_CLASS);
-      hitSpan.style.backgroundColor = '#ffeb3b';  // var(--paper-yellow-500)
-      hitSpan.style.color = '#202124';            // var(--google-grey-900)
+      // Defaults to the color associated with --paper-yellow-500.
+      hitSpan.style.backgroundColor =
+          'var(--search-highlight-hit-background-color, #ffeb3b)';
+      // Defaults to the color associated with --google-grey-900.
+      hitSpan.style.color = 'var(--search-highlight-hit-color, #202124)';
       hitSpan.textContent = tokens[i];
       wrapper.appendChild(hitSpan);
     }

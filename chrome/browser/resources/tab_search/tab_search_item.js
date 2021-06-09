@@ -127,11 +127,7 @@ export class TabSearchItem extends TabSearchItemBase {
     const node = document.createTextNode(text);
     container.appendChild(node);
     if (ranges) {
-      const result = highlight(node, ranges, true);
-      // Delete default highlight style.
-      result.querySelectorAll('.search-highlight-hit').forEach(e => {
-        e.style = '';
-      });
+      highlight(node, ranges);
     }
   }
 
