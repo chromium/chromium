@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/chromeos/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -117,4 +117,4 @@ class AffiliatedInvalidationServiceProviderImpl
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_

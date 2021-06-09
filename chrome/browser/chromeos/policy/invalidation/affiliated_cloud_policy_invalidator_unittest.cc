@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/affiliated_cloud_policy_invalidator.h"
+#include "chrome/browser/chromeos/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 
 #include <stdint.h>
 
@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/browser/chromeos/policy/fake_affiliated_invalidation_service_provider.h"
+#include "chrome/browser/chromeos/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
@@ -55,8 +55,7 @@ class FakeCloudPolicyStore : public CloudPolicyStore {
   DISALLOW_COPY_AND_ASSIGN(FakeCloudPolicyStore);
 };
 
-FakeCloudPolicyStore::FakeCloudPolicyStore() {
-}
+FakeCloudPolicyStore::FakeCloudPolicyStore() {}
 
 void FakeCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
   policy_ = std::make_unique<em::PolicyData>();
@@ -142,12 +141,11 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   policy_client->SetFetchedInvalidationVersion(invalidation_version);
   policy.payload().mutable_reboot_on_shutdown()->set_reboot_on_shutdown(true);
   policy.Build();
-  policy_client->SetPolicy(dm_protocol::kChromeDevicePolicyType,
-                           std::string(),
+  policy_client->SetPolicy(dm_protocol::kChromeDevicePolicyType, std::string(),
                            policy.policy());
   EXPECT_CALL(*policy_client, FetchPolicy())
-      .WillOnce(Invoke(policy_client,
-                       &MockCloudPolicyClient::NotifyPolicyFetched));
+      .WillOnce(
+          Invoke(policy_client, &MockCloudPolicyClient::NotifyPolicyFetched));
   base::RunLoop().RunUntilIdle();
 
   // Verify that the invalidator's highest handled invalidation version was

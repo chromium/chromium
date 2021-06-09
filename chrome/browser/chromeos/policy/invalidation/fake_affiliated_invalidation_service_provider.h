@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 
-#include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"
 #include "base/macros.h"
+#include "chrome/browser/chromeos/policy/invalidation/affiliated_invalidation_service_provider.h"
 
 namespace policy {
 
@@ -26,4 +26,4 @@ class FakeAffiliatedInvalidationServiceProvider
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
