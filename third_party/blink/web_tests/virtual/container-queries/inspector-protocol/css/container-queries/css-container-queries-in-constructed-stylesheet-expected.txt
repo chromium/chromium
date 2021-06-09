@@ -1,0 +1,26 @@
+Test CSS.getMatchedStylesForNode and CSS.setContainerQueryText methods for container queries in a constructed stylesheet
+@container (min-width: 100px)
+    *.item* {    regular
+        font-size: 1px; @[2:10-2:25]
+        font-size: 1px; @[undefined-undefined]
+    }
+==== Style sheet text ====
+#parent { width: 200px; contain: size layout style; }
+@container (max-width: 300px) {
+  .item { font-size: 1px; }
+}
+
+Dumping matched rules: 
+@container (max-width: 300px)
+    *.item* {    regular
+        font-size: 1px; @[2:10-2:25]
+        font-size: 1px; @[undefined-undefined]
+    }
+Dumping inherited rules: 
+*#parent* {    regular
+    width: 200px; @[0:10-0:23]
+    contain: size layout style; @[0:24-0:51]
+    width: 200px; @[undefined-undefined]
+    contain: size layout style; @[undefined-undefined]
+}
+

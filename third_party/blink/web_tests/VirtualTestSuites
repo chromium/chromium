@@ -695,7 +695,8 @@
     "prefix": "container-queries",
     "bases": ["wpt_internal/css/css-conditional/container-queries",
               "wpt_internal/css/css-contain",
-              "inspector-protocol/css/css-get-styles-for-node.js"],
+              "inspector-protocol/css/css-get-styles-for-node.js",
+              "inspector-protocol/css/container-queries"],
     "args": ["--enable-blink-features=CSSContainerQueries"]
   },
   {

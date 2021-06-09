@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script>
+const sheet = new CSSStyleSheet();
+
+sheet.replaceSync(`
+  #parent {
+    width: 200px;
+    contain: layout style size;
+  }
+
+  @container (min-width: 100px) {
+    .item {
+      font-size: 1px;
+    }
+  }
+`);
+
+// Apply the stylesheet to a document:
+document.adoptedStyleSheets = [sheet];
+</script>
+<div id="parent"><div class="item"></div></div>

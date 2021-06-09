@@ -1,0 +1,28 @@
+Tests CSS.setContainerQueryText method.
+==== Initial style sheet text ====
+@container (max-width: 200px) and (min-height: 100px) {
+  div {
+    color: red;
+  }
+}
+
+
+Running test: testSimpleEdit
+ERROR: SyntaxError Selector or container query text is not valid.
+
+Running test: testFeatureChange
+ERROR: SyntaxError Selector or container query text is not valid.
+
+Running test: testInvalidParameters
+Expected protocol error: Invalid parameters (Failed to deserialize params.range.startLine - BINDINGS: int32 value expected <somewhere>)
+
+Running test: testInvalidText
+Expected protocol error: SyntaxError Selector or container query text is not valid.
+
+Running test: testEditSequentially
+ERROR: SyntaxError Selector or container query text is not valid.
+ERROR: SyntaxError Selector or container query text is not valid.
+
+Running test: testAfterSequentially
+ERROR: SyntaxError Selector or container query text is not valid.
+

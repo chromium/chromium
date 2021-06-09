@@ -1698,6 +1698,16 @@ experimental domain CSS
       # The resulting CSS media rule after modification.
       CSSMedia media
 
+  # Modifies the expression of a container query.
+  experimental command setContainerQueryText
+    parameters
+      StyleSheetId styleSheetId
+      SourceRange range
+      string text
+    returns
+      # The resulting CSS container query rule after modification.
+      CSSContainerQuery containerQuery
+
   # Modifies the rule selector.
   command setRuleSelector
     parameters

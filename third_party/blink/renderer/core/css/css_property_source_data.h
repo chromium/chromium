@@ -97,6 +97,8 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
     return type == StyleRule::kMedia || type == StyleRule::kImport;
   }
 
+  bool HasContainer() const { return type == StyleRule::kContainer; }
+
   StyleRule::RuleType type;
 
   // Range of the selector list in the enclosing source.
