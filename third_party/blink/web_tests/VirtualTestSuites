@@ -352,7 +352,7 @@
               "external/wpt/css/css-grid",
               "external/wpt/css/css-contain",
               "external/wpt/css/css-sizing/contain-intrinsic-size"],
-    "args": ["--enable-blink-features=LayoutNGGrid"]
+    "args": ["--disable-blink-features=LayoutNGGrid"]
   },
   {
     "prefix": "layout_ng_svg_text",

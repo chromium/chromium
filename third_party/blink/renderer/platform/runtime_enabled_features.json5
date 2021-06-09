@@ -1137,7 +1137,7 @@
       // provides a convenient way for testing legacy layout code path in blink
       // unit tests.
       name: "LayoutNG",
-      implied_by: ["LayoutNGGrid", "BidiCaretAffinity", "CSSContainerQueries"],
+      implied_by: ["BidiCaretAffinity", "CSSContainerQueries"],
       status: "stable",
     },
     {
@@ -1159,7 +1159,8 @@
     },
     {
       name: "LayoutNGGrid",
-      implied_by: ["CSSContainerQueries"],
+      depends_on: ["LayoutNG"],
+      status: "test",
     },
     {
       name: "LayoutNGLayoutOverflowRecalc",
