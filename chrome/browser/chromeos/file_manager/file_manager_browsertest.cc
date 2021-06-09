@@ -269,11 +269,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("fileDisplayDownloads"),
-#if !defined(OFFICIAL_BUILD)
-        TestCase("fileDisplayDownloads").FilesSwa(),
-#endif
         TestCase("fileDisplayDownloads").InGuestMode(),
         TestCase("fileDisplayDownloads").TabletMode(),
+#if !defined(OFFICIAL_BUILD)
+        TestCase("fileDisplayDownloads").FilesSwa(),
+        TestCase("fileDisplayDownloads").FilesSwa().InGuestMode(),
+        TestCase("fileDisplayDownloads").FilesSwa().TabletMode(),
+#endif
         TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks(),
         TestCase("fileDisplayDrive").TabletMode(),
@@ -976,14 +978,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     InstallLinuxPackageDialog, /* install_linux_package_dialog.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("installLinuxPackageDialog")));
-
-#if !defined(OFFICIAL_BUILD)
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    LaunchFilesAppSwa, /* launch_files_app_swa.js */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("launchFilesAppSwa").FilesSwa(),
-                      TestCase("launchFilesAppSwa").FilesSwa().InGuestMode()));
-#endif
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
