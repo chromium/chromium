@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/callback_helpers.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
@@ -84,6 +85,11 @@ ProjectorMarkerColor GetMarkerColor(SkColor color) {
   }
 }
 
+gfx::Rect GetScreenBounds() {
+  return WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
+      ->user_work_area_bounds();
+}
+
 }  // namespace
 
 // This class controls the interaction with the caption bubble. It keeps track
@@ -93,9 +99,8 @@ class ProjectorUiController::CaptionBubbleController
  public:
   explicit CaptionBubbleController(ProjectorUiController* controller)
       : controller_(controller) {
-    aura::Window* root_window = Shell::Get()->GetRootWindowForNewWindows();
     caption_bubble_model_ = std::make_unique<captions::CaptionBubbleModel>(
-        root_window->GetBoundsInScreen(), base::NullCallback());
+        GetScreenBounds(), base::NullCallback());
 
     auto* caption_bubble = new captions::CaptionBubble(
         base::NullCallback(), /* hide_on_inactivity= */ false);
