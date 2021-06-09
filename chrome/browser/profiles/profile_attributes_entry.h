@@ -328,12 +328,6 @@ class ProfileAttributesEntry {
   std::string storage_key_;
   std::u16string last_name_to_display_;
 
-  // A separate boolean flag indicates whether the signin is required when force
-  // signin is enabled. So that the profile locked status will be stored in
-  // memory only and can be easily reset once the policy is turned off.
-  bool is_force_signin_profile_locked_ = false;
-  bool is_force_signin_enabled_;
-
   // Indicates whether the profile should not be displayed to the user in the
   // list of profiles. This flag is intended to work only with ephemeral
   // profiles which get removed after the browser restart. Thus, this flag is

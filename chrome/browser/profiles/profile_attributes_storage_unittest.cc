@@ -810,36 +810,48 @@ TEST_F(ProfileAttributesStorageTest, IsSigninRequiredOnInit_Authenticated) {
 }
 
 TEST_F(ProfileAttributesStorageTest,
-       IsSigninRequiredOnInit_AuthenticatedWithError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kForceSignInReauth);
-  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-
+       IsSigninRequiredOnInit_FromPreviousSession) {
   base::FilePath profile_path = GetProfilePath("testing_profile_path");
-  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  {
+    signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
 
-  ProfileAttributesInitParams params;
-  params.profile_path = profile_path;
-  params.profile_name = u"testing_profile_name";
-  params.gaia_id = "testing_profile_gaia";
-  params.user_name = u"testing_profile_username";
-  params.is_consented_primary_account = true;
-  storage()->AddProfile(std::move(params));
+    EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
 
-  VerifyAndResetCallExpectations();
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = u"testing_profile_name";
+    params.gaia_id = "testing_profile_gaia";
+    params.user_name = u"testing_profile_username";
+    params.is_consented_primary_account = true;
+    storage()->AddProfile(std::move(params));
 
-  // IsAuthError() cannot be set as an init parameter. Set it after an entry
-  // is initialized and reset the cache to reinitialize an entry from prefs.
+    VerifyAndResetCallExpectations();
+
+    // IsSigninRequired() cannot be set as an init parameter. Set it after an
+    // entry is initialized and reset the cache to reinitialize an entry from
+    // prefs.
+    EXPECT_CALL(observer(), OnProfileSigninRequiredChanged(profile_path))
+        .Times(1);
+    ProfileAttributesEntry* entry =
+        storage()->GetProfileAttributesWithPath(profile_path);
+    entry->LockForceSigninProfile(true);
+    VerifyAndResetCallExpectations();
+    testing_profile_manager_.DeleteProfileInfoCache();
+
+    entry = storage()->GetProfileAttributesWithPath(profile_path);
+    ASSERT_NE(entry, nullptr);
+    EXPECT_TRUE(entry->IsAuthenticated());
+    EXPECT_TRUE(entry->IsSigninRequired());
+  }
+
+  // Reset the cache once more after the policy has been disabled and check that
+  // sign-in is no longer required.
+  testing_profile_manager_.DeleteProfileInfoCache();
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
-  entry->SetIsAuthError(true);
-  testing_profile_manager_.DeleteProfileInfoCache();
-
-  entry = storage()->GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsAuthenticated());
-  EXPECT_TRUE(entry->IsAuthError());
-  EXPECT_TRUE(entry->IsSigninRequired());
+  EXPECT_FALSE(entry->IsSigninRequired());
 }
 
 TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {

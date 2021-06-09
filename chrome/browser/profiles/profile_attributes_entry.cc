@@ -51,9 +51,12 @@ const char kGAIAGivenNameKey[] = "gaia_given_name";
 const char kGAIANameKey[] = "gaia_name";
 const char kShortcutNameKey[] = "shortcut_name";
 const char kActiveTimeKey[] = "active_time";
+// TODO(https://crbug.com/1211292): this pref is obsolete. Remove it.
 const char kIsAuthErrorKey[] = "is_auth_error";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
+// TODO(https://crbug.com/1211292): this pref is obsolete. Remove it.
 const char kSigninRequiredKey[] = "signin_required";
+const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
 
 // Profile colors info.
@@ -156,23 +159,25 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
     }
   }
 
-  is_force_signin_enabled_ = signin_util::IsForceSigninEnabled();
-  if (is_force_signin_enabled_) {
-    if (!IsAuthenticated() ||
-        (IsAuthError() &&
-         base::FeatureList::IsEnabled(features::kForceSignInReauth))) {
-      is_force_signin_profile_locked_ = true;
-    }
+  if (signin_util::IsForceSigninEnabled()) {
+    if (!IsAuthenticated())
+      SetBool(kForceSigninProfileLockedKey, true);
+  } else {
+    // Reset the locked state to avoid a profile being locked after the force
+    // signin policy has been disabled.
+    SetBool(kForceSigninProfileLockedKey, false);
+  }
+
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
-  } else if (IsSigninRequired()) {
+  if (!signin_util::IsForceSigninEnabled() && IsSigninRequired()) {
     // Profiles that require signin in the absence of an enterprise policy are
     // left-overs from legacy supervised users. Just unlock them, so users can
     // keep using them.
     SetAuthInfo(std::string(), std::u16string(), false);
     SetIsSigninRequired(false);
-#endif
   }
+#endif
 }
 
 void ProfileAttributesEntry::InitializeLastNameToDisplay() {
@@ -378,7 +383,7 @@ bool ProfileAttributesEntry::IsOmitted() const {
 }
 
 bool ProfileAttributesEntry::IsSigninRequired() const {
-  return GetBool(kSigninRequiredKey) || is_force_signin_profile_locked_;
+  return GetBool(kSigninRequiredKey) || GetBool(kForceSigninProfileLockedKey);
 }
 
 std::string ProfileAttributesEntry::GetSupervisedUserId() const {
@@ -553,7 +558,7 @@ void ProfileAttributesEntry::SetIsSigninRequired(bool value) {
     SetBool(kSigninRequiredKey, value);
     profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
   }
-  if (is_force_signin_enabled_)
+  if (signin_util::IsForceSigninEnabled())
     LockForceSigninProfile(value);
 }
 
@@ -564,10 +569,10 @@ void ProfileAttributesEntry::SetSignedInWithCredentialProvider(bool value) {
 }
 
 void ProfileAttributesEntry::LockForceSigninProfile(bool is_lock) {
-  DCHECK(is_force_signin_enabled_);
-  if (is_force_signin_profile_locked_ == is_lock)
+  DCHECK(signin_util::IsForceSigninEnabled());
+  if (GetBool(kForceSigninProfileLockedKey) == is_lock)
     return;
-  is_force_signin_profile_locked_ = is_lock;
+  SetBool(kForceSigninProfileLockedKey, is_lock);
   profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
 }
 
