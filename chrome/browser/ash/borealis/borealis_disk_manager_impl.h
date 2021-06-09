@@ -44,6 +44,10 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   void ReleaseSpace(uint64_t bytes_to_release,
                     base::OnceCallback<void(Expected<uint64_t, std::string>)>
                         callback) override;
+  // TODO(b/174592560): Since there are differing success criteria, we may wish
+  // to split this into Expected<SuccessEnum, ErrorEnum> when we expand on the
+  // error handling.
+  void SyncDiskSize(base::OnceCallback<void(std::string)> callback) override;
 
   void SetFreeSpaceProviderForTesting(
       std::unique_ptr<FreeSpaceProvider> provider) {
@@ -64,6 +68,12 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   // the original state and the second references the updated state after the
   // resize).
   class ResizeDisk;
+
+  // Transition class representing the process of assessing the state of the VM
+  // disk and adjusting it to fit within the appropriate parameters if needed.
+  // Specifically, when the available space on the disk does not match the
+  // target buffer size +/-10%, we will resize the disk.
+  class SyncDisk;
 
   // Handles the results of a GetDiskInfo request.
   void BuildGetDiskInfoResponse(
@@ -87,9 +97,14 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
       Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
                std::string> disk_info_or_error);
 
+  void OnSyncDiskSize(base::OnceCallback<void(std::string)> callback,
+                      Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
+                          disk_info_or_error);
+
   const BorealisContext* const context_;
   std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
   std::unique_ptr<ResizeDisk> resize_disk_transition_;
+  std::unique_ptr<SyncDisk> sync_disk_transition_;
   std::unique_ptr<FreeSpaceProvider> free_space_provider_;
   base::WeakPtrFactory<BorealisDiskManagerImpl> weak_factory_;
 };

@@ -26,10 +26,14 @@
 
 namespace borealis {
 
+struct Nothing {};
+
 constexpr int64_t kGiB = 1024 * 1024 * 1024;
 constexpr int64_t kDiskHeadroomBytes = 1 * kGiB;
 constexpr int64_t kTargetBufferBytes = 2 * kGiB;
 constexpr int64_t kDiskRoundingBytes = 2 * 1024 * 1024;
+constexpr int64_t kTargetBufferLowerBound = kTargetBufferBytes * 0.9;
+constexpr int64_t kTargetBufferUpperBound = kTargetBufferBytes * 1.1;
 
 void BorealisDiskManagerImpl::FreeSpaceProvider::Get(
     base::OnceCallback<void(int64_t)> callback) {
@@ -52,6 +56,8 @@ struct BorealisDiskManagerImpl::BorealisDiskInfo {
   int64_t min_size = 0;
   // Image type of the disk.
   vm_tools::concierge::DiskImageType disk_type;
+  // If the disk isn't fixed, we shouldn't be resizing it.
+  bool has_fixed_size = 0;
 };
 
 BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
@@ -129,6 +135,7 @@ class BorealisDiskManagerImpl::BuildDiskInfo
     disk_info_->min_size = image->min_size();
     disk_info_->disk_size = image->size();
     disk_info_->disk_type = image->image_type();
+    disk_info_->has_fixed_size = image->user_chosen_size();
 
     Succeed(std::move(disk_info_));
   }
@@ -190,12 +197,11 @@ class BorealisDiskManagerImpl::ResizeDisk
       return;
     }
     if (space_delta_ < 0) {
-      if (original_disk_info_.available_space + space_delta_ <=
+      if (original_disk_info_.available_space + space_delta_ <
           kTargetBufferBytes) {
         Fail("shrinking the disk would not leave enough space available");
         return;
       }
-
       if (original_disk_info_.disk_size + space_delta_ <=
           original_disk_info_.min_size) {
         Fail("cannot shrink the disk below its minimum size");
@@ -284,8 +290,88 @@ class BorealisDiskManagerImpl::ResizeDisk
   BorealisDiskInfo updated_disk_info_;
   const BorealisContext* const context_;
   std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
-  std::unique_ptr<BorealisDiskManagerImpl::BorealisDiskInfo> start_instance_;
   base::WeakPtrFactory<ResizeDisk> weak_factory_;
+};
+
+class BorealisDiskManagerImpl::SyncDisk
+    : public Transition<Nothing, BorealisDiskInfo, std::string> {
+ public:
+  explicit SyncDisk(
+      BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider,
+      const BorealisContext* context)
+      : free_space_provider_(free_space_provider),
+        context_(context),
+        build_disk_info_transition_(free_space_provider_, context_),
+        weak_factory_(this) {}
+
+  void Start(std::unique_ptr<Nothing> start_instance) override {
+    build_disk_info_transition_.Begin(
+        std::make_unique<BorealisDiskInfo>(),
+        base::BindOnce(&SyncDisk::HandleDiskInfo, weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void HandleDiskInfo(Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
+                          disk_info_or_error) {
+    if (!disk_info_or_error) {
+      Fail("BuildDiskInfo failed: " + disk_info_or_error.Error());
+      return;
+    }
+    if (!disk_info_or_error.Value()->has_fixed_size) {
+      // We're currently not handling sparse sized disks.
+      Succeed(std::move(disk_info_or_error.Value()));
+      return;
+    }
+    const BorealisDiskInfo& disk_info = *disk_info_or_error.Value();
+    if (IsDiskSizeWithinBounds(disk_info)) {
+      Succeed(std::move(disk_info_or_error.Value()));
+      return;
+    }
+    int64_t delta = kTargetBufferBytes - disk_info.available_space;
+    if (delta > disk_info.expandable_space) {
+      delta = disk_info.expandable_space;
+    }
+    if (delta == 0) {
+      LOG(WARNING) << "borealis' available space is not within parameters, "
+                      "but there is not enough free space to expand it";
+      Succeed(std::move(disk_info_or_error.Value()));
+      return;
+    }
+    resize_disk_transition_ =
+        std::make_unique<ResizeDisk>(delta, free_space_provider_, context_);
+    resize_disk_transition_->Begin(
+        std::move(disk_info_or_error.Value()),
+        base::BindOnce(&SyncDisk::HandleResizeAttempt,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  void HandleResizeAttempt(
+      Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
+               std::string> disk_info_or_error) {
+    if (!disk_info_or_error) {
+      Fail("resize failed: " + disk_info_or_error.Error());
+      return;
+    }
+    if (!IsDiskSizeWithinBounds(disk_info_or_error.Value()->second)) {
+      LOG(WARNING) << "disk resized successfully, but available space is not "
+                      "within its parameters";
+    }
+    Succeed(
+        std::make_unique<BorealisDiskInfo>(disk_info_or_error.Value()->second));
+    return;
+  }
+
+  bool IsDiskSizeWithinBounds(const BorealisDiskInfo& disk_info) {
+    return disk_info.available_space >= kTargetBufferLowerBound &&
+           disk_info.available_space <= kTargetBufferUpperBound;
+  }
+
+  BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider_;
+  const BorealisContext* const context_;
+  BuildDiskInfo build_disk_info_transition_;
+  std::unique_ptr<ResizeDisk> resize_disk_transition_;
+  base::WeakPtrFactory<SyncDisk> weak_factory_;
 };
 
 void BorealisDiskManagerImpl::GetDiskInfo(
@@ -414,6 +500,35 @@ void BorealisDiskManagerImpl::ReleaseSpace(
     return;
   }
   RequestSpaceDelta(int64_t(bytes_to_release) * -1, std::move(callback));
+}
+
+void BorealisDiskManagerImpl::SyncDiskSize(
+    base::OnceCallback<void(std::string)> callback) {
+  if (sync_disk_transition_) {
+    std::string error = "another SyncDiskSize request is in progress";
+    LOG(ERROR) << error;
+    std::move(callback).Run(std::move(error));
+    return;
+  }
+  sync_disk_transition_ =
+      std::make_unique<SyncDisk>(free_space_provider_.get(), context_);
+  sync_disk_transition_->Begin(
+      std::make_unique<Nothing>(),
+      base::BindOnce(&BorealisDiskManagerImpl::OnSyncDiskSize,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BorealisDiskManagerImpl::OnSyncDiskSize(
+    base::OnceCallback<void(std::string)> callback,
+    Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
+        disk_info_or_error) {
+  sync_disk_transition_.reset();
+  std::string error = "";
+  if (!disk_info_or_error) {
+    error = "SyncDiskSize failed: " + disk_info_or_error.Error();
+    LOG(ERROR) << error;
+  }
+  std::move(callback).Run(std::move(error));
 }
 
 }  // namespace borealis

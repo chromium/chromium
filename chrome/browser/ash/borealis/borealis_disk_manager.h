@@ -45,6 +45,10 @@ class BorealisDiskManager {
   virtual void ReleaseSpace(
       uint64_t bytes_to_release,
       base::OnceCallback<void(Expected<uint64_t, std::string>)> callback) = 0;
+
+  // Assesses the disk and resizes it so that it fits within the desired
+  // constraints. Returns an empty string on success or an error.
+  virtual void SyncDiskSize(base::OnceCallback<void(std::string)> callback) = 0;
 };
 
 }  // namespace borealis

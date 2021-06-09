@@ -61,7 +61,8 @@ enum class BorealisStartupResult {
   kDiskImageFailed = 3,
   kStartVmFailed = 4,
   kAwaitBorealisStartupFailed = 5,
-  kMaxValue = kAwaitBorealisStartupFailed,
+  kSyncDiskFailed = 6,
+  kMaxValue = kSyncDiskFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

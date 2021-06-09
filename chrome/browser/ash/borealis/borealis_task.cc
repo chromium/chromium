@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
+#include "chrome/browser/ash/borealis/borealis_disk_manager.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -180,4 +182,24 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
   context->set_container_name(container.value());
   Complete(BorealisStartupResult::kSuccess, "");
 }
+
+SyncBorealisDisk::SyncBorealisDisk() = default;
+SyncBorealisDisk::~SyncBorealisDisk() = default;
+
+void SyncBorealisDisk::RunInternal(BorealisContext* context) {
+  context->get_disk_manager().SyncDiskSize(
+      base::BindOnce(&SyncBorealisDisk::OnSyncBorealisDisk,
+                     weak_factory_.GetWeakPtr(), context));
+}
+
+void SyncBorealisDisk::OnSyncBorealisDisk(BorealisContext* context,
+                                          std::string error) {
+  if (!error.empty()) {
+    Complete(BorealisStartupResult::kSyncDiskFailed,
+             "Failed to sync disk: " + error);
+    return;
+  }
+  Complete(BorealisStartupResult::kSuccess, "");
+}
+
 }  // namespace borealis

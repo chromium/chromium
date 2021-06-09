@@ -47,6 +47,10 @@ class BorealisContext {
   const base::FilePath& disk_path() const { return disk_path_; }
   void set_disk_path(base::FilePath path) { disk_path_ = std::move(path); }
 
+  BorealisDiskManager& get_disk_manager() { return *disk_manager_.get(); }
+  void SetDiskManagerForTesting(
+      std::unique_ptr<BorealisDiskManager> disk_manager);
+
   // Called to signal that this Borealis VM is being unexpectedly shut down.
   // Not to be called during intentional shutdowns.
   void NotifyUnexpectedVmShutdown();

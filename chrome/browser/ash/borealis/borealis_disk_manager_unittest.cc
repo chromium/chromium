@@ -29,6 +29,9 @@
 namespace borealis {
 namespace {
 
+using ::testing::_;
+using ::testing::Not;
+
 constexpr int64_t kGiB = 1024 * 1024 * 1024;
 
 class FreeSpaceProviderMock
@@ -44,6 +47,8 @@ using DiskInfoCallbackFactory = StrictCallbackFactory<void(
 
 using RequestDeltaCallbackFactory =
     StrictCallbackFactory<void(Expected<uint64_t, std::string>)>;
+
+using SyncDiskCallbackFactory = NiceCallbackFactory<void(std::string)>;
 
 class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
  public:
@@ -135,18 +140,16 @@ class BorealisDiskManagerTest : public testing::Test {
     profile_ = profile_builder.Build();
   }
 
-  vm_tools::concierge::ListVmDisksResponse BuildListVmDisksResponse(
-      bool success,
-      const std::string& vm_name,
-      vm_tools::concierge::DiskImageType image_type,
+  vm_tools::concierge::ListVmDisksResponse BuildValidListVmDisksResponse(
       int64_t min_size,
       int64_t size,
       int64_t available_space) {
     vm_tools::concierge::ListVmDisksResponse response;
     auto* image = response.add_images();
-    response.set_success(success);
-    image->set_name(vm_name);
-    image->set_image_type(image_type);
+    response.set_success(true);
+    image->set_name("vm_name1");
+    image->set_image_type(vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW);
+    image->set_user_chosen_size(true);
     image->set_min_size(min_size);
     image->set_size(size);
     image->set_available_space(available_space);
@@ -171,13 +174,13 @@ class BorealisDiskManagerTest : public testing::Test {
 };
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
         std::move(callback).Run(-1);
       }));
 
   DiskInfoCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_FALSE(response_or_error); }));
@@ -186,7 +189,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             // Concierge will return an empty ListVmDisksResponse.
@@ -196,7 +199,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
           }));
 
   DiskInfoCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_FALSE(response_or_error); }));
@@ -206,20 +209,19 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
 
 TEST_F(BorealisDiskManagerTest,
        GetDiskInfoFailsOnUnsuccessfulResponseFromConcierge) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/false, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
-                    /*available_space=*/1 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
+                /*available_space=*/1 * kGiB);
+            response.set_success(false);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
   DiskInfoCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_FALSE(response_or_error); }));
@@ -228,21 +230,19 @@ TEST_F(BorealisDiskManagerTest,
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true,
-                    /*vm_name=*/"UNMATCHED_VM", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
-                    /*available_space=*/1 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
+                /*available_space=*/1 * kGiB);
+            response.mutable_images()->at(0).set_name("UNMATCHED_VM");
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
   DiskInfoCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_FALSE(response_or_error); }));
@@ -251,20 +251,18 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
   DiskInfoCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) {
@@ -280,25 +278,23 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
   DiskInfoCallbackFactory first_callback_factory;
   DiskInfoCallbackFactory second_callback_factory;
-  EXPECT_CALL(first_callback_factory, Call(testing::_))
+  EXPECT_CALL(first_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_TRUE(response_or_error); }));
-  EXPECT_CALL(second_callback_factory, Call(testing::_))
+  EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_FALSE(response_or_error); }));
@@ -308,17 +304,15 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
-  vm_tools::concierge::ListVmDisksResponse response = BuildListVmDisksResponse(
-      /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-      vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-      /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-      /*available_space=*/3 * kGiB);
+  auto response =
+      BuildValidListVmDisksResponse(/*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                                    /*available_space=*/3 * kGiB);
 
   // This object forces all EXPECT_CALLs to occur in the order they are
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this, response = response](
                               base::OnceCallback<void(int64_t)> callback) {
@@ -327,14 +321,14 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
           }));
 
   DiskInfoCallbackFactory first_callback_factory;
-  EXPECT_CALL(first_callback_factory, Call(testing::_))
+  EXPECT_CALL(first_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_TRUE(response_or_error); }));
   disk_manager_->GetDiskInfo(first_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this, response = response](
                               base::OnceCallback<void(int64_t)> callback) {
@@ -343,7 +337,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
           }));
 
   DiskInfoCallbackFactory second_callback_factory;
-  EXPECT_CALL(second_callback_factory, Call(testing::_))
+  EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
                  response_or_error) { EXPECT_TRUE(response_or_error); }));
@@ -353,7 +347,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
 
 TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfRequestExceedsInt64) {
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -364,21 +358,19 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfRequestExceedsInt64) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true,
-                    /*vm_name=*/"UNMATCHED_VM", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            response.mutable_images()->at(0).set_name("UNMATCHED_VM");
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -388,20 +380,20 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_AUTO,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            response.mutable_images()->at(0).set_image_type(
+                vm_tools::concierge::DiskImageType::DISK_IMAGE_AUTO);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -411,20 +403,18 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -436,20 +426,18 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
 
 TEST_F(BorealisDiskManagerTest,
        RequestDeltaFailsIfRequestWouldNotLeaveEnoughSpace) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -461,20 +449,18 @@ TEST_F(BorealisDiskManagerTest,
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
-                    /*available_space=*/10 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/10 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -485,20 +471,18 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -508,15 +492,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -526,7 +508,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -536,15 +518,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -562,7 +542,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
   fake_concierge_client_->set_disk_image_status_signals(signals);
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -576,15 +556,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -593,13 +571,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
         std::move(callback).Run(-1 * kGiB);
       }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -613,15 +591,13 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -630,20 +606,18 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
-                    /*available_space=*/4 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
+                /*available_space=*/4 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -657,15 +631,13 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/4 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/4 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -674,20 +646,18 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
-                    /*available_space=*/5 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
+                /*available_space=*/5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -701,15 +671,13 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -718,20 +686,18 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
-                    /*available_space=*/5 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
+                /*available_space=*/5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_TRUE(response_or_error);
@@ -746,15 +712,13 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/4 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/4 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -763,20 +727,18 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/19 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/19 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(6 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_TRUE(response_or_error);
@@ -791,27 +753,23 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   // guaranteed, because of that we need to declare the free space provider
   // expectations in reverse order and retire the first expecation when
   // fulfilled.
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
-                    /*available_space=*/5 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
+                /*available_space=*/5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }))
       .RetiresOnSaturation();
@@ -822,13 +780,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_TRUE(response_or_error);
           }));
   RequestDeltaCallbackFactory second_callback_factory;
-  EXPECT_CALL(second_callback_factory, Call(testing::_))
+  EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_FALSE(response_or_error);
@@ -843,15 +801,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
   // declared.
   testing::InSequence sequence;
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                    /*available_space=*/3 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -860,20 +816,18 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
-                    /*available_space=*/5 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
+                /*available_space=*/5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
   RequestDeltaCallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(testing::_))
+  EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_TRUE(response_or_error);
@@ -881,15 +835,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
-                    /*available_space=*/5 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
+                /*available_space=*/5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
@@ -898,26 +850,239 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
   fake_concierge_client_->set_resize_disk_image_response(second_disk_response);
 
-  EXPECT_CALL(*free_space_provider_, Get(testing::_))
+  EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(
-                BuildListVmDisksResponse(
-                    /*success=*/true, /*vm_name=*/"vm_name1", /*image_type=*/
-                    vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW,
-                    /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
-                    /*available_space=*/4 * kGiB));
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
+                /*available_space=*/4 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
   RequestDeltaCallbackFactory second_callback_factory;
-  EXPECT_CALL(second_callback_factory, Call(testing::_))
+  EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<uint64_t, std::string> response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
           }));
   disk_manager_->ReleaseSpace(1 * kGiB, second_callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfGetDiskInfoFails) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            response.mutable_images()->at(0).set_name("UNMATCHED_VM");
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(Not("")));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskNotFixedSize) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/3 * kGiB);
+            response.mutable_images()->at(0).set_user_chosen_size(false);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskCantExpand) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/1 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(0 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskDoesntNeedToExpand) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/2 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(10 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfResizeAttemptFails) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/6 * kGiB,
+                /*available_space=*/3 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(Not("")));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
+  // This is considered "partial" as it should log a warning. There is not
+  // enough space on the device to fully rebuild the buffer to 2GB, but it will
+  // succeed in rebuilding it to 1.5GB.
+
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/1 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(1.5 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7.5 * kGiB,
+                /*available_space=*/1.5 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(1 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeCompleteResizeSucceeds) {
+  // This is a complete success as the buffer is fully resized to 2GB.
+
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/1 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(2 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
+                /*available_space=*/2 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(1 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
+  // We don't use a sequence here because the ordering of expectations is not
+  // guaranteed, because of that we need to declare the free space provider
+  // expectations in reverse order and retire the first expecation when
+  // fulfilled.
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
+                /*available_space=*/2 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(1 * kGiB);
+          }));
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/1 * kGiB);
+            fake_concierge_client_->set_list_vm_disks_response(response);
+            std::move(callback).Run(2 * kGiB);
+          }))
+      .RetiresOnSaturation();
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(""));
+
+  SyncDiskCallbackFactory second_callback_factory;
+  EXPECT_CALL(second_callback_factory, Call(Not("")));
+
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  disk_manager_->SyncDiskSize(second_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 }
 

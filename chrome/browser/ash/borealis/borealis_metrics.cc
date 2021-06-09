@@ -91,5 +91,7 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "Start VM Failed";
     case borealis::BorealisStartupResult::kAwaitBorealisStartupFailed:
       return stream << "Await Borealis Startup Failed";
+    case borealis::BorealisStartupResult::kSyncDiskFailed:
+      return stream << "Syncing Disk failed";
   }
 }

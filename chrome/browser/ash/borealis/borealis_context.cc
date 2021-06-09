@@ -118,6 +118,11 @@ class BorealisLifetimeObserver
 
 BorealisContext::~BorealisContext() = default;
 
+void BorealisContext::SetDiskManagerForTesting(
+    std::unique_ptr<BorealisDiskManager> disk_manager) {
+  disk_manager_ = std::move(disk_manager);
+}
+
 void BorealisContext::NotifyUnexpectedVmShutdown() {
   guest_os_stability_monitor_->LogUnexpectedVmShutdown();
 }

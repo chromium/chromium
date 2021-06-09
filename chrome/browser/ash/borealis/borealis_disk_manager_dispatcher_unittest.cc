@@ -31,6 +31,7 @@ class DiskManagerMock : public BorealisDiskManager {
               (uint64_t,
                base::OnceCallback<void(Expected<uint64_t, std::string>)>),
               ());
+  MOCK_METHOD(void, SyncDiskSize, (base::OnceCallback<void(std::string)>), ());
 };
 
 using DiskInfoCallbackFactory = NiceCallbackFactory<void(
