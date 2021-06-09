@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -118,12 +117,6 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     return query_url_result;
   }
 
-  void NavigateToUrlAsTypeLink(const GURL& url) {
-    NavigateParams params(browser(), url,
-                          ui::PageTransition::PAGE_TRANSITION_LINK);
-    ui_test_utils::NavigateToURL(&params);
-  }
-
  private:
   // Callback for HistoryService::QueryURL.
   void SaveResultAndQuit(bool* success_out,
@@ -210,87 +203,6 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SavingHistoryEnabledThenDisabled) {
     std::vector<GURL> urls(GetHistoryContents());
     ASSERT_EQ(1U, urls.size());
     EXPECT_EQ(GetTestUrl().spec(), urls[0].spec());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SetHideAllNavigations) {
-  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
-  ExpectEmptyHistory();
-
-  HistoryTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
-      ->set_hide_all_navigations(true);
-  NavigateToUrlAsTypeLink(GetTestUrl());
-  WaitForHistoryBackendToRun(GetProfile());
-
-  {
-    auto result = QueryURL(GetTestUrl());
-    ASSERT_TRUE(result.success);
-    EXPECT_TRUE(result.row.hidden());
-    EXPECT_EQ(0, result.row.typed_count());
-    EXPECT_EQ(1, result.row.visit_count());
-    ASSERT_EQ(1u, result.visits.size());
-    EXPECT_FALSE(result.visits[0].incremented_omnibox_typed_score);
-  }
-
-  GURL url2 = ui_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html")));
-  NavigateToUrlAsTypeLink(url2);
-  WaitForHistoryBackendToRun(GetProfile());
-
-  {
-    auto result = QueryURL(url2);
-    ASSERT_TRUE(result.success);
-    EXPECT_TRUE(result.row.hidden());
-    EXPECT_EQ(0, result.row.typed_count());
-    EXPECT_EQ(1, result.row.visit_count());
-    ASSERT_EQ(1u, result.visits.size());
-    EXPECT_FALSE(result.visits[0].incremented_omnibox_typed_score);
-  }
-
-  HistoryTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
-      ->set_hide_all_navigations(false);
-  NavigateToUrlAsTypeLink(GetTestUrl());
-  WaitForHistoryBackendToRun(GetProfile());
-
-  {
-    auto result = QueryURL(GetTestUrl());
-    ASSERT_TRUE(result.success);
-    EXPECT_FALSE(result.row.hidden());
-    EXPECT_EQ(2, result.row.visit_count());
-    ASSERT_EQ(2u, result.visits.size());
-    EXPECT_FALSE(result.visits[0].incremented_omnibox_typed_score);
-    EXPECT_FALSE(result.visits[1].incremented_omnibox_typed_score);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
-                       SetHideAllNavigationsDoesntAddApi3ForTypedNavigation) {
-  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
-  ExpectEmptyHistory();
-
-  HistoryTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
-      ->set_hide_all_navigations(true);
-  // This navigates with a TYPED navigation.
-  ui_test_utils::NavigateToURL(browser(), GetTestUrl());
-  WaitForHistoryBackendToRun(GetProfile());
-
-  {
-    auto result = QueryURL(GetTestUrl());
-    ASSERT_TRUE(result.success);
-    EXPECT_FALSE(result.row.hidden());
-    EXPECT_EQ(1, result.row.typed_count());
-    EXPECT_EQ(1, result.row.visit_count());
-    ASSERT_EQ(1u, result.visits.size());
-    EXPECT_TRUE(result.visits[0].incremented_omnibox_typed_score);
-    // As the transition was TYPED, set_hide_all_navigations() was ignored and
-    // PAGE_TRANSITION_FROM_API_3 should not be added.
-    EXPECT_TRUE((ui::PageTransitionGetQualifier(result.visits[0].transition) &
-                 ui::PAGE_TRANSITION_FROM_API_3) == 0);
   }
 }
 

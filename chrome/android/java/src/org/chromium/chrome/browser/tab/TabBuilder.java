@@ -195,13 +195,8 @@ public class TabBuilder {
         // |onInitialized| of TabObserver they register.
         tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
                 mInitiallyHidden, mTabState);
-        if (parent != null) {
-            if (parent.getAddApi2TransitionToFutureNavigations()) {
-                tab.setAddApi2TransitionToFutureNavigations(true);
-            }
-            if (parent.getHideFutureNavigations()) {
-                tab.setHideFutureNavigations(true);
-            }
+        if (parent != null && parent.getAddApi2TransitionToFutureNavigations()) {
+            tab.setAddApi2TransitionToFutureNavigations(true);
         }
 
         return tab;

@@ -14,12 +14,10 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/url_database.h"
 #include "sql/statement.h"
@@ -30,15 +28,6 @@
 namespace history {
 
 namespace {
-
-// This is called from functions that are testing for the absence of
-// PAGE_TRANSITION_FROM_API_3 in transitions. It is expected this is used
-// with a database query of '& FromApi3QualifierForQuery() == 0'.
-int32_t FromApi3QualifierForQuery() {
-  return base::FeatureList::IsEnabled(kHideFromApi3Transitions)
-             ? ui::PAGE_TRANSITION_FROM_API_3
-             : 0;
-}
 
 // Returns [lower, upper) bounds for matching a URL against `host`.
 std::pair<std::string, std::string> GetHostSearchBounds(const GURL& host) {
@@ -65,7 +54,6 @@ std::pair<std::string, std::string> GetHostSearchBounds(const GURL& host) {
 bool TransitionIsVisible(int32_t transition) {
   ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
   return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
-         (transition & FromApi3QualifierForQuery()) == 0 &&
          ui::PageTransitionIsMainFrame(page_transition) &&
          !ui::PageTransitionCoreTypeIs(page_transition,
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);

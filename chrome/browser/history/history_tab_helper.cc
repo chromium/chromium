@@ -12,7 +12,6 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/content/browser/history_context_helper.h"
-#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -91,33 +90,21 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     base::Time timestamp,
     int nav_entry_id,
     content::NavigationHandle* navigation_handle) {
-  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-
+  const ui::PageTransition page_transition =
+      navigation_handle->GetPageTransition();
   const bool status_code_is_error =
       navigation_handle->GetResponseHeaders() &&
       (navigation_handle->GetResponseHeaders()->response_code() >= 400) &&
       (navigation_handle->GetResponseHeaders()->response_code() < 600);
-  // Top-level frame navigations are visible, unless hiding all visits;
-  // everything else is hidden. Also hide top-level navigations that result in
-  // an error in order to prevent the omnibox from suggesting URLs that have
-  // never been navigated to successfully.  (If a top-level navigation to the
-  // URL succeeds at some point, the URL will be unhidden and thus eligible to
-  // be suggested by the omnibox.)
-  // Don't attempt hide navigations that increment the typed count. Doing that
-  // would lead to a state where the omnibox would suggest urls that don't
-  // show up in history.
-  const bool hide_normally_visible_navigation =
-      hide_all_navigations_ && ui::PageTransitionIsMainFrame(page_transition) &&
-      !history::HistoryBackend::IsTypedIncrement(page_transition);
-  const bool hidden = hide_normally_visible_navigation ||
-                      !ui::PageTransitionIsMainFrame(page_transition) ||
-                      status_code_is_error;
-  if (hide_normally_visible_navigation) {
-    // Add PAGE_TRANSITION_FROM_API_3 so that VisitsDatabase won't return this
-    // visit in queries for visible visits.
-    page_transition = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_FROM_API_3 |
-                                                page_transition);
-  }
+  // Top-level frame navigations are visible; everything else is hidden.
+  // Also hide top-level navigations that result in an error in order to
+  // prevent the omnibox from suggesting URLs that have never been navigated
+  // to successfully.  (If a top-level navigation to the URL succeeds at some
+  // point, the URL will be unhidden and thus eligible to be suggested by the
+  // omnibox.)
+  const bool hidden =
+      !ui::PageTransitionIsMainFrame(navigation_handle->GetPageTransition()) ||
+      status_code_is_error;
 
   // Note: floc_allowed is set to false initially and is later updated by the
   // floc eligibility observer. Eventually it will be removed from the history

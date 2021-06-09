@@ -89,10 +89,8 @@ const char* PageTransitionGetCoreTransitionString(PageTransition type) {
     case PAGE_TRANSITION_RELOAD: return "reload";
     case PAGE_TRANSITION_KEYWORD: return "keyword";
     case PAGE_TRANSITION_KEYWORD_GENERATED: return "keyword_generated";
-    case PAGE_TRANSITION_FROM_API_3:
-      return "api3";
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace ui

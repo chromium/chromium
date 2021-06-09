@@ -197,10 +197,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (provider.shouldHideOmniboxSuggestionsForCctVisits()) {
             tab.setAddApi2TransitionToFutureNavigations(true);
         }
-
-        if (provider.shouldHideCctVisits()) {
-            tab.setHideFutureNavigations(true);
-        }
     }
 
     /**

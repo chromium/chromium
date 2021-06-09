@@ -212,7 +212,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 WebContents webContents = tab == null ? null : tab.getWebContents();
                 if (tab != null) {
                     tab.setAddApi2TransitionToFutureNavigations(false);
-                    tab.setHideFutureNavigations(false);
                 }
                 mConnection.notifyOpenInBrowser(mSession, webContents);
             }

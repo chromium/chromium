@@ -21,18 +21,6 @@ class HistoryTabHelper : public content::WebContentsObserver,
  public:
   ~HistoryTabHelper() override;
 
-  // If true, visits that do not increment the typed count (see
-  // HistoryBackend::IsTypedIncrement()) are marked as hidden. More
-  // specifically, this does two things:
-  //
-  // . |HistoryAddPageArgs::hidden| supplied to HistoryService::AddPage() is set
-  //   to true.
-  // . The transition type PAGE_TRANSITION_FROM_API_3 is added.
-  //
-  // This results in the visit not directly influencing the omnibox and not
-  // being shown in history ui.
-  void set_hide_all_navigations(bool value) { hide_all_navigations_ = value; }
-
   // Updates history with the specified navigation. This is called by
   // DidFinishNavigation to update history state.
   void UpdateHistoryForNavigation(
@@ -82,9 +70,6 @@ class HistoryTabHelper : public content::WebContentsObserver,
   // a certain time period after the page load is complete will be saved to the
   // history system. Only applies to the main frame of the page.
   base::TimeTicks last_load_completion_;
-
-  // See comment above setter for details.
-  bool hide_all_navigations_ = false;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligibile_tab_for_testing_ = false;
