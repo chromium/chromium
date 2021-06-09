@@ -300,9 +300,7 @@ GURL SafeBrowsingNavigationObserverManager::ClearURLRef(const GURL& url) {
 bool SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
     Profile* profile) {
   return IsSafeBrowsingEnabled(*profile->GetPrefs()) &&
-         g_browser_process->safe_browsing_service() &&
-         g_browser_process->safe_browsing_service()
-             ->navigation_observer_manager();
+         g_browser_process->safe_browsing_service();
 }
 
 // static
@@ -340,9 +338,6 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
 
 SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager()
     : navigation_event_list_(kNavigationRecordMaxSize) {
-  // Notify WebUIInfoSingleton that a new ReferrerChainProvider was created.
-  WebUIInfoSingleton::GetInstance()->set_referrer_chain_provider(this);
-
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(
       base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));

@@ -236,10 +236,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   // Unowned object used to retrieve referrer chains.
-  // This object will always be destroyed later than the current object, so
-  // accessing it won't cause UAF. This is because this object is held by
-  // |safe_browsing_service|, which is only destroyed when the browser process
-  // is shutdown.
   ReferrerChainProvider* referrer_chain_provider_;
 
   friend class RealTimeUrlLookupServiceTest;

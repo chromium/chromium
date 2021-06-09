@@ -28,6 +28,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/util.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
@@ -68,7 +69,6 @@ class DownloadProtectionService;
 #endif
 class PasswordProtectionService;
 class SafeBrowsingDatabaseManager;
-class SafeBrowsingNavigationObserverManager;
 class SafeBrowsingNetworkContext;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
@@ -144,8 +144,8 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   virtual const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
       const;
 
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
-  navigation_observer_manager();
+  ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
+      content::BrowserContext* browser_context) override;
 
   // Called on UI thread.
   PingManager* ping_manager() const;
@@ -306,11 +306,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   // The UI manager handles showing interstitials.  Accessed on both UI and IO
   // thread.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-
-  // The navigation observer manager handles attribution of safe browsing
-  // events.
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

@@ -51,7 +51,7 @@ class AdPopupTriggerTest : public content::RenderViewHostTestHarness {
 
   void CreateTrigger() {
     safe_browsing::AdPopupTrigger::CreateForWebContents(
-        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr);
+        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr, nullptr);
 
     safe_browsing::AdPopupTrigger* ad_popup_trigger =
         safe_browsing::AdPopupTrigger::FromWebContents(web_contents());
@@ -110,7 +110,7 @@ TEST_F(AdPopupTriggerTest, PopupWithAds) {
   CreateTrigger();
   EXPECT_CALL(*get_trigger_manager(),
               StartCollectingThreatDetailsWithReason(
-                  TriggerType::AD_POPUP, web_contents(), _, _, _, _, _))
+                  TriggerType::AD_POPUP, web_contents(), _, _, _, _, _, _))
       .Times(1)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
@@ -149,7 +149,7 @@ TEST_F(AdPopupTriggerTest, MAYBE_ReportRejectedByTriggerManager) {
   // report.
   CreateTrigger();
   EXPECT_CALL(*get_trigger_manager(),
-              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _))
+              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(2);
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _))
@@ -174,7 +174,7 @@ TEST_F(AdPopupTriggerTest, DISABLED_PopupWithNoAds) {
   // Make sure the trigger doesn't fire when there are no ads on the page.
   CreateTrigger();
   EXPECT_CALL(*get_trigger_manager(),
-              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _))
+              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _))
@@ -196,7 +196,7 @@ TEST_F(AdPopupTriggerTest, PopupNotFromAdForPageWithAd) {
   // the popup is caused from a different frame.
   CreateTrigger();
   EXPECT_CALL(*get_trigger_manager(),
-              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _))
+              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _))

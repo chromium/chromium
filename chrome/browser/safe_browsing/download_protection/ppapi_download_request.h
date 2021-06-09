@@ -168,6 +168,8 @@ class PPAPIDownloadRequest {
 
   Profile* profile_;
 
+  content::WebContents* web_contents_;
+
   base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PPAPIDownloadRequest);

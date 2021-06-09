@@ -497,6 +497,7 @@ void RealTimeUrlLookupServiceBase::Shutdown() {
 
   // Clear references to other KeyedServices.
   cache_manager_ = nullptr;
+  referrer_chain_provider_ = nullptr;
 }
 
 }  // namespace safe_browsing

@@ -31,20 +31,21 @@ class ClientSideDetectionHostDelegate
   void AddReferrerChain(ClientPhishingRequest* verdict,
                         GURL current_url) override;
 
-  void SetNavigationObserverManagerForTest(
+  void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {
-    navigation_observer_manager_ = navigation_observer_manager;
+    observer_manager_for_testing_ = navigation_observer_manager;
   }
 
  protected:
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
+  SafeBrowsingNavigationObserverManager*
   GetSafeBrowsingNavigationObserverManager();
   size_t CountOfRecentNavigationsToAppend(
       SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
   content::WebContents* web_contents_;
-  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
+  SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
+      nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHostDelegate);
 };

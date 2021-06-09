@@ -11,9 +11,11 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -89,9 +91,7 @@ void SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
     web_contents->SetUserData(
         kWebContentsUserDataKey,
-        std::make_unique<SafeBrowsingNavigationObserver>(
-            web_contents, g_browser_process->safe_browsing_service()
-                              ->navigation_observer_manager()));
+        std::make_unique<SafeBrowsingNavigationObserver>(web_contents));
   }
 }
 
@@ -103,9 +103,8 @@ SafeBrowsingNavigationObserver* SafeBrowsingNavigationObserver::FromWebContents(
 }
 
 SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
-    content::WebContents* contents,
-    const scoped_refptr<SafeBrowsingNavigationObserverManager>& manager)
-    : content::WebContentsObserver(contents), manager_(manager) {
+    content::WebContents* contents)
+    : content::WebContentsObserver(contents) {
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
@@ -114,7 +113,7 @@ SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
 SafeBrowsingNavigationObserver::~SafeBrowsingNavigationObserver() {}
 
 void SafeBrowsingNavigationObserver::OnUserInteraction() {
-  manager_->RecordUserGestureForWebContents(web_contents());
+  GetObserverManager()->RecordUserGestureForWebContents(web_contents());
 }
 
 // Called when a navigation starts in the WebContents. |navigation_handle|
@@ -154,7 +153,7 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
     if (initiator_frame_host) {
       content::WebContents* initiator_contents =
           content::WebContents::FromRenderFrameHost(initiator_frame_host);
-      manager_->RecordNewWebContents(
+      GetObserverManager()->RecordNewWebContents(
           initiator_contents, initiator_frame_host, navigation_handle->GetURL(),
           navigation_handle->GetPageTransition(), web_contents(),
           navigation_handle->IsRendererInitiated());
@@ -175,14 +174,14 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
     // NavigationEvent, and decide if it is triggered by user.
     if (!navigation_handle->IsRendererInitiated()) {
       nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
-    } else if (manager_->HasUnexpiredUserGesture(web_contents())) {
+    } else if (GetObserverManager()->HasUnexpiredUserGesture(web_contents())) {
       nav_event->navigation_initiation =
           ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
     } else {
       nav_event->navigation_initiation =
           ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
     }
-    manager_->OnUserGestureConsumed(web_contents());
+    GetObserverManager()->OnUserGestureConsumed(web_contents());
   }
 
   // All the other fields are reconstructed based on current content of
@@ -223,8 +222,8 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   std::unique_ptr<NavigationEvent> pending_nav_event =
       std::make_unique<NavigationEvent>(*nav_event);
   navigation_handle_map_[navigation_handle] = std::move(nav_event);
-  manager_->RecordPendingNavigationEvent(navigation_handle,
-                                         std::move(pending_nav_event));
+  GetObserverManager()->RecordPendingNavigationEvent(
+      navigation_handle, std::move(pending_nav_event));
 }
 
 void SafeBrowsingNavigationObserver::DidRedirectNavigation(
@@ -240,15 +239,15 @@ void SafeBrowsingNavigationObserver::DidRedirectNavigation(
           navigation_handle->GetURL()));
   nav_event->last_updated = base::Time::Now();
 
-  manager_->AddRedirectUrlToPendingNavigationEvent(navigation_handle,
-                                                   navigation_handle->GetURL());
+  GetObserverManager()->AddRedirectUrlToPendingNavigationEvent(
+      navigation_handle, navigation_handle->GetURL());
 }
 
 void SafeBrowsingNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if ((navigation_handle->HasCommitted() || navigation_handle->IsDownload()) &&
       !navigation_handle->GetSocketAddress().address().empty()) {
-    manager_->RecordHostToIpMapping(
+    GetObserverManager()->RecordHostToIpMapping(
         navigation_handle->GetURL().host(),
         navigation_handle->GetSocketAddress().ToStringWithoutPort());
   }
@@ -273,7 +272,7 @@ void SafeBrowsingNavigationObserver::DidFinishNavigation(
       sessions::SessionTabHelper::IdForTab(navigation_handle->GetWebContents());
   nav_event->last_updated = base::Time::Now();
 
-  manager_->RecordNavigationEvent(
+  GetObserverManager()->RecordNavigationEvent(
       navigation_handle, std::move(navigation_handle_map_[navigation_handle]));
   navigation_handle_map_.erase(navigation_handle);
 }
@@ -284,7 +283,7 @@ void SafeBrowsingNavigationObserver::DidGetUserInteraction(
 }
 
 void SafeBrowsingNavigationObserver::WebContentsDestroyed() {
-  manager_->OnWebContentDestroyed(web_contents());
+  GetObserverManager()->OnWebContentDestroyed(web_contents());
   web_contents()->RemoveUserData(kWebContentsUserDataKey);
   // web_contents is null after this function.
 }
@@ -298,8 +297,9 @@ void SafeBrowsingNavigationObserver::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  manager_->RecordNewWebContents(web_contents(), source_render_frame_host, url,
-                                 transition, new_contents, renderer_initiated);
+  GetObserverManager()->RecordNewWebContents(
+      web_contents(), source_render_frame_host, url, transition, new_contents,
+      renderer_initiated);
 }
 
 void SafeBrowsingNavigationObserver::OnContentSettingChanged(
@@ -313,6 +313,22 @@ void SafeBrowsingNavigationObserver::OnContentSettingChanged(
       PageInfoUI::ContentSettingsTypeInPageInfo(content_type)) {
     OnUserInteraction();
   }
+}
+
+SafeBrowsingNavigationObserverManager*
+SafeBrowsingNavigationObserver::GetObserverManager() {
+  if (observer_manager_for_testing_) {
+    return observer_manager_for_testing_;
+  }
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  return safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+      GetForBrowserContext(browser_context);
+}
+
+void SafeBrowsingNavigationObserver::SetObserverManagerForTesting(
+    SafeBrowsingNavigationObserverManager* observer_manager) {
+  observer_manager_for_testing_ = observer_manager;
 }
 
 }  // namespace safe_browsing

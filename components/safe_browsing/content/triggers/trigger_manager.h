@@ -86,7 +86,6 @@ enum class TriggerManagerReason {
 class TriggerManager {
  public:
   TriggerManager(BaseUIManager* ui_manager,
-                 ReferrerChainProvider* referrer_chain_provider,
                  PrefService* local_state_prefs);
   virtual ~TriggerManager();
 
@@ -127,6 +126,7 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options,
       TriggerManagerReason* out_reason);
 
@@ -138,6 +138,7 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options);
 
   // Completes the collection of a ThreatDetails report on the specified
@@ -175,10 +176,6 @@ class TriggerManager {
   // The UI manager is used to send reports to Google. Not owned.
   // TODO(lpz): we may only need a the PingManager here.
   BaseUIManager* ui_manager_;
-
-  // The Referrer Chain Provider is used to retrieve the referrer chain for
-  // reports that require it. Not owned.
-  ReferrerChainProvider* referrer_chain_provider_;
 
   // Map of the data collectors running on each tabs. New keys are added the
   // first time any trigger tries to collect data on a tab and are removed when

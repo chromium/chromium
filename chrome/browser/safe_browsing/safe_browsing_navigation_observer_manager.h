@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -152,9 +153,8 @@ struct NavigationEventList {
 // Manager class for SafeBrowsingNavigationObserver, which is in charge of
 // cleaning up stale navigation events, and identifying landing page/landing
 // referrer for a specific Safe Browsing event.
-class SafeBrowsingNavigationObserverManager
-    : public base::RefCountedThreadSafe<SafeBrowsingNavigationObserverManager>,
-      public ReferrerChainProvider {
+class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
+                                              public KeyedService {
  public:
   // Helper function to check if user gesture is older than
   // kUserGestureTTLInSecond.
@@ -273,8 +273,6 @@ class SafeBrowsingNavigationObserverManager
                                ReferrerChain* out_referrer_chain);
 
  private:
-  friend class base::RefCountedThreadSafe<
-      SafeBrowsingNavigationObserverManager>;
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
@@ -290,7 +288,7 @@ class SafeBrowsingNavigationObserverManager
   typedef std::unordered_map<std::string, std::vector<ResolvedIPAddress>>
       HostToIpMap;
 
-  virtual ~SafeBrowsingNavigationObserverManager();
+  ~SafeBrowsingNavigationObserverManager() override;
 
   NavigationEventList* navigation_event_list() {
     return &navigation_event_list_;

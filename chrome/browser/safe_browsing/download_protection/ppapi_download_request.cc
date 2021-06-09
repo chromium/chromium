@@ -59,17 +59,23 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
       start_time_(base::TimeTicks::Now()),
       supported_path_(
           GetSupportedFilePath(default_file_path, alternate_extensions)),
-      profile_(profile) {
+      profile_(profile),
+      web_contents_(web_contents) {
   DCHECK(profile);
   is_extended_reporting_ = IsExtendedReportingEnabled(*profile->GetPrefs());
   is_enhanced_protection_ = IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
-  if (service->navigation_observer_manager()) {
-    has_user_gesture_ =
-        service->navigation_observer_manager()->HasUserGesture(web_contents);
+  // web_contents can be null in tests.
+  if (!web_contents) {
+    return;
+  }
+
+  SafeBrowsingNavigationObserverManager* observer_manager =
+      service->GetNavigationObserverManager(web_contents);
+  if (observer_manager) {
+    has_user_gesture_ = observer_manager->HasUserGesture(web_contents);
     if (has_user_gesture_) {
-      service->navigation_observer_manager()->OnUserGestureConsumed(
-          web_contents);
+      observer_manager->OnUserGestureConsumed(web_contents);
     }
   }
 }
@@ -196,7 +202,7 @@ void PPAPIDownloadRequest::SendRequest() {
   }
 
   service_->AddReferrerChainToPPAPIClientDownloadRequest(
-      initiating_frame_url_, initiating_main_frame_url_, tab_id_,
+      web_contents_, initiating_frame_url_, initiating_main_frame_url_, tab_id_,
       has_user_gesture_, &request);
 
   if (!request.SerializeToString(&client_download_request_data_)) {

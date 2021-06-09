@@ -8,9 +8,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -27,10 +29,13 @@ class SBNavigationObserverTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("http://foo/0"));
-    navigation_observer_manager_ = new SafeBrowsingNavigationObserverManager();
+    content::BrowserContext* browser_context =
+        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext();
+    navigation_observer_manager_ =
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            browser_context);
     navigation_observer_ = new SafeBrowsingNavigationObserver(
-        browser()->tab_strip_model()->GetWebContentsAt(0),
-        navigation_observer_manager_);
+        browser()->tab_strip_model()->GetWebContentsAt(0));
   }
   void TearDown() override {
     delete navigation_observer_;

@@ -31,6 +31,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/safe_browsing/user_population.h"
@@ -246,7 +247,6 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
       ui_manager_(sb_service->ui_manager()),
       trigger_manager_(sb_service->trigger_manager()),
       profile_(profile),
-      navigation_observer_manager_(sb_service->navigation_observer_manager()),
       pref_change_registrar_(new PrefChangeRegistrar),
       cache_manager_(VerdictCacheManagerFactory::GetForProfile(profile)) {
   pref_change_registrar_->Init(profile_->GetPrefs());
@@ -594,6 +594,8 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   trigger_manager_->StartCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents, resource,
       url_loader_factory, /*history_service=*/nullptr,
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          profile_),
       TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
                                                web_contents));
 }
@@ -1401,8 +1403,11 @@ void ChromePasswordProtectionService::FillReferrerChain(
     SessionID event_tab_id,
     LoginReputationClientRequest::Frame* frame) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager =
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          profile_);
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      navigation_observer_manager->IdentifyReferrerChainByEventURL(
           event_url, event_tab_id, kPasswordEventAttributionUserGestureLimit,
           frame->mutable_referrer_chain());
   size_t referrer_chain_length = frame->referrer_chain().size();
@@ -1418,7 +1423,7 @@ void ChromePasswordProtectionService::FillReferrerChain(
       profile_ ? SafeBrowsingNavigationObserverManager::
                      CountOfRecentNavigationsToAppend(*profile_, result)
                : 0u;
-  navigation_observer_manager_->AppendRecentNavigations(
+  navigation_observer_manager->AppendRecentNavigations(
       recent_navigations_to_collect, frame->mutable_referrer_chain());
 }
 

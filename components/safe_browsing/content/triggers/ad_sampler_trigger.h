@@ -21,6 +21,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace safe_browsing {
+class ReferrerChainProvider;
 class TriggerManager;
 
 // Param name of the denominator for controlling sampling frequency.
@@ -76,7 +77,8 @@ class AdSamplerTrigger : public content::WebContentsObserver,
       TriggerManager* trigger_manager,
       PrefService* prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      ReferrerChainProvider* referrer_chain_provider);
 
   // Called to create an ad sample report.
   void CreateAdSampleReport();
@@ -107,6 +109,7 @@ class AdSamplerTrigger : public content::WebContentsObserver,
   PrefService* prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   history::HistoryService* history_service_;
+  ReferrerChainProvider* referrer_chain_provider_;
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.

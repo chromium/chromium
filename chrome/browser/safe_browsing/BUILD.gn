@@ -117,6 +117,8 @@ static_library("safe_browsing") {
       "safe_browsing_navigation_observer.h",
       "safe_browsing_navigation_observer_manager.cc",
       "safe_browsing_navigation_observer_manager.h",
+      "safe_browsing_navigation_observer_manager_factory.cc",
+      "safe_browsing_navigation_observer_manager_factory.h",
       "safe_browsing_navigation_throttle.cc",
       "safe_browsing_navigation_throttle.h",
       "safe_browsing_service.cc",

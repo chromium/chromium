@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "components/safe_browsing/content/triggers/trigger_manager.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,21 +18,23 @@ class MockTriggerManager : public TriggerManager {
   MockTriggerManager();
   ~MockTriggerManager() override;
 
-  MOCK_METHOD6(
+  MOCK_METHOD7(
       StartCollectingThreatDetails,
       bool(TriggerType trigger_type,
            content::WebContents* web_contents,
            const security_interstitials::UnsafeResource& resource,
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
+           ReferrerChainProvider* referrer_chain_provider,
            const SBErrorOptions& error_display_options));
-  MOCK_METHOD7(
+  MOCK_METHOD8(
       StartCollectingThreatDetailsWithReason,
       bool(TriggerType trigger_type,
            content::WebContents* web_contents,
            const security_interstitials::UnsafeResource& resource,
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
+           ReferrerChainProvider* referrer_chain_provider,
            const SBErrorOptions& error_display_options,
            TriggerManagerReason* out_reason));
 

@@ -82,6 +82,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 safe_browsing::TriggerType::SECURITY_INTERSTITIAL, web_contents,
                 unsafe_resources[0], url_loader_factory,
                 /*history_service*/ nullptr,
+                /*referrer_chain_provider*/ nullptr,
                 sb_error_ui()->get_error_display_options());
   }
 }

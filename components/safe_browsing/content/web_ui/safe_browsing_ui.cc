@@ -357,6 +357,16 @@ WebUIInfoSingleton::GetCookieManager(content::BrowserContext* browser_context) {
   return cookie_manager_remote;
 }
 
+ReferrerChainProvider* WebUIInfoSingleton::GetReferrerChainProvider(
+    content::BrowserContext* browser_context) {
+  if (!sb_service_) {
+    return nullptr;
+  }
+
+  return sb_service_->GetReferrerChainProviderFromBrowserContext(
+      browser_context);
+}
+
 void WebUIInfoSingleton::ClearListenerForTesting() {
   has_test_listener_ = false;
   MaybeClearData();
@@ -2186,7 +2196,8 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::ListValue* args) {
   args->GetString(1, &url_string);
 
   ReferrerChainProvider* provider =
-      WebUIInfoSingleton::GetInstance()->referrer_chain_provider();
+      WebUIInfoSingleton::GetInstance()->GetReferrerChainProvider(
+          browser_context_);
 
   std::string callback_id;
   args->GetString(0, &callback_id);

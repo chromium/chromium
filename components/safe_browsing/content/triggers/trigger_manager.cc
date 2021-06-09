@@ -67,10 +67,8 @@ DataCollectorsContainer::DataCollectorsContainer() {}
 DataCollectorsContainer::~DataCollectorsContainer() {}
 
 TriggerManager::TriggerManager(BaseUIManager* ui_manager,
-                               ReferrerChainProvider* referrer_chain_provider,
                                PrefService* local_state_prefs)
     : ui_manager_(ui_manager),
-      referrer_chain_provider_(referrer_chain_provider),
       trigger_throttler_(new TriggerThrottler(local_state_prefs)) {}
 
 TriggerManager::~TriggerManager() {}
@@ -140,11 +138,12 @@ bool TriggerManager::StartCollectingThreatDetails(
     const security_interstitials::UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
+    ReferrerChainProvider* referrer_chain_provider,
     const SBErrorOptions& error_display_options) {
   TriggerManagerReason unused_reason;
   return StartCollectingThreatDetailsWithReason(
       trigger_type, web_contents, resource, url_loader_factory, history_service,
-      error_display_options, &unused_reason);
+      referrer_chain_provider, error_display_options, &unused_reason);
 }
 
 bool TriggerManager::StartCollectingThreatDetailsWithReason(
@@ -153,6 +152,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
     const security_interstitials::UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
+    ReferrerChainProvider* referrer_chain_provider,
     const SBErrorOptions& error_display_options,
     TriggerManagerReason* reason) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
@@ -171,7 +171,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
                                      trigger_type == TriggerType::AD_REDIRECT);
   collectors->threat_details = ThreatDetails::NewThreatDetails(
       ui_manager_, web_contents, resource, url_loader_factory, history_service,
-      referrer_chain_provider_, should_trim_threat_details,
+      referrer_chain_provider, should_trim_threat_details,
       base::BindOnce(&TriggerManager::ThreatDetailsDone,
                      weak_factory_.GetWeakPtr()));
   return true;

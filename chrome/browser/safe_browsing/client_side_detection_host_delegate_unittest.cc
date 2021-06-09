@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/safe_browsing/core/features.h"
@@ -22,10 +23,13 @@ class ClientSideDetectionDelegateTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("http://foo/0"));
-    navigation_observer_manager_ = new SafeBrowsingNavigationObserverManager();
+    content::BrowserContext* browser_context =
+        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext();
+    navigation_observer_manager_ =
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            browser_context);
     navigation_observer_ = new SafeBrowsingNavigationObserver(
-        browser()->tab_strip_model()->GetWebContentsAt(0),
-        navigation_observer_manager_);
+        browser()->tab_strip_model()->GetWebContentsAt(0));
     scoped_feature_list_.InitAndEnableFeature(
         kClientSideDetectionReferrerChain);
   }
@@ -73,7 +77,7 @@ TEST_F(ClientSideDetectionDelegateTest, GetReferrerChain) {
   std::unique_ptr<ClientSideDetectionHostDelegate> csd_host_delegate =
       std::make_unique<ClientSideDetectionHostDelegate>(
           browser()->tab_strip_model()->GetWebContentsAt(0));
-  csd_host_delegate->SetNavigationObserverManagerForTest(
+  csd_host_delegate->SetNavigationObserverManagerForTesting(
       navigation_observer_manager_);
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"));

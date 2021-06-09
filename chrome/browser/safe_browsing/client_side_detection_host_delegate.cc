@@ -8,6 +8,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -41,10 +43,7 @@ ClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
 
 ClientSideDetectionHostDelegate::ClientSideDetectionHostDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  navigation_observer_manager_ =
-      GetSafeBrowsingNavigationObserverManager().get();
-}
+    : web_contents_(web_contents) {}
 ClientSideDetectionHostDelegate::~ClientSideDetectionHostDelegate() = default;
 
 bool ClientSideDetectionHostDelegate::HasSafeBrowsingUserInteractionObserver() {
@@ -63,10 +62,14 @@ ClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
   return sb_service ? sb_service->database_manager().get() : nullptr;
 }
 
-scoped_refptr<SafeBrowsingNavigationObserverManager>
+SafeBrowsingNavigationObserverManager*
 ClientSideDetectionHostDelegate::GetSafeBrowsingNavigationObserverManager() {
-  SafeBrowsingService* sb_service = g_browser_process->safe_browsing_service();
-  return sb_service ? sb_service->navigation_observer_manager().get() : nullptr;
+  if (observer_manager_for_testing_) {
+    return observer_manager_for_testing_;
+  }
+
+  return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+      web_contents_->GetBrowserContext());
 }
 
 scoped_refptr<BaseUIManager>
@@ -84,11 +87,13 @@ ClientSideDetectionHostDelegate::GetClientSideDetectionService() {
 void ClientSideDetectionHostDelegate::AddReferrerChain(
     ClientPhishingRequest* verdict,
     GURL current_url) {
-  if (!navigation_observer_manager_) {
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager =
+      GetSafeBrowsingNavigationObserverManager();
+  if (!navigation_observer_manager) {
     return;
   }
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      navigation_observer_manager->IdentifyReferrerChainByEventURL(
           current_url, SessionID::InvalidValue(),
           kCSDAttributionUserGestureLimitForExtendedReporting,
           verdict->mutable_referrer_chain());
@@ -104,7 +109,7 @@ void ClientSideDetectionHostDelegate::AddReferrerChain(
   size_t recent_navigations_to_collect =
       CountOfRecentNavigationsToAppend(result);
 
-  navigation_observer_manager_->AppendRecentNavigations(
+  navigation_observer_manager->AppendRecentNavigations(
       recent_navigations_to_collect, verdict->mutable_referrer_chain());
 }
 

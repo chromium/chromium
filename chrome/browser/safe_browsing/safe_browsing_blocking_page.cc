@@ -20,6 +20,8 @@
 #include "chrome/browser/safe_browsing/chrome_controller_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -179,6 +181,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                   unsafe_resources[0], url_loader_factory,
                   HistoryServiceFactory::GetForProfile(
                       profile, ServiceAccessType::EXPLICIT_ACCESS),
+                  SafeBrowsingNavigationObserverManagerFactory::
+                      GetForBrowserContext(web_contents->GetBrowserContext()),
                   sb_error_ui()->get_error_display_options());
     }
   }

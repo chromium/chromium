@@ -180,13 +180,16 @@ class TestNavigationObserverManager
 
   void ObserveContents(content::WebContents* contents) {
     ASSERT_TRUE(contents);
-    observer_list_.push_back(
-        std::make_unique<SafeBrowsingNavigationObserver>(contents, this));
+    auto observer = std::make_unique<SafeBrowsingNavigationObserver>(contents);
+    observer->SetObserverManagerForTesting(this);
+    observer_list_.push_back(std::move(observer));
     inner_contents_creation_observers_.push_back(
         std::make_unique<InnerContentsCreationObserver>(
             contents,
             base::BindRepeating(&TestNavigationObserverManager::ObserveContents,
-                                this)));
+                                // Unretained is safe because this object owns
+                                // inner_contents_creation_observers_
+                                base::Unretained(this))));
   }
 
   // TabStripModelObserver:
@@ -203,7 +206,6 @@ class TestNavigationObserverManager
     }
   }
 
- protected:
   ~TestNavigationObserverManager() override = default;
 
  private:
@@ -227,7 +229,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     observer_manager_ =
-        base::MakeRefCounted<TestNavigationObserverManager>(browser());
+        std::make_unique<TestNavigationObserverManager>(browser());
     observer_manager_->ObserveContents(
         browser()->tab_strip_model()->GetActiveWebContents());
     ASSERT_TRUE(InitialSetup());
@@ -549,7 +551,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  scoped_refptr<TestNavigationObserverManager> observer_manager_;
+  std::unique_ptr<TestNavigationObserverManager> observer_manager_;
 };
 
 // Type download URL into address bar and start download on the same page.

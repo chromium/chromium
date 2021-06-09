@@ -63,6 +63,7 @@ source_set("ad_popup_trigger") {
     ":triggers",
     "//base:base",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//content/public/browser",
   ]
 }
@@ -78,6 +79,7 @@ source_set("ad_redirect_trigger") {
     ":triggers",
     "//base:base",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//content/public/browser",
     "//content/public/common",
   ]
@@ -94,6 +96,7 @@ source_set("ad_sampler_trigger") {
     ":triggers",
     "//base:base",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//content/public/browser",
   ]
 }
@@ -110,6 +113,7 @@ source_set("suspicious_site_trigger") {
     "//components/history/core/browser:browser",
     "//components/prefs:prefs",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//content/public/browser",
     "//net:net",
   ]
@@ -138,6 +142,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common:test_support",
     "//components/subresource_filter/content/browser:test_support",
     "//content/public/browser:browser",

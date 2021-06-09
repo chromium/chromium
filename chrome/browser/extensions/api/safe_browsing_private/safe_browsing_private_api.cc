@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
@@ -57,9 +57,9 @@ SafeBrowsingPrivateGetReferrerChainFunction::Run() {
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(profile))
     return RespondNow(NoArguments());
 
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager = g_browser_process->safe_browsing_service()
-                                        ->navigation_observer_manager();
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager =
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile);
 
   safe_browsing::ReferrerChain referrer_chain;
   SafeBrowsingNavigationObserverManager::AttributionResult result =

@@ -62,7 +62,7 @@ class MockTriggerThrottler : public TriggerThrottler {
 class TriggerManagerTest : public ::testing::Test {
  public:
   TriggerManagerTest()
-      : trigger_manager_(nullptr, nullptr, nullptr),
+      : trigger_manager_(nullptr, nullptr),
         task_environment_(CreateTestTaskEnvironment()) {}
   ~TriggerManagerTest() override {}
 
@@ -118,7 +118,7 @@ class TriggerManagerTest : public ::testing::Test {
         TriggerManager::GetSBErrorDisplayOptions(pref_service_, web_contents);
     return trigger_manager_.StartCollectingThreatDetails(
         trigger_type, web_contents, security_interstitials::UnsafeResource(),
-        nullptr, nullptr, options);
+        nullptr, nullptr, nullptr, options);
   }
 
   bool FinishCollectingThreatDetails(const TriggerType trigger_type,

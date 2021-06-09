@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
@@ -48,6 +49,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());
+  DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   DependsOn(AdvancedProtectionStatusManagerFactory::GetInstance());
 #endif
@@ -75,9 +77,8 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(), g_browser_process->variations_service(),
-      g_browser_process->safe_browsing_service()
-          ->navigation_observer_manager()
-          .get());
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          profile));
 }
 
 }  // namespace safe_browsing

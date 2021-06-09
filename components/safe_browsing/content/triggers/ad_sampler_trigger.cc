@@ -17,6 +17,7 @@
 #include "components/safe_browsing/content/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/triggers/trigger_util.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -82,7 +83,8 @@ AdSamplerTrigger::AdSamplerTrigger(
     TriggerManager* trigger_manager,
     PrefService* prefs,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    ReferrerChainProvider* referrer_chain_provider)
     : content::WebContentsObserver(web_contents),
       sampler_frequency_denominator_(GetSamplerFrequencyDenominator()),
       start_report_delay_ms_(
@@ -93,6 +95,7 @@ AdSamplerTrigger::AdSamplerTrigger(
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
+      referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
 AdSamplerTrigger::~AdSamplerTrigger() {}
@@ -137,7 +140,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,
-          history_service_, error_options)) {
+          history_service_, referrer_chain_provider_, error_options)) {
     UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName,
                               NO_SAMPLE_COULD_NOT_START_REPORT, MAX_ACTIONS);
     return;

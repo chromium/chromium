@@ -14,6 +14,7 @@
 namespace safe_browsing {
 
 class SafeBrowsingServiceFactory;
+class ReferrerChainProvider;
 
 // This interface will provide methods for checking the safety of URLs and
 // downloads with Safe Browsing.
@@ -34,6 +35,9 @@ class SafeBrowsingServiceInterface
   static SafeBrowsingServiceInterface* CreateSafeBrowsingService();
 
   virtual network::mojom::NetworkContext* GetNetworkContext(
+      content::BrowserContext* browser_context) = 0;
+
+  virtual ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) = 0;
 
  protected:

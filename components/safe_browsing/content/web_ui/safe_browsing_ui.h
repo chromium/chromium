@@ -488,14 +488,6 @@ class WebUIInfoSingleton {
   }
 #endif
 
-  ReferrerChainProvider* referrer_chain_provider() {
-    return referrer_chain_provider_;
-  }
-
-  void set_referrer_chain_provider(ReferrerChainProvider* provider) {
-    referrer_chain_provider_ = provider;
-  }
-
   const std::vector<std::pair<base::Time, std::string>>& log_messages() {
     return log_messages_;
   }
@@ -505,6 +497,9 @@ class WebUIInfoSingleton {
   }
 
   mojo::Remote<network::mojom::CookieManager> GetCookieManager(
+      content::BrowserContext* browser_context);
+
+  ReferrerChainProvider* GetReferrerChainProvider(
       content::BrowserContext* browser_context);
 
   void set_safe_browsing_service(SafeBrowsingServiceInterface* sb_service) {
@@ -599,9 +594,6 @@ class WebUIInfoSingleton {
   // request to the data about the request.
   base::flat_map<std::string, DeepScanDebugData> deep_scan_requests_;
 #endif
-
-  // The current referrer chain provider, if any. Can be nullptr.
-  ReferrerChainProvider* referrer_chain_provider_ = nullptr;
 
   // The Safe Browsing service.
   SafeBrowsingServiceInterface* sb_service_ = nullptr;

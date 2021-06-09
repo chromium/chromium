@@ -35,7 +35,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -1168,9 +1168,9 @@ WebstorePrivateGetReferrerChainFunction::Run() {
         kWebstoreUserCancelledError));
   }
 
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager = g_browser_process->safe_browsing_service()
-                                        ->navigation_observer_manager();
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager =
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile);
 
   safe_browsing::ReferrerChain referrer_chain;
   SafeBrowsingNavigationObserverManager::AttributionResult result =

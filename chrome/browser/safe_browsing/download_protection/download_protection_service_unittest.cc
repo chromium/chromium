@@ -2582,8 +2582,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedDefault) {
     SetExtendedReportingPreference(true);
     RunLoop run_loop;
     download_service_->CheckPPAPIDownloadRequest(
-        GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
-        alternate_extensions, profile(),
+        GURL("http://example.com/foo"), GURL(), /*web_contents=*/nullptr,
+        default_file_path, alternate_extensions, profile(),
         base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();

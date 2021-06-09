@@ -163,7 +163,6 @@ AwBrowserProcess::GetSafeBrowsingTriggerManager() {
     safe_browsing_trigger_manager_ =
         std::make_unique<safe_browsing::TriggerManager>(
             GetSafeBrowsingUIManager(),
-            /*referrer_chain_provider=*/nullptr,
             /*local_state_prefs=*/nullptr);
   }
 

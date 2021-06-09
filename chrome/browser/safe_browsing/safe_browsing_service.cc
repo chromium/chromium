@@ -32,6 +32,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/chrome_paths.h"
@@ -44,6 +45,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/content/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
@@ -121,8 +123,6 @@ void SafeBrowsingService::Initialize() {
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(this);
 
   ui_manager_ = CreateUIManager();
-
-  navigation_observer_manager_ = new SafeBrowsingNavigationObserverManager();
 
   services_delegate_->Initialize();
 
@@ -220,9 +220,11 @@ SafeBrowsingService::database_manager() const {
   return services_delegate_->database_manager();
 }
 
-scoped_refptr<SafeBrowsingNavigationObserverManager>
-SafeBrowsingService::navigation_observer_manager() {
-  return navigation_observer_manager_;
+ReferrerChainProvider*
+SafeBrowsingService::GetReferrerChainProviderFromBrowserContext(
+    content::BrowserContext* browser_context) {
+  return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+      browser_context);
 }
 
 PingManager* SafeBrowsingService::ping_manager() const {
@@ -459,8 +461,7 @@ void SafeBrowsingService::SendSerializedDownloadReport(
 void SafeBrowsingService::CreateTriggerManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   trigger_manager_ = std::make_unique<TriggerManager>(
-      ui_manager_.get(), navigation_observer_manager_.get(),
-      g_browser_process->local_state());
+      ui_manager_.get(), g_browser_process->local_state());
 }
 
 network::mojom::NetworkContextParamsPtr

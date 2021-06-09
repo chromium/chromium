@@ -7,6 +7,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/triggers/ad_popup_trigger.h"
@@ -58,14 +60,18 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
     safe_browsing::AdSamplerTrigger::CreateForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS));
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            profile));
   }
   if (base::FeatureList::IsEnabled(kAdPopupTriggerFeature) &&
       trigger_manager->CanStartDataCollection(options, TriggerType::AD_POPUP)) {
     safe_browsing::AdPopupTrigger::CreateForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS));
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            profile));
   }
   if (base::FeatureList::IsEnabled(kAdRedirectTriggerFeature) &&
       trigger_manager->CanStartDataCollection(options,
@@ -73,7 +79,9 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
     safe_browsing::AdRedirectTrigger::CreateForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS));
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            profile));
   }
   TriggerManagerReason reason;
   if (trigger_manager->CanStartDataCollectionWithReason(
@@ -84,6 +92,8 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
+        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+            profile),
         monitor_mode);
   }
 }

@@ -17,6 +17,7 @@
 #include "components/safe_browsing/content/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/triggers/trigger_util.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -57,7 +58,8 @@ AdPopupTrigger::AdPopupTrigger(
     TriggerManager* trigger_manager,
     PrefService* prefs,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    ReferrerChainProvider* referrer_chain_provider)
     : web_contents_(web_contents),
       start_report_delay_ms_(
           base::RandInt(kMinAdPopupCollectionStartDelayMilliseconds,
@@ -67,6 +69,7 @@ AdPopupTrigger::AdPopupTrigger(
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
+      referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
 AdPopupTrigger::~AdPopupTrigger() {}
@@ -83,7 +86,7 @@ void AdPopupTrigger::CreateAdPopupReport() {
   TriggerManagerReason reason = TriggerManagerReason::NO_REASON;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(
           TriggerType::AD_POPUP, web_contents_, resource, url_loader_factory_,
-          history_service_, error_options, &reason)) {
+          history_service_, referrer_chain_provider_, error_options, &reason)) {
     if (reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED) {
       RecordAdPopupTriggerAction(
           AdPopupTriggerAction::POPUP_DAILY_QUOTA_EXCEEDED);

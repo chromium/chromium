@@ -43,7 +43,6 @@ class WebContents;
 namespace safe_browsing {
 
 class SafeBrowsingService;
-class SafeBrowsingNavigationObserverManager;
 class SafeBrowsingUIManager;
 class ChromePasswordProtectionService;
 class VerdictCacheManager;
@@ -562,8 +561,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   Profile* profile_;
   // Current sync password hash.
   std::string sync_password_hash_;
-  scoped_refptr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager_;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::set<content::WebContents*>

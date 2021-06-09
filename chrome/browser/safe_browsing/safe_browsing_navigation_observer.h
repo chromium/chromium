@@ -108,11 +108,12 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   static SafeBrowsingNavigationObserver* FromWebContents(
       content::WebContents* web_contents);
 
-  SafeBrowsingNavigationObserver(
-      content::WebContents* contents,
-      const scoped_refptr<SafeBrowsingNavigationObserverManager>& manager);
+  explicit SafeBrowsingNavigationObserver(content::WebContents* contents);
 
   ~SafeBrowsingNavigationObserver() override;
+
+  void SetObserverManagerForTesting(
+      SafeBrowsingNavigationObserverManager* observer_manager);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SBNavigationObserverTest, TestContentSettingChange);
@@ -121,6 +122,8 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       NavigationHandleMap;
 
   void OnUserInteraction();
+
+  SafeBrowsingNavigationObserverManager* GetObserverManager();
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -153,10 +156,11 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   // SafeBrowsingNavigationObserverManager::navigation_map_.
   NavigationHandleMap navigation_handle_map_;
 
-  scoped_refptr<SafeBrowsingNavigationObserverManager> manager_;
-
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+
+  SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
+      nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };
