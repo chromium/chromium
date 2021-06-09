@@ -748,66 +748,23 @@ std::string RenderAccessibilityImpl::GetLanguage() {
   return page_language_;
 }
 
-void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
-  TRACE_EVENT0("accessibility",
-               "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
-  base::ElapsedTimer timer;
-
-  // Clear status here in case we return early.
-  event_schedule_status_ = EventScheduleStatus::kNotWaiting;
-  WebDocument document = GetMainDocument();
-  if (document.IsNull())
-    return;
-
-  if (needs_initial_ax_tree_root_) {
-    // At the very start of accessibility for this document, push a layout
-    // complete for the entire document, in order to initialize the browser's
-    // cached accessibility tree.
-    needs_initial_ax_tree_root_ = false;
-    auto root_obj = WebAXObject::FromWebDocument(document);
-    // Always fire layout complete for a new root object.
-    pending_events_.insert(
-        pending_events_.begin(),
-        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
-
-    // If loaded and has some content, insert load complete at the top, so that
-    // screen readers are informed a new document is ready.
-    if (root_obj.IsLoaded() && !document.Body().IsNull() &&
-        !document.Body().FirstChild().IsNull()) {
-      pending_events_.insert(
-          pending_events_.begin(),
-          ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete));
-    }
-  }
-
-  if (pending_events_.empty() && dirty_objects_.empty()) {
-    // By default, assume the next batch does not have interactive events, and
-    // defer so that the batch of events is larger. If any interactive events
-    // come in, the batch will be processed immediately.
-    event_schedule_mode_ = EventScheduleMode::kDeferEvents;
-    return;
-  }
-
-  // Update layout before snapshotting the events so that live state read from
-  // the DOM during freezing (e.g. which node currently has focus) is consistent
-  // with the events and node data we're about to send up.
-  WebAXObject::UpdateLayout(document);
-
-  // Make a copy of the events, because it's possible that
-  // actions inside this loop will cause more events to be
-  // queued up.
-  std::vector<ui::AXEvent> src_events = pending_events_;
-  pending_events_.clear();
-
-  // The serialized list of updates and events to send to the browser.
-  mojom::AXUpdatesAndEventsPtr updates_and_events =
-      mojom::AXUpdatesAndEvents::New();
-  std::vector<ui::AXTreeUpdate>& updates = updates_and_events->updates;
-  std::vector<ui::AXEvent>& events = updates_and_events->events;
-
+bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
+    WebDocument document,
+    WebAXObject root,
+    std::vector<ui::AXEvent>& events,
+    std::vector<ui::AXTreeUpdate>& updates,
+    bool invalidate_plugin_subtree) {
   // Keep track of nodes in the tree that need to be updated.
   std::vector<DirtyObject> dirty_objects = dirty_objects_;
   dirty_objects_.clear();
+  // Make a copy of the events, because it's possible that
+  // actions inside this loop will cause more events to be
+  // queued up.
+
+  std::vector<ui::AXEvent> src_events = pending_events_;
+  pending_events_.clear();
+
+  bool had_end_of_test_event = false;
 
   // If there's a layout complete or a scroll changed message, we need to send
   // location changes.
@@ -816,52 +773,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // Keep track of load complete messages. When a load completes, it's a good
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
-
-  bool had_end_of_test_event = false;
-
-  ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
-
-  WebAXObject root = tree_source_->GetRoot();
-#if DCHECK_IS_ON()
-  // Never causes a document lifecycle change during serialization,
-  // because the assumption is that layout is in a safe, stable state.
-  blink::WebDisallowTransitionScope disallow(&document);
-#endif
-
-  // Save the page language.
-  page_language_ = root.Language().Utf8();
-
-  // Popups have a document lifecycle managed separately from the main document
-  // but we need to return a combined accessibility tree for both.
-  // We ensured layout validity for the main document in the loop above; if a
-  // popup is open, do the same for it.
-  WebDocument popup_document = GetPopupDocument();
-  if (!popup_document.IsNull()) {
-    WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
-    if (!popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
-      // If a popup is open but we can't ensure its validity, return without
-      // sending an update bundle, the same as we would for a node in the main
-      // document.
-      return;
-    }
-  }
-
-#if DCHECK_IS_ON()
-  // Protect against lifecycle changes in the popup document, if any.
-  // If no popup document, use the main document -- it's harmless to protect it
-  // twice, and some document is needed because this cannot be done in an if
-  // statement because it's scoped.
-  WebDocument popup_or_main_document =
-      popup_document.IsNull() ? document : popup_document;
-  blink::WebDisallowTransitionScope disallow2(&popup_or_main_document);
-#endif
-
-  // Keep track of if the host node for a plugin has been invalidated,
-  // because if so, the plugin subtree will need to be re-serialized.
-  bool invalidate_plugin_subtree = false;
-  if (plugin_tree_source_ && !plugin_host_node_.IsDetached()) {
-    invalidate_plugin_subtree = !serializer_->IsInClientTree(plugin_host_node_);
-  }
 
   // Loop over each event and generate an updated event message.
   for (ui::AXEvent& event : src_events) {
@@ -1019,8 +930,112 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     }
   }
 
+  if (had_load_complete_messages) {
+    has_injected_stylesheet_ = false;
+  }
+
+  return need_to_send_location_changes;
+}
+
+void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
+  TRACE_EVENT0("accessibility",
+               "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
+  base::ElapsedTimer timer;
+
+  // Clear status here in case we return early.
+  event_schedule_status_ = EventScheduleStatus::kNotWaiting;
+  WebDocument document = GetMainDocument();
+  if (document.IsNull())
+    return;
+
+  if (needs_initial_ax_tree_root_) {
+    // At the very start of accessibility for this document, push a layout
+    // complete for the entire document, in order to initialize the browser's
+    // cached accessibility tree.
+    needs_initial_ax_tree_root_ = false;
+    auto root_obj = WebAXObject::FromWebDocument(document);
+    // Always fire layout complete for a new root object.
+    pending_events_.insert(
+        pending_events_.begin(),
+        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
+
+    // If loaded and has some content, insert load complete at the top, so that
+    // screen readers are informed a new document is ready.
+    if (root_obj.IsLoaded() && !document.Body().IsNull() &&
+        !document.Body().FirstChild().IsNull()) {
+      pending_events_.insert(
+          pending_events_.begin(),
+          ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete));
+    }
+  }
+
+  if (pending_events_.empty() && dirty_objects_.empty()) {
+    // By default, assume the next batch does not have interactive events, and
+    // defer so that the batch of events is larger. If any interactive events
+    // come in, the batch will be processed immediately.
+    event_schedule_mode_ = EventScheduleMode::kDeferEvents;
+    return;
+  }
+
+  // Update layout before snapshotting the events so that live state read from
+  // the DOM during freezing (e.g. which node currently has focus) is consistent
+  // with the events and node data we're about to send up.
+  WebAXObject::UpdateLayout(document);
+
+  ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
+
+  WebAXObject root = tree_source_->GetRoot();
+#if DCHECK_IS_ON()
+  // Never causes a document lifecycle change during serialization,
+  // because the assumption is that layout is in a safe, stable state.
+  blink::WebDisallowTransitionScope disallow(&document);
+#endif
+
+  // Save the page language.
+  page_language_ = root.Language().Utf8();
+
+  // Popups have a document lifecycle managed separately from the main document
+  // but we need to return a combined accessibility tree for both.
+  // We ensured layout validity for the main document in the loop above; if a
+  // popup is open, do the same for it.
+  WebDocument popup_document = GetPopupDocument();
+  if (!popup_document.IsNull()) {
+    WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
+    if (!popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
+      // If a popup is open but we can't ensure its validity, return without
+      // sending an update bundle, the same as we would for a node in the main
+      // document.
+      return;
+    }
+  }
+
+#if DCHECK_IS_ON()
+  // Protect against lifecycle changes in the popup document, if any.
+  // If no popup document, use the main document -- it's harmless to protect it
+  // twice, and some document is needed because this cannot be done in an if
+  // statement because it's scoped.
+  WebDocument popup_or_main_document =
+      popup_document.IsNull() ? document : popup_document;
+  blink::WebDisallowTransitionScope disallow2(&popup_or_main_document);
+#endif
+
+  // Keep track of if the host node for a plugin has been invalidated,
+  // because if so, the plugin subtree will need to be re-serialized.
+  bool invalidate_plugin_subtree = false;
+  if (plugin_tree_source_ && !plugin_host_node_.IsDetached()) {
+    invalidate_plugin_subtree = !serializer_->IsInClientTree(plugin_host_node_);
+  }
+
+  // The serialized list of updates and events to send to the browser.
+  mojom::AXUpdatesAndEventsPtr updates_and_events =
+      mojom::AXUpdatesAndEvents::New();
+
+  bool need_to_send_location_changes = SerializeUpdatesAndEvents(
+      document, root, updates_and_events->events, updates_and_events->updates,
+      invalidate_plugin_subtree);
+
   if (image_annotation_debugging_)
-    AddImageAnnotationDebuggingAttributes(updates);
+    AddImageAnnotationDebuggingAttributes(updates_and_events->updates);
 
   event_schedule_status_ = EventScheduleStatus::kWaitingForAck;
   render_accessibility_manager_->HandleAccessibilityEvents(
@@ -1031,10 +1046,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   if (need_to_send_location_changes)
     SendLocationChanges();
-
-  if (had_load_complete_messages) {
-    has_injected_stylesheet_ = false;
-  }
 
   // Now that this batch is complete, assume the next batch does not have
   // interactive events, and defer so that the batch of events is larger.
