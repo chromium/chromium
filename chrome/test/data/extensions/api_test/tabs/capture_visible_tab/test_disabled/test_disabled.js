@@ -19,7 +19,11 @@ var kWindowRect = {
 chrome.test.getConfig((config) => {
   const kError = 'Taking screenshots has been disabled';
   const kUrl = `http://localhost:${config.testServer.port}/simple.html`;
-  chrome.test.runTests([
+  const scriptUrl =
+      '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+
+  let loadScript = chrome.test.loadScript(scriptUrl);
+  loadScript.then(() => {chrome.test.runTests([
     function captureVisibleDisabled() {
       createWindow([kUrl], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
@@ -43,5 +47,5 @@ chrome.test.getConfig((config) => {
       chrome.tabs.captureVisibleTab(chrome.windows.WINDOW_ID_CURRENT,
                                     fail(kError));
     }
-  ]);
+  ])});
 });

@@ -18,7 +18,11 @@ var kWindowRect = {
 
 var fail_url = "file:///nosuch.html";
 
-chrome.test.runTests([
+const scriptUrl =
+    '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+
+let loadScript = chrome.test.loadScript(scriptUrl);
+loadScript.then(() => {chrome.test.runTests([
   // Check that test infrastructure launched us with permissions.
   function checkAllowedAccess() {
     chrome.extension.isAllowedFileSchemeAccess(pass(function(hasAccess) {
@@ -59,4 +63,4 @@ chrome.test.runTests([
       assertEq('data:image/jpeg;base64,', imgDataUrl.substr(0,23));
     }));
   }
-]);
+])});
