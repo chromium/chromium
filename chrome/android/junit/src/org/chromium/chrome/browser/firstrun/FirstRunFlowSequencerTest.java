@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.accounts.Account;
@@ -132,23 +131,6 @@ public class FirstRunFlowSequencerTest {
     @After
     public void tearDown() {
         mActivityController.pause().stop().destroy();
-    }
-
-    @Test
-    @Feature({"FirstRun"})
-    public void testFirstRunComplete() {
-        mSequencer.isFirstRunFlowComplete = true;
-        mSequencer.isSignedIn = false;
-        mSequencer.isSyncAllowed = true;
-        mSequencer.googleAccounts =
-                Collections.singletonList(new Account(DEFAULT_ACCOUNT, GOOGLE_ACCOUNT_TYPE));
-        mSequencer.shouldSkipFirstUseHints = false;
-        mSequencer.isFirstRunEulaAccepted = true;
-        mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD);
-
-        mSequencer.processFreEnvironmentPreNative();
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertNull(mSequencer.returnedBundle);
     }
 
     @Test
