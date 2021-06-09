@@ -275,6 +275,7 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          DeliveredCallback delivered_callback,
                                          std::vector<TargetInfo> targets) {
   RecordTargetCountMetrics(targets);
+  RecordShareDataMetrics(intent);
 
   // If SetSelectedAppForTesting() has been called, immediately launch the app.
   const std::u16string selected_app = GetSelectedApp();
@@ -410,6 +411,23 @@ void SharesheetService::RecordShareActionMetrics(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void SharesheetService::RecordShareDataMetrics(
+    const apps::mojom::IntentPtr& intent) {
+  // Record whether or not we're sharing a drive folder.
+
+  // If |intent| has a |drive_share_url| but does not contain |share_text|,
+  // it is a Drive Folder.
+  const bool is_drive_folder = intent->drive_share_url.has_value() &&
+                               intent->drive_share_url.value().is_valid() &&
+                               intent->share_text.value_or("").empty();
+  SharesheetMetrics::RecordSharesheetIsDriveFolder(is_drive_folder);
+
+  // Record file count.
+  const size_t file_count =
+      intent->file_urls.value_or(std::vector<GURL>()).size();
+  SharesheetMetrics::RecordSharesheetFilesSharedCount(file_count);
 }
 
 }  // namespace sharesheet

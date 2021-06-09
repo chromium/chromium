@@ -1413,11 +1413,41 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Sharesheet.FileCount" units="files"
+    expires_after="M97">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records the number of files a user is trying to share from the Sharesheet
+    when the sharesheet is invoked.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Sharesheet.FormFactor"
     enum="ChromeOSSharesheetFormFactor" expires_after="M95">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.IsDriveFolder" enum="Boolean"
+    expires_after="M97">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    If the value is true, the data being shared from the Sharesheet is a folder
+    from Drive. Recorded when the sharesheet is invoked.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
+    enum="BooleanSelected" expires_after="M97">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    If the value is true, the image preview was pressed during the current
+    invocation. Recorded when the sharesheet closes.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
