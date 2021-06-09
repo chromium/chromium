@@ -17,9 +17,7 @@ config("libjxl_external_config") {
 }
 
 source_set("libjxl") {
-  # TODO(deymo): Remove libjxl_enc_sources when there are not dependencies
-  # into it.
-  sources = rebase_path(libjxl_dec_sources + libjxl_enc_sources, ".", "src/lib")
+  sources = rebase_path(libjxl_dec_sources, ".", "src/lib")
 
   cflags_cc = [ "-Wno-unused-function" ]
 
@@ -33,9 +31,6 @@ source_set("libjxl") {
   deps = [
     "//skia:skcms",
     "//third_party/brotli:dec",
-
-    # TODO(deymo): Compile only the decoder-side files.
-    "//third_party/brotli:enc",
     "//third_party/highway:libhwy",
   ]
 
