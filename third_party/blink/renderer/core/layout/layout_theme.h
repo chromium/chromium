@@ -123,10 +123,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Highlight and text colors for TextMatches.
   Color PlatformTextSearchHighlightColor(
       bool active_match,
-      bool in_forced_colors_mode,
       mojom::blink::ColorScheme color_scheme) const;
   Color PlatformTextSearchColor(bool active_match,
-                                bool in_forced_colors_mode,
                                 mojom::blink::ColorScheme color_scheme) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
@@ -194,6 +192,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
     return Color();
   }
 
+  bool InForcedColorsMode() const { return in_forced_colors_mode_; }
+
  protected:
   // The platform selection color.
   virtual Color PlatformActiveSelectionBackgroundColor(
@@ -234,6 +234,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   bool HasCustomFocusRingColor() const;
   Color GetCustomFocusRingColor() const;
 
+  Color DefaultSystemColor(CSSValueID,
+                           mojom::blink::ColorScheme color_scheme) const;
+  Color SystemColorFromNativeTheme(
+      CSSValueID,
+      mojom::blink::ColorScheme color_scheme) const;
+
  private:
   // This function is to be implemented in your platform-specific theme
   // implementation to hand back the appropriate platform theme.
@@ -245,12 +251,15 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   ControlPart AdjustAppearanceWithElementType(const ComputedStyle& style,
                                               const Element* element);
 
+  void UpdateForcedColorsState();
+
   Color custom_focus_ring_color_;
   bool has_custom_focus_ring_color_;
   base::TimeDelta caret_blink_interval_ =
       base::TimeDelta::FromMilliseconds(500);
 
   bool delegates_menu_list_rendering_ = false;
+  bool in_forced_colors_mode_ = false;
 
   // This color is expected to be drawn on a semi-transparent overlay,
   // making it more transparent than its alpha value indicates.

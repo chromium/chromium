@@ -286,8 +286,7 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
   if (marker.GetType() != DocumentMarker::kTextFragment) {
     const Color platform_text_color =
         LayoutTheme::GetTheme().PlatformTextSearchColor(
-            marker.IsActiveMatch(), document.InForcedColorsMode(),
-            style.UsedColorScheme());
+            marker.IsActiveMatch(), style.UsedColorScheme());
     if (platform_text_color == text_color)
       return {};
     text_color = platform_text_color;

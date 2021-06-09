@@ -818,8 +818,6 @@ Document::Document(const DocumentInit& initializer,
   // |fetcher_|.
   style_engine_ = MakeGarbageCollected<StyleEngine>(*this);
 
-  UpdateForcedColors();
-
   // The parent's parser should be suspended together with all the other
   // objects, else this new Document would have a new ExecutionContext which
   // suspended state would not match the one from the parent, and could start
@@ -2652,6 +2650,8 @@ void Document::Initialize() {
   // ExecutionContextLifecycleObserver::contextDestroyed wouldn't be fired.
   network_state_observer_ =
       MakeGarbageCollected<NetworkStateObserver>(GetExecutionContext());
+
+  UpdateForcedColors();
 }
 
 void Document::Shutdown() {

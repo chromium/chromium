@@ -89,8 +89,7 @@ Color HighlightThemeForegroundColor(const Document& document,
           style.UsedColorScheme());
     case kPseudoIdTargetText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
-          false /* active match */, document.InForcedColorsMode(),
-          style.UsedColorScheme());
+          false /* active match */, style.UsedColorScheme());
     default:
       NOTREACHED();
       return Color();
@@ -112,8 +111,7 @@ Color HighlightThemeBackgroundColor(const Document& document,
         return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
 
       return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-          false /* active match */, document.InForcedColorsMode(),
-          style.UsedColorScheme());
+          false /* active match */, style.UsedColorScheme());
     default:
       NOTREACHED();
       return Color();

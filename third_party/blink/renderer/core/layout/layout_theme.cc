@@ -148,7 +148,9 @@ LayoutTheme& LayoutTheme::GetTheme() {
   return NativeTheme();
 }
 
-LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {}
+LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {
+  UpdateForcedColorsState();
+}
 
 ControlPart LayoutTheme::AdjustAppearanceWithAuthorStyle(
     ControlPart part,
@@ -515,6 +517,7 @@ void LayoutTheme::AdjustSearchFieldStyle(ComputedStyle&) const {}
 void LayoutTheme::AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const {}
 
 void LayoutTheme::PlatformColorsDidChange() {
+  UpdateForcedColorsState();
   Page::PlatformColorsChanged();
 }
 
@@ -592,6 +595,14 @@ void LayoutTheme::SystemFont(CSSValueID system_font_id,
 
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
                                mojom::blink::ColorScheme color_scheme) const {
+  if (!WebTestSupport::IsRunningWebTest() && InForcedColorsMode())
+    return SystemColorFromNativeTheme(css_value_id, color_scheme);
+  return DefaultSystemColor(css_value_id, color_scheme);
+}
+
+Color LayoutTheme::DefaultSystemColor(
+    CSSValueID css_value_id,
+    mojom::blink::ColorScheme color_scheme) const {
   switch (css_value_id) {
     case CSSValueID::kActiveborder:
       return 0xFFFFFFFF;
@@ -692,12 +703,57 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
   return Color();
 }
 
+Color LayoutTheme::SystemColorFromNativeTheme(
+    CSSValueID css_value_id,
+    mojom::blink::ColorScheme color_scheme) const {
+  blink::WebThemeEngine::SystemThemeColor theme_color;
+  switch (css_value_id) {
+    case CSSValueID::kActivetext:
+    case CSSValueID::kLinktext:
+    case CSSValueID::kVisitedtext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHotlight;
+      break;
+    case CSSValueID::kButtonface:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonFace;
+      break;
+    case CSSValueID::kButtontext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonText;
+      break;
+    case CSSValueID::kGraytext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kGrayText;
+      break;
+    case CSSValueID::kHighlight:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHighlight;
+      break;
+    case CSSValueID::kHighlighttext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHighlightText;
+      break;
+    case CSSValueID::kWindow:
+    case CSSValueID::kCanvas:
+    case CSSValueID::kField:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kWindow;
+      break;
+    case CSSValueID::kWindowtext:
+    case CSSValueID::kCanvastext:
+    case CSSValueID::kFieldtext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kWindowText;
+      break;
+    default:
+      return DefaultSystemColor(css_value_id, color_scheme);
+  }
+  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
+  const absl::optional<SkColor> system_color =
+      Platform::Current()->ThemeEngine()->GetSystemColor(theme_color);
+  if (system_color)
+    return Color(system_color.value());
+  return DefaultSystemColor(css_value_id, color_scheme);
+}
+
 Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
-    bool in_forced_colors_mode,
     mojom::blink::ColorScheme color_scheme) const {
   if (active_match) {
-    if (in_forced_colors_mode)
+    if (InForcedColorsMode())
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme);
     return Color(255, 150, 50);  // Orange.
   }
@@ -706,9 +762,8 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
 
 Color LayoutTheme::PlatformTextSearchColor(
     bool active_match,
-    bool in_forced_colors_mode,
     mojom::blink::ColorScheme color_scheme) const {
-  if (in_forced_colors_mode && active_match)
+  if (InForcedColorsMode() && active_match)
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme);
   return Color::kBlack;
 }
@@ -776,6 +831,13 @@ bool LayoutTheme::HasCustomFocusRingColor() const {
 
 Color LayoutTheme::GetCustomFocusRingColor() const {
   return custom_focus_ring_color_;
+}
+
+void LayoutTheme::UpdateForcedColorsState() {
+  in_forced_colors_mode_ =
+      Platform::Current() && Platform::Current()->ThemeEngine() &&
+      Platform::Current()->ThemeEngine()->GetForcedColors() !=
+          ForcedColors::kNone;
 }
 
 }  // namespace blink

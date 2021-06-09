@@ -305,8 +305,7 @@ void NGHighlightPainter::Paint(Phase phase) {
           Color color;
           if (marker->GetType() == DocumentMarker::kTextMatch) {
             color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-                text_marker.IsActiveMatch(), document.InForcedColorsMode(),
-                style_.UsedColorScheme());
+                text_marker.IsActiveMatch(), style_.UsedColorScheme());
           } else {
             color = HighlightPaintingUtils::HighlightBackgroundColor(
                 document, style_, node_, kPseudoIdTargetText);
