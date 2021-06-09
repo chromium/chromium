@@ -27,7 +27,7 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr PhysicalOffset(LayoutUnit left, LayoutUnit top)
       : left(left), top(top) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline PhysicalOffset(int left, int top);
 
   LayoutUnit left;

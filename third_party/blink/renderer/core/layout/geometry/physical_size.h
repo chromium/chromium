@@ -27,7 +27,7 @@ struct CORE_EXPORT PhysicalSize {
   constexpr PhysicalSize(LayoutUnit width, LayoutUnit height)
       : width(width), height(height) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline PhysicalSize(int width, int height);
 
   LayoutUnit width;

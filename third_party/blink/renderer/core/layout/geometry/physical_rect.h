@@ -42,7 +42,7 @@ struct CORE_EXPORT PhysicalRect {
                          LayoutUnit height)
       : offset(left, top), size(width, height) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline PhysicalRect(int left, int top, int width, int height);
 
   PhysicalOffset offset;

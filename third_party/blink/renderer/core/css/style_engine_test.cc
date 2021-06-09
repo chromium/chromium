@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -125,6 +126,17 @@ class StyleEngineTest : public testing::Test {
 
  private:
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
+};
+
+// It's currently not possible to use ScopedCSSContainerQueriesForTest in
+// individual tests. CSSContainerQueries implies LayoutNGGrid, and
+// LayoutNGGrid needs to be enabled early (before StyleResolver::InitialStyle
+// is created, probably). Otherwise assumptions made by e.g.
+// GridTrackList::AssignFrom do not hold.
+class StyleEngineContainerQueryTest : public StyleEngineTest,
+                                      private ScopedCSSContainerQueriesForTest {
+ public:
+  StyleEngineContainerQueryTest() : ScopedCSSContainerQueriesForTest(true) {}
 };
 
 void StyleEngineTest::SetUp() {
@@ -3387,28 +3399,16 @@ TEST_F(StyleEngineSimTest, ColorSchemeBaseBackgroundWhileRenderBlocking) {
   css_resource.Finish();
 }
 
-namespace {
-
-void SetDependsOnContainerQueries(Element& element) {
-  if (const ComputedStyle* style = element.GetComputedStyle()) {
-    scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
-    cloned_style->SetDependsOnContainerQueries(true);
-    element.SetComputedStyle(cloned_style);
-  }
-}
-
-void SetDependsOnContainerQueries(HTMLCollection& affected) {
-  for (Element* element : affected)
-    SetDependsOnContainerQueries(*element);
-}
-
-}  // namespace
-
-TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
+TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
         contain: layout size style;
+        width: 100px;
+        height: 100px;
+      }
+      @container (min-width: 200px) {
+        .affected { background-color: green; }
       }
     </style>
     <div id="container1" class="container">
@@ -3442,32 +3442,34 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
 
   auto* container1 = GetDocument().getElementById("container1");
   auto* container2 = GetDocument().getElementById("container2");
-  auto* affected = GetDocument().getElementsByClassName("affected");
   ASSERT_TRUE(container1);
   ASSERT_TRUE(container2);
-  ASSERT_TRUE(affected);
-  SetDependsOnContainerQueries(*affected);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container1, LogicalSize(), LogicalAxes(kLogicalAxisBoth));
+      *container1, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
   // The first span.affected child and #container2
   EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container2, LogicalSize(), LogicalAxes(kLogicalAxisBoth));
+      *container2, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
   // Three direct span.affected children, and the two display:none elements.
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
-TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
+TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
         contain: layout size style;
+        width: 100px;
+        height: 100px;
+      }
+      @container (min-width: 200px) {
+        .affected { background-color: green; }
       }
     </style>
     <div id="container" class="container">
@@ -3498,27 +3500,33 @@ TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
   UpdateAllLifecyclePhases();
 
   auto* container = GetDocument().getElementById("container");
-  auto* affected = GetDocument().getElementsByClassName("affected");
   ASSERT_TRUE(container);
-  ASSERT_TRUE(affected);
-  SetDependsOnContainerQueries(*affected);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(), LogicalAxes(kLogicalAxisBoth));
 
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
   // span.affected is updated because containment does not apply to the display
   // types on the element styled with containment. All marked as affected are
   // recalculated.
   EXPECT_EQ(7u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
-TEST_F(StyleEngineTest, PseudoElementContainerQueryRecalc) {
+TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #container { contain: layout size style }
+      #container {
+        contain: layout size style;
+        width: 100px;
+        height: 100px;
+      }
+      /* TODO(crbug.com/1217976): For now we need to create the pseudo-
+         element #container outside of the container query. */
       #container::before { content: " " }
-      span::before { content: " " }
+      @container (min-width: 200px) {
+        #container::before { content: " " }
+        span::before { content: " " }
+      }
     </style>
     <div id="container">
       <span id="span"></span>
@@ -3532,25 +3540,29 @@ TEST_F(StyleEngineTest, PseudoElementContainerQueryRecalc) {
   ASSERT_TRUE(container);
   ASSERT_TRUE(span);
 
-  auto* before = span->GetPseudoElement(kPseudoIdBefore);
-  ASSERT_TRUE(before);
-  SetDependsOnContainerQueries(*before);
-
-  before = container->GetPseudoElement(kPseudoIdBefore);
-  ASSERT_TRUE(before);
-  SetDependsOnContainerQueries(*before);
-
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
-  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
+  // Two ::before elements, plus #span. (Originating elements are also
+  // marked as SetDependsOnContainerQueries).
+  EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
-TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
+TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div id="container" style="contain: layout size style">
-      <input id="input" type="text" class="affected">
+    <style>
+      #container {
+        contain: layout size style;
+        width: 100px;
+        height: 100px;
+      }
+      @container (min-width: 200px) {
+        #input { background-color: green; }
+      }
+    </style>
+    <div id="container">
+      <input id="input" type="text">
     </div>
   )HTML");
 
@@ -3558,13 +3570,10 @@ TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
 
   auto* container = GetDocument().getElementById("container");
   auto* input = GetDocument().getElementById("input");
-  auto* affected = GetDocument().getElementsByClassName("affected");
   ASSERT_TRUE(container);
   ASSERT_TRUE(input);
   auto* inner_editor = DynamicTo<HTMLInputElement>(input)->InnerEditorElement();
   ASSERT_TRUE(inner_editor);
-  ASSERT_TRUE(affected);
-  SetDependsOnContainerQueries(*affected);
 
   scoped_refptr<const ComputedStyle> old_inner_style =
       inner_editor->GetComputedStyle();
@@ -3572,7 +3581,7 @@ TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
 
   // Input elements mark their InnerEditorElement() style-dirty when they are
   // recalculated. That means the UpdateStyleAndLayoutTreeForContainer() call

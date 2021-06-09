@@ -28,7 +28,7 @@ struct CORE_EXPORT LogicalRect {
                         LayoutUnit block_size)
       : offset(inline_offset, block_offset), size(inline_size, block_size) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline LogicalRect(int inline_offset,
                      int block_offset,
                      int inline_size,
