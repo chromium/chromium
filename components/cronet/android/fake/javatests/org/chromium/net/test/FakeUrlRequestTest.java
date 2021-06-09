@@ -29,14 +29,17 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetEngine;
+import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.TestUploadDataProvider;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UploadDataSink;
+import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlRequest.Status;
 import org.chromium.net.UrlRequest.StatusListener;
+import org.chromium.net.UrlResponseInfo;
 
 import java.io.IOException;
 import java.net.URI;
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -733,17 +737,18 @@ public class FakeUrlRequestTest {
 
     @Test
     @SmallTest
-    public void testDoubleReadFails() {
-        TestUrlRequestCallback callback = Mockito.spy(new TestUrlRequestCallback());
-        callback.setAutoAdvance(false);
+    public void testDoubleReadFails() throws Exception {
+        UrlRequest.Callback callback = new StubCallback();
         FakeUrlRequest request =
                 (FakeUrlRequest) mFakeCronetEngine
-                        .newUrlRequestBuilder("url", callback, callback.getExecutor())
+                        .newUrlRequestBuilder("url", callback, Executors.newSingleThreadExecutor())
                         .build();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(32 * 1024);
         request.start();
-        callback.startNextRead(request);
+
+        request.read(buffer);
         try {
-            callback.startNextRead(request);
+            request.read(buffer);
             fail("Double read() should be disallowed.");
         } catch (IllegalStateException e) {
             assertEquals("Invalid state transition - expected 4 but was 7", e.getMessage());
@@ -1593,5 +1598,31 @@ public class FakeUrlRequestTest {
         // 2 read call for the first two data chunks, and 1 for final chunk.
         assertEquals(3, dataProvider.getNumReadCalls());
         assertEquals("hello there!", callback.mResponseAsString);
+    }
+
+    /**
+     * A Cronet callback that does nothing.
+     */
+
+    private static class StubCallback extends UrlRequest.Callback {
+        @Override
+        public void onRedirectReceived(org.chromium.net.UrlRequest urlRequest,
+                UrlResponseInfo urlResponseInfo, String s) {}
+
+        @Override
+        public void onResponseStarted(
+                org.chromium.net.UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) {}
+
+        @Override
+        public void onReadCompleted(org.chromium.net.UrlRequest urlRequest,
+                UrlResponseInfo urlResponseInfo, ByteBuffer byteBuffer) {}
+
+        @Override
+        public void onSucceeded(
+                org.chromium.net.UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) {}
+
+        @Override
+        public void onFailed(org.chromium.net.UrlRequest urlRequest,
+                UrlResponseInfo urlResponseInfo, CronetException e) {}
     }
 }
