@@ -8,7 +8,7 @@ import './files_icon_button.js';
 import './files_metadata_box.js';
 import './files_safe_media.js';
 import './files_tooltip.js';
-import './icons.m.js';
+import './icons.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

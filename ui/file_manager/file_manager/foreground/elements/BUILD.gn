@@ -5,7 +5,6 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
@@ -13,10 +12,8 @@ visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
 group("elements") {
   visibility += [ "//ui/file_manager/*" ]
-  public_deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_spinner",
-    "//ui/file_manager/file_manager/foreground/elements:icons_module",
-  ]
+  public_deps =
+      [ "//ui/file_manager/file_manager/foreground/elements:files_spinner" ]
 }
 
 group("closure_compile") {
@@ -67,6 +64,7 @@ html_to_js("web_components") {
     "files_toast.js",
     "files_toggle_ripple.js",
     "files_tooltip.js",
+    "icons.js",
   ]
 }
 
@@ -260,13 +258,6 @@ js_unittest("files_xf_elements_unittest.m") {
   ]
 
   externs_list = [ "$externs_path/file_manager_private.js" ]
-}
-
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
-  preserve_url_scheme = true
 }
 
 js_library("xf_button") {

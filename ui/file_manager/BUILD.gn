@@ -266,7 +266,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/webui_command_extender.m.js",
 
     # Files app Elements:
-    "file_manager/foreground/elements/icons.m.js",
+    "file_manager/foreground/elements/icons.js",
     "file_manager/foreground/elements/files_format_dialog.js",
     "file_manager/foreground/elements/files_icon_button.js",
     "file_manager/foreground/elements/files_message.m.js",
