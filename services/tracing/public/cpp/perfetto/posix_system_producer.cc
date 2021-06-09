@@ -429,6 +429,11 @@ void PosixSystemProducer::ConnectSocket() {
   // If the child process hasn't received the Mojo remote, try again later.
   auto& remote = TracedProcessImpl::GetInstance()->system_tracing_service();
   if (!remote.is_bound()) {
+    // We don't really open the socket using ProducerIPCClient in child
+    // processes and need to reset |state_| to make DelayedReconnect() retry the
+    // connection using mojo.
+    DCHECK(state_ == State::kConnecting);
+    state_ = State::kDisconnected;
     DelayedReconnect();
     return;
   }
@@ -440,6 +445,9 @@ void PosixSystemProducer::ConnectSocket() {
           return;
 
         if (!file.IsValid()) {
+          // Reset |state_| to make DelayedReconnect() retry the connection.
+          DCHECK(self->state_ == State::kConnecting);
+          self->state_ = State::kDisconnected;
           self->DelayedReconnect();
           return;
         }
