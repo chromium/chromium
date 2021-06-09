@@ -3235,10 +3235,6 @@
           'shards': 2,
         },
       },
-      # TODO(crbug.com/1217434) Test failure on CQ.
-      'linux-lacros-tester-rel': {
-        'ci_only': True,
-      },
     },
   },
   'weblayer_browsertests': {
