@@ -717,6 +717,26 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 #endif  // !BUILDFLAG(IS_CHROMECAST)
 
+  // On MacOS, the default texture target for native GpuMemoryBuffers is
+  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
+  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
+  // it's necessary to use GL_TEXTURE_2D instead.
+  // TODO(crbug.com/1056312): The proper behavior is to check the config
+  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
+#if defined(OS_MAC)
+  if (command_line->HasSwitch(switches::kUseGL)) {
+    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
+    std::string use_angle =
+        command_line->GetSwitchValueASCII(switches::kUseANGLE);
+    if (use_gl == gl::kGLImplementationANGLEName &&
+        (use_angle == gl::kANGLEImplementationSwiftShaderName ||
+         use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
+         use_angle == gl::kANGLEImplementationMetalName)) {
+      SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
+    }
+  }
+#endif  // defined(OS_MAC)
+
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
