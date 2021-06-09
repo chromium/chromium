@@ -115,6 +115,10 @@ struct Config {
 // Gets the current configuration.
 const Config& GetFeedConfig();
 
+// Sets whether the legacy feed endpoint should be used for Web Feed content
+// fetches.
+void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy);
+
 void SetFeedConfigForTesting(const Config& config);
 void OverrideConfigWithFinchForTesting();
 

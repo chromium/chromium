@@ -157,6 +157,13 @@ const Config& GetFeedConfig() {
   return *s_config;
 }
 
+// This is a dev setting that updates Config, which is supposed to be constant.
+// TODO(crbug/1152592): remove when not needed anymore.
+void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy) {
+  Config& config = const_cast<Config&>(GetFeedConfig());
+  config.use_feed_query_requests_for_web_feeds = use_legacy;
+}
+
 void SetFeedConfigForTesting(const Config& config) {
   const_cast<Config&>(GetFeedConfig()) = config;
 }

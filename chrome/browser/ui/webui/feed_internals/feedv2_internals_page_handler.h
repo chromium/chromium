@@ -47,10 +47,12 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
   void OverrideDiscoverApiEndpoint(const GURL& endpoint_url) override;
   void OverrideFeedStreamData(const std::vector<uint8_t>& data) override;
   void SetWebFeedFollowIntroDebugEnabled(const bool enabled) override;
+  void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy) override;
 
  private:
   bool IsFeedAllowed();
   bool IsWebFeedFollowIntroDebugEnabled();
+  bool ShouldUseFeedQueryRequestsForWebFeeds();
 
   mojo::Receiver<feed_internals::mojom::PageHandler> receiver_;
 

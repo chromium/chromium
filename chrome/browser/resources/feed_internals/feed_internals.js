@@ -29,6 +29,8 @@ function updatePageWithProperties() {
     $('enable-webfeed-follow-intro-debug').checked =
         properties.isWebFeedFollowIntroDebugEnabled;
     $('enable-webfeed-follow-intro-debug').disabled = false;
+    $('use-feed-query-requests-for-web-feeds').checked =
+        properties.useFeedQueryRequestsForWebFeeds;
   });
 }
 
@@ -175,6 +177,12 @@ function setupEventListeners() {
         $('enable-webfeed-follow-intro-debug').checked);
     $('enable-webfeed-follow-intro-debug').disabled = true;
   });
+
+  $('use-feed-query-requests-for-web-feeds')
+      .addEventListener('click', function() {
+        pageHandler.setUseFeedQueryRequestsForWebFeeds(
+            $('use-feed-query-requests-for-web-feeds').checked);
+      });
 }
 
 function updatePage() {
