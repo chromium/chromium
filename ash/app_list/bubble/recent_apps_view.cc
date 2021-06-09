@@ -97,10 +97,20 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
 
   // AppListItemView::GridDelegate:
   bool IsInFolder() const override { return false; }
-  void SetSelectedView(AppListItemView* view) override {}
-  void ClearSelectedView() override {}
+  void SetSelectedView(AppListItemView* view) override {
+    DCHECK(view);
+    if (view == selected_view_)
+      return;
+    // Ensure the translucent background of the previous selection goes away.
+    if (selected_view_)
+      selected_view_->SchedulePaint();
+    selected_view_ = view;
+    // Ensure the translucent background of this selection is painted.
+    selected_view_->SchedulePaint();
+  }
+  void ClearSelectedView() override { selected_view_ = nullptr; }
   bool IsSelectedView(const AppListItemView* view) const override {
-    return false;
+    return view == selected_view_;
   }
   void InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,
@@ -123,6 +133,9 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
     return *AppListConfigProvider::Get().GetConfigForType(
         AppListConfigType::kLarge, /*can_create=*/true);
   }
+
+ private:
+  AppListItemView* selected_view_ = nullptr;
 };
 
 RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
@@ -149,7 +162,12 @@ RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
 
 RecentAppsView::~RecentAppsView() = default;
 
+AppListItemView* RecentAppsView::GetItemViewForTest(int index) {
+  return static_cast<AppListItemView*>(children()[index]);
+}
+
 void RecentAppsView::AddAppIcon(AppListItem* item) {
+  // NOTE: If you change the view structure, update GetItemForTest() as well.
   AppListItemView* item_view = AddChildView(std::make_unique<AppListItemView>(
       grid_delegate_.get(), item, view_delegate_));
   item_view->SetCallback(

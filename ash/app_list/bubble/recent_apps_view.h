@@ -19,6 +19,7 @@ class Event;
 namespace ash {
 
 class AppListItem;
+class AppListItemView;
 class AppListViewDelegate;
 
 // The recent apps row in the "Continue" section of the bubble launcher. Shows
@@ -29,6 +30,8 @@ class ASH_EXPORT RecentAppsView : public views::View {
   RecentAppsView(const RecentAppsView&) = delete;
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
+
+  AppListItemView* GetItemViewForTest(int index);
 
  private:
   // Adds an app icon as a child view.

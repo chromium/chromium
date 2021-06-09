@@ -190,6 +190,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool is_folder() const { return is_folder_; }
 
   bool IsNotificationIndicatorShownForTest() const;
+  GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
 
  private:
   class IconImageView;
