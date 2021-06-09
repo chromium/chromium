@@ -305,11 +305,12 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
     blink::WebGraphicsContext3DProvider* context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK(context_provider);
+  DCHECK(!image->CurrentFrameKnownToBeOpaque());
 
   const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const bool is_opaque = image->CurrentFrameKnownToBeOpaque();
   const media::VideoPixelFormat temp_argb_pixel_format =
-      media::VideoPixelFormatFromSkColorType(kN32_SkColorType, is_opaque);
+      media::VideoPixelFormatFromSkColorType(kN32_SkColorType,
+                                             /*is_opaque = */ false);
   const gfx::Size image_size(image->width(), image->height());
   scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
       temp_argb_pixel_format, image_size, gfx::Rect(image_size), image_size,
@@ -324,8 +325,7 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
                 "CanvasCaptureHandler::ReadARGBPixelsAsync supports only "
                 "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
   SkImageInfo info = SkImageInfo::MakeN32(
-      image_size.width(), image_size.height(),
-      is_opaque ? kOpaque_SkAlphaType : kUnpremul_SkAlphaType);
+      image_size.width(), image_size.height(), kUnpremul_SkAlphaType);
   GLuint row_bytes;
   if (!base::CheckedNumeric<size_t>(info.minRowBytes())
            .AssignIfValid(&row_bytes)) {
