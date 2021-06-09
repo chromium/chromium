@@ -121,7 +121,8 @@ void AutofillProviderAndroid::OnQueryFormFieldAutofill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  MaybeStartNewSession(manager, form, field, bounding_box);
+  if (ShouldStartNewSession(manager, form))
+    StartNewSession(manager, form, field, bounding_box);
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -139,24 +140,18 @@ void AutofillProviderAndroid::OnQueryFormFieldAutofill(
   }
 }
 
-void AutofillProviderAndroid::MaybeStartNewSession(
+bool AutofillProviderAndroid::ShouldStartNewSession(
     AndroidAutofillManager* manager,
-    const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
-  // Don't start a new session when the new form is similar to the old form, the
-  // new manager is the same as the current manager, and the coordinates of the
-  // relevant form field haven't changed.
-  if (form_ && form_->SimilarFormAs(form) &&
-      IsCurrentlyLinkedManager(manager)) {
-    size_t index;
-    if (form_->GetFieldIndex(field, &index) &&
-        manager->driver()->TransformBoundingBoxToViewportCoordinates(
-            form.fields[index].bounds) == form_->form().fields[index].bounds) {
-      return;
-    }
-  }
+    const FormData& form) {
+  // Only start a new session when form or manager is changed, the change of
+  // manager indicates query from other frame and a new session is needed.
+  return !IsCurrentlyLinkedForm(form) || !IsCurrentlyLinkedManager(manager);
+}
 
+void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
+                                              const FormData& form,
+                                              const FormFieldData& field,
+                                              const gfx::RectF& bounding_box) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
@@ -262,7 +257,8 @@ void AutofillProviderAndroid::OnSelectControlDidChange(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
-  MaybeStartNewSession(manager, form, field, bounding_box);
+  if (ShouldStartNewSession(manager, form))
+    StartNewSession(manager, form, field, bounding_box);
   FireFormFieldDidChanged(manager, form, field, bounding_box);
 }
 

@@ -53,7 +53,7 @@ public class FormFieldData {
     public final boolean mVisible;
 
     // The bounds in the viewport's coordinates
-    private final RectF mBounds;
+    private RectF mBounds;
     // The bounds in the container view's coordinates.
     private RectF mBoundsInContainerViewCoordinates;
 
@@ -114,6 +114,10 @@ public class FormFieldData {
 
     public RectF getBounds() {
         return mBounds;
+    }
+
+    public void updateBounds(RectF bounds) {
+        mBounds = bounds;
     }
 
     public void setBoundsInContainerViewCoordinates(RectF bounds) {

@@ -121,12 +121,13 @@ class AutofillProviderAndroid : public AutofillProvider {
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
 
-  // Starts a new session, but only if |form| or |manager| doesn't match the
-  // current session.
-  void MaybeStartNewSession(AndroidAutofillManager* manager,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box);
+  bool ShouldStartNewSession(AndroidAutofillManager* manager,
+                             const FormData& form);
+
+  void StartNewSession(AndroidAutofillManager* manager,
+                       const FormData& form,
+                       const FormFieldData& field,
+                       const gfx::RectF& bounding_box);
 
   void Reset();
 

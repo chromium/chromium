@@ -2057,7 +2057,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "crbug.com/1033179")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
