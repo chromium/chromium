@@ -842,6 +842,8 @@
 
     # TODO(jmadill/ynovikov): Migrate these to angle waterfall. http://anglebug.com/4483
     'tryserver.chromium.angle': {
+      'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild',
+      'android-angle-try': 'angle_specific_no_trace_android_release_trybot_arm64',
       'android_angle_rel_ng': 'gpu_tests_android_release_trybot_arm64',
       'android_angle_deqp_rel_ng': 'angle_deqp_android_release_trybot_arm64',
       'fuchsia-angle-rel': 'gpu_fyi_tests_release_trybot_fuchsia',
