@@ -12,6 +12,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_icon_loader.h"
@@ -73,7 +74,7 @@ void NotificationPlatformBridgeChromeOs::Close(
     const std::string& notification_id) {
   const std::string profile_notification_id =
       ProfileNotification::GetProfileNotificationId(
-          notification_id, NotificationUIManager::GetProfileID(profile));
+          notification_id, ProfileNotification::GetProfileID(profile));
   impl_->Close(profile, profile_notification_id);
 }
 

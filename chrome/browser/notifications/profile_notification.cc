@@ -24,18 +24,22 @@ std::string ProfileNotification::GetProfileNotificationId(
                             delegate_id.c_str());
 }
 
+// static
+ProfileNotification::ProfileID ProfileNotification::GetProfileID(
+    Profile* profile) {
+  return static_cast<ProfileID>(profile);
+}
+
 ProfileNotification::ProfileNotification(
     Profile* profile,
     const message_center::Notification& notification,
     NotificationHandler::Type type)
     : profile_(profile),
-      profile_id_(NotificationUIManager::GetProfileID(profile)),
+      profile_id_(GetProfileID(profile)),
       notification_(
           // Uses Notification's copy constructor to assign the message center
           // id, which should be unique for every profile + Notification pair.
-          GetProfileNotificationId(
-              notification.id(),
-              NotificationUIManager::GetProfileID(profile)),
+          GetProfileNotificationId(notification.id(), GetProfileID(profile)),
           notification),
       original_id_(notification.id()),
       type_(type) {

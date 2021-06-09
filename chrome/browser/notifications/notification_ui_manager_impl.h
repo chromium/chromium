@@ -51,10 +51,11 @@ class NotificationUIManagerImpl : public NotificationUIManager,
               Profile* profile) override;
   const message_center::Notification* FindById(
       const std::string& delegate_id,
-      ProfileID profile_id) const override;
+      ProfileNotification::ProfileID profile_id) const override;
   bool CancelById(const std::string& delegate_id,
-                  ProfileID profile_id) override;
-  std::set<std::string> GetAllIdsByProfile(ProfileID profile_id) override;
+                  ProfileNotification::ProfileID profile_id) override;
+  std::set<std::string> GetAllIdsByProfile(
+      ProfileNotification::ProfileID profile_id) override;
   bool CancelAllBySourceOrigin(const GURL& source_origin) override;
   void CancelAll() override;
   void StartShutdown() override;

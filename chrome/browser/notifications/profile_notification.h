@@ -8,9 +8,9 @@
 #include <string>
 
 #include "chrome/browser/notifications/notification_common.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
@@ -21,12 +21,18 @@ class ScopedProfileKeepAlive;
 // notification services have no notion of the profile.
 class ProfileNotification {
  public:
+  using ProfileID = void*;
+
   // Returns a string that uniquely identifies a profile + delegate_id pair.
   // The profile_id is used as an identifier to identify a profile instance; it
   // can be null for system notifications. The ID becomes invalid when a profile
   // is destroyed.
   static std::string GetProfileNotificationId(const std::string& delegate_id,
                                               ProfileID profile_id);
+
+  // Convert a profile pointer into an opaque profile id, which can be safely
+  // used by NotificationUIManager even after a profile may have been destroyed.
+  static ProfileID GetProfileID(Profile* profile);
 
   ProfileNotification(
       Profile* profile,

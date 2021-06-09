@@ -95,7 +95,7 @@ bool NotificationUIManagerImpl::Update(
     const message_center::Notification& notification,
     Profile* profile) {
   const std::string profile_id = ProfileNotification::GetProfileNotificationId(
-      notification.id(), NotificationUIManager::GetProfileID(profile));
+      notification.id(), ProfileNotification::GetProfileID(profile));
   for (auto iter = profile_notifications_.begin();
        iter != profile_notifications_.end(); ++iter) {
     ProfileNotification* old_notification = (*iter).second.get();
@@ -107,7 +107,7 @@ bool NotificationUIManagerImpl::Update(
     DCHECK_EQ(old_notification->notification().origin_url(),
               notification.origin_url());
     DCHECK_EQ(old_notification->profile_id(),
-              NotificationUIManager::GetProfileID(profile));
+              ProfileNotification::GetProfileID(profile));
 
     // Changing the type from non-progress to progress does not count towards
     // the immediate update allowed in the message center.
@@ -140,7 +140,7 @@ bool NotificationUIManagerImpl::Update(
 
 const message_center::Notification* NotificationUIManagerImpl::FindById(
     const std::string& id,
-    ProfileID profile_id) const {
+    ProfileNotification::ProfileID profile_id) const {
   std::string profile_notification_id =
       ProfileNotification::GetProfileNotificationId(id, profile_id);
   auto iter = profile_notifications_.find(profile_notification_id);
@@ -149,8 +149,9 @@ const message_center::Notification* NotificationUIManagerImpl::FindById(
   return &(iter->second->notification());
 }
 
-bool NotificationUIManagerImpl::CancelById(const std::string& id,
-                                           ProfileID profile_id) {
+bool NotificationUIManagerImpl::CancelById(
+    const std::string& id,
+    ProfileNotification::ProfileID profile_id) {
   std::string profile_notification_id =
       ProfileNotification::GetProfileNotificationId(id, profile_id);
   // See if this ID hasn't been shown yet.
@@ -166,7 +167,7 @@ bool NotificationUIManagerImpl::CancelById(const std::string& id,
 }
 
 std::set<std::string> NotificationUIManagerImpl::GetAllIdsByProfile(
-    ProfileID profile_id) {
+    ProfileNotification::ProfileID profile_id) {
   std::set<std::string> original_ids;
   for (const auto& pair : profile_notifications_) {
     if (pair.second->profile_id() == profile_id)
@@ -223,7 +224,8 @@ void NotificationUIManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
   for (auto loopiter = profile_notifications_.begin();
        loopiter != profile_notifications_.end();) {
     auto curiter = loopiter++;
-    if (GetProfileID(profile) == (*curiter).second->profile_id()) {
+    if (ProfileNotification::GetProfileID(profile) ==
+        (*curiter).second->profile_id()) {
       const std::string id = curiter->first;
       RemoveProfileNotification(id);
       MessageCenter::Get()->RemoveNotification(id, /* by_user */ false);
@@ -238,8 +240,8 @@ void NotificationUIManagerImpl::ResetUiControllerForTest() {
 std::string NotificationUIManagerImpl::GetMessageCenterNotificationIdForTest(
     const std::string& id,
     Profile* profile) {
-  return ProfileNotification::GetProfileNotificationId(id,
-                                                       GetProfileID(profile));
+  return ProfileNotification::GetProfileNotificationId(
+      id, ProfileNotification::GetProfileID(profile));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

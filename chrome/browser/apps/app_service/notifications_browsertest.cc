@@ -109,7 +109,7 @@ OptionalBool HasBadge(Profile* profile, const std::string& app_id) {
 void RemoveNotification(Profile* profile, const std::string& notification_id) {
   const std::string profile_notification_id =
       ProfileNotification::GetProfileNotificationId(
-          notification_id, NotificationUIManager::GetProfileID(profile));
+          notification_id, ProfileNotification::GetProfileID(profile));
   message_center::MessageCenter::Get()->RemoveNotification(
       profile_notification_id, true);
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -96,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerInteractiveUITest,
                         &script_result));
   EXPECT_EQ("ok", script_result);
 
-  ProfileID profile_id =
-      NotificationUIManager::GetProfileID(browser()->profile());
+  ProfileNotification::ProfileID profile_id =
+      ProfileNotification::GetProfileID(browser()->profile());
   std::set<std::string> ids = manager()->GetAllIdsByProfile(profile_id);
   ASSERT_EQ(1u, ids.size());
   const message_center::Notification* notification =

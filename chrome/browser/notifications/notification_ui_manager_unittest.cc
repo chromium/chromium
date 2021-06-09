@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/notification_ui_manager_impl.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -103,7 +104,7 @@ TEST_F(NotificationUIManagerTest, GetAllIdsReturnsOriginalId) {
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
   notification_manager()->Add(GetANotification("test"), &profile);
   std::set<std::string> ids = notification_manager()->GetAllIdsByProfile(
-      NotificationUIManager::GetProfileID(&profile));
+      ProfileNotification::GetProfileID(&profile));
   ASSERT_EQ(1u, ids.size());
   EXPECT_EQ(*ids.begin(), "test");
 }
