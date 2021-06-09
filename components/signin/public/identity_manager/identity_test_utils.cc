@@ -157,9 +157,11 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
 
 void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
                                       const std::string& token_value) {
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  // Primary account for ConsentLevel::kSync (if one exists) is always the
+  // same as the one with ConsentLevel::kSignin.
+  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
   SetRefreshTokenForAccount(identity_manager, account_id, token_value);
 }
 
@@ -187,10 +189,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         ConsentLevel consent_level) {
   CoreAccountInfo account_info =
       SetPrimaryAccount(identity_manager, email, consent_level);
-  // TODO(https://crbug.com/1176695): Refactor
-  // SetRefreshTokenForPrimaryAccount() to set the refresh token for
-  // signin::kSignin and use it here.
-  SetRefreshTokenForAccount(identity_manager, account_info.account_id);
+  SetRefreshTokenForPrimaryAccount(identity_manager);
   AccountInfo primary_account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(
           account_info.account_id);
