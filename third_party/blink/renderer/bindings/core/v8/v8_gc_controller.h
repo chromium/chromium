@@ -45,7 +45,18 @@ class CORE_EXPORT V8GCController {
   STATIC_ONLY(V8GCController);
 
  public:
-  static Node* OpaqueRootForGC(v8::Isolate*, Node*);
+  // Information about whether a wrapper is attached to the main DOM tree
+  // or not. It is computed as follows:
+  // 1) A ExecutionContext with IsContextDestroyed() = true is detached.
+  // 2) A ExecutionContext with IsContextDestroyed() = false is attached.
+  // 3) A Node that is reachable from a detached ExecutionContext is detached.
+  // 4) A Node that is reachable from an attached ExecutionContext is attached.
+  // 5) Any non-Node wrappers return unknown.
+  static v8::EmbedderGraph::Node::Detachedness DetachednessFromWrapper(
+      v8::Isolate*,
+      const v8::Local<v8::Value>&,
+      uint16_t class_id,
+      void*);
 
   // Prologue and epilogue callbacks for V8 garbage collections.
   static void GcPrologue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);

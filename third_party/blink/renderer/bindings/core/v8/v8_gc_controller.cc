@@ -57,22 +57,41 @@
 
 namespace blink {
 
-Node* V8GCController::OpaqueRootForGC(v8::Isolate*, Node* node) {
+namespace {
+
+const Node& OpaqueRootForGC(v8::Isolate*, const Node* node) {
   DCHECK(node);
   if (node->isConnected())
-    return &node->GetDocument();
+    return node->GetDocument();
 
   if (auto* attr = DynamicTo<Attr>(node)) {
     Node* owner_element = attr->ownerElement();
     if (!owner_element)
-      return node;
+      return *node;
     node = owner_element;
   }
 
   while (Node* parent = node->ParentOrShadowHostOrTemplateHostNode())
     node = parent;
 
-  return node;
+  return *node;
+}
+
+}  // namespace
+
+// static
+v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
+    v8::Isolate* isolate,
+    const v8::Local<v8::Value>& v8_value,
+    uint16_t class_id,
+    void*) {
+  if (class_id != WrapperTypeInfo::kNodeClassId)
+    return v8::EmbedderGraph::Node::Detachedness::kUnknown;
+  const auto& root_node =
+      OpaqueRootForGC(isolate, V8Node::ToImpl(v8_value.As<v8::Object>()));
+  if (root_node.isConnected() && root_node.GetExecutionContext())
+    return v8::EmbedderGraph::Node::Detachedness::kAttached;
+  return v8::EmbedderGraph::Node::Detachedness::kDetached;
 }
 
 #if !BUILDFLAG(USE_V8_OILPAN)

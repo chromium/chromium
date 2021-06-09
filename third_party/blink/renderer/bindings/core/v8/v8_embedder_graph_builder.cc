@@ -36,33 +36,6 @@ using Traceable = const void*;
 using Graph = v8::EmbedderGraph;
 using Detachedness = v8::EmbedderGraph::Node::Detachedness;
 
-// Information about whether a node is attached to the main DOM tree
-// or not. It is computed as follows:
-// 1) A ExecutionContext with IsContextDestroyed() = true is detached.
-// 2) A ExecutionContext with IsContextDestroyed() = false is attached.
-// 3) A Node that is not connected to any ExecutionContext is detached.
-// 4) A Node that is connected to a detached ExecutionContext is detached.
-// 5) A Node that is connected to an attached ExecutionContext is attached.
-// 6) A ScriptWrappable that is reachable from an attached Node is
-//    attached.
-// 7) A ScriptWrappable that is reachable from a detached Node is
-//    detached.
-// 8) A ScriptWrappable that is not reachable from any Node is
-//    considered (conservatively) as attached.
-// The unknown state applies to ScriptWrappables during graph
-// traversal when we don't have reachability information yet.
-Detachedness DetachednessFromWrapper(v8::Isolate* isolate,
-                                     uint16_t class_id,
-                                     v8::Local<v8::Object> v8_value) {
-  if (class_id != WrapperTypeInfo::kNodeClassId)
-    return Detachedness::kUnknown;
-  Node* node = V8Node::ToImpl(v8_value);
-  Node* root = V8GCController::OpaqueRootForGC(isolate, node);
-  if (root->isConnected() && node->GetExecutionContext())
-    return Detachedness::kAttached;
-  return Detachedness::kDetached;
-}
-
 class EmbedderNode : public Graph::Node {
  public:
   EmbedderNode(const char* name,
@@ -467,7 +440,8 @@ void V8EmbedderGraphBuilder::VisitPersistentHandleInternal(
   if (!traceable)
     return;
   Graph::Node* wrapper = node_builder_->GraphNode(v8_value);
-  auto detachedness = DetachednessFromWrapper(isolate_, class_id, v8_value);
+  auto detachedness = V8GCController::DetachednessFromWrapper(
+      isolate_, v8_value.As<v8::Value>(), class_id, nullptr);
   EmbedderNode* graph_node = node_builder_->GraphNode(
       traceable, traceable->NameInHeapSnapshot(), wrapper, detachedness);
   State* const to_process_state = EnsureState(traceable, graph_node);

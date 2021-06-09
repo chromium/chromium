@@ -662,6 +662,11 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
 
   WasmResponseExtensions::Initialize(isolate);
+
+  if (v8::HeapProfiler* profiler = isolate->GetHeapProfiler()) {
+    profiler->SetGetDetachednessCallback(
+        V8GCController::DetachednessFromWrapper, nullptr);
+  }
 }
 
 namespace {
