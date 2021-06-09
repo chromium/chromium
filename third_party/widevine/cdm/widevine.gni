@@ -54,6 +54,10 @@ assert(!enable_media_foundation_widevine_cdm || is_win)
 declare_args() {
   # Widevine CDM is bundled as part of Google Chrome builds.
   bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded
+
+  # Customized relative root directory to //third_party/widevine/cdm for
+  # cdm files. It is only applied on "is_linux" or "is_chromeos_lacros"
+  widevine_root = "."
 }
 
 # Enable Widevine CDM host verification, which will sign additional binaries
