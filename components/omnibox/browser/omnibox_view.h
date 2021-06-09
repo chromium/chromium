@@ -177,14 +177,18 @@ class OmniboxView {
                                            bool notify_text_changed) = 0;
 
   // Called when the inline autocomplete text in the model may have changed.
-  // |display_text| is the new text to show. |selection| indicates the
-  // autocompleted portions which should be selected. |user_text_length| is the
-  // length of the user input portion of the text (not including the
-  // autocompletion).
+  // `display_text` is the new text to show. `selection` indicates the
+  // autocompleted portions which should be selected. `*_autocompletion`
+  // represents the appropriate autocompletion.
+  // TODO(manukh) The last 3 parameters are redundant except when split
+  //  autocompletion is enabled. Once we've cleaned up split autocompletion
+  //  (it's unlikely to launch but still useful for experimenting), `selections`
+  //  should be removed.
   virtual void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& display_text,
       std::vector<gfx::Range> selections,
-      size_t user_text_length) = 0;
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) = 0;
 
   // Called when the inline autocomplete text in the model has been cleared.
   virtual void OnInlineAutocompleteTextCleared() = 0;

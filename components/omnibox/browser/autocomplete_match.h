@@ -570,23 +570,23 @@ struct AutocompleteMatch {
   std::u16string inline_autocompletion;
   // Whether rich autocompletion triggered; i.e. this suggestion *is or could
   // have been* rich autocompleted. This is usually redundant and checking
-  // whether either of |prefix_autocompletion| or |split_autocompletion| are
+  // whether either of `prefix_autocompletion` or `split_autocompletion` are
   // non-empty should be used instead to determine if this suggestion *is* rich
-  // autocompelted. But for counterfactual variations, the latter 2 aren't
+  // autocompleted. But for counterfactual variations, the latter 2 aren't
   // copied when deduping matches to avoid showing rich autocompletion and so
   // can't be used to trigger logging.
-  // TODO(manukh): remove |rich_autocompletion_triggered| when counterfactual
-  // experiments end.
+  // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
+  //  experiments end.
   bool rich_autocompletion_triggered = false;
   // The inline autocompletion to display before the user's input in the
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.
   std::u16string prefix_autocompletion;
   // A representation of inline autocompletion that supports splitting the
-  // user input. See |SplitAutocompletion|| comments. Always empty if split
+  // user input. See `SplitAutocompletion()` comments. Always empty if split
   // autocompletion is disabled.
   // TODO(manukh) If split rich autocompletion launches, all 3 autocompletions
-  // can be represented by |split_autocompletion|.
+  //  can be represented by `split_autocompletion`.
   SplitAutocompletion split_autocompletion;
 
   // If false, the omnibox should prevent this match from being the

@@ -73,15 +73,16 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
 void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
     const std::u16string& display_text,
     std::vector<gfx::Range> selections,
-    size_t user_text_length) {
+    const std::u16string& prefix_autocompletion,
+    const std::u16string& inline_autocompletion) {
   const bool text_changed = text_ != display_text;
   text_ = display_text;
-  inline_autocompletion_ = display_text.substr(user_text_length);
+  inline_autocompletion_ = inline_autocompletion;
 
   // Just like the Views control, only change the selection if the text has
   // actually changed.
   if (text_changed)
-    selection_ = gfx::Range(text_.size(), user_text_length);
+    selection_ = gfx::Range(text_.size(), inline_autocompletion.size());
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextCleared() {

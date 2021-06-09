@@ -16,7 +16,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -485,7 +484,8 @@ TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction) {
 TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   // Set the edit model into an inline autocompletion state.
   view()->SetUserText(u"user");
-  view()->OnInlineAutocompleteTextMaybeChanged(u"user text", {{9, 4}}, 4);
+  view()->OnInlineAutocompleteTextMaybeChanged(u"user text", {{9, 4}}, u"",
+                                               u" test");
 
   // Entering keyword search mode should preserve the full display text as the
   // user text, and select all.
@@ -531,7 +531,8 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
   // Set the edit model into an inline autocomplete state.
   view()->SetUserText(u"foo");
   model()->StartAutocomplete(false, false);
-  view()->OnInlineAutocompleteTextMaybeChanged(u"foobar", {{6, 3}}, 3);
+  view()->OnInlineAutocompleteTextMaybeChanged(u"foobar", {{6, 3}}, u"",
+                                               u"bar");
 
   model()->OnControlKeyChanged(true);
   model()->AcceptInput(WindowOpenDisposition::UNKNOWN);

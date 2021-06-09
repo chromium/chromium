@@ -309,11 +309,16 @@ void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
     const std::u16string& display_text,
     std::vector<gfx::Range> selections,
-    size_t user_text_length) {
+    const std::u16string& prefix_autocompletion,
+    const std::u16string& inline_autocompletion) {
   if (display_text == GetText())
     return;
 
   NSAttributedString* as = ApplyTextAttributes(display_text);
+  // TODO(crbug.com/1062446): This `user_text_length` calculation  isn't
+  //  accurate when there's prefix autocompletion. This should be addressed
+  //  before we experiment with prefix autocompletion on iOS.
+  size_t user_text_length = display_text.size() - inline_autocompletion.size();
   [field_ setText:as userTextLength:user_text_length];
 }
 

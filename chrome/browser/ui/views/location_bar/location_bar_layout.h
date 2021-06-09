@@ -49,21 +49,21 @@ class LocationBarLayout {
                      views::View* view);
 
   // First pass of decoration layout process. Pass the full width of the
-  // location bar in |entry_width|. This pass will adjust it to account for
+  // location bar in `entry_width`. This pass will decrease it to account for
   // non-collapsible and non-resizable decorations.
   void LayoutPass1(int* entry_width);
 
-  // Second pass of decoration layout process. Pass the |entry_width| computed
-  // by the first pass. This pass will adjust it to account for resizable
+  // Second pass of decoration layout process. Pass the `entry_width` computed
+  // by the first pass. This pass will decrease it to account for resizable
   // decorations.
   void LayoutPass2(int* entry_width);
 
-  // Third and final pass of decoration layout process. Pass the |bounds|
+  // Third and final pass of decoration layout process. Pass the `bounds`
   // corresponding to the entire space available in the location bar. This pass
-  // will update it as decorations are laid out. |available_width| measures the
+  // will update it as decorations are laid out. `available_width` measures the
   // empty space within the location bar, taking the decorations and text into
-  // account. |decorations| must always be ordered from the edge of the location
-  // bar towards the middle.
+  // account. `decorations_` must always be ordered from the edge of the
+  // location bar towards the middle.
   void LayoutPass3(gfx::Rect* bounds, int* available_width);
 
  private:

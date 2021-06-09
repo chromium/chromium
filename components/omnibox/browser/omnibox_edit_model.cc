@@ -1421,7 +1421,8 @@ void OmniboxEditModel::OnPopupDataChanged(
       selections = split_autocompletion.selections;
     }
     view_->OnInlineAutocompleteTextMaybeChanged(display_text, selections,
-                                                user_text.length());
+                                                prefix_autocompletion_,
+                                                inline_autocompletion_);
     view_->SetAdditionalText(additional_text);
   }
   // We need to invoke OnChanged in case the destination url changed (as could

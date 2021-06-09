@@ -144,8 +144,15 @@ class LocationBarView : public LocationBar,
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
+  void SetImePrefixAutocompletion(const std::u16string& text);
+  std::u16string GetImePrefixAutocompletion() const;
   void SetImeInlineAutocompletion(const std::u16string& text);
   std::u16string GetImeInlineAutocompletion() const;
+
+  // Sets the additional omnibox text. E.g. the title corresponding to the URL
+  // displayed in the OmniboxView.
+  void SetOmniboxAdditionalText(const std::u16string& text);
+  std::u16string GetOmniboxAdditionalText() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -158,11 +165,6 @@ class LocationBarView : public LocationBar,
   }
 
   OmniboxViewViews* omnibox_view() { return omnibox_view_; }
-
-  // Sets the additional omnibox text. E.g. the title corresponding to the URL
-  // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const std::u16string& text);
-  std::u16string GetOmniboxAdditionalText() const;
 
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
@@ -305,6 +307,11 @@ class LocationBarView : public LocationBar,
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
 
+  // Helper to set the texts of labels adjacent to the omnibox:
+  // `ime_prefix_autocomplete_view_`, `ime_inline_autocomplete_view_`, and
+  // `omnibox_additional_text_view_`.
+  void SetOmniboxAdjacentText(views::Label* label, const std::u16string& text);
+
   // LocationBar:
   GURL GetDestinationURL() const override;
   bool IsInputTypedUrlWithoutScheme() const override;
@@ -412,10 +419,11 @@ class LocationBarView : public LocationBar,
   // search icon, EV HTTPS bubble, etc.
   LocationIconView* location_icon_view_ = nullptr;
 
-  // A view to show inline autocompletion when an IME is active.  In this case,
+  // Views to show inline autocompletion when an IME is active.  In this case,
   // we shouldn't change the text or selection inside the OmniboxView itself,
   // since this will conflict with the IME's control over the text.  So instead
   // we show any autocompletion in a separate field after the OmniboxView.
+  views::Label* ime_prefix_autocomplete_view_ = nullptr;
   views::Label* ime_inline_autocomplete_view_ = nullptr;
 
   // The complementary omnibox label displaying the selected suggestion's title

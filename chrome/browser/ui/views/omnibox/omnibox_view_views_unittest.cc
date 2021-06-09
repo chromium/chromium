@@ -801,21 +801,21 @@ TEST_F(OmniboxViewViewsTest, SetWindowTextAndCaretPos) {
 TEST_F(OmniboxViewViewsTest, OnInlineAutocompleteTextMaybeChanged) {
   // No selection, google.com|
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
-                                                       {{10, 10}}, 10);
+                                                       {{10, 10}}, u"", u"");
   EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 10}}));
 
   // Single selection, gmai[l.com]
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"gmail.com", {{9, 4}},
-                                                       4);
+                                                       u"", u"l.com");
   EXPECT_EQ(u"gmail.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{9, 4}}));
 
   // Multiselection, [go]ogl[e.com]
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
-                                                       {{10, 5}, {0, 2}}, 3);
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
+      u"google.com", {{10, 5}, {0, 2}}, u"go", u"e.com");
   EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 5}, {0, 2}}));
@@ -832,7 +832,9 @@ TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
       u"user text. Followed by very long autocompleted text that is unlikely "
       u"to fit in |kOmniboxWidth|",
-      {{94, 10}}, 10);
+      {{94, 10}}, u"",
+      u" Followed by very long autocompleted text that is unlikely to fit in "
+      u"|kOmniboxWidth|");
 
   // NOTE: Technically (depending on the font), this expectation could fail if
   // 'user text' doesn't fit in 100px or the entire string fits in 100px.

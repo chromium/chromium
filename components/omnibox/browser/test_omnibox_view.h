@@ -64,9 +64,11 @@ class TestOmniboxView : public OmniboxView {
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  void OnInlineAutocompleteTextMaybeChanged(const std::u16string& display_text,
-                                            std::vector<gfx::Range> selections,
-                                            size_t user_text_length) override;
+  void OnInlineAutocompleteTextMaybeChanged(
+      const std::u16string& display_text,
+      std::vector<gfx::Range> selections,
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) override;
   void OnInlineAutocompleteTextCleared() override;
   void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override;
