@@ -2752,16 +2752,15 @@ void LayoutText::InvalidateDisplayItemClients(
 
 const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
   NOT_DESTROYED();
+  if (UNLIKELY(!IsInLayoutNGInlineFormattingContext()))
+    return nullptr;
   if (!IsSelected())
     return nullptr;
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (const auto* client = GetSelectionDisplayItemClientMap().at(this))
-      return client;
-    return GetSelectionDisplayItemClientMap()
-        .insert(this, std::make_unique<SelectionDisplayItemClient>())
-        .stored_value->value.get();
-  }
-  return nullptr;
+  if (const auto* client = GetSelectionDisplayItemClientMap().at(this))
+    return client;
+  return GetSelectionDisplayItemClientMap()
+      .insert(this, std::make_unique<SelectionDisplayItemClient>())
+      .stored_value->value.get();
 }
 
 PhysicalRect LayoutText::DebugRect() const {
