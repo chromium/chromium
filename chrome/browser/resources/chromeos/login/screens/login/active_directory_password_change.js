@@ -180,10 +180,10 @@ Polymer({
       return;
     }
     this.setUIStep(UIState.PROGRESS);
-    this.resetInputFields_();
     chrome.send(
         'login.ActiveDirectoryPasswordChangeScreen.changePassword',
         [this.oldPassword, this.newPassword]);
+    this.resetInputFields_();
   },
 
   /**
