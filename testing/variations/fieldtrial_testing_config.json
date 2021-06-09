@@ -4630,6 +4630,21 @@
             ]
         }
     ],
+    "LinkDoctorDeprecationAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LinkDoctorDeprecationAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "LiteVideo": [
         {
             "platforms": [
