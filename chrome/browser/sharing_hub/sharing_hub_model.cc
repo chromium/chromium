@@ -73,19 +73,14 @@ void SharingHubModel::PopulateFirstPartyActions() {
        kCopyIcon, true});
 
   first_party_action_list_.push_back(
-      {IDC_QRCODE_GENERATOR,
-       l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL),
-       kQrcodeGeneratorIcon, true});
-
-  first_party_action_list_.push_back(
       {IDC_SEND_TAB_TO_SELF,
        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
        kSendTabToSelfIcon, true});
 
   first_party_action_list_.push_back(
-      {IDC_SAVE_PAGE,
-       l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
-       kSavePageIcon, true});
+      {IDC_QRCODE_GENERATOR,
+       l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL),
+       kQrcodeGeneratorIcon, true});
 
   if (media_router::MediaRouterEnabled(context_)) {
     first_party_action_list_.push_back(
@@ -93,6 +88,11 @@ void SharingHubModel::PopulateFirstPartyActions() {
          l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
          vector_icons::kMediaRouterIdleIcon, true});
   }
+
+  first_party_action_list_.push_back(
+      {IDC_SAVE_PAGE,
+       l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
+       kSavePageIcon, true});
 }
 
 void SharingHubModel::PopulateThirdPartyActions() {
