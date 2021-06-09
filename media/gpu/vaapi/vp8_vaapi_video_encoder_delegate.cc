@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vp8_encoder.h"
+#include "media/gpu/vaapi/vp8_vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
 #include <va/va_enc_vp8.h>
@@ -66,7 +66,7 @@ static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
 
 }  // namespace
 
-VP8Encoder::EncodeParams::EncodeParams()
+VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
       cpb_window_size_ms(kCPBWindowSizeMs),
@@ -76,7 +76,7 @@ VP8Encoder::EncodeParams::EncodeParams()
       max_qp(kMaxQP),
       error_resilient_mode(false) {}
 
-void VP8Encoder::Reset() {
+void VP8VaapiVideoEncoderDelegate::Reset() {
   current_params_ = EncodeParams();
   reference_frames_.Clear();
   frame_num_ = 0;
@@ -84,15 +84,16 @@ void VP8Encoder::Reset() {
   InitializeFrameHeader();
 }
 
-VP8Encoder::VP8Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-                       base::RepeatingClosure error_cb)
+VP8VaapiVideoEncoderDelegate::VP8VaapiVideoEncoderDelegate(
+    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    base::RepeatingClosure error_cb)
     : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
 
-VP8Encoder::~VP8Encoder() {
-  // VP8Encoder can be destroyed on any thread.
+VP8VaapiVideoEncoderDelegate::~VP8VaapiVideoEncoderDelegate() {
+  // VP8VaapiVideoEncoderDelegate can be destroyed on any thread.
 }
 
-bool VP8Encoder::Initialize(
+bool VP8VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
     const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -120,20 +121,20 @@ bool VP8Encoder::Initialize(
                          VideoEncodeAccelerator::kDefaultFramerate));
 }
 
-gfx::Size VP8Encoder::GetCodedSize() const {
+gfx::Size VP8VaapiVideoEncoderDelegate::GetCodedSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!coded_size_.IsEmpty());
 
   return coded_size_;
 }
 
-size_t VP8Encoder::GetMaxNumOfRefFrames() const {
+size_t VP8VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return kNumVp8ReferenceBuffers;
 }
 
-bool VP8Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
+bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (encode_job->IsKeyframeRequested())
@@ -171,8 +172,9 @@ bool VP8Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
   return true;
 }
 
-bool VP8Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
-                             uint32_t framerate) {
+bool VP8VaapiVideoEncoderDelegate::UpdateRates(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (bitrate_allocation.GetSumBps() == 0 || framerate == 0)
@@ -195,7 +197,7 @@ bool VP8Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
   return true;
 }
 
-void VP8Encoder::InitializeFrameHeader() {
+void VP8VaapiVideoEncoderDelegate::InitializeFrameHeader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   current_frame_hdr_ = {};
@@ -218,7 +220,7 @@ void VP8Encoder::InitializeFrameHeader() {
   current_frame_hdr_.mb_no_skip_coeff = 1;
 }
 
-void VP8Encoder::UpdateFrameHeader(bool keyframe) {
+void VP8VaapiVideoEncoderDelegate::UpdateFrameHeader(bool keyframe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (keyframe) {
@@ -243,13 +245,14 @@ void VP8Encoder::UpdateFrameHeader(bool keyframe) {
   }
 }
 
-void VP8Encoder::UpdateReferenceFrames(scoped_refptr<VP8Picture> picture) {
+void VP8VaapiVideoEncoderDelegate::UpdateReferenceFrames(
+    scoped_refptr<VP8Picture> picture) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   reference_frames_.Refresh(picture);
 }
 
-scoped_refptr<VP8Picture> VP8Encoder::GetPicture(
+scoped_refptr<VP8Picture> VP8VaapiVideoEncoderDelegate::GetPicture(
     VaapiVideoEncoderDelegate::EncodeJob* job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -257,7 +260,7 @@ scoped_refptr<VP8Picture> VP8Encoder::GetPicture(
       reinterpret_cast<VP8Picture*>(job->picture().get()));
 }
 
-bool VP8Encoder::SubmitFrameParameters(
+bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
     VaapiVideoEncoderDelegate::EncodeJob* job,
     const EncodeParams& encode_params,
     scoped_refptr<VP8Picture> pic,

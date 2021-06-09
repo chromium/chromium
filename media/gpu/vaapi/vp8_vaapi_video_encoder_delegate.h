@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_VP8_ENCODER_H_
-#define MEDIA_GPU_VAAPI_VP8_ENCODER_H_
+#ifndef MEDIA_GPU_VAAPI_VP8_VAAPI_VIDEO_ENCODER_DELEGATE_H_
+#define MEDIA_GPU_VAAPI_VP8_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <list>
 #include <vector>
@@ -18,7 +18,7 @@
 namespace media {
 class VaapiWrapper;
 
-class VP8Encoder : public VaapiVideoEncoderDelegate {
+class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
   struct EncodeParams {
     EncodeParams();
@@ -47,9 +47,9 @@ class VP8Encoder : public VaapiVideoEncoderDelegate {
     bool error_resilient_mode;
   };
 
-  VP8Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-             base::RepeatingClosure error_cb);
-  ~VP8Encoder() override;
+  VP8VaapiVideoEncoderDelegate(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+                               base::RepeatingClosure error_cb);
+  ~VP8VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
   bool Initialize(const VideoEncodeAccelerator::Config& config,
@@ -86,9 +86,9 @@ class VP8Encoder : public VaapiVideoEncoderDelegate {
   Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
 
-  DISALLOW_COPY_AND_ASSIGN(VP8Encoder);
+  DISALLOW_COPY_AND_ASSIGN(VP8VaapiVideoEncoderDelegate);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_VAAPI_VP8_ENCODER_H_
+#endif  // MEDIA_GPU_VAAPI_VP8_VAAPI_VIDEO_ENCODER_DELEGATE_H_
