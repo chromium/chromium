@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace send_tab_to_self {
@@ -26,7 +28,10 @@ SendTabToSelfToolbarButtonView::SendTabToSelfToolbarButtonView(
       browser_(browser_view->browser()) {
   SetFlipCanvasOnPaintForRTLUI(false);
   SetVectorIcons(kSendTabToSelfIcon, kSendTabToSelfIcon);
-  // TODO(crbug/1206381): SetTooltipText(...);
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_A11Y_NAME));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE));
 
   // We start hidden and only show once the controller tells us to.
   SetVisible(false);
