@@ -37,6 +37,9 @@ ax::mojom::Event ToAXEvent(
 absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action);
 
+ax::mojom::Action ConvertToChromeAction(
+    const mojom::AccessibilityActionType action);
+
 AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
     const mojom::AccessibilityEventData& event_data,
     AccessibilityInfoDataWrapper* source_node);

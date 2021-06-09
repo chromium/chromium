@@ -253,9 +253,14 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
       GetFromId(event_data.source_id), focused_node);
   event.id = event_data.source_id;
 
-  if (HasProperty(event_data.int_properties,
-                  arc::mojom::AccessibilityEventIntProperty::ACTION)) {
+  int event_from_action;
+  if (GetProperty(event_data.int_properties,
+                  arc::mojom::AccessibilityEventIntProperty::ACTION,
+                  &event_from_action)) {
     event.event_from = ax::mojom::EventFrom::kAction;
+
+    event.event_from_action = ConvertToChromeAction(
+        static_cast<mojom::AccessibilityActionType>(event_from_action));
   }
 
   events.push_back(std::move(event));

@@ -57,8 +57,8 @@ class MockAutomationEventRouter
                                    std::vector<ui::AXEvent> events) override {
     for (auto&& event : events) {
       event_count_[event.event_type]++;
-      last_event_type_ = event.event_type;
     }
+    last_dispatched_events_ = std::move(events);
 
     for (const auto& update : updates)
       tree_.Unserialize(update);
@@ -80,13 +80,15 @@ class MockAutomationEventRouter
       const ui::AXActionData& data,
       const absl::optional<gfx::Rect>& rect) override {}
 
-  ax::mojom::Event last_event_type() const { return last_event_type_; }
+  std::vector<ui::AXEvent> last_dispatched_events() const {
+    return last_dispatched_events_;
+  }
 
   std::map<ax::mojom::Event, int> event_count_;
   ui::AXTree tree_;
 
  private:
-  ax::mojom::Event last_event_type_;
+  std::vector<ui::AXEvent> last_dispatched_events_;
 };
 
 class AXTreeSourceArcTest : public testing::Test,
@@ -141,8 +143,8 @@ class AXTreeSourceArcTest : public testing::Test,
     return router_->event_count_[type];
   }
 
-  ax::mojom::Event last_dispatched_event_type() const {
-    return router_->last_event_type();
+  std::vector<ui::AXEvent> last_dispatched_events() const {
+    return router_->last_dispatched_events();
   }
 
   ui::AXTree* tree() { return router_->tree(); }
@@ -1166,12 +1168,12 @@ TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
               content_change_types);
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_event_type());
+            last_dispatched_events()[0].event_type);
 
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_event_type());
+            last_dispatched_events()[0].event_type);
 
   // State description changed event from non range widget.
   event->node_data.push_back(AXNodeInfoData::New());
@@ -1182,12 +1184,12 @@ TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
   event->event_type = AXEventType::WINDOW_STATE_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_event_type());
+            last_dispatched_events()[0].event_type);
 
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_event_type());
+            last_dispatched_events()[0].event_type);
 }
 
 TEST_F(AXTreeSourceArcTest, EventWithWrongSourceId) {
@@ -1418,4 +1420,36 @@ TEST_F(AXTreeSourceArcTest, AutoComplete) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
 }
 
+TEST_F(AXTreeSourceArcTest, EventFrom) {
+  auto event = AXEventData::New();
+  event->source_id = 1;
+  event->task_id = 1;
+  event->event_type = AXEventType::VIEW_FOCUSED;
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node = event->node_data.back().get();
+  node->id = 10;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root = event->window_data->back().get();
+  root->window_id = 1;
+  root->root_node_id = node->id;
+
+  // By default, event_from and event_from_action are None.
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXEvent actual = last_dispatched_events()[0];
+  EXPECT_EQ(ax::mojom::EventFrom::kNone, actual.event_from);
+  EXPECT_EQ(ax::mojom::Action::kNone, actual.event_from_action);
+
+  // With |Action| field, event_from and event_from_action are populated.
+  SetProperty(event.get(), AXEventIntProperty::ACTION,
+              static_cast<int32_t>(arc::mojom::AccessibilityActionType::CLICK));
+  CallNotifyAccessibilityEvent(event.get());
+
+  actual = last_dispatched_events()[0];
+  EXPECT_EQ(ax::mojom::EventFrom::kAction, actual.event_from);
+  EXPECT_EQ(ax::mojom::Action::kDoDefault, actual.event_from_action);
+}
 }  // namespace arc

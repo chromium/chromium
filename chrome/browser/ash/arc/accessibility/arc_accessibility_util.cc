@@ -178,6 +178,67 @@ absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
   }
 }
 
+ax::mojom::Action ConvertToChromeAction(
+    const mojom::AccessibilityActionType action) {
+  switch (action) {
+    case arc::mojom::AccessibilityActionType::CLICK:
+      return ax::mojom::Action::kDoDefault;
+    case arc::mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS:
+      // TODO: there are multiple actions converted to ACCESSIBILITY_FOCUS.
+      //  Consider if this is appropriate.
+      return ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
+    case arc::mojom::AccessibilityActionType::SHOW_ON_SCREEN:
+      return ax::mojom::Action::kScrollToMakeVisible;
+    case arc::mojom::AccessibilityActionType::SCROLL_BACKWARD:
+      return ax::mojom::Action::kScrollBackward;
+    case arc::mojom::AccessibilityActionType::SCROLL_FORWARD:
+      return ax::mojom::Action::kScrollForward;
+    case arc::mojom::AccessibilityActionType::SCROLL_UP:
+      return ax::mojom::Action::kScrollUp;
+    case arc::mojom::AccessibilityActionType::SCROLL_DOWN:
+      return ax::mojom::Action::kScrollDown;
+    case arc::mojom::AccessibilityActionType::SCROLL_LEFT:
+      return ax::mojom::Action::kScrollLeft;
+    case arc::mojom::AccessibilityActionType::SCROLL_RIGHT:
+      return ax::mojom::Action::kScrollRight;
+    case arc::mojom::AccessibilityActionType::CUSTOM_ACTION:
+      return ax::mojom::Action::kCustomAction;
+    case arc::mojom::AccessibilityActionType::CLEAR_ACCESSIBILITY_FOCUS:
+      return ax::mojom::Action::kClearAccessibilityFocus;
+    case arc::mojom::AccessibilityActionType::GET_TEXT_LOCATION:
+      return ax::mojom::Action::kGetTextLocation;
+    case arc::mojom::AccessibilityActionType::SHOW_TOOLTIP:
+      return ax::mojom::Action::kShowTooltip;
+    case arc::mojom::AccessibilityActionType::HIDE_TOOLTIP:
+      return ax::mojom::Action::kHideTooltip;
+    case arc::mojom::AccessibilityActionType::COLLAPSE:
+      return ax::mojom::Action::kCollapse;
+    case arc::mojom::AccessibilityActionType::EXPAND:
+      return ax::mojom::Action::kExpand;
+    case arc::mojom::AccessibilityActionType::LONG_CLICK:
+      return ax::mojom::Action::kShowContextMenu;
+    // Below are actions not mapped in ConvertToAndroidAction().
+    case arc::mojom::AccessibilityActionType::FOCUS:
+    case arc::mojom::AccessibilityActionType::CLEAR_FOCUS:
+    case arc::mojom::AccessibilityActionType::SELECT:
+    case arc::mojom::AccessibilityActionType::CLEAR_SELECTION:
+    case arc::mojom::AccessibilityActionType::NEXT_AT_MOVEMENT_GRANULARITY:
+    case arc::mojom::AccessibilityActionType::PREVIOUS_AT_MOVEMENT_GRANULARITY:
+    case arc::mojom::AccessibilityActionType::NEXT_HTML_ELEMENT:
+    case arc::mojom::AccessibilityActionType::PREVIOUS_HTML_ELEMENT:
+    case arc::mojom::AccessibilityActionType::COPY:
+    case arc::mojom::AccessibilityActionType::PASTE:
+    case arc::mojom::AccessibilityActionType::CUT:
+    case arc::mojom::AccessibilityActionType::SET_SELECTION:
+    case arc::mojom::AccessibilityActionType::DISMISS:
+    case arc::mojom::AccessibilityActionType::SET_TEXT:
+    case arc::mojom::AccessibilityActionType::CONTEXT_CLICK:
+    case arc::mojom::AccessibilityActionType::SCROLL_TO_POSITION:
+    case arc::mojom::AccessibilityActionType::SET_PROGRESS:
+      return ax::mojom::Action::kNone;
+  }
+}
+
 AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
     const mojom::AccessibilityEventData& event_data,
     AccessibilityInfoDataWrapper* source_node) {
