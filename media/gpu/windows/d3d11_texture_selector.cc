@@ -56,12 +56,14 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       !SupportsZeroCopy(gpu_preferences, workarounds) ||
       base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
 
-#define SUPPORTS(fmt) format_checker->CheckOutputFormatSupport(fmt)
+  auto supports_fmt = [format_checker](auto fmt) {
+    return format_checker->CheckOutputFormatSupport(fmt);
+  };
   // TODO(liberato): add other options here, like "copy to rgb" for NV12.
   switch (decoder_output_format) {
     case DXGI_FORMAT_NV12: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing NV12";
-      if (!needs_texture_copy || SUPPORTS(DXGI_FORMAT_NV12)) {
+      if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
         output_pixel_format = PIXEL_FORMAT_NV12;
         output_dxgi_format = DXGI_FORMAT_NV12;
         // Leave |output_color_space| the same, since we'll bind either the
@@ -69,7 +71,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
         // shaders or in the overlay, if needed.
         output_color_space.reset();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
-      } else if (SUPPORTS(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+      } else if (supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_pixel_format = PIXEL_FORMAT_ARGB;
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
         output_color_space.reset();
@@ -83,22 +85,22 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     case DXGI_FORMAT_P010: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
       if (hdr_output_mode == HDRMode::kSDROnly &&
-          SUPPORTS(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+          supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
         output_pixel_format = PIXEL_FORMAT_ARGB;
         output_color_space = gfx::ColorSpace::CreateSRGB();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
-      } else if (!needs_texture_copy || SUPPORTS(DXGI_FORMAT_P010)) {
+      } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_dxgi_format = DXGI_FORMAT_P010;
         output_pixel_format = PIXEL_FORMAT_P016LE;
         output_color_space.reset();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010";
-      } else if (SUPPORTS(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
+      } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
         output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         output_pixel_format = PIXEL_FORMAT_RGBAF16;
         output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected RGBAF16";
-      } else if (SUPPORTS(DXGI_FORMAT_R10G10B10A2_UNORM)) {
+      } else if (supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
         output_pixel_format = PIXEL_FORMAT_XB30;
         output_color_space = gfx::ColorSpace::CreateHDR10();
@@ -116,7 +118,6 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       return nullptr;
     }
   }
-#undef SUPPORTS
 
   // If we're trying to produce an output texture that's different from what
   // the decoder is providing, then we need to copy it. If sharing decoder
