@@ -61,17 +61,14 @@ class FormFieldTestBase {
       std::string name,
       std::string label,
       int max_length,
-      const std::vector<std::string>& options_contents,
-      const std::vector<std::string>& options_values,
+      const std::vector<SelectOption>& options,
       ServerFieldType expected_type);
 
   // Convenience wrapper for 'select-one' elements.
-  void AddSelectOneFormFieldData(
-      std::string name,
-      std::string label,
-      const std::vector<std::string>& options_contents,
-      const std::vector<std::string>& options_values,
-      ServerFieldType expected_type);
+  void AddSelectOneFormFieldData(std::string name,
+                                 std::string label,
+                                 const std::vector<SelectOption>& options,
+                                 ServerFieldType expected_type);
 
   // Apply parsing and verify the expected types.
   // |parsed| indicates if at least one field could be parsed successfully.

@@ -56,6 +56,13 @@ enum FieldPropertiesFlags : uint32_t {
 // values.
 using FieldPropertiesMask = std::underlying_type_t<FieldPropertiesFlags>;
 
+// For the HTML snippet |<option value="US">United States</option>|, the
+// value is "US" and the contents is "United States".
+struct SelectOption {
+  std::u16string value;
+  std::u16string content;
+};
+
 // Stores information about a field in a form.
 struct FormFieldData {
   using CheckStatus = mojom::FormFieldData_CheckStatus;
@@ -196,10 +203,8 @@ struct FormFieldData {
   // trigger.
   std::u16string user_input;
 
-  // For the HTML snippet |<option value="US">United States</option>|, the
-  // value is "US" and the contents are "United States".
-  std::vector<std::u16string> option_values;
-  std::vector<std::u16string> option_contents;
+  // The options of a select box.
+  std::vector<SelectOption> options;
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
@@ -213,8 +218,8 @@ struct FormFieldData {
   // The datalist is associated with this field, if any. The following two
   // vectors valid if not empty, will not be synced to the server side or be
   // used for field comparison and aren't in serialize methods.
-  // The datalist option is intentionally separated from option_values and
-  // option_contents because they are handled very differently in autofill.
+  // The datalist option is intentionally separated from |options| because they
+  // are handled very differently in Autofill.
   std::vector<std::u16string> datalist_values;
   std::vector<std::u16string> datalist_labels;
 };

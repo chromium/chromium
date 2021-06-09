@@ -56,15 +56,19 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
 
   // Returns a vector of numeric months with a leading 0 and an additional "MM"
   // entry.
-  std::vector<std::string> GetMonths() {
-    return std::vector<std::string>{"MM", "01", "02", "03", "04", "05", "06",
+  std::vector<SelectOption> GetMonths() {
+    std::vector<std::string> months{"MM", "01", "02", "03", "04", "05", "06",
                                     "07", "08", "09", "10", "11", "12"};
+    std::vector<SelectOption> options;
+    for (const std::string& month : months)
+      options.push_back({base::ASCIIToUTF16(month), base::ASCIIToUTF16(month)});
+    return options;
   }
 
   // Returns a vector of 10 consecutive years starting today in 2 digit format
   // and an additional "YY" entry.
-  std::vector<std::string> Get2DigitYears() {
-    std::vector<std::string> years = {"YY"};
+  std::vector<SelectOption> Get2DigitYears() {
+    std::vector<SelectOption> years = {{u"YY", u"YY"}};
 
     const base::Time time_now = AutofillClock::Now();
     base::Time::Exploded time_exploded;
@@ -73,7 +77,9 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
 
     for (auto year = time_exploded.year;
          year < time_exploded.year + kYearsToAdd; year++) {
-      years.push_back(base::NumberToString(year).substr(2));
+      std::u16string yy =
+          base::ASCIIToUTF16(base::NumberToString(year).substr(2));
+      years.push_back({yy, yy});
     }
 
     return years;
@@ -122,9 +128,9 @@ TEST_F(CreditCardFieldTest, ParseMiniumCreditCard) {
 TEST_F(CreditCardFieldTest, ParseMinimumCreditCardWithExpiryDateOptions) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddSelectOneFormFieldData("Random Label", "Random Label", GetMonths(),
-                            GetMonths(), CREDIT_CARD_EXP_MONTH);
+                            CREDIT_CARD_EXP_MONTH);
   AddSelectOneFormFieldDataWithLength("Random Label", "Random Label", 2,
-                                      Get2DigitYears(), Get2DigitYears(),
+                                      Get2DigitYears(),
                                       CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
   ClassifyAndVerify(ParseResult::PARSED);
@@ -137,7 +143,7 @@ TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
   AddTextFormFieldData("verification", "Verification",
                        CREDIT_CARD_VERIFICATION_CODE);
-  AddSelectOneFormFieldData("Card Type", "card_type", {"visa"}, {"visa"},
+  AddSelectOneFormFieldData("Card Type", "card_type", {{u"visa", u"visa"}},
                             CREDIT_CARD_TYPE);
 
   ClassifyAndVerify(ParseResult::PARSED);

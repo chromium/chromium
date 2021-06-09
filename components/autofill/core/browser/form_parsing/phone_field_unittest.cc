@@ -72,11 +72,10 @@ class PhoneFieldTest : public testing::Test {
     field->name = ASCIIToUTF16(name);
     field->form_control_type = "select-one";
 
-    std::vector<std::u16string> contents16;
-    for (auto* const element : contents)
-      contents16.push_back(base::UTF8ToUTF16(element));
-
-    field->option_contents = contents16;
+    for (auto* const element : contents) {
+      field->options.push_back(
+          {.value = u"", .content = base::UTF8ToUTF16(element)});
+    }
   }
 
   std::vector<std::unique_ptr<AutofillField>> list_;

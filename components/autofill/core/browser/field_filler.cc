@@ -51,25 +51,22 @@ bool SetSelectControlValue(const std::u16string& value,
                            std::string* failure_to_fill) {
   l10n::CaseInsensitiveCompare compare;
 
-  DCHECK_EQ(field->option_values.size(), field->option_contents.size());
   std::u16string best_match;
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
-    if (value == field->option_values[i] ||
-        value == field->option_contents[i]) {
+  for (size_t i = 0; i < field->options.size(); ++i) {
+    const SelectOption& option = field->options[i];
+    if (value == option.value || value == option.content) {
       // An exact match, use it.
-      best_match = field->option_values[i];
+      best_match = option.value;
       if (best_match_index)
         *best_match_index = i;
       break;
     }
 
-    if (compare.StringsEqual(value, field->option_values[i]) ||
-        compare.StringsEqual(value, field->option_contents[i])) {
+    if (compare.StringsEqual(value, option.value) ||
+        compare.StringsEqual(value, option.content)) {
       // A match, but not in the same case. Save it in case an exact match is
       // not found.
-      best_match = field->option_values[i];
+      best_match = option.value;
       if (best_match_index)
         *best_match_index = i;
     }
@@ -97,7 +94,7 @@ bool SetSelectControlValueSubstringMatch(const std::u16string& value,
       value, ignore_whitespace, field);
 
   if (best_match >= 0) {
-    field->value = field->option_values[best_match];
+    field->value = field->options[best_match].value;
     return true;
   }
 
@@ -116,30 +113,27 @@ bool SetSelectControlValueTokenMatch(const std::u16string& value,
                                      FormFieldData* field,
                                      std::string* failure_to_fill) {
   std::vector<std::u16string> tokenized;
-  DCHECK_EQ(field->option_values.size(), field->option_contents.size());
   l10n::CaseInsensitiveCompare compare;
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+  for (const SelectOption& option : field->options) {
     tokenized =
-        base::SplitString(field->option_values[i], base::kWhitespaceASCIIAs16,
+        base::SplitString(option.value, base::kWhitespaceASCIIAs16,
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (std::find_if(tokenized.begin(), tokenized.end(),
                      [&compare, value](std::u16string& rhs) {
                        return compare.StringsEqual(value, rhs);
                      }) != tokenized.end()) {
-      field->value = field->option_values[i];
+      field->value = option.value;
       return true;
     }
 
     tokenized =
-        base::SplitString(field->option_contents[i], base::kWhitespaceASCIIAs16,
+        base::SplitString(option.content, base::kWhitespaceASCIIAs16,
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (std::find_if(tokenized.begin(), tokenized.end(),
                      [&compare, value](std::u16string& rhs) {
                        return compare.StringsEqual(value, rhs);
                      }) != tokenized.end()) {
-      field->value = field->option_values[i];
+      field->value = option.value;
       return true;
     }
   }
@@ -204,11 +198,11 @@ bool SetNormalizedStateSelectControlValue(const std::u16string& value,
   // |field_copy| before normalizing.
   FormFieldData field_copy(*field);
   bool normalized = false;
-  for (size_t i = 0; i < field_copy.option_values.size(); ++i) {
+  for (SelectOption& option : field_copy.options) {
+    normalized |= NormalizeAdminAreaForCountryCode(&option.value, country_code,
+                                                   address_normalizer);
     normalized |= NormalizeAdminAreaForCountryCode(
-        &field_copy.option_values[i], country_code, address_normalizer);
-    normalized |= NormalizeAdminAreaForCountryCode(
-        &field_copy.option_contents[i], country_code, address_normalizer);
+        &option.content, country_code, address_normalizer);
   }
 
   // If at least some normalization happened on the field options, try filling
@@ -216,9 +210,9 @@ bool SetNormalizedStateSelectControlValue(const std::u16string& value,
   size_t best_match_index = 0;
   if (normalized && SetSelectControlValue(field_value, &field_copy,
                                           &best_match_index, failure_to_fill)) {
-    // |best_match_index| now points to the option in |field->option_values|
+    // |best_match_index| now points to the option in |field->options|
     // that corresponds to our best match. Update |field| with the answer.
-    field->value = field->option_values[best_match_index];
+    field->value = field->options[best_match_index].value;
     return true;
   }
 
@@ -232,14 +226,11 @@ bool SetNormalizedStateSelectControlValue(const std::u16string& value,
 bool FillNumericSelectControl(int value,
                               FormFieldData* field,
                               std::string* failure_to_fill) {
-  DCHECK_EQ(field->option_values.size(), field->option_contents.size());
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
-    int option;
-    if ((StringToInt(field->option_values[i], &option) && option == value) ||
-        (StringToInt(field->option_contents[i], &option) && option == value)) {
-      field->value = field->option_values[i];
+  for (const SelectOption& option : field->options) {
+    int num;
+    if ((StringToInt(option.value, &num) && num == value) ||
+        (StringToInt(option.content, &num) && num == value)) {
+      field->value = option.value;
       return true;
     }
   }
@@ -346,16 +337,14 @@ bool FillCountrySelectControl(const std::u16string& value,
     return false;
   }
 
-  DCHECK_EQ(field_data->option_values.size(),
-            field_data->option_contents.size());
-  for (size_t i = 0; i < field_data->option_values.size(); ++i) {
+  for (const SelectOption& option : field_data->options) {
     // Canonicalize each <option> value to a country code, and compare to the
     // target country code.
-    std::u16string value = field_data->option_values[i];
-    std::u16string contents = field_data->option_contents[i];
-    if (country_code == CountryNames::GetInstance()->GetCountryCode(value) ||
-        country_code == CountryNames::GetInstance()->GetCountryCode(contents)) {
-      field_data->value = value;
+    if (country_code ==
+            CountryNames::GetInstance()->GetCountryCode(option.value) ||
+        country_code ==
+            CountryNames::GetInstance()->GetCountryCode(option.content)) {
+      field_data->value = option.value;
       return true;
     }
   }
@@ -384,11 +373,11 @@ bool FillExpirationMonthSelectControl(const std::u16string& value,
 
   // Trim the whitespace and specific prefixes used in AngularJS from the
   // select values before attempting to convert them to months.
-  std::vector<std::u16string> trimmed_values(field->option_values.size());
+  std::vector<std::u16string> trimmed_values(field->options.size());
   const std::u16string kNumberPrefix = u"number:";
   const std::u16string kStringPrefix = u"string:";
-  for (size_t i = 0; i < field->option_values.size(); ++i) {
-    base::TrimWhitespace(field->option_values[i], base::TRIM_ALL,
+  for (size_t i = 0; i < field->options.size(); ++i) {
+    base::TrimWhitespace(field->options[i].value, base::TRIM_ALL,
                          &trimmed_values[i]);
     base::ReplaceFirstSubstringAfterOffset(&trimmed_values[i], 0, kNumberPrefix,
                                            u"");
@@ -420,6 +409,7 @@ bool FillExpirationMonthSelectControl(const std::u16string& value,
   }
 
   // Attempt to match the user's |month| with the field's value attributes.
+  DCHECK_EQ(trimmed_values.size(), field->options.size());
   for (size_t i = 0; i < trimmed_values.size(); ++i) {
     int converted_value = 0;
     // We use the trimmed value to match with |month|, but the original select
@@ -427,18 +417,18 @@ bool FillExpirationMonthSelectControl(const std::u16string& value,
     if (data_util::ParseExpirationMonth(trimmed_values[i], app_locale,
                                         &converted_value) &&
         month == converted_value) {
-      field->value = field->option_values[i];
+      field->value = field->options[i].value;
       return true;
     }
   }
 
   // Attempt to match with each of the options' content.
-  for (size_t i = 0; i < field->option_contents.size(); ++i) {
+  for (const SelectOption& option : field->options) {
     int converted_contents = 0;
-    if (data_util::ParseExpirationMonth(field->option_contents[i], app_locale,
+    if (data_util::ParseExpirationMonth(option.content, app_locale,
                                         &converted_contents) &&
         month == converted_contents) {
-      field->value = field->option_values[i];
+      field->value = option.value;
       return true;
     }
   }
@@ -467,13 +457,10 @@ bool FillYearSelectControl(const std::u16string& value,
     return false;
   }
 
-  DCHECK_EQ(field->option_values.size(), field->option_contents.size());
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
-    if (LastTwoDigitsMatch(value, field->option_values[i]) ||
-        LastTwoDigitsMatch(value, field->option_contents[i])) {
-      field->value = field->option_values[i];
+  for (const SelectOption& option : field->options) {
+    if (LastTwoDigitsMatch(value, option.value) ||
+        LastTwoDigitsMatch(value, option.content)) {
+      field->value = option.value;
       return true;
     }
   }
@@ -554,15 +541,6 @@ bool FillSelectControl(const AutofillType& type,
                        AddressNormalizer* address_normalizer,
                        std::string* failure_to_fill) {
   DCHECK_EQ("select-one", field->form_control_type);
-
-  // Guard against corrupted values passed over IPC.
-  if (field->option_values.size() != field->option_contents.size()) {
-    if (failure_to_fill) {
-      *failure_to_fill +=
-          "Corrupted values in options of select control element. ";
-    }
-    return false;
-  }
 
   ServerFieldType storable_type = type.GetStorableType();
 
@@ -799,16 +777,15 @@ void FillPhoneCountryCodeSelectControl(const std::u16string& country_code,
                             failure_to_fill))
     return;
 
-  for (size_t i = 0; i < field->option_contents.size(); i++) {
+  for (const SelectOption& option : field->options) {
     std::u16string cc_candidate_in_value =
-        data_util::FindPossiblePhoneCountryCode(
-            RemoveWhitespace(field->option_values[i]));
+        data_util::FindPossiblePhoneCountryCode(RemoveWhitespace(option.value));
     std::u16string cc_candidate_in_content =
         data_util::FindPossiblePhoneCountryCode(
-            RemoveWhitespace(field->option_contents[i]));
+            RemoveWhitespace(option.content));
     if (cc_candidate_in_value == country_code ||
         cc_candidate_in_content == country_code) {
-      field->value = field->option_values[i];
+      field->value = option.value;
       return;
     }
   }
@@ -978,27 +955,22 @@ int FieldFiller::FindShortestSubstringMatchInSelect(
     const std::u16string& value,
     bool ignore_whitespace,
     const FormFieldData* field) {
-  DCHECK_EQ(field->option_values.size(), field->option_contents.size());
-
   int best_match = -1;
 
   std::u16string value_stripped =
       ignore_whitespace ? RemoveWhitespace(value) : value;
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
       value_stripped);
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+  for (size_t i = 0; i < field->options.size(); ++i) {
+    const SelectOption& option = field->options[i];
     std::u16string option_value =
-        ignore_whitespace ? RemoveWhitespace(field->option_values[i])
-                          : field->option_values[i];
+        ignore_whitespace ? RemoveWhitespace(option.value) : option.value;
     std::u16string option_content =
-        ignore_whitespace ? RemoveWhitespace(field->option_contents[i])
-                          : field->option_contents[i];
+        ignore_whitespace ? RemoveWhitespace(option.content) : option.content;
     if (searcher.Search(option_value, nullptr, nullptr) ||
         searcher.Search(option_content, nullptr, nullptr)) {
-      if (best_match == -1 || field->option_values[best_match].size() >
-                                  field->option_values[i].size()) {
+      if (best_match == -1 ||
+          field->options[best_match].value.size() > option.value.size()) {
         best_match = i;
       }
     }

@@ -37,31 +37,21 @@ void FormFieldTestBase::AddFormFieldDataWithLength(
 void FormFieldTestBase::AddSelectOneFormFieldData(
     std::string name,
     std::string label,
-    const std::vector<std::string>& options_contents,
-    const std::vector<std::string>& options_values,
+    const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
-  AddSelectOneFormFieldDataWithLength(name, label, 0, options_contents,
-                                      options_values, expected_type);
+  AddSelectOneFormFieldDataWithLength(name, label, 0, options, expected_type);
 }
 
 void FormFieldTestBase::AddSelectOneFormFieldDataWithLength(
     std::string name,
     std::string label,
     int max_length,
-    const std::vector<std::string>& options_contents,
-    const std::vector<std::string>& options_values,
+    const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
   AddFormFieldData("select-one", name, label, expected_type);
   FormFieldData* field_data = list_.back().get();
   field_data->max_length = max_length;
-
-  for (auto option_content : options_contents) {
-    field_data->option_contents.push_back(base::UTF8ToUTF16(option_content));
-  }
-
-  for (auto option_value : options_values) {
-    field_data->option_values.push_back(base::UTF8ToUTF16(option_value));
-  }
+  field_data->options = options;
 }
 
 // Convenience wrapper for text control elements.

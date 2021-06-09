@@ -2295,16 +2295,11 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MonthSelectInvalidText) {
                         "Feb (2)", "2999");
   // Add option values and contents to the expiration month field.
   ASSERT_EQ(u"exp_month", form.fields[2].name);
-  std::vector<std::u16string> values;
-  values.push_back(u"1");
-  values.push_back(u"2");
-  values.push_back(u"3");
-  std::vector<std::u16string> contents;
-  contents.push_back(u"Jan (1)");
-  contents.push_back(u"Feb (2)");
-  contents.push_back(u"Mar (3)");
-  form.fields[2].option_values = values;
-  form.fields[2].option_contents = contents;
+  form.fields[2].options = {
+      {.value = u"1", .content = u"Jan (1)"},
+      {.value = u"2", .content = u"Feb (2)"},
+      {.value = u"3", .content = u"Mar (3)"},
+  };
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);

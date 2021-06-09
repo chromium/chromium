@@ -35,7 +35,7 @@ bool IsValidFormFieldData(const FormFieldData& field) {
          IsValidString16(field.value) &&
          IsValidString(field.form_control_type) &&
          IsValidString(field.autocomplete_attribute) &&
-         IsValidString16Vector(field.option_contents);
+         IsValidOptionVector(field.options);
 }
 
 bool IsValidFormData(const FormData& form) {
@@ -54,6 +54,12 @@ bool IsValidPasswordFormFillData(const PasswordFormFillData& form) {
            return IsValidString16(login.username) &&
                   IsValidString16(login.password) && IsValidString(login.realm);
          });
+}
+
+bool IsValidOptionVector(const std::vector<SelectOption>& options) {
+  return options.size() <= kMaxListSize &&
+         base::ranges::all_of(options, &IsValidString16,
+                              &SelectOption::content);
 }
 
 bool IsValidString16Vector(const std::vector<std::u16string>& v) {

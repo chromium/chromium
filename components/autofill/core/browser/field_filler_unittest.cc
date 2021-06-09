@@ -70,16 +70,12 @@ const std::vector<const char*> NotNumericMonthsContentsWithPlaceholder() {
 }
 
 // Returns the index of |value| in |values|.
-void GetIndexOfValue(const std::vector<std::u16string>& values,
-                     const std::u16string& value,
-                     size_t* index) {
-  for (size_t i = 0; i < values.size(); ++i) {
-    if (values[i] == value) {
-      *index = i;
-      return;
-    }
-  }
-  ASSERT_TRUE(false) << "Passing invalid arguments to GetIndexOfValue";
+size_t GetIndexOfValue(const std::vector<SelectOption>& values,
+                       const std::u16string& value) {
+  size_t i =
+      base::ranges::find(values, value, &SelectOption::value) - values.begin();
+  CHECK_LT(i, values.size()) << "Passing invalid arguments to GetIndexOfValue";
+  return i;
 }
 
 // Creates the select field from the specified |values| and |contents| and tests
@@ -100,14 +96,14 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(3);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  GetIndexOfValue(field.option_values, field.value, &content_index);
-  EXPECT_EQ(u"Mar", field.option_contents[content_index]);
+  content_index = GetIndexOfValue(field.options, field.value);
+  EXPECT_EQ(u"Mar", field.options[content_index].content);
 
   // Try a two-digit month.
   card.SetExpirationMonth(11);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  GetIndexOfValue(field.option_values, field.value, &content_index);
-  EXPECT_EQ(u"Nov", field.option_contents[content_index]);
+  content_index = GetIndexOfValue(field.options, field.value);
+  EXPECT_EQ(u"Nov", field.options[content_index].content);
 }
 
 void TestFillingInvalidFields(const std::u16string& state,
@@ -789,8 +785,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
 
   // Set semantically empty contents for each option, so that only the values
   // can be used for matching.
-  for (size_t i = 0; i < field.option_contents.size(); ++i)
-    field.option_contents[i] = base::NumberToString16(i);
+  for (size_t i = 0; i < field.options.size(); ++i)
+    field.options[i].content = base::NumberToString16(i);
 
   address()->SetRawInfo(NAME_FIRST, u"Meenie");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -811,8 +807,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
 
   // Set semantically empty values for each option, so that only the contents
   // can be used for matching.
-  for (size_t i = 0; i < field.option_values.size(); ++i)
-    field.option_values[i] = base::NumberToString16(i);
+  for (size_t i = 0; i < field.options.size(); ++i)
+    field.options[i].value = base::NumberToString16(i);
 
   address()->SetRawInfo(NAME_FIRST, u"Miney");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);

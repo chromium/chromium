@@ -149,17 +149,13 @@ void FillInDummyFormData(FormData* data) {
   field_data.is_focusable = true;
   field_data.should_autocomplete = false;
   field_data.text_direction = base::i18n::RIGHT_TO_LEFT;
-  field_data.option_values.push_back(u"First");
-  field_data.option_values.push_back(u"Second");
-  field_data.option_contents.push_back(u"First");
-  field_data.option_contents.push_back(u"Second");
-
+  field_data.options = {{.value = u"First", .content = u"First"},
+                        {.value = u"Second", .content = u"Second"}};
   data->fields.push_back(field_data);
 
   // Change a few fields.
   field_data.max_length = 150;
-  field_data.option_values.push_back(u"Third");
-  field_data.option_contents.push_back(u"Third");
+  field_data.options = {{.value = u"Third", .content = u"Third"}};
   data->fields.push_back(field_data);
 }
 
