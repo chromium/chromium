@@ -69,6 +69,8 @@ class MetricsHost;
 class MetricsInstance;
 class MidisHost;
 class MidisInstance;
+class NearbyShareHost;
+class NearbyShareInstance;
 class NetHost;
 class NetInstance;
 class ObbMounterHost;
@@ -249,6 +251,10 @@ class ArcBridgeService {
   ConnectionHolder<mojom::MidisInstance, mojom::MidisHost>* midis() {
     return &midis_;
   }
+  ConnectionHolder<mojom::NearbyShareInstance, mojom::NearbyShareHost>*
+  nearby_share() {
+    return &nearby_share_;
+  }
   ConnectionHolder<mojom::NetInstance, mojom::NetHost>* net() { return &net_; }
   ConnectionHolder<mojom::ObbMounterInstance, mojom::ObbMounterHost>*
   obb_mounter() {
@@ -366,6 +372,8 @@ class ArcBridgeService {
   ConnectionHolder<mojom::MediaSessionInstance> media_session_;
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost> metrics_;
   ConnectionHolder<mojom::MidisInstance, mojom::MidisHost> midis_;
+  ConnectionHolder<mojom::NearbyShareInstance, mojom::NearbyShareHost>
+      nearby_share_;
   ConnectionHolder<mojom::NetInstance, mojom::NetHost> net_;
   ConnectionHolder<mojom::ObbMounterInstance, mojom::ObbMounterHost>
       obb_mounter_;

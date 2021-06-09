@@ -45,6 +45,7 @@ if (is_chromeos_ash) {
       "media_session.mojom",
       "metrics.mojom",
       "midis.mojom",
+      "nearby_share.mojom",
       "net.mojom",
       "obb_mounter.mojom",
       "payment_app.mojom",

@@ -92,6 +92,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojo::PendingRemote<mojom::MetricsInstance> metrics_remote) override;
   void OnMidisInstanceReady(
       mojo::PendingRemote<mojom::MidisInstance> midis_remote) override;
+  void OnNearbyShareInstanceReady(
+      mojo::PendingRemote<mojom::NearbyShareInstance> nearby_share_remote)
+      override;
   void OnNetInstanceReady(
       mojo::PendingRemote<mojom::NetInstance> net_remote) override;
   void OnNotificationsInstanceReady(

@@ -34,6 +34,7 @@
 #include "components/arc/mojom/media_session.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/midis.mojom.h"
+#include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/mojom/notifications.mojom.h"
 #include "components/arc/mojom/obb_mounter.mojom.h"
@@ -166,6 +167,9 @@ void FakeArcBridgeHost::OnMetricsInstanceReady(
 
 void FakeArcBridgeHost::OnMidisInstanceReady(
     mojo::PendingRemote<mojom::MidisInstance> midis_remote) {}
+
+void FakeArcBridgeHost::OnNearbyShareInstanceReady(
+    mojo::PendingRemote<mojom::NearbyShareInstance> nearby_share_remote) {}
 
 void FakeArcBridgeHost::OnNetInstanceReady(
     mojo::PendingRemote<mojom::NetInstance> net_remote) {}

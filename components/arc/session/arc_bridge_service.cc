@@ -35,6 +35,7 @@
 #include "components/arc/mojom/media_session.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/midis.mojom.h"
+#include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/mojom/obb_mounter.mojom.h"
 #include "components/arc/mojom/oemcrypto.mojom.h"

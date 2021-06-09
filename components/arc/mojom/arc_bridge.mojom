@@ -35,6 +35,7 @@ import "components/arc/mojom/lock_screen.mojom";
 import "components/arc/mojom/media_session.mojom";
 import "components/arc/mojom/metrics.mojom";
 import "components/arc/mojom/midis.mojom";
+import "components/arc/mojom/nearby_share.mojom";
 import "components/arc/mojom/net.mojom";
 import "components/arc/mojom/notifications.mojom";
 import "components/arc/mojom/obb_mounter.mojom";
@@ -63,9 +64,9 @@ import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 import "components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 58
+// Next MinVersion: 59
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 163
+// Next method ID: 164
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -193,6 +194,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the MidisInstance interface is ready.
   [MinVersion=30] OnMidisInstanceReady@135(
       pending_remote<MidisInstance> instance_remote);
+
+  // Notifies Chrome that the NearbyShareInstance interface is ready.
+  [MinVersion=58] OnNearbyShareInstanceReady@163(
+      pending_remote<NearbyShareInstance> instance_remote);
 
   // Notifies Chrome that the NetInstance interface is ready.
   [MinVersion=5] OnNetInstanceReady@108(

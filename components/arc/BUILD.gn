@@ -376,6 +376,8 @@ static_library("arc_test_support") {
     "test/fake_intent_helper_instance.h",
     "test/fake_lock_screen_instance.cc",
     "test/fake_lock_screen_instance.h",
+    "test/fake_nearby_share_instance.cc",
+    "test/fake_nearby_share_instance.h",
     "test/fake_pip_instance.cc",
     "test/fake_pip_instance.h",
     "test/fake_policy_instance.cc",
