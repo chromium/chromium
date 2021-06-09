@@ -37,13 +37,15 @@ public class HostBrowserUtils {
 
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
+    public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";
+
     /**
      * The package names of the browsers that support WebAPKs. The most preferred one comes first.
      */
-    private static Set<String> sBrowsersSupportingWebApk =
-            new HashSet<String>(Arrays.asList("com.google.android.apps.chrome",
-                    "com.android.chrome", "com.chrome.beta", "com.chrome.dev", "com.chrome.canary",
-                    "org.chromium.chrome", "org.chromium.chrome.tests", ARC_INTENT_HELPER_BROWSER));
+    private static Set<String> sBrowsersSupportingWebApk = new HashSet<String>(
+            Arrays.asList("com.google.android.apps.chrome", "com.android.chrome", "com.chrome.beta",
+                    "com.chrome.dev", "com.chrome.canary", "org.chromium.chrome",
+                    "org.chromium.chrome.tests", ARC_INTENT_HELPER_BROWSER, ARC_WEBAPK_BROWSER));
 
     /** Caches the package name of the host browser. */
     private static String sHostPackage;
@@ -155,6 +157,10 @@ public class HostBrowserUtils {
             return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_INTENT_HELPER_VERSION;
         }
 
+        if (TextUtils.equals(hostBrowserPackageName, ARC_WEBAPK_BROWSER)) {
+            return false;
+        }
+
         return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_CHROME_VERSION;
     }
 
@@ -165,6 +171,7 @@ public class HostBrowserUtils {
     public static boolean shouldIntentLaunchSplashActivity(HostBrowserLauncherParams params) {
         return params.isNewStyleWebApk()
                 && !params.getHostBrowserPackageName().equals(ARC_INTENT_HELPER_BROWSER)
+                && !params.getHostBrowserPackageName().equals(ARC_WEBAPK_BROWSER)
                 && params.getHostBrowserMajorChromiumVersion()
                 >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
