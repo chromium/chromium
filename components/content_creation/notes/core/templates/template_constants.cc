@@ -22,7 +22,7 @@ const char kSourceSerifProFontName[] = "Source Serif Pro";
 const ARGBColor kBlue900Color = 0xFF174EA6;
 const ARGBColor kGreen50Color = 0xFFE6F4EA;
 const ARGBColor kGreen900Color = 0xFF0D652D;
-const ARGBColor kGrey200Color = 0xFFE8EAED;
+const ARGBColor kGrey300Color = 0xFFDADCE0;
 const ARGBColor kGrey900Color = 0xFF202124;
 const ARGBColor kRed500Color = 0xFFEA4335;
 const ARGBColor kYellow400Color = 0xFFFCC934;
@@ -110,7 +110,7 @@ NoteTemplate GetImpactfulTemplate() {
       /*id=*/NoteTemplateIds::kImpactful,
       l10n_util::GetStringUTF8(
           IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_IMPACTFUL),
-      Background(/*color=*/kGrey200Color),
+      Background(/*color=*/kGrey300Color),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
