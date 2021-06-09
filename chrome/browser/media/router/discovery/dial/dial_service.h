@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_address.h"
 #include "net/socket/udp_socket.h"
@@ -263,8 +262,6 @@ class DialServiceImpl : public DialService {
 
   // List of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  base::CancelableTaskTracker task_tracker_;
 
   // WeakPtrFactory for WeakPtrs that are invalidated on IO thread.
   base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_{this};
