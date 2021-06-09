@@ -20,7 +20,6 @@ namespace {
 bool CanSyncStart(syncer::SyncService* sync_service) {
   if (!sync_service || !sync_service->CanSyncFeatureStart())
     return false;
-  CHECK(sync_service->GetUserSettings());
   if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kThemes)) {
     return false;
@@ -132,7 +131,6 @@ void ProfileCustomizationBubbleSyncController::Init() {
     return;
   }
 
-  CHECK(theme_service_->GetThemeSyncableService());
   theme_observation_.Observe(theme_service_->GetThemeSyncableService());
 
   // Observe also the sync service to abort waiting for theme sync if the user
