@@ -20,8 +20,6 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -100,17 +98,9 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
-
-    builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
-    auth_service_ = static_cast<AuthenticationServiceFake*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
 
     store_ = BuildTestPasswordStore(browser_state_.get());
 
@@ -121,7 +111,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     mediator_ =
         [[PasswordsMediator alloc] initWithPasswordCheckManager:password_check_
-                                                    authService:auth_service_
                                                     syncService:syncService()];
     mediator_.consumer = consumer_;
   }
@@ -143,7 +132,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  AuthenticationServiceFake* auth_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   FakePasswordsConsumer* consumer_;

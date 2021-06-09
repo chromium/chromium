@@ -104,7 +104,6 @@ using signin_metrics::PromoAction;
           userPrefService:self.browser->GetBrowserState()->GetPrefs()];
   self.mediator.syncSetupService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
-  self.mediator.authService = self.authService;
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
   self.viewController = [[ManageSyncSettingsTableViewController alloc]

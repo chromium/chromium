@@ -40,9 +40,6 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   // The service responsible for password check feature.
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
 
-  // Service used to check if user is signed in.
-  AuthenticationService* _authService;
-
   // Service to check if passwords are synced.
   SyncSetupService* _syncService;
 
@@ -74,11 +71,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
-                                 authService:(AuthenticationService*)authService
                                  syncService:(SyncSetupService*)syncService {
   self = [super init];
   if (self) {
-    _authService = authService;
     _syncService = syncService;
 
     _passwordCheckManager = passwordCheckManager;
@@ -291,7 +286,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return _authService->IsAuthenticated() && _syncService->IsSyncEnabled() &&
+  return _syncService->IsSyncEnabled() &&
          !_syncService->IsEncryptEverythingEnabled();
 }
 

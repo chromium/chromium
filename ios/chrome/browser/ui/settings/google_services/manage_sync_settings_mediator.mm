@@ -82,8 +82,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 @property(nonatomic, assign, readonly) BOOL disabledBecauseOfSyncError;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 @property(nonatomic, assign, readonly) BOOL isSyncDisabledByAdministrator;
-// Returns YES if the user is authenticated.
-@property(nonatomic, assign, readonly) BOOL isAuthenticated;
 
 @end
 
@@ -435,8 +433,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)shouldDisplaySignoutSection {
-  return self.isAuthenticated &&
-         self.syncSetupService->IsFirstSetupComplete() &&
+  return self.syncSetupService->IsFirstSetupComplete() &&
          self.syncSetupService->IsSyncEnabled();
 }
 
@@ -760,10 +757,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)isSyncDisabledByAdministrator {
   return self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-}
-
-- (BOOL)isAuthenticated {
-  return self.authService->IsAuthenticated();
 }
 
 @end

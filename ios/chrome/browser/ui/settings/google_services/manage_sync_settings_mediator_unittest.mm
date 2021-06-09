@@ -15,8 +15,6 @@
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -79,10 +77,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = builder.Build();
 
     consumer_ = [[ManageSyncSettingsTableViewController alloc]
@@ -90,11 +84,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [consumer_ loadModel];
 
     pref_service_ = SetPrefService();
-
-    // Sign a fake identity into Chrome.
-    authentication_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    authentication_service_->SignIn(identity);
 
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
@@ -105,7 +94,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         initWithSyncService:sync_service_mock_
             userPrefService:pref_service_];
     mediator_.syncSetupService = sync_setup_service_mock_;
-    mediator_.authService = authentication_service_;
     mediator_.consumer = consumer_;
   }
 
@@ -148,7 +136,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   ManageSyncSettingsMediator* mediator_ = nullptr;
   ManageSyncSettingsTableViewController* consumer_ = nullptr;
   PrefService* pref_service_ = nullptr;
-  AuthenticationService* authentication_service_ = nullptr;
 };
 
 // Tests for Advanced Settings items.

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
-class AuthenticationService;
 class IOSChromePasswordCheckManager;
 @protocol PasswordsConsumer;
 class SyncSetupService;
@@ -23,7 +22,6 @@ class SyncSetupService;
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
-                                 authService:(AuthenticationService*)authService
                                  syncService:(SyncSetupService*)syncService
     NS_DESIGNATED_INITIALIZER;
 

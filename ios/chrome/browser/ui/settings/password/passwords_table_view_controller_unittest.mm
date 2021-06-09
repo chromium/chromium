@@ -102,7 +102,6 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForBrowserState(
                                              browser_->GetBrowserState())
-                         authService:nil
                          syncService:nil];
 
     // Inject some fake passwords to pass the loading state.
