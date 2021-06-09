@@ -92,8 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // This can be called on any thread. This call allows LacrosChromeServiceImpl
   // to start receiving messages from ash-chrome.
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver);
+  void BindReceiver();
 
   // Each of these functions guards usage of access to the corresponding remote.
   // Keep these in alphabetical order.

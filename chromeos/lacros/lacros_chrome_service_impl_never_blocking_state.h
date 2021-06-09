@@ -37,8 +37,9 @@ class LacrosChromeServiceImplNeverBlockingState
   ~LacrosChromeServiceImplNeverBlockingState() override;
 
   // crosapi::mojom::BrowserService:
+  void REMOVED_0(REMOVED_0Callback callback) override;
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
-  void RequestCrosapiReceiver(RequestCrosapiReceiverCallback callback) override;
+
   void NewWindow(bool incognito, NewWindowCallback callback) override;
   void NewTab(NewTabCallback callback) override;
   void RestoreTab(RestoreTabCallback callback) override;
@@ -52,12 +53,6 @@ class LacrosChromeServiceImplNeverBlockingState
   // to ash-chrome. The messages will not go through until
   // RequestCrosapiReceiver() is invoked.
   void BindCrosapi();
-
-  // BrowserService is the interface that ash-chrome uses to message
-  // lacros-chrome. This handles and routes all incoming messages from
-  // ash-chrome.
-  void BindBrowserServiceReceiver(
-      mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver);
 
   void FusePipeCrosapi(
       mojo::PendingRemote<crosapi::mojom::Crosapi> pending_remote);

@@ -22,17 +22,14 @@ LacrosChromeServiceImplNeverBlockingState::
 }
 
 // crosapi::mojom::BrowserService:
-void LacrosChromeServiceImplNeverBlockingState::REMOVED_2(
-    crosapi::mojom::BrowserInitParamsPtr) {
+void LacrosChromeServiceImplNeverBlockingState::REMOVED_0(
+    REMOVED_0Callback callback) {
   NOTIMPLEMENTED();
 }
 
-void LacrosChromeServiceImplNeverBlockingState::RequestCrosapiReceiver(
-    RequestCrosapiReceiverCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(hidehiko): Remove non-error logging from here.
-  LOG(WARNING) << "CrosapiReceiver requested.";
-  std::move(callback).Run(std::move(pending_crosapi_receiver_));
+void LacrosChromeServiceImplNeverBlockingState::REMOVED_2(
+    crosapi::mojom::BrowserInitParamsPtr) {
+  NOTIMPLEMENTED();
 }
 
 void LacrosChromeServiceImplNeverBlockingState::NewWindow(
@@ -108,15 +105,6 @@ void LacrosChromeServiceImplNeverBlockingState::UpdateDeviceAccountPolicy(
 void LacrosChromeServiceImplNeverBlockingState::BindCrosapi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_crosapi_receiver_ = crosapi_.BindNewPipeAndPassReceiver();
-}
-
-// BrowserService is the interface that ash-chrome uses to message
-// lacros-chrome. This handles and routes all incoming messages from
-// ash-chrome.
-void LacrosChromeServiceImplNeverBlockingState::BindBrowserServiceReceiver(
-    mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  receiver_.Bind(std::move(receiver));
 }
 
 void LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi(

@@ -60,12 +60,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  void REMOVED_0(REMOVED_0Callback callback) override { NOTIMPLEMENTED(); }
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
-    NOTIMPLEMENTED();
-  }
-
-  void RequestCrosapiReceiver(
-      RequestCrosapiReceiverCallback callback) override {
     NOTIMPLEMENTED();
   }
 

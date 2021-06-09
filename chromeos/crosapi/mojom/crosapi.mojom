@@ -520,16 +520,8 @@ struct BrowserInitParams {
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
   // Removed method. No longer used.
+  REMOVED_0@0() => (pending_receiver<Crosapi> receiver);
   REMOVED_2@2(BrowserInitParams params);
-
-  // DEPRECATED: in M90. In new versions, Crosapi is the bootstrap interface.
-  // BrowserService should be registered via BrowserServiceHost.
-  // Returns the pending_receiver of Crosapi.
-  // Ash-chrome is expected to call this method on initialization.
-  // The browser may call Crosapi APIs earlier than this invocation.
-  // In the case, the calls are queued, and processed sequentially, when
-  // ash-chrome binds the receiver to the service.
-  RequestCrosapiReceiver@0() => (pending_receiver<Crosapi> receiver);
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.

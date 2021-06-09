@@ -295,42 +295,28 @@ LacrosChromeServiceImpl::~LacrosChromeServiceImpl() {
   g_instance = nullptr;
 }
 
-void LacrosChromeServiceImpl::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
-  if (receiver.is_valid()) {
-    // This is legacy invitation flow.
-    // TODO(crbug.com/1180712): Remove this after all base ash-chrome is new
-    // enough supporting new invitation flow.
-    never_blocking_sequence_->PostTask(
-        FROM_HERE, base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::
-                                      BindBrowserServiceReceiver,
-                                  weak_sequenced_state_, std::move(receiver)));
-  } else {
-    // Accept Crosapi invitation here. Mojo IPC support should be initialized
-    // at this stage.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
+void LacrosChromeServiceImpl::BindReceiver() {
+  // Accept Crosapi invitation here. Mojo IPC support should be initialized
+  // at this stage.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
 
-    // In unittests/browser_tests cases, the mojo pipe may not be set up.
-    // Just ignore the case.
-    if (!command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle))
-      return;
+  // In unittests/browser_tests cases, the mojo pipe may not be set up.
+  // Just ignore the case.
+  if (!command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle))
+    return;
 
-    mojo::PlatformChannelEndpoint endpoint =
-        mojo::PlatformChannel::RecoverPassedEndpointFromString(
-            command_line->GetSwitchValueASCII(
-                crosapi::kCrosapiMojoPlatformChannelHandle));
-    auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi,
-            weak_sequenced_state_,
-            mojo::PendingRemote<crosapi::mojom::Crosapi>(
-                invitation.ExtractMessagePipe(0), /*version=*/0)));
-
-    // In this case, ash-chrome should be new enough, so init params should be
-    // passed from the startup outband file descriptor.
-  }
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::PlatformChannel::RecoverPassedEndpointFromString(
+          command_line->GetSwitchValueASCII(
+              crosapi::kCrosapiMojoPlatformChannelHandle));
+  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi,
+          weak_sequenced_state_,
+          mojo::PendingRemote<crosapi::mojom::Crosapi>(
+              invitation.ExtractMessagePipe(0), /*version=*/0)));
 
   delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;

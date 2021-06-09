@@ -5904,8 +5904,7 @@ bool ChromeContentBrowserClient::IsOriginTrialRequiredForAppCache(
 void ChromeContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()->BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::BrowserService>(std::move(pipe)));
+  chromeos::LacrosChromeServiceImpl::Get()->BindReceiver();
 #endif
 }
 
