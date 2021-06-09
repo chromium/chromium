@@ -623,6 +623,21 @@
             ]
         }
     ],
+    "AndroidMessagesUpdatePassword": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MessagesForAndroidUpdatePassword"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPartnerCustomizationPhenotype": [
         {
             "platforms": [
