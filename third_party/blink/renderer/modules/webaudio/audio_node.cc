@@ -614,13 +614,13 @@ void AudioNode::Dispose() {
   BaseAudioContext::GraphAutoLocker locker(context());
   Handler().Dispose();
 
-  // Add the handler to the orphan list if the context is pulling on the audio
-  // graph.  This keeps the handler alive until it can be deleted at a safe
-  // point (in pre/post handler task).  If graph isn't being pulled, we can
-  // delete the handler now since nothing on the audio thread will be touching
-  // it.
+  // Add the handler to the orphan list.  This keeps the handler alive until it
+  // can be deleted at a safe point (in pre/post handler task).  If the graph is
+  // being processed, the handler must be added.  If the context is suspended,
+  // the handler still needs to be added in case the context is resumed.
   DCHECK(context());
-  if (context()->IsPullingAudioGraph()) {
+  if (context()->IsPullingAudioGraph() ||
+      context()->ContextState() == BaseAudioContext::kSuspended) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
