@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -124,13 +125,12 @@ void TabGroupsApiUnitTest::SetUp() {
   InitializeEmptyExtensionService();
 
   // Create a browser window.
-  TestBrowserWindow* window = new TestBrowserWindow;
+  browser_window_ = std::make_unique<TestBrowserWindow>();
   // TestBrowserWindowOwner handles its own lifetime, and also cleans up
   // |window2|.
-  new TestBrowserWindowOwner(window);
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window;
+  params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
   BrowserList::SetLastActive(browser_.get());
 
@@ -543,6 +543,34 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnMoved) {
   EXPECT_EQ(1u, event_observer.events().size());
   EXPECT_TRUE(base::Contains(event_observer.events(),
                              api::tab_groups::OnMoved::kEventName));
+}
+
+// Test that tab groups aren't edited while dragging.
+TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+  int group_id = tab_groups_util::GetGroupId(
+      browser()->tab_strip_model()->AddToNewGroup({0}));
+  const std::string args =
+      base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
+
+  // Succeed moving group in normal case.
+  {
+    auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+    function->set_extension(extension);
+    ASSERT_TRUE(extension_function_test_utils::RunFunction(
+        function.get(), args, browser(), api_test_utils::NONE));
+  }
+
+  // Gracefully cancel group tab drag if tab strip isn't editable.
+  {
+    browser_window()->SetIsTabStripEditable(false);
+    auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+    function->set_extension(extension);
+    std::string error =
+        extension_function_test_utils::RunFunctionAndReturnError(
+            function.get(), args, browser());
+    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+  }
 }
 
 }  // namespace extensions

@@ -253,6 +253,14 @@ class ExtensionTabUtil {
   // some non-const member functions of |contents|, but actually leaves it
   // unmodified.
   static api::tabs::TabStatus GetLoadingStatus(content::WebContents* contents);
+
+  // Check TabStripModel editability in every browser because a drag session
+  // could be running in another browser that reverts to the current browser. Or
+  // a drag could be mid-handoff if from one browser to another.
+  static bool IsTabStripEditable();
+
+  // Retrieve a TabStripModel only if every browser is editable.
+  static TabStripModel* GetEditableTabStripModel(Browser* browser);
 };
 
 }  // namespace extensions
