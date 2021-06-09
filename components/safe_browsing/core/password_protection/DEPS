@@ -3,8 +3,5 @@ include_rules = [
   "+components/sessions/core/session_id.h",
   "+components/url_formatter",
   "+components/signin/public/identity_manager",
-  # TODO(crbug.com/1216341): Eliminate the need for these.
-  "!content/public/browser/browser_thread.h",
-  "!ios/web/public/thread/web_thread.h",
   "+ui/gfx/geometry",
 ]

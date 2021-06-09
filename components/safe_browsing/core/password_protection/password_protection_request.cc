@@ -60,6 +60,7 @@ std::vector<std::string> GetMatchingDomains(
 }  // namespace
 
 PasswordProtectionRequest::PasswordProtectionRequest(
+    scoped_refptr<base::SequencedTaskRunner> task_runner_to_delete_on,
     const GURL& main_frame_url,
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
@@ -72,7 +73,9 @@ PasswordProtectionRequest::PasswordProtectionRequest(
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
-    : request_proto_(std::make_unique<LoginReputationClientRequest>()),
+    : base::RefCountedDeleteOnSequence<PasswordProtectionRequest>(
+          std::move(task_runner_to_delete_on)),
+      request_proto_(std::make_unique<LoginReputationClientRequest>()),
       main_frame_url_(main_frame_url),
       password_form_action_(password_form_action),
       password_form_frame_url_(password_form_frame_url),

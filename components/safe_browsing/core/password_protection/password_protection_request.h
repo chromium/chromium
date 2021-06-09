@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -19,12 +19,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
-
-#if defined(OS_IOS)
-#include "ios/web/public/thread/web_thread.h"
-#else
-#include "content/public/browser/browser_thread.h"
-#endif  // defined(OS_IOS)
 
 class GURL;
 
@@ -37,13 +31,6 @@ namespace safe_browsing {
 class PasswordProtectionServiceBase;
 
 using password_manager::metrics_util::PasswordType;
-
-#if defined(OS_IOS)
-using DeleteOnUIThread = web::WebThread::DeleteOnThread<web::WebThread::UI>;
-#else
-using DeleteOnUIThread =
-    content::BrowserThread::DeleteOnThread<content::BrowserThread::UI>;
-#endif  // defined(OS_IOS)
 
 // A request for checking if an unfamiliar login form or a password reuse event
 // is safe. PasswordProtectionRequest objects are owned by
@@ -66,8 +53,7 @@ using DeleteOnUIThread =
 //     |        | On deletion of |password_protection_service_|, cancel request.
 class PasswordProtectionRequest
     : public CancelableRequest,
-      public base::RefCountedThreadSafe<PasswordProtectionRequest,
-                                        DeleteOnUIThread>,
+      public base::RefCountedDeleteOnSequence<PasswordProtectionRequest>,
       public base::SupportsWeakPtr<PasswordProtectionRequest> {
  public:
   // Not copyable or movable
@@ -124,6 +110,7 @@ class PasswordProtectionRequest
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
   PasswordProtectionRequest(
+      scoped_refptr<base::SequencedTaskRunner> task_runner_to_delete_on,
       const GURL& main_frame_url,
       const GURL& password_form_action,
       const GURL& password_form_frame_url,
@@ -168,8 +155,8 @@ class PasswordProtectionRequest
   std::unique_ptr<LoginReputationClientRequest> request_proto_;
 
  private:
-  friend DeleteOnUIThread;
-  friend class base::DeleteHelper<PasswordProtectionRequest>;
+  friend base::RefCountedDeleteOnSequence<PasswordProtectionRequest>;
+  friend base::DeleteHelper<PasswordProtectionRequest>;
 
   // Start checking the allowlist.
   void CheckAllowlist();

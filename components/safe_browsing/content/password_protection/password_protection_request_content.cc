@@ -13,6 +13,8 @@
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -89,7 +91,8 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
-    : PasswordProtectionRequest(main_frame_url,
+    : PasswordProtectionRequest(content::GetUIThreadTaskRunner({}),
+                                main_frame_url,
                                 password_form_action,
                                 password_form_frame_url,
                                 mime_type,

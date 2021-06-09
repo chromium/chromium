@@ -8,8 +8,11 @@
 #error "This file requires ARC support."
 #endif
 
+#include "base/task/post_task.h"
 #import "components/safe_browsing/core/password_protection/request_canceler.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
@@ -35,17 +38,19 @@ PasswordProtectionRequestIOS::PasswordProtectionRequestIOS(
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
-    : PasswordProtectionRequest(main_frame_url,
-                                /*password_form_action=*/GURL(),
-                                /*password_frame_url=*/GURL(),
-                                mime_type,
-                                username,
-                                password_type,
-                                matching_reused_credentials,
-                                type,
-                                password_field_exists,
-                                pps,
-                                request_timeout_in_ms),
+    : PasswordProtectionRequest(
+          base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+          main_frame_url,
+          /*password_form_action=*/GURL(),
+          /*password_frame_url=*/GURL(),
+          mime_type,
+          username,
+          password_type,
+          matching_reused_credentials,
+          type,
+          password_field_exists,
+          pps,
+          request_timeout_in_ms),
       web_state_(web_state) {
   request_canceler_ =
       RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_state);
