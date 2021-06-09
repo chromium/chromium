@@ -39,28 +39,6 @@ MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
 void MultiSourceMemoryPressureMonitor::Start() {
   system_evaluator_ =
       SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(this);
-  StartMetricsTimer();
-}
-
-void MultiSourceMemoryPressureMonitor::StartMetricsTimer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Unretained is safe here since this task is running on a timer owned by this
-  // object.
-  metric_timer_.Start(
-      FROM_HERE, MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod,
-      BindRepeating(
-          &MultiSourceMemoryPressureMonitor::RecordCurrentPressureLevel,
-          base::Unretained(this)));
-}
-
-void MultiSourceMemoryPressureMonitor::StopMetricsTimer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  metric_timer_.Stop();
-}
-
-void MultiSourceMemoryPressureMonitor::RecordCurrentPressureLevel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordMemoryPressure(GetCurrentPressureLevel(), /* ticks = */ 1);
 }
 
 base::MemoryPressureListener::MemoryPressureLevel

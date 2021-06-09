@@ -52,16 +52,10 @@ class MultiSourceMemoryPressureMonitor
   void SetSystemEvaluator(
       std::unique_ptr<SystemMemoryPressureEvaluator> evaluator);
 
- protected:
-  void StartMetricsTimer();
-  void StopMetricsTimer();
-
  private:
   // Delegate implementation.
   void OnMemoryPressureLevelChanged(MemoryPressureLevel level) override;
   void OnNotifyListenersRequested() override;
-
-  void RecordCurrentPressureLevel();
 
   MemoryPressureLevel current_pressure_level_;
 
@@ -70,9 +64,6 @@ class MultiSourceMemoryPressureMonitor
   MemoryPressureVoteAggregator aggregator_;
 
   std::unique_ptr<SystemMemoryPressureEvaluator> system_evaluator_;
-
-  // A periodic timer to record UMA metrics.
-  base::RepeatingTimer metric_timer_;
 
   // The timestamp of the last pressure change event.
   base::TimeTicks last_pressure_change_timestamp_;

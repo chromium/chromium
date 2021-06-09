@@ -2366,6 +2366,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.PressureLevel" enum="MemoryPressureLevel"
     expires_after="2021-10-24">
+  <obsolete>
+    Replaced by Memory.PressureLevel2 in M93.
+  </obsolete>
   <owner>chrisha@chromium.org</owner>
   <summary>
     The memory pressure level, which is recorded periodically. This shows the
@@ -2375,7 +2378,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PressureLevel2" enum="MemoryPressureLevel"
-    expires_after="2021-11-30">
+    expires_after="never">
+<!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
+
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

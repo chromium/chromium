@@ -26,6 +26,10 @@ class SystemMemoryPressureEvaluatorFuchsia
  public:
   using SystemMemoryPressureEvaluator::SendCurrentVote;
 
+  // The period at which the system is re-notified when the pressure is not
+  // none.
+  static const base::TimeDelta kRenotifyVotePeriod;
+
   explicit SystemMemoryPressureEvaluatorFuchsia(
       std::unique_ptr<util::MemoryPressureVoter> voter);
 
@@ -43,7 +47,8 @@ class SystemMemoryPressureEvaluatorFuchsia
 
   fidl::Binding<fuchsia::memorypressure::Watcher> binding_;
 
-  base::RepeatingTimer send_current_vote_timer_;
+  // Timer that will re-notify with the current vote at regular interval.
+  base::RepeatingTimer renotify_current_vote_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

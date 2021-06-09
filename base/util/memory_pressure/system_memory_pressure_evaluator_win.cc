@@ -73,6 +73,10 @@ void MemoryPressureWatcherDelegate::OnObjectSignaled(HANDLE handle) {
 
 }  // namespace
 
+// Check the amount of RAM left every 5 seconds.
+const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
+    base::TimeDelta::FromSeconds(5);
+
 // The following constants have been lifted from similar values in the ChromeOS
 // memory pressure monitor. The values were determined experimentally to ensure
 // sufficient responsiveness of the memory pressure subsystem, and minimal
@@ -235,7 +239,7 @@ void SystemMemoryPressureEvaluator::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.Start(
-      FROM_HERE, base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod,
+      FROM_HERE, kMemorySamplingPeriod,
       BindRepeating(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
                     weak_ptr_factory_.GetWeakPtr()));
 }
@@ -271,8 +275,7 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
         // Already in moderate pressure, only notify if sustained over the
         // cooldown period.
         const int kModeratePressureCooldownCycles =
-            kModeratePressureCooldown /
-            base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod;
+            kModeratePressureCooldown / kMemorySamplingPeriod;
         if (++moderate_pressure_repeat_count_ ==
             kModeratePressureCooldownCycles) {
           moderate_pressure_repeat_count_ = 0;

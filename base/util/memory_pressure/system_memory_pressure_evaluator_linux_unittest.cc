@@ -180,8 +180,7 @@ TEST_F(LinuxSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
 
   // Check that the event gets reposted after a while.
   const int kModeratePressureCooldownCycles =
-      evaluator.kModeratePressureCooldown /
-      base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod;
+      evaluator.kModeratePressureCooldown / evaluator.kMemorySamplingPeriod;
 
   for (int i = 0; i < kModeratePressureCooldownCycles; ++i) {
     if (i + 1 == kModeratePressureCooldownCycles) {

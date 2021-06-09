@@ -8,6 +8,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/time/time.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
 
 namespace util {
@@ -29,6 +30,10 @@ FuchsiaToBaseMemoryPressureLevel(fuchsia::memorypressure::Level level) {
 }
 
 }  // namespace
+
+const base::TimeDelta
+    SystemMemoryPressureEvaluatorFuchsia::kRenotifyVotePeriod =
+        base::TimeDelta::FromSeconds(5);
 
 SystemMemoryPressureEvaluatorFuchsia::SystemMemoryPressureEvaluatorFuchsia(
     std::unique_ptr<util::MemoryPressureVoter> voter)
@@ -65,14 +70,14 @@ void SystemMemoryPressureEvaluatorFuchsia::OnLevelChanged(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       // By convention no notifications are sent when returning to NONE level.
       SendCurrentVote(false);
-      send_current_vote_timer_.Stop();
+      renotify_current_vote_timer_.Stop();
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
       SendCurrentVote(true);
       // This will reset the timer if already running.
-      send_current_vote_timer_.Start(
-          FROM_HERE, base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod,
+      renotify_current_vote_timer_.Start(
+          FROM_HERE, kRenotifyVotePeriod,
           base::BindRepeating(
               &SystemMemoryPressureEvaluatorFuchsia::SendCurrentVote,
               base::Unretained(this), true));

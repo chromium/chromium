@@ -33,12 +33,6 @@ class BASE_EXPORT MemoryPressureMonitor {
   // Return the singleton MemoryPressureMonitor.
   static MemoryPressureMonitor* Get();
 
-  // Record memory pressure UMA statistic. A tick is 5 seconds.
-  static void RecordMemoryPressure(MemoryPressureLevel level, int ticks);
-
-  // Defines the time between UMA events, currently 5s.
-  static const base::TimeDelta kUMAMemoryPressureLevelPeriod;
-
   // Returns the currently observed memory pressure.
   virtual MemoryPressureLevel GetCurrentPressureLevel() const = 0;
 

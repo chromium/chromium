@@ -35,6 +35,9 @@ int GetAvailableSystemMemoryMiB(const base::SystemMemoryInfoKB& mem_info) {
 namespace util {
 namespace os_linux {
 
+const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
+    base::TimeDelta::FromSeconds(5);
+
 const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
     base::TimeDelta::FromSeconds(10);
 
@@ -65,7 +68,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 void SystemMemoryPressureEvaluator::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Start(
-      FROM_HERE, base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod,
+      FROM_HERE, kMemorySamplingPeriod,
       base::BindRepeating(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
                           base::Unretained(this)));
 }
@@ -104,8 +107,7 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
         // Already in moderate pressure, only notify if sustained over the
         // cooldown period.
         const int kModeratePressureCooldownCycles =
-            kModeratePressureCooldown /
-            base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod;
+            kModeratePressureCooldown / kMemorySamplingPeriod;
         if (++moderate_pressure_repeat_count_ ==
             kModeratePressureCooldownCycles) {
           moderate_pressure_repeat_count_ = 0;

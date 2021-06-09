@@ -165,8 +165,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
       evaluator,
       OnMemoryPressure(
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE));
-  task_environment_.FastForwardBy(
-      base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod);
+  task_environment_.FastForwardBy(evaluator.kRenotifyVotePeriod);
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 
   EXPECT_CALL(
@@ -183,8 +182,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
       evaluator,
       OnMemoryPressure(
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL));
-  task_environment_.FastForwardBy(
-      base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod);
+  task_environment_.FastForwardBy(evaluator.kRenotifyVotePeriod);
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 
   SendPressureLevel(fuchsia::memorypressure::Level::NORMAL);
@@ -192,8 +190,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
 
   // Verify that NONE pressure level is not reported periodically.
-  task_environment_.FastForwardBy(
-      base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod);
+  task_environment_.FastForwardBy(evaluator.kRenotifyVotePeriod);
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 }
 
