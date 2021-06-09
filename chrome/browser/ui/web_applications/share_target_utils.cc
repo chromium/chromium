@@ -84,7 +84,7 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<std::string> types;
   std::vector<bool> is_value_file_uris;
 
-  if (intent.mime_type.has_value() && intent.file_urls.has_value()) {
+  if (intent.mime_type.has_value() && intent.files.has_value()) {
     const std::string& mime_type = intent.mime_type.value();
     std::string name;
     for (const apps::ShareTarget::Files& files : share_target.params.files) {
@@ -103,14 +103,14 @@ NavigateParams NavigateParamsForShareTarget(
       // Files for Web Share intents are created by the browser in
       // a .WebShare directory, with generated file names and file urls - see
       // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-      for (const GURL& file_url : intent.file_urls.value()) {
+      for (const auto& file : intent.files.value()) {
         storage::FileSystemContext* file_system_context =
             file_manager::util::GetFileManagerFileSystemContext(
                 browser->profile());
         storage::FileSystemURL file_system_url =
-            file_system_context->CrackURL(file_url);
+            file_system_context->CrackURL(file->url);
         if (!file_system_url.is_valid()) {
-          VLOG(1) << "Received unexpected file URL: " << file_url.spec();
+          VLOG(1) << "Received unexpected file URL: " << file->url.spec();
           continue;
         }
 

@@ -338,15 +338,19 @@ struct IntentFilter {
   string? activity_label;
 };
 
-// Action and resource handling request. This includes the scheme and URL at
-// the moment, and will be extended to handle files in the future. This should
+// Metadata for a single file shared through an intent.
+struct IntentFile {
+  url.mojom.Url url;  // The URL of the file to share.
+};
+
+// Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
 struct Intent {
   string? action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
   string? mime_type; // MIME type. e.g. text/plain, image/*.
-  array<url.mojom.Url>? file_urls; // The URLs of the files to share.
+  array<IntentFile>? files; // The files to share.
   string? activity_name; // The activity for the app to launch.
 
   // The Drive share URL, this is only filled if the intent contains a file

@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -170,7 +171,12 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
   intent->action = filesystem_urls.size() == 1 ? kIntentActionSend
                                                : kIntentActionSendMultiple;
   intent->mime_type = CalculateCommonMimeType(mime_types);
-  intent->file_urls = filesystem_urls;
+  intent->files = std::vector<apps::mojom::IntentFilePtr>{};
+  for (const GURL& url : filesystem_urls) {
+    auto file = apps::mojom::IntentFile::New();
+    file->url = url;
+    intent->files->push_back(std::move(file));
+  }
   return intent;
 }
 
@@ -196,7 +202,10 @@ apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
   intent->action = kIntentActionSend;
   if (!is_directory) {
     intent->mime_type = mime_type;
-    intent->file_urls = std::vector<GURL>{filesystem_url};
+    intent->files = std::vector<apps::mojom::IntentFilePtr>{};
+    auto file = apps::mojom::IntentFile::New();
+    file->url = filesystem_url;
+    intent->files->push_back(std::move(file));
   }
   if (!drive_share_url.is_empty()) {
     intent->drive_share_url = drive_share_url;
@@ -361,7 +370,7 @@ bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
   if (intent->action == kIntentActionSend ||
       intent->action == kIntentActionSendMultiple) {
     if (intent->drive_share_url.has_value() &&
-        !intent->share_text.has_value() && !intent->file_urls.has_value()) {
+        !intent->share_text.has_value() && !intent->files.has_value()) {
       return true;
     }
   }
@@ -373,7 +382,7 @@ bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
   // validity check. Check if this is a share intent with no file or text.
   if (intent->action == kIntentActionSend ||
       intent->action == kIntentActionSendMultiple) {
-    if (!intent->share_text.has_value() && !intent->file_urls.has_value()) {
+    if (!intent->share_text.has_value() && !intent->files.has_value()) {
       return false;
     }
   }
@@ -393,11 +402,11 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   if (intent->mime_type.has_value() && !intent->mime_type.value().empty())
     intent_value.SetStringKey(kMimeTypeKey, intent->mime_type.value());
 
-  if (intent->file_urls.has_value() && !intent->file_urls.value().empty()) {
+  if (intent->files.has_value() && !intent->files.value().empty()) {
     base::Value file_urls_list(base::Value::Type::LIST);
-    for (auto& url : intent->file_urls.value()) {
-      DCHECK(url.is_valid());
-      file_urls_list.Append(base::Value(url.spec()));
+    for (const auto& file : intent->files.value()) {
+      DCHECK(file->url.is_valid());
+      file_urls_list.Append(base::Value(file->url.spec()));
     }
     intent_value.SetKey(kFileUrlsKey, std::move(file_urls_list));
   }
@@ -493,7 +502,7 @@ absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
   return url;
 }
 
-absl::optional<std::vector<::GURL>> GetFileUrlsFromDict(
+absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
@@ -503,13 +512,16 @@ absl::optional<std::vector<::GURL>> GetFileUrlsFromDict(
   if (!value || !value->is_list() || value->GetList().empty())
     return absl::nullopt;
 
-  std::vector<::GURL> file_urls;
+  std::vector<apps::mojom::IntentFilePtr> files;
   for (const auto& item : value->GetList()) {
     GURL url(item.GetString());
-    if (url.is_valid())
-      file_urls.push_back(std::move(url));
+    if (url.is_valid()) {
+      auto file = apps::mojom::IntentFile::New();
+      file->url = std::move(url);
+      files.push_back(std::move(file));
+    }
   }
-  return file_urls;
+  return files;
 }
 
 absl::optional<std::vector<std::string>> GetCategoriesFromDict(
@@ -559,7 +571,7 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   intent->action = GetStringValueFromDict(*dict, kActionKey);
   intent->url = GetGurlValueFromDict(*dict, kUrlKey);
   intent->mime_type = GetStringValueFromDict(*dict, kMimeTypeKey);
-  intent->file_urls = GetFileUrlsFromDict(*dict, kFileUrlsKey);
+  intent->files = GetFilesFromDict(*dict, kFileUrlsKey);
   intent->activity_name = GetStringValueFromDict(*dict, kActivityNameKey);
   intent->drive_share_url = GetGurlValueFromDict(*dict, kDriveShareUrlKey);
   intent->share_text = GetStringValueFromDict(*dict, kShareTextKey);

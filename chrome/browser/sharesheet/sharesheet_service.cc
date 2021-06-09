@@ -428,7 +428,7 @@ void SharesheetService::RecordShareDataMetrics(
 
   // Record file count.
   const size_t file_count =
-      intent->file_urls.value_or(std::vector<GURL>()).size();
+      intent->files.has_value() ? intent->files->size() : 0;
   SharesheetMetrics::RecordSharesheetFilesSharedCount(file_count);
 }
 

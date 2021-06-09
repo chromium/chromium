@@ -37,12 +37,12 @@ namespace {
 
 std::vector<base::FilePath> ResolveFileUrls(
     Profile* profile,
-    const std::vector<GURL>& file_urls) {
+    const std::vector<apps::mojom::IntentFilePtr>& files) {
   std::vector<base::FilePath> file_paths;
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
-  for (const auto& file_url : file_urls) {
-    storage::FileSystemURL fs_url = fs_context->CrackURL(file_url);
+  for (const auto& file : files) {
+    storage::FileSystemURL fs_url = fs_context->CrackURL(file->url);
     file_paths.push_back(fs_url.path());
   }
   return file_paths;
@@ -50,7 +50,7 @@ std::vector<base::FilePath> ResolveFileUrls(
 
 std::string GetFirstFilenameFromFileUrls(
     Profile* profile,
-    absl::optional<std::vector<GURL>> file_urls) {
+    const absl::optional<std::vector<apps::mojom::IntentFilePtr>>& file_urls) {
   if (!file_urls) {
     return std::string();
   }
@@ -69,7 +69,7 @@ std::vector<std::unique_ptr<Attachment>> CreateTextAttachmentFromIntent(
                                                  : TextAttachment::Type::kUrl;
   std::string title = intent->share_title ? *intent->share_title
                                           : GetFirstFilenameFromFileUrls(
-                                                profile, intent->file_urls);
+                                                profile, intent->files);
 
   std::string text;
   if (intent->share_text)
@@ -94,7 +94,7 @@ std::vector<std::unique_ptr<Attachment>> CreateFileAttachmentsFromIntent(
     Profile* profile,
     const apps::mojom::IntentPtr& intent) {
   std::vector<base::FilePath> file_paths =
-      ResolveFileUrls(profile, *intent->file_urls);
+      ResolveFileUrls(profile, *intent->files);
 
   std::vector<std::unique_ptr<Attachment>> attachments;
   for (auto& file_path : file_paths) {
@@ -169,11 +169,11 @@ bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
   bool valid_file_share =
       (intent->action == apps_util::kIntentActionSend ||
        intent->action == apps_util::kIntentActionSendMultiple) &&
-      intent->file_urls && !intent->file_urls->empty() && !intent->share_text &&
+      intent->files && !intent->files->empty() && !intent->share_text &&
       !intent->url && !intent->drive_share_url && !contains_hosted_document;
 
   bool valid_text_share = intent->action == apps_util::kIntentActionSend &&
-                          intent->share_text && !intent->file_urls;
+                          intent->share_text && !intent->files;
 
   bool valid_url_share = intent->action == apps_util::kIntentActionView &&
                          intent->url && intent->url->is_valid() &&
@@ -184,8 +184,7 @@ bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
   bool valid_drive_share =
       intent->action == apps_util::kIntentActionSend &&
       intent->drive_share_url && intent->drive_share_url->is_valid() &&
-      intent->file_urls && intent->file_urls->size() == 1u &&
-      !intent->share_text;
+      intent->files && intent->files->size() == 1u && !intent->share_text;
 
   return (valid_file_share || valid_text_share || valid_url_share ||
           valid_drive_share) &&

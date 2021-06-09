@@ -38,7 +38,7 @@ class IntentUtilTest : public testing::Test {
       const std::string& action,
       const GURL& url,
       const std::string& mime_type,
-      const std::vector<::GURL>& file_urls,
+      std::vector<apps::mojom::IntentFilePtr> files,
       const std::string& activity_name,
       const GURL& drive_share_url,
       const std::string& share_text,
@@ -52,7 +52,7 @@ class IntentUtilTest : public testing::Test {
     intent->action = action;
     intent->url = url;
     intent->mime_type = mime_type;
-    intent->file_urls = file_urls;
+    intent->files = std::move(files);
     intent->activity_name = activity_name;
     intent->drive_share_url = drive_share_url;
     intent->share_text = share_text;
@@ -461,8 +461,16 @@ TEST_F(IntentUtilTest, Convert) {
   base::flat_map<std::string, std::string> extras = {
       {"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}};
 
+  auto file1 = apps::mojom::IntentFile::New();
+  file1->url = test_url1;
+  auto file2 = apps::mojom::IntentFile::New();
+  file2->url = test_url2;
+  auto files = std::vector<apps::mojom::IntentFilePtr>();
+  files.push_back(std::move(file1));
+  files.push_back(std::move(file2));
+
   auto src_intent =
-      CreateIntent(action, test_url1, mime_type, {test_url1, test_url2},
+      CreateIntent(action, test_url1, mime_type, std::move(files),
                    activity_name, test_url3, share_text, share_title,
                    start_type, {category1}, data, ui_bypassed, extras);
   base::Value value = apps_util::ConvertIntentToValue(src_intent);
@@ -471,9 +479,9 @@ TEST_F(IntentUtilTest, Convert) {
   EXPECT_EQ(action, dst_intent->action.value());
   EXPECT_EQ(test_url1, dst_intent->url.value());
   EXPECT_EQ(mime_type, dst_intent->mime_type.value());
-  EXPECT_EQ(2u, dst_intent->file_urls->size());
-  EXPECT_EQ(test_url1, dst_intent->file_urls.value()[0]);
-  EXPECT_EQ(test_url2, dst_intent->file_urls.value()[1]);
+  EXPECT_EQ(2u, dst_intent->files->size());
+  EXPECT_EQ(test_url1, dst_intent->files.value()[0]->url);
+  EXPECT_EQ(test_url2, dst_intent->files.value()[1]->url);
   EXPECT_EQ(activity_name, dst_intent->activity_name.value());
   EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
   EXPECT_EQ(share_text, dst_intent->share_text.value());
@@ -496,7 +504,7 @@ TEST_F(IntentUtilTest, ConvertEmptyIntent) {
   EXPECT_FALSE(dst_intent->action.has_value());
   EXPECT_FALSE(dst_intent->url.has_value());
   EXPECT_FALSE(dst_intent->mime_type.has_value());
-  EXPECT_FALSE(dst_intent->file_urls.has_value());
+  EXPECT_FALSE(dst_intent->files.has_value());
   EXPECT_FALSE(dst_intent->activity_name.has_value());
   EXPECT_FALSE(dst_intent->drive_share_url.has_value());
   EXPECT_FALSE(dst_intent->share_text.has_value());

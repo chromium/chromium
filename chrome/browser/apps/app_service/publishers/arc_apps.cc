@@ -714,8 +714,11 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     int32_t session_id = new_window_info->window_id;
     int64_t display_id = new_window_info->display_id;
 
-    if (intent->mime_type.has_value() && intent->file_urls.has_value()) {
-      const auto file_urls = intent->file_urls.value();
+    if (intent->mime_type.has_value() && intent->files.has_value()) {
+      std::vector<GURL> file_urls;
+      for (const auto& file : intent->files.value()) {
+        file_urls.push_back(file->url);
+      }
       arc::ConvertToContentUrlsAndShare(
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
