@@ -249,7 +249,6 @@ TEST_F(ReceiveMessagesExpressTest, SuccessfulPartialResponse) {
 
 TEST_F(ReceiveMessagesExpressTest, StopPreventsPendingTransfer) {
   base::RunLoop run_loop;
-
   StartReceivingMessages(&run_loop, /*token_success=*/true);
 
   // Calls OnDataReceived() in ReceiveMessagesExpress.

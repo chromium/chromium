@@ -123,6 +123,9 @@ message ReceiveMessagesResponse {
   }
 }
 
+// Matches StreamBody definition from the server:
+// google3/google/rpc/stream_body.proto
 message StreamBody {
   repeated bytes messages = 1;
+  repeated bytes noop = 15;
 }

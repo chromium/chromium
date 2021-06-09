@@ -62,13 +62,17 @@ class StreamParserTest : public testing::Test {
 
   bool fast_path_ready() { return fast_path_ready_; }
 
+  bool on_message_recieved() { return on_message_recieved_; }
+
  private:
   void OnMessageReceived(const std::string& message) {
     messages_received_.push_back(message);
+    on_message_recieved_ = true;
   }
   void OnFastPathReady() { fast_path_ready_ = true; }
 
   bool fast_path_ready_ = false;
+  bool on_message_recieved_ = false;
   StreamParser stream_parser_;
   std::vector<std::string> messages_received_;
 };
@@ -150,4 +154,54 @@ TEST_F(StreamParserTest, FastPathReadyTriggersCallback) {
   EXPECT_TRUE(fast_path_ready());
   EXPECT_EQ(1, MessagesReceived());
   EXPECT_EQ(messages, GetMessages());
+}
+
+// The InboxMessage message triggers callback.
+TEST_F(StreamParserTest, InboxMessageTriggersCallback) {
+  std::vector<std::string> messages = {"random 42"};
+  chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body =
+      BuildProto(messages);
+  GetStreamParser().Append(stream_body.SerializeAsString());
+
+  EXPECT_TRUE(on_message_recieved());
+  EXPECT_EQ(1, MessagesReceived());
+  EXPECT_EQ(messages, GetMessages());
+}
+
+// Check that the buffer resizes properly when a long message is sent at once.
+TEST_F(StreamParserTest, LongMessageAtOnce) {
+  std::vector<std::string> messages = {
+      "This is a long test message to see if the buffer breaks if we send a "
+      "big message: "
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111111111111111111111111111111111111111111111111111111111111111111111"
+      "111111"};
+  chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body =
+      BuildProto(messages);
+  GetStreamParser().Append(stream_body.SerializeAsString());
+
+  EXPECT_EQ(1, MessagesReceived());
+  EXPECT_EQ(messages, GetMessages());
+}
+
+// Check that when we have a tag failure, no message is received.
+TEST_F(StreamParserTest, TagFailure) {
+  std::string message = "";
+  GetStreamParser().Append(message);
+  EXPECT_EQ(0, MessagesReceived());
+
+  char bytes[3] = {0x00, 0xf0, 0xab};
+  GetStreamParser().Append(bytes);
+  EXPECT_EQ(0, MessagesReceived());
+}
+
+// Check that when we have a ReadBytes failure, no message is received.
+TEST_F(StreamParserTest, ReadBytesFailure) {
+  char bytes[6] = {0x00, 0xf0, 0xab, 0xf0, 0xab, 0xf0};
+  GetStreamParser().Append(bytes);
+  EXPECT_EQ(0, MessagesReceived());
 }
