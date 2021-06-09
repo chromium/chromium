@@ -1039,7 +1039,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         try {
             final String str_id = String.valueOf(id);
             return manager.getCameraCharacteristics(str_id);
-        } catch (CameraAccessException | IllegalArgumentException | AssertionError ex) {
+        } catch (CameraAccessException | IllegalArgumentException | AssertionError
+                | NullPointerException ex) {
             Log.e(TAG, "getCameraCharacteristics: ", ex);
         }
         return null;
