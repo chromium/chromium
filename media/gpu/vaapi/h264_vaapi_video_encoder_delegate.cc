@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/h264_encoder.h"
+#include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
 #include <va/va_enc_h264.h>
@@ -87,7 +87,7 @@ static void InitVAPictureH264(VAPictureH264* va_pic) {
 
 }  // namespace
 
-H264Encoder::EncodeParams::EncodeParams()
+H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : idr_period_frames(kIDRPeriod),
       i_period_frames(kIPeriod),
       ip_period_frames(kIPPeriod),
@@ -102,17 +102,18 @@ H264Encoder::EncodeParams::EncodeParams()
       max_ref_pic_list0_size(kMaxRefIdxL0Size),
       max_ref_pic_list1_size(kMaxRefIdxL1Size) {}
 
-H264Encoder::H264Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-                         base::RepeatingClosure error_cb)
+H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
+    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    base::RepeatingClosure error_cb)
     : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb),
       packed_sps_(new H264BitstreamBuffer()),
       packed_pps_(new H264BitstreamBuffer()) {}
 
-H264Encoder::~H264Encoder() {
-  // H264Encoder can be destroyed on any thread.
+H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() {
+  // H264VaapiVideoEncoderDelegate can be destroyed on any thread.
 }
 
-bool H264Encoder::Initialize(
+bool H264VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
     const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -188,20 +189,20 @@ bool H264Encoder::Initialize(
   return true;
 }
 
-gfx::Size H264Encoder::GetCodedSize() const {
+gfx::Size H264VaapiVideoEncoderDelegate::GetCodedSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!coded_size_.IsEmpty());
 
   return coded_size_;
 }
 
-size_t H264Encoder::GetMaxNumOfRefFrames() const {
+size_t H264VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return curr_params_.max_num_ref_frames;
 }
 
-bool H264Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
+bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<H264Picture> pic = GetPicture(encode_job);
@@ -277,8 +278,9 @@ bool H264Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
   return true;
 }
 
-bool H264Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
-                              uint32_t framerate) {
+bool H264VaapiVideoEncoderDelegate::UpdateRates(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   uint32_t bitrate = bitrate_allocation.GetSumBps();
@@ -313,7 +315,7 @@ bool H264Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
   return true;
 }
 
-void H264Encoder::UpdateSPS() {
+void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   memset(&current_sps_, 0, sizeof(H264SPS));
@@ -416,7 +418,7 @@ void H264Encoder::UpdateSPS() {
   encoding_parameters_changed_ = true;
 }
 
-void H264Encoder::UpdatePPS() {
+void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   memset(&current_pps_, 0, sizeof(H264PPS));
@@ -445,7 +447,7 @@ void H264Encoder::UpdatePPS() {
   encoding_parameters_changed_ = true;
 }
 
-void H264Encoder::GeneratePackedSPS() {
+void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   packed_sps_->Reset();
@@ -560,7 +562,7 @@ void H264Encoder::GeneratePackedSPS() {
   packed_sps_->FinishNALU();
 }
 
-void H264Encoder::GeneratePackedPPS() {
+void H264VaapiVideoEncoderDelegate::GeneratePackedPPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   packed_pps_->Reset();
@@ -597,7 +599,7 @@ void H264Encoder::GeneratePackedPPS() {
   packed_pps_->FinishNALU();
 }
 
-void H264Encoder::SubmitH264BitstreamBuffer(
+void H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
     scoped_refptr<H264BitstreamBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -607,9 +609,9 @@ void H264Encoder::SubmitH264BitstreamBuffer(
   }
 }
 
-bool H264Encoder::SubmitFrameParameters(
+bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     VaapiVideoEncoderDelegate::EncodeJob* job,
-    const H264Encoder::EncodeParams& encode_params,
+    const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
     const H264SPS& sps,
     const H264PPS& pps,
     scoped_refptr<H264Picture> pic,
@@ -780,14 +782,15 @@ bool H264Encoder::SubmitFrameParameters(
   return true;
 }
 
-scoped_refptr<H264Picture> H264Encoder::GetPicture(EncodeJob* job) {
+scoped_refptr<H264Picture> H264VaapiVideoEncoderDelegate::GetPicture(
+    EncodeJob* job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return base::WrapRefCounted(
       reinterpret_cast<H264Picture*>(job->picture().get()));
 }
 
-bool H264Encoder::SubmitPackedHeaders(
+bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
     EncodeJob* job,
     scoped_refptr<H264BitstreamBuffer> packed_sps,
     scoped_refptr<H264BitstreamBuffer> packed_pps) {
@@ -803,8 +806,9 @@ bool H264Encoder::SubmitPackedHeaders(
       VAEncPackedHeaderParameterBufferType,
       MakeRefCountedBytes(&par_buffer, sizeof(par_buffer))));
 
-  job->AddSetupCallback(base::BindOnce(&H264Encoder::SubmitH264BitstreamBuffer,
-                                       base::Unretained(this), packed_sps));
+  job->AddSetupCallback(
+      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
+                     base::Unretained(this), packed_sps));
 
   // Submit PPS.
   par_buffer = {};
@@ -816,8 +820,9 @@ bool H264Encoder::SubmitPackedHeaders(
       VAEncPackedHeaderParameterBufferType,
       MakeRefCountedBytes(&par_buffer, sizeof(par_buffer))));
 
-  job->AddSetupCallback(base::BindOnce(&H264Encoder::SubmitH264BitstreamBuffer,
-                                       base::Unretained(this), packed_pps));
+  job->AddSetupCallback(
+      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
+                     base::Unretained(this), packed_pps));
 
   return true;
 }

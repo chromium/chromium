@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_H264_ENCODER_H_
-#define MEDIA_GPU_VAAPI_H264_ENCODER_H_
+#ifndef MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
+#define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <stddef.h>
 #include <list>
@@ -25,7 +25,7 @@ class VaapiWrapper;
 //
 // Names used in documentation of this class refer directly to naming used
 // in the H.264 specification (http://www.itu.int/rec/T-REC-H.264).
-class H264Encoder : public VaapiVideoEncoderDelegate {
+class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
   struct EncodeParams {
     EncodeParams();
@@ -68,9 +68,10 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
     size_t max_ref_pic_list1_size;
   };
 
-  H264Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-              base::RepeatingClosure error_cb);
-  ~H264Encoder() override;
+  H264VaapiVideoEncoderDelegate(
+      const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+      base::RepeatingClosure error_cb);
+  ~H264VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
   bool Initialize(const VideoEncodeAccelerator::Config& config,
@@ -82,7 +83,7 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
 
  private:
-  friend class H264EncoderTest;
+  friend class H264VaapiVideoEncoderDelegateTest;
 
   // Fill current_sps_ and current_pps_ with current encoding state parameters.
   void UpdateSPS();
@@ -108,7 +109,7 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
 
   bool SubmitFrameParameters(
       EncodeJob* job,
-      const H264Encoder::EncodeParams& encode_params,
+      const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
       const H264SPS& sps,
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
@@ -154,9 +155,9 @@ class H264Encoder : public VaapiVideoEncoderDelegate {
   // RefPicList0 per spec (spec section 8.2.4.2).
   std::list<scoped_refptr<H264Picture>> ref_pic_list0_;
 
-  DISALLOW_COPY_AND_ASSIGN(H264Encoder);
+  DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoEncoderDelegate);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_VAAPI_H264_ENCODER_H_
+#endif  // MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_

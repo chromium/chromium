@@ -35,7 +35,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/h264_encoder.h"
+#include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -282,7 +282,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   switch (output_codec_) {
     case kCodecH264:
       if (!IsConfiguredForTesting())
-        encoder_ = std::make_unique<H264Encoder>(vaapi_wrapper_, error_cb);
+        encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
+            vaapi_wrapper_, error_cb);
 
       DCHECK_EQ(ave_config.bitrate_control,
                 VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);

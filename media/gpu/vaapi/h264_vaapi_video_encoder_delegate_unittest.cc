@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/h264_encoder.h"
+#include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 
 #include <memory>
 
@@ -41,9 +41,9 @@ class MockVaapiWrapper : public VaapiWrapper {
 
 }  // namespace
 
-class H264EncoderTest : public ::testing::Test {
+class H264VaapiVideoEncoderDelegateTest : public ::testing::Test {
  public:
-  H264EncoderTest() = default;
+  H264VaapiVideoEncoderDelegateTest() = default;
   void SetUp() override;
 
   void ExpectLevel(uint8_t level) { EXPECT_EQ(encoder_->level_, level); }
@@ -51,29 +51,31 @@ class H264EncoderTest : public ::testing::Test {
   MOCK_METHOD0(OnError, void());
 
  protected:
-  std::unique_ptr<H264Encoder> encoder_;
+  std::unique_ptr<H264VaapiVideoEncoderDelegate> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
 };
 
-void H264EncoderTest::SetUp() {
+void H264VaapiVideoEncoderDelegateTest::SetUp() {
   mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>();
   ASSERT_TRUE(mock_vaapi_wrapper_);
 
-  encoder_ = std::make_unique<H264Encoder>(
+  encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
       mock_vaapi_wrapper_,
-      base::BindRepeating(&H264EncoderTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&H264VaapiVideoEncoderDelegateTest::OnError,
+                          base::Unretained(this)));
   EXPECT_CALL(*this, OnError()).Times(0);
 }
 
-TEST_F(H264EncoderTest, Initialize) {
+TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
   auto vea_config = kDefaultVEAConfig;
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
   EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
-  // Profile is unspecified, H264Encoder will select the default level, 4.0.
-  // 4.0 will be proper with |vea_config|'s values.
+  // Profile is unspecified, H264VaapiVideoEncoderDelegate will select the
+  // default level, 4.0. 4.0 will be proper with |vea_config|'s values.
   ExpectLevel(H264SPS::kLevelIDC4p0);
 
-  // Initialize with 4k size. The level will be adjusted to 5.1 by H264Encoder.
+  // Initialize with 4k size. The level will be adjusted to 5.1 by
+  // H264VaapiVideoEncoderDelegate.
   vea_config.input_visible_size.SetSize(3840, 2160);
   EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
   ExpectLevel(H264SPS::kLevelIDC5p1);
