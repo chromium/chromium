@@ -14,9 +14,11 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -34,6 +36,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -252,6 +255,24 @@ void WebAppSyncBridge::UpdateAppsDisableMode() {
     return;
 
   registrar_->NotifyWebAppsDisabledModeChanged();
+}
+
+void WebAppSyncBridge::SetExperimentalTabbedWindowMode(const AppId& app_id,
+                                                       bool enabled,
+                                                       bool is_user_action) {
+  if (enabled) {
+    DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip));
+    UpdateBoolWebAppPref(profile()->GetPrefs(), app_id,
+                         kExperimentalTabbedWindowMode, true);
+
+    // Set non-experimental window mode to standalone for when the user disables
+    // this flag.
+    SetAppUserDisplayMode(app_id, DisplayMode::kStandalone, is_user_action);
+  } else {
+    RemoveWebAppPref(profile()->GetPrefs(), app_id,
+                     kExperimentalTabbedWindowMode);
+  }
+  registrar_->NotifyWebAppExperimentalTabbedWindowModeChanged(app_id, enabled);
 }
 
 void WebAppSyncBridge::SetAppIsLocallyInstalled(const AppId& app_id,

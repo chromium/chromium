@@ -234,14 +234,16 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
 void WebAppsPublisherHost::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
     DisplayMode user_display_mode) {
-  if (GetWebApp(app_id)) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = apps::mojom::AppType::kWeb;
-    app->app_id = app_id;
-    app->window_mode =
-        publisher_helper().ConvertDisplayModeToWindowMode(user_display_mode);
-    PublishWebApp(std::move(app));
-  }
+  publisher_helper().PublishWindowModeUpdate(
+      app_id, user_display_mode,
+      registrar().IsInExperimentalTabbedWindowMode(app_id));
+}
+
+void WebAppsPublisherHost::OnWebAppExperimentalTabbedWindowModeChanged(
+    const AppId& app_id,
+    bool enabled) {
+  auto display_mode = registrar().GetAppUserDisplayMode(app_id);
+  publisher_helper().PublishWindowModeUpdate(app_id, display_mode, enabled);
 }
 
 void WebAppsPublisherHost::OnRequestUpdate(

@@ -123,6 +123,10 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       app_id, ash::LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->FlushMojoCallsForTesting();
+
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
             1);
 

@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/context_menu_params.h"
@@ -50,9 +48,10 @@ apps::mojom::WindowMode ConvertUseLaunchTypeCommandToWindowMode(
       return apps::mojom::WindowMode::kBrowser;
     case ash::USE_LAUNCH_TYPE_WINDOW:
       return apps::mojom::WindowMode::kWindow;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      return apps::mojom::WindowMode::kTabbedWindow;
     case ash::USE_LAUNCH_TYPE_PINNED:
     case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
     default:
       return apps::mojom::WindowMode::kUnknown;
   }
@@ -148,10 +147,8 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         if (app_type_ == apps::mojom::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
-          auto* provider = web_app::WebAppProvider::Get(profile());
-          DCHECK(provider);
-          provider->registry_controller().SetExperimentalTabbedWindowMode(
-              app_id(), true, /*is_user_action=*/true);
+          apps::AppServiceProxyFactory::GetForProfile(profile())->SetWindowMode(
+              app_id(), apps::mojom::WindowMode::kTabbedWindow);
           return;
         }
 
@@ -181,12 +178,6 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
     case apps::mojom::AppType::kWeb:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        auto* provider = web_app::WebAppProvider::Get(profile());
-        DCHECK(provider);
-        if (provider->registrar().IsInExperimentalTabbedWindowMode(app_id())) {
-          return command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW;
-        }
-
         auto user_window_mode = apps::mojom::WindowMode::kUnknown;
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->AppRegistryCache()
@@ -321,10 +312,6 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       apps::mojom::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::mojom::WindowMode::kUnknown) {
-        auto* provider = web_app::WebAppProvider::Get(profile());
-        DCHECK(provider);
-        provider->registry_controller().SetExperimentalTabbedWindowMode(
-            app_id(), false, /*is_user_action=*/true);
         apps::AppServiceProxyFactory::GetForProfile(profile())->SetWindowMode(
             app_id(), user_window_mode);
       }

@@ -462,4 +462,6 @@ enum WindowMode {
   kWindow,
   // Opens in the default web browser
   kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
 };

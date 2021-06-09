@@ -123,7 +123,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                       DisplayMode user_display_mode) override;
-
+  void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
+                                                   bool enabled) override;
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 
   // MediaCaptureDevicesDispatcher::Observer:

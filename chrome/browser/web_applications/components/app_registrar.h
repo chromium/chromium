@@ -238,6 +238,8 @@ class AppRegistrar {
   void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
   void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
                                           DisplayMode user_display_mode);
+  void NotifyWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
+                                                       bool enabled);
 
  protected:
   Profile* profile() const { return profile_; }

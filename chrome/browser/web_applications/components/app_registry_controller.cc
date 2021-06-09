@@ -4,10 +4,7 @@
 
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "content/public/common/content_features.h"
 
 namespace web_app {
 
@@ -19,24 +16,6 @@ AppRegistryController::~AppRegistryController() = default;
 void AppRegistryController::SetSubsystems(
     OsIntegrationManager* os_integration_manager) {
   os_integration_manager_ = os_integration_manager;
-}
-
-void AppRegistryController::SetExperimentalTabbedWindowMode(
-    const AppId& app_id,
-    bool enabled,
-    bool is_user_action) {
-  if (enabled) {
-    DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip));
-    UpdateBoolWebAppPref(profile()->GetPrefs(), app_id,
-                         kExperimentalTabbedWindowMode, true);
-
-    // Set non-experimental window mode to standalone for when the user disables
-    // this flag.
-    SetAppUserDisplayMode(app_id, DisplayMode::kStandalone, is_user_action);
-  } else {
-    RemoveWebAppPref(profile()->GetPrefs(), app_id,
-                     kExperimentalTabbedWindowMode);
-  }
 }
 
 }  // namespace web_app

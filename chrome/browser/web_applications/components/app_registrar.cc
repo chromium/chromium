@@ -122,6 +122,13 @@ void AppRegistrar::NotifyWebAppUserDisplayModeChanged(
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
 
+void AppRegistrar::NotifyWebAppExperimentalTabbedWindowModeChanged(
+    const AppId& app_id,
+    bool enabled) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppExperimentalTabbedWindowModeChanged(app_id, enabled);
+}
+
 void AppRegistrar::NotifyAppRegistrarShutdown() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarShutdown();

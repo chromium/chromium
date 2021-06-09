@@ -564,13 +564,23 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
     case apps::mojom::WindowMode::kWindow:
       display_mode = blink::mojom::DisplayMode::kStandalone;
       break;
+    case apps::mojom::WindowMode::kTabbedWindow:
+      provider_->registry_controller().SetExperimentalTabbedWindowMode(
+          app_id, /*enabled=*/true, /*is_user_action=*/true);
+      return;
   }
+  provider_->registry_controller().SetExperimentalTabbedWindowMode(
+      app_id, /*enabled=*/false, /*is_user_action=*/true);
   provider_->registry_controller().SetAppUserDisplayMode(
       app_id, display_mode, /*is_user_action=*/true);
 }
 
 apps::mojom::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
-    blink::mojom::DisplayMode display_mode) {
+    blink::mojom::DisplayMode display_mode,
+    bool in_experimental_tabbed_window) {
+  if (in_experimental_tabbed_window) {
+    return apps::mojom::WindowMode::kTabbedWindow;
+  }
   switch (display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
       return apps::mojom::WindowMode::kUnknown;
@@ -581,6 +591,20 @@ apps::mojom::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
     case blink::mojom::DisplayMode::kFullscreen:
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
       return apps::mojom::WindowMode::kWindow;
+  }
+}
+
+void WebAppPublisherHelper::PublishWindowModeUpdate(
+    const std::string& app_id,
+    blink::mojom::DisplayMode display_mode,
+    bool in_experimental_tabbed_window) {
+  if (GetWebApp(app_id) && Accepts(app_id)) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = app_type();
+    app->app_id = app_id;
+    app->window_mode = ConvertDisplayModeToWindowMode(
+        display_mode, in_experimental_tabbed_window);
+    delegate_->PublishWebApp(std::move(app));
   }
 }
 

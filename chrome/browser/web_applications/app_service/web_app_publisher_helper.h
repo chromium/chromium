@@ -153,7 +153,12 @@ class WebAppPublisherHelper : public content_settings::Observer {
 
   // Converts |display_mode| to a |window_mode|.
   apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
-      blink::mojom::DisplayMode display_mode);
+      blink::mojom::DisplayMode display_mode,
+      bool in_experimental_tabbed_window);
+
+  void PublishWindowModeUpdate(const std::string& app_id,
+                               blink::mojom::DisplayMode display_mode,
+                               bool in_experimental_tabbed_window);
 
   Profile* profile() { return profile_; }
 
