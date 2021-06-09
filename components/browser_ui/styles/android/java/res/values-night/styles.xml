@@ -8,6 +8,7 @@
         <item name="colorPrimary">@color/modern_blue_300</item>
         <item name="colorError">@color/google_red_300</item>
         <item name="android:colorBackground">@color/modern_grey_900</item>
+        <item name="colorSurface">@color/modern_grey_900</item>
         <item name="colorOnBackground">@color/modern_white</item>
         <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
         <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>

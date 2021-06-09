@@ -21,7 +21,7 @@
         <item name="android:windowBackground">@color/default_bg_color</item>
 
         <!-- Action bar color -->
-        <item name="colorPrimary">@color/default_bg_color</item>
+        <item name="colorSurface">@color/default_bg_color</item>
 
         <!-- Status bar color -->
         <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
@@ -184,6 +184,7 @@
         <item name="colorPrimary">@color/modern_blue_600</item>
         <item name="colorError">@color/google_red_600</item>
         <item name="android:colorBackground">@color/modern_white</item>
+        <item name="colorSurface">@color/modern_white</item>
         <item name="colorOnBackground">@color/modern_grey_900</item>
         <item name="colorOnSurfaceVariant">@color/modern_grey_700</item>
         <item name="colorOnSurfaceInverse">@color/modern_white</item>
