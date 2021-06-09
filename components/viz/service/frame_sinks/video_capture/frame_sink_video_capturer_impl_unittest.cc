@@ -636,7 +636,9 @@ TEST_F(FrameSinkVideoCapturerTest, CapturesCompositedFrames) {
 
     // Change the content of the frame sink and notify the capturer of the
     // damage.
-    const YUVColor color = {i << 4, (i << 4) + 0x10, (i << 4) + 0x20};
+    const YUVColor color = {static_cast<uint8_t>(i << 4),
+                            static_cast<uint8_t>((i << 4) + 0x10),
+                            static_cast<uint8_t>((i << 4) + 0x20)};
     frame_sink_.SetCopyOutputColor(color);
     task_runner_->FastForwardBy(kVsyncInterval / 4);
     const base::TimeTicks expected_capture_begin_time =

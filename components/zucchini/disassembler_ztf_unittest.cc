@@ -373,7 +373,8 @@ TEST(DisassemblerZtfTest, WriteOutOfBoundsRefs) {
       {{DisassemblerZtf::kAngles, DisassemblerZtf::kAnglesAbs3},
        {Reference({4, 50})}},  // This should fail to write.
       {{DisassemblerZtf::kBrackets, DisassemblerZtf::kBracketsRel2},
-       {Reference({139, mutable_text.size()})}},  // This should fail.
+       {Reference({139, static_cast<offset_t>(
+                            mutable_text.size())})}},  // This should fail.
       {{DisassemblerZtf::kParentheses, DisassemblerZtf::kParenthesesAbs1},
        {Reference({174, 21})}},  // This should fail.
       {{DisassemblerZtf::kBraces, DisassemblerZtf::kBracesAbs1},
@@ -390,8 +391,8 @@ TEST(DisassemblerZtfTest, WriteOutOfBoundsRefs) {
   change_map.at({DisassemblerZtf::kAngles, DisassemblerZtf::kAnglesAbs1})
       .emplace(Reference{4, 0});
   update_map({DisassemblerZtf::kBrackets, DisassemblerZtf::kBracketsRel2},
-             Reference({139, mutable_text.size()}), Reference({139, 149}),
-             &change_map);
+             Reference({139, static_cast<offset_t>(mutable_text.size())}),
+             Reference({139, 149}), &change_map);
   update_map({DisassemblerZtf::kParentheses, DisassemblerZtf::kParenthesesAbs1},
              Reference({174, 21}), Reference({174, 4}), &change_map);
   ConstBufferView const_image(image);

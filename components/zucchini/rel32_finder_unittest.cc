@@ -132,7 +132,8 @@ class TestRel32Finder : public Rel32Finder {
 AddressTranslator GetTrivialTranslator(size_t size) {
   AddressTranslator translator;
   EXPECT_EQ(AddressTranslator::kSuccess,
-            translator.Initialize({{0, size, 0U, size}}));
+            translator.Initialize({{0, static_cast<offset_t>(size), 0U,
+                                    static_cast<rva_t>(size)}}));
   return translator;
 }
 

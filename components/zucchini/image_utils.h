@@ -176,8 +176,8 @@ constexpr ExecutableType CastToExecutableType(uint32_t possible_exe_type) {
 
 inline std::string CastExecutableTypeToString(ExecutableType exe_type) {
   uint32_t v = static_cast<uint32_t>(exe_type);
-  char result[] = {v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF,
-                   (v >> 24) & 0xFF, 0};
+  char result[] = {static_cast<char>(v), static_cast<char>(v >> 8),
+                   static_cast<char>(v >> 16), static_cast<char>(v >> 24), 0};
   return result;
 }
 

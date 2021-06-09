@@ -71,8 +71,8 @@ class GLScalerShaderPixelTest
           gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
     }
     const GLenum swizzle[2] = {
-        is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA,
-        is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA,
+        static_cast<GLenum>(is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA),
+        static_cast<GLenum>(is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA),
     };
     return scaler_->GetShaderProgram(shader, GL_UNSIGNED_BYTE, transform.get(),
                                      swizzle);

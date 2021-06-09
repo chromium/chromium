@@ -189,7 +189,7 @@ TEST(UrlFormatterTest, FormatUrl) {
 #if defined(OS_WIN)
       {"omit file on Windows", "file:///C:/Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitFileScheme, net::UnescapeRule::NORMAL,
-       L"C:/Users/homedirname/folder/file.pdf/", -1},
+       L"C:/Users/homedirname/folder/file.pdf/", static_cast<size_t>(-1)},
 #else
       {"omit file", "file:///Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitFileScheme, net::UnescapeRule::NORMAL,

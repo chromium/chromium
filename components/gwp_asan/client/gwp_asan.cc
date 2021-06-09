@@ -177,8 +177,9 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
   if (!SampleProcess(feature, boost_sampling))
     return absl::nullopt;
 
-  return AllocatorSettings{max_allocations, max_metadata, total_pages,
-                           alloc_sampling_freq};
+  return AllocatorSettings{
+      static_cast<size_t>(max_allocations), static_cast<size_t>(max_metadata),
+      static_cast<size_t>(total_pages), alloc_sampling_freq};
 }
 
 }  // namespace internal

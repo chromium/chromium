@@ -121,8 +121,8 @@ TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
 
   for (size_t i = 0; i < base::size(histogram_names); ++i) {
     histogram_tester.ExpectTotalCount(histogram_names[i], 1);
-    histogram_tester.ExpectBucketCount(histogram_names[i], expected_counts[i],
-                                       1);
+    histogram_tester.ExpectBucketCount(histogram_names[i],
+                                       static_cast<int>(expected_counts[i]), 1);
   }
 }
 
@@ -139,8 +139,8 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
 
   for (size_t i = 0; i < base::size(histogram_names); ++i) {
     histogram_tester.ExpectTotalCount(histogram_names[i], 1);
-    histogram_tester.ExpectBucketCount(histogram_names[i], expected_counts[i],
-                                       1);
+    histogram_tester.ExpectBucketCount(histogram_names[i],
+                                       static_cast<int>(expected_counts[i]), 1);
   }
 }
 #endif  // defined(OS_WIN)
