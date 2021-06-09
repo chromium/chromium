@@ -33,6 +33,8 @@
 
 #if defined(OS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
+#elif defined(OS_MAC)
+#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
 #if defined(USE_OZONE)
@@ -122,11 +124,17 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       discardable_manager_remote.InitWithNewPipeAndPassReceiver());
 
   DCHECK(GetFontRenderParams().Get());
-  viz_main_->CreateGpuService(gpu_service_remote_.BindNewPipeAndPassReceiver(),
-                              gpu_host_receiver_.BindNewPipeAndPassRemote(),
-                              std::move(discardable_manager_remote),
-                              activity_flags_.CloneHandle(),
-                              GetFontRenderParams().Get()->subpixel_rendering);
+  scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr;
+#if defined(OS_MAC)
+  if (params_.main_thread_task_runner->BelongsToCurrentThread())
+    task_runner = ui::WindowResizeHelperMac::Get()->task_runner();
+#endif
+
+  viz_main_->CreateGpuService(
+      gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
+      gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
+      std::move(discardable_manager_remote), activity_flags_.CloneHandle(),
+      GetFontRenderParams().Get()->subpixel_rendering);
 
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform())
