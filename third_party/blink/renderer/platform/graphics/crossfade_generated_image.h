@@ -40,16 +40,14 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
       scoped_refptr<Image> from_image,
       scoped_refptr<Image> to_image,
       float percentage,
-      FloatSize crossfade_size,
       const FloatSize& size) {
-    return base::AdoptRef(
-        new CrossfadeGeneratedImage(std::move(from_image), std::move(to_image),
-                                    percentage, crossfade_size, size));
+    return base::AdoptRef(new CrossfadeGeneratedImage(
+        std::move(from_image), std::move(to_image), percentage, size));
   }
 
   bool HasIntrinsicSize() const override { return true; }
 
-  IntSize Size() const override { return FlooredIntSize(crossfade_size_); }
+  IntSize Size() const override { return FlooredIntSize(size_); }
 
  protected:
   void Draw(cc::PaintCanvas*,
@@ -67,7 +65,6 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
   CrossfadeGeneratedImage(scoped_refptr<Image> from_image,
                           scoped_refptr<Image> to_image,
                           float percentage,
-                          FloatSize crossfade_size,
                           const FloatSize&);
 
  private:
@@ -82,7 +79,6 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
   scoped_refptr<Image> to_image_;
 
   float percentage_;
-  FloatSize crossfade_size_;
 };
 
 }  // namespace blink

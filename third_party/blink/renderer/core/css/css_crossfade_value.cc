@@ -262,7 +262,7 @@ scoped_refptr<Image> CSSCrossfadeValue::GetImage(
 
   return CrossfadeGeneratedImage::Create(from_image_ref, to_image_ref,
                                          percentage_value_->GetFloatValue(),
-                                         FixedSize(document, size), size);
+                                         FixedSize(document, size));
 }
 
 void CSSCrossfadeValue::CrossfadeChanged(
