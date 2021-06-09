@@ -17,9 +17,4 @@ public interface AccountsChangeObserver {
      */
     @MainThread
     void onAccountsChanged();
-
-    /**
-     * Called every time the capabilities get updated.
-     */
-    default void onCapabilitiesUpdated() {}
 }

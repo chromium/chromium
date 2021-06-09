@@ -22,6 +22,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -71,7 +73,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new ArrayDeque<>();
     // The map stores the boolean for whether an account can offer extended chrome sync promos
     private final AtomicReference<Map<String, Boolean>> mCanOfferExtendedSyncPromos =
-            new AtomicReference<>();
+            new AtomicReference<>(new HashMap<>());
 
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
@@ -265,24 +267,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     private void updateCanOfferExtendedSyncPromos(List<Account> accounts) {
-        new AsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                final Map<String, Boolean> subjectToMinorModeRestrictions = new HashMap<>();
-                for (Account account : accounts) {
-                    subjectToMinorModeRestrictions.put(AccountUtils.canonicalizeName(account.name),
-                            mDelegate.hasCapability(
-                                    account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS));
-                }
-                mCanOfferExtendedSyncPromos.set(subjectToMinorModeRestrictions);
-                return null;
+        PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
+            final Map<String, Boolean> subjectToMinorModeRestrictions = new HashMap<>();
+            for (Account account : accounts) {
+                subjectToMinorModeRestrictions.put(AccountUtils.canonicalizeName(account.name),
+                        mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS));
             }
-
-            @Override
-            protected void onPostExecute(Void unused) {
-                // TODO(crbug/1206249): Notify observers
-            }
-        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            mCanOfferExtendedSyncPromos.set(subjectToMinorModeRestrictions);
+        });
     }
 
     private void updateAccounts() {

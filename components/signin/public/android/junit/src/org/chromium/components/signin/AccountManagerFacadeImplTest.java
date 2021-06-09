@@ -19,6 +19,7 @@ import android.os.UserManager;
 
 import androidx.test.rule.GrantPermissionRule;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
@@ -36,6 +38,7 @@ import org.robolectric.shadows.ShadowUserManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -85,6 +88,7 @@ public class AccountManagerFacadeImplTest {
 
     @Before
     public void setUp() {
+        PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -98,6 +102,11 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate =
                 new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
+    }
+
+    @After
+    public void tearDown() {
+        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     @Test
