@@ -3877,8 +3877,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(entry, controller.GetLastCommittedEntry());
   NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
 
-  // Verify subframe entries.
+  // Verify subframe entries are shared between the NavigationEntries.
   ASSERT_EQ(2U, entry->root_node()->children.size());
+  EXPECT_EQ(entry->root_node()->frame_entry.get(),
+            entry2->root_node()->frame_entry.get());
+  EXPECT_EQ(entry->root_node()->children[0]->frame_entry.get(),
+            entry2->root_node()->children[0]->frame_entry.get());
+  EXPECT_EQ(entry->root_node()->children[1]->frame_entry.get(),
+            entry2->root_node()->children[1]->frame_entry.get());
+  EXPECT_NE(entry->root_node()->children[0]->children[0]->frame_entry.get(),
+            entry2->root_node()->children[0]->children[0]->frame_entry.get());
   frame_entry =
       entry2->root_node()->children[0]->children[0]->frame_entry.get();
   EXPECT_EQ(about_blank_url, frame_entry->url());
@@ -4255,6 +4263,76 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(bar_url, root->child_at(0)->child_at(0)->current_url());
 }
 
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_CrossProcessSameDocumentNavigation) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  // 1. Create a cross-process iframe.
+  GURL child_url(embedded_test_server()->GetURL(
+      "foo.com", "/navigation_controller/simple_page_2.html"));
+  {
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, child_url)));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+  }
+
+  // 2. Create a grandchild iframe (also cross-process).
+  GURL grandchild_url(embedded_test_server()->GetURL(
+      "foo.com", "/navigation_controller/simple_page_1.html"));
+  {
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root->child_at(0),
+                       JsReplace(kAddFrameWithSrcScript, grandchild_url)));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+  }
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* entry_before_nav = controller.GetLastCommittedEntry();
+  scoped_refptr<FrameNavigationEntry> main_entry_before_nav =
+      entry_before_nav->GetFrameEntry(root);
+  scoped_refptr<FrameNavigationEntry> child_entry_before_nav =
+      entry_before_nav->GetFrameEntry(root->child_at(0));
+  scoped_refptr<FrameNavigationEntry> grandchild_entry_before_nav =
+      entry_before_nav->GetFrameEntry(root->child_at(0)->child_at(0));
+  ASSERT_NE(main_entry_before_nav, nullptr);
+  ASSERT_NE(child_entry_before_nav, nullptr);
+  ASSERT_NE(grandchild_entry_before_nav, nullptr);
+
+  // 4. The main frame navigates the child same-document from a different
+  // process.
+  GURL child_fragment_url(embedded_test_server()->GetURL(
+      "foo.com", "/navigation_controller/simple_page_2.html#fragment"));
+  {
+    LoadCommittedCapturer capturer(root->child_at(0));
+    std::string script =
+        JsReplace("frames[0].location = $1;", child_fragment_url);
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
+  }
+
+  NavigationEntryImpl* entry_after_nav = controller.GetLastCommittedEntry();
+  // Only the navigated frame's FrameNavigationEntry should change.
+  EXPECT_EQ(main_entry_before_nav, entry_after_nav->GetFrameEntry(root));
+  EXPECT_NE(child_entry_before_nav,
+            entry_after_nav->GetFrameEntry(root->child_at(0)));
+  EXPECT_EQ(child_fragment_url,
+            entry_after_nav->GetFrameEntry(root->child_at(0))->url());
+  EXPECT_EQ(grandchild_entry_before_nav,
+            entry_after_nav->GetFrameEntry(root->child_at(0)->child_at(0)));
+}
+
 // Verify the tree of FrameNavigationEntries after NAVIGATION_TYPE_AUTO_SUBFRAME
 // commits.
 // TODO(creis): Test updating entries for history auto subframe navigations.
@@ -4465,11 +4543,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(entry, entry2);
   EXPECT_EQ(main_url, entry2->GetURL());
   FrameNavigationEntry* root_entry2 = entry2->root_node()->frame_entry.get();
+  EXPECT_EQ(entry->root_node()->frame_entry.get(), root_entry2);
   EXPECT_EQ(main_url, root_entry2->url());
   EXPECT_FALSE(root_entry2->initiator_origin().has_value());
 
   // The entry should have a new FrameNavigationEntries for the subframe.
   ASSERT_EQ(1U, entry2->root_node()->children.size());
+  EXPECT_NE(entry->root_node()->children[0]->frame_entry.get(),
+            entry2->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(frame_url2, entry2->root_node()->children[0]->frame_entry->url());
 
   // 3. Create a second, initially cross-site iframe.
@@ -4514,10 +4595,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(main_url, entry3->GetURL());
   FrameNavigationEntry* root_entry3 = entry3->root_node()->frame_entry.get();
   EXPECT_EQ(main_url, root_entry3->url());
+  EXPECT_EQ(root_entry2, root_entry3);
 
   // The entry should still have FrameNavigationEntries for all 3 subframes.
   ASSERT_EQ(2U, entry3->root_node()->children.size());
-  EXPECT_EQ(frame_url2, entry3->root_node()->children[0]->frame_entry->url());
+  EXPECT_EQ(entry2->root_node()->children[0]->frame_entry.get(),
+            entry3->root_node()->children[0]->frame_entry.get());
+  EXPECT_EQ(entry2->root_node()->children[1]->frame_entry.get(),
+            entry3->root_node()->children[1]->frame_entry.get());
+  EXPECT_NE(entry2->root_node()->children[1]->children[0]->frame_entry.get(),
+            entry3->root_node()->children[1]->children[0]->frame_entry.get());
   EXPECT_EQ(foo_url, entry3->root_node()->children[1]->frame_entry->url());
   ASSERT_EQ(1U, entry3->root_node()->children[1]->children.size());
   EXPECT_EQ(bar_url,
@@ -4551,11 +4638,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(entry, entry4);
   EXPECT_EQ(main_url, entry4->GetURL());
   FrameNavigationEntry* root_entry4 = entry4->root_node()->frame_entry.get();
+  EXPECT_EQ(root_entry3, root_entry4);
   EXPECT_EQ(main_url, root_entry4->url());
 
   // The entry should still have FrameNavigationEntries for all 3 subframes.
   ASSERT_EQ(2U, entry4->root_node()->children.size());
-  EXPECT_EQ(frame_url2, entry4->root_node()->children[0]->frame_entry->url());
+  EXPECT_EQ(entry3->root_node()->children[0]->frame_entry.get(),
+            entry4->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(baz_url, entry4->root_node()->children[1]->frame_entry->url());
   ASSERT_EQ(0U, entry4->root_node()->children[1]->children.size());
 
@@ -4675,6 +4764,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   NavigationEntryImpl* entry3 = controller.GetLastCommittedEntry();
+  EXPECT_EQ(entry1->root_node()->frame_entry.get(),
+            entry2->root_node()->frame_entry.get());
+  EXPECT_EQ(entry2->root_node()->frame_entry.get(),
+            entry3->root_node()->frame_entry.get());
+  EXPECT_NE(entry1->root_node()->children[0]->frame_entry.get(),
+            entry2->root_node()->children[0]->frame_entry.get());
+  EXPECT_NE(entry1->root_node()->children[0]->frame_entry.get(),
+            entry3->root_node()->children[0]->frame_entry.get());
+  EXPECT_NE(entry2->root_node()->children[0]->frame_entry.get(),
+            entry3->root_node()->children[0]->frame_entry.get());
 
   // 4. Go back in the subframe.
   {
@@ -4821,6 +4920,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // The entry should have a FrameNavigationEntry for the b.com subframe.
   ASSERT_EQ(1U, entry3->root_node()->children.size());
   ASSERT_EQ(1U, entry3->root_node()->children[0]->children.size());
+  EXPECT_EQ(entry2->root_node()->frame_entry.get(),
+            entry3->root_node()->frame_entry.get());
+  EXPECT_NE(entry2->root_node()->children[0]->frame_entry.get(),
+            entry3->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(frame_url_b, entry3->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(data_url,
             entry3->root_node()->children[0]->children[0]->frame_entry->url());
@@ -4855,6 +4958,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry4->root_node()->children.size());
   ASSERT_EQ(1U, entry4->root_node()->children[0]->children.size());
+  EXPECT_EQ(entry3->root_node()->frame_entry.get(),
+            entry4->root_node()->frame_entry.get());
+  EXPECT_EQ(entry3->root_node()->children[0]->frame_entry.get(),
+            entry4->root_node()->children[0]->frame_entry.get());
+  EXPECT_NE(entry3->root_node()->children[0]->children[0]->frame_entry.get(),
+            entry4->root_node()->children[0]->children[0]->frame_entry.get());
   EXPECT_EQ(frame_url_b, entry4->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(frame_url_c,
             entry4->root_node()->children[0]->children[0]->frame_entry->url());
@@ -5080,6 +5189,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the b.com subframe.
   ASSERT_EQ(1U, entry2->root_node()->children.size());
+  EXPECT_EQ(entry1->root_node()->frame_entry.get(),
+            entry2->root_node()->frame_entry.get());
+  EXPECT_NE(entry1->root_node()->children[0]->frame_entry.get(),
+            entry2->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(frame_url_b, entry2->root_node()->children[0]->frame_entry->url());
 
   // 3. Navigate main frame cross-site, destroying the frames.
@@ -5260,7 +5373,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
+  FrameNavigationEntry* child_frame_entry =
+      entry->root_node()->children[0]->frame_entry.get();
+  EXPECT_EQ(blank_url, child_frame_entry->url());
 
   // 2. Navigate the main frame, destroying the frames.
   GURL main_url_2(embedded_test_server()->GetURL(
@@ -5290,8 +5405,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(entry, controller.GetLastCommittedEntry());
 
-  // The entry should have a FrameNavigationEntry for the blank subframe.
+  // The entry should have the same FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
+  EXPECT_EQ(child_frame_entry,
+            entry->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
 }
 
@@ -5328,6 +5445,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry->root_node()->children.size());
+  FrameNavigationEntry* child_frame_entry =
+      entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(inner_url,
             entry->root_node()->children[0]->children[0]->frame_entry->url());
@@ -5370,6 +5489,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, entry->root_node()->children.size());
 
   // The entry should have FrameNavigationEntries for the subframes.
+  EXPECT_NE(child_frame_entry,
+            entry->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(inner_url,
             entry->root_node()->children[0]->children[0]->frame_entry->url());
@@ -5420,6 +5541,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry->root_node()->children.size());
+  FrameNavigationEntry* child_frame_entry =
+      entry->root_node()->children[0]->frame_entry.get();
   EXPECT_TRUE(
       entry->root_node()->children[0]->frame_entry->url().IsAboutSrcdoc());
   EXPECT_EQ(inner_url,
@@ -5465,6 +5588,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, entry->root_node()->children.size());
 
   // The entry should have FrameNavigationEntries for the subframes.
+  EXPECT_NE(child_frame_entry,
+            entry->root_node()->children[0]->frame_entry.get());
   EXPECT_TRUE(
       entry->root_node()->children[0]->frame_entry->url().IsAboutSrcdoc());
   EXPECT_EQ(inner_url,
@@ -5512,7 +5637,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
+  FrameNavigationEntry* blank_entry =
+      entry->root_node()->children[0]->frame_entry.get();
+  EXPECT_EQ(blank_url, blank_entry->url());
 
   // 3. Navigate the main frame, destroying the frames.
   GURL main_url_2(embedded_test_server()->GetURL(
@@ -5540,6 +5667,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
+  EXPECT_EQ(blank_entry, entry->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
 }
 
@@ -8222,7 +8350,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 // Ensure the renderer process does not get killed if the main frame URL's path
-// changes when going back in a subframe, since this is currently possible after
+// changes when going back in a subframe, since this was possible after
 // a replaceState in the main frame (thanks to https://crbug.com/373041).
 // See https:///crbug.com/486916.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
@@ -8257,6 +8385,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     capturer.Wait();
   }
 
+  GURL replaced_url = shell()->web_contents()->GetLastCommittedURL();
+
   {
     // Go back in the iframe.
     TestNavigationObserver back_load_observer(shell()->web_contents());
@@ -8264,12 +8394,105 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     back_load_observer.Wait();
   }
 
-  // For now, we expect the main frame's URL to revert.  This won't happen once
-  // https://crbug.com/373041 is fixed.
-  EXPECT_EQ(url1, shell()->web_contents()->GetLastCommittedURL());
+  // The replaceState() should not be reverted by the iframe back.
+  EXPECT_EQ(replaced_url, shell()->web_contents()->GetLastCommittedURL());
 
   // Make sure the renderer process has not been killed.
   EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
+}
+
+// Ensure that a main frame replaceState remains in effect after a subframe back
+// navigation, even after cloning the tab. Also ensure that
+// FrameNavigationEntries are not shared across cloned tabs.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       SubframeBackFromReplaceStateInClonedTab) {
+  // Start at a page with a real iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_data_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  NavigationControllerImpl& original_controller =
+      static_cast<NavigationControllerImpl&>(
+          shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_NE(nullptr, root->child_at(0));
+
+  {
+    // Navigate in the iframe.
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    GURL frame_url(embedded_test_server()->GetURL(
+        "/navigation_controller/simple_page_2.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+  }
+
+  // Clone the tab without navigating it.
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* cloned_tab_impl =
+      static_cast<WebContentsImpl*>(new_tab.get());
+  NavigationControllerImpl& cloned_controller =
+      static_cast<NavigationControllerImpl&>(cloned_tab_impl->GetController());
+  EXPECT_TRUE(cloned_controller.IsInitialNavigation());
+  EXPECT_TRUE(cloned_controller.NeedsReload());
+
+  // The FrameNavigationEntries should not be shared across tabs, but they
+  // should be shared among entries in each tab.
+  ASSERT_EQ(2, original_controller.GetEntryCount());
+  ASSERT_EQ(2, cloned_controller.GetEntryCount());
+  NavigationEntryImpl* original_previous_entry =
+      original_controller.GetEntryAtIndex(0);
+  NavigationEntryImpl* original_current_entry =
+      original_controller.GetEntryAtIndex(1);
+  NavigationEntryImpl* cloned_previous_entry =
+      cloned_controller.GetEntryAtIndex(0);
+  NavigationEntryImpl* cloned_current_entry =
+      cloned_controller.GetEntryAtIndex(1);
+  EXPECT_NE(original_current_entry->root_node()->frame_entry.get(),
+            cloned_current_entry->root_node()->frame_entry.get());
+  EXPECT_NE(original_current_entry->root_node()->children[0]->frame_entry.get(),
+            cloned_current_entry->root_node()->children[0]->frame_entry.get());
+  EXPECT_EQ(original_previous_entry->root_node()->frame_entry.get(),
+            original_current_entry->root_node()->frame_entry.get());
+  // TODO(japhet): This case fails because we are not correctly matching and
+  // de-duplicating FrameNavigationEntries when cloning.
+  // https://crbug.com/1211683
+  //
+  // EXPECT_EQ(cloned_previous_entry->root_node()->frame_entry.get(),
+  //           cloned_current_entry->root_node()->frame_entry.get());
+
+  {
+    // history.replaceState() in the original tab.
+    FrameNavigateParamsCapturer capturer(root);
+    std::string script = "history.replaceState({}, 'replaced', 'replaced2')";
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+  }
+
+  {
+    // Go back in the iframe in the cloned tab.
+    TestNavigationObserver back_load_observer(new_tab.get());
+    new_tab->GetController().GoBack();
+    back_load_observer.Wait();
+  }
+
+  // Make sure the renderer process has not been killed.
+  FrameTreeNode* cloned_root = cloned_tab_impl->GetFrameTree()->root();
+  EXPECT_TRUE(cloned_root->current_frame_host()->IsRenderFrameLive());
+
+  // Only the cloned tab's NavigationEntry should have changed.
+  EXPECT_EQ(original_current_entry,
+            original_controller.GetLastCommittedEntry());
+  EXPECT_EQ(cloned_previous_entry, cloned_controller.GetLastCommittedEntry());
+
+  // The url should have changed in the original tab but not in the clone.
+  EXPECT_EQ(cloned_previous_entry, cloned_controller.GetLastCommittedEntry());
+  EXPECT_NE(original_previous_entry->root_node()->frame_entry->url(),
+            cloned_previous_entry->root_node()->frame_entry->url());
 }
 
 namespace {
@@ -16623,7 +16846,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   NavigationEntryImpl* entry_1 = controller.GetLastCommittedEntry();
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
-  FrameNavigationEntry* frame_entry_1 =
+  scoped_refptr<FrameNavigationEntry> frame_entry_1 =
       entry_1->root_node()->children[0]->frame_entry.get();
   absl::optional<url::Origin> origin_1 = frame_entry_1->initiator_origin();
   ASSERT_TRUE(frame_entry_1->initiator_origin().has_value());
@@ -16656,7 +16879,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   NavigationEntryImpl* entry_2 = controller.GetLastCommittedEntry();
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
-  FrameNavigationEntry* frame_entry_2 =
+  scoped_refptr<FrameNavigationEntry> frame_entry_2 =
       entry_2->root_node()->children[0]->frame_entry.get();
   absl::optional<url::Origin> origin_2 = frame_entry_2->initiator_origin();
   ASSERT_TRUE(frame_entry_2->initiator_origin().has_value());

@@ -1936,9 +1936,10 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
   entry->AddOrUpdateFrameEntry(
-      rfh->frame_tree_node(), params.item_sequence_number,
-      params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params, request),
+      rfh->frame_tree_node(), NavigationEntryImpl::UpdatePolicy::kUpdate,
+      params.item_sequence_number, params.document_sequence_number,
+      rfh->GetSiteInstance(), nullptr, params.url,
+      GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -2081,10 +2082,36 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   // This may be a "new auto" case where we add a new FrameNavigationEntry, or
   // it may be a "history auto" case where we update an existing one.
   NavigationEntryImpl* last_committed = GetLastCommittedEntry();
+
+  // We may want to update |last_committed|'s FrameNavigationEntry (if one
+  // exists), or we may want to clobber it and create a new one. We update in
+  // cases where the corresponding FrameNavigationEntry is conceptually similar
+  // to the document described by the commit params: same-document
+  // navigations, history traversal to an existing entry, and reloads (including
+  // a "soft reload" where we navigate to the same url without flagging it as a
+  // reload). But in the case of a different document that is not logically
+  // related to the committed FrameNavigationEntry's document (cross-document,
+  // not same url, not a reload, not a history traversal), we replace rather
+  // than update.
+  // In the case where we update, the FrameNavigationEntry will potentially be
+  // shared across multiple NavigationEntries, and any updates will be reflected
+  // in all of those NavigationEntries. In the replace case, any existing
+  // sharing with other NavigationEntries will stop.
+  FrameNavigationEntry* last_committed_frame_entry =
+      last_committed->GetFrameEntry(rfh->frame_tree_node());
+  NavigationEntryImpl::UpdatePolicy update_policy =
+      NavigationEntryImpl::UpdatePolicy::kUpdate;
+  if (request->common_params().navigation_type ==
+          mojom::NavigationType::DIFFERENT_DOCUMENT &&
+      last_committed_frame_entry &&
+      last_committed_frame_entry->url() != params.url) {
+    update_policy = NavigationEntryImpl::UpdatePolicy::kReplace;
+  }
+
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
   last_committed->AddOrUpdateFrameEntry(
-      rfh->frame_tree_node(), params.item_sequence_number,
+      rfh->frame_tree_node(), update_policy, params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
       params.url, GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
@@ -2429,8 +2456,14 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
       // CreateNavigationEntry() may have changed the transition type.
       page_transition = entry->GetTransitionType();
     }
+    // The UpdatePolicy doesn't matter here. |entry| is only used as a parameter
+    // to CreateNavigationRequestFromLoadParams(), so while kReplace might
+    // remove child FrameNavigationEntries (e.g., if this is a cross-process
+    // same-document navigation), they will still be present in the
+    // committed NavigationEntry that will be referenced to construct the new
+    // FrameNavigationEntry tree when this navigation commits.
     entry->AddOrUpdateFrameEntry(
-        node, -1, -1, nullptr,
+        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* commit_origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
@@ -2969,12 +3002,6 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
   //
   // TODO(creis): Store the last committed FrameNavigationEntry to use here,
   // rather than assuming the NavigationEntry has up to date info on subframes.
-  // Note that this may require sharing FrameNavigationEntries between
-  // NavigationEntries (https://crbug.com/373041) as a prerequisite, since
-  // otherwise the stored FrameNavigationEntry might get stale (e.g., after
-  // subframe navigations, or in the case where we don't find any frames to
-  // navigate and ignore a back/forward navigation while moving to a different
-  // NavigationEntry, as in https://crbug.com/705550).
   FrameNavigationEntry* old_item =
       GetLastCommittedEntry()->GetFrameEntry(frame);
   if (!old_item)
@@ -3288,8 +3315,6 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   // For subframes, create a pending entry with a corresponding frame entry.
   if (!node->IsMainFrame()) {
     if (GetLastCommittedEntry()) {
-      // Create an identical NavigationEntry with a new FrameNavigationEntry for
-      // the target subframe.
       entry = GetLastCommittedEntry()->Clone();
     } else {
       // If there's no last committed entry, create an entry for about:blank
@@ -3304,7 +3329,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
     }
 
     entry->AddOrUpdateFrameEntry(
-        node, -1, -1, nullptr,
+        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()),
         params.url, absl::nullopt, params.referrer, params.initiator_origin,
         params.redirect_chain, blink::PageState(), "GET", -1,
@@ -3837,10 +3862,15 @@ void NavigationControllerImpl::InsertEntriesFrom(
     int max_index) {
   DCHECK_LE(max_index, source->GetEntryCount());
   for (int i = 0; i < max_index; i++) {
-    // TODO(creis): Once we start sharing FrameNavigationEntries between
-    // NavigationEntries, it will not be safe to share them with another tab.
-    // Must have a version of Clone that recreates them.
-    entries_.insert(entries_.begin() + i, source->entries_[i]->Clone());
+    // Normally, cloning a NavigationEntryImpl results in sharing
+    // FrameNavigationEntries between the original and the clone. However, when
+    // cloning from a different NavigationControllerImpl, we want to fork the
+    // FrameNavigationEntries.
+    // TODO(japhet): FNEs should not be shared between original and clone, but
+    // we should mirror any sharing of FNEs within the |source->entries_|. We
+    // don't currently. https://crbug.com/1211683
+    entries_.insert(entries_.begin() + i,
+                    source->entries_[i]->CloneWithoutSharing());
   }
   DCHECK(pending_entry_index_ == -1 ||
          pending_entry_ == GetEntryAtIndex(pending_entry_index_));

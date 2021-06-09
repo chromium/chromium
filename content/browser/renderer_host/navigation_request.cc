@@ -2929,7 +2929,8 @@ void NavigationRequest::OnResponseStarted(
           base::WrapRefCounted<SiteInstanceImpl>(static_cast<SiteInstanceImpl*>(
               instance->GetRelatedSiteInstance(frame_entry->url()).get()));
       nav_entry->AddOrUpdateFrameEntry(
-          frame_tree_node_, frame_entry->item_sequence_number(),
+          frame_tree_node_, NavigationEntryImpl::UpdatePolicy::kReplace,
+          frame_entry->item_sequence_number(),
           frame_entry->document_sequence_number(), new_site_instance.get(),
           frame_entry->source_site_instance(), frame_entry->url(),
           frame_entry->committed_origin(), frame_entry->referrer(),

@@ -234,13 +234,17 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
     bool clone_children_of_target,
     FrameTreeNode* target_frame_tree_node,
     FrameTreeNode* current_frame_tree_node,
-    TreeNode* parent_node) const {
+    TreeNode* parent_node,
+    ClonePolicy clone_policy) const {
   // Clone this TreeNode, possibly replacing its FrameNavigationEntry.
   bool is_target_frame =
       target_frame_tree_node && MatchesFrame(target_frame_tree_node);
   auto copy = std::make_unique<NavigationEntryImpl::TreeNode>(
-      parent_node,
-      is_target_frame ? frame_navigation_entry : frame_entry->Clone());
+      parent_node, is_target_frame
+                       ? frame_navigation_entry
+                       : (clone_policy == ClonePolicy::kShareFrameEntries
+                              ? frame_entry
+                              : frame_entry->Clone()));
 
   // Recursively clone the children if needed.
   if (!is_target_frame || clone_children_of_target) {
@@ -252,7 +256,7 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
       if (!current_frame_tree_node) {
         copy->children.push_back(child->CloneAndReplace(
             frame_navigation_entry, clone_children_of_target,
-            target_frame_tree_node, nullptr, copy.get()));
+            target_frame_tree_node, nullptr, copy.get(), clone_policy));
         continue;
       }
 
@@ -276,7 +280,7 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
           copy->children.push_back(child->CloneAndReplace(
               frame_navigation_entry, clone_children_of_target,
               target_frame_tree_node, current_frame_tree_node->child_at(index),
-              copy.get()));
+              copy.get(), clone_policy));
           break;
         }
       }
@@ -666,7 +670,14 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
 }
 
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
-  return NavigationEntryImpl::CloneAndReplace(nullptr, false, nullptr, nullptr);
+  return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr,
+                                 ClonePolicy::kShareFrameEntries);
+}
+
+std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneWithoutSharing()
+    const {
+  return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr,
+                                 ClonePolicy::kCloneFrameEntries);
 }
 
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneAndReplace(
@@ -674,13 +685,23 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneAndReplace(
     bool clone_children_of_target,
     FrameTreeNode* target_frame_tree_node,
     FrameTreeNode* root_frame_tree_node) const {
+  return CloneAndReplaceInternal(
+      frame_navigation_entry, clone_children_of_target, target_frame_tree_node,
+      root_frame_tree_node, ClonePolicy::kShareFrameEntries);
+}
+
+std::unique_ptr<NavigationEntryImpl>
+NavigationEntryImpl::CloneAndReplaceInternal(
+    scoped_refptr<FrameNavigationEntry> frame_navigation_entry,
+    bool clone_children_of_target,
+    FrameTreeNode* target_frame_tree_node,
+    FrameTreeNode* root_frame_tree_node,
+    ClonePolicy clone_policy) const {
   auto copy = std::make_unique<NavigationEntryImpl>();
 
-  // TODO(creis): Only share the same FrameNavigationEntries if cloning within
-  // the same tab.
   copy->frame_tree_ = frame_tree_->CloneAndReplace(
       std::move(frame_navigation_entry), clone_children_of_target,
-      target_frame_tree_node, root_frame_tree_node, nullptr);
+      target_frame_tree_node, root_frame_tree_node, nullptr, clone_policy);
 
   // Copy most state over, unless cleared in ResetForCommit.
   // Don't copy unique_id_, otherwise it won't be unique.
@@ -856,6 +877,7 @@ NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
 
 void NavigationEntryImpl::AddOrUpdateFrameEntry(
     FrameTreeNode* frame_tree_node,
+    UpdatePolicy update_policy,
     int64_t item_sequence_number,
     int64_t document_sequence_number,
     SiteInstanceImpl* site_instance,
@@ -908,6 +930,10 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
   const std::string& unique_name = frame_tree_node->unique_name();
   for (const auto& child : parent_node->children) {
     if (child->frame_entry->frame_unique_name() == unique_name) {
+      if (update_policy == UpdatePolicy::kReplace) {
+        RemoveEntryForFrame(frame_tree_node, false);
+        break;
+      }
       // If the document of the FrameNavigationEntry is changing, we must clear
       // any child FrameNavigationEntries.
       if (child->frame_entry->document_sequence_number() !=

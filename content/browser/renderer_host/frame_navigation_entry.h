@@ -26,15 +26,10 @@ class SubresourceWebBundleNavigationInfo;
 
 // Represents a session history item for a particular frame.  It is matched with
 // corresponding FrameTreeNodes using unique name (or by the root position).
-//
-// This class is refcounted and can be shared across multiple NavigationEntries.
-// For now, it is owned by a single NavigationEntry and only tracks the main
+// There is a tree of FrameNavigationEntries in each NavigationEntry, one per
 // frame.
 //
-// If SiteIsolationPolicy::UseSubframeNavigationEntries is true, there will be a
-// tree of FrameNavigationEntries in each NavigationEntry, one per frame.
-// TODO(creis): Share these FrameNavigationEntries across NavigationEntries if
-// the frame hasn't changed.
+// This class is refcounted and can be shared across multiple NavigationEntries.
 class CONTENT_EXPORT FrameNavigationEntry
     : public base::RefCounted<FrameNavigationEntry> {
  public:

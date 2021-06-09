@@ -41,6 +41,10 @@ class SubresourceWebBundleNavigationInfo;
 
 class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
  public:
+  // Determines whether CloneAndReplace will share the existing
+  // FrameNavigationEntries in the new NavigationEntry or not.
+  enum class ClonePolicy { kShareFrameEntries, kCloneFrameEntries };
+
   // Represents a tree of FrameNavigationEntries that make up this joint session
   // history item.
   struct TreeNode {
@@ -52,20 +56,20 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     // main frame.  Otherwise, we check if the unique name matches.
     bool MatchesFrame(FrameTreeNode* frame_tree_node) const;
 
-    // Recursively makes a deep copy of TreeNode with copies of each of the
-    // FrameNavigationEntries in the subtree.  Replaces the TreeNode
-    // corresponding to |target_frame_tree_node|, clearing all of its children
-    // unless |clone_children_of_target| is true.  This function omits any
-    // subframe history items that do not correspond to frames actually in the
-    // current page, using |current_frame_tree_node| (if present).
-    // TODO(creis): For --site-per-process, share FrameNavigationEntries between
-    // NavigationEntries of the same tab.
+    // Recursively makes a copy of this TreeNode, either sharing
+    // FrameNavigationEntries or making deep copies depending on |clone_policy|.
+    // Replaces the TreeNode corresponding to |target_frame_tree_node|,
+    // clearing all of its children unless |clone_children_of_target| is true.
+    // This function omits any subframe history items that do not correspond to
+    // frames actually in the current page, using |current_frame_tree_node| (if
+    // present).
     std::unique_ptr<TreeNode> CloneAndReplace(
         scoped_refptr<FrameNavigationEntry> frame_navigation_entry,
         bool clone_children_of_target,
         FrameTreeNode* target_frame_tree_node,
         FrameTreeNode* current_frame_tree_node,
-        TreeNode* parent_node) const;
+        TreeNode* parent_node,
+        ClonePolicy clone_policy) const;
 
     // The parent of this node.
     TreeNode* parent;
@@ -151,22 +155,22 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   int64_t GetMainFrameDocumentSequenceNumber() override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
-  // independently from the original.  Does not copy any value that would be
-  // cleared in ResetForCommit.  Unlike |CloneAndReplace|, this does not check
-  // whether the subframe history items are for frames that are still in the
-  // current page.
+  // independently from the original, but that shares FrameNavigationEntries.
+  // Does not copy any value that would be cleared in ResetForCommit.  Unlike
+  // |CloneAndReplace|, this does not check whether the subframe history items
+  // are for frames that are still in the current page.
   std::unique_ptr<NavigationEntryImpl> Clone() const;
+
+  // Creates a true deep copy of this NavigationEntryImpl. The
+  // FrameNavigationEntries are cloned rather than merely taking a refptr to the
+  // original.
+  std::unique_ptr<NavigationEntryImpl> CloneWithoutSharing() const;
 
   // Like |Clone|, but replaces the FrameNavigationEntry corresponding to
   // |target_frame_tree_node| with |frame_entry|, clearing all of its children
   // unless |clone_children_of_target| is true.  This function omits any
   // subframe history items that do not correspond to frames actually in the
   // current page, using |root_frame_tree_node| (if present).
-  //
-  // TODO(creis): Once we start sharing FrameNavigationEntries between
-  // NavigationEntryImpls, we will need to support two versions of Clone: one
-  // that shares the existing FrameNavigationEntries (for use within the same
-  // tab) and one that draws them from a different pool (for use in a new tab).
   std::unique_ptr<NavigationEntryImpl> CloneAndReplace(
       scoped_refptr<FrameNavigationEntry> frame_entry,
       bool clone_children_of_target,
@@ -204,9 +208,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Exposes the tree of FrameNavigationEntries that make up this joint session
   // history item.
-  // In default Chrome, this tree only has a root node with an unshared
-  // FrameNavigationEntry.  Subframes are only added to the tree if the
-  // --site-per-process flag is passed.
   TreeNode* root_node() const { return frame_tree_.get(); }
 
   // Finds the TreeNode associated with |frame_tree_node|, if any.
@@ -216,11 +217,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Finds the TreeNode associated with |frame_tree_node_id| to add or update
   // its FrameNavigationEntry.  A new FrameNavigationEntry is added if none
   // exists, or else the existing one (which might be shared with other
-  // NavigationEntries) is updated with the given parameters.
+  // NavigationEntries) is updated or replaced (based on |update_policy|) with
+  // the given parameters.
   // Does nothing if there is no entry already and |url| is about:blank, since
   // that does not count as a real commit.
+  enum class UpdatePolicy { kUpdate, kReplace };
   void AddOrUpdateFrameEntry(
       FrameTreeNode* frame_tree_node,
+      UpdatePolicy update_policy,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
       SiteInstanceImpl* site_instance,
@@ -412,6 +416,13 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   }
 
  private:
+  std::unique_ptr<NavigationEntryImpl> CloneAndReplaceInternal(
+      scoped_refptr<FrameNavigationEntry> frame_entry,
+      bool clone_children_of_target,
+      FrameTreeNode* target_frame_tree_node,
+      FrameTreeNode* root_frame_tree_node,
+      ClonePolicy clone_policy) const;
+
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
   // Session/Tab restore save portions of this class so that it can be recreated
   // later. If you add a new field that needs to be persisted you'll have to
@@ -421,9 +432,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 
   // Tree of FrameNavigationEntries, one for each frame on the page.
-  // TODO(creis): Once FrameNavigationEntries can be shared across multiple
-  // NavigationEntries, we will need to update Session/Tab restore.  For now,
-  // each NavigationEntry's tree has its own unshared FrameNavigationEntries.
+  // FrameNavigationEntries may be shared with other NavigationEntries;
+  // TreeNodes are not shared.
   std::unique_ptr<TreeNode> frame_tree_;
 
   // See the accessors above for descriptions.

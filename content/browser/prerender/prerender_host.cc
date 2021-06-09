@@ -163,7 +163,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     std::unique_ptr<NavigationEntryImpl> nav_entry =
         GetNavigationController()
             .GetEntryWithUniqueID(page->render_frame_host->nav_entry_id())
-            ->Clone();
+            ->CloneWithoutSharing();
 
     navigation_request.SetPrerenderNavigationEntry(std::move(nav_entry));
 
