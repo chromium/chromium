@@ -50,6 +50,7 @@ source_set("browser") {
     "//base:i18n",
     "//components/back_forward_cache",
     "//components/history/core/browser",
+    "//components/safe_browsing/content/common",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/web_ui:web_ui",
     "//components/safe_browsing/core:csd_proto",

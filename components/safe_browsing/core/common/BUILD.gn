@@ -106,11 +106,6 @@ source_set("common") {
   }
 
   public_deps = [ ":interfaces" ]
-
-  if (!is_ios) {
-    sources += [ "//components/safe_browsing/content/common/safebrowsing_constants_content.cc" ]
-    deps += [ "//third_party/blink/public/mojom:mojom_platform_headers" ]
-  }
 }
 
 mojom("interfaces") {
