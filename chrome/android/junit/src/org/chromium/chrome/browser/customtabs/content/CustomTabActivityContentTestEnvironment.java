@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
@@ -131,6 +132,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(intentDataProvider.getIntent()).thenReturn(intent);
         when(intentDataProvider.getSession()).thenReturn(session);
         when(intentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
+        when(intentDataProvider.getActivityType()).thenReturn(ActivityType.CUSTOM_TAB);
         when(tabFactory.createTab(webContentsCaptor.capture(), any(), any()))
                 .thenReturn(tabFromFactory);
         when(tabFactory.getTabModelOrchestrator()).thenReturn(tabModelOrchestrator);

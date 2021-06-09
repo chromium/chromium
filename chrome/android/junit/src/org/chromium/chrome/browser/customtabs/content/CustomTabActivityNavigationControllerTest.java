@@ -29,6 +29,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.url.GURL;
@@ -111,6 +112,17 @@ public class CustomTabActivityNavigationControllerTest {
     @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanNotHandleIntent() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
+        mNavigationController.openCurrentUrlInBrowser(false);
+        verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
+        verify(env.activity).startActivity(any(), any());
+    }
+
+    @Test
+    public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanHandleIntent_AndIsTwa() {
+        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        when(env.intentDataProvider.getActivityType())
+                .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+
         mNavigationController.openCurrentUrlInBrowser(false);
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
