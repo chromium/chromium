@@ -3962,6 +3962,7 @@ source_set("unit_tests") {
     "cryptauth/client_app_metadata_provider_service_unittest.cc",
     "dbus/encrypted_reporting_service_provider_unittest.cc",
     "dbus/proxy_resolution_service_provider_unittest.cc",
+    "dbus/vm_applications_service_provider_unittest.cc",
     "device_name_store_unittest.cc",
     "eol_notification_unittest.cc",
     "events/event_rewriter_unittest.cc",

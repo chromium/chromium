@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -616,6 +617,21 @@ class CiceroneClientImpl : public CiceroneClient {
         base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
                            vm_tools::cicerone::GetVshSessionResponse>,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void FileSelected(
+      const vm_tools::cicerone::FileSelectedSignal& signal) override {
+    dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
+                                 vm_tools::cicerone::kFileSelectedMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(signal)) {
+      LOG(ERROR) << "Failed to encode FileSelected protobuf";
+      return;
+    }
+
+    cicerone_proxy_->CallMethod(&method_call, kDefaultTimeout.InMilliseconds(),
+                                base::DoNothing());
   }
 
   void WaitForServiceToBeAvailable(

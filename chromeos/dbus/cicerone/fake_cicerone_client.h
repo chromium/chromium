@@ -142,6 +142,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
       const vm_tools::cicerone::GetVshSessionRequest& request,
       DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse> callback)
       override;
+  void FileSelected(
+      const vm_tools::cicerone::FileSelectedSignal& signal) override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 

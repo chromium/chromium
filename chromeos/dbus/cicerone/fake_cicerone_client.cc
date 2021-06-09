@@ -420,6 +420,9 @@ void FakeCiceroneClient::GetVshSession(
       base::BindOnce(std::move(callback), get_vsh_session_response_));
 }
 
+void FakeCiceroneClient::FileSelected(
+    const vm_tools::cicerone::FileSelectedSignal& signal) {}
+
 void FakeCiceroneClient::NotifyLxdContainerCreated(
     const vm_tools::cicerone::LxdContainerCreatedSignal& proto) {
   for (auto& observer : observer_list_) {

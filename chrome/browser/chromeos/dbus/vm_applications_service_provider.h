@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_CHROMEOS_DBUS_VM_APPLICATIONS_SERVICE_PROVIDER_H_
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace dbus {
 class MethodCall;
@@ -20,7 +22,8 @@ namespace chromeos {
 // This class exports D-Bus methods for functions that we want to be available
 // to the Crostini container.
 class VmApplicationsServiceProvider
-    : public CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface,
+      public ui::SelectFileDialog::Listener {
  public:
   VmApplicationsServiceProvider();
   ~VmApplicationsServiceProvider() override;
@@ -29,6 +32,9 @@ class VmApplicationsServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(VmApplicationsServiceProviderTest,
+                           ParseSelectFileDialogFileTypes);
+
   // Called from ExportedObject when UpdateApplicationList() is exported as a
   // D-Bus method or failed to be exported.
   void OnExported(const std::string& interface_name,
@@ -43,6 +49,21 @@ class VmApplicationsServiceProvider
                       dbus::ExportedObject::ResponseSender response_sender);
   void UpdateMimeTypes(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender);
+  void SelectFile(dbus::MethodCall* method_call,
+                  dbus::ExportedObject::ResponseSender response_sender);
+
+  void ParseSelectFileDialogFileTypes(
+      const std::string& allowed_extensions,
+      ui::SelectFileDialog::FileTypeInfo* file_types,
+      int* file_type_index) const;
+
+  // ui::SelectFileDialog::Listener implementation.
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override;
+  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+                          void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
 
