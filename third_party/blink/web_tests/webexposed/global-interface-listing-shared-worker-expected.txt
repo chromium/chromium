@@ -2788,6 +2788,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter closed
 [Worker]     getter datagramReadable
 [Worker]     getter datagramWritable
+[Worker]     getter datagrams
 [Worker]     getter incomingBidirectionalStreams
 [Worker]     getter incomingUnidirectionalStreams
 [Worker]     getter ready

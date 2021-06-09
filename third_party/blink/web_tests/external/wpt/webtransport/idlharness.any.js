@@ -15,6 +15,6 @@ idl_test(
       // SendStream
       // ReceiveStream
     });
-    self.webTransport = new WebTransport("quic-transport://example.com/");
+    self.webTransport = new WebTransport("https://example.com/");
   }
 );

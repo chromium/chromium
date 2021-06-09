@@ -17,6 +17,11 @@
       createBidirectionalStream();
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
+  readonly attribute DatagramDuplexStream datagrams;
+
+  // datagramWritable and datagramReadable are retained for backwards
+  // compatibility.
+  // TODO(ricea): Remove these before shipping.
   readonly attribute WritableStream datagramWritable;
   readonly attribute ReadableStream datagramReadable;
 
