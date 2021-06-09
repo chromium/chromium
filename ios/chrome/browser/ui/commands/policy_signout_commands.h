@@ -12,10 +12,6 @@
 // on-screen until the user dismisses it.
 - (void)showPolicySignoutPrompt;
 
-// Command to clean up the sign-out prompt. Stops the coordinator and sets it to
-// nil. Should only be invoked by the prompt's action handlers.
-- (void)hidePolicySignoutPrompt;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_POLICY_SIGNOUT_COMMANDS_H_

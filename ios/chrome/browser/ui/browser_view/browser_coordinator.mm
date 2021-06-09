@@ -106,6 +106,7 @@
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
+                                  UserPolicySignoutCoordinatorDelegate,
                                   WebStateListObserving>
 
 // Whether the coordinator is started.
@@ -1046,14 +1047,19 @@
     self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
-    self.policySignoutPromptCoordinator.signoutPromptHandler = self;
-    self.policySignoutPromptCoordinator.applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    self.policySignoutPromptCoordinator.delegate = self;
   }
   [self.policySignoutPromptCoordinator start];
 }
 
-- (void)hidePolicySignoutPrompt {
+#pragma mark - UserPolicySignoutCoordinatorDelegate
+
+- (void)hidePolicySignoutPromptForLearnMore:(BOOL)learnMore {
+  [self.policySignoutPromptCoordinator stop];
+  self.policySignoutPromptCoordinator = nil;
+}
+
+- (void)userPolicySignoutDidDismiss {
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
 }

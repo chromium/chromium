@@ -7,10 +7,13 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -30,8 +33,14 @@
 #endif
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
+                                       PolicyWatcherBrowserAgentObserving,
                                        SigninScreenMediatorDelegate,
-                                       SigninScreenViewControllerDelegate>
+                                       SigninScreenViewControllerDelegate,
+                                       UserPolicySignoutCoordinatorDelegate> {
+  // Observer for the sign-out policy changes.
+  std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
+      _policyWatcherObserverBridge;
+}
 
 // First run screen delegate.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
@@ -49,6 +58,10 @@
 @property(nonatomic, assign) first_run::SignInAttemptStatus attemptStatus;
 // Whether there was existing accounts when the screen was presented.
 @property(nonatomic, assign) BOOL hadIdentitiesAtStartup;
+// The coordinator that manages the prompt for when the user is signed out due
+// to policy.
+@property(nonatomic, strong)
+    UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
 
 @end
 
@@ -66,20 +79,23 @@
   if (self) {
     _baseNavigationController = navigationController;
     _delegate = delegate;
+    _policyWatcherObserverBridge =
+        std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
   }
   return self;
 }
 
 - (void)start {
-  // TODO(crbug.com/1189836): The kSigninAllowedByPolicy pref should be observed
-  // in case the policy is applied while this screen is presented.
-
   if (!signin::IsSigninAllowedByPolicy(
           self.browser->GetBrowserState()->GetPrefs())) {
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
     return;
   }
+
+  PolicyWatcherBrowserAgent::FromBrowser(self.browser)
+      ->AddObserver(_policyWatcherObserverBridge.get());
+
   self.hadIdentitiesAtStartup = ios::GetChromeBrowserProvider()
                                     ->GetChromeIdentityService()
                                     ->HasIdentities();
@@ -107,6 +123,9 @@
 }
 
 - (void)stop {
+  PolicyWatcherBrowserAgent::FromBrowser(self.browser)
+      ->RemoveObserver(_policyWatcherObserverBridge.get());
+
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
@@ -115,6 +134,8 @@
   self.identityChooserCoordinator = nil;
   [self.addAccountSigninCoordinator stop];
   self.addAccountSigninCoordinator = nil;
+  [self.policySignoutPromptCoordinator stop];
+  self.policySignoutPromptCoordinator = nil;
 }
 
 #pragma mark - SigninScreenViewControllerDelegate
@@ -172,7 +193,51 @@
   [self finishPresentingAndSkipRemainingScreens:NO];
 }
 
+#pragma mark - PolicyWatcherBrowserAgentObserving
+
+- (void)policyWatcherBrowserAgentNotifySignInDisabled:
+    (PolicyWatcherBrowserAgent*)policyWatcher {
+  [self.viewController setUIEnabled:NO];
+  if (self.addAccountSigninCoordinator) {
+    __weak __typeof(self) weakSelf = self;
+    [self.addAccountSigninCoordinator
+        interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+                 completion:^{
+                   [weakSelf showSignedOutModal];
+                 }];
+  } else {
+    [self showSignedOutModal];
+  }
+}
+
+#pragma mark - UserPolicySignoutCoordinatorDelegate
+
+- (void)hidePolicySignoutPromptForLearnMore:(BOOL)learnMore {
+  [self dismissSignedOutModalAndSkipScreens:learnMore];
+}
+
+- (void)userPolicySignoutDidDismiss {
+  [self dismissSignedOutModalAndSkipScreens:NO];
+}
+
 #pragma mark - Private
+
+// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+- (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
+  [self.policySignoutPromptCoordinator stop];
+  self.policySignoutPromptCoordinator = nil;
+  [self finishPresentingAndSkipRemainingScreens:skipScreens];
+}
+
+// Shows the modal letting the user know that they have been signed out.
+- (void)showSignedOutModal {
+  self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
+  self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.policySignoutPromptCoordinator.delegate = self;
+  [self.policySignoutPromptCoordinator start];
+}
 
 // Completes the presentation of the screen, recording the metrics and notifying
 // the delegate to skip the rest of the FRE if |skipRemainingScreens| is YES, or

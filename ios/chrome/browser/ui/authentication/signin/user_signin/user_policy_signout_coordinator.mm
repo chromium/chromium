@@ -6,8 +6,10 @@
 
 #include "base/notreached.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -17,7 +19,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface UserPolicySignoutCoordinator () <ConfirmationAlertActionHandler>
+@interface UserPolicySignoutCoordinator () <
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
 
 // The fullscreen sign-out prompt view controller this coordiantor
 // manages.
@@ -34,9 +38,10 @@
   [super start];
   self.policySignoutViewController =
       [[UserPolicySignoutViewController alloc] init];
-  self.policySignoutViewController.actionHandler = self;
   self.policySignoutViewController.modalPresentationStyle =
       UIModalPresentationFormSheet;
+  self.policySignoutViewController.actionHandler = self;
+  self.policySignoutViewController.presentationController.delegate = self;
   [self.baseViewController
       presentViewController:self.policySignoutViewController
                    animated:YES
@@ -59,15 +64,17 @@
 }
 
 - (void)confirmationAlertPrimaryAction {
-  [self.signoutPromptHandler hidePolicySignoutPrompt];
+  [self.delegate hidePolicySignoutPromptForLearnMore:NO];
 }
 
 - (void)confirmationAlertSecondaryAction {
-  [self.signoutPromptHandler hidePolicySignoutPrompt];
+  [self.delegate hidePolicySignoutPromptForLearnMore:YES];
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
   command.userInitiated = YES;
-  [self.applicationHandler openURLInNewTab:command];
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 - (void)confirmationAlertTertiaryAction {
@@ -78,6 +85,13 @@
 - (void)confirmationAlertLearnMoreAction {
   // There should be no Learn More action button for this UI.
   NOTREACHED();
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate userPolicySignoutDidDismiss];
 }
 
 @end
