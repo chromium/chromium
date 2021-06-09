@@ -88,6 +88,8 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -598,6 +600,36 @@ public class StartSurfaceTest {
         pressBack();
         showWatcher.waitForBehavior();
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
+    public void testFinale_webFeedLaunchOrigin_notFocusedOnOmnibox() throws ExecutionException {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        // Launches a new Tab, and verifies the omnibox is not focused.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> cta.getTabCreator(false).launchUrl(
+                                NewTabPageUtils.encodeNtpUrl(NewTabPageLaunchOrigin.WEB_FEED),
+                                TabLaunchType.FROM_CHROME_UI));
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        waitForView(withId(R.id.search_box_text));
+        TextView urlBar = cta.findViewById(R.id.url_bar);
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> !StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
+                        && !urlBar.isFocused(),
+                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test

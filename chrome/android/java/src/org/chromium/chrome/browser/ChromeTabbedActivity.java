@@ -2322,7 +2322,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         getTabModelSelector().selectModel(incognito);
-        if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
+        if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
+                && launchOrigin != NewTabPageLaunchOrigin.WEB_FEED) {
             Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
                 showOverview(StartSurfaceState.SHOWING_PREVIOUS, launchOrigin);
             } : null;
