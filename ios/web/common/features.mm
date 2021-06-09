@@ -88,5 +88,9 @@ bool UseWebViewNativeContextMenuSystem() {
 const base::Feature kIOSSharedHighlightingColorChange{
     "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCreatePendingItemForPostFormSubmission{
+    "CreatePendingItemForPostFormSubmission",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace web

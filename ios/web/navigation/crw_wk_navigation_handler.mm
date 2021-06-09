@@ -164,8 +164,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         navigationItem];
     if (item) {
       item->SetUserAgentType(userAgentType);
-      if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-        self.webStateImpl->SetUserAgent(userAgentType);
+      if (base::FeatureList::IsEnabled(
+              web::features::kCreatePendingItemForPostFormSubmission)) {
+        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+          self.webStateImpl->SetUserAgent(userAgentType);
+        }
       }
     }
   }
@@ -227,8 +230,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           navigationItem];
       if (item) {
         item->SetUserAgentType(userAgentType);
-        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-          self.webStateImpl->SetUserAgent(userAgentType);
+        if (base::FeatureList::IsEnabled(
+                web::features::kCreatePendingItemForPostFormSubmission)) {
+          if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+            self.webStateImpl->SetUserAgent(userAgentType);
+          }
         }
       }
     }
