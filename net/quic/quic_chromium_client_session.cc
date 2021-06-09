@@ -1707,10 +1707,17 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
 
 void QuicChromiumClientSession::OnConfigNegotiated() {
   quic::QuicSpdyClientSessionBase::OnConfigNegotiated();
-  if (!stream_factory_ || !stream_factory_->allow_server_migration() ||
-      (!config()->HasReceivedIPv6AlternateServerAddress() &&
-       !config()->HasReceivedIPv4AlternateServerAddress())) {
-    return;
+  if (!stream_factory_ || !stream_factory_->allow_server_migration()) {
+    if (connection()->connection_migration_use_new_cid()) {
+      if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
+        return;
+      }
+    } else {
+      if (!config()->HasReceivedIPv6AlternateServerAddress() &&
+          !config()->HasReceivedIPv4AlternateServerAddress()) {
+        return;
+      }
+    }
   }
 
   // Server has sent an alternate address to connect to.
@@ -1723,8 +1730,7 @@ void QuicChromiumClientSession::OnConfigNegotiated() {
     if (!config()->HasReceivedIPv6AlternateServerAddress()) {
       return;
     }
-      new_address =
-          ToIPEndPoint(config()->ReceivedIPv6AlternateServerAddress());
+    new_address = ToIPEndPoint(config()->ReceivedIPv6AlternateServerAddress());
   } else if (old_address.GetFamily() == ADDRESS_FAMILY_IPV4) {
     if (!config()->HasReceivedIPv4AlternateServerAddress()) {
       return;

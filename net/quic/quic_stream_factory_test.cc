@@ -112,6 +112,7 @@ const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 const size_t kWaitTimeForNewNetworkSecs = 10;
 const IPAddress kCachedIPAddress = IPAddress(192, 168, 0, 2);
 const char kNonCachedIPAddress[] = "192.168.0.1";
+const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 
 // Run QuicStreamFactoryTest instances with all value combinations of version
 // and enable_connection_racting.
@@ -498,6 +499,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     // Set up second socket data provider that is used after
     // migration.
     MockQuicData socket_data2(version_);
+    if (VersionUsesHttp3(version_.transport_version)) {
+      client_maker_.set_connection_id(kNewCID);
+    }
     socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
     int packet_num = 1;
     if (VersionUsesHttp3(version_.transport_version)) {
@@ -508,6 +512,10 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         SYNCHRONOUS,
         client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
     if (VersionUsesHttp3(version_.transport_version)) {
+      socket_data2.AddWrite(SYNCHRONOUS,
+                            client_maker_.MakeRetireConnectionIdPacket(
+                                packet_num++, /*include_version=*/false,
+                                /*sequence_number=*/0u));
       socket_data2.AddWrite(
           SYNCHRONOUS, client_maker_.MakeDataPacket(
                            packet_num++, GetQpackDecoderStreamId(), true, false,
@@ -529,6 +537,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                   true /* use_dns_aliases */,
                   /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                   failed_on_default_network_callback_, callback_.callback()));
+
     EXPECT_EQ(OK, callback_.WaitForResult());
 
     // Run QuicChromiumClientSession::WriteToNewSocket()
@@ -1683,8 +1692,17 @@ TEST_P(QuicStreamFactoryTest, PoolingWithServerMigration) {
                                             "192.168.0.1", "");
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 443);
   quic::QuicConfig config;
-  config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
-
+  if (version_.UsesHttp3()) {
+    SetIetfConnectionMigrationFlagsAndConnectionOptions();
+    config.SetIPv4AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address), kNewCID,
+        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  } else {
+    config.SetIPv4AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address));
+  }
+  quic::QuicConnectionId cid_on_old_path =
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator());
   VerifyServerMigration(config, alt_address);
 
   // Close server-migrated session.
@@ -1700,6 +1718,7 @@ TEST_P(QuicStreamFactoryTest, PoolingWithServerMigration) {
   MockQuicData socket_data1(version_);
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
+    client_maker_.set_connection_id(cid_on_old_path);
     socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   }
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
@@ -4920,6 +4939,11 @@ TEST_P(QuicStreamFactoryTest,
 // Verifies that port migration can be attempted and succeed when path degrading
 // is detected, even if NetworkHandle is not supported.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithoutNetworkHandle) {
+  if (version_.HasIetfQuicFrames()) {
+    // MigratePortOnPathDegrading_WithoutNetworkHandle_PathValidator is the
+    // corresponding IETF QUIC test.
+    return;
+  }
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
   FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
@@ -5220,6 +5244,11 @@ TEST_P(QuicStreamFactoryTest,
 // Verifies that port migration can be attempted on the default network and
 // succeed when path degrading is detected. NetworkHandle is supported.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
+  if (version_.HasIetfQuicFrames()) {
+    // MigratePortOnPathDegrading_WithNetworkHandle_PathValidator is the
+    // corresponding IETF QUIC test.
+    return;
+  }
   scoped_mock_network_change_notifier_ =
       std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
@@ -5243,6 +5272,11 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
 // NetworkHandle is supported. Migration on network change is also enabled.
 // No additional network migration is triggered post port migration.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithMigration) {
+  if (version_.HasIetfQuicFrames()) {
+    // MigratePortOnPathDegrading_WithMigration_PathValidator is the
+    // corresponding IETF QUIC test.
+    return;
+  }
   scoped_mock_network_change_notifier_ =
       std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
@@ -11684,6 +11718,7 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
 
 TEST_P(QuicStreamFactoryTest, ServerMigration) {
   quic_params_->allow_server_migration = true;
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11731,6 +11766,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
 
   // Send GET request on stream.
   HttpResponseInfo response;
@@ -11748,6 +11786,7 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   // response to the request is read on this new socket.
   MockQuicData socket_data2(version_);
   if (version_.UsesHttp3()) {
+    client_maker_.set_connection_id(cid_on_new_path);
     socket_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeCombinedRetransmissionPacket(
                               {1, 2}, packet_num++, true));
@@ -11755,6 +11794,12 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   socket_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
+  if (version_.UsesHttp3()) {
+    socket_data2.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeRetireConnectionIdPacket(
+                              packet_num++, /*include_version=*/false,
+                              /*sequence_number=*/0u));
+  }
   socket_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -11814,7 +11859,15 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv4) {
   // Add alternate IPv4 server address to config.
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   quic::QuicConfig config;
-  config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
+  if (version_.UsesHttp3()) {
+    SetIetfConnectionMigrationFlagsAndConnectionOptions();
+    config.SetIPv4AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address), kNewCID,
+        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  } else {
+    config.SetIPv4AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address));
+  }
   VerifyServerMigration(config, alt_address);
 }
 
@@ -11826,7 +11879,15 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv6ToIPv6) {
   IPEndPoint alt_address = IPEndPoint(
       IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), 123);
   quic::QuicConfig config;
-  config.SetIPv6AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
+  if (version_.UsesHttp3()) {
+    SetIetfConnectionMigrationFlagsAndConnectionOptions();
+    config.SetIPv6AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address), kNewCID,
+        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  } else {
+    config.SetIPv6AlternateServerAddressToSend(
+        ToQuicSocketAddress(alt_address));
+  }
   VerifyServerMigration(config, alt_address);
 }
 
