@@ -28,8 +28,7 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   String value();
   void setValue(const String&, bool send_events = false);
-
-  bool IsOpen() const;
+  bool open() const;
 
   void Trace(Visitor*) const override;
 
@@ -37,8 +36,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   class SelectMutationCallback;
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  void Open();
-  void Close();
+  void OpenListbox();
+  void CloseListbox();
   void UpdatePartElements();
 
   Element* FirstOptionPart() const;

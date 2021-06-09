@@ -968,6 +968,7 @@ html element select
     property value
     property willValidate
 html element selectmenu
+    property open
     property value
 html element slot
     property assign

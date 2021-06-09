@@ -4,6 +4,8 @@
 
 [Exposed=Window,HTMLConstructor,RuntimeEnabled=HTMLSelectMenuElement]
 interface HTMLSelectMenuElement : HTMLElement {
+  readonly attribute boolean open;
+
   attribute DOMString value;
   // TODO(crbug.com/1121840) Fill this out.
   // Open question: do we want to replicate the interface of

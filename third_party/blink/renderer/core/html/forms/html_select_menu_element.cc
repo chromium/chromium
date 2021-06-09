@@ -250,7 +250,7 @@ void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
   }
 }
 
-bool HTMLSelectMenuElement::IsOpen() const {
+bool HTMLSelectMenuElement::open() const {
   // TODO(crbug.com/1121840) listbox_part_ can be null if
   // the author has filled the listbox slot without including
   // a replacement listbox part. Instead of null checks like this,
@@ -259,15 +259,15 @@ bool HTMLSelectMenuElement::IsOpen() const {
   return listbox_part_ != nullptr && listbox_part_->open();
 }
 
-void HTMLSelectMenuElement::Open() {
-  if (listbox_part_ != nullptr && !IsOpen()) {
+void HTMLSelectMenuElement::OpenListbox() {
+  if (listbox_part_ != nullptr && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     listbox_part_->show();
   }
 }
 
-void HTMLSelectMenuElement::Close() {
-  if (listbox_part_ != nullptr && IsOpen()) {
+void HTMLSelectMenuElement::CloseListbox() {
+  if (listbox_part_ != nullptr && open()) {
     listbox_part_->hide();
   }
 }
@@ -584,8 +584,8 @@ void HTMLSelectMenuElement::UpdateSelectedValuePartContents() {
 void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
   if (event->type() == event_type_names::kClick &&
-      !select_menu_element_->IsOpen()) {
-    select_menu_element_->Open();
+      !select_menu_element_->open()) {
+    select_menu_element_->OpenListbox();
   }
 }
 

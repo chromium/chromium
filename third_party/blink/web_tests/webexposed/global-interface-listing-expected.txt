@@ -4159,6 +4159,7 @@ interface HTMLSelectElement : HTMLElement
     setter value
 interface HTMLSelectMenuElement : HTMLElement
     attribute @@toStringTag
+    getter open
     getter value
     method constructor
     setter value
