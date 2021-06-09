@@ -89,7 +89,7 @@ public class SyncErrorInfoBarTest {
     @Before
     public void setUp() {
         deleteSyncErrorInfoBarShowTimePref();
-        mFakeProfileSyncService = (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
+        mFakeProfileSyncService = (FakeProfileSyncService) mSyncTestRule.getSyncService();
         mInfoBarObserver = new SyncErrorInfoBarContainerObserver();
         mInfoBarContainer = mSyncTestRule.getInfoBarContainer();
         mSyncTestRule.getInfoBarContainer().addObserver(mInfoBarObserver);

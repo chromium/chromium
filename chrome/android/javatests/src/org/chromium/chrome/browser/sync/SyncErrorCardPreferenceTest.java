@@ -80,20 +80,18 @@ public class SyncErrorCardPreferenceTest {
     @Before
     public void setUp() throws Exception {
         // Start main activity before because native side needs to be initialized before overriding
-        // ProfileSyncService.
+        // SyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeProfileSyncService = new FakeProfileSyncService();
-            ProfileSyncService.overrideForTests(mFakeProfileSyncService);
+            SyncService.overrideForTests(mFakeProfileSyncService);
         });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ProfileSyncService.resetForTests();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncService.resetForTests(); });
     }
 
     @AfterClass
@@ -263,10 +261,10 @@ public class SyncErrorCardPreferenceTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForSyncSetupIncomplete(boolean nightModeEnabled) throws Exception {
-        // Passing a null ProfileSyncService instance here would sign-in the user but
+        // Passing a null SyncService instance here would sign-in the user but
         // FirstSetupComplete will be unset.
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
-                /* profileSyncService= */ null);
+                /* syncService= */ null);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertEquals("SYNC_SETUP_INCOMPLETE SyncError should be set",

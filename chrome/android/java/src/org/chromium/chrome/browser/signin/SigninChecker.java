@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -111,7 +111,7 @@ public class SigninChecker
                                     new SignInCallback() {
                                         @Override
                                         public void onSignInComplete() {
-                                            ProfileSyncService.get().setFirstSetupComplete(
+                                            SyncService.get().setFirstSetupComplete(
                                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
                                         }
 
@@ -145,9 +145,9 @@ public class SigninChecker
                 final SignInCallback signInCallback = new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        final ProfileSyncService profileSyncService = ProfileSyncService.get();
-                        if (profileSyncService != null) {
-                            profileSyncService.setFirstSetupComplete(
+                        final SyncService syncService = SyncService.get();
+                        if (syncService != null) {
+                            syncService.setFirstSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
                         }
                         ++mNumOfChildAccountChecksDone;

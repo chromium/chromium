@@ -107,7 +107,7 @@ public class AndroidSyncSettings {
         updateCachedSettings();
         updateSyncability();
 
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
@@ -131,7 +131,7 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * DEPRECATED - DO NOT USE! You probably want ProfileSyncService.isSyncRequested() instead.
+     * DEPRECATED - DO NOT USE! You probably want SyncService.isSyncRequested() instead.
      *
      * @return The state of the Chrome sync setting for the given account,
      * *ignoring* the master sync setting.
@@ -262,15 +262,15 @@ public class AndroidSyncSettings {
         }
         mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
 
-        if (mAccount != null && ProfileSyncService.get() != null
+        if (mAccount != null && SyncService.get() != null
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
                 && mMasterSyncEnabled && !mShouldDecoupleSyncFromMasterSync) {
             // Re-enabling master sync at least once should cause Sync to no longer care whether
-            // the former is enabled or not. This fact should be persisted via ProfileSyncService
+            // the former is enabled or not. This fact should be persisted via SyncService
             // so it's known on the next startup.
             mShouldDecoupleSyncFromMasterSync = true;
-            ProfileSyncService.get().setDecoupledFromAndroidMasterSync();
+            SyncService.get().setDecoupledFromAndroidMasterSync();
         }
 
         return oldChromeSyncEnabled != mChromeSyncEnabled

@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -147,7 +147,7 @@ public class BookmarkTest {
     private EmbeddedTestServer mTestServer;
     private @Nullable BookmarkActivity mBookmarkActivity;
     @Mock
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
     private UserActionTester mActionTester;
 
     @BeforeClass
@@ -169,10 +169,10 @@ public class BookmarkTest {
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
 
-            // Stub ProfileSyncService state to make sure promos aren't suppressed.
-            when(mProfileSyncService.isSyncAllowedByPlatform()).thenReturn(true);
-            when(mProfileSyncService.isSyncRequested()).thenReturn(false);
-            ProfileSyncService.overrideForTests(mProfileSyncService);
+            // Stub SyncService state to make sure promos aren't suppressed.
+            when(mSyncService.isSyncAllowedByPlatform()).thenReturn(true);
+            when(mSyncService.isSyncRequested()).thenReturn(false);
+            SyncService.overrideForTests(mSyncService);
         });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mTestUrlA = new GURL("http://a.com");

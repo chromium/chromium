@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -78,53 +78,52 @@ public class SyncSettingsUtils {
      */
     @SyncError
     public static int getSyncError() {
-        ProfileSyncService profileSyncService = ProfileSyncService.get();
-        if (profileSyncService == null) {
+        SyncService syncService = SyncService.get();
+        if (syncService == null) {
             return SyncError.NO_ERROR;
         }
 
-        if (!profileSyncService.isSyncAllowedByPlatform()) {
+        if (!syncService.isSyncAllowedByPlatform()) {
             return SyncError.ANDROID_SYNC_DISABLED;
         }
 
-        if (!profileSyncService.isSyncRequested()) {
+        if (!syncService.isSyncRequested()) {
             return SyncError.NO_ERROR;
         }
 
-        if (profileSyncService.getAuthError()
-                == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
+        if (syncService.getAuthError() == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
             return SyncError.AUTH_ERROR;
         }
 
-        if (profileSyncService.requiresClientUpgrade()) {
+        if (syncService.requiresClientUpgrade()) {
             return SyncError.CLIENT_OUT_OF_DATE;
         }
 
-        if (profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE
-                || profileSyncService.hasUnrecoverableError()) {
+        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE
+                || syncService.hasUnrecoverableError()) {
             return SyncError.OTHER_ERRORS;
         }
 
-        if (profileSyncService.isEngineInitialized()
-                && profileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
+        if (syncService.isEngineInitialized()
+                && syncService.isPassphraseRequiredForPreferredDataTypes()) {
             return SyncError.PASSPHRASE_REQUIRED;
         }
 
-        if (profileSyncService.isEngineInitialized()
-                && profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-            return profileSyncService.isEncryptEverythingEnabled()
+        if (syncService.isEngineInitialized()
+                && syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
+            return syncService.isEncryptEverythingEnabled()
                     ? SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING
                     : SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
         }
 
-        if (profileSyncService.isEngineInitialized()
-                && profileSyncService.isTrustedVaultRecoverabilityDegraded()) {
-            return profileSyncService.isEncryptEverythingEnabled()
+        if (syncService.isEngineInitialized()
+                && syncService.isTrustedVaultRecoverabilityDegraded()) {
+            return syncService.isEncryptEverythingEnabled()
                     ? SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
                     : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
         }
 
-        if (!profileSyncService.isFirstSetupComplete()) {
+        if (!syncService.isFirstSetupComplete()) {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
@@ -203,51 +202,51 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_off);
         }
 
-        ProfileSyncService profileSyncService = ProfileSyncService.get();
-        if (profileSyncService == null) {
+        SyncService syncService = SyncService.get();
+        if (syncService == null) {
             return context.getString(R.string.sync_off);
         }
 
-        if (!profileSyncService.isSyncAllowedByPlatform()) {
+        if (!syncService.isSyncAllowedByPlatform()) {
             return context.getString(R.string.sync_android_system_sync_disabled);
         }
 
-        if (profileSyncService.isSyncDisabledByEnterprisePolicy()) {
+        if (syncService.isSyncDisabledByEnterprisePolicy()) {
             return context.getString(R.string.sync_is_disabled_by_administrator);
         }
 
-        if (!profileSyncService.isFirstSetupComplete()) {
+        if (!syncService.isFirstSetupComplete()) {
             return context.getString(R.string.sync_settings_not_confirmed);
         }
 
-        if (profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
-            return getSyncStatusSummaryForAuthError(context, profileSyncService.getAuthError());
+        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
+            return getSyncStatusSummaryForAuthError(context, syncService.getAuthError());
         }
 
-        if (profileSyncService.requiresClientUpgrade()) {
+        if (syncService.requiresClientUpgrade()) {
             return context.getString(
                     R.string.sync_error_upgrade_client, BuildInfo.getInstance().hostPackageLabel);
         }
 
-        if (profileSyncService.hasUnrecoverableError()) {
+        if (syncService.hasUnrecoverableError()) {
             return context.getString(R.string.sync_error_generic);
         }
 
-        if (!profileSyncService.isSyncRequested()) {
+        if (!syncService.isSyncRequested()) {
             return context.getString(R.string.sync_data_types_off);
         }
 
-        if (!profileSyncService.isSyncFeatureActive()) {
+        if (!syncService.isSyncFeatureActive()) {
             return context.getString(R.string.sync_setup_progress);
         }
 
-        if (profileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
+        if (syncService.isPassphraseRequiredForPreferredDataTypes()) {
             return context.getString(R.string.sync_need_passphrase);
         }
 
-        if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
-                || profileSyncService.isTrustedVaultRecoverabilityDegraded()) {
-            return profileSyncService.isEncryptEverythingEnabled()
+        if (syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
+                || syncService.isTrustedVaultRecoverabilityDegraded()) {
+            return syncService.isEncryptEverythingEnabled()
                     ? context.getString(R.string.sync_error_card_title)
                     : context.getString(R.string.password_sync_error_summary);
         }
@@ -292,11 +291,11 @@ public class SyncSettingsUtils {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
-        ProfileSyncService profileSyncService = ProfileSyncService.get();
-        if (profileSyncService == null || !profileSyncService.isSyncRequested()) {
+        SyncService syncService = SyncService.get();
+        if (syncService == null || !syncService.isSyncRequested()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
-        if (profileSyncService.isSyncDisabledByEnterprisePolicy()) {
+        if (syncService.isSyncDisabledByEnterprisePolicy()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
@@ -308,20 +307,20 @@ public class SyncSettingsUtils {
     }
 
     /**
-     * Enables or disables {@link ProfileSyncService} and optionally records metrics that the sync
-     * was disabled from settings. Requires that {@link ProfileSyncService#get()} returns non-null
+     * Enables or disables {@link SyncService} and optionally records metrics that the sync
+     * was disabled from settings. Requires that {@link SyncService#get()} returns non-null
      * reference.
      */
     public static void enableSync(boolean enable) {
-        ProfileSyncService profileSyncService = ProfileSyncService.get();
-        if (enable == profileSyncService.isSyncRequested()) return;
+        SyncService syncService = SyncService.get();
+        if (enable == syncService.isSyncRequested()) return;
 
         if (enable) {
-            profileSyncService.setSyncRequested(true);
+            syncService.setSyncRequested(true);
         } else {
             RecordHistogram.recordEnumeratedHistogram("Sync.StopSource",
                     StopSource.CHROME_SYNC_SETTINGS, StopSource.STOP_SOURCE_LIMIT);
-            profileSyncService.setSyncRequested(false);
+            syncService.setSyncRequested(false);
         }
     }
 
@@ -430,7 +429,7 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        ProfileSyncService.get().recordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA.SETTINGS);
+        SyncService.get().recordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
                 TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
     }

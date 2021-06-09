@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.sync.ModelType;
 
 /**
@@ -173,7 +173,7 @@ public class PriceTrackingUtilities {
     }
 
     private static boolean isOpenTabsSyncEnabled() {
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncRequested()
                 && syncService.getActiveDataTypes().contains(ModelType.SESSIONS);
     }

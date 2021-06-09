@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
@@ -259,12 +259,12 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSyncRowSummaryWhenNoDataTypeSynced() {
-        final ProfileSyncService profileSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(ProfileSyncService::get);
+        final SyncService syncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { profileSyncService.setChosenDataTypes(false, new HashSet<>()); });
+                () -> { syncService.setChosenDataTypes(false, new HashSet<>()); });
         CoreAccountInfo account = mSyncTestRule.addTestAccount();
-        SigninTestUtil.signinAndEnableSync(account, profileSyncService);
+        SigninTestUtil.signinAndEnableSync(account, syncService);
 
         launchSettingsActivity();
 

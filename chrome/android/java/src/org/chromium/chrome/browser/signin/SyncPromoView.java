@@ -19,7 +19,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -30,8 +30,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * If inflated manually, {@link SyncPromoView#init(int)} must be called before
  * attaching this View to a ViewGroup.
  */
-public class SyncPromoView
-        extends LinearLayout implements ProfileSyncService.SyncStateChangedListener {
+public class SyncPromoView extends LinearLayout implements SyncService.SyncStateChangedListener {
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
@@ -60,7 +59,7 @@ public class SyncPromoView
         super(context, attrs);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.
-        assert ProfileSyncService.get() != null;
+        assert SyncService.get() != null;
     }
 
     @Override
@@ -96,9 +95,9 @@ public class SyncPromoView
 
     private void update() {
         ViewState viewState;
-        if (!ProfileSyncService.get().isSyncAllowedByPlatform()) {
+        if (!SyncService.get().isSyncAllowedByPlatform()) {
             viewState = getStateForEnableAndroidSync();
-        } else if (!ProfileSyncService.get().isSyncRequested()) {
+        } else if (!SyncService.get().isSyncRequested()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();
@@ -201,17 +200,17 @@ public class SyncPromoView
         assert mInitialized : "init(...) must be called on SyncPromoView before use.";
 
         super.onAttachedToWindow();
-        ProfileSyncService.get().addSyncStateChangedListener(this);
+        SyncService.get().addSyncStateChangedListener(this);
         update();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        ProfileSyncService.get().removeSyncStateChangedListener(this);
+        SyncService.get().removeSyncStateChangedListener(this);
     }
 
-    // ProfileSyncService.SyncStateChangedListener
+    // SyncService.SyncStateChangedListener
     @Override
     public void syncStateChanged() {
         update();

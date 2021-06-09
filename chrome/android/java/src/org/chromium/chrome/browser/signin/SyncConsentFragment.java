@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -119,7 +119,7 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
                                         ManageSyncSettings.class,
                                         ManageSyncSettings.createArguments(true));
                             } else {
-                                ProfileSyncService.get().setFirstSetupComplete(
+                                SyncService.get().setFirstSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
 

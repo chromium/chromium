@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -361,8 +361,7 @@ class SigninManagerImpl
             // sync tries to start without being signed in the native code and crashes.
             mAndroidSyncSettings.updateAccount(
                     AccountUtils.createAccountFromName(mSignInState.mCoreAccountInfo.getEmail()));
-            boolean atLeastOneDataTypeSynced =
-                    !ProfileSyncService.get().getChosenDataTypes().isEmpty();
+            boolean atLeastOneDataTypeSynced = !SyncService.get().getChosenDataTypes().isEmpty();
             if (atLeastOneDataTypeSynced) {
                 // Turn on sync only when user has at least one data type to sync, this is
                 // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
@@ -413,8 +412,8 @@ class SigninManagerImpl
                 //   If the account is managed then the data should be wiped.
                 //
                 //   TODO(https://crbug.com/1173016): It might be too late to get management status
-                //       here. ProfileSyncService should call RevokeSyncConsent/ClearPrimaryAccount
-                //       in SigninManager instead.
+                //       here. SyncService should call RevokeSyncConsent/ClearPrimaryAccount in
+                //       SigninManager instead.
                 if (mSignOutState == null) {
                     mSignOutState = new SignOutState(null, getManagementDomain() != null);
                 }

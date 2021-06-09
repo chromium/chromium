@@ -31,19 +31,19 @@ import org.chromium.components.sync.StopSource;
  * on when it is re-enabled.
  */
 public class SyncController
-        implements ProfileSyncService.SyncStateChangedListener, AndroidSyncSettings.Delegate {
+        implements SyncService.SyncStateChangedListener, AndroidSyncSettings.Delegate {
     private static final String TAG = "SyncController";
 
     @SuppressLint("StaticFieldLeak")
     private static SyncController sInstance;
     private static boolean sInitialized;
 
-    private final ProfileSyncService mProfileSyncService;
+    private final SyncService mSyncService;
 
     private SyncController() {
         AndroidSyncSettings.get().setDelegate(this);
-        mProfileSyncService = ProfileSyncService.get();
-        mProfileSyncService.addSyncStateChangedListener(this);
+        mSyncService = SyncService.get();
+        mSyncService.addSyncStateChangedListener(this);
 
         updateSyncStateFromAndroid();
     }
@@ -57,7 +57,7 @@ public class SyncController
     public static SyncController get() {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
-            if (ProfileSyncService.get() != null) {
+            if (SyncService.get() != null) {
                 sInstance = new SyncController();
             }
             sInitialized = true;
@@ -74,12 +74,12 @@ public class SyncController
         // SyncAllowedByPlatform.
         // TODO(crbug.com/921025): Don't mix these two concepts.
 
-        mProfileSyncService.setSyncAllowedByPlatform(
+        mSyncService.setSyncAllowedByPlatform(
                 AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync());
 
-        if (isSyncEnabledInAndroidSyncSettings() == mProfileSyncService.isSyncRequested()) return;
+        if (isSyncEnabledInAndroidSyncSettings() == mSyncService.isSyncRequested()) return;
         if (isSyncEnabledInAndroidSyncSettings()) {
-            mProfileSyncService.setSyncRequested(true);
+            mSyncService.setSyncRequested(true);
             return;
         }
 
@@ -92,7 +92,7 @@ public class SyncController
             // On sign-out, Sync.StopSource is already recorded in the native code, so only
             // record it here if there's still a primary (syncing) account.
             // TODO(crbug.com/1105795): Revisit how these metrics are recorded.
-            if (mProfileSyncService.isAuthenticatedAccountPrimary()) {
+            if (mSyncService.isAuthenticatedAccountPrimary()) {
                 int source = !AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()
                         ? StopSource.ANDROID_MASTER_SYNC
                         : StopSource.ANDROID_CHROME_SYNC;
@@ -100,12 +100,12 @@ public class SyncController
                         "Sync.StopSource", source, StopSource.STOP_SOURCE_LIMIT);
             }
 
-            mProfileSyncService.setSyncRequested(false);
+            mSyncService.setSyncRequested(false);
         }
     }
 
     /**
-     * From {@link ProfileSyncService.SyncStateChangedListener}.
+     * From {@link SyncService.SyncStateChangedListener}.
      *
      * Changes the invalidation controller and Android sync setting state to match
      * the new native sync state.
@@ -113,7 +113,7 @@ public class SyncController
     @Override
     public void syncStateChanged() {
         ThreadUtils.assertOnUiThread();
-        if (mProfileSyncService.isSyncRequested()) {
+        if (mSyncService.isSyncRequested()) {
             if (!isSyncEnabledInAndroidSyncSettings()) {
                 AndroidSyncSettings.get().enableChromeSync();
             }

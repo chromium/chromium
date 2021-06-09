@@ -17,7 +17,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ProfileDataSource;
@@ -175,7 +175,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return addTestAccountThenSigninAndEnableSync(
-                TestThreadUtils.runOnUiThreadBlockingNoException(ProfileSyncService::get));
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
     }
 
     /**
@@ -183,14 +183,14 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      *
-     * @param profileSyncService ProfileSyncService object to set up sync, if null, sync won't
+     * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
-            @Nullable ProfileSyncService profileSyncService) {
+            @Nullable SyncService syncService) {
         assert !mIsSignedIn : "An account is already signed in!";
         CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
         mIsSignedIn = true;
         return coreAccountInfo;
     }

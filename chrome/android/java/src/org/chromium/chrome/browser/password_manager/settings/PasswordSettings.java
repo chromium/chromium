@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -59,10 +59,9 @@ import java.util.Locale;
  * The "Passwords" screen in Settings, which allows the user to enable or disable password saving,
  * to view saved passwords (just the username and URL), and to delete saved passwords.
  */
-public class PasswordSettings
-        extends PreferenceFragmentCompat implements PasswordManagerHandler.PasswordListObserver,
-                                                    Preference.OnPreferenceClickListener,
-                                                    ProfileSyncService.SyncStateChangedListener {
+public class PasswordSettings extends PreferenceFragmentCompat
+        implements PasswordManagerHandler.PasswordListObserver,
+                   Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener {
     // Keys for name/password dictionaries.
     public static final String PASSWORD_LIST_URL = "url";
     public static final String PASSWORD_LIST_NAME = "name";
@@ -156,8 +155,8 @@ public class PasswordSettings
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getInstance().addObserver(this);
 
-        if (ProfileSyncService.get() != null) {
-            ProfileSyncService.get().addSyncStateChangedListener(this);
+        if (SyncService.get() != null) {
+            SyncService.get().addSyncStateChangedListener(this);
         }
 
         setHasOptionsMenu(true); // Password Export might be optional but Search is always present.
@@ -190,8 +189,8 @@ public class PasswordSettings
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
-        mShouldShowTrustedVaultOptIn = ProfileSyncService.get() != null
-                && ProfileSyncService.get().shouldOfferTrustedVaultOptIn();
+        mShouldShowTrustedVaultOptIn =
+                SyncService.get() != null && SyncService.get().shouldOfferTrustedVaultOptIn();
     }
 
     @Override
@@ -457,8 +456,8 @@ public class PasswordSettings
     public void onDestroy() {
         super.onDestroy();
 
-        if (ProfileSyncService.get() != null) {
-            ProfileSyncService.get().removeSyncStateChangedListener(this);
+        if (SyncService.get() != null) {
+            SyncService.get().removeSyncStateChangedListener(this);
         }
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
@@ -572,8 +571,8 @@ public class PasswordSettings
         mTrustedVaultOptIn.setIcon(android.R.drawable.ic_lock_lock);
         mTrustedVaultOptIn.setSummary(R.string.android_trusted_vault_opt_in_sub_label);
         mTrustedVaultOptIn.setOnPreferenceClickListener(preference -> {
-            assert ProfileSyncService.get() != null;
-            CoreAccountInfo accountInfo = ProfileSyncService.get().getAuthenticatedAccountInfo();
+            assert SyncService.get() != null;
+            CoreAccountInfo accountInfo = SyncService.get().getAuthenticatedAccountInfo();
             assert accountInfo != null;
             SyncSettingsUtils.openTrustedVaultOptInDialog(
                     this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);
@@ -636,8 +635,7 @@ public class PasswordSettings
 
     @Override
     public void syncStateChanged() {
-        boolean shouldShowTrustedVaultOptIn =
-                ProfileSyncService.get().shouldOfferTrustedVaultOptIn();
+        boolean shouldShowTrustedVaultOptIn = SyncService.get().shouldOfferTrustedVaultOptIn();
         if (mShouldShowTrustedVaultOptIn != shouldShowTrustedVaultOptIn) {
             mShouldShowTrustedVaultOptIn = shouldShowTrustedVaultOptIn;
             rebuildPasswordLists();

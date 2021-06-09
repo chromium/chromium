@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -32,15 +33,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * usable from the UI thread as the native ProfileSyncService requires its access to be on the
  * UI thread. See components/sync/driver/sync_service_impl.h for more details.
  */
-public class ProfileSyncService {
+public class ProfileSyncService extends SyncService {
+    private final long mNativeProfileSyncServiceAndroid;
 
-    /**
-     * Listener for the underlying sync status.
-     */
-    public interface SyncStateChangedListener {
-        // Invoked when the status has changed.
-        public void syncStateChanged();
-    }
+    private int mSetupInProgressCounter;
+
+    // Sync state changes more often than listeners are added/removed, so using CopyOnWrite.
+    private final List<SyncStateChangedListener> mListeners =
+            new CopyOnWriteArrayList<SyncStateChangedListener>();
 
     /**
      * ModelTypes that the user can directly select in settings.
@@ -57,113 +57,41 @@ public class ProfileSyncService {
         ModelType.TYPED_URLS
     };
 
-    private static ProfileSyncService sProfileSyncService;
-    private static boolean sInitialized;
-
-    // Sync state changes more often than listeners are added/removed, so using CopyOnWrite.
-    private final List<SyncStateChangedListener> mListeners =
-            new CopyOnWriteArrayList<SyncStateChangedListener>();
-
-    /**
-     * Native ProfileSyncServiceAndroid object. Cannot be final because it is initialized in
-     * {@link init()}.
-     */
-    private long mNativeProfileSyncServiceAndroid;
-
-    private int mSetupInProgressCounter;
-
-    /**
-     * Retrieves or creates the ProfileSyncService singleton instance. Returns null if sync is
-     * disabled (via flag or variation).
-     *
-     * Can only be accessed on the main thread.
-     */
-    @Nullable
-    public static ProfileSyncService get() {
+    /** SyncService should be the only caller of this method. */
+    public static @Nullable ProfileSyncService create() {
         ThreadUtils.assertOnUiThread();
-        if (!sInitialized) {
-            sProfileSyncService = new ProfileSyncService();
-            if (sProfileSyncService.mNativeProfileSyncServiceAndroid == 0) {
-                sProfileSyncService = null;
-            }
-            sInitialized = true;
-        }
-        return sProfileSyncService;
-    }
-
-    /**
-     * Overrides the initialization for tests. The tests should call resetForTests() at shutdown.
-     */
-    @VisibleForTesting
-    public static void overrideForTests(ProfileSyncService profileSyncService) {
-        ThreadUtils.assertOnUiThread();
-        sProfileSyncService = profileSyncService;
-        sInitialized = true;
-    }
-
-    /**
-     * Resets the ProfileSyncService instance. Calling get() next time will initialize with a new
-     * instance.
-     */
-    @VisibleForTesting
-    public static void resetForTests() {
-        sInitialized = false;
-        sProfileSyncService = null;
+        ProfileSyncService syncService = new ProfileSyncService();
+        return syncService.mNativeProfileSyncServiceAndroid == 0 ? null : syncService;
     }
 
     protected ProfileSyncService() {
-        ThreadUtils.assertOnUiThread();
-
         // This may cause us to create ProfileSyncService even if sync has not
         // been set up, but ProfileSyncService won't actually start until
         // credentials are available.
         mNativeProfileSyncServiceAndroid = ProfileSyncServiceJni.get().init(this);
     }
 
-    /**
-     * Checks if the sync engine is initialized. Note that this refers to
-     * Sync-the-transport, i.e. it can be true even if the user has *not*
-     * enabled Sync-the-feature.
-     * This mostly needs to be checked as a precondition for the various
-     * encryption-related methods (see below).
-     *
-     * @return true if the sync engine is initialized.
-     */
+    @Override
     public boolean isEngineInitialized() {
         return ProfileSyncServiceJni.get().isEngineInitialized(mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks whether sync machinery is active.
-     *
-     * @return true if the transport state is active.
-     */
-    @VisibleForTesting
+    @Override
     public boolean isTransportStateActive() {
         return ProfileSyncServiceJni.get().isTransportStateActive(mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
-     * account and no disable reasons. Note that the Sync machinery may start up in transport-only
-     * mode even if this is false.
-     *
-     * @return true if Sync can start, false otherwise.
-     */
+    @Override
     public boolean canSyncFeatureStart() {
         return ProfileSyncServiceJni.get().canSyncFeatureStart(mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
-     * active even if this is false.
-     *
-     * @return true if Sync is active, false otherwise.
-     */
+    @Override
     public boolean isSyncFeatureActive() {
         return ProfileSyncServiceJni.get().isSyncFeatureActive(mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public @GoogleServiceAuthError.State int getAuthError() {
         int authErrorCode =
                 ProfileSyncServiceJni.get().getAuthError(mNativeProfileSyncServiceAndroid);
@@ -173,135 +101,110 @@ public class ProfileSyncService {
         return authErrorCode;
     }
 
-    /**
-     * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy
-     * received from the sync server.
-     *
-     * @return true if Sync is disabled, false otherwise.
-     */
+    @Override
     public boolean isSyncDisabledByEnterprisePolicy() {
         return ProfileSyncServiceJni.get().isSyncDisabledByEnterprisePolicy(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public boolean hasUnrecoverableError() {
         return ProfileSyncServiceJni.get().hasUnrecoverableError(mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public boolean requiresClientUpgrade() {
         return ProfileSyncServiceJni.get().requiresClientUpgrade(mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public void setDecoupledFromAndroidMasterSync() {
         ProfileSyncServiceJni.get().setDecoupledFromAndroidMasterSync(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public boolean getDecoupledFromAndroidMasterSync() {
         return ProfileSyncServiceJni.get().getDecoupledFromAndroidMasterSync(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public @Nullable CoreAccountInfo getAuthenticatedAccountInfo() {
         return ProfileSyncServiceJni.get().getAuthenticatedAccountInfo(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public boolean isAuthenticatedAccountPrimary() {
         return ProfileSyncServiceJni.get().isAuthenticatedAccountPrimary(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Gets the set of data types that are currently syncing.
-     *
-     * This is affected by whether sync is on.
-     *
-     * @return Set of active data types.
-     */
+    @Override
     public Set<Integer> getActiveDataTypes() {
         int[] activeDataTypes =
                 ProfileSyncServiceJni.get().getActiveDataTypes(mNativeProfileSyncServiceAndroid);
         return modelTypeArrayToSet(activeDataTypes);
     }
 
-    /**
-     * Gets the set of data types that the user has chosen to enable. This
-     * corresponds to the native GetSelectedTypes() / UserSelectableTypeSet, but
-     * every UserSelectableType is mapped to the corresponding canonical
-     * ModelType.
-     * TODO(crbug.com/985290): Expose UserSelectableType to Java and return that
-     * instead.
-     *
-     * NOTE: This returns "all types" by default, even if the user has never
-     *       enabled Sync, or if only Sync-the-transport is running.
-     *
-     * @return Set of chosen types.
-     */
+    @Override
     public Set<Integer> getChosenDataTypes() {
         int[] modelTypeArray =
                 ProfileSyncServiceJni.get().getChosenDataTypes(mNativeProfileSyncServiceAndroid);
         return modelTypeArrayToSet(modelTypeArray);
     }
 
+    @Override
     public boolean hasKeepEverythingSynced() {
         return ProfileSyncServiceJni.get().hasKeepEverythingSynced(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Enables syncing for the passed data types.
-     *
-     * @param syncEverything Set to true if the user wants to sync all data types
-     *                       (including new data types we add in the future).
-     * @param enabledTypes   The set of types to enable. Ignored (can be null) if
-     *                       syncEverything is true.
-     */
+    @Override
     public void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes) {
         ProfileSyncServiceJni.get().setChosenDataTypes(mNativeProfileSyncServiceAndroid,
                 syncEverything,
                 syncEverything ? ALL_SELECTABLE_TYPES : modelTypeSetToArray(enabledTypes));
     }
 
+    @Override
     public void setFirstSetupComplete(int syncFirstSetupCompleteSource) {
         ProfileSyncServiceJni.get().setFirstSetupComplete(
                 mNativeProfileSyncServiceAndroid, syncFirstSetupCompleteSource);
     }
 
+    @Override
     public boolean isFirstSetupComplete() {
         return ProfileSyncServiceJni.get().isFirstSetupComplete(mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public void setSyncRequested(boolean requested) {
         ProfileSyncServiceJni.get().setSyncRequested(mNativeProfileSyncServiceAndroid, requested);
     }
 
-    /**
-     * Checks whether syncing is requested by the user, i.e. the user has at least started a Sync
-     * setup flow, and has not disabled syncing in settings. Note that even if this is true, other
-     * reasons might prevent Sync from actually starting up.
-     *
-     * @return true if the user wants to sync, false otherwise.
-     */
+    @Override
     public boolean isSyncRequested() {
         return ProfileSyncServiceJni.get().isSyncRequested(mNativeProfileSyncServiceAndroid);
     }
 
     /**
      * Instances of this class keep sync paused until {@link #close} is called. Use
-     * {@link ProfileSyncService#getSetupInProgressHandle} to create. Please note that
+     * {@link SyncService#getSetupInProgressHandle} to create. Please note that
      * {@link #close} should be called on every instance of this class.
      */
-    public final class SyncSetupInProgressHandle {
+    private class SyncSetupInProgressHandleImpl implements SyncSetupInProgressHandle {
         private boolean mClosed;
 
-        private SyncSetupInProgressHandle() {
+        public SyncSetupInProgressHandleImpl() {
             ThreadUtils.assertOnUiThread();
             if (++mSetupInProgressCounter == 1) {
                 setSetupInProgress(true);
             }
         }
 
+        @Override
         public void close() {
             ThreadUtils.assertOnUiThread();
             if (mClosed) return;
@@ -314,17 +217,9 @@ public class ProfileSyncService {
         }
     }
 
-    /**
-     * Called by the UI to prevent changes in sync settings from taking effect while these settings
-     * are being modified by the user. When sync settings UI is no longer visible,
-     * {@link SyncSetupInProgressHandle#close} has to be invoked for sync settings to be applied.
-     * Sync settings will remain paused as long as there are unclosed objects returned by this
-     * method. Please note that the behavior of SyncSetupInProgressHandle is slightly different from
-     * the equivalent C++ object, as Java instances don't commit sync settings as soon as any
-     * instance of SyncSetupInProgressHandle is closed.
-     */
+    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
-        return new SyncSetupInProgressHandle();
+        return new SyncSetupInProgressHandleImpl();
     }
 
     private void setSetupInProgress(boolean inProgress) {
@@ -332,11 +227,13 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, inProgress);
     }
 
+    @Override
     public void addSyncStateChangedListener(SyncStateChangedListener listener) {
         ThreadUtils.assertOnUiThread();
         mListeners.add(listener);
     }
 
+    @Override
     public void removeSyncStateChangedListener(SyncStateChangedListener listener) {
         ThreadUtils.assertOnUiThread();
         mListeners.remove(listener);
@@ -353,23 +250,19 @@ public class ProfileSyncService {
         }
     }
 
+    @Override
     public boolean isSyncAllowedByPlatform() {
         return ProfileSyncServiceJni.get().isSyncAllowedByPlatform(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public void setSyncAllowedByPlatform(boolean allowed) {
         ProfileSyncServiceJni.get().setSyncAllowedByPlatform(
                 mNativeProfileSyncServiceAndroid, allowed);
     }
 
-    /**
-     * Returns the actual passphrase type being used for encryption. The sync engine must be
-     * running (isEngineInitialized() returns true) before calling this function.
-     * <p/>
-     * This method should only be used if you want to know the raw value. For checking whether
-     * we should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
-     */
+    @Override
     public @PassphraseType int getPassphraseType() {
         assert isEngineInitialized();
         int passphraseType =
@@ -380,10 +273,7 @@ public class ProfileSyncService {
         return passphraseType;
     }
 
-    /**
-     * Returns the time the current explicit passphrase was set (if any). Null if no explicit
-     * passphrase is in use, or no time is available.
-     */
+    @Override
     public @Nullable Date getExplicitPassphraseTime() {
         assert isEngineInitialized();
         long timeInMilliseconds = ProfileSyncServiceJni.get().getExplicitPassphraseTime(
@@ -391,146 +281,94 @@ public class ProfileSyncService {
         return timeInMilliseconds != 0 ? new Date(timeInMilliseconds) : null;
     }
 
-    /**
-     * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
-     * frozen implicit passphrase). The sync engine must be running (isEngineInitialized() returns
-     * true) before calling this function.
-     *
-     * @return true if sync is using a custom passphrase.
-     */
+    @Override
     public boolean isUsingExplicitPassphrase() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isUsingExplicitPassphrase(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks if we need a passphrase to decrypt a currently-enabled data type. This returns false
-     * if a passphrase is needed for a type that is not currently enabled.
-     *
-     * @return true if we need a passphrase.
-     */
+    @Override
     public boolean isPassphraseRequiredForPreferredDataTypes() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isPassphraseRequiredForPreferredDataTypes(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks if trusted vault encryption keys are needed, independently of the currently-enabled
-     * data types.
-     *
-     * @return true if we need an encryption key.
-     */
+    @Override
     public boolean isTrustedVaultKeyRequired() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isTrustedVaultKeyRequired(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks if trusted vault encryption keys are needed to decrypt a currently-enabled data type.
-     *
-     * @return true if we need an encryption key for a type that is currently enabled.
-     */
+    @Override
     public boolean isTrustedVaultKeyRequiredForPreferredDataTypes() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isTrustedVaultKeyRequiredForPreferredDataTypes(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks if recoverability of the trusted vault keys is degraded and user action is required,
-     * affecting currently enabled data types.
-     *
-     * @return true if recoverability is degraded.
-     */
+    @Override
     public boolean isTrustedVaultRecoverabilityDegraded() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isTrustedVaultRecoverabilityDegraded(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * @return Whether setting a custom passphrase is allowed.
-     */
+    @Override
     public boolean isCustomPassphraseAllowed() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isCustomPassphraseAllowed(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Checks if the user has chosen to encrypt all data types. Note that some data types (e.g.
-     * DEVICE_INFO) are never encrypted.
-     *
-     * @return true if all data types are encrypted, false if only passwords are encrypted.
-     */
+    @Override
     public boolean isEncryptEverythingEnabled() {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().isEncryptEverythingEnabled(
                 mNativeProfileSyncServiceAndroid);
     }
 
+    @Override
     public void setEncryptionPassphrase(String passphrase) {
         assert isEngineInitialized();
         ProfileSyncServiceJni.get().setEncryptionPassphrase(
                 mNativeProfileSyncServiceAndroid, passphrase);
     }
 
+    @Override
     public boolean setDecryptionPassphrase(String passphrase) {
         assert isEngineInitialized();
         return ProfileSyncServiceJni.get().setDecryptionPassphrase(
                 mNativeProfileSyncServiceAndroid, passphrase);
     }
 
-    /**
-     * Returns whether this client has previously prompted the user for a
-     * passphrase error via the android system notifications for the current
-     * product major version (i.e. gets reset upon browser upgrade). More
-     * specifically, it returns whether the method
-     * markPassphrasePromptMutedForCurrentProductVersion() has been invoked
-     * before, since the last time the browser was upgraded to a new major
-     * version.
-     *
-     * Can be called whether or not sync is initialized.
-     *
-     * @return Whether client has prompted for a passphrase error previously for
-     * the current product major version.
-     */
+    @Override
     public boolean isPassphrasePromptMutedForCurrentProductVersion() {
         return ProfileSyncServiceJni.get().isPassphrasePromptMutedForCurrentProductVersion(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Mutes passphrase error via the android system notifications until the
-     * browser is upgraded to a new major version.
-     *
-     * Can be called whether or not sync is initialized.
-     */
+    @Override
     public void markPassphrasePromptMutedForCurrentProductVersion() {
         ProfileSyncServiceJni.get().markPassphrasePromptMutedForCurrentProductVersion(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * Records TrustedVaultKeyRetrievalTrigger histogram.
-     */
+    @Override
     public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
         ProfileSyncServiceJni.get().recordKeyRetrievalTrigger(
                 mNativeProfileSyncServiceAndroid, keyRetrievalTrigger);
     }
 
-    /** @return Whether the user should be offered to opt in to trusted vault encryption. */
+    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         return ProfileSyncServiceJni.get().shouldOfferTrustedVaultOptIn(
                 mNativeProfileSyncServiceAndroid);
     }
 
-    /**
-     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
-     */
+    @Override
     public boolean isSyncingUrlsWithKeystorePassphrase() {
         return isEngineInitialized() && getActiveDataTypes().contains(ModelType.TYPED_URLS)
                 && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
@@ -538,60 +376,33 @@ public class ProfileSyncService {
     }
 
     @VisibleForTesting
-    public long getNativeSyncServiceImplForTest() {
-        return ProfileSyncServiceJni.get().getSyncServiceImplForTest(
-                mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Returns the time when the last sync cycle was completed.
-     *
-     * @return The difference measured in microseconds, between last sync cycle completion time
-     * and 1 January 1970 00:00:00 UTC.
-     */
-    @VisibleForTesting
-    public long getLastSyncedTimeForTest() {
-        return ProfileSyncServiceJni.get().getLastSyncedTimeForTest(
+    @Override
+    public long getLastSyncedTimeForDebugging() {
+        return ProfileSyncServiceJni.get().getLastSyncedTimeForDebugging(
                 mNativeProfileSyncServiceAndroid);
     }
 
     @VisibleForTesting
+    @Override
     public void triggerRefresh() {
         ProfileSyncServiceJni.get().triggerRefresh(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Callback for getAllNodes.
-     */
-    public static class GetAllNodesCallback {
-        private String mNodesString;
-
-        // Invoked when getAllNodes completes.
-        public void onResult(String nodesString) {
-            mNodesString = nodesString;
-        }
-
-        // Returns the result of GetAllNodes as a JSONArray.
-        @VisibleForTesting
-        public JSONArray getNodesAsJsonArray() throws JSONException {
-            return new JSONArray(mNodesString);
-        }
     }
 
     /**
      * Invokes the onResult method of the callback from native code.
      */
     @CalledByNative
-    private static void onGetAllNodesResult(GetAllNodesCallback callback, String nodes) {
-        callback.onResult(nodes);
+    private static void onGetAllNodesResult(Callback<JSONArray> callback, String serializedNodes) {
+        try {
+            callback.onResult(new JSONArray(serializedNodes));
+        } catch (JSONException e) {
+            callback.onResult(new JSONArray());
+        }
     }
 
-    /**
-     * Retrieves a JSON version of local Sync data via the native GetAllNodes method.
-     * This method is asynchronous; the result will be sent to the callback.
-     */
     @VisibleForTesting
-    public void getAllNodes(GetAllNodesCallback callback) {
+    @Override
+    public void getAllNodes(Callback<JSONArray> callback) {
         ProfileSyncServiceJni.get().getAllNodes(mNativeProfileSyncServiceAndroid, callback);
     }
 
@@ -610,6 +421,13 @@ public class ProfileSyncService {
             modelTypeArray[i++] = modelType;
         }
         return modelTypeArray;
+    }
+
+    @VisibleForTesting
+    @Override
+    public long getNativeSyncServiceImplForTest() {
+        return ProfileSyncServiceJni.get().getNativeSyncServiceImplForTest(
+                mNativeProfileSyncServiceAndroid);
     }
 
     @NativeMethods
@@ -646,7 +464,7 @@ public class ProfileSyncService {
         void setEncryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
         boolean setDecryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
         long getExplicitPassphraseTime(long nativeProfileSyncServiceAndroid);
-        void getAllNodes(long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
+        void getAllNodes(long nativeProfileSyncServiceAndroid, Callback<JSONArray> callback);
         int getAuthError(long nativeProfileSyncServiceAndroid);
         boolean hasUnrecoverableError(long nativeProfileSyncServiceAndroid);
         boolean requiresClientUpgrade(long nativeProfileSyncServiceAndroid);
@@ -664,7 +482,7 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, int keyRetrievalTrigger);
         boolean shouldOfferTrustedVaultOptIn(long nativeProfileSyncServiceAndroid);
         void triggerRefresh(long nativeProfileSyncServiceAndroid);
-        long getSyncServiceImplForTest(long nativeProfileSyncServiceAndroid);
-        long getLastSyncedTimeForTest(long nativeProfileSyncServiceAndroid);
+        long getLastSyncedTimeForDebugging(long nativeProfileSyncServiceAndroid);
+        long getNativeSyncServiceImplForTest(long nativeProfileSyncServiceAndroid);
     }
 }

@@ -380,17 +380,17 @@ void ProfileSyncServiceAndroid::TriggerRefresh(JNIEnv* env) {
   native_sync_service_->TriggerRefresh(syncer::ProtocolTypes());
 }
 
-jlong ProfileSyncServiceAndroid::GetSyncServiceImplForTest(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return reinterpret_cast<intptr_t>(native_sync_service_);
-}
-
-jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForTest(JNIEnv* env) {
+jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForDebugging(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time last_sync_time =
       native_sync_service_->GetLastSyncedTimeForDebugging();
   return static_cast<jlong>(
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
+}
+
+jlong ProfileSyncServiceAndroid::GetNativeSyncServiceImplForTest(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return reinterpret_cast<intptr_t>(native_sync_service_);
 }
 
 static jlong JNI_ProfileSyncService_Init(

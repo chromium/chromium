@@ -22,7 +22,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -50,7 +50,7 @@ public class PasswordViewingTypeTest {
 
     private ChromeBasePreference mPasswordsPref;
     @Mock
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
 
     @Before
     public void setUp() {
@@ -59,8 +59,7 @@ public class PasswordViewingTypeTest {
         MainSettings mainSettings = mSettingsActivityTestRule.getFragment();
         mPasswordsPref =
                 (ChromeBasePreference) mainSettings.findPreference(MainSettings.PREF_PASSWORDS);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ProfileSyncService.overrideForTests(mProfileSyncService));
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncService));
     }
 
     /**
@@ -71,9 +70,9 @@ public class PasswordViewingTypeTest {
     @SmallTest
     @Feature({"Sync"})
     public void testUserRedirectSyncSettings() {
-        when(mProfileSyncService.isSyncRequested()).thenReturn(true);
-        when(mProfileSyncService.isEngineInitialized()).thenReturn(true);
-        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(false);
+        when(mSyncService.isSyncRequested()).thenReturn(true);
+        when(mSyncService.isEngineInitialized()).thenReturn(true);
+        when(mSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());
@@ -86,9 +85,9 @@ public class PasswordViewingTypeTest {
     @Test
     @SmallTest
     public void testSyncingNativePasswordView() {
-        when(mProfileSyncService.isSyncRequested()).thenReturn(true);
-        when(mProfileSyncService.isEngineInitialized()).thenReturn(true);
-        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(true);
+        when(mSyncService.isSyncRequested()).thenReturn(true);
+        when(mSyncService.isEngineInitialized()).thenReturn(true);
+        when(mSyncService.isUsingExplicitPassphrase()).thenReturn(true);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());
@@ -101,9 +100,9 @@ public class PasswordViewingTypeTest {
     @Test
     @SmallTest
     public void testNonSyncingNativePasswordView() {
-        when(mProfileSyncService.isSyncRequested()).thenReturn(false);
-        when(mProfileSyncService.isEngineInitialized()).thenReturn(false);
-        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(false);
+        when(mSyncService.isSyncRequested()).thenReturn(false);
+        when(mSyncService.isEngineInitialized()).thenReturn(false);
+        when(mSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());

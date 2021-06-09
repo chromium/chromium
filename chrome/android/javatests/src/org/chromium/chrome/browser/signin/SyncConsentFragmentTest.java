@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -318,7 +318,7 @@ public class SyncConsentFragmentTest {
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertFalse(ProfileSyncService.get().isFirstSetupComplete()); });
+                () -> { Assert.assertFalse(SyncService.get().isFirstSetupComplete()); });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
     }

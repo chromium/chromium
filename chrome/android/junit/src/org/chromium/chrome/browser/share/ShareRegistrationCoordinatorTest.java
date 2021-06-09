@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareRegistrationCoordinator.ShareBroadcastReceiver;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -67,7 +67,7 @@ public class ShareRegistrationCoordinatorTest {
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
     @Mock
     private Context mContext;
 
@@ -99,9 +99,8 @@ public class ShareRegistrationCoordinatorTest {
                 .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
 
         // Setup the mocked object for sync settings.
-        when(mProfileSyncService.isSyncRequested()).thenReturn(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ProfileSyncService.overrideForTests(mProfileSyncService));
+        when(mSyncService.isSyncRequested()).thenReturn(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncService));
 
         mShareRegistrationCoordinator.doSendTabToSelfShare(
                 mActivity, mNavigationEntry, mBottomSheetController);

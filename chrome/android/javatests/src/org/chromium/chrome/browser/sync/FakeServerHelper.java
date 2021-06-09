@@ -60,7 +60,7 @@ public class FakeServerHelper {
             if (sFakeServerHelper == null) return;
 
             FakeServerHelperJni.get().deleteFakeServer(sFakeServerHelper.mNativeFakeServer,
-                    ProfileSyncService.get().getNativeSyncServiceImplForTest());
+                    SyncService.get().getNativeSyncServiceImplForTest());
             sFakeServerHelper = null;
         });
     }
@@ -68,7 +68,7 @@ public class FakeServerHelper {
     private FakeServerHelper() {
         ThreadUtils.assertOnUiThread();
         mNativeFakeServer = FakeServerHelperJni.get().createFakeServer(
-                ProfileSyncService.get().getNativeSyncServiceImplForTest());
+                SyncService.get().getNativeSyncServiceImplForTest());
         assert mNativeFakeServer != 0L;
     }
 

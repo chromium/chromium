@@ -93,10 +93,10 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
       jint trigger);
   jboolean ShouldOfferTrustedVaultOptIn(JNIEnv* env);
   void TriggerRefresh(JNIEnv* env);
-  jlong GetSyncServiceImplForTest(JNIEnv* env);
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
-  jlong GetLastSyncedTimeForTest(JNIEnv* env);
+  jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
+  jlong GetNativeSyncServiceImplForTest(JNIEnv* env);
 
  private:
   // A reference to the sync service for this profile.

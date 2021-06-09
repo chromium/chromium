@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -75,13 +75,13 @@ public final class SigninTestUtil {
     }
 
     /**
-     * Signs into an account and enables the sync if given a {@link ProfileSyncService} object.
+     * Signs into an account and enables the sync if given a {@link SyncService} object.
      *
-     * @param profileSyncService Enable the sync with it if it is not null.
+     * @param syncService Enable the sync with it if it is not null.
      */
     @WorkerThread
     public static void signinAndEnableSync(
-            CoreAccountInfo coreAccountInfo, @Nullable ProfileSyncService profileSyncService) {
+            CoreAccountInfo coreAccountInfo, @Nullable SyncService syncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -92,8 +92,8 @@ public final class SigninTestUtil {
                     new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
-                            if (profileSyncService != null) {
-                                profileSyncService.setFirstSetupComplete(
+                            if (syncService != null) {
+                                syncService.setFirstSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
                             callbackHelper.notifyCalled();

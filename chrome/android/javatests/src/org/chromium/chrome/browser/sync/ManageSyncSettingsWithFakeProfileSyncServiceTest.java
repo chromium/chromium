@@ -56,7 +56,7 @@ public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
     @DisabledTest(message = "https://crbug.com/986243")
     public void testPassphraseDialogDismissed() {
         final FakeProfileSyncService fakeProfileSyncService =
-                (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
+                (FakeProfileSyncService) mSyncTestRule.getSyncService();
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();

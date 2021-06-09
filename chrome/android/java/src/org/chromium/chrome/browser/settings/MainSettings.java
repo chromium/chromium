@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
@@ -57,7 +57,7 @@ import java.util.Map;
  * The main settings screen, shown when the user first opens Settings.
  */
 public class MainSettings extends PreferenceFragmentCompat
-        implements TemplateUrlService.LoadListener, ProfileSyncService.SyncStateChangedListener,
+        implements TemplateUrlService.LoadListener, SyncService.SyncStateChangedListener,
                    SigninManager.SignInStateObserver {
     public static final String PREF_SYNC_PROMO = "sync_promo";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
@@ -131,7 +131,7 @@ public class MainSettings extends PreferenceFragmentCompat
         if (signinManager.isSigninSupported()) {
             signinManager.addSignInStateObserver(this);
         }
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -145,7 +145,7 @@ public class MainSettings extends PreferenceFragmentCompat
         if (signinManager.isSigninSupported()) {
             signinManager.removeSignInStateObserver(this);
         }
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -280,7 +280,7 @@ public class MainSettings extends PreferenceFragmentCompat
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
         mManageSync.setOnPreferenceClickListener(pref -> {
             Context context = getContext();
-            if (ProfileSyncService.get().isSyncDisabledByEnterprisePolicy()) {
+            if (SyncService.get().isSyncDisabledByEnterprisePolicy()) {
                 SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
             } else if (isSyncConsentAvailable) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();

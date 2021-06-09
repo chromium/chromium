@@ -19,7 +19,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * An {@link InfoBar} that shows sync errors and prompts the user to open settings page.
  */
 public class SyncErrorInfoBar
-        extends ConfirmInfoBar implements ProfileSyncService.SyncStateChangedListener {
+        extends ConfirmInfoBar implements SyncService.SyncStateChangedListener {
     // Preference key to save the latest time this infobar is viewed.
     @VisibleForTesting
     static final String PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME =
@@ -92,7 +92,7 @@ public class SyncErrorInfoBar
 
     @CalledByNative
     private void accept() {
-        ProfileSyncService.get().removeSyncStateChangedListener(this);
+        SyncService.get().removeSyncStateChangedListener(this);
         recordHistogram(mType, SyncErrorInfoBarAction.OPEN_SETTINGS_CLICKED);
 
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
@@ -102,7 +102,7 @@ public class SyncErrorInfoBar
 
     @CalledByNative
     private void dismissed() {
-        ProfileSyncService.get().removeSyncStateChangedListener(this);
+        SyncService.get().removeSyncStateChangedListener(this);
         recordHistogram(mType, SyncErrorInfoBarAction.DISMISSED);
     }
 
@@ -112,7 +112,7 @@ public class SyncErrorInfoBar
                 primaryButtonText, null);
         mType = type;
         mDetailsMessage = detailsMessage;
-        ProfileSyncService.get().addSyncStateChangedListener(this);
+        SyncService.get().addSyncStateChangedListener(this);
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putLong(PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME, System.currentTimeMillis())

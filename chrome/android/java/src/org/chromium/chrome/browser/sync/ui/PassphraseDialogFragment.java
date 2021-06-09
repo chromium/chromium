@@ -38,7 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -81,7 +81,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
      * Create a new instanceof of {@link PassphraseDialogFragment} and set its arguments.
      */
     public static PassphraseDialogFragment newInstance(Fragment target) {
-        assert ProfileSyncService.get() != null;
+        assert SyncService.get() != null;
         PassphraseDialogFragment dialog = new PassphraseDialogFragment();
         if (target != null) {
             dialog.setTargetFragment(target, -1);
@@ -184,7 +184,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
     }
 
     private SpannableString getPromptText() {
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         String accountName = getString(R.string.sync_account_info,
                                      syncService.getAuthenticatedAccountInfo().getEmail())
                 + "\n\n";

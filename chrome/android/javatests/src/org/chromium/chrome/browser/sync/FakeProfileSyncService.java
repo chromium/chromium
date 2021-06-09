@@ -11,7 +11,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Fake some ProfileSyncService methods for testing.
+ * Fake some SyncService methods for testing.
  *
  * Only what has been needed for tests so far has been faked.
  */

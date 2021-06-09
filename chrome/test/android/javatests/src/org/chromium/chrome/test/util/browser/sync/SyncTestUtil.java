@@ -11,19 +11,18 @@ import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Utility class for shared sync test functionality.
@@ -43,7 +42,7 @@ public final class SyncTestUtil {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return ProfileSyncService.get().isSyncRequested();
+                return SyncService.get().isSyncRequested();
             }
         });
     }
@@ -55,7 +54,7 @@ public final class SyncTestUtil {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return ProfileSyncService.get().canSyncFeatureStart();
+                return SyncService.get().canSyncFeatureStart();
             }
         });
     }
@@ -67,7 +66,7 @@ public final class SyncTestUtil {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return ProfileSyncService.get().isSyncFeatureActive();
+                return SyncService.get().isSyncFeatureActive();
             }
         });
     }
@@ -77,7 +76,7 @@ public final class SyncTestUtil {
      */
     public static void waitForSyncFeatureActive() {
         CriteriaHelper.pollUiThread(()
-                                            -> ProfileSyncService.get().isSyncFeatureActive(),
+                                            -> SyncService.get().isSyncFeatureActive(),
                 "Timed out waiting for sync to become active.", TIMEOUT_MS, INTERVAL_MS);
     }
 
@@ -86,7 +85,7 @@ public final class SyncTestUtil {
      */
     public static void waitForSyncTransportActive() {
         CriteriaHelper.pollUiThread(()
-                                            -> ProfileSyncService.get().isTransportStateActive(),
+                                            -> SyncService.get().isTransportStateActive(),
                 "Timed out waiting for sync transport state to become active.", TIMEOUT_MS,
                 INTERVAL_MS);
     }
@@ -96,7 +95,7 @@ public final class SyncTestUtil {
      */
     public static void waitForEngineInitialized() {
         CriteriaHelper.pollUiThread(()
-                                            -> ProfileSyncService.get().isEngineInitialized(),
+                                            -> SyncService.get().isEngineInitialized(),
                 "Timed out waiting for sync's engine to initialize.", TIMEOUT_MS, INTERVAL_MS);
     }
 
@@ -105,8 +104,8 @@ public final class SyncTestUtil {
      */
     public static void waitForTrustedVaultKeyRequired(boolean desiredValue) {
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ProfileSyncService.get().isTrustedVaultKeyRequired(),
-                    Matchers.is(desiredValue));
+            Criteria.checkThat(
+                    SyncService.get().isTrustedVaultKeyRequired(), Matchers.is(desiredValue));
         }, TIMEOUT_MS, INTERVAL_MS);
     }
 
@@ -114,7 +113,7 @@ public final class SyncTestUtil {
      * Triggers a sync cycle.
      */
     public static void triggerSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { ProfileSyncService.get().triggerRefresh(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncService.get().triggerRefresh(); });
     }
 
     /**
@@ -136,40 +135,36 @@ public final class SyncTestUtil {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Long>() {
             @Override
             public Long call() {
-                return ProfileSyncService.get().getLastSyncedTimeForTest();
+                return SyncService.get().getLastSyncedTimeForDebugging();
             }
         });
     }
 
     /**
-     * Retrieves the local Sync data as a JSONArray via ProfileSyncService.
+     * Retrieves the local Sync data as a JSONArray via SyncService.
      *
      * This method blocks until the data is available or until it times out.
      */
-    private static JSONArray getAllNodesAsJsonArray() throws JSONException {
-        final Semaphore semaphore = new Semaphore(0);
-        final ProfileSyncService.GetAllNodesCallback callback =
-                new ProfileSyncService.GetAllNodesCallback() {
-                    @Override
-                    public void onResult(String nodesString) {
-                        super.onResult(nodesString);
-                        semaphore.release();
-                    }
+    private static JSONArray getAllNodesAsJsonArray() {
+        class NodesCallbackHelper extends CallbackHelper {
+            public JSONArray nodes;
         };
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ProfileSyncService.get().getAllNodes(callback); });
+        NodesCallbackHelper callbackHelper = new NodesCallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SyncService.get().getAllNodes((nodes) -> {
+                callbackHelper.nodes = nodes;
+                callbackHelper.notifyCalled();
+            });
+        });
 
         try {
-            Assert.assertTrue("Semaphore should have been released.",
-                    semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            callbackHelper.waitForNext();
+        } catch (TimeoutException e) {
+            assert false : "Timed out waiting for SyncService.getAllNodes()";
         }
 
-        return callback.getNodesAsJsonArray();
+        return callbackHelper.nodes;
     }
-
 
     /**
      * Extracts datatype-specific information from the given JSONObject. The returned JSONObject
@@ -234,7 +229,7 @@ public final class SyncTestUtil {
      * is a JSONObject representing the datatype-specific information for the entity. This data is
      * the same as the data stored in a specifics protocol buffer (e.g., TypedUrlSpecifics).
      *
-     * @param context the Context used to retreive the correct ProfileSyncService
+     * @param context the Context used to retreive the correct SyncService
      * @param typeString a String representing a specific datatype.
      *
      * TODO(pvalenzuela): Replace typeString with the native ModelType enum or something else
@@ -275,7 +270,7 @@ public final class SyncTestUtil {
      */
     public static void encryptWithPassphrase(final String passphrase) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> ProfileSyncService.get().setEncryptionPassphrase(passphrase));
+                () -> SyncService.get().setEncryptionPassphrase(passphrase));
         // Make sure the new encryption settings make it to the server.
         SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
@@ -285,6 +280,6 @@ public final class SyncTestUtil {
      */
     public static void decryptWithPassphrase(final String passphrase) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ProfileSyncService.get().setDecryptionPassphrase(passphrase); });
+                () -> { SyncService.get().setDecryptionPassphrase(passphrase); });
     }
 }

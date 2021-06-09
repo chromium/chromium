@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browsing_data;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceScreen;
@@ -18,13 +20,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -32,7 +35,6 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Integration tests for ClearBrowsingDataFragmentBasic.
@@ -59,42 +61,30 @@ public class ClearBrowsingDataFragmentBasicTest {
     private static final String OTHER_ACTIVITY = "other forms of browsing history";
     private static final String SYNCED_DEVICES = "synced devices";
 
-    private StubProfileSyncService mStubProfileSyncService;
+    @Mock
+    private SyncService mMockSyncService;
 
     @Before
     public void setUp() throws InterruptedException {
+        initMocks(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mMockSyncService));
+        setSyncable(false);
         mActivityTestRule.startMainActivityOnBlankPage();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Can only construct StubProfileSyncService after native was initialized by
-            // startMainActivityOnBlankPage() above.
-            mStubProfileSyncService = new StubProfileSyncService();
-            ProfileSyncService.overrideForTests(mStubProfileSyncService);
-        });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.resetForTests());
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
     }
 
-    private static class StubProfileSyncService extends ProfileSyncService {
-        private boolean mSyncable;
-
-        public void setSyncable(boolean syncable) {
-            mSyncable = syncable;
-        }
-
-        @Override
-        public boolean isSyncRequested() {
-            return mSyncable;
-        }
-
-        @Override
-        public Set<Integer> getActiveDataTypes() {
-            return mSyncable ? CollectionUtil.newHashSet(ModelType.HISTORY_DELETE_DIRECTIVES)
-                             : new HashSet<Integer>();
-        }
+    private void setSyncable(boolean syncable) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mMockSyncService.isSyncRequested()).thenReturn(syncable);
+            when(mMockSyncService.getActiveDataTypes())
+                    .thenReturn(syncable
+                                    ? CollectionUtil.newHashSet(ModelType.HISTORY_DELETE_DIRECTIVES)
+                                    : new HashSet<Integer>());
+        });
     }
 
     private String getCheckboxSummary(PreferenceScreen screen, String preference) {
@@ -135,7 +125,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     public void testCheckBoxTextSignedInButNotSyncing() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         // Simulate that Sync was stopped but the primary account remained.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStubProfileSyncService.setSyncable(false));
+        setSyncable(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -164,7 +154,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @SmallTest
     public void testCheckBoxTextSignedInAndSyncing() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStubProfileSyncService.setSyncable(true));
+        setSyncable(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
 

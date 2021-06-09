@@ -125,7 +125,7 @@ public class AndroidSyncSettingsTest {
     private AndroidSyncSettings mAndroidSyncSettings;
     private CountingMockSyncContentResolverDelegate mSyncContentResolverDelegate;
     @Mock
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
     private Account mAccount;
     private Account mAlternateAccount;
     private String mAuthority = AndroidSyncSettings.getContractAuthority();
@@ -135,7 +135,7 @@ public class AndroidSyncSettingsTest {
         mSyncContentResolverDelegate = new CountingMockSyncContentResolverDelegate();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SyncContentResolverDelegate.overrideForTests(mSyncContentResolverDelegate);
-            ProfileSyncService.overrideForTests(mProfileSyncService);
+            SyncService.overrideForTests(mSyncService);
         });
 
         FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
@@ -600,7 +600,7 @@ public class AndroidSyncSettingsTest {
         // in the past.
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(false);
+            when(mSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(false);
         });
 
         // Sync must remain disallowed as long as master sync is not re-enabled.
@@ -610,11 +610,11 @@ public class AndroidSyncSettingsTest {
         // Re-enable master sync at least once. Sync is now allowed and decoupled from master
         // sync.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> doNothing().when(mProfileSyncService).setDecoupledFromAndroidMasterSync());
+                () -> doNothing().when(mSyncService).setDecoupledFromAndroidMasterSync());
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> verify(mProfileSyncService).setDecoupledFromAndroidMasterSync());
+                () -> verify(mSyncService).setDecoupledFromAndroidMasterSync());
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
     }
@@ -627,9 +627,8 @@ public class AndroidSyncSettingsTest {
         // Master sync is disabled on startup, but the user has gone through the decoupling flow in
         // the past and has the DecoupleSyncFromAndroidMasterSync feature enabled.
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { when(mSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true); });
 
         // Chrome becomes aware of the previous decoupling, so Sync can be enabled despite master
         // sync being disabled.
@@ -645,9 +644,8 @@ public class AndroidSyncSettingsTest {
         // The user went through the master sync decoupling flow in the past, but has the
         // DecoupleSyncFromAndroidMasterSync feature disabled.
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { when(mSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true); });
 
         // Chrome should ignore that a previous decoupling happened. Sync should again respect
         // master sync, so it's not allowed.

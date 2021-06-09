@@ -132,17 +132,17 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     private Context mContext;
     private FakeServerHelper mFakeServerHelper;
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
     private MockSyncContentResolverDelegate mSyncContentResolver;
     private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileSyncService.setSyncRequested(false);
+            mSyncService.setSyncRequested(false);
             mFakeServerHelper = null;
             FakeServerHelper.destroyInstance();
         });
-        ProfileSyncService.resetForTests();
+        SyncService.resetForTests();
     }
 
     public SyncTestRule() {}
@@ -156,8 +156,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         return mFakeServerHelper;
     }
 
-    public ProfileSyncService getProfileSyncService() {
-        return mProfileSyncService;
+    public SyncService getSyncService() {
+        return mSyncService;
     }
 
     MockSyncContentResolverDelegate getSyncContentResolver() {
@@ -201,7 +201,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
         CoreAccountInfo accountInfo =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
+                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mSyncService);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -223,7 +223,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
         CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
-                /* profileSyncService= */ null);
+                /* syncService= */ null);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
@@ -231,8 +231,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void startSync() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfileSyncService.setSyncRequested(true); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mSyncService.setSyncRequested(true); });
     }
 
     public void startSyncAndWait() {
@@ -241,13 +240,12 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void stopSync() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfileSyncService.setSyncRequested(false); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mSyncService.setSyncRequested(false); });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
-        SigninTestUtil.signinAndEnableSync(accountInfo, mProfileSyncService);
+        SigninTestUtil.signinAndEnableSync(accountInfo, mSyncService);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -264,7 +262,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         mFakeServerHelper.clearServerData();
         SyncTestUtil.triggerSync();
         CriteriaHelper.pollUiThread(() -> {
-            return !ProfileSyncService.get().isSyncRequested();
+            return !SyncService.get().isSyncRequested();
         }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
 
@@ -273,9 +271,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public void enableDataType(final int modelType) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Set<Integer> chosenTypes = mProfileSyncService.getChosenDataTypes();
+            Set<Integer> chosenTypes = mSyncService.getChosenDataTypes();
             chosenTypes.add(modelType);
-            mProfileSyncService.setChosenDataTypes(false, chosenTypes);
+            mSyncService.setChosenDataTypes(false, chosenTypes);
         });
     }
 
@@ -284,7 +282,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public void setChosenDataTypes(boolean syncEverything, Set<Integer> chosenDataTypes) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfileSyncService.setChosenDataTypes(syncEverything, chosenDataTypes); });
+                () -> { mSyncService.setChosenDataTypes(syncEverything, chosenDataTypes); });
     }
 
     /*
@@ -300,9 +298,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public void disableDataType(final int modelType) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Set<Integer> chosenTypes = mProfileSyncService.getChosenDataTypes();
+            Set<Integer> chosenTypes = mSyncService.getChosenDataTypes();
             chosenTypes.remove(modelType);
-            mProfileSyncService.setChosenDataTypes(false, chosenTypes);
+            mSyncService.setChosenDataTypes(false, chosenTypes);
         });
     }
 
@@ -329,16 +327,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 TrustedVaultClient.setInstanceForTesting(
                         new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
-                // Load native since the FakeServer needs it and possibly ProfileSyncService as well
+                // Load native since the FakeServer needs it and possibly SyncService as well
                 // (depends on what fake is provided by |createProfileSyncService()|).
                 NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    ProfileSyncService profileSyncService = createProfileSyncService();
-                    if (profileSyncService != null) {
-                        ProfileSyncService.overrideForTests(profileSyncService);
+                    ProfileSyncService syncService = createProfileSyncService();
+                    if (syncService != null) {
+                        SyncService.overrideForTests(syncService);
                     }
-                    mProfileSyncService = ProfileSyncService.get();
+                    mSyncService = SyncService.get();
 
                     mContext = InstrumentationRegistry.getTargetContext();
                     mFakeServerHelper = FakeServerHelper.createInstanceAndGet();

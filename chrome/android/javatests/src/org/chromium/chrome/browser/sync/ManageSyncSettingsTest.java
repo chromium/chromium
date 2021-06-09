@@ -664,8 +664,7 @@ public class ManageSyncSettingsTest {
         final Set<Integer> disabledDataTypes = new HashSet<>(UI_DATATYPES.keySet());
         disabledDataTypes.removeAll(enabledDataTypes);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Set<Integer> actualDataTypes =
-                    mSyncTestRule.getProfileSyncService().getChosenDataTypes();
+            Set<Integer> actualDataTypes = mSyncTestRule.getSyncService().getChosenDataTypes();
             Assert.assertTrue(actualDataTypes.containsAll(enabledDataTypes));
             Assert.assertTrue(Collections.disjoint(disabledDataTypes, actualDataTypes));
         });

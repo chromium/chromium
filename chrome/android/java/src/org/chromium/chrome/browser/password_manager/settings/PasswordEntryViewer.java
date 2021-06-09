@@ -39,7 +39,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.password_manager.ReauthResult;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
@@ -216,7 +216,7 @@ public class PasswordEntryViewer
     }
 
     private boolean isPasswordSyncingUser() {
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncRequested()
                 && syncService.isEngineInitialized() && !syncService.isUsingExplicitPassphrase();
     }

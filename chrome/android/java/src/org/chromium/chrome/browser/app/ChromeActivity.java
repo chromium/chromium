@@ -149,7 +149,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.share.ShareRegistrationCoordinator;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -297,7 +297,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
 
     // Observes when sync becomes ready to create the mContextReporter.
-    private ProfileSyncService.SyncStateChangedListener mSyncStateChangedListener;
+    private SyncService.SyncStateChangedListener mSyncStateChangedListener;
 
     // The PictureInPictureController is initialized lazily https://crbug.com/729738.
     private PictureInPictureController mPictureInPictureController;
@@ -1007,7 +1007,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!mStarted) return; // Sync state reporting should work only in started state.
         if (mContextReporter != null || getActivityTab() == null) return;
 
-        final ProfileSyncService syncService = ProfileSyncService.get();
+        final SyncService syncService = SyncService.get();
 
         if (syncService != null && syncService.isSyncingUrlsWithKeystorePassphrase()) {
             ContextReporter.SelectionReporter controller =
@@ -1044,7 +1044,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Records an appropriate status via UMA given the current sync status.
      */
-    private static void reportSyncStatus(@Nullable ProfileSyncService syncService) {
+    private static void reportSyncStatus(@Nullable SyncService syncService) {
         if (syncService == null || !syncService.isEngineInitialized()) {
             ContextReporter.reportStatus(ContextReporter.STATUS_SYNC_NOT_INITIALIZED);
         } else if (!syncService.getActiveDataTypes().contains(ModelType.TYPED_URLS)) {
@@ -1140,7 +1140,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (mGSAAccountChangeListener != null) mGSAAccountChangeListener.disconnect();
         }
         if (mSyncStateChangedListener != null) {
-            ProfileSyncService syncService = ProfileSyncService.get();
+            SyncService syncService = SyncService.get();
             if (syncService != null) {
                 syncService.removeSyncStateChangedListener(mSyncStateChangedListener);
             }

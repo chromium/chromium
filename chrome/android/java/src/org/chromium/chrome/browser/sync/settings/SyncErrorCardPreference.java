@@ -17,13 +17,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 public class SyncErrorCardPreference extends Preference
-        implements ProfileSyncService.SyncStateChangedListener, ProfileDataCache.Observer {
+        implements SyncService.SyncStateChangedListener, ProfileDataCache.Observer {
     /**
      * Listener for the buttons in the error card.
      */
@@ -63,7 +63,7 @@ public class SyncErrorCardPreference extends Preference
     public void onAttached() {
         super.onAttached();
         mProfileDataCache.addObserver(this);
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -74,7 +74,7 @@ public class SyncErrorCardPreference extends Preference
     public void onDetached() {
         super.onDetached();
         mProfileDataCache.removeObserver(this);
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -151,7 +151,7 @@ public class SyncErrorCardPreference extends Preference
     }
 
     /**
-     * {@link ProfileSyncServiceListener} implementation.
+     * {@link SyncService.SyncStateChangedListener} implementation.
      */
     @Override
     public void syncStateChanged() {

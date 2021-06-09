@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTestHelper.hasTextInViewHolder;
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
@@ -48,7 +49,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -57,8 +58,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.util.Set;
 
 /**
  * Tests for the "Passwords" settings screen. These tests are not batchable (without significant
@@ -76,6 +75,9 @@ public class PasswordSettingsTest {
 
     @Mock
     private PasswordCheck mPasswordCheck;
+
+    @Mock
+    private SyncService mMockSyncService;
 
     private final PasswordSettingsTestHelper mTestHelper = new PasswordSettingsTestHelper();
 
@@ -181,7 +183,7 @@ public class PasswordSettingsTest {
         // empty.
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
-        overrideProfileSyncService(false, false);
+        overrideSyncService(false, false);
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
@@ -203,7 +205,7 @@ public class PasswordSettingsTest {
         // empty.
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
-        overrideProfileSyncService(false, true);
+        overrideSyncService(false, true);
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
@@ -225,7 +227,7 @@ public class PasswordSettingsTest {
         // empty.
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
-        overrideProfileSyncService(true, true);
+        overrideSyncService(true, true);
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
@@ -379,21 +381,14 @@ public class PasswordSettingsTest {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
-    private static void overrideProfileSyncService(
+    private void overrideSyncService(
             final boolean usingPassphrase, final boolean syncingPasswords) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ProfileSyncService.overrideForTests(new ProfileSyncService() {
-                @Override
-                public boolean isUsingExplicitPassphrase() {
-                    return usingPassphrase;
-                }
-
-                @Override
-                public Set<Integer> getActiveDataTypes() {
-                    if (syncingPasswords) return CollectionUtil.newHashSet(ModelType.PASSWORDS);
-                    return CollectionUtil.newHashSet(ModelType.AUTOFILL);
-                }
-            });
+            when(mMockSyncService.isUsingExplicitPassphrase()).thenReturn(usingPassphrase);
+            when(mMockSyncService.getActiveDataTypes())
+                    .thenReturn(CollectionUtil.newHashSet(
+                            syncingPasswords ? ModelType.PASSWORDS : ModelType.AUTOFILL));
+            SyncService.overrideForTests(mMockSyncService);
         });
     }
 }

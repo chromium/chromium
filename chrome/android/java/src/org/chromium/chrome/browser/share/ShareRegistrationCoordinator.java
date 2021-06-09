@@ -21,7 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -207,8 +207,7 @@ public class ShareRegistrationCoordinator {
     void doSendTabToSelfShare(@NonNull Context context, @Nullable NavigationEntry entry,
             @NonNull BottomSheetController bottomSheetController) {
         if (entry == null) return;
-        boolean isSyncEnabled =
-                ProfileSyncService.get() != null && ProfileSyncService.get().isSyncRequested();
+        boolean isSyncEnabled = SyncService.get() != null && SyncService.get().isSyncRequested();
         bottomSheetController.requestShowContent(
                 SendTabToSelfCoordinator.createBottomSheetContent(context, entry.getUrl().getSpec(),
                         entry.getTitle(), entry.getTimestamp(), bottomSheetController,

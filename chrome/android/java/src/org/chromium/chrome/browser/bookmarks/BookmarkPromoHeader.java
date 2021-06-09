@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -42,9 +42,8 @@ import java.lang.annotation.RetentionPolicy;
  * Class that manages all the logic and UI behind the signin promo header in the bookmark
  * content UI. The header is shown only on certain situations, (e.g., not signed in).
  */
-class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener,
-                                     SignInStateObserver, ProfileDataCache.Observer,
-                                     AccountsChangeObserver {
+class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignInStateObserver,
+                                     ProfileDataCache.Observer, AccountsChangeObserver {
     /**
      * Specifies the various states in which the Bookmarks promo can be.
      */
@@ -71,7 +70,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
     private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SigninPromoController mSigninPromoController;
     private @PromoState int mPromoState;
-    private final @Nullable ProfileSyncService mProfileSyncService;
+    private final @Nullable SyncService mSyncService;
 
     /**
      * Initializes the class. Note that this will start listening to signin related events and
@@ -81,8 +80,8 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
         mContext = context;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
 
-        mProfileSyncService = ProfileSyncService.get();
-        if (mProfileSyncService != null) mProfileSyncService.addSyncStateChangedListener(this);
+        mSyncService = SyncService.get();
+        if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
 
         mSignInManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
@@ -113,7 +112,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
      * Clean ups the class. Must be called once done using this class.
      */
     void destroy() {
-        if (mProfileSyncService != null) mProfileSyncService.removeSyncStateChangedListener(this);
+        if (mSyncService != null) mSyncService.removeSyncStateChangedListener(this);
 
         if (mSigninPromoController != null) {
             mAccountManagerFacade.removeObserver(this);
@@ -204,13 +203,13 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
             return sPromoStateForTests;
         }
 
-        if (mProfileSyncService == null) {
-            // |mProfileSyncService| will remain null until the next browser startup, so no sense in
+        if (mSyncService == null) {
+            // |mSyncService| will remain null until the next browser startup, so no sense in
             // offering any promo.
             return PromoState.PROMO_NONE;
         }
 
-        if (!mProfileSyncService.isSyncAllowedByPlatform()) {
+        if (!mSyncService.isSyncAllowedByPlatform()) {
             return PromoState.PROMO_NONE;
         }
 
@@ -228,13 +227,13 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
                 < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
-        if (!mProfileSyncService.isSyncRequested() && impressionLimitNotReached) {
+        if (!mSyncService.isSyncRequested() && impressionLimitNotReached) {
             return PromoState.PROMO_SYNC;
         }
         return PromoState.PROMO_NONE;
     }
 
-    // ProfileSyncService.SyncStateChangedListener implementation.
+    // SyncService.SyncStateChangedListener implementation.
     @Override
     public void syncStateChanged() {
         mPromoState = calculatePromoState();

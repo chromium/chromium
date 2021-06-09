@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.sync.FakeProfileSyncService;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -44,7 +44,7 @@ public class PassphraseActivityTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.resetForTests());
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
     }
 
     /**
@@ -55,8 +55,8 @@ public class PassphraseActivityTest {
     @Feature({"Sync"})
     public void testCallbackAfterBackgrounded() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        // Override before signing in, otherwise regular ProfileSyncService will be created.
-        overrideProfileSyncService();
+        // Override before signing in, otherwise regular SyncService will be created.
+        overrideSyncService();
         mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         // Create the activity.
@@ -69,8 +69,8 @@ public class PassphraseActivityTest {
             InstrumentationRegistry.getInstrumentation().callActivityOnSaveInstanceState(
                     activity, bundle);
             // Fake sync's backend finishing its initialization.
-            FakeProfileSyncService pss = (FakeProfileSyncService) ProfileSyncService.get();
-            pss.setEngineInitialized(true);
+            FakeProfileSyncService syncService = (FakeProfileSyncService) SyncService.get();
+            syncService.setEngineInitialized(true);
         });
         // Nothing crashed; success!
 
@@ -94,10 +94,10 @@ public class PassphraseActivityTest {
                 monitor);
     }
 
-    private void overrideProfileSyncService() {
+    private void overrideSyncService() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // PSS has to be constructed on the UI thread.
-            ProfileSyncService.overrideForTests(new FakeProfileSyncService());
+            SyncService.overrideForTests(new FakeProfileSyncService());
         });
     }
 }

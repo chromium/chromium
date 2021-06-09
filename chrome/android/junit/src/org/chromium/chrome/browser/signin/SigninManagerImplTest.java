@@ -27,7 +27,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
@@ -71,7 +71,7 @@ public class SigninManagerImplTest {
     private final IdentityMutator mIdentityMutator = mock(IdentityMutator.class);
     private final AndroidSyncSettings mAndroidSyncSettings = mock(AndroidSyncSettings.class);
     private final ExternalAuthUtils mExternalAuthUtils = mock(ExternalAuthUtils.class);
-    private final ProfileSyncService mProfileSyncService = mock(ProfileSyncService.class);
+    private final SyncService mSyncService = mock(SyncService.class);
 
     private final IdentityManager mIdentityManager =
             IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
@@ -81,7 +81,7 @@ public class SigninManagerImplTest {
     public void setUp() {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        ProfileSyncService.overrideForTests(mProfileSyncService);
+        SyncService.overrideForTests(mSyncService);
         AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
@@ -111,7 +111,7 @@ public class SigninManagerImplTest {
     @Test
     public void signinAndTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
-        when(mProfileSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
+        when(mSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
 
         mSigninManager.onFirstRunCheckDone();
 

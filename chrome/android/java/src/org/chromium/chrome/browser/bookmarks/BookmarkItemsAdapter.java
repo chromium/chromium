@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
@@ -42,7 +42,7 @@ import java.util.List;
  * BaseAdapter for {@link RecyclerView}. It manages bookmarks to list there.
  */
 class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
-        implements BookmarkUIObserver, ProfileSyncService.SyncStateChangedListener {
+        implements BookmarkUIObserver, SyncService.SyncStateChangedListener {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
@@ -56,7 +56,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     private BookmarkPromoHeader mPromoHeaderManager;
     private String mSearchText;
     private BookmarkId mCurrentFolder;
-    private ProfileSyncService mProfileSyncService;
+    private SyncService mSyncService;
 
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
@@ -109,8 +109,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     BookmarkItemsAdapter(Context context) {
         super(context);
-        mProfileSyncService = ProfileSyncService.get();
-        mProfileSyncService.addSyncStateChangedListener(this);
+        mSyncService = SyncService.get();
+        mSyncService.addSyncStateChangedListener(this);
     }
 
     /**
@@ -306,7 +306,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         mDelegate.getSelectionDelegate().removeObserver(this);
         mDelegate = null;
         mPromoHeaderManager.destroy();
-        mProfileSyncService.removeSyncStateChangedListener(this);
+        mSyncService.removeSyncStateChangedListener(this);
     }
 
     @Override

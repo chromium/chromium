@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -66,7 +66,7 @@ public class PriceTrackingUtilitiesTest {
     private IdentityServicesProvider mIdentityServicesProviderMock;
 
     @Mock
-    private ProfileSyncService mProfileSyncServiceMock;
+    private SyncService mSyncServiceMock;
 
     @Before
     public void setUp() throws Exception {
@@ -74,8 +74,7 @@ public class PriceTrackingUtilitiesTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
                 .thenReturn(mIdentityManagerMock);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ProfileSyncService.overrideForTests(mProfileSyncServiceMock));
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncServiceMock));
 
         setMbbStatus(true);
         setSignedInStatus(true);
@@ -84,7 +83,7 @@ public class PriceTrackingUtilitiesTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.resetForTests());
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
         IdentityServicesProvider.setInstanceForTests(null);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
     }
@@ -169,8 +168,8 @@ public class PriceTrackingUtilitiesTest {
     }
 
     private void setTabSyncStatus(boolean isSyncRequested, boolean hasSessions) {
-        when(mProfileSyncServiceMock.isSyncRequested()).thenReturn(isSyncRequested);
-        when(mProfileSyncServiceMock.getActiveDataTypes())
+        when(mSyncServiceMock.isSyncRequested()).thenReturn(isSyncRequested);
+        when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(hasSessions ? CollectionUtil.newHashSet(ModelType.SESSIONS)
                                         : CollectionUtil.newHashSet(ModelType.AUTOFILL));
     }

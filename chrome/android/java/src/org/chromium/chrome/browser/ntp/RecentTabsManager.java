@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -42,9 +42,8 @@ import java.util.List;
 /**
  * Provides the domain logic and data for RecentTabsPage and RecentTabsRowAdapter.
  */
-public class RecentTabsManager implements ProfileSyncService.SyncStateChangedListener,
-                                          SignInStateObserver, ProfileDataCache.Observer,
-                                          AccountsChangeObserver {
+public class RecentTabsManager implements SyncService.SyncStateChangedListener, SignInStateObserver,
+                                          ProfileDataCache.Observer, AccountsChangeObserver {
     /**
      * Implement this to receive updates when the page contents change.
      */
@@ -85,7 +84,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
     private final ProfileDataCache mProfileDataCache;
     private final SigninPromoController mSigninPromoController;
     @Nullable
-    private final ProfileSyncService mProfileSyncService;
+    private final SyncService mSyncService;
 
     /**
      * Create an RecentTabsManager to be used with RecentTabsPage and RecentTabsRowAdapter.
@@ -111,7 +110,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
-        mProfileSyncService = ProfileSyncService.get();
+        mSyncService = SyncService.get();
 
         mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {
             updateRecentlyClosedTabs();
@@ -132,8 +131,8 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
      */
     public void destroy() {
         mIsDestroyed = true;
-        if (mProfileSyncService != null) {
-            mProfileSyncService.removeSyncStateChangedListener(this);
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(this);
         }
 
         mSignInManager.removeSignInStateObserver(this);
@@ -168,8 +167,8 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
     }
 
     private void registerObservers() {
-        if (mProfileSyncService != null) {
-            mProfileSyncService.addSyncStateChangedListener(this);
+        if (mSyncService != null) {
+            mSyncService.addSyncStateChangedListener(this);
         }
 
         mSignInManager.addSignInStateObserver(this);
@@ -379,13 +378,13 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
             return PromoState.PROMO_SIGNIN_PERSONALIZED;
         }
 
-        if (mProfileSyncService == null) {
-            // |mProfileSyncService| will remain null until the next browser startup, so no sense in
+        if (mSyncService == null) {
+            // |mSyncService| will remain null until the next browser startup, so no sense in
             // offering any promo.
             return PromoState.PROMO_NONE;
         }
 
-        if (mProfileSyncService.isSyncRequested() && !mForeignSessions.isEmpty()) {
+        if (mSyncService.isSyncRequested() && !mForeignSessions.isEmpty()) {
             return PromoState.PROMO_NONE;
         }
         return PromoState.PROMO_SYNC;
@@ -421,7 +420,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
         update();
     }
 
-    // ProfileSyncService.SyncStateChangedListener implementation.
+    // SyncService.SyncStateChangedListener implementation.
     @Override
     public void syncStateChanged() {
         update();
