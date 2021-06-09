@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -209,10 +210,15 @@ class SessionRestoreImpl : public BrowserListObserver {
           (*i)->user_title, (*i)->window_id.id());
       browsers.push_back(browser);
 
+      // A foreign session window will not contain tab groups, however an
+      // instance is still required for RestoreTabsToBrowser.
+      base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
+          new_group_ids;
+
       // Restore and show the browser.
       const int initial_tab_count = 0;
-      RestoreTabsToBrowser(*(*i), browser, initial_tab_count,
-                           &created_contents);
+      RestoreTabsToBrowser(*(*i), browser, initial_tab_count, &created_contents,
+                           &new_group_ids);
       NotifySessionServiceOfRestoredTabs(browser, initial_tab_count);
     }
 
@@ -543,7 +549,10 @@ class SessionRestoreImpl : public BrowserListObserver {
       // For the cases that users have more than one desk, a window is restored
       // to its parent desk, which can be non-active desk, and left invisible
       // but unminimized.
-      RestoreTabsToBrowser(*(*i), browser, initial_tab_count, created_contents);
+      base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
+          new_group_ids;
+      RestoreTabsToBrowser(*(*i), browser, initial_tab_count, created_contents,
+                           &new_group_ids);
       (*tab_count) += (static_cast<int>(browser->tab_strip_model()->count()) -
                        initial_tab_count);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -556,7 +565,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       TabGroupModel* group_model = browser->tab_strip_model()->group_model();
       for (auto& session_tab_group : (*i)->tab_groups) {
         TabGroup* model_tab_group =
-            group_model->GetTabGroup(session_tab_group->id);
+            group_model->GetTabGroup(new_group_ids.at(session_tab_group->id));
         DCHECK(model_tab_group);
         model_tab_group->SetVisualData(session_tab_group->visual_data);
       }
@@ -631,10 +640,13 @@ class SessionRestoreImpl : public BrowserListObserver {
   // tabs but pinned tabs will be pushed in front.
   // If there are no existing tabs, the tab at |window.selected_tab_index| will
   // be selected. Otherwise, the tab selection will remain untouched.
-  void RestoreTabsToBrowser(const sessions::SessionWindow& window,
-                            Browser* browser,
-                            int initial_tab_count,
-                            std::vector<RestoredTab>* created_contents) {
+  void RestoreTabsToBrowser(
+      const sessions::SessionWindow& window,
+      Browser* browser,
+      int initial_tab_count,
+      std::vector<RestoredTab>* created_contents,
+      base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>*
+          new_group_ids) {
     DVLOG(1) << "RestoreTabsToBrowser " << window.tabs.size();
     // TODO(https://crbug.com/1032348): Change to DCHECK once we understand
     // why some browsers don't have an active tab on startup.
@@ -680,8 +692,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       // the existing ones. E.g. this happens in Win8 Metro where we merge
       // windows or when launching a hosted app from the app launcher.
       int tab_index = i + initial_tab_count;
-      RestoreTab(tab, browser, created_contents, tab_index, is_selected_tab,
-                 last_active_time);
+      RestoreTab(tab, browser, created_contents, new_group_ids, tab_index,
+                 is_selected_tab, last_active_time);
     }
   }
 
@@ -693,6 +705,8 @@ class SessionRestoreImpl : public BrowserListObserver {
   void RestoreTab(const sessions::SessionTab& tab,
                   Browser* browser,
                   std::vector<RestoredTab>* created_contents,
+                  base::flat_map<tab_groups::TabGroupId,
+                                 tab_groups::TabGroupId>* new_group_ids,
                   const int tab_index,
                   bool is_selected_tab,
                   base::TimeTicks last_active_time) {
@@ -716,17 +730,29 @@ class SessionRestoreImpl : public BrowserListObserver {
               ->RecreateSessionStorage(tab.session_storage_persistent_id);
     }
 
+    // Relabel group IDs to prevent duplicating groups. See crbug.com/1202102.
+    absl::optional<tab_groups::TabGroupId> new_group;
+    if (tab.group) {
+      auto it = new_group_ids->find(*tab.group);
+      if (it == new_group_ids->end()) {
+        it = new_group_ids
+                 ->emplace(*tab.group, tab_groups::TabGroupId::GenerateNew())
+                 .first;
+      }
+      new_group = it->second;
+    }
+
     // Apply the stored group.
     WebContents* web_contents = chrome::AddRestoredTab(
         browser, tab.navigations, tab_index, selected_index,
-        tab.extension_app_id, tab.group, is_selected_tab, tab.pinned,
+        tab.extension_app_id, new_group, is_selected_tab, tab.pinned,
         last_active_time, session_storage_namespace.get(),
         tab.user_agent_override, true /* from_session_restore */);
     DCHECK(web_contents);
 
     RestoredTab restored_tab(web_contents, is_selected_tab,
                              tab.extension_app_id.empty(), tab.pinned,
-                             tab.group);
+                             new_group);
     created_contents->push_back(restored_tab);
 
     // If this isn't the selected tab, there's nothing else to do.

@@ -1039,7 +1039,8 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, TabsWithGroups) {
 
   Browser* new_browser = QuitBrowserAndRestore(browser(), kNumTabs);
   ASSERT_EQ(kNumTabs, new_browser->tab_strip_model()->count());
-  EXPECT_EQ(groups, GetTabGroups(new_browser->tab_strip_model()));
+  ASSERT_NO_FATAL_FAILURE(
+      CheckTabGrouping(new_browser->tab_strip_model(), group_spec));
 }
 
 IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
@@ -1070,11 +1071,19 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   TabStripModel* const new_tsm = new_browser->tab_strip_model();
   ASSERT_EQ(5, new_tsm->count());
 
+  const absl::optional<tab_groups::TabGroupId> new_group1 =
+      new_tsm->GetTabGroupForTab(0);
+  const absl::optional<tab_groups::TabGroupId> new_group2 =
+      new_tsm->GetTabGroupForTab(2);
+
+  ASSERT_TRUE(new_group1);
+  ASSERT_TRUE(new_group2);
+
   // Check that the restored visual data is the same.
   const tab_groups::TabGroupVisualData* const group1_restored_data =
-      new_tsm->group_model()->GetTabGroup(group1)->visual_data();
+      new_tsm->group_model()->GetTabGroup(*new_group1)->visual_data();
   const tab_groups::TabGroupVisualData* const group2_restored_data =
-      new_tsm->group_model()->GetTabGroup(group2)->visual_data();
+      new_tsm->group_model()->GetTabGroup(*new_group2)->visual_data();
 
   EXPECT_EQ(group1_data.title(), group1_restored_data->title());
   EXPECT_EQ(group1_data.color(), group1_restored_data->color());
@@ -1082,6 +1091,37 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   EXPECT_EQ(group2_data.title(), group2_restored_data->title());
   EXPECT_EQ(group2_data.color(), group2_restored_data->color());
   EXPECT_EQ(group2_data.is_collapsed(), group2_restored_data->is_collapsed());
+}
+
+IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
+                       TabGroupIDsRelabeledOnRestore) {
+  constexpr int kNumTabs = 3;
+  const std::array<absl::optional<int>, kNumTabs> group_spec = {0, 0, 1};
+
+  // Open |kNumTabs| tabs.
+  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  for (int i = 1; i < kNumTabs; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GetUrl1(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  CreateTabGroups(browser()->tab_strip_model(), group_spec);
+  ASSERT_NO_FATAL_FAILURE(
+      CheckTabGrouping(browser()->tab_strip_model(), group_spec));
+  const auto orig_groups = GetTabGroups(browser()->tab_strip_model());
+
+  Browser* const new_browser = QuitBrowserAndRestore(browser(), 5);
+  TabStripModel* const new_tsm = new_browser->tab_strip_model();
+  ASSERT_EQ(kNumTabs, new_tsm->count());
+  ASSERT_NO_FATAL_FAILURE(CheckTabGrouping(new_tsm, group_spec));
+  const auto new_groups = GetTabGroups(new_tsm);
+
+  for (int i = 0; i < kNumTabs; ++i) {
+    SCOPED_TRACE(i);
+    EXPECT_NE(orig_groups[i], new_groups[i]);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(WithAndWithoutReset,
