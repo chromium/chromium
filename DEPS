@@ -1573,6 +1573,12 @@ deps = {
       'condition': 'checkout_linux',
   },
 
+  # Additional Wayland protocols specific for GNOME desktop environment.
+  'src/third_party/wayland-protocols/gtk': {
+      'url': Var('chromium_git') + '/external/github.com/GNOME/gtk.git' + '@' + '40ebed3a03aef096addc0af09fec4ec529d882a0',
+      'condition': 'checkout_linux',
+  },
+
   'src/third_party/webdriver/pylib':
     Var('chromium_git') + '/external/github.com/SeleniumHQ/selenium/py.git' + '@' + 'd0045ec570c1a77612db35d1e92f05e1d27b4d53',
 

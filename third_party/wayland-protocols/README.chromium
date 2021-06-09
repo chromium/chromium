@@ -1,6 +1,14 @@
 This component wraps several external sources of Wayland protocol extensions.
 Descriptions of each source go below.
 
+To upgrade a source to a new version:
+- Find the commit hash of that version in the project's git repository specified
+  in the source's section below.
+- Update the DEPS entry to the commit found above with this command:
+  $ roll-dep --roll-to=<commit> <source-checkout-path>
+- Run gclient sync to update the local working copy with the new version.
+- Update this README to reflect the new version number in the source's section.
+
 --------------------------------------------------------------------------------
 Name: wayland-protocols
 URL: http://wayland.freedesktop.org/
@@ -13,13 +21,30 @@ Description:
 wayland-protocols/src contains the official library of Wayland protocol
 extensions maintained by the developers of the Wayland project.
 
-To upgrade to a new version:
-- Find the commit hash of that version in the project's git repository, which is
-  https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
-- Update the DEPS entry to the commit found above with this command:
-  $ roll-dep --roll-to=<commit> src/third_party/wayland-protocols/src
-- Run gclient sync to update the local working copy with the new version.
-- Update this README to reflect the new version number.
+Repository:
+https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
+
+Source checkout path:
+src/third_party/wayland-protocols/src
+
+--------------------------------------------------------------------------------
+Name: gtk
+URL: https://github.com/GNOME/gtk
+Version: 4.3.0
+License: GNU LGPL 2
+License File: gtk/COPYING
+Security Critical: yes
+
+Description:
+wayland-protocols/gtk contains the GTK toolkit.  In its gdk/wayland/protocol
+subdirectory there are Wayland protocol extensions exposed by Mutter Wayland
+compositor, which is used by GNOME desktop environment.
+
+Repository:
+https://github.com/GNOME/gtk.git.
+
+Source checkout path:
+src/third_party/wayland-protocols/gtk
 
 --------------------------------------------------------------------------------
 Name: plasma-wayland-protocols
@@ -33,10 +58,8 @@ Description:
 wayland-protocols/kde contains Wayland protocol extensions exposed by
 KWin Wayland compositor, which is used by KDE Plasma desktop environment.
 
-To upgrade to a new version:
-- Find the commit hash of that version in the project's git repository, which is
-  https://github.com/KDE/plasma-wayland-protocols.git.
-- Update the DEPS entry to the commit found above with this command:
-  $ roll-dep --roll-to=<commit> src/third_party/wayland-protocols/kde
-- Run gclient sync to update the local working copy with the new version.
-- Update this README to reflect the new version number.
+Repository:
+https://github.com/KDE/plasma-wayland-protocols.git.
+
+Source checkout path:
+src/third_party/wayland-protocols/kde
