@@ -639,6 +639,8 @@ source_set("browser") {
     "compute_pressure/compute_pressure_sample.h",
     "compute_pressure/compute_pressure_sampler.cc",
     "compute_pressure/compute_pressure_sampler.h",
+    "compute_pressure/cpu_core_speed_info.cc",
+    "compute_pressure/cpu_core_speed_info.h",
     "compute_pressure/cpu_probe.cc",
     "compute_pressure/cpu_probe.h",
     "compute_pressure/cpuid_base_frequency_parser.cc",

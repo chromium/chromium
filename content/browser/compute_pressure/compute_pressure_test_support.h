@@ -26,6 +26,10 @@ bool operator==(const ComputePressureSample& lhs,
 
 std::ostream& operator<<(std::ostream& os, const ComputePressureSample& sample);
 
+// googletest integration with CpuCoreSpeedInfo.
+struct CpuCoreSpeedInfo;
+std::ostream& operator<<(std::ostream& os, const CpuCoreSpeedInfo& info);
+
 // Synchronous proxy to a blink::mojom::ComputePressureManager.
 class ComputePressureHostSync {
  public:

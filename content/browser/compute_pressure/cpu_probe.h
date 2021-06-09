@@ -58,18 +58,6 @@ class CONTENT_EXPORT CpuProbe {
   // CPU compute resource availability between the last two Update() calls.
   virtual ComputePressureSample LastSample() = 0;
 
-  // Computes the normalized speed of a single CPU core.
-  //
-  // Returns -1 if the input is invalid. Otherwise, returns a number in the
-  // range [0.0, 1.0].
-  //
-  // Input frequencies are expected to be expressed in Hz. However, any unit
-  // works, as long as all frequencies use the same unit.
-  static double CoreSpeed(double min_frequency,
-                          double max_frequency,
-                          double base_frequency,
-                          double current_frequency);
-
  protected:
   // The constructor is intentionally only exposed to subclasses. Production
   // code must use the Create() factory method.

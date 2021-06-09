@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/compute_pressure/compute_pressure_sample.h"
+#include "content/browser/compute_pressure/cpu_core_speed_info.h"
 
 namespace content {
 
@@ -26,6 +27,13 @@ std::ostream& operator<<(std::ostream& os,
                          const ComputePressureSample& sample) {
   os << "[utilization: " << sample.cpu_utilization
      << " speed: " << sample.cpu_speed << "]";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const CpuCoreSpeedInfo& info) {
+  os << "[min: " << info.min_frequency << " max: " << info.max_frequency
+     << " base: " << info.base_frequency
+     << " current: " << info.current_frequency << "]";
   return os;
 }
 

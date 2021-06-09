@@ -1898,7 +1898,7 @@ test("content_unittests") {
     "../browser/compute_pressure/compute_pressure_sampler_unittest.cc",
     "../browser/compute_pressure/compute_pressure_test_support.cc",
     "../browser/compute_pressure/compute_pressure_test_support.h",
-    "../browser/compute_pressure/cpu_probe_unittest.cc",
+    "../browser/compute_pressure/cpu_core_speed_info_unittest.cc",
     "../browser/compute_pressure/cpuid_base_frequency_parser_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",

@@ -2,23 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/compute_pressure/cpu_probe.h"
+#include "content/browser/compute_pressure/cpu_core_speed_info.h"
 
 #include <vector>
 
+#include "content/browser/compute_pressure/compute_pressure_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
-TEST(CpuProbeTest, CoreSpeed_InvalidInputs) {
-  struct TestCase {
-    double min_frequency;
-    double max_frequency;
-    double base_frequency;
-    double current_frequency;
-  };
-
-  std::vector<TestCase> test_cases = {
+TEST(CpuCoreSpeedInfoTest, NormalizedSpeed_InvalidInputs) {
+  std::vector<CpuCoreSpeedInfo> test_cases = {
       // -1 inputs.
       {-1, 3'800'000'000, 3'000'000'000, 1'000'000'000},
       {1'000'000'000, -1, 3'000'000'000, 1'000'000'000},
@@ -30,19 +24,13 @@ TEST(CpuProbeTest, CoreSpeed_InvalidInputs) {
       {1'000'000'000, 1'000'000'000, 1'000'000'000, 1'000'000'000},
   };
 
-  for (const TestCase& test_case : test_cases) {
-    SCOPED_TRACE(testing::Message()
-                 << "min: " << test_case.min_frequency
-                 << " max: " << test_case.max_frequency
-                 << " base: " << test_case.base_frequency
-                 << " current: " << test_case.current_frequency);
-    EXPECT_EQ(-1, CpuProbe::CoreSpeed(
-                      test_case.min_frequency, test_case.max_frequency,
-                      test_case.base_frequency, test_case.current_frequency));
+  for (const CpuCoreSpeedInfo& test_case : test_cases) {
+    SCOPED_TRACE(test_case);
+    EXPECT_EQ(false, test_case.IsValid());
   }
 }
 
-TEST(CpuProbeTest, CoreSpeed_Math) {
+TEST(CpuCoreSpeedInfoTest, NormalizedSpeed_Math) {
   struct TestCase {
     double min_frequency;
     double max_frequency;
@@ -125,15 +113,16 @@ TEST(CpuProbeTest, CoreSpeed_Math) {
   };
 
   for (const TestCase& test_case : test_cases) {
-    SCOPED_TRACE(testing::Message()
-                 << "min: " << test_case.min_frequency
-                 << " max: " << test_case.max_frequency
-                 << " base: " << test_case.base_frequency
-                 << " current: " << test_case.current_frequency);
-    EXPECT_EQ(test_case.cpu_speed,
-              CpuProbe::CoreSpeed(
-                  test_case.min_frequency, test_case.max_frequency,
-                  test_case.base_frequency, test_case.current_frequency));
+    CpuCoreSpeedInfo info = {
+        .min_frequency = test_case.min_frequency,
+        .max_frequency = test_case.max_frequency,
+        .base_frequency = test_case.base_frequency,
+        .current_frequency = test_case.current_frequency,
+    };
+
+    SCOPED_TRACE(info);
+    ASSERT_EQ(true, info.IsValid());
+    EXPECT_EQ(test_case.cpu_speed, info.NormalizedSpeed());
   }
 }
 

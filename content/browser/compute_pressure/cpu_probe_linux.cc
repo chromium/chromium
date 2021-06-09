@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
+#include "content/browser/compute_pressure/cpu_core_speed_info.h"
 #include "content/browser/compute_pressure/cpuid_base_frequency_parser.h"
 #include "content/browser/compute_pressure/procfs_stat_cpu_parser.h"
 #include "content/browser/compute_pressure/sysfs_cpufreq_core_parser.h"
@@ -142,15 +143,18 @@ void CpuProbeLinux::Initialize() {
 double CpuProbeLinux::CoreSpeed(SysfsCpufreqCoreParser& cpufreq_parser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int64_t max_frequency = cpufreq_parser.ReadMaxFrequency();
-  int64_t min_frequency = cpufreq_parser.ReadMinFrequency();
-  int64_t current_frequency = cpufreq_parser.ReadCurrentFrequency();
-  int64_t base_frequency = cpufreq_parser.ReadBaseFrequency();
-  if (base_frequency == -1)
-    base_frequency = cpuid_base_frequency_;
+  CpuCoreSpeedInfo core_speed_info;
+  core_speed_info.max_frequency = cpufreq_parser.ReadMaxFrequency();
+  core_speed_info.min_frequency = cpufreq_parser.ReadMinFrequency();
+  core_speed_info.current_frequency = cpufreq_parser.ReadCurrentFrequency();
+  core_speed_info.base_frequency = cpufreq_parser.ReadBaseFrequency();
+  if (core_speed_info.base_frequency == -1)
+    core_speed_info.base_frequency = cpuid_base_frequency_;
 
-  return CpuProbe::CoreSpeed(min_frequency, max_frequency, base_frequency,
-                             current_frequency);
+  if (!core_speed_info.IsValid())
+    return -1;
+
+  return core_speed_info.NormalizedSpeed();
 }
 
 }  // namespace content
