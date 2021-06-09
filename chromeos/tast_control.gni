@@ -21,12 +21,19 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1099695
   "platform.Drivefs",
 
+  # crbug.com/1131496
+  "apps.LaunchHelpApp.clamshell_oobe_stable",
+  "apps.LaunchHelpApp.tablet_oobe_stable",
+
   # crbug.com/1148036
   "ui.ExistingUserLogin",
   "ui.SigninProfileExtension",
 
   # crbug.com/1154794
   "policy.DefaultGeolocationSetting",
+
+  # crbug.com/1115622
+  "inputs.VirtualKeyboardOOBE",
 
   # crbug.com/1156006
   "filemanager.DragDrop",
@@ -51,6 +58,12 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
+
+  # crbug.com/1185030
+  "inputs.VirtualKeyboardJapaneseInputs.stable",
+
+  # crbug.com/1185031
+  "inputs.VirtualKeyboardInputFields.jp_us_stable",
 
   # crbug.com/1192623
   "policy.AllowDeletingBrowserHistory",
