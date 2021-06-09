@@ -105,7 +105,7 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
     is_alt_right_key_down_ = event->type == mojom::KeyEventType::kKeyDown;
   }
 
-  const bool isAltDown = event->modifier_state->alt && !is_alt_right_key_down_;
+  const bool is_alt_down = event->modifier_state->alt && !is_alt_right_key_down_;
 
   // - Shift/AltRight/Caps/Ctrl are modifier keys for the characters which the
   // Mojo service may accept, but don't send the keys themselves to Mojo.
@@ -113,7 +113,7 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
   // engine.
   if (event->type != mojom::KeyEventType::kKeyDown ||
       (IsModifierKey(event->code) || event->modifier_state->control ||
-       isAltDown)) {
+       is_alt_down)) {
     std::move(callback).Run(mojom::KeypressResponseForRulebased::New(
         false, std::vector<mojom::OperationForRulebasedPtr>(0)));
     return;
