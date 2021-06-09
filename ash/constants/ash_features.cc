@@ -462,7 +462,7 @@ const base::Feature kInstantTethering{"InstantTethering",
 
 // Enables or disables noise cancellation UI toggle.
 const base::Feature kEnableInputNoiseCancellationUi{
-    "EnableInputNoiseCancellationUi", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables to use lacros-chrome as a primary web browser on Chrome OS.
 // This works only when LacrosSupport below is enabled.
