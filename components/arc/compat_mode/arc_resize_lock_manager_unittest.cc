@@ -123,24 +123,29 @@ TEST_F(ArcResizeLockManagerTest, TestNonArcWindowPropertyChange) {
 // Test that size button callback changes nothing for fullscreen.
 TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnFullscreenWidget) {
   auto widget = CreateTestWidget();
+  widget->Show();
   widget->SetFullscreen(true);
   EXPECT_TRUE(widget->IsFullscreen());
   EXPECT_FALSE(OnResizeButtonPressed(widget.get()));
   EXPECT_TRUE(widget->IsFullscreen());
+  widget->CloseNow();
 }
 
 // Test that size button callback changes nothing for maximized.
 TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnMaximizedWidget) {
   auto widget = CreateTestWidget();
+  widget->Show();
   widget->Maximize();
   EXPECT_TRUE(widget->IsMaximized());
   EXPECT_FALSE(OnResizeButtonPressed(widget.get()));
   EXPECT_TRUE(widget->IsMaximized());
+  widget->CloseNow();
 }
 
 // Test that size button callback works properly for freeform.
 TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnFreeformWidget) {
   auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  widget->Show();
 
   // Test the toggle menu is shown and the default maximize button
   // behavior is cancelled.
@@ -149,6 +154,8 @@ TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnFreeformWidget) {
   EXPECT_TRUE(OnResizeButtonPressed(widget.get()));
   EXPECT_FALSE(widget->IsMaximized());
   EXPECT_TRUE(IsToggleMenuShown());
+
+  widget->CloseNow();
 }
 
 }  // namespace arc

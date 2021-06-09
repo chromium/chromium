@@ -160,23 +160,43 @@ class RoundedCornerBubbleDialogDelegateView
 ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
                                    ArcResizeLockPrefDelegate* pref_delegate)
     : widget_(widget), pref_delegate_(pref_delegate) {
-  const gfx::Rect client_view_rect =
-      widget_->client_view()->GetBoundsInScreen();
-  // Anchored to the top edge of the client_view with padding.
-  constexpr auto kMarginTopDp = 8;
-  const gfx::Rect anchor_rect =
-      gfx::Rect(client_view_rect.x(), client_view_rect.y() + kMarginTopDp,
-                client_view_rect.width(), 0);
-
   bubble_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(MakeBubbleDelegateView(
-          widget_, anchor_rect,
+          widget_, GetAnchorRect(),
           base::BindRepeating(&ResizeToggleMenu::ExecuteCommand,
                               base::Unretained(this))));
+  widget_observations_.AddObservation(widget_);
+  widget_observations_.AddObservation(bubble_widget_);
   bubble_widget_->Show();
 }
 
 ResizeToggleMenu::~ResizeToggleMenu() = default;
+
+void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
+  widget_observations_.RemoveAllObservations();
+  widget_ = nullptr;
+  bubble_widget_ = nullptr;
+}
+
+void ResizeToggleMenu::OnWidgetBoundsChanged(views::Widget* widget,
+                                             const gfx::Rect& new_bounds) {
+  if (widget != widget_)
+    return;
+
+  DCHECK(bubble_widget_);
+  bubble_widget_->widget_delegate()->AsBubbleDialogDelegate()->SetAnchorRect(
+      GetAnchorRect());
+}
+
+gfx::Rect ResizeToggleMenu::GetAnchorRect() const {
+  DCHECK(widget_);
+  const gfx::Rect client_view_rect =
+      widget_->client_view()->GetBoundsInScreen();
+  // Anchored to the top edge of the client_view with padding.
+  constexpr auto kMarginTopDp = 8;
+  return gfx::Rect(client_view_rect.x(), client_view_rect.y() + kMarginTopDp,
+                   client_view_rect.width(), 0);
+}
 
 std::unique_ptr<views::BubbleDialogDelegateView>
 ResizeToggleMenu::MakeBubbleDelegateView(
