@@ -147,6 +147,10 @@ mojo::PendingRemote<mojom::ExternalConnector> BrokerService::CreateConnector() {
 
 void BrokerService::BindServiceRequest(
     mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+  if (service_receiver_.is_bound()) {
+    LOG(INFO) << "BrokerService is re-binding to the Service Manager.";
+    service_receiver_.Close();
+  }
   service_receiver_.Bind(std::move(receiver));
 }
 
