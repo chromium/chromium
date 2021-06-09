@@ -166,6 +166,8 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                              fill_data.password_field.value.size(),
                              suggestions);
 
+  int prefered_match = suggestions->size();
+
   for (const auto& login : fill_data.additional_logins) {
     AppendSuggestionIfMatching(login.username, current_username, custom_icon,
                                login.realm, show_all, is_password_field,
@@ -173,12 +175,19 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                                suggestions);
   }
 
+  std::sort(suggestions->begin() + prefered_match, suggestions->end(),
+            [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
+              return a.value < b.value;
+            });
+
   // Prefix matches should precede other token matches.
   if (!show_all && autofill::IsFeatureSubstringMatchEnabled()) {
-    std::sort(suggestions->begin(), suggestions->end(),
-              [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
-                return a.match < b.match;
-              });
+    // Using stable sort in order to preserve sorting by 'value'
+    std::stable_sort(
+        suggestions->begin(), suggestions->end(),
+        [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
+          return a.match < b.match;
+        });
   }
 }
 

@@ -921,6 +921,16 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   additional.username = u"John Foo";
   data.additional_logins.push_back(additional);
 
+  autofill::PasswordAndMetadata additional1;
+  additional1.realm = "https://foobarrealm.org";
+  additional1.username = u"Kohn Foo";
+  data.additional_logins.push_back(std::move(additional1));
+
+  autofill::PasswordAndMetadata additional2;
+  additional2.realm = "https://foobarrealm.org";
+  additional2.username = u"Gohn Foo";
+  data.additional_logins.push_back(std::move(additional2));
+
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // First, simulate displaying suggestions matching an empty prefix. Also
@@ -932,10 +942,10 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
-  EXPECT_THAT(
-      open_args.suggestions,
-      SuggestionVectorValuesAre(testing::UnorderedElementsAre(
-          test_username_, additional.username, GetManagePasswordsTitle())));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorValuesAre(testing::UnorderedElementsAre(
+                  test_username_, u"Gohn Foo", u"John Foo", u"Kohn Foo",
+                  GetManagePasswordsTitle())));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorLabelsAre(testing::Contains(u"foo.com")));
   EXPECT_THAT(open_args.suggestions,
@@ -956,9 +966,10 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, u"xyz", autofill::SHOW_ALL, element_bounds);
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorValuesAre(ElementsAre(
-                                         test_username_, additional.username,
-                                         GetManagePasswordsTitle())));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorValuesAre(
+                  ElementsAre(test_username_, u"Gohn Foo", u"John Foo",
+                              u"Kohn Foo", GetManagePasswordsTitle())));
 }
 
 // Verify that, for Android application credentials, the prettified realms of
