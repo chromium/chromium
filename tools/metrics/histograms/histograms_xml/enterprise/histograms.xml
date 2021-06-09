@@ -121,6 +121,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus"
     enum="PrivateSetMembershipStatus" expires_after="2021-10-31">
+  <obsolete>
+    Deprecated since June 2021 and replaced with
+    Enterprise.AutoEnrollmentPsmResult.
+  </obsolete>
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
@@ -157,6 +161,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Comparison of hash dance and private set membership results used to
     determine the initial enrollment state of the device. Only recorded after
     both protocols have been executed successfully with different results.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AutoEnrollmentPsmResult" enum="PsmResult"
+    expires_after="2021-10-31">
+<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
+
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    All possible PSM protocol results after it has executed succcessfully or
+    terminated due to an error or timeout. This request is used to determine the
+    initial enrollment state of the device.
   </summary>
 </histogram>
 

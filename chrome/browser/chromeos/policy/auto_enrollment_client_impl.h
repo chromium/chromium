@@ -47,13 +47,21 @@ private_membership::rlwe::RlwePlaintextId ConstructDeviceRlweId(
 // determination it won't allow another membership check.
 class PsmHelper;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PsmStatus {
-  kAttempt = 0,
-  kSuccessfulDetermination = 1,
-  kError = 2,
-  kTimeout = 3,
+// Indicates all possible PSM protocol results after it has executed
+// successfully or terminated because of an error or timeout. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class PsmResult {
+  kSuccessfulDetermination = 0,
+  kCreateRlweClientLibraryError = 1,
+  kCreateOprfRequestLibraryError = 2,
+  kCreateQueryRequestLibraryError = 3,
+  kProcessingQueryResponseLibraryError = 4,
+  kEmptyOprfResponseError = 5,
+  kEmptyQueryResponseError = 6,
+  kConnectionError = 7,
+  kServerError = 8,
+  kTimeout = 9,
   kMaxValue = kTimeout,
 };
 

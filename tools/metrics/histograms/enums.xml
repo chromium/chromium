@@ -64659,6 +64659,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PrivateSetMembershipStatus">
+  <obsolete>
+    Deprecated since June 2021 and replaced with PsmResult.
+  </obsolete>
   <int value="0" label="Attempt"/>
   <int value="1" label="Successful Determination"/>
   <int value="2" label="Error"/>
@@ -65615,6 +65618,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="PsmHashDanceDifferentResultsComparison">
   <int value="0" label="Hash dance true and PSM false"/>
   <int value="1" label="PSM true and Hash dance false"/>
+</enum>
+
+<enum name="PsmResult">
+  <int value="0" label="Successful Determination"/>
+  <int value="1" label="Create RLWE client library Error"/>
+  <int value="2" label="Create RLWE OPRF request library error"/>
+  <int value="3" label="Create RLWE query request library error"/>
+  <int value="4" label="Processing query response library error"/>
+  <int value="5" label="Empty RLWE OPRF response error"/>
+  <int value="6" label="Empty RLWE query response Error"/>
+  <int value="7" label="Connection Error"/>
+  <int value="8" label="Server Error"/>
+  <int value="9" label="Timeout"/>
 </enum>
 
 <enum name="PublicKeyPinFailedDomain">
