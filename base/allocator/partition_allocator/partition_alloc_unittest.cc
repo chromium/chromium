@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -3040,12 +3041,12 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-  EXPECT_EQ(NotInDirectMapOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotInDirectMap,
             *ReservationOffsetPointer(ptr_as_uintptr));
   allocator.root()->Free(ptr);
 
   // For not yet allocated memory, offset should be kOffsetTagNotAllocated.
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
 
   // For direct-map,
@@ -3072,16 +3073,16 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
 
   allocator.root()->Free(ptr);
   // After free, the offsets must be kOffsetTagNotAllocated.
-  EXPECT_EQ(NotAllocatedOffsetTag(), *ReservationOffsetPointer(ptr_as_uintptr));
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated, *ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
-  EXPECT_EQ(NotAllocatedOffsetTag(),
+  EXPECT_EQ(kOffsetTagNotAllocated,
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
 }
 

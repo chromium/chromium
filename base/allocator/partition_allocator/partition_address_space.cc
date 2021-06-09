@@ -82,32 +82,6 @@ void PartitionAddressSpace::Init() {
   SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-  // Allocate the reservation offset table from GigaCage (it fits in a supe
-  // page). We arbitrarily picked the end of the BRP pool, so that it can be
-  // easily located.
-  static_assert(kReservationOffsetTableSize <= kSuperPageSize, "");
-  void* requested_reservation_offset_table_address = reinterpret_cast<void*>(
-      brp_pool_base_address_ + kBRPPoolSize - kSuperPageSize);
-  void* actual_reservation_offset_table_address =
-      internal::AddressPoolManager::GetInstance()->Reserve(
-          brp_pool_, requested_reservation_offset_table_address,
-          kSuperPageSize);
-  PA_CHECK(requested_reservation_offset_table_address ==
-           actual_reservation_offset_table_address)
-      << "Reservation offset table has to be in a predictable location";
-  RecommitSystemPages(
-      actual_reservation_offset_table_address,
-      bits::AlignUp(kReservationOffsetTableSize, SystemPageSize()),
-      PageReadWrite, PageUpdatePermissions);
-  // Mark all super pages in the reservation offset table as "not allocated".
-  // It is ok to keep PCScan card table and the reservation offset table that
-  // are carved out above as "not allocated", because these are internal
-  // structures, so won't be queried for belonging to direct map/normal buckets.
-  auto* reservation_offset_table = ReservationOffsetTable();
-  PA_CHECK(actual_reservation_offset_table_address == reservation_offset_table);
-  for (size_t i = 0; i < kReservationOffsetTableLength; ++i)
-    reservation_offset_table[i] = kOffsetTagNotAllocated;
-
   PA_DCHECK(reserved_base_address_ + properties.size == current);
 }
 

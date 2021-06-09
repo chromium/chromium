@@ -1860,6 +1860,8 @@ component("base") {
         "allocator/partition_allocator/partition_tls.h",
         "allocator/partition_allocator/random.cc",
         "allocator/partition_allocator/random.h",
+        "allocator/partition_allocator/reservation_offset_table.cc",
+        "allocator/partition_allocator/reservation_offset_table.h",
         "allocator/partition_allocator/spinning_mutex.cc",
         "allocator/partition_allocator/spinning_mutex.h",
         "allocator/partition_allocator/starscan/metadata_allocator.cc",

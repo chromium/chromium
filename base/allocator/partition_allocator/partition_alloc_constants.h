@@ -188,7 +188,7 @@ NumPartitionPagesPerSuperPage() {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
-// because this is the reservation granularit of the GigaCage.
+// because this is the reservation granularity of the GigaCage.
 constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
   return kSuperPageSize;
 }

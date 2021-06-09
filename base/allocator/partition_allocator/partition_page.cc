@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -245,9 +246,9 @@ void DeferredUnmap::Unmap() {
   // condition.
   uint16_t i = 0;
   while (ptr_as_uintptr < ptr_end) {
-    PA_DCHECK(offset_ptr < EndOfReservationOffsetTable());
+    PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd());
     PA_DCHECK(*offset_ptr == i++);
-    *offset_ptr++ = NotAllocatedOffsetTag();
+    *offset_ptr++ = kOffsetTagNotAllocated;
     ptr_as_uintptr += kSuperPageSize;
   }
 
