@@ -956,6 +956,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/thumbnail:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/internal:junit",
+    "//chrome/browser/ui/android/autofill/internal:junit",
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//chrome/browser/ui/android/default_browser_promo:junit",
     "//chrome/browser/ui/android/favicon:java",
