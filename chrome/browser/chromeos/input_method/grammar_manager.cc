@@ -88,10 +88,10 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
 void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
                                               int cursor_pos,
                                               int anchor_pos) {
+  if (suggestion_shown_)
+    DismissSuggestion();
+
   if (text != last_text_) {
-    if (suggestion_shown_) {
-      DismissSuggestion();
-    }
     // Grammar check is cpu consuming, so we only send request to ml service
     // when the user has stopped typing for some time.
     delay_timer_.Start(
@@ -102,16 +102,18 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
     return;
   }
 
+  // Do not show the suggestion when the user is selecting a range of text, so
+  // that we will not show conflict with the system copy/paste popup.
+  if (cursor_pos != anchor_pos)
+    return;
+
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
 
-  gfx::Range cursor_range = cursor_pos <= anchor_pos
-                                ? gfx::Range(cursor_pos, anchor_pos)
-                                : gfx::Range(anchor_pos, cursor_pos);
   absl::optional<ui::GrammarFragment> grammar_fragment_opt =
-      input_context->GetGrammarFragment(cursor_range);
+      input_context->GetGrammarFragment(gfx::Range(cursor_pos));
 
   if (grammar_fragment_opt) {
     current_fragment_ = grammar_fragment_opt.value();
@@ -127,8 +129,6 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
     }
     highlighted_button_ = ui::ime::ButtonId::kNone;
     suggestion_shown_ = true;
-  } else if (suggestion_shown_) {
-    DismissSuggestion();
   }
 }
 

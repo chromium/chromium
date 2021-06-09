@@ -198,6 +198,31 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   manager.OnSurroundingTextChanged(u"There is error.", 3, 3);
 }
 
+TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
+  ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+
+  manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+
+  AssistiveWindowProperties expected_properties;
+  expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  expected_properties.candidates = {u"correct"};
+  expected_properties.visible = true;
+
+  EXPECT_CALL(mock_suggestion_handler,
+              SetAssistiveWindowProperties(1, expected_properties, _));
+
+  manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
+
+  EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
+
+  manager.OnSurroundingTextChanged(u"There is error.", 9, 10);
+}
+
 TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestion) {
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
   GrammarManager manager(profile_.get(),
