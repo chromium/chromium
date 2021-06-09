@@ -917,7 +917,6 @@ public class AwAutofillTest {
     }
 
     @Test
-    @FlakyTest(message = "https://crbug.com/1074525")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testTouchingFormWithAdjustResize() throws Throwable {
