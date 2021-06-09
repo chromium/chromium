@@ -190,6 +190,9 @@ void OnDeviceSpeechRecognizer::UpdateStatus(SpeechRecognizerStatus state) {
   waiting_for_params_ = false;
   if (state_ == state)
     return;
-  delegate()->OnSpeechRecognitionStateChanged(state);
+
   state_ = state;
+  // Since the |OnSpeechRecognitionStateChanged| call below can destroy |this|
+  // it should be the last thing done in here.
+  delegate()->OnSpeechRecognitionStateChanged(state);
 }

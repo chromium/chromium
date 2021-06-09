@@ -97,6 +97,13 @@ class ProjectorClientTest : public InProcessBrowserTest {
     loop.RunUntilIdle();
   }
 
+  void SendTranscriptionError() {
+    EXPECT_TRUE(fake_service_->is_capturing_audio());
+    base::RunLoop loop;
+    fake_service_->SendSpeechRecognitionError();
+    loop.RunUntilIdle();
+  }
+
  protected:
   std::unique_ptr<ProjectorController::ScopedInstanceResetterForTest>
       scoped_resetter_;
@@ -133,6 +140,9 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SpeechRecognitionResults) {
                                 kSecondSpeechResult, false)));
   SendSpeechResult(kSecondSpeechResult, false /* is_final */);
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*controller_, OnTranscriptionError());
+  SendTranscriptionError();
 }
 
 }  // namespace ash
