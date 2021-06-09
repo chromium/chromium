@@ -293,8 +293,8 @@ void ModuleDatabase::RemoveObserver(ModuleDatabaseObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ModuleDatabase::ForceStartInspection() {
-  module_inspector_.ForceStartInspection();
+void ModuleDatabase::IncreaseInspectionPriority() {
+  module_inspector_.IncreaseInspectionPriority();
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
