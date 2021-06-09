@@ -7,12 +7,17 @@
 #include <chrono>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
 namespace raster {
+
+GrCacheController::GrCacheController(SharedContextState* context_state)
+    : context_state_(context_state),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 GrCacheController::GrCacheController(
     SharedContextState* context_state,

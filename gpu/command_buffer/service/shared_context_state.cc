@@ -206,6 +206,9 @@ SharedContextState::SharedContextState(
   if (base::ThreadTaskRunnerHandle::IsSet()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "SharedContextState", base::ThreadTaskRunnerHandle::Get());
+
+    // Create |gr_cache_controller_| only if we have task runner.
+    gr_cache_controller_.emplace(this);
   }
   // Initialize the scratch buffer to some small initial size.
   scratch_deserialization_buffer_.resize(
@@ -856,6 +859,11 @@ bool SharedContextState::CheckResetStatus(bool need_gl) {
     return true;
   }
   return false;
+}
+
+void SharedContextState::ScheduleGrContextCleanup() {
+  if (gr_cache_controller_)
+    gr_cache_controller_->ScheduleGrContextCleanup();
 }
 
 }  // namespace gpu

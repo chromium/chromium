@@ -328,7 +328,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // alive until all clients have recovered, we use a ref-counted object and
   // allow the decoders to manage its lifetime.
   absl::optional<raster::GrShaderCache> gr_shader_cache_;
-  absl::optional<raster::GrCacheController> gr_cache_controller_;
   scoped_refptr<SharedContextState> shared_context_state_;
 
   // With --enable-vulkan, |vulkan_context_provider_| will be set from

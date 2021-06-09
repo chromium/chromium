@@ -562,11 +562,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
                                      context_group_->feature_info());
       }
 
-      if (base::ThreadTaskRunnerHandle::IsSet()) {
-        gr_cache_controller_.emplace(context_state_.get(),
-                                     base::ThreadTaskRunnerHandle::Get());
-      }
-
       context_ = context_state_->context();
       decoder_.reset(raster::RasterDecoder::Create(
           this, command_buffer_.get(), task_executor_->outputter(),
@@ -697,7 +692,6 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
     surface_->PrepareToDestroy(have_context);
 
   if (decoder_) {
-    gr_cache_controller_.reset();
     decoder_->Destroy(have_context);
     decoder_.reset();
   }
@@ -1224,8 +1218,7 @@ void InProcessCommandBuffer::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
 
 void InProcessCommandBuffer::ScheduleGrContextCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  if (gr_cache_controller_)
-    gr_cache_controller_->ScheduleGrContextCleanup();
+  context_state_->ScheduleGrContextCleanup();
 }
 
 void InProcessCommandBuffer::HandleReturnData(base::span<const uint8_t> data) {

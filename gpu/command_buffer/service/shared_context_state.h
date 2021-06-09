@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
+#include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -220,6 +222,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool CheckResetStatus(bool needs_gl);
   bool device_needs_reset() { return device_needs_reset_; }
 
+  void ScheduleGrContextCleanup();
+
  private:
   friend class base::RefCounted<SharedContextState>;
   friend class raster::RasterDecoderTestBase;
@@ -349,6 +353,8 @@ class GPU_GLES2_EXPORT SharedContextState
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<ExternalSemaphorePool> external_semaphore_pool_;
 #endif
+
+  absl::optional<raster::GrCacheController> gr_cache_controller_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 
