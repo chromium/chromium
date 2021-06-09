@@ -42,6 +42,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -816,7 +817,7 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
  public:
   LookingForQuotaErrorMockCallbacks()
       : IndexedDBCallbacks(nullptr,
-                           url::Origin(),
+                           blink::StorageKey(),
                            mojo::NullAssociatedRemote(),
                            base::SequencedTaskRunnerHandle::Get()) {}
   void OnError(const IndexedDBDatabaseError& error) override {

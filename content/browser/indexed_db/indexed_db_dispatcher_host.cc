@@ -276,7 +276,9 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
 
   const auto& origin = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      this->AsWeakPtr(), blink::StorageKey(origin),
+      std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
       std::move(callbacks), origin, indexed_db_path);
@@ -295,7 +297,9 @@ void IndexedDBDispatcherHost::Open(
 
   const auto& origin = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      this->AsWeakPtr(), blink::StorageKey(origin),
+      std::move(pending_callbacks), IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
@@ -322,7 +326,9 @@ void IndexedDBDispatcherHost::DeleteDatabase(
 
   const auto& origin = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      this->AsWeakPtr(), blink::StorageKey(origin),
+      std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
       name, std::move(callbacks), origin, indexed_db_path, force_close);
