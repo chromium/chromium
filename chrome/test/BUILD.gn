@@ -3935,7 +3935,7 @@ group("telemetry_perf_unittests_base") {
 
     # For tests in tools/perf/process_perf_results_unittest.py
     "//build/android/pylib/",
-    "//tools/swarming_client/",
+    "//third_party/logdog/logdog",
 
     # For representative perf testing run_rendering_benchmark_with_gated_performance.py
     "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
