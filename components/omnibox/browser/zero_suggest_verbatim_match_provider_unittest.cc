@@ -36,18 +36,12 @@ class ZeroSuggestVerbatimMatchProviderTest
 };
 
 bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
-  switch (GetParam()) {
-    case metrics::OmniboxEventProto::OTHER:
-      return true;
-    case metrics::OmniboxEventProto::
-        SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT:
-    case metrics::OmniboxEventProto::
-        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
-      return base::FeatureList::IsEnabled(
-          omnibox::kOmniboxSearchReadyIncognito);
-    default:
-      return false;
-  }
+  auto param = GetParam();
+  return param == metrics::OmniboxEventProto::OTHER ||
+         param == metrics::OmniboxEventProto::
+                      SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+         param == metrics::OmniboxEventProto::
+                      SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
 }
 
 void ZeroSuggestVerbatimMatchProviderTest::SetUp() {

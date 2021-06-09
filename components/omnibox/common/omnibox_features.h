@@ -64,7 +64,6 @@ extern const base::Feature kClipboardSuggestionContentHidden;
 extern const base::Feature kCompactSuggestions;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
-extern const base::Feature kOmniboxSearchReadyIncognito;
 extern const base::Feature kOmniboxPedalsBatch2;
 extern const base::Feature kOmniboxPedalsBatch2NonEnglish;
 extern const base::Feature kOmniboxPedalsDefaultIconColored;

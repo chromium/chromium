@@ -327,11 +327,8 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(
         new MostVisitedSitesProvider(provider_client_.get(), this));
     // Note: the need for the always-present verbatim match originates from the
-    // OmniboxSearchReadyIncognito feature.
-    // The feature aims at showing SRO in an Incognito mode, where the
+    // search-ready omnibox (SRO) in Incognito mode, where the
     // ZeroSuggestProvider intentionally never gets invoked.
-    // The gating flag here should be removed when the SRO Incognito is
-    // launched.
     providers_.push_back(
         new ZeroSuggestVerbatimMatchProvider(provider_client_.get()));
   }

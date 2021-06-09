@@ -245,10 +245,6 @@ extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
 const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature that enables Search Ready Omnibox in incognito.
-const base::Feature kOmniboxSearchReadyIncognito{
-    "OmniboxSearchReadyIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to enable the second batch of Pedals (Safety Check, etc.).
 const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

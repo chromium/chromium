@@ -985,9 +985,6 @@ extern const char kOmniboxOnFocusSuggestionsContextualWebDescription[];
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 
-extern const char kOmniboxSearchReadyIncognitoName[];
-extern const char kOmniboxSearchReadyIncognitoDescription[];
-
 extern const char kOmniboxSpareRendererName[];
 extern const char kOmniboxSpareRendererDescription[];
 

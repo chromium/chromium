@@ -22,19 +22,12 @@ const int kVerbatimMatchRelevanceScore = 1600;
 bool IsVerbatimMatchEligible(
     metrics::OmniboxEventProto::PageClassification context) {
   // Only offer verbatim match on a site visit and SRP (no NTP etc).
-  switch (context) {
-    case metrics::OmniboxEventProto::
-        SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT:
-    case metrics::OmniboxEventProto::
-        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
-      return base::FeatureList::IsEnabled(
-          omnibox::kOmniboxSearchReadyIncognito);
-    case metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET:
-    case metrics::OmniboxEventProto::OTHER:
-      return true;
-    default:
-      return false;
-  }
+  return context == metrics::OmniboxEventProto::
+                        SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+         context == metrics::OmniboxEventProto::
+                        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
+         context == metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET ||
+         context == metrics::OmniboxEventProto::OTHER;
 }
 
 }  // namespace

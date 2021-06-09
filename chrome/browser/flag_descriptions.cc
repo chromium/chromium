@@ -1722,11 +1722,6 @@ const char kOmniboxOnFocusSuggestionsContextualWebDescription[] =
     "current URL. Will only work if user is signed-in and syncing, or is "
     "otherwise eligible to send the current page URL to the suggest server.";
 
-const char kOmniboxSearchReadyIncognitoName[] =
-    "Search ready omnibox in incognito";
-const char kOmniboxSearchReadyIncognitoDescription[] =
-    "Show search ready omnibox when browsing incognito.";
-
 const char kOmniboxSpareRendererName[] =
     "Start spare renderer on omnibox focus";
 const char kOmniboxSpareRendererDescription[] =

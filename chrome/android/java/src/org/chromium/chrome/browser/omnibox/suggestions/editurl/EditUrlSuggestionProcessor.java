@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -78,11 +77,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         Tab activeTab = mTabSupplier.get();
         if (activeTab == null || !activeTab.isInitialized() || activeTab.isNativePage()
                 || SadTab.isShowing(activeTab)) {
-            return false;
-        }
-
-        if (activeTab.isIncognito()
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SEARCH_READY_INCOGNITO)) {
             return false;
         }
 
