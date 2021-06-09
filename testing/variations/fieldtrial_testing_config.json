@@ -6001,6 +6001,23 @@
             ]
         }
     ],
+    "PasswordMassMigrationToGoogleAccount": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableMovingMultiplePasswordsToAccount"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentRequestAlwaysAllowJustInTimePaymentApp": [
         {
             "platforms": [
