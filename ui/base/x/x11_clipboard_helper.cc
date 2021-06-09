@@ -228,6 +228,8 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
       base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
     available_types.push_back(kMimeTypeURIList);
   }
+  if (target_list.ContainsFormat(ClipboardFormatType::GetWebCustomDataType()))
+    available_types.push_back(kMimeTypeWebCustomData);
 
   return available_types;
 }
