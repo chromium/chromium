@@ -63,8 +63,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -129,9 +127,7 @@
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "chrome/browser/ui/startup/web_app_protocol_handling_startup_utils.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
@@ -399,86 +395,6 @@ void FinalizeWebAppLaunch(
     launch_mode_recorder->SetLaunchMode(mode);
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
 }
-
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-// Tries to launch the web app from a protocol handler url. Checks if the passed
-// in url is a potential protocol url, if it is, check the protocol handler
-// registry for an entry. If there is an entry, then check if we need approval
-// from the user to launch this web app. If we didn't have approval from a
-// previous session, launch the permission dialog to ask for approval. If we did
-// get permission in the past, directly launch the web app with the translated
-// url. Returns true if the command line references a valid app and also
-// contains a protocol url that is specifically registered by the app.
-// `launch_mode_recorder` is used if and only if this function returns true.
-bool MaybeLaunchProtocolHandlerWebApp(
-    const base::CommandLine& command_line,
-    const base::FilePath& cur_dir,
-    Profile* profile,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
-  std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
-  // We must have a kAppId switch arg in the command line to launch.
-  if (app_id.empty())
-    return false;
-
-  GURL protocol_url;
-  base::CommandLine::StringVector args = command_line.GetArgs();
-  for (const auto& arg : args) {
-#if defined(OS_WIN)
-    GURL potential_protocol(base::AsStringPiece16(arg));
-#else
-    GURL potential_protocol(arg);
-#endif  // defined(OS_WIN)
-    // protocol_url is checked for validity later on with GetHandlersFor() where
-    // we consult the ProtocolHandlerRegistry and find entries that match this
-    // protocol.
-    if (potential_protocol.is_valid()) {
-      protocol_url = std::move(potential_protocol);
-      break;
-    }
-  }
-  if (protocol_url.is_empty())
-    return false;
-
-  web_app::WebAppProviderBase* provider =
-      web_app::WebAppProviderBase::GetProviderBase(profile);
-  web_app::OsIntegrationManager& os_integration_manager =
-      provider->os_integration_manager();
-  const std::vector<ProtocolHandler> handlers =
-      os_integration_manager.GetHandlersForProtocol(protocol_url.scheme());
-
-  // Nothing to do if there are no handlers with a web_app_id.
-  if (!base::Contains(handlers, true, [](const auto& handler) {
-        return handler.web_app_id().has_value();
-      })) {
-    return false;
-  }
-
-  auto launch_callback = base::BindOnce(
-      [](const base::CommandLine& command_line, const base::FilePath& cur_dir,
-         Profile* profile, const GURL& protocol_url,
-         const web_app::AppId& app_id,
-         std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
-         bool accepted) {
-        if (accepted) {
-          apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->BrowserAppLauncher()
-              ->LaunchAppWithCallback(
-                  app_id, command_line, cur_dir,
-                  /*url_handler_launch_url=*/absl::nullopt, protocol_url,
-                  base::BindOnce(&FinalizeWebAppLaunch,
-                                 std::move(launch_mode_recorder)));
-        }  // else allow the process to exit without opening a browser.
-      },
-      command_line, cur_dir, profile, protocol_url, app_id,
-      std::move(launch_mode_recorder));
-  // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
-  // running of `launch_callback`.
-  chrome::ShowWebAppProtocolHandlerIntentPicker(std::move(protocol_url),
-                                                profile, std::move(app_id),
-                                                std::move(launch_callback));
-  return true;
-}
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 // If the process was launched with the web application command line flags,
 // e.g. --app=http://www.google.com/ or --app_id=... return true.
@@ -1085,13 +1001,44 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   // Web app Protocol handling.
-  if (MaybeLaunchProtocolHandlerWebApp(
-          command_line, cur_dir, privacy_safe_profile,
-          std::make_unique<LaunchModeRecorder>())) {
+  auto startup_callback = base::BindOnce(
+      [](bool process_startup, const base::CommandLine& command_line,
+         const base::FilePath& cur_dir, Profile* profile,
+         Profile* last_used_profile,
+         const std::vector<Profile*>& last_opened_profiles) {
+        // TODO(crbug.com/1208199): Refactor StartupBrowserCreator and use the
+        // state struct here.
+        StartupBrowserCreator browser_creator;
+        browser_creator.StartupLaunchAfterProtocolHandler(
+            command_line, cur_dir, profile, process_startup, last_used_profile,
+            last_opened_profiles);
+      },
+      process_startup);
+
+  // web_app::startup::MaybeLaunchProtocolHandlerWebApp keeps the `profile`
+  // alive through running of `startup_callback`.
+  if (web_app::startup::MaybeLaunchProtocolHandlerWebApp(
+          command_line, cur_dir, privacy_safe_profile, last_used_profile,
+          last_opened_profiles,
+          base::BindOnce(&FinalizeWebAppLaunch,
+                         std::make_unique<LaunchModeRecorder>()),
+          std::move(startup_callback))) {
     return true;
   }
 #endif
 
+  return StartupLaunchAfterProtocolHandler(
+      command_line, cur_dir, privacy_safe_profile, process_startup,
+      last_used_profile, last_opened_profiles);
+}
+
+bool StartupBrowserCreator::StartupLaunchAfterProtocolHandler(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* privacy_safe_profile,
+    bool process_startup,
+    Profile* last_used_profile,
+    const std::vector<Profile*>& last_opened_profiles) {
   // If we're being run as an application window or application tab, don't
   // restore tabs or open initial URLs as the user has directly launched an app
   // shortcut. In the first case, the user should see a standlone app window. In

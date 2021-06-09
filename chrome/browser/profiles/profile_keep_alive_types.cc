@@ -43,6 +43,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kWebAppPermissionDialogWindow";
     case ProfileKeepAliveOrigin::kSessionDataDeleter:
       return out << "kSessionDataDeleter";
+    case ProfileKeepAliveOrigin::kWebAppProtocolHandlerLaunch:
+      return out << "kWebAppProtocolHandlerLaunch";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

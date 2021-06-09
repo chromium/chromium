@@ -77,7 +77,10 @@ enum class ProfileKeepAliveOrigin {
   // Data for Clear on Exit is being deleted.
   kSessionDataDeleter = 16,
 
-  kMaxValue = kSessionDataDeleter,
+  // Waiting for the provider to be ready in protocol handler web app launch.
+  kWebAppProtocolHandlerLaunch = 17,
+
+  kMaxValue = kWebAppProtocolHandlerLaunch,
 };
 
 std::ostream& operator<<(std::ostream& out,
