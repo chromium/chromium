@@ -72345,6 +72345,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="Too Many STAs"/>
   <int value="14" label="Bad Passphrase"/>
   <int value="15" label="Bad Wep Key"/>
+  <int value="16" label="Sim Locked"/>
+  <int value="17" label="Not registered"/>
 </enum>
 
 <enum name="ShillSuspendTerminationDarkResumeActionResult">
@@ -80509,6 +80511,8 @@ Full version information for the fingerprint enum values:
   <int value="12" label="Not connected"/>
   <int value="13" label="Activate Failed"/>
   <int value="14" label="Enabled or disabled when not available"/>
+  <int value="15" label="Cellular device busy"/>
+  <int value="16" label="Error Connect Timeout"/>
 </enum>
 
 <enum name="UserInitiatedEvent">

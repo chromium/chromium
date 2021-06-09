@@ -156,7 +156,10 @@ CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
     return CellularMetricsLogger::ConnectResult::kInvalidGuid;
 
   if (error_name == NetworkConnectionHandler::kErrorConnected ||
-      error_name == NetworkConnectionHandler::kErrorConnecting) {
+      error_name == NetworkConnectionHandler::kErrorConnecting ||
+      error_name == NetworkConnectionHandler::kErrorNotConnected ||
+      error_name ==
+          NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate) {
     return CellularMetricsLogger::ConnectResult::kInvalidState;
   }
 
@@ -201,6 +204,12 @@ CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
         kEnabledOrDisabledWhenNotAvailable;
   }
 
+  if (error_name == NetworkConnectionHandler::kErrorCellularDeviceBusy)
+    return CellularMetricsLogger::ConnectResult::kErrorCellularDeviceBusy;
+
+  if (error_name == NetworkConnectionHandler::kErrorConnectTimeout)
+    return CellularMetricsLogger::ConnectResult::kErrorConnectTimeout;
+
   return CellularMetricsLogger::ConnectResult::kUnknown;
 }
 
@@ -234,6 +243,10 @@ CellularMetricsLogger::ShillErrorToConnectResult(
     return CellularMetricsLogger::ShillConnectResult::kNotAssociated;
   else if (error_name == shill::kErrorNotAuthenticated)
     return CellularMetricsLogger::ShillConnectResult::kNotAuthenticated;
+  else if (error_name == shill::kErrorSimLocked)
+    return CellularMetricsLogger::ShillConnectResult::kErrorSimLocked;
+  else if (error_name == shill::kErrorNotRegistered)
+    return CellularMetricsLogger::ShillConnectResult::kErrorNotRegistered;
   return CellularMetricsLogger::ShillConnectResult::kUnknown;
 }
 
