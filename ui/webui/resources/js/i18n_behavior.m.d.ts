@@ -4,7 +4,7 @@
 
 import {SanitizeInnerHtmlOpts} from './parse_html_subset.m.js';
 
-export interface I18nBehaviorInterface {
+export interface I18nBehavior {
   locale: string|null|undefined;
   i18nUpdateLocale(): void;
   i18n(id: string, ...var_args: Array<string|number>): string;
@@ -13,9 +13,5 @@ export interface I18nBehaviorInterface {
   i18nRecursive(locale: string, id: string, ...var_args: string[]): string;
   i18nExists(id: string): boolean;
 }
-
-export {I18nBehavior};
-
-interface I18nBehavior extends I18nBehaviorInterface {}
 
 declare const I18nBehavior: object;

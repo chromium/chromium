@@ -18,11 +18,11 @@ import './strings.m.js';
 
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

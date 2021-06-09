@@ -13,7 +13,7 @@ import '../shared/chooser_shared_css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -45,7 +45,7 @@ const KEYBOARD_FOCUSED = 'keyboard-focused';
 
 const NuxGoogleAppsElementBase =
     mixinBehaviors([I18nBehavior], NavigationMixin(PolymerElement)) as
-    {new (): PolymerElement & NavigationMixinInterface & I18nBehaviorInterface};
+    {new (): PolymerElement & NavigationMixinInterface & I18nBehavior};
 
 /** @polymer */
 export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {

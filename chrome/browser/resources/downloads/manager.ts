@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

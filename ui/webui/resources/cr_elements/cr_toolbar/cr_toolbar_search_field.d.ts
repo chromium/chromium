@@ -4,9 +4,9 @@
 
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-import {CrSearchFieldBehaviorInterface} from '../cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.js';
 
-interface CrToolbarSearchFieldElement extends CrSearchFieldBehaviorInterface,
+interface CrToolbarSearchFieldElement extends CrSearchFieldBehavior,
                                               LegacyElementMixin, HTMLElement {
   narrow: boolean;
   showingSearch: boolean;

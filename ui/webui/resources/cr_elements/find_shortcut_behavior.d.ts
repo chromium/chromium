@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface FindShortcutBehaviorInterface {
+export interface FindShortcutBehavior {
   findShortcutListenOnAttach: boolean;
   becomeActiveFindShortcutListener(): void;
   handleFindShortcut(modalContextOpen: boolean): boolean;
   removeSelfAsFindShortcutListener(): void;
   searchInputHasFocus(): boolean;
 }
-
-export {FindShortcutBehavior};
-
-interface FindShortcutBehavior extends FindShortcutBehaviorInterface {}
 
 declare const FindShortcutBehavior: object;

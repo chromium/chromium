@@ -4,7 +4,7 @@
 
 import {FocusRow} from './focus_row.m.js';
 
-export interface FocusRowBehaviorInterface {
+export interface FocusRowBehavior {
   id: string|null|undefined;
   isFocused: boolean|null|undefined;
   focusRowIndex: number|null|undefined;
@@ -14,9 +14,5 @@ export interface FocusRowBehaviorInterface {
   focusRowIndexChanged(newIndex: number, oldIndex: number): void;
   getFocusRow(): FocusRow;
 }
-
-export {FocusRowBehavior};
-
-interface FocusRowBehavior extends FocusRowBehaviorInterface {}
 
 declare const FocusRowBehavior: object;

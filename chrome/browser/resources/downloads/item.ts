@@ -18,7 +18,7 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {HTMLEscape} from 'chrome://resources/js/util.m.js';
