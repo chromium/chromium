@@ -39,6 +39,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/known_user.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,7 +49,6 @@ namespace assistant {
 
 namespace {
 
-constexpr char kScopeAuthGcm[] = "https://www.googleapis.com/auth/gcm";
 constexpr char kScopeAssistant[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
 
@@ -433,7 +433,7 @@ void Service::RequestAccessToken() {
 
   signin::ScopeSet scopes;
   scopes.insert(kScopeAssistant);
-  scopes.insert(kScopeAuthGcm);
+  scopes.insert(GaiaConstants::kGCMGroupServerOAuth2Scope);
 
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_info.account_id, "cros_assistant", scopes,
