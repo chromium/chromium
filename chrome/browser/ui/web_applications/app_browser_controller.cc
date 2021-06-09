@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
-#include "chrome/browser/ui/manifest_web_app_browser_controller.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -125,8 +124,6 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
     }
   }
 #endif
-  if (!controller && browser->is_focus_mode())
-    controller = std::make_unique<ManifestWebAppBrowserController>(browser);
   if (controller)
     controller->Init();
   return controller;
@@ -455,13 +452,8 @@ std::u16string AppBrowserController::GetTitle() const {
       web_contents->GetController().GetVisibleEntry();
   std::u16string raw_title = entry ? entry->GetTitle() : std::u16string();
 
-  // The AppBrowserController is still used for focus mode windows, which do not
-  // have an `app_id_`. Exit early in that case.
-  if (!base::FeatureList::IsEnabled(
-          features::kPrefixWebAppWindowsWithAppName) ||
-      !HasAppId()) {
+  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
     return raw_title;
-  }
 
   std::u16string app_name =
       base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())

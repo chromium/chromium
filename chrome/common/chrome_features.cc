@@ -431,9 +431,6 @@ const base::Feature kFlashDeprecationWarning{"FlashDeprecationWarning",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-// Enables Focus Mode which brings up a PWA-like window look.
-const base::Feature kFocusMode{"FocusMode", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_WIN)
 // Enables using GDI to print text as simply text.
 const base::Feature kGdiTextPrinting{"GdiTextPrinting",

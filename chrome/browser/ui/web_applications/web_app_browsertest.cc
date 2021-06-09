@@ -1007,15 +1007,12 @@ class WebAppBrowserTest_PrefixInTitle
       public testing::WithParamInterface<bool> {
  public:
   WebAppBrowserTest_PrefixInTitle() {
-    // Focus mode uses AppBrowserController without an AppId, which we must
-    // handle in `GetTitle()`, so we have to test with this feature.
     if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kFocusMode, features::kPrefixWebAppWindowsWithAppName},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kPrefixWebAppWindowsWithAppName);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kFocusMode}, {features::kPrefixWebAppWindowsWithAppName});
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kPrefixWebAppWindowsWithAppName);
     }
   }
 
@@ -1088,30 +1085,6 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
 
   // When we are off scope, show the app title.
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
-                       GetTitleWorksWithNoAppId) {
-  // Focus mode uses web app window codepaths without installing a web app,
-  // which means there is no available app id.
-  const GURL url("http://aaa.com/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  Browser* app_browser = web_app::ReparentWebContentsForFocusMode(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_TRUE(app_browser->is_type_app());
-  EXPECT_NE(app_browser, browser());
-
-  content::WebContents* main_browser_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(main_browser_web_contents);
-  EXPECT_NE(url, main_browser_web_contents->GetLastCommittedURL());
-
-  GURL app_browser_url = app_browser->tab_strip_model()
-                             ->GetActiveWebContents()
-                             ->GetLastCommittedURL();
-  EXPECT_EQ(url, app_browser_url);
-  EXPECT_TRUE(app_browser->is_focus_mode());
 }
 
 INSTANTIATE_TEST_SUITE_P(WebAppBrowserTestTitlePrefix,

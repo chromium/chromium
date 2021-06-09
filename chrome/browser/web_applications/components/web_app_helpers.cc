@@ -27,9 +27,6 @@ namespace {
 // are no naming conflicts.
 const char kCrxAppPrefix[] = "_crx_";
 
-const char kFocusModePrefix[] = "_focus_";
-int64_t focus_mode_counter = 0;
-
 }  // namespace
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
@@ -40,12 +37,6 @@ std::string GenerateApplicationNameFromAppId(const AppId& app_id) {
   std::string t(kCrxAppPrefix);
   t.append(app_id);
   return t;
-}
-
-// TODO(crbug.com/943194): Move this method to Focus Mode specific file.
-// TODO(crbug.com/943653): Use site's manifest scope as window grouping key.
-std::string GenerateApplicationNameForFocusMode() {
-  return kFocusModePrefix + base::NumberToString(focus_mode_counter++);
 }
 
 AppId GetAppIdFromApplicationName(const std::string& app_name) {

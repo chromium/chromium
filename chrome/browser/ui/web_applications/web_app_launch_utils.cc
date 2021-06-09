@@ -157,20 +157,6 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           gfx::Rect(), profile, true /* user_gesture */)));
 }
 
-Browser* ReparentWebContentsForFocusMode(content::WebContents* contents) {
-  DCHECK(base::FeatureList::IsEnabled(features::kFocusMode));
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  // TODO(crbug.com/941577): Remove DCHECK when focus mode is permitted in guest
-  // and incognito sessions.
-  DCHECK(!profile->IsOffTheRecord());
-  Browser::CreateParams browser_params(Browser::CreateParams::CreateForApp(
-      GenerateApplicationNameForFocusMode(), true /* trusted_source */,
-      gfx::Rect(), profile, true /* user_gesture */));
-  browser_params.is_focus_mode = true;
-  return ::ReparentWebContentsIntoAppBrowser(contents,
-                                             Browser::Create(browser_params));
-}
-
 void SetAppPrefsForWebContents(content::WebContents* web_contents) {
   web_contents->GetMutableRendererPrefs()->can_accept_load_drops = false;
   web_contents->SyncRendererPrefs();

@@ -457,7 +457,6 @@ Browser::Browser(const CreateParams& params)
                                           params.profile)),
       app_name_(params.app_name),
       is_trusted_source_(params.trusted_source),
-      is_focus_mode_(params.is_focus_mode),
       session_id_(SessionID::NewUnique()),
       cancel_download_confirmation_state_(NOT_PROMPTED),
       override_bounds_(params.initial_bounds),
@@ -550,9 +549,6 @@ Browser::Browser(const CreateParams& params)
       window_->GetExclusiveAccessContext());
 
   BrowserList::AddBrowser(this);
-
-  if (is_focus_mode_)
-    focus_mode_start_time_ = base::TimeTicks::Now();
 }
 
 Browser::~Browser() {
@@ -641,13 +637,6 @@ Browser::~Browser() {
   // away so they don't try and call back to us.
   if (select_file_dialog_.get())
     select_file_dialog_->ListenerDestroyed();
-
-  if (is_focus_mode_) {
-    auto duration = base::TimeTicks::Now() - focus_mode_start_time_;
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Session.TimeSpentInFocusMode",
-                                duration.InSeconds(), 1,
-                                base::TimeDelta::FromHours(24).InSeconds(), 50);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

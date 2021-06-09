@@ -169,10 +169,7 @@ WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
 }
 
 gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
-  constexpr int kFocusModeButtonSize = 34;
-  int size = browser_view_->browser()->is_focus_mode()
-                 ? kFocusModeButtonSize
-                 : GetLayoutConstant(WEB_APP_MENU_BUTTON_SIZE);
+  const int size = GetLayoutConstant(WEB_APP_MENU_BUTTON_SIZE);
   return gfx::Size(size, size);
 }
 

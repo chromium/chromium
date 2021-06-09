@@ -2859,9 +2859,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(ash::features::kWebUITabStripTabDragIntegration),
     },
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
-    {"focus-mode", flag_descriptions::kFocusMode,
-     flag_descriptions::kFocusModeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kFocusMode)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"disable-explicit-dma-fences",
      flag_descriptions::kDisableExplicitDmaFencesName,

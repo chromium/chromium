@@ -17,8 +17,7 @@ constexpr int kWebAppMenuMargin = 7;
 // Makes adjustments to |toolbar_button| for display in a web app frame.
 void ConfigureWebAppToolbarButton(
     ToolbarButton* toolbar_button,
-    ToolbarButtonProvider* toolbar_button_provider,
-    bool is_browser_focus_mode);
+    ToolbarButtonProvider* toolbar_button_provider);
 
 int WebAppFrameRightMargin();
 

@@ -176,9 +176,6 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   // The index of the current frame of the throbber animation.
   int throbber_frame_ = 0;
 
-  // How much extra space to reserve in non-maximized windows for a drag handle.
-  int drag_handle_padding_;
-
   static const int kThrobberIconCount = 24;
   static HICON throbber_icons_[kThrobberIconCount];
   static void InitThrobberIcons();

@@ -129,13 +129,6 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
 
   caption_button_container_ =
       AddChildView(std::make_unique<GlassBrowserCaptionButtonContainer>(this));
-
-  // Because currently focus mode uses a vertically-expanded titlebar, there is
-  // no need to add extra space for a grab handle. However, traditional PWA and
-  // full browser mode require the extra space when the window is not maximized.
-  constexpr int kTopResizeFrameArea = 5;
-  drag_handle_padding_ =
-      browser_view->browser()->is_focus_mode() ? 0 : kTopResizeFrameArea;
 }
 
 GlassBrowserFrameView::~GlassBrowserFrameView() = default;
@@ -435,8 +428,9 @@ int GlassBrowserFrameView::FrameTopBorderThickness(bool restored) const {
     // default. When maximized, the OS sizes the window such that the border
     // extends beyond the screen edges. In that case, we must return the default
     // value.
+    constexpr int kTopResizeFrameArea = 5;
     if (browser_view()->GetTabStripVisible())
-      return drag_handle_padding_;
+      return kTopResizeFrameArea;
 
     // There is no top border in tablet mode when the window is "restored"
     // because it is still tiled into either the left or right pane of the

@@ -105,13 +105,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
-  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
-    // TODO(crbug.com/941577): Allow Focus Mode in Incognito and Guest Session.
-    if (!tab_strip->profile()->IsOffTheRecord()) {
-      AddItemWithStringId(TabStripModel::CommandFocusMode,
-                          IDS_TAB_CXMENU_FOCUS_THIS_TAB);
-    }
-  }
   const bool will_mute = !chrome::AreAllSitesMuted(*tab_strip, indices);
   AddItem(TabStripModel::CommandToggleSiteMuted,
           will_mute ? l10n_util::GetPluralStringFUTF16(

@@ -513,7 +513,6 @@ class TabStripModel : public TabGroupController {
     CommandCloseTabsToRight,
     CommandTogglePinned,
     CommandToggleGrouped,
-    CommandFocusMode,
     CommandToggleSiteMuted,
     CommandSendTabToSelf,
     CommandSendTabToSelfSingleTarget,

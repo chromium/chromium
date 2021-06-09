@@ -11,13 +11,11 @@
 
 void ConfigureWebAppToolbarButton(
     ToolbarButton* toolbar_button,
-    ToolbarButtonProvider* toolbar_button_provider,
-    bool is_browser_focus_mode) {
+    ToolbarButtonProvider* toolbar_button_provider) {
   // An ink drop with round corners in shown when the user hovers over the
   // button. Eliminate the insets to avoid increasing web app frame toolbar
   // height. The size of the button is set below.
-  if (!is_browser_focus_mode)
-    toolbar_button->SetLayoutInsets(gfx::Insets());
+  toolbar_button->SetLayoutInsets(gfx::Insets());
 
   toolbar_button->SetMinSize(toolbar_button_provider->GetToolbarButtonSize());
   toolbar_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);

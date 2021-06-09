@@ -3593,8 +3593,6 @@ static_library("ui") {
       "autofill/save_update_address_profile_bubble_controller_impl.cc",
       "autofill/save_update_address_profile_bubble_controller_impl.h",
       "bubble_anchor_util.h",
-      "manifest_web_app_browser_controller.cc",
-      "manifest_web_app_browser_controller.h",
       "qrcode_generator/qrcode_generator_bubble_controller.cc",
       "qrcode_generator/qrcode_generator_bubble_controller.h",
       "qrcode_generator/qrcode_generator_bubble_view.h",

@@ -1288,9 +1288,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandToggleGrouped:
       return true;
 
-    case CommandFocusMode:
-      return GetIndicesForCommand(context_index).size() == 1;
-
     case CommandSendTabToSelf:
       return true;
 
@@ -1442,14 +1439,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
-    case CommandFocusMode: {
-      base::RecordAction(UserMetricsAction("TabContextMenu_FocusMode"));
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      WebContents* contents = GetWebContentsAt(indices[0]);
-      web_app::ReparentWebContentsForFocusMode(contents);
-      break;
-    }
-
     case CommandToggleSiteMuted: {
       const bool mute = WillContextMenuMuteSites(context_index);
       if (mute) {
@@ -1580,9 +1569,6 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
       break;
     case CommandCloseTab:
       *browser_cmd = IDC_CLOSE_TAB;
-      break;
-    case CommandFocusMode:
-      *browser_cmd = IDC_FOCUS_THIS_TAB;
       break;
     default:
       *browser_cmd = 0;

@@ -35,9 +35,6 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const AppId& app_id);
 
-// Reparents contents to a new app browser when entering the Focus Mode.
-Browser* ReparentWebContentsForFocusMode(content::WebContents* contents);
-
 // Set preferences that are unique to app windows.
 void SetAppPrefsForWebContents(content::WebContents* web_contents);
 

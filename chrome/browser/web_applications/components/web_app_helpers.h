@@ -24,10 +24,6 @@ std::string GenerateApplicationNameFromURL(const GURL& url);
 // Compute a deterministic name based on an apps's id.
 std::string GenerateApplicationNameFromAppId(const AppId& app_id);
 
-// Compute a name for Focus Mode, using counter;
-// TODO(crbug.com/943194): Move this method to Focus Mode specific file.
-std::string GenerateApplicationNameForFocusMode();
-
 // Extracts the application id from the app name.
 AppId GetAppIdFromApplicationName(const std::string& app_name);
 

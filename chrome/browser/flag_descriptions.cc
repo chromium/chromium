@@ -493,10 +493,6 @@ const char kEnablePasswordsAccountStorageIPHDescription[] =
     "Enables in-product help bubbles about storing passwords in a second, "
     "Gaia-account-scoped storage for signed-in but not syncing users";
 
-const char kFocusMode[] = "Focus Mode";
-const char kFocusModeDescription[] =
-    "If enabled, allows the user to switch to Focus Mode";
-
 const char kFontAccessAPIName[] = "Font Access APIs";
 const char kFontAccessAPIDescription[] =
     "Enables the experimental Font Access APIs, giving websites access "
