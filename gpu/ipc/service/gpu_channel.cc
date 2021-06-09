@@ -968,6 +968,8 @@ void GpuChannel::CreateCommandBuffer(
         route_id);
   }
 
+  stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);
+
   auto stub_result =
       stub->Initialize(share_group, *init_params, std::move(shared_state_shm));
   if (stub_result != gpu::ContextResult::kSuccess) {
@@ -981,8 +983,6 @@ void GpuChannel::CreateCommandBuffer(
     LOG(ERROR) << "ContextResult::kFatalFailure: failed to add route";
     return;
   }
-
-  stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);
 
   responder.set_result(ContextResult::kSuccess);
   responder.set_capabilities(stub->decoder_context()->GetCapabilities());
