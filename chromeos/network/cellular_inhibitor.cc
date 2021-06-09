@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/network/device_state.h"
@@ -52,6 +53,12 @@ CellularInhibitor::InhibitLock::~InhibitLock() {
 // static
 const base::TimeDelta CellularInhibitor::kInhibitPropertyChangeTimeout =
     base::TimeDelta::FromSeconds(5);
+
+// static
+void CellularInhibitor::RecordInhibitOperationResult(
+    InhibitOperationResult result) {
+  base::UmaHistogramEnumeration("Network.Cellular.InhibitResult", result);
+}
 
 CellularInhibitor::CellularInhibitor() = default;
 
@@ -149,7 +156,9 @@ void CellularInhibitor::ProcessRequests() {
   SetInhibitProperty();
 }
 
-void CellularInhibitor::OnInhibit(bool success) {
+void CellularInhibitor::OnInhibit(
+    bool success,
+    absl::optional<CellularInhibitor::InhibitOperationResult> result) {
   DCHECK(state_ == State::kWaitForInhibit || state_ == State::kInhibiting);
 
   if (success) {
@@ -161,6 +170,8 @@ void CellularInhibitor::OnInhibit(bool success) {
     return;
   }
 
+  DCHECK(result.has_value());
+  RecordInhibitOperationResult(*result);
   std::move(inhibit_requests_.front()->inhibit_callback).Run(nullptr);
   PopRequestAndProcessNext();
 }
@@ -228,6 +239,7 @@ void CellularInhibitor::CheckForScanningStopped() {
   if (!HasScanningStopped())
     return;
 
+  RecordInhibitOperationResult(InhibitOperationResult::kSuccess);
   PopRequestAndProcessNext();
 }
 
@@ -242,6 +254,7 @@ void CellularInhibitor::OnScanningChangeTimeout() {
   NET_LOG(ERROR)
       << "Timeout waiting for cellular device scanning state to change.";
   // Assume that inhibit has completed and continue processing other requests.
+  RecordInhibitOperationResult(InhibitOperationResult::kUninhibitTimeout);
   PopRequestAndProcessNext();
 }
 
@@ -256,7 +269,8 @@ void CellularInhibitor::SetInhibitProperty() {
   DCHECK(state_ == State::kInhibiting || state_ == State::kUninhibiting);
   const DeviceState* cellular_device = GetCellularDevice();
   if (!cellular_device) {
-    ReturnSetInhibitPropertyResult(/*success=*/false);
+    ReturnSetInhibitPropertyResult(/*success=*/false,
+                                   InhibitOperationResult::kSetInhibitNoDevice);
     return;
   }
 
@@ -264,7 +278,7 @@ void CellularInhibitor::SetInhibitProperty() {
 
   // If the new value is already set, return early.
   if (cellular_device->inhibited() == new_inhibit_value) {
-    ReturnSetInhibitPropertyResult(/*success=*/true);
+    ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/absl::nullopt);
     return;
   }
 
@@ -297,13 +311,16 @@ void CellularInhibitor::OnSetPropertyError(
     std::unique_ptr<base::DictionaryValue> error_data) {
   NET_LOG(ERROR) << (attempted_inhibit ? "Inhibit" : "Uninhibit")
                  << "CellularScanning() failed: " << error_name;
-  ReturnSetInhibitPropertyResult(/*success=*/false);
+  ReturnSetInhibitPropertyResult(/*success=*/false,
+                                 InhibitOperationResult::kSetInhibitFailed);
 }
 
-void CellularInhibitor::ReturnSetInhibitPropertyResult(bool success) {
+void CellularInhibitor::ReturnSetInhibitPropertyResult(
+    bool success,
+    absl::optional<CellularInhibitor::InhibitOperationResult> result) {
   set_inhibit_timer_.Stop();
   if (state_ == State::kInhibiting || state_ == State::kWaitForInhibit) {
-    OnInhibit(success);
+    OnInhibit(success, result);
     return;
   }
   if (state_ == State::kUninhibiting || state_ == State::kWaitForUninhibit) {
@@ -325,13 +342,14 @@ void CellularInhibitor::CheckInhibitPropertyIfNeeded() {
   if (state_ == State::kWaitForUninhibit && cellular_device->inhibited())
     return;
 
-  ReturnSetInhibitPropertyResult(/*success=*/true);
+  ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/absl::nullopt);
 }
 
 void CellularInhibitor::OnInhibitPropertyChangeTimeout() {
   NET_LOG(EVENT) << "Timeout waiting for inhibit property change state "
                  << state_;
-  ReturnSetInhibitPropertyResult(/*success=*/false);
+  ReturnSetInhibitPropertyResult(/*success=*/false,
+                                 InhibitOperationResult::kSetInhibitTimeout);
 }
 
 std::ostream& operator<<(std::ostream& stream,

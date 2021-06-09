@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -92,9 +93,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   void NotifyInhibitStateChanged();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CellularInhibitorTest, SuccessSingleRequest);
+  FRIEND_TEST_ALL_PREFIXES(CellularInhibitorTest, SuccessMultipleRequests);
+  FRIEND_TEST_ALL_PREFIXES(CellularInhibitorTest, Failure);
+  FRIEND_TEST_ALL_PREFIXES(CellularInhibitorTest, FailurePropertySetTimeout);
+  FRIEND_TEST_ALL_PREFIXES(CellularInhibitorTest, FailureScanningChangeTimeout);
+  friend class CellularInhibitorTest;
+
   // Timeout after which an inhibit property change is considered to be failed.
   static const base::TimeDelta kInhibitPropertyChangeTimeout;
-  friend class CellularInhibitorTest;
 
   struct InhibitRequest {
     InhibitRequest(InhibitReason inhibit_reason,
@@ -119,6 +126,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   };
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InhibitOperationResult {
+    kSuccess = 0,
+    kUninhibitTimeout = 1,
+    kSetInhibitFailed = 2,
+    kSetInhibitTimeout = 3,
+    kSetInhibitNoDevice = 4,
+    kMaxValue = kSetInhibitNoDevice
+  };
+  static void RecordInhibitOperationResult(InhibitOperationResult result);
+
   // NetworkStateHandlerObserver:
   void DeviceListChanged() override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
@@ -127,7 +146,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
 
   void TransitionToState(State state);
   void ProcessRequests();
-  void OnInhibit(bool success);
+  // Called when inhibit completes. |result| is the operation error result and
+  // is set only for failures.
+  void OnInhibit(bool success, absl::optional<InhibitOperationResult> result);
   void AttemptUninhibit();
   void OnUninhibit(bool success);
 
@@ -147,11 +168,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
 
   void SetInhibitProperty();
   void OnSetPropertySuccess();
-  void OnSetPropertyError(
-      bool attempted_inhibit,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
-  void ReturnSetInhibitPropertyResult(bool success);
+  void OnSetPropertyError(bool attempted_inhibit,
+                          const std::string& error_name,
+                          std::unique_ptr<base::DictionaryValue> error_data);
+  // Returns result of setting inhibit property. |result| is the operation
+  // error result and is set only for failures.
+  void ReturnSetInhibitPropertyResult(
+      bool success,
+      absl::optional<InhibitOperationResult> result);
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkDeviceHandler* network_device_handler_ = nullptr;
