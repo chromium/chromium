@@ -3246,6 +3246,7 @@ enum WebFeature {
   kDocumentTransition = 3931,
   kSpeculationRules = 3932,
   kV8AbortSignal_Abort_Method = 3933,
+  kSelectionBackgroundColorInversion = 3934,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

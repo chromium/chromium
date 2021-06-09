@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -110,8 +111,11 @@ Color SelectionBackgroundColor(const Document& document,
 
   // If the text color ends up being the same as the selection background,
   // invert the selection background.
-  if (text_color == color)
+  if (text_color == color) {
+    UseCounter::Count(node->GetDocument(),
+                      WebFeature::kSelectionBackgroundColorInversion);
     return Color(0xff - color.Red(), 0xff - color.Green(), 0xff - color.Blue());
+  }
   return color;
 }
 
