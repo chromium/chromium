@@ -60,6 +60,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_egl.h"
 #include "gpu/command_buffer/service/shared_image_backing_scoped_hardware_buffer_fence_sync.h"
 #endif
 
@@ -133,9 +134,13 @@ SharedImageFactory::SharedImageFactory(
   if (use_gl) {
     gl_backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
         gpu_preferences, workarounds, gpu_feature_info, image_factory,
-        shared_image_manager->batch_access_manager(),
         shared_context_state_ ? shared_context_state_->progress_reporter()
                               : nullptr);
+#if defined(OS_ANDROID)
+    egl_backing_factory_ = std::make_unique<SharedImageBackingFactoryEGL>(
+        gpu_preferences, workarounds, gpu_feature_info,
+        shared_image_manager->batch_access_manager());
+#endif
   }
 
   // TODO(ccameron): This block of code should be changed to a switch on
@@ -486,6 +491,15 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
                                        allow_legacy_mailbox)) {
     return gl_backing_factory_.get();
   }
+
+#if defined(OS_ANDROID)
+  if (egl_backing_factory_ &&
+      egl_backing_factory_->IsSupported(usage, format, share_between_threads,
+                                        gmb_type, gr_context_type_,
+                                        allow_legacy_mailbox)) {
+    return egl_backing_factory_.get();
+  }
+#endif  // !defined(OS_ANDROID)
 
   if (interop_backing_factory_ &&
       interop_backing_factory_->IsSupported(

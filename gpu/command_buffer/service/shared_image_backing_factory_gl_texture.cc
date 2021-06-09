@@ -29,11 +29,9 @@
 #include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_texture.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -77,16 +75,12 @@ SharedImageBackingFactoryGLTexture::SharedImageBackingFactoryGLTexture(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     ImageFactory* image_factory,
-    SharedImageBatchAccessManager* batch_access_manager,
     gl::ProgressReporter* progress_reporter)
     : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       image_factory_(image_factory),
       workarounds_(workarounds),
       progress_reporter_(progress_reporter) {
-#if defined(OS_ANDROID)
-  batch_access_manager_ = batch_access_manager;
-#endif
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);
   // When the passthrough command decoder is used, the max_texture_size
@@ -205,14 +199,10 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     bool is_thread_safe) {
-  if (is_thread_safe) {
-    return MakeEglImageBacking(mailbox, format, size, color_space,
-                               surface_origin, alpha_type, usage);
-  } else {
-    return CreateSharedImageInternal(mailbox, format, surface_handle, size,
-                                     color_space, surface_origin, alpha_type,
-                                     usage, base::span<const uint8_t>());
-  }
+  DCHECK(!is_thread_safe);
+  return CreateSharedImageInternal(mailbox, format, surface_handle, size,
+                                   color_space, surface_origin, alpha_type,
+                                   usage, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -376,6 +366,9 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox) {
+  if (thread_safe) {
+    return false;
+  }
 #if defined(OS_MAC)
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
@@ -398,46 +391,6 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
   }
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL && !thread_safe;
   return true;
-#endif
-}
-
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::MakeEglImageBacking(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage) {
-#if defined(OS_ANDROID)
-  const FormatInfo& format_info = format_info_[format];
-  if (!format_info.enabled) {
-    DLOG(ERROR) << "MakeEglImageBacking: invalid format";
-    return nullptr;
-  }
-
-  DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
-
-  if (size.width() < 1 || size.height() < 1 ||
-      size.width() > max_texture_size_ || size.height() > max_texture_size_) {
-    DLOG(ERROR) << "MakeEglImageBacking: Invalid size";
-    return nullptr;
-  }
-
-  // Calculate SharedImage size in bytes.
-  size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
-    DLOG(ERROR) << "MakeEglImageBacking: Failed to calculate SharedImage size";
-    return nullptr;
-  }
-
-  return std::make_unique<SharedImageBackingEglImage>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info.gl_format, format_info.gl_type,
-      batch_access_manager_, workarounds_, use_passthrough_);
-#else
-  return nullptr;
 #endif
 }
 

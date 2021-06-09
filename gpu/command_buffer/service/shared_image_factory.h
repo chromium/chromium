@@ -33,6 +33,7 @@ class MailboxManager;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
+class SharedImageBackingFactoryEGL;
 class SharedImageBackingFactoryGLTexture;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -171,6 +172,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   std::unique_ptr<SharedImageBackingFactory> interop_backing_factory_;
 
 #if defined(OS_ANDROID)
+  // Used for creating shared image using EGL Backing
+  std::unique_ptr<SharedImageBackingFactoryEGL> egl_backing_factory_;
+
   // On android we have two interop factory which is |interop_backing_factory_|
   // and |external_vk_image_factory_| and we choose one of those
   // based on the format it supports.

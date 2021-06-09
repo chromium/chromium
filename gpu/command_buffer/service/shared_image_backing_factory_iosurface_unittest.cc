@@ -67,7 +67,6 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
 
     backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
         preferences, workarounds, GpuFeatureInfo(), &image_factory_,
-        shared_image_manager_.batch_access_manager(),
         /*progress_reporter=*/nullptr);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);

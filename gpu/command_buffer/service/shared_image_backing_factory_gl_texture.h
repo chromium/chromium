@@ -28,7 +28,6 @@ class ProgressReporter;
 
 namespace gpu {
 class SharedImageBacking;
-class SharedImageBatchAccessManager;
 class GpuDriverBugWorkarounds;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -47,7 +46,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
       const GpuDriverBugWorkarounds& workarounds,
       const GpuFeatureInfo& gpu_feature_info,
       ImageFactory* image_factory,
-      SharedImageBatchAccessManager* batch_access_manager,
       gl::ProgressReporter* progress_reporter);
   ~SharedImageBackingFactoryGLTexture() override;
 
@@ -106,17 +104,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
                                          gfx::BufferPlane plane,
                                          SurfaceHandle surface_handle,
                                          const gfx::Size& size);
-
-  // This is meant to be used only on Android. Return nullptr for other
-  // platforms.
-  std::unique_ptr<SharedImageBacking> MakeEglImageBacking(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage);
 
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,
@@ -184,10 +171,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
   gl::ProgressReporter* const progress_reporter_ = nullptr;
-
-#if defined(OS_ANDROID)
-  SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
-#endif
 };
 
 }  // namespace gpu
