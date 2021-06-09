@@ -24,6 +24,7 @@ bool StructTraits<
       !data.ReadBrowserControlsParams(&out->browser_controls_params) ||
       !data.ReadLocalSurfaceId(&out->local_surface_id) ||
       !data.ReadRootWidgetWindowSegments(&out->root_widget_window_segments) ||
+      !data.ReadWindowControlsOverlayRect(&out->window_controls_overlay_rect) ||
       data.page_scale_factor() <= 0 || data.compositing_scale_factor() <= 0)
     return false;
   out->auto_resize_enabled = data.auto_resize_enabled();

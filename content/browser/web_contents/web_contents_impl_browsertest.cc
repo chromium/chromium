@@ -42,6 +42,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/load_notification_details.h"
@@ -88,6 +89,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "url/gurl.h"
@@ -4557,16 +4559,18 @@ class WebContentsImplBrowserTestWindowControlsOverlay
   }
 
   void ValidateTitlebarAreaCSSValue(const std::string& name,
-                                    const std::string& expected_result) {
+                                    int expected_result) {
     SCOPED_TRACE(name);
-
     EXPECT_EQ(
         expected_result,
         EvalJs(shell()->web_contents(),
                JsReplace(
-                   "(() => {const e = document.getElementById('target');const "
-                   "style = window.getComputedStyle(e, null); return "
-                   "style.getPropertyValue($1);})();",
+                   "(() => {"
+                   "const e = document.getElementById('target');"
+                   "const style = window.getComputedStyle(e, null);"
+                   "return Math.round(style.getPropertyValue($1).replace('px', "
+                   "''));"
+                   "})();",
                    name)));
   }
 
@@ -4602,12 +4606,24 @@ class WebContentsImplBrowserTestWindowControlsOverlay
                        css_fallback_value, css_fallback_value);
     }
 
-    auto FormatPx = [](int value) { return base::StringPrintf("%dpx", value); };
+    ValidateTitlebarAreaCSSValue("left", css_rect.x());
+    ValidateTitlebarAreaCSSValue("top", css_rect.y());
+    ValidateTitlebarAreaCSSValue("width", css_rect.width());
+    ValidateTitlebarAreaCSSValue("height", css_rect.height());
+  }
 
-    ValidateTitlebarAreaCSSValue("left", FormatPx(css_rect.x()));
-    ValidateTitlebarAreaCSSValue("top", FormatPx(css_rect.y()));
-    ValidateTitlebarAreaCSSValue("width", FormatPx(css_rect.width()));
-    ValidateTitlebarAreaCSSValue("height", FormatPx(css_rect.height()));
+  void WaitForWindowControlsOverlayUpdate(
+      WebContents* web_contents,
+      const gfx::Rect& bounding_client_rect) {
+    EXPECT_TRUE(
+        ExecJs(web_contents->GetMainFrame(),
+               "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+               "  document.title = 'ongeometrychange'"
+               "}"));
+
+    web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+    TitleWatcher title_watcher(web_contents, u"ongeometrychange");
+    ignore_result(title_watcher.WaitAndGetTitle());
   }
 
  private:
@@ -4633,7 +4649,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
 
   // Update bounds and ensure that JS APIs and CSS variables are updated.
   gfx::Rect bounding_client_rect(1, 2, 3, 4);
-  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
   ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 50);
 }
 
@@ -4652,12 +4668,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
 
   // Update bounds and ensure that JS APIs and CSS variables are updated.
   gfx::Rect bounding_client_rect(0, 0, 100, 32);
-  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
   ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 55);
 
   // Now toggle Windows Controls Overlay off.
   gfx::Rect empty_rect;
-  web_contents->UpdateWindowControlsOverlay(empty_rect);
+  WaitForWindowControlsOverlayUpdate(web_contents, empty_rect);
   ValidateWindowsControlOverlayState(web_contents, empty_rect, 55);
 }
 
@@ -4674,6 +4690,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
              "  geometrychangeCount++;"
              "  rect = e.boundingRect;"
              "  visible = e.visible;"
+             "  document.title = 'ongeometrychange' + geometrychangeCount"
              "}"));
 
   WaitForLoadStop(web_contents);
@@ -4683,24 +4700,108 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   EXPECT_EQ(0, EvalJs(web_contents, "geometrychangeCount"));
 
   // Information about the bounds should be updated.
-  const int x = 2;
-  const int y = 2;
-  const int width = 2;
-  const int height = 2;
-
-  gfx::Rect bounding_client_rect = gfx::Rect(x, y, width, height);
-
+  gfx::Rect bounding_client_rect = gfx::Rect(2, 3, 4, 5);
   web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  TitleWatcher title_watcher(web_contents, u"ongeometrychange1");
+  ignore_result(title_watcher.WaitAndGetTitle());
 
   // Expect the "geometrychange" event to have fired once.
   EXPECT_EQ(1, EvalJs(web_contents, "geometrychangeCount"));
 
   // Validate the event payload.
   EXPECT_EQ(true, EvalJs(web_contents, "visible"));
-  EXPECT_EQ(x, EvalJs(web_contents, "rect.x;"));
-  EXPECT_EQ(y, EvalJs(web_contents, "rect.y"));
-  EXPECT_EQ(width, EvalJs(web_contents, "rect.width"));
-  EXPECT_EQ(height, EvalJs(web_contents, "rect.height"));
+  EXPECT_EQ(bounding_client_rect.x(), EvalJs(web_contents, "rect.x;"));
+  EXPECT_EQ(bounding_client_rect.y(), EvalJs(web_contents, "rect.y"));
+  EXPECT_EQ(bounding_client_rect.width(), EvalJs(web_contents, "rect.width"));
+  EXPECT_EQ(bounding_client_rect.height(), EvalJs(web_contents, "rect.height"));
+}
+
+#if !defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
+                       ValidatePageScaleChangesInfoAndFiresEvent) {
+  auto* web_contents = shell()->web_contents();
+  GURL url(
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 60px);
+      top: env(titlebar-area-y, 60px);
+      width: env(titlebar-area-width, 60px);
+      height: env(titlebar-area-height, 60px);"></div></body>)");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForLoadStop(web_contents);
+
+  gfx::Rect bounding_client_rect = gfx::Rect(5, 10, 15, 20);
+  WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
+
+  // Update zoom level, confirm the "geometrychange" event is fired,
+  // and CSS variables are updated
+  EXPECT_TRUE(
+      ExecJs(web_contents->GetMainFrame(),
+             "geometrychangeCount = 0;"
+             "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+             "  geometrychangeCount++;"
+             "  rect = e.boundingRect;"
+             "  visible = e.visible;"
+             "  document.title = 'ongeometrychangefromzoomlevel'"
+             "}"));
+  content::HostZoomMap::SetZoomLevel(web_contents, 1.5);
+  TitleWatcher title_watcher(web_contents, u"ongeometrychangefromzoomlevel");
+  ignore_result(title_watcher.WaitAndGetTitle());
+
+  // Validate the event payload.
+  double zoom_factor = blink::PageZoomLevelToZoomFactor(
+      content::HostZoomMap::GetZoomLevel(web_contents));
+  gfx::Rect scaled_rect =
+      gfx::ScaleToEnclosingRectSafe(bounding_client_rect, 1.0f / zoom_factor);
+
+  EXPECT_EQ(true, EvalJs(web_contents, "visible"));
+  EXPECT_EQ(scaled_rect.x(), EvalJs(web_contents, "rect.x"));
+  EXPECT_EQ(scaled_rect.y(), EvalJs(web_contents, "rect.y"));
+  EXPECT_EQ(scaled_rect.width(), EvalJs(web_contents, "rect.width"));
+  EXPECT_EQ(scaled_rect.height(), EvalJs(web_contents, "rect.height"));
+  ValidateWindowsControlOverlayState(web_contents, scaled_rect, 60);
+}
+#endif
+
+class WebContentsImplBrowserTestWindowControlsOverlayNonOneDeviceScaleFactor
+    : public WebContentsImplBrowserTestWindowControlsOverlay {
+ public:
+  void SetUp() override {
+#if defined(OS_MAC)
+    // Device scale factor on MacOSX is always an integer.
+    EnablePixelOutput(2.0f);
+#else
+    EnablePixelOutput(1.25f);
+#endif
+    WebContentsImplBrowserTestWindowControlsOverlay::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTestWindowControlsOverlayNonOneDeviceScaleFactor,
+    ValidateScaledCorrectly) {
+  auto* web_contents = shell()->web_contents();
+  GURL url(
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 70px);
+      top: env(titlebar-area-y, 70px);
+      width: env(titlebar-area-width, 70px);
+      height: env(titlebar-area-height, 70px);"></div></body>)");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForLoadStop(web_contents);
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  ASSERT_EQ(2.0f,
+            web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+#else
+  ASSERT_EQ(1.25f,
+            web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+#endif
+
+  gfx::Rect bounding_client_rect = gfx::Rect(5, 10, 15, 20);
+  WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
+  ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
 }
 
 }  // namespace content

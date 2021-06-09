@@ -284,6 +284,7 @@ _CONFIG = [
             'gfx::RectF',
             'gfx::RRectF',
             'gfx::ScaleToCeiledSize',
+            'gfx::ScaleToEnclosingRectSafe',
             'gfx::ScaleVector2d',
             'gfx::Size',
             'gfx::SizeF',

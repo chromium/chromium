@@ -98,6 +98,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.is_pinch_gesture_active;
   }
 
+  static const gfx::Rect& window_controls_overlay_rect(
+      const blink::VisualProperties& r) {
+    return r.window_controls_overlay_rect;
+  }
+
   static bool Read(blink::mojom::VisualPropertiesDataView r,
                    blink::VisualProperties* out);
 };

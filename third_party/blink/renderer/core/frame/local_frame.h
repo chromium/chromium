@@ -763,8 +763,7 @@ class CORE_EXPORT LocalFrame final
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& window_controls_overlay_rect) override;
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
 
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;

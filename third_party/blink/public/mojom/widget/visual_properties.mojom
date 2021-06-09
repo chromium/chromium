@@ -92,4 +92,12 @@ struct VisualProperties {
   // Indicates whether a pinch gesture is currently active. Originates in the
   // main frame's renderer, and needs to be shared with subframes.
   bool is_pinch_gesture_active;
+
+  // The rect of the Windows Control Overlay, which contains system UX
+  // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),
+  // if the app specifies the 'window-controls-overlay' DisplayMode in its
+  // manifest. This is only valid and to be consumed by the outermost main
+  // frame.
+  gfx.mojom.Rect window_controls_overlay_rect;
+
 };

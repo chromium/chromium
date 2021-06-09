@@ -128,6 +128,13 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // main frame's renderer, and needs to be shared with subframes.
   bool is_pinch_gesture_active = false;
 
+  // The rect of the Windows Control Overlay, which contains system UX
+  // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),
+  // if the app specifies the 'window-controls-overlay' DisplayMode in its
+  // manifest. This is only valid and to be consumed by the outermost main
+  // frame.
+  gfx::Rect window_controls_overlay_rect;
+
   VisualProperties();
   VisualProperties(const VisualProperties& other);
   ~VisualProperties();

@@ -3113,10 +3113,30 @@ void LocalFrame::UpdateBrowserControlsState(
 }
 
 void LocalFrame::UpdateWindowControlsOverlay(
-    const gfx::Rect& window_controls_overlay_rect) {
-  if (window_controls_overlay_rect == window_controls_overlay_rect_)
+    const gfx::Rect& bounding_rect_in_dips) {
+  if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(nullptr))
     return;
 
+  // The rect passed to us from content is in DIP screen space, relative to the
+  // main frame, and needs to move to CSS space. This doesn't take the page's
+  // zoom factor into account so we must scale by the inverse of the page zoom
+  // in order to get correct CSS space coordinates. Note that when
+  // use-zoom-for-dsf is enabled, WindowToViewportScalar will be the true device
+  // scale factor, and PageZoomFactor will be the combination of the device
+  // scale factor and the zoom percent of the page. It is preferable to compute
+  // a rect that is slightly larger than one that would render smaller than the
+  // window control overlay.
+  LocalFrame& local_frame_root = LocalFrameRoot();
+  const float window_to_viewport_factor =
+      GetPage()->GetChromeClient().WindowToViewportScalar(&local_frame_root,
+                                                          1.0f);
+  const float zoom_factor = local_frame_root.PageZoomFactor();
+  const float scale_factor = zoom_factor / window_to_viewport_factor;
+  gfx::Rect window_controls_overlay_rect =
+      gfx::ScaleToEnclosingRectSafe(bounding_rect_in_dips, 1.0f / scale_factor);
+
+  bool fire_event =
+      (window_controls_overlay_rect != window_controls_overlay_rect_);
   is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
   window_controls_overlay_rect_ = window_controls_overlay_rect;
 
@@ -3137,22 +3157,26 @@ void LocalFrame::UpdateWindowControlsOverlay(
                      StyleEnvironmentVariables::FormatPx(
                          window_controls_overlay_rect_.height()));
   } else {
-    vars.RemoveVariable(vars.GetVariableName(UADefinedVariable::kTitlebarAreaX,
-                                             vars.GetFeatureContext()));
-    vars.RemoveVariable(vars.GetVariableName(UADefinedVariable::kTitlebarAreaY,
-                                             vars.GetFeatureContext()));
-    vars.RemoveVariable(vars.GetVariableName(
-        UADefinedVariable::kTitlebarAreaWidth, vars.GetFeatureContext()));
-    vars.RemoveVariable(vars.GetVariableName(
-        UADefinedVariable::kTitlebarAreaHeight, vars.GetFeatureContext()));
+    const UADefinedVariable vars_to_remove[] = {
+        UADefinedVariable::kTitlebarAreaX,
+        UADefinedVariable::kTitlebarAreaY,
+        UADefinedVariable::kTitlebarAreaWidth,
+        UADefinedVariable::kTitlebarAreaHeight,
+    };
+    for (auto var_to_remove : vars_to_remove) {
+      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
+          var_to_remove, vars.GetFeatureContext()));
+    }
   }
 
-  auto* window_controls_overlay =
-      WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());
+  if (fire_event) {
+    auto* window_controls_overlay =
+        WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());
 
-  if (window_controls_overlay) {
-    window_controls_overlay->WindowControlsOverlayChanged(
-        window_controls_overlay_rect);
+    if (window_controls_overlay) {
+      window_controls_overlay->WindowControlsOverlayChanged(
+          window_controls_overlay_rect_);
+    }
   }
 }
 

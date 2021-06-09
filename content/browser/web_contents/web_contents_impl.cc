@@ -8047,10 +8047,22 @@ gfx::Size WebContentsImpl::GetSize() {
 
 #endif  // !defined(OS_MAC)
 
+gfx::Rect WebContentsImpl::GetWindowsControlsOverlayRect() const {
+  return window_controls_overlay_rect_;
+}
+
 void WebContentsImpl::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect) {
-  GetMainFrame()->GetAssociatedLocalMainFrame()->UpdateWindowControlsOverlay(
-      bounding_rect);
+  if (window_controls_overlay_rect_ == bounding_rect)
+    return;
+
+  window_controls_overlay_rect_ = bounding_rect;
+
+  // Updates to the |window_controls_overlay_rect_| are sent via
+  // the VisualProperties message.
+  if (RenderWidgetHost* render_widget_host =
+          GetMainFrame()->GetRenderWidgetHost())
+    render_widget_host->SynchronizeVisualProperties();
 }
 
 BrowserPluginEmbedder* WebContentsImpl::GetBrowserPluginEmbedder() const {

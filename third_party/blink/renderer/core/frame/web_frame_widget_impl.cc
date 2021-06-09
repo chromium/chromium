@@ -1508,6 +1508,10 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
               widget_base_->VisibleViewportSizeInDIPs()),
           visual_properties.browser_controls_params);
     }
+
+    LocalRootImpl()->GetFrame()->UpdateWindowControlsOverlay(
+        visual_properties.window_controls_overlay_rect);
+
   } else {
     // Widgets in a WebView's frame tree without a local main frame
     // set the size of the WebView to be the |visible_viewport_size|, in order
