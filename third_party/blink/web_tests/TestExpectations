@@ -6156,6 +6156,9 @@ crbug.com/1195224 http/tests/devtools/filtered-item-selection-dialog-rendering.j
 # No support for key combinations like Alt + c in testdriver.Actions for content_shell
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
+# Unblock https://crrev.com/c/2944898
+crbug.com/1193250 http/tests/devtools/console/console-format.js [ Pass Failure ]
+
 # Timing out on Fuchsia
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
 
