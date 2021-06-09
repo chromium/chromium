@@ -155,6 +155,8 @@ class VIEWS_EXPORT Combobox : public View,
   // Finds the size of the largest menu label.
   gfx::Size GetContentSize() const;
 
+  void OnContentSizeMaybeChanged();
+
   // Handles the clicking event.
   void HandleClickEvent();
 

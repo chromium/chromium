@@ -362,6 +362,7 @@ void Combobox::OnThemeChanged() {
           GetNativeTheme()->GetSystemColor(
               ui::NativeTheme::kColorId_TextfieldDefaultBackground),
           FocusableBorder::kCornerRadiusDp)));
+  OnContentSizeMaybeChanged();
 }
 
 int Combobox::GetRowCount() {
@@ -557,9 +558,7 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
     SetSelectedIndex(model_->GetDefaultIndex());
   }
 
-  content_size_ = GetContentSize();
-  PreferredSizeChanged();
-  SchedulePaint();
+  OnContentSizeMaybeChanged();
 }
 
 const base::RepeatingClosure& Combobox::GetCallback() const {
@@ -700,8 +699,9 @@ gfx::Size Combobox::GetContentSize() const {
       int item_width = gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
       ui::ImageModel icon = GetModel()->GetIconAt(i);
       if (!icon.IsEmpty()) {
-        gfx::ImageSkia icon_skia =
-            GetImageSkiaFromImageModel(icon, GetNativeTheme());
+        gfx::ImageSkia icon_skia;
+        if (GetWidget())
+          icon_skia = GetImageSkiaFromImageModel(icon, GetNativeTheme());
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -711,6 +711,11 @@ gfx::Size Combobox::GetContentSize() const {
     }
   }
   return gfx::Size(width, height);
+}
+
+void Combobox::OnContentSizeMaybeChanged() {
+  content_size_ = GetContentSize();
+  PreferredSizeChanged();
 }
 
 PrefixSelector* Combobox::GetPrefixSelector() {

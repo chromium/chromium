@@ -164,16 +164,12 @@ void CastDialogSinkButton::OnEnabledChanged() {
   if (sink_.state != UIMediaSinkState::AVAILABLE)
     return;
 
-  SkColor background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
   if (GetEnabled()) {
-    SetTitleTextStyle(views::style::STYLE_PRIMARY, background_color);
     if (saved_status_text_)
       RestoreStatusText();
     static_cast<views::ImageView*>(icon_view())
         ->SetImage(CreateSinkIcon(sink_.icon_type));
   } else {
-    SetTitleTextStyle(views::style::STYLE_DISABLED, background_color);
     if (IsIncompatibleDialSink(sink_)) {
       OverrideStatusText(
           l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES));
@@ -184,8 +180,17 @@ void CastDialogSinkButton::OnEnabledChanged() {
     static_cast<views::ImageView*>(icon_view())
         ->SetImage(CreateDisabledSinkIcon(sink_.icon_type));
   }
-  // Apply the style change to the title text.
-  title()->Layout();
+
+  if (GetWidget())
+    UpdateTitleTextStyle();
+}
+
+void CastDialogSinkButton::UpdateTitleTextStyle() {
+  SkColor background_color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DialogBackground);
+  SetTitleTextStyle(
+      GetEnabled() ? views::style::STYLE_PRIMARY : views::style::STYLE_DISABLED,
+      background_color);
 }
 
 void CastDialogSinkButton::RequestFocus() {
@@ -219,6 +224,11 @@ void CastDialogSinkButton::OnFocus() {
 void CastDialogSinkButton::OnBlur() {
   if (sink_.state == UIMediaSinkState::CONNECTED)
     RestoreStatusText();
+}
+
+void CastDialogSinkButton::OnThemeChanged() {
+  HoverButton::OnThemeChanged();
+  UpdateTitleTextStyle();
 }
 
 // static

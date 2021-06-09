@@ -11,6 +11,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ImageButton;
+}
 
 class ChosenObjectViewObserver;
 class PageInfoRowView;
@@ -29,12 +32,15 @@ class ChosenObjectView : public views::View {
 
   void AddObserver(ChosenObjectViewObserver* observer);
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   void UpdateIconImage(bool is_deleted) const;
 
   void ExecuteDeleteCommand();
 
-  views::View* delete_button_ = nullptr;
+  views::ImageButton* delete_button_ = nullptr;
   PageInfoRowView* row_view_ = nullptr;
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;

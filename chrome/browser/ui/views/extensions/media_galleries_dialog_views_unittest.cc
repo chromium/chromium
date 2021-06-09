@@ -10,7 +10,7 @@
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
 #include "chrome/browser/ui/views/extensions/media_galleries_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/media_gallery_checkbox_view.h"
-#include "chrome/test/views/chrome_test_views_delegate.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/storage_monitor/storage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -37,11 +37,12 @@ MediaGalleryPrefInfo MakePrefInfoForTesting(MediaGalleryPrefId id) {
 
 }  // namespace
 
-class MediaGalleriesDialogTest : public testing::Test {
+class MediaGalleriesDialogTest : public ChromeViewsTestBase {
  public:
   MediaGalleriesDialogTest() {}
   ~MediaGalleriesDialogTest() override {}
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
     std::vector<std::u16string> headers;
     headers.push_back(std::u16string());
     headers.push_back(u"header2");
@@ -53,16 +54,34 @@ class MediaGalleriesDialogTest : public testing::Test {
 
   void TearDown() override {
     Mock::VerifyAndClearExpectations(&controller_);
+    ChromeViewsTestBase::TearDown();
+  }
+
+  views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Type type) override {
+    // This relies on the setup done in the ToggleCheckboxes test below.
+    auto* dialog = new MediaGalleriesDialogViews(controller());  // Owns itself.
+    dialog->SetModalType(ui::MODAL_TYPE_WINDOW);
+    EXPECT_EQ(1U, dialog->checkbox_map_.size());
+    checkbox_ = dialog->checkbox_map_[1]->checkbox();
+    EXPECT_TRUE(checkbox_->GetChecked());
+
+    views::Widget::InitParams params = ChromeViewsTestBase::CreateParams(type);
+    params.delegate = dialog;
+    return params;
   }
 
   NiceMock<MediaGalleriesDialogControllerMock>* controller() {
     return &controller_;
   }
 
+  views::Checkbox* checkbox() { return checkbox_; }
+
  private:
   // TODO(gbillock): Get rid of this mock; make something specialized.
   NiceMock<MediaGalleriesDialogControllerMock> controller_;
-  ChromeTestViewsDelegate<> test_views_delegate_;
+
+  views::Checkbox* checkbox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaGalleriesDialogTest);
 };
@@ -90,24 +109,24 @@ TEST_F(MediaGalleriesDialogTest, InitializeCheckboxes) {
 
 // Tests that toggling checkboxes updates the controller.
 TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
+  // Setup necessary for the expectations in CreateParams() above to pass.
   MediaGalleriesDialogController::Entries attached_permissions;
   attached_permissions.push_back(
       MediaGalleriesDialogController::Entry(MakePrefInfoForTesting(1), true));
   EXPECT_CALL(*controller(), GetSectionEntries(0)).
       WillRepeatedly(Return(attached_permissions));
 
-  MediaGalleriesDialogViews dialog(controller());
-  EXPECT_EQ(1U, dialog.checkbox_map_.size());
-  views::Checkbox* checkbox = dialog.checkbox_map_[1]->checkbox();
-  EXPECT_TRUE(checkbox->GetChecked());
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));
-  views::test::ButtonTestApi test_api(checkbox);
+  views::test::ButtonTestApi test_api(checkbox());
   ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   test_api.NotifyClick(dummy_event);  // Toggles to unchecked before notifying.
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, true));
   test_api.NotifyClick(dummy_event);  // Toggles to checked before notifying.
+
+  widget->CloseNow();
 }
 
 // Tests that UpdateGallery will add a new checkbox, but only if it refers to

@@ -243,6 +243,62 @@ gfx::Size ConstrainedWidthView::CalculatePreferredSize() const {
 BEGIN_METADATA(ConstrainedWidthView, views::View)
 END_METADATA
 
+class PopupSeparator : public views::Separator {
+ public:
+  METADATA_HEADER(PopupSeparator);
+  explicit PopupSeparator(AutofillPopupBaseView* popup);
+
+  // views::Separator:
+  void OnThemeChanged() override;
+
+ private:
+  AutofillPopupBaseView* popup_;
+};
+
+PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
+  // Add some spacing between the the previous item and the separator.
+  SetPreferredHeight(views::MenuConfig::instance().separator_thickness);
+  SetBorder(views::CreateEmptyBorder(GetContentsVerticalPadding(), 0, 0, 0));
+}
+
+void PopupSeparator::OnThemeChanged() {
+  views::Separator::OnThemeChanged();
+  SetColor(popup_->GetSeparatorColor());
+}
+
+BEGIN_METADATA(PopupSeparator, views::Separator)
+END_METADATA
+
+class SuggestionLabel : public views::Label {
+ public:
+  METADATA_HEADER(SuggestionLabel);
+  SuggestionLabel(const std::u16string& text, AutofillPopupBaseView* popup);
+
+  // views::Label:
+  void OnThemeChanged() override;
+
+ private:
+  AutofillPopupBaseView* popup_;
+};
+
+SuggestionLabel::SuggestionLabel(const std::u16string& text,
+                                 AutofillPopupBaseView* popup)
+    : Label(text,
+            views::style::CONTEXT_DIALOG_BODY_TEXT,
+            ChromeTextStyle::STYLE_RED),
+      popup_(popup) {
+  SetMultiLine(true);
+  SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+}
+
+void SuggestionLabel::OnThemeChanged() {
+  views::Label::OnThemeChanged();
+  SetEnabledColor(popup_->GetWarningColor());
+}
+
+BEGIN_METADATA(SuggestionLabel, views::Label)
+END_METADATA
+
 // This represents a single selectable item. Subclasses distinguish between
 // footer and suggestion rows, which are structurally similar but have
 // distinct styling.
@@ -975,18 +1031,7 @@ void AutofillPopupSeparatorView::GetAccessibleNodeData(
 
 void AutofillPopupSeparatorView::CreateContent() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  views::Separator* separator = new views::Separator();
-  separator->SetColor(popup_view()->GetSeparatorColor());
-  // Add some spacing between the the previous item and the separator.
-  separator->SetPreferredHeight(
-      views::MenuConfig::instance().separator_thickness);
-  separator->SetBorder(views::CreateEmptyBorder(
-      /*top=*/GetContentsVerticalPadding(),
-      /*left=*/0,
-      /*bottom=*/0,
-      /*right=*/0));
-  AddChildView(separator);
+  AddChildView(std::make_unique<PopupSeparator>(popup_view()));
 }
 
 void AutofillPopupSeparatorView::RefreshStyle() {
@@ -1037,14 +1082,8 @@ void AutofillPopupWarningView::CreateContent() {
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_margin, horizontal_margin)));
 
-  auto text_label = std::make_unique<views::Label>(
-      controller->GetSuggestionMainTextAt(GetLineNumber()),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
-  text_label->SetEnabledColor(popup_view()->GetWarningColor());
-  text_label->SetMultiLine(true);
-  text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  AddChildView(std::move(text_label));
+  AddChildView(std::make_unique<SuggestionLabel>(
+      controller->GetSuggestionMainTextAt(GetLineNumber()), popup_view()));
 }
 
 std::unique_ptr<views::Background>

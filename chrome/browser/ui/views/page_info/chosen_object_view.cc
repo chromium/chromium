@@ -42,11 +42,6 @@ ChosenObjectView::ChosenObjectView(
   std::unique_ptr<views::ImageButton> delete_button =
       views::CreateVectorImageButton(base::BindRepeating(
           &ChosenObjectView::ExecuteDeleteCommand, base::Unretained(this)));
-
-  views::SetImageFromVectorIcon(
-      delete_button.get(), vector_icons::kCloseRoundedIcon,
-      views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
-                             views::style::STYLE_PRIMARY));
   delete_button->SetRequestFocusOnPress(true);
   delete_button->SetTooltipText(
       l10n_util::GetStringUTF16(info_->ui_info.delete_tooltip_string_id));
@@ -77,7 +72,15 @@ void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
-ChosenObjectView::~ChosenObjectView() {}
+void ChosenObjectView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  views::SetImageFromVectorIcon(
+      delete_button_, vector_icons::kCloseRoundedIcon,
+      views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
+                             views::style::STYLE_PRIMARY));
+}
+
+ChosenObjectView::~ChosenObjectView() = default;
 
 void ChosenObjectView::ExecuteDeleteCommand() {
   // Policy-managed permissions cannot be deleted. This isn't normally

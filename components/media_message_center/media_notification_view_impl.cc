@@ -465,7 +465,8 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 
   UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, has_artwork_);
 
-  UpdateForegroundColor();
+  if (GetWidget())
+    UpdateForegroundColor();
 
   container_->OnMediaArtworkChanged(image);
 
@@ -478,7 +479,8 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 void MediaNotificationViewImpl::UpdateWithFavicon(const gfx::ImageSkia& icon) {
   GetMediaNotificationBackground()->UpdateFavicon(icon);
 
-  UpdateForegroundColor();
+  if (GetWidget())
+    UpdateForegroundColor();
   SchedulePaint();
 }
 
@@ -488,13 +490,11 @@ void MediaNotificationViewImpl::UpdateWithVectorIcon(
     return;
 
   vector_header_icon_ = &vector_icon;
-  const SkColor foreground =
-      GetMediaNotificationBackground()->GetForegroundColor(*this);
-  header_row_->SetAppIcon(gfx::CreateVectorIcon(
-      *vector_header_icon_, message_center::kSmallImageSizeMD, foreground));
   header_row_->SetAppIconVisible(true);
   header_row_->SetProperty(views::kMarginsKey,
                            kIconMediaNotificationHeaderInsets);
+  if (GetWidget())
+    UpdateForegroundColor();
 }
 
 void MediaNotificationViewImpl::UpdateDeviceSelectorAvailability(

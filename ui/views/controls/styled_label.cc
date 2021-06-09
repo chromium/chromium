@@ -169,7 +169,7 @@ void StyledLabel::SetDisplayedOnBackgroundColor(
 
   displayed_on_background_color_ = color;
 
-  if (GetNativeTheme())
+  if (GetWidget())
     UpdateLabelBackgroundColor();
 
   OnPropertyChanged(&displayed_on_background_color_, kPropertyEffectsPaint);

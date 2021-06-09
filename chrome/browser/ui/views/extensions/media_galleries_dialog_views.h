@@ -49,8 +49,8 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
                                   ui::MenuSourceType source_type) override;
 
  private:
+  friend class MediaGalleriesDialogTest;
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, InitializeCheckboxes);
-  FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, ToggleCheckboxes);
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, UpdateAdds);
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, ForgetDeletes);
 

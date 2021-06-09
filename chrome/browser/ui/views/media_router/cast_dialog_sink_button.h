@@ -37,6 +37,7 @@ class CastDialogSinkButton : public HoverButton {
   void RequestFocus() override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnThemeChanged() override;
 
   const UIMediaSink& sink() const { return sink_; }
 
@@ -56,6 +57,7 @@ class CastDialogSinkButton : public HoverButton {
                            SetStatusLabelForDialSinks);
 
   void OnEnabledChanged();
+  void UpdateTitleTextStyle();
 
   const UIMediaSink sink_;
   absl::optional<std::u16string> saved_status_text_;

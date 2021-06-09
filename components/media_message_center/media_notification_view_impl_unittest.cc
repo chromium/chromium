@@ -202,6 +202,8 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
 
   MockMediaNotificationController& controller() { return controller_; }
 
+  views::Widget* widget() { return widget_.get(); }
+
   MediaNotificationViewImpl* view() const { return container_.view(); }
 
   TestMediaController* media_controller() const {
@@ -355,8 +357,8 @@ class DISABLED_MediaNotificationViewImplTest
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, ButtonsSanityCheck) {
   view()->SetExpanded(true);
-
   EnableAllActions();
+  widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(button_row()->GetVisible());
   EXPECT_GT(button_row()->width(), 0);
@@ -595,8 +597,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, MetadataIsDisplayed) {
   view()->SetExpanded(true);
-
   EnableAllActions();
+  widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(title_artist_row()->GetVisible());
   EXPECT_TRUE(title_label()->GetVisible());
@@ -610,6 +612,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, MetadataIsDisplayed) {
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EnableAllActions();
+  widget()->LayoutRootViewIfNecessary();
 
   ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kTitle,
                                   1);
@@ -630,6 +633,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
   GetItem()->MediaSessionMetadataChanged(metadata);
   view()->SetExpanded(true);
+  widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(title_artist_row()->GetVisible());
   EXPECT_TRUE(title_label()->GetVisible());

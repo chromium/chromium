@@ -7,6 +7,7 @@
 
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 class ImageView;
@@ -27,7 +28,13 @@ class PageInfoRowView : public views::View {
   void SetIcon(const ui::ImageModel image);
   void SetTitle(std::u16string title);
   void AddSecondaryLabel(std::u16string text);
-  views::View* AddControl(std::unique_ptr<views::View> control_view);
+  template <typename T>
+  T* AddControl(std::unique_ptr<T> control_view) {
+    control_view->SetProperty(views::kInternalPaddingKey,
+                              control_view->GetInsets());
+    controls_width_ += control_view->GetPreferredSize().width();
+    return AddChildView(std::move(control_view));
+  }
 
   int GetFirstLineHeight();
 

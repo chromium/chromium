@@ -68,14 +68,6 @@ void PageInfoRowView::AddSecondaryLabel(std::u16string text) {
   labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
-views::View* PageInfoRowView::AddControl(
-    std::unique_ptr<views::View> control_view) {
-  control_view->SetProperty(views::kInternalPaddingKey,
-                            control_view->GetInsets());
-  controls_width_ += control_view->GetPreferredSize().width();
-  return AddChildView(std::move(control_view));
-}
-
 gfx::Size PageInfoRowView::CalculatePreferredSize() const {
   // Secondary labels can be multiline. To wrap them properly, calculate here
   // the width of the row without them. This way, if a secondary label is too
