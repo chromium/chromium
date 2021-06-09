@@ -122,6 +122,7 @@ class FunctionRef<R(Args...)> {
   // To help prevent subtle lifetime bugs, FunctionRef is not assignable.
   // Typically, it should only be used as an argument type.
   FunctionRef& operator=(const FunctionRef& rhs) = delete;
+  FunctionRef(const FunctionRef& rhs) = default;
 
   // Call the underlying object.
   R operator()(Args... args) const {

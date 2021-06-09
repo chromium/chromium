@@ -236,13 +236,18 @@ ABSL_CONST_INIT extern thread_local ThreadIdentity* thread_identity_ptr;
 #error Thread-local storage not detected on this platform
 #endif
 
-// thread_local variables cannot be in headers exposed by DLLs. However, it is
-// important for performance reasons in general that
-// `CurrentThreadIdentityIfPresent` be inlined. This is not possible across a
-// DLL boundary so, with DLLs, we opt to have the function not be inlined. Note
+// thread_local variables cannot be in headers exposed by DLLs or in certain
+// build configurations on Apple platforms. However, it is important for
+// performance reasons in general that `CurrentThreadIdentityIfPresent` be
+// inlined. In the other cases we opt to have the function not be inlined. Note
 // that `CurrentThreadIdentityIfPresent` is declared above so we can exclude
-// this entire inline definition when compiling as a DLL.
-#if !defined(ABSL_BUILD_DLL) && !defined(ABSL_CONSUME_DLL)
+// this entire inline definition.
+#if !defined(__APPLE__) && !defined(ABSL_BUILD_DLL) && \
+    !defined(ABSL_CONSUME_DLL)
+#define ABSL_INTERNAL_INLINE_CURRENT_THREAD_IDENTITY_IF_PRESENT 1
+#endif
+
+#ifdef ABSL_INTERNAL_INLINE_CURRENT_THREAD_IDENTITY_IF_PRESENT
 inline ThreadIdentity* CurrentThreadIdentityIfPresent() {
   return thread_identity_ptr;
 }

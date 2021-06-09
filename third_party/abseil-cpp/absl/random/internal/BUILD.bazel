@@ -82,6 +82,7 @@ cc_library(
     deps = [
         ":fast_uniform_bits",
         "//absl/base:core_headers",
+        "//absl/base:dynamic_annotations",
         "//absl/base:raw_logging_internal",
         "//absl/strings",
         "//absl/types:optional",

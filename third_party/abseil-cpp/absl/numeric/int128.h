@@ -810,6 +810,14 @@ inline bool operator>=(uint128 lhs, uint128 rhs) { return !(lhs < rhs); }
 
 // Unary operators.
 
+constexpr inline uint128 operator+(uint128 val) {
+  return val;
+}
+
+constexpr inline int128 operator+(int128 val) {
+  return val;
+}
+
 inline uint128 operator-(uint128 val) {
   uint64_t hi = ~Uint128High64(val);
   uint64_t lo = ~Uint128Low64(val) + 1;

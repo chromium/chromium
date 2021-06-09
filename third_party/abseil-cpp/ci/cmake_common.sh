@@ -14,7 +14,7 @@
 
 # The commit of GoogleTest to be used in the CMake tests in this directory.
 # Keep this in sync with the commit in the WORKSPACE file.
-readonly ABSL_GOOGLETEST_COMMIT="f5e592d8ee5ffb1d9af5be7f715ce3576b8bf9c4"
+readonly ABSL_GOOGLETEST_COMMIT="5bcd8e3bb929714e031a542d303f818e5a5af45d"
 
 # Avoid depending on GitHub by looking for a cached copy of the commit first.
 if [[ -r "${KOKORO_GFILE_DIR:-}/distdir/${ABSL_GOOGLETEST_COMMIT}.zip" ]]; then

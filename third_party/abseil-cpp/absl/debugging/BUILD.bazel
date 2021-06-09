@@ -344,6 +344,7 @@ cc_test(
     srcs = ["internal/stack_consumption_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["notsan"],
     deps = [
         ":stack_consumption",
         "//absl/base:core_headers",

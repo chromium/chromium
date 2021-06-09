@@ -1553,7 +1553,7 @@ class raw_hash_set {
     auto layout = MakeLayout(capacity_);
     char* mem = static_cast<char*>(
         Allocate<Layout::Alignment()>(&alloc_ref(), layout.AllocSize()));
-    ctrl_ = reinterpret_cast<ctrl_t*>(layout.template Pointer<0>(mem));
+    ctrl_ = layout.template Pointer<0>(mem);
     slots_ = layout.template Pointer<1>(mem);
     reset_ctrl();
     reset_growth_left();
