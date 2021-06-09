@@ -1618,11 +1618,15 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/1050281): Clean up, enable.
           "-Wno-non-c-typedef-for-linkage",
-
-          # TODO(https://crbug.com/1203071): Clean up and enable.
-          "-Wno-unused-but-set-parameter",
-          "-Wno-unused-but-set-variable",
         ]
+
+        if (llvm_force_head_revision) {
+          # TODO(https://crbug.com/1203071): Clean up and enable.
+          cflags += [
+            "-Wno-unused-but-set-parameter",
+            "-Wno-unused-but-set-variable",
+          ]
+        }
 
         cflags_c += [
           # TODO(https://crbug.com/995993): Clean up and enable.
