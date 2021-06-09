@@ -173,12 +173,15 @@ void PaintOpWriter::Write(const SkRRect& rect) {
   WriteSimple(rect);
 }
 
-void PaintOpWriter::Write(const SkPath& path) {
+void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
   if (!options_.for_identifiability_study)
     Write(id);
 
-  if (options_.paint_cache->Get(PaintCacheDataType::kPath, id)) {
+  DCHECK(use_paint_cache == UsePaintCache::kEnabled ||
+         !options_.paint_cache->Get(PaintCacheDataType::kPath, id));
+  if (use_paint_cache == UsePaintCache::kEnabled &&
+      options_.paint_cache->Get(PaintCacheDataType::kPath, id)) {
     Write(static_cast<uint32_t>(PaintCacheEntryState::kCached));
     return;
   }
@@ -190,7 +193,11 @@ void PaintOpWriter::Write(const SkPath& path) {
     return;
   }
 
-  Write(static_cast<uint32_t>(PaintCacheEntryState::kInlined));
+  if (use_paint_cache == UsePaintCache::kEnabled) {
+    Write(static_cast<uint32_t>(PaintCacheEntryState::kInlined));
+  } else {
+    Write(static_cast<uint32_t>(PaintCacheEntryState::kInlinedDoNotCache));
+  }
   uint64_t* bytes_to_skip = WriteSize(0u);
   if (!valid_)
     return;
@@ -201,7 +208,9 @@ void PaintOpWriter::Write(const SkPath& path) {
   }
   size_t bytes_written = path.writeToMemory(memory_);
   DCHECK_EQ(bytes_written, bytes_required);
-  options_.paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
+  if (use_paint_cache == UsePaintCache::kEnabled) {
+    options_.paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
+  }
   *bytes_to_skip = bytes_written;
   memory_ += bytes_written;
   remaining_bytes_ -= bytes_written;

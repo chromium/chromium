@@ -227,7 +227,8 @@ void PaintOpReader::Read(SkPath* path) {
       if (!options_.paint_cache->GetPath(path_id, path))
         SetInvalid();
       return;
-    case PaintCacheEntryState::kInlined: {
+    case PaintCacheEntryState::kInlined:
+    case PaintCacheEntryState::kInlinedDoNotCache: {
       size_t path_bytes = 0u;
       ReadSize(&path_bytes);
       if (path_bytes > remaining_bytes_)
@@ -243,7 +244,9 @@ void PaintOpReader::Read(SkPath* path) {
         SetInvalid();
         return;
       }
-      options_.paint_cache->PutPath(path_id, *path);
+      if (entry_state == PaintCacheEntryState::kInlined) {
+        options_.paint_cache->PutPath(path_id, *path);
+      }
       memory_ += path_bytes;
       remaining_bytes_ -= path_bytes;
       return;

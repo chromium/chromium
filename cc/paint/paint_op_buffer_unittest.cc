@@ -558,16 +558,19 @@ TEST(PaintOpBufferTest, SlowPaths) {
   SkPath path;
   path.addCircle(2, 2, 5);
   EXPECT_TRUE(path.isConvex());
-  buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, true);
+  buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
+                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer->numSlowPaths(), 1);
 
   // Concave paths are slow only when antialiased.
   SkPath concave = path;
   concave.addCircle(3, 4, 2);
   EXPECT_FALSE(concave.isConvex());
-  buffer->push<ClipPathOp>(concave, SkClipOp::kIntersect, true);
+  buffer->push<ClipPathOp>(concave, SkClipOp::kIntersect, /*antialias=*/true,
+                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer->numSlowPaths(), 2);
-  buffer->push<ClipPathOp>(concave, SkClipOp::kIntersect, false);
+  buffer->push<ClipPathOp>(concave, SkClipOp::kIntersect, /*antialias=*/false,
+                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer->numSlowPaths(), 2);
 
   // Drawing a record with slow paths into another adds the same
@@ -608,11 +611,13 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     path.addCircle(2, 2, 5);
 
     // ClipPathOp with AA
-    buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, true /* antialias */);
+    buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
+                             UsePaintCache::kDisabled);
     EXPECT_FALSE(buffer->HasNonAAPaint());
 
     // ClipPathOp without AA
-    buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, false /* antialias */);
+    buffer->push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/false,
+                             UsePaintCache::kDisabled);
     EXPECT_TRUE(buffer->HasNonAAPaint());
   }
 
@@ -641,7 +646,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     SkPath path;
     path.addCircle(2, 2, 5);
     sub_buffer->push<ClipPathOp>(path, SkClipOp::kIntersect,
-                                 false /* antialias */);
+                                 /*antialias=*/false, UsePaintCache::kDisabled);
     EXPECT_TRUE(sub_buffer->HasNonAAPaint());
 
     buffer->push<DrawRecordOp>(sub_buffer);
@@ -1415,7 +1420,8 @@ void PushAnnotateOps(PaintOpBuffer* buffer) {
 void PushClipPathOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < test_paths.size(); ++i) {
     SkClipOp op = i % 3 ? SkClipOp::kDifference : SkClipOp::kIntersect;
-    buffer->push<ClipPathOp>(test_paths[i], op, !!(i % 2));
+    buffer->push<ClipPathOp>(test_paths[i], op, /*antialias=*/!!(i % 2),
+                             UsePaintCache::kDisabled);
   }
   ValidateOps<ClipPathOp>(buffer);
 }
@@ -1530,7 +1536,8 @@ void PushDrawOvalOps(PaintOpBuffer* buffer) {
 void PushDrawPathOps(PaintOpBuffer* buffer) {
   size_t len = std::min(test_paths.size(), test_flags.size());
   for (size_t i = 0; i < len; ++i)
-    buffer->push<DrawPathOp>(test_paths[i], test_flags[i]);
+    buffer->push<DrawPathOp>(test_paths[i], test_flags[i],
+                             UsePaintCache::kDisabled);
   ValidateOps<DrawPathOp>(buffer);
 }
 
@@ -2458,13 +2465,15 @@ TEST(PaintOpBufferTest, ValidateSkClip) {
 
   // Successful first op.
   SkPath path;
-  buffer.push<ClipPathOp>(path, SkClipOp::kMax_EnumValue, true);
+  buffer.push<ClipPathOp>(path, SkClipOp::kMax_EnumValue, /*antialias=*/true,
+                          UsePaintCache::kDisabled);
 
   // Bad other ops.
   SkClipOp bad_clip = static_cast<SkClipOp>(
       static_cast<uint32_t>(SkClipOp::kMax_EnumValue) + 1);
 
-  buffer.push<ClipPathOp>(path, bad_clip, true);
+  buffer.push<ClipPathOp>(path, bad_clip, /*antialias=*/true,
+                          UsePaintCache::kDisabled);
   buffer.push<ClipRectOp>(test_rects[0], bad_clip, true);
   buffer.push<ClipRRectOp>(test_rrects[0], bad_clip, false);
 
@@ -3983,6 +3992,43 @@ TEST(PaintOpBufferTest, SetMatrixOpWithNonIdentityPlaybackParams) {
                                              SkM44(original_ctm, matrix)));
     }
   }
+}
+
+TEST(PaintOpBufferTest, PathCaching) {
+  SkPath path;
+  PaintFlags flags;
+
+  // Grow path large enough to trigger caching
+  path.moveTo(0, 0);
+  for (int x = 1; x < 100; ++x)
+    path.lineTo(x, x % 1);
+
+  TestOptionsProvider options_provider;
+
+  std::unique_ptr<char, base::AlignedFreeDeleter> memory(
+      static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
+                                            PaintOpBuffer::PaintOpAlign)));
+  auto buffer = sk_make_sp<PaintOpBuffer>();
+  buffer->push<DrawPathOp>(path, flags, UsePaintCache::kEnabled);
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer.get());
+
+  EXPECT_TRUE(options_provider.client_paint_cache()->Get(
+      PaintCacheDataType::kPath, path.getGenerationID()));
+
+  auto deserialized_buffer =
+      PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
+                                    options_provider.deserialize_options());
+  ASSERT_TRUE(deserialized_buffer);
+  ASSERT_EQ(deserialized_buffer->size(), 1u);
+  ASSERT_EQ(deserialized_buffer->GetFirstOp()->GetType(),
+            PaintOpType::DrawPath);
+
+  SkPath cached_path;
+  EXPECT_TRUE(options_provider.service_paint_cache()->GetPath(
+      path.getGenerationID(), &cached_path));
 }
 
 }  // namespace cc

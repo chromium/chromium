@@ -53,7 +53,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 
   void clipRect(const SkRect& rect, SkClipOp op, bool antialias) override;
   void clipRRect(const SkRRect& rrect, SkClipOp op, bool antialias) override;
-  void clipPath(const SkPath& path, SkClipOp op, bool antialias) override;
+  void clipPath(const SkPath& path,
+                SkClipOp op,
+                bool antialias,
+                UsePaintCache use_paint_cache) override;
   SkRect getLocalClipBounds() const override;
   bool getLocalClipBounds(SkRect* bounds) const override;
   SkIRect getDeviceClipBounds() const override;
@@ -77,7 +80,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                      SkScalar rx,
                      SkScalar ry,
                      const PaintFlags& flags) override;
-  void drawPath(const SkPath& path, const PaintFlags& flags) override;
+  void drawPath(const SkPath& path,
+                const PaintFlags& flags,
+                UsePaintCache use_paint_cache) override;
   void drawImage(const PaintImage& image,
                  SkScalar left,
                  SkScalar top,

@@ -56,7 +56,8 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
 
   PaintRecorder recorder;
   recorder.beginRecording(kMarkerWidth, kMarkerHeight);
-  recorder.getRecordingCanvas()->drawPath(path.detach(), flags);
+  recorder.getRecordingCanvas()->cc::PaintCanvas::drawPath(path.detach(),
+                                                           flags);
 
   return recorder.finishRecordingAsPicture();
 }

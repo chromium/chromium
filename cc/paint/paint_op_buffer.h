@@ -389,8 +389,15 @@ class CC_PAINT_EXPORT AnnotateOp final : public PaintOp {
 class CC_PAINT_EXPORT ClipPathOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::ClipPath;
-  ClipPathOp(SkPath path, SkClipOp op, bool antialias)
-      : PaintOp(kType), path(path), op(op), antialias(antialias) {}
+  ClipPathOp(SkPath path,
+             SkClipOp op,
+             bool antialias,
+             UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
+      : PaintOp(kType),
+        path(path),
+        op(op),
+        antialias(antialias),
+        use_cache(use_paint_cache) {}
   static void Raster(const ClipPathOp* op,
                      SkCanvas* canvas,
                      const PlaybackParams& params);
@@ -403,6 +410,7 @@ class CC_PAINT_EXPORT ClipPathOp final : public PaintOp {
   ThreadsafePath path;
   SkClipOp op;
   bool antialias;
+  UsePaintCache use_cache;
 
  private:
   ClipPathOp() : PaintOp(kType) {}
@@ -685,10 +693,13 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawPath;
   static constexpr bool kIsDrawOp = true;
-  DrawPathOp(const SkPath& path, const PaintFlags& flags)
+  DrawPathOp(const SkPath& path,
+             const PaintFlags& flags,
+             UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
       : PaintOpWithFlags(kType, flags),
         path(path),
-        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())) {}
+        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())),
+        use_cache(use_paint_cache) {}
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -705,6 +716,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   // serialize/deserialize this value and set it on the SkPath before handing it
   // to Skia.
   uint8_t sk_path_fill_type;
+  UsePaintCache use_cache;
 
  private:
   DrawPathOp() : PaintOpWithFlags(kType) {}

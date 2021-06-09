@@ -7,6 +7,8 @@
 
 #include <map>
 #include <set>
+#include <utility>
+#include <vector>
 
 #include "base/containers/mru_cache.h"
 #include "base/containers/stack_container.h"
@@ -41,7 +43,8 @@ enum class PaintCacheEntryState : uint32_t {
   kEmpty,
   kCached,
   kInlined,
-  kLast = kInlined
+  kInlinedDoNotCache,
+  kLast = kInlinedDoNotCache
 };
 
 constexpr size_t PaintCacheDataTypeCount =

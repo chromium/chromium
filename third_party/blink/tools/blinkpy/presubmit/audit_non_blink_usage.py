@@ -271,6 +271,7 @@ _CONFIG = [
             'cc::PaintWorkletInput',
             'cc::NodeId',
             'cc::NodeInfo',
+            'cc::UsePaintCache',
 
             # Chromium geometry types.
             'gfx::Insets',

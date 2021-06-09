@@ -150,7 +150,8 @@ void RecordPaintCanvas::clipRRect(const SkRRect& rrect,
 
 void RecordPaintCanvas::clipPath(const SkPath& path,
                                  SkClipOp op,
-                                 bool antialias) {
+                                 bool antialias,
+                                 UsePaintCache use_paint_cache) {
   if (!path.isInverseFillType() &&
       GetCanvas()->getTotalMatrix().rectStaysRect()) {
     // TODO(enne): do these cases happen? should the caller know that this isn't
@@ -172,7 +173,7 @@ void RecordPaintCanvas::clipPath(const SkPath& path,
     }
   }
 
-  list_->push<ClipPathOp>(path, op, antialias);
+  list_->push<ClipPathOp>(path, op, antialias, use_paint_cache);
   GetCanvas()->clipPath(path, op, antialias);
   return;
 }
@@ -257,8 +258,10 @@ void RecordPaintCanvas::drawRoundRect(const SkRect& rect,
   }
 }
 
-void RecordPaintCanvas::drawPath(const SkPath& path, const PaintFlags& flags) {
-  list_->push<DrawPathOp>(path, flags);
+void RecordPaintCanvas::drawPath(const SkPath& path,
+                                 const PaintFlags& flags,
+                                 UsePaintCache use_paint_cache) {
+  list_->push<DrawPathOp>(path, flags, use_paint_cache);
 }
 
 void RecordPaintCanvas::drawImage(const PaintImage& image,

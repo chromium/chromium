@@ -976,7 +976,8 @@ bool BaseRenderingContext2D::IsFullCanvasCompositeMode(SkBlendMode op) {
 void BaseRenderingContext2D::DrawPathInternal(
     const Path& path,
     CanvasRenderingContext2DState::PaintType paint_type,
-    SkPathFillType fill_type) {
+    SkPathFillType fill_type,
+    UsePaintCache use_paint_cache) {
   if (path.IsEmpty())
     return;
 
@@ -993,8 +994,9 @@ void BaseRenderingContext2D::DrawPathInternal(
   if (!GetOrCreatePaintCanvas())
     return;
 
-  Draw([sk_path](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
-       { c->drawPath(sk_path, *flags); },
+  Draw([sk_path, use_paint_cache](cc::PaintCanvas* c,
+                                  const PaintFlags* flags)  // draw lambda
+       { c->drawPath(sk_path, *flags, use_paint_cache); },
        [](const SkIRect& rect)  // overdraw test lambda
        { return false; },
        bounds, paint_type,
@@ -1015,23 +1017,25 @@ static SkPathFillType ParseWinding(const String& winding_rule_string) {
 
 void BaseRenderingContext2D::fill(const String& winding_rule_string) {
   DrawPathInternal(path_, CanvasRenderingContext2DState::kFillPaintType,
-                   ParseWinding(winding_rule_string));
+                   ParseWinding(winding_rule_string), UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::fill(Path2D* dom_path,
                                   const String& winding_rule_string) {
   DrawPathInternal(dom_path->GetPath(),
                    CanvasRenderingContext2DState::kFillPaintType,
-                   ParseWinding(winding_rule_string));
+                   ParseWinding(winding_rule_string), UsePaintCache::kEnabled);
 }
 
 void BaseRenderingContext2D::stroke() {
-  DrawPathInternal(path_, CanvasRenderingContext2DState::kStrokePaintType);
+  DrawPathInternal(path_, CanvasRenderingContext2DState::kStrokePaintType,
+                   SkPathFillType::kWinding, UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::stroke(Path2D* dom_path) {
   DrawPathInternal(dom_path->GetPath(),
-                   CanvasRenderingContext2DState::kStrokePaintType);
+                   CanvasRenderingContext2DState::kStrokePaintType,
+                   SkPathFillType::kWinding, UsePaintCache::kEnabled);
 }
 
 void BaseRenderingContext2D::fillRect(double x,
@@ -1130,7 +1134,8 @@ void BaseRenderingContext2D::strokeRect(double x,
 }
 
 void BaseRenderingContext2D::ClipInternal(const Path& path,
-                                          const String& winding_rule_string) {
+                                          const String& winding_rule_string,
+                                          UsePaintCache use_paint_cache) {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c) {
     return;
@@ -1142,17 +1147,18 @@ void BaseRenderingContext2D::ClipInternal(const Path& path,
   SkPath sk_path = path.GetSkPath();
   sk_path.setFillType(ParseWinding(winding_rule_string));
   GetState().ClipPath(sk_path, clip_antialiasing_);
-  c->clipPath(sk_path, SkClipOp::kIntersect,
-              clip_antialiasing_ == kAntiAliased);
+  c->clipPath(sk_path, SkClipOp::kIntersect, clip_antialiasing_ == kAntiAliased,
+              use_paint_cache);
 }
 
 void BaseRenderingContext2D::clip(const String& winding_rule_string) {
-  ClipInternal(path_, winding_rule_string);
+  ClipInternal(path_, winding_rule_string, UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::clip(Path2D* dom_path,
                                   const String& winding_rule_string) {
-  ClipInternal(dom_path->GetPath(), winding_rule_string);
+  ClipInternal(dom_path->GetPath(), winding_rule_string,
+               UsePaintCache::kEnabled);
 }
 
 bool BaseRenderingContext2D::isPointInPath(const double x,

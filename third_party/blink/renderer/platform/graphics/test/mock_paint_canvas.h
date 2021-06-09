@@ -40,8 +40,11 @@ class MockPaintCanvas : public cc::PaintCanvas {
                void(const SkRect& rect, SkClipOp op, bool do_anti_alias));
   MOCK_METHOD3(clipRRect,
                void(const SkRRect& rrect, SkClipOp op, bool do_anti_alias));
-  MOCK_METHOD3(clipPath,
-               void(const SkPath& path, SkClipOp op, bool do_anti_alias));
+  MOCK_METHOD4(clipPath,
+               void(const SkPath& path,
+                    SkClipOp op,
+                    bool do_anti_alias,
+                    cc::UsePaintCache use_paint_cache));
   MOCK_CONST_METHOD0(getLocalClipBounds, SkRect());
   MOCK_CONST_METHOD1(getLocalClipBounds, bool(SkRect* bounds));
   MOCK_CONST_METHOD0(getDeviceClipBounds, SkIRect());
@@ -67,7 +70,10 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     SkScalar rx,
                     SkScalar ry,
                     const PaintFlags& flags));
-  MOCK_METHOD2(drawPath, void(const SkPath& path, const PaintFlags& flags));
+  MOCK_METHOD3(drawPath,
+               void(const SkPath& path,
+                    const PaintFlags& flags,
+                    cc::UsePaintCache use_paint_cache));
   MOCK_METHOD5(drawImage,
                void(const PaintImage& image,
                     SkScalar left,

@@ -28,6 +28,7 @@ class Image;
 class Path2D;
 class V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString;
 class V8UnionCanvasFilterOrString;
+using cc::UsePaintCache;
 
 class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                                               public CanvasPath {
@@ -498,7 +499,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   void DrawPathInternal(const Path&,
                         CanvasRenderingContext2DState::PaintType,
-                        SkPathFillType = SkPathFillType::kWinding);
+                        SkPathFillType,
+                        UsePaintCache);
   void DrawImageInternal(cc::PaintCanvas*,
                          CanvasImageSource*,
                          Image*,
@@ -506,7 +508,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                          const FloatRect& dst_rect,
                          const SkSamplingOptions&,
                          const PaintFlags*);
-  void ClipInternal(const Path&, const String& winding_rule_string);
+  void ClipInternal(const Path&,
+                    const String& winding_rule_string,
+                    UsePaintCache);
 
   bool IsPointInPathInternal(const Path&,
                              const double x,

@@ -4,6 +4,7 @@
 
 #include "cc/paint/paint_op_buffer.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -413,7 +414,7 @@ size_t ClipPathOp::Serialize(const PaintOp* base_op,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const ClipPathOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
-  helper.Write(op->path);
+  helper.Write(op->path, op->use_cache);
   helper.Write(op->op);
   helper.Write(op->antialias);
   return helper.size();
@@ -629,7 +630,7 @@ size_t DrawPathOp::Serialize(const PaintOp* base_op,
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
   helper.Write(*flags_to_serialize, current_ctm);
-  helper.Write(op->path);
+  helper.Write(op->path, op->use_cache);
   helper.Write(op->sk_path_fill_type);
   return helper.size();
 }
@@ -2432,7 +2433,7 @@ gfx::Rect PaintOp::ComputePaintRect(const PaintOp* op,
   } else {
     const PaintFlags* flags =
         op->IsPaintOpWithFlags()
-            ? &static_cast<const PaintOpWithFlags*>(op)->flags
+            ? &(static_cast<const PaintOpWithFlags*>(op)->flags)
             : nullptr;
     SkRect paint_rect = MapRect(ctm, op_rect);
     if (flags) {
