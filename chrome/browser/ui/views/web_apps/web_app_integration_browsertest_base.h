@@ -272,8 +272,10 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
 
   TestDelegate* delegate_;
-  std::unique_ptr<StateSnapshot> before_action_state_;
-  std::unique_ptr<StateSnapshot> after_action_state_;
+  // State snapshots, captured before and after "state change" actions are
+  // executed, and inspected by "state check" actions to verify behavior.
+  std::unique_ptr<StateSnapshot> before_state_change_action_state_;
+  std::unique_ptr<StateSnapshot> after_state_change_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
   Browser* app_browser_ = nullptr;
   Browser* active_browser_ = nullptr;

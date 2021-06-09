@@ -422,7 +422,8 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
       action_string.substr(0, action_string.length() - param_length);
 
   if (!IsInspectionAction(action_base)) {
-    before_action_state_ = std::move(after_action_state_);
+    before_state_change_action_state_ =
+        std::move(after_state_change_action_state_);
   }
 
   if (action_base == "add_policy_app_internal_tabbed") {
@@ -529,10 +530,10 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
   }
 
   if (IsInspectionAction(action_base)) {
-    DCHECK(!after_action_state_ ||
-           *after_action_state_ == ConstructStateSnapshot());
+    DCHECK(!after_state_change_action_state_ ||
+           *after_state_change_action_state_ == ConstructStateSnapshot());
   } else {
-    after_action_state_ =
+    after_state_change_action_state_ =
         std::make_unique<StateSnapshot>(ConstructStateSnapshot());
     MaybeWaitForManifestUpdates(profile());
   }
@@ -637,8 +638,8 @@ web_app::AppId WebAppIntegrationBrowserTestBase::InstallOmniboxOrMenu() {
 
 void WebAppIntegrationBrowserTestBase::LaunchInternal(
     const std::string& action_param) {
-  absl::optional<AppState> app_state =
-      GetAppByScope(before_action_state_.get(), profile(), action_param);
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
@@ -699,8 +700,8 @@ void WebAppIntegrationBrowserTestBase::RemovePolicyApp(
 
 void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
     const std::string& action_param) {
-  absl::optional<AppState> app_state =
-      GetAppByScope(before_action_state_.get(), profile(), action_param);
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
@@ -712,8 +713,8 @@ void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
 
 void WebAppIntegrationBrowserTestBase::SetOpenInWindowInternal(
     const std::string& action_param) {
-  absl::optional<AppState> app_state =
-      GetAppByScope(before_action_state_.get(), profile(), action_param);
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
@@ -783,8 +784,8 @@ void WebAppIntegrationBrowserTestBase::UninstallFromMenu() {
 
 void WebAppIntegrationBrowserTestBase::UninstallInternal(
     const std::string& action_param) {
-  absl::optional<AppState> app_state =
-      GetAppByScope(before_action_state_.get(), profile(), action_param);
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
@@ -819,33 +820,33 @@ void WebAppIntegrationBrowserTestBase::UserSigninInternal() {
 
 // Assert Actions
 void WebAppIntegrationBrowserTestBase::AssertAppLocallyInstalledInternal() {
-  DCHECK(after_action_state_);
-  absl::optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_TRUE(app_state->is_installed_locally);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertAppNotLocallyInstalledInternal() {
-  DCHECK(after_action_state_);
-  absl::optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertAppNotInList(
     const std::string& action_param) {
-  DCHECK(after_action_state_);
-  absl::optional<AppState> app_state =
-      GetAppByScope(after_action_state_.get(), profile(), action_param);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<AppState> app_state = GetAppByScope(
+      after_state_change_action_state_.get(), profile(), action_param);
   EXPECT_FALSE(app_state.has_value());
 }
 
 void WebAppIntegrationBrowserTestBase::AssertInstallable() {
-  DCHECK(after_action_state_);
-  absl::optional<BrowserState> browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
+  DCHECK(after_state_change_action_state_);
+  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   absl::optional<TabState> active_tab =
       GetStateForActiveTab(browser_state.value());
@@ -854,54 +855,54 @@ void WebAppIntegrationBrowserTestBase::AssertInstallable() {
 }
 
 void WebAppIntegrationBrowserTestBase::AssertInstallIconShown() {
-  DCHECK(after_action_state_);
-  absl::optional<BrowserState> browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
+  DCHECK(after_state_change_action_state_);
+  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_TRUE(browser_state->install_icon_shown);
   EXPECT_TRUE(pwa_install_view()->GetVisible());
 }
 
 void WebAppIntegrationBrowserTestBase::AssertInstallIconNotShown() {
-  absl::optional<BrowserState> browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
+  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_FALSE(browser_state->install_icon_shown);
   EXPECT_FALSE(pwa_install_view()->GetVisible());
 }
 
 void WebAppIntegrationBrowserTestBase::AssertLaunchIconShown() {
-  DCHECK(after_action_state_);
-  absl::optional<BrowserState> browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
+  DCHECK(after_state_change_action_state_);
+  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_TRUE(browser_state->launch_icon_shown);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertLaunchIconNotShown() {
-  DCHECK(after_action_state_);
-  absl::optional<BrowserState> browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
+  DCHECK(after_state_change_action_state_);
+  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_FALSE(browser_state->launch_icon_shown);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertManifestDisplayModeInternal(
     DisplayMode display_mode) {
-  DCHECK(after_action_state_);
-  absl::optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(display_mode, app_state->effective_display_mode);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
-  DCHECK(before_action_state_);
-  DCHECK(after_action_state_);
-  absl::optional<BrowserState> most_recent_browser_state =
-      GetStateForBrowser(after_action_state_.get(), profile(), browser());
-  absl::optional<BrowserState> previous_browser_state =
-      GetStateForBrowser(before_action_state_.get(), profile(), browser());
+  DCHECK(before_state_change_action_state_);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
+  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+      before_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
   ASSERT_TRUE(previous_browser_state.has_value());
   EXPECT_GT(most_recent_browser_state->tabs.size(),
@@ -914,20 +915,20 @@ void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
 
 void WebAppIntegrationBrowserTestBase::AssertUserDisplayModeInternal(
     DisplayMode display_mode) {
-  DCHECK(after_action_state_);
-  absl::optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  DCHECK(after_state_change_action_state_);
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(display_mode, app_state->user_display_mode);
 }
 
 void WebAppIntegrationBrowserTestBase::AssertWindowClosed() {
-  DCHECK(before_action_state_);
-  DCHECK(after_action_state_);
+  DCHECK(before_state_change_action_state_);
+  DCHECK(after_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
-      GetStateForProfile(after_action_state_.get(), profile());
+      GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
-      GetStateForProfile(before_action_state_.get(), profile());
+      GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
   EXPECT_LT(after_action_profile->browsers.size(),
@@ -935,12 +936,12 @@ void WebAppIntegrationBrowserTestBase::AssertWindowClosed() {
 }
 
 void WebAppIntegrationBrowserTestBase::AssertWindowCreated() {
-  DCHECK(before_action_state_);
-  DCHECK(after_action_state_);
+  DCHECK(before_state_change_action_state_);
+  DCHECK(after_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
-      GetStateForProfile(after_action_state_.get(), profile());
+      GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
-      GetStateForProfile(before_action_state_.get(), profile());
+      GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
   EXPECT_GT(after_action_profile->browsers.size(),
@@ -951,8 +952,8 @@ void WebAppIntegrationBrowserTestBase::AssertWindowDisplayMode(
     blink::mojom::DisplayMode display_mode) {
   DCHECK(app_browser());
   DCHECK(app_browser()->app_controller()->AsWebAppBrowserController());
-  absl::optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
@@ -1063,8 +1064,8 @@ bool WebAppIntegrationBrowserTestBase::AreNoAppWindowsOpen(
 void WebAppIntegrationBrowserTestBase::ForceUpdateManifestContents(
     const std::string& app_scope,
     GURL app_url_with_manifest_param) {
-  absl::optional<AppState> app_state =
-      GetAppByScope(before_action_state_.get(), profile(), app_scope);
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), app_scope);
   ASSERT_TRUE(app_state.has_value());
   auto app_id = app_state->id;
   active_app_id_ = app_id;
