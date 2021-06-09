@@ -12,10 +12,8 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 
 /**
- * TabObserver that keeps switching to always observe the current tab. A stop-gap solution
- * to ActivityTabTabObserver for classes that cannot reference it directly.
- * TODO(crbug.com/1146871): Just switch to ActivityTabTabObserver once ActivityTabProvider
- *                  gets modularized.
+ * TabObserver that keeps switching to always observe the "current" tab. The current tab is decided
+ * by the provided ObservableSupplier<Tab>.
  */
 public class CurrentTabObserver {
     private final ObservableSupplier<Tab> mTabSupplier;
@@ -23,6 +21,12 @@ public class CurrentTabObserver {
     private final Callback<Tab> mTabSupplierCallback;
     private CallbackController mCallbackController;
     private Tab mTab;
+
+    /** @see #CurrentTabObserver(ObservableSupplier, TabObserver, Callback) */
+    public CurrentTabObserver(
+            @NonNull ObservableSupplier<Tab> tabSupplier, @NonNull TabObserver tabObserver) {
+        this(tabSupplier, tabObserver, null);
+    }
 
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}. NOT to be owned
