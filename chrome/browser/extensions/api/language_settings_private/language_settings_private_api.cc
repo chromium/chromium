@@ -7,14 +7,15 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +44,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
+#include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
@@ -71,35 +73,36 @@ using chromeos::input_method::InputMethodUtil;
 const size_t kNumImesToAutoEnableImeMenu = 2;
 
 // Returns the set of IDs of all enabled IMEs.
-std::unordered_set<std::string> GetEnabledIMEs(
+base::flat_set<std::string> GetEnabledIMEs(
     scoped_refptr<InputMethodManager::State> ime_state) {
-  const std::vector<std::string>& ime_ids(ime_state->GetActiveInputMethodIds());
-  return std::unordered_set<std::string>(ime_ids.begin(), ime_ids.end());
+  return ime_state->GetAllowedInputMethods();
 }
 
 // Returns the set of IDs of all allowed IMEs.
-std::unordered_set<std::string> GetAllowedIMEs(
+base::flat_set<std::string> GetAllowedIMEs(
     scoped_refptr<InputMethodManager::State> ime_state) {
-  const std::vector<std::string>& ime_ids(ime_state->GetAllowedInputMethods());
-  return std::unordered_set<std::string>(ime_ids.begin(), ime_ids.end());
+  return ime_state->GetAllowedInputMethods();
 }
 
 // Returns the set of IDs of enabled IMEs for the given pref.
-std::unordered_set<std::string> GetIMEsFromPref(PrefService* prefs,
-                                                const char* pref_name) {
-  std::vector<std::string> enabled_imes =
-      base::SplitString(prefs->GetString(pref_name), ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  return std::unordered_set<std::string>(enabled_imes.begin(),
-                                         enabled_imes.end());
+base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
+                                            const char* pref_name) {
+  return base::SplitString(prefs->GetString(pref_name), ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
 // Returns the set of allowed UI locales.
-std::unordered_set<std::string> GetAllowedLanguages(PrefService* prefs) {
-  std::unordered_set<std::string> allowed_languages;
-  for (const base::Value& locale_value :
-       prefs->GetList(prefs::kAllowedLanguages)->GetList()) {
-    allowed_languages.insert(locale_value.GetString());
+base::flat_set<std::string> GetAllowedLanguages(PrefService* prefs) {
+  const auto& allowed_languages_values =
+      prefs->GetList(prefs::kAllowedLanguages)->GetList();
+
+  // Uses the O(n log n) base::flat_set constructor by pushing back to a vector
+  // instead of inserting into a set.
+  std::vector<std::string> allowed_languages;
+  allowed_languages.reserve(allowed_languages_values.size());
+
+  for (const base::Value& locale_value : allowed_languages_values) {
+    allowed_languages.push_back(locale_value.GetString());
   }
 
   return allowed_languages;
@@ -113,14 +116,15 @@ std::unordered_set<std::string> GetAllowedLanguages(PrefService* prefs) {
 std::vector<std::string> GetSortedComponentIMEs(
     InputMethodManager* manager,
     scoped_refptr<InputMethodManager::State> ime_state,
-    const std::unordered_set<std::string>& component_ime_set,
+    const base::flat_set<std::string>& component_ime_set,
     PrefService* prefs) {
   std::vector<std::string> enabled_languages =
       base::SplitString(prefs->GetString(language::prefs::kPreferredLanguages),
                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Duplicate set for membership testing.
-  std::unordered_set<std::string> available_component_imes(component_ime_set);
+  std::set<std::string> available_component_imes(component_ime_set.begin(),
+                                                 component_ime_set.end());
   std::vector<std::string> component_ime_list;
 
   for (const auto& language_code : enabled_languages) {
@@ -132,7 +136,7 @@ std::vector<std::string> GetSortedComponentIMEs(
     // Append the enabled ones to the new list. Also remove them from the set
     // so they aren't duplicated for other languages.
     for (const auto& input_method_id : input_method_ids) {
-      if (available_component_imes.count(input_method_id)) {
+      if (base::Contains(available_component_imes, input_method_id)) {
         component_ime_list.push_back(input_method_id);
         available_component_imes.erase(input_method_id);
       }
@@ -148,14 +152,14 @@ std::vector<std::string> GetSortedComponentIMEs(
 // Sorts the third-party IMEs by the order of their associated languages.
 std::vector<std::string> GetSortedThirdPartyIMEs(
     scoped_refptr<InputMethodManager::State> ime_state,
-    const std::unordered_set<std::string>& third_party_ime_set,
+    const base::flat_set<std::string>& third_party_ime_set,
     PrefService* prefs) {
   std::vector<std::string> ime_list;
   std::string preferred_languages =
       prefs->GetString(language::prefs::kPreferredLanguages);
-  std::vector<std::string> enabled_languages =
-      base::SplitString(preferred_languages, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<base::StringPiece> enabled_languages =
+      base::SplitStringPiece(preferred_languages, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
 
   // Add the fake language for ARC IMEs at the very last of the list. Unlike
   // Chrome OS IMEs, these ARC ones are not associated with any (real) language.
@@ -165,34 +169,35 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
   ime_state->GetInputMethodExtensions(&descriptors);
 
   // Filter out the IMEs not in |third_party_ime_set|.
-  auto it = descriptors.begin();
-  while (it != descriptors.end()) {
-    if (third_party_ime_set.count(it->id()) == 0)
-      it = descriptors.erase(it);
-    else
-      it++;
-  }
+  descriptors.erase(
+      std::remove_if(
+          descriptors.begin(), descriptors.end(),
+          [&third_party_ime_set](const InputMethodDescriptor& descriptor) {
+            return !third_party_ime_set.contains(descriptor.id());
+          }),
+      descriptors.end());
+
+  // A set of the elements of |ime_list|.
+  std::set<std::string> ime_set;
 
   // For each language, add any candidate IMEs that support it.
   for (const auto& language : enabled_languages) {
-    auto it = descriptors.begin();
-    while (it != descriptors.end() && descriptors.size()) {
-      if (third_party_ime_set.count(it->id()) &&
-          base::Contains(it->language_codes(), language)) {
-        ime_list.push_back(it->id());
-        // Remove the added descriptor from the candidate list.
-        it = descriptors.erase(it);
-      } else {
-        it++;
+    for (const InputMethodDescriptor& descriptor : descriptors) {
+      const std::string& id = descriptor.id();
+      if (!base::Contains(ime_set, id) &&
+          base::Contains(descriptor.language_codes(), language)) {
+        ime_list.push_back(id);
+        ime_set.insert(id);
       }
     }
   }
 
   // Add the rest of the third party IMEs
-  auto item = descriptors.begin();
-  while (item != descriptors.end()) {
-    ime_list.push_back(item->id());
-    item = descriptors.erase(item);
+  for (const InputMethodDescriptor& descriptor : descriptors) {
+    const std::string& id = descriptor.id();
+    if (!base::Contains(ime_set, id)) {
+      ime_list.push_back(id);
+    }
   }
 
   return ime_list;
@@ -247,7 +252,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   // Build the language list.
   language_list_->Clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::unordered_set<std::string> allowed_ui_locales(GetAllowedLanguages(
+  const base::flat_set<std::string> allowed_ui_locales(GetAllowedLanguages(
       Profile::FromBrowserContext(browser_context())->GetPrefs()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (const auto& entry : languages) {
@@ -271,7 +276,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&
-        allowed_ui_locales.count(language.code) == 0) {
+        !base::Contains(allowed_ui_locales, language.code)) {
       language.is_prohibited_language = std::make_unique<bool>(true);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -725,8 +730,8 @@ void PopulateInputMethodListFromDescriptors(
   if (!ime_state.get())
     return;
 
-  const std::unordered_set<std::string> active_ids(GetEnabledIMEs(ime_state));
-  const std::unordered_set<std::string> allowed_ids(GetAllowedIMEs(ime_state));
+  const base::flat_set<std::string> active_ids(GetEnabledIMEs(ime_state));
+  const base::flat_set<std::string> allowed_ids(GetAllowedIMEs(ime_state));
 
   // Collator used to sort display names in the given locale.
   UErrorCode error = U_ZERO_ERROR;
@@ -748,14 +753,14 @@ void PopulateInputMethodListFromDescriptors(
     input_method.display_name = util->GetLocalizedDisplayName(descriptor);
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
-    if (active_ids.count(input_method.id) > 0)
+    if (base::Contains(active_ids, input_method.id))
       input_method.enabled = std::make_unique<bool>(true);
     if (descriptor.options_page_url().is_valid())
       input_method.has_options_page = std::make_unique<bool>(true);
     if (!allowed_ids.empty() &&
         (util->IsKeyboardLayout(input_method.id) ||
          chromeos::extension_ime_util::IsArcIME(input_method.id)) &&
-        allowed_ids.count(input_method.id) == 0) {
+        !base::Contains(allowed_ids, input_method.id)) {
       input_method.is_prohibited_by_policy = std::make_unique<bool>(true);
     }
     input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
@@ -836,7 +841,7 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
                               : prefs::kLanguageEnabledImes;
 
   // Get the input methods we are adding to.
-  std::unordered_set<std::string> input_method_set(
+  base::flat_set<std::string> input_method_set(
       GetIMEsFromPref(prefs, pref_name));
 
   // Add the new input method.
@@ -867,7 +872,7 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
     const char* other_ime_list_pref_name = is_component_extension_ime
                                                ? prefs::kLanguageEnabledImes
                                                : prefs::kLanguagePreloadEngines;
-    std::unordered_set<std::string> other_input_method_set(
+    base::flat_set<std::string> other_input_method_set(
         GetIMEsFromPref(prefs, other_ime_list_pref_name));
     if (input_method_set.size() + other_input_method_set.size() ==
         kNumImesToAutoEnableImeMenu) {
