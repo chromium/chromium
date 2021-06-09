@@ -56,7 +56,7 @@ static constexpr size_t kDefaultBackForwardCacheSize = 1;
 static constexpr size_t kDefaultForegroundBackForwardCacheSize = 0;
 
 // The default time to live in seconds for documents in BackForwardCache.
-static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 15;
+static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 180;
 
 #if defined(OS_ANDROID)
 bool IsProcessBindingEnabled() {
