@@ -118,10 +118,14 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
                            FdWatchController* controller,
                            FdWatcher* delegate);
 
-  // Exposed for testing.
-  bool is_ludicrous_timer_slack_enabled() const {
-    return is_ludicrous_timer_slack_enabled_;
-  }
+  bool GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting() const;
+  void MaybeUpdateWakeupTimerForTesting(const base::TimeTicks& wakeup_time);
+
+ protected:
+  // Virtual for testing.
+  virtual void SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
+                                   bool use_slack,
+                                   kevent64_s* timer_event);
 
  private:
   // Called by the watch controller implementations to stop watching the
@@ -142,9 +146,14 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // true if work was done, or false if no work was done.
   bool ProcessEvents(Delegate* delegate, int count);
 
-  // Sets the wakeup timer to |wakeup_time|, or clears it if |wakeup_time| is
-  // base::TimeTicks::Max(). Updates |scheduled_wakeup_time_| to follow.
-  void UpdateWakeupTimer(const base::TimeTicks& wakeup_time);
+  // Updates the wakeup timer to |wakeup_time| if it differs from the currently
+  // scheduled wakeup. Clears the wakeup timer if |wakeup_time| is
+  // base::TimeTicks::Max().
+  // Updates |scheduled_wakeup_time_| to follow.
+  void MaybeUpdateWakeupTimer(const base::TimeTicks& wakeup_time);
+
+  // Ludicrous slack is applied when this function returns true.
+  bool IsLudicrousTimerSlackEnabledAndNotSuspended() const;
 
   // Receive right to which an empty Mach message is sent to wake up the pump
   // in response to ScheduleWork().
@@ -171,6 +180,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   // Cache flag for ease of testing.
   const bool is_ludicrous_timer_slack_enabled_;
+
+  // True if Ludicrous slack was suspended last time the wakeup timer was
+  // updated.
+  bool ludicrous_timer_slack_was_suspended_;
 
   // The currently scheduled wakeup, if any. If no wakeup is scheduled,
   // contains base::TimeTicks::Max().

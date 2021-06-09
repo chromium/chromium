@@ -83,6 +83,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
     kLudicrousSlackUninitialized,
     kLudicrousSlackOff,
     kLudicrousSlackOn,
+    kLudicrousSlackSuspended,
   };
 
   // MessagePump:
@@ -102,8 +103,8 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 #endif  // OS_IOS
 
   // Exposed for testing.
-  LudicrousSlackSetting ludicrous_slack_setting() const {
-    return ludicrous_slack_setting_;
+  LudicrousSlackSetting GetLudicrousSlackStateForTesting() const {
+    return GetLudicrousSlackState();
   }
 
  protected:
@@ -159,6 +160,10 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   // The maximum number of run loop modes that can be monitored.
   static constexpr int kNumModes = 4;
+
+  // Returns the current ludicrous slack state, which implies reading both the
+  // feature flag and the suspension state.
+  LudicrousSlackSetting GetLudicrousSlackState() const;
 
   // All sources of delayed work scheduling converge to this, using TimeDelta
   // avoids querying Now() for key callers.
