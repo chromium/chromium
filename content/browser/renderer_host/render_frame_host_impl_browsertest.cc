@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -3419,6 +3420,8 @@ IN_PROC_BROWSER_TEST_F(
   static_assert(net::IsolationInfo::kPartyContextMaxSize == 20,
                 "kPartyContextMaxSize should have value 20.");
 
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, base::TimeDelta::FromSeconds(60));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   GURL b_url = embedded_test_server()->GetURL("b.com", "/");
