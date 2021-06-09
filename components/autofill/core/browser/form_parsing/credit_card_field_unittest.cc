@@ -9,10 +9,12 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -23,6 +25,58 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
+namespace {
+// Returns a vector of numeric months with a leading 0 and an additional "MM"
+// entry.
+std::vector<SelectOption> GetMonths() {
+  std::vector<std::string> months{"MM", "01", "02", "03", "04", "05", "06",
+                                  "07", "08", "09", "10", "11", "12"};
+  std::vector<SelectOption> options;
+  for (const std::string& month : months)
+    options.push_back({base::ASCIIToUTF16(month), base::ASCIIToUTF16(month)});
+  return options;
+}
+
+// Returns a vector of 10 consecutive years starting today in $ digit format
+// and an additional "YYYY" entry.
+std::vector<SelectOption> Get4DigitYears() {
+  std::vector<SelectOption> years = {{u"YYYY", u"YYYY"}};
+
+  const base::Time time_now = AutofillClock::Now();
+  base::Time::Exploded time_exploded;
+  time_now.UTCExplode(&time_exploded);
+  const int kYearsToAdd = 10;
+
+  for (auto year = time_exploded.year; year < time_exploded.year + kYearsToAdd;
+       year++) {
+    std::u16string yyyy = base::ASCIIToUTF16(base::NumberToString(year));
+    years.push_back({yyyy, yyyy});
+  }
+
+  return years;
+}
+
+// Returns a vector of 10 consecutive years starting today in 2 digit format
+// and an additional "YY" entry.
+std::vector<SelectOption> Get2DigitYears() {
+  std::vector<SelectOption> years = Get4DigitYears();
+  for (SelectOption& option : years) {
+    DCHECK_EQ(option.content.size(), 4u);
+    DCHECK_EQ(option.value.size(), 4u);
+    option.content = option.content.substr(2);
+    option.value = option.value.substr(2);
+  }
+  return years;
+}
+
+// Adds prefixes and postfixes to options and labels.
+std::vector<SelectOption> WithNoise(std::vector<SelectOption> options) {
+  for (SelectOption& option : options) {
+    option.content = base::StrCat({u"bla", option.content, u"123"});
+    option.value = base::StrCat({u"bla", option.content, u"123"});
+  }
+  return options;
+}
 
 class CreditCardFieldTestBase : public FormFieldTestBase {
  public:
@@ -52,37 +106,6 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
       }
     }
     TestClassificationExpectations();
-  }
-
-  // Returns a vector of numeric months with a leading 0 and an additional "MM"
-  // entry.
-  std::vector<SelectOption> GetMonths() {
-    std::vector<std::string> months{"MM", "01", "02", "03", "04", "05", "06",
-                                    "07", "08", "09", "10", "11", "12"};
-    std::vector<SelectOption> options;
-    for (const std::string& month : months)
-      options.push_back({base::ASCIIToUTF16(month), base::ASCIIToUTF16(month)});
-    return options;
-  }
-
-  // Returns a vector of 10 consecutive years starting today in 2 digit format
-  // and an additional "YY" entry.
-  std::vector<SelectOption> Get2DigitYears() {
-    std::vector<SelectOption> years = {{u"YY", u"YY"}};
-
-    const base::Time time_now = AutofillClock::Now();
-    base::Time::Exploded time_exploded;
-    time_now.UTCExplode(&time_exploded);
-    const int kYearsToAdd = 10;
-
-    for (auto year = time_exploded.year;
-         year < time_exploded.year + kYearsToAdd; year++) {
-      std::u16string yy =
-          base::ASCIIToUTF16(base::NumberToString(year).substr(2));
-      years.push_back({yy, yy});
-    }
-
-    return years;
   }
 };
 
@@ -125,16 +148,38 @@ TEST_F(CreditCardFieldTest, ParseMiniumCreditCard) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(CreditCardFieldTest, ParseMinimumCreditCardWithExpiryDateOptions) {
+struct CreditCardFieldYearTestCase {
+  std::vector<SelectOption> options;
+  ServerFieldType expected_type;
+};
+
+class CreditCardFieldYearTest
+    : public CreditCardFieldTestBase,
+      public testing::TestWithParam<CreditCardFieldYearTestCase> {};
+
+TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddSelectOneFormFieldData("Random Label", "Random Label", GetMonths(),
                             CREDIT_CARD_EXP_MONTH);
-  AddSelectOneFormFieldDataWithLength("Random Label", "Random Label", 2,
-                                      Get2DigitYears(),
-                                      CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  AddSelectOneFormFieldDataWithLength(
+      "Random Label", "Random Label",
+      GetParam().expected_type == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
+      GetParam().options, GetParam().expected_type);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CreditCardFieldYearTest,
+    testing::Values(CreditCardFieldYearTestCase{Get2DigitYears(),
+                                                CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                    CreditCardFieldYearTestCase{Get4DigitYears(),
+                                                CREDIT_CARD_EXP_4_DIGIT_YEAR},
+                    CreditCardFieldYearTestCase{WithNoise(Get2DigitYears()),
+                                                CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                    CreditCardFieldYearTestCase{WithNoise(Get4DigitYears()),
+                                                CREDIT_CARD_EXP_4_DIGIT_YEAR}));
 
 TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
@@ -509,4 +554,5 @@ TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+}  // namespace
 }  // namespace autofill

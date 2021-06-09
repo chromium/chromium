@@ -34,37 +34,6 @@ namespace {
 // [Ref: http://en.wikipedia.org/wiki/Bank_card_number]
 const size_t kMaxValidCardNumberSize = 19;
 
-// Look for the vector |regex_needles| in the values and in the options of
-// |haystack|. Returns true if a consecutive section of |haystack| matches
-// |regex_needles|.
-bool FindConsecutiveStrings(const std::vector<std::u16string>& regex_needles,
-                            const std::vector<SelectOption>& haystack) {
-  if (regex_needles.empty() || haystack.empty() ||
-      (haystack.size() < regex_needles.size()))
-    return false;
-
-  for (size_t i = 0; i < haystack.size() - regex_needles.size() + 1; ++i) {
-    for (size_t j = 0; j < regex_needles.size(); ++j) {
-      if (!MatchesPattern(haystack[i + j].value, regex_needles[j]))
-        break;
-
-      if (j == regex_needles.size() - 1)
-        return true;
-    }
-  }
-
-  for (size_t i = 0; i < haystack.size() - regex_needles.size() + 1; ++i) {
-    for (size_t j = 0; j < regex_needles.size(); ++j) {
-      if (!MatchesPattern(haystack[i + j].content, regex_needles[j]))
-        break;
-
-      if (j == regex_needles.size() - 1)
-        return true;
-    }
-  }
-  return false;
-}
-
 // Returns true if a field that has |max_length| can fit the data for a field of
 // |type|.
 bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
@@ -394,20 +363,30 @@ bool CreditCardField::LikelyCardYearSelectField(
     }
   }
 
+  // Test if three consecutive items in `field->options` mention three
+  // consecutive year dates.
   const base::Time time_now = AutofillClock::Now();
   base::Time::Exploded time_exploded;
   time_now.UTCExplode(&time_exploded);
 
   const int kYearsToMatch = 3;
-  std::vector<std::u16string> years_to_check_4_digit;
   std::vector<std::u16string> years_to_check_2_digit;
   for (int year = time_exploded.year; year < time_exploded.year + kYearsToMatch;
        ++year) {
-    years_to_check_4_digit.push_back(base::NumberToString16(year));
     years_to_check_2_digit.push_back(base::NumberToString16(year).substr(2));
   }
-  return FindConsecutiveStrings(years_to_check_4_digit, field->options) ||
-         FindConsecutiveStrings(years_to_check_2_digit, field->options);
+
+  auto OptionsContain = [&](const std::vector<std::u16string>& year_needles,
+                            const auto& option_projection) {
+    auto is_substring = [](base::StringPiece16 option,
+                           base::StringPiece16 year_needle) {
+      return option.find(year_needle) != base::StringPiece16::npos;
+    };
+    return base::ranges::search(field->options, year_needles, is_substring,
+                                option_projection) != field->options.end();
+  };
+  return OptionsContain(years_to_check_2_digit, &SelectOption::value) ||
+         OptionsContain(years_to_check_2_digit, &SelectOption::content);
 }
 
 // static
