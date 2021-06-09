@@ -219,21 +219,12 @@ class RenderViewHostTestHarness : public ::testing::Test {
   //   web_contents()->GetRenderViewHost()
   RenderViewHost* rvh();
 
-  // pending_rvh() is equivalent to:
-  //   WebContentsTester::For(web_contents())->GetPendingRenderViewHost()
-  RenderViewHost* pending_rvh();
-
-  // active_rvh() is equivalent to pending_rvh() ? pending_rvh() : rvh()
-  RenderViewHost* active_rvh();
-
   // main_rfh() is equivalent to web_contents()->GetMainFrame()
   RenderFrameHost* main_rfh();
 
-  // pending_main_rfh() is equivalent to:
-  //   WebContentsTester::For(web_contents())->GetPendingMainFrame()
-  RenderFrameHost* pending_main_rfh();
-
   BrowserContext* browser_context();
+
+  // Returns |main_rfh()|'s process.
   MockRenderProcessHost* process();
 
   // Frees the current WebContents for tests that want to test destruction.

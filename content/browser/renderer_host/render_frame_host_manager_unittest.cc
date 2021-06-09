@@ -2838,17 +2838,15 @@ TEST_P(RenderFrameHostManagerTest, CanCommitOrigin) {
     }
     navigation->ReadyToCommit();
 
-    int expected_bad_msg_count =
-        static_cast<MockRenderProcessHost*>(navigation->GetNavigationHandle()
-                                                ->GetRenderFrameHost()
-                                                ->GetProcess())
-            ->bad_msg_count();
+    auto* process = static_cast<MockRenderProcessHost*>(
+        navigation->GetNavigationHandle()->GetRenderFrameHost()->GetProcess());
+    int expected_bad_msg_count = process->bad_msg_count();
     if (test_case.mismatch)
       expected_bad_msg_count++;
 
     navigation->Commit();
 
-    EXPECT_EQ(expected_bad_msg_count, process()->bad_msg_count())
+    EXPECT_EQ(expected_bad_msg_count, process->bad_msg_count())
         << " url:" << test_case.url << " origin:" << test_case.origin
         << " mismatch:" << test_case.mismatch;
   }
