@@ -159,6 +159,20 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
+// Regression test for crbug.com/1213109.
+TEST_F(ProfileCustomizationBubbleSyncControllerTest,
+       ShouldNotShowWhenSyncGetsCustomColorBeforeStarting) {
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
+
+  // Set up theme sync before the bubble controller gets created.
+  SetSyncedProfileColor();
+  NotifyOnSyncStarted();
+
+  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
+}
+
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncGetsCustomTheme) {
   base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;

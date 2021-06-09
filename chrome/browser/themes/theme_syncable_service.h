@@ -127,6 +127,7 @@ class ThemeSyncableService : public syncer::SyncableService,
 
   // Captures the state of theme sync after initial data merge.
   ThemeSyncState startup_state_ = ThemeSyncState::kFailed;
+  bool sync_started_for_testing_ = false;
 
   base::ThreadChecker thread_checker_;
 

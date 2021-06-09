@@ -66,7 +66,7 @@ void ThemeSyncableService::OnThemeChanged() {
 void ThemeSyncableService::AddObserver(
     ThemeSyncableService::Observer* observer) {
   observer_list_.AddObserver(observer);
-  if (sync_processor_)
+  if (sync_processor_ || sync_started_for_testing_)
     observer->OnThemeSyncStarted(startup_state_);
 }
 
@@ -78,6 +78,7 @@ void ThemeSyncableService::RemoveObserver(
 void ThemeSyncableService::NotifyOnSyncStartedForTesting(
     ThemeSyncState startup_state) {
   startup_state_ = startup_state;
+  sync_started_for_testing_ = true;
   NotifyOnSyncStarted();
 }
 
