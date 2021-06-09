@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_VP9_ENCODER_H_
-#define MEDIA_GPU_VAAPI_VP9_ENCODER_H_
+#ifndef MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
+#define MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <list>
 #include <memory>
@@ -22,7 +22,7 @@ class VaapiWrapper;
 class VP9TemporalLayers;
 class VP9RateControl;
 
-class VP9Encoder : public VaapiVideoEncoderDelegate {
+class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
   struct EncodeParams {
     EncodeParams();
@@ -51,9 +51,9 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
     bool error_resilient_mode;
   };
 
-  VP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-             base::RepeatingClosure error_cb);
-  ~VP9Encoder() override;
+  VP9VaapiVideoEncoderDelegate(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+                               base::RepeatingClosure error_cb);
+  ~VP9VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
   bool Initialize(const VideoEncodeAccelerator::Config& config,
@@ -68,7 +68,7 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
                                       size_t payload_size) override;
 
  private:
-  friend class VP9EncoderTest;
+  friend class VP9VaapiVideoEncoderDelegateTest;
   friend class VaapiVideoEncodeAcceleratorTest;
 
   void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
@@ -107,8 +107,8 @@ class VP9Encoder : public VaapiVideoEncoderDelegate {
 
   std::unique_ptr<VP9RateControl> rate_ctrl_;
 
-  DISALLOW_COPY_AND_ASSIGN(VP9Encoder);
+  DISALLOW_COPY_AND_ASSIGN(VP9VaapiVideoEncoderDelegate);
 };
 }  // namespace media
 
-#endif  // MEDIA_GPU_VAAPI_VP9_ENCODER_H_
+#endif  // MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_

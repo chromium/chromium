@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vp9_encoder.h"
+#include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 
 #include <algorithm>
 #include <numeric>
@@ -121,7 +121,7 @@ VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
 
 libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
     const gfx::Size encode_size,
-    const VP9Encoder::EncodeParams& encode_params,
+    const VP9VaapiVideoEncoderDelegate::EncodeParams& encode_params,
     const VideoBitrateAllocation& bitrate_allocation,
     const size_t num_temporal_layers) {
   libvpx::VP9RateControlRtcConfig rc_cfg{};
@@ -167,7 +167,7 @@ static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
 
 }  // namespace
 
-VP9Encoder::EncodeParams::EncodeParams()
+VP9VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
       cpb_window_size_ms(kCPBWindowSizeMs),
@@ -177,20 +177,21 @@ VP9Encoder::EncodeParams::EncodeParams()
       max_qp(kMaxQP),
       error_resilient_mode(false) {}
 
-void VP9Encoder::set_rate_ctrl_for_testing(
+void VP9VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
     std::unique_ptr<VP9RateControl> rate_ctrl) {
   rate_ctrl_ = std::move(rate_ctrl);
 }
 
-VP9Encoder::VP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-                       base::RepeatingClosure error_cb)
+VP9VaapiVideoEncoderDelegate::VP9VaapiVideoEncoderDelegate(
+    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    base::RepeatingClosure error_cb)
     : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
 
-VP9Encoder::~VP9Encoder() {
-  // VP9Encoder can be destroyed on any thread.
+VP9VaapiVideoEncoderDelegate::~VP9VaapiVideoEncoderDelegate() {
+  // VP9VaapiVideoEncoderDelegate can be destroyed on any thread.
 }
 
-bool VP9Encoder::Initialize(
+bool VP9VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
     const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -208,8 +209,8 @@ bool VP9Encoder::Initialize(
     return false;
   }
 
-  // Even though VP9Encoder might support other bitrate control modes, only
-  // the kConstantQuantizationParameter is used.
+  // Even though VP9VaapiVideoEncoderDelegate might support other bitrate
+  // control modes, only the kConstantQuantizationParameter is used.
   if (ave_config.bitrate_control != VaapiVideoEncoderDelegate::BitrateControl::
                                         kConstantQuantizationParameter) {
     DVLOGF(1) << "Only CQ bitrate control is supported";
@@ -252,20 +253,20 @@ bool VP9Encoder::Initialize(
                          VideoEncodeAccelerator::kDefaultFramerate));
 }
 
-gfx::Size VP9Encoder::GetCodedSize() const {
+gfx::Size VP9VaapiVideoEncoderDelegate::GetCodedSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!coded_size_.IsEmpty());
 
   return coded_size_;
 }
 
-size_t VP9Encoder::GetMaxNumOfRefFrames() const {
+size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return kVp9NumRefFrames;
 }
 
-bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
+bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (encode_job->IsKeyframeRequested())
@@ -293,8 +294,9 @@ bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
   return true;
 }
 
-BitstreamBufferMetadata VP9Encoder::GetMetadata(EncodeJob* encode_job,
-                                                size_t payload_size) {
+BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
+    EncodeJob* encode_job,
+    size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto metadata =
@@ -305,7 +307,8 @@ BitstreamBufferMetadata VP9Encoder::GetMetadata(EncodeJob* encode_job,
   return metadata;
 }
 
-void VP9Encoder::BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) {
+void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
+    uint64_t encoded_chunk_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!rate_ctrl_) {
@@ -317,8 +320,9 @@ void VP9Encoder::BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) {
   rate_ctrl_->PostEncodeUpdate(encoded_chunk_size_bytes);
 }
 
-bool VP9Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
-                             uint32_t framerate) {
+bool VP9VaapiVideoEncoderDelegate::UpdateRates(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (bitrate_allocation.GetSumBps() == 0 || framerate == 0)
@@ -348,7 +352,8 @@ bool VP9Encoder::UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
   return true;
 }
 
-Vp9FrameHeader VP9Encoder::GetDefaultFrameHeader(const bool keyframe) const {
+Vp9FrameHeader VP9VaapiVideoEncoderDelegate::GetDefaultFrameHeader(
+    const bool keyframe) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Vp9FrameHeader hdr{};
@@ -365,7 +370,7 @@ Vp9FrameHeader VP9Encoder::GetDefaultFrameHeader(const bool keyframe) const {
   return hdr;
 }
 
-void VP9Encoder::SetFrameHeader(
+void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
     bool keyframe,
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
@@ -415,12 +420,14 @@ void VP9Encoder::SetFrameHeader(
             << ", filter_level=" << rate_ctrl_->GetLoopfilterLevel();
 }
 
-void VP9Encoder::UpdateReferenceFrames(scoped_refptr<VP9Picture> picture) {
+void VP9VaapiVideoEncoderDelegate::UpdateReferenceFrames(
+    scoped_refptr<VP9Picture> picture) {
   reference_frames_.Refresh(picture);
 }
 
-void VP9Encoder::NotifyEncodedChunkSize(VABufferID buffer_id,
-                                        VASurfaceID sync_surface_id) {
+void VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize(
+    VABufferID buffer_id,
+    VASurfaceID sync_surface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const uint64_t encoded_chunk_size =
       vaapi_wrapper_->GetEncodedChunkSize(buffer_id, sync_surface_id);
@@ -430,14 +437,15 @@ void VP9Encoder::NotifyEncodedChunkSize(VABufferID buffer_id,
   BitrateControlUpdate(encoded_chunk_size);
 }
 
-scoped_refptr<VP9Picture> VP9Encoder::GetPicture(EncodeJob* job) {
+scoped_refptr<VP9Picture> VP9VaapiVideoEncoderDelegate::GetPicture(
+    EncodeJob* job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return base::WrapRefCounted(
       reinterpret_cast<VP9Picture*>(job->picture().get()));
 }
 
-bool VP9Encoder::SubmitFrameParameters(
+bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
     EncodeJob* job,
     const EncodeParams& encode_params,
     scoped_refptr<VP9Picture> pic,
@@ -538,9 +546,10 @@ bool VP9Encoder::SubmitFrameParameters(
                      base::Unretained(this), VAEncPictureParameterBufferType,
                      MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
 
-  job->AddPostExecuteCallback(base::BindOnce(
-      &VP9Encoder::NotifyEncodedChunkSize, base::Unretained(this),
-      job->coded_buffer_id(), job->input_surface()->id()));
+  job->AddPostExecuteCallback(
+      base::BindOnce(&VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
+                     base::Unretained(this), job->coded_buffer_id(),
+                     job->input_surface()->id()));
   return true;
 }
 

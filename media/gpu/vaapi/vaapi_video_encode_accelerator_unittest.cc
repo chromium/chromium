@@ -13,8 +13,8 @@
 #include "base/test/task_environment.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vaapi/vp9_encoder.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,11 +112,12 @@ class MockVaapiWrapper : public VaapiWrapper {
   ~MockVaapiWrapper() override = default;
 };
 
-class MockVP9Encoder : public VP9Encoder {
+class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
  public:
-  MockVP9Encoder(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-                 base::RepeatingClosure error_cb)
-      : VP9Encoder(vaapi_wrapper, error_cb) {}
+  MockVP9VaapiVideoEncoderDelegate(
+      const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+      base::RepeatingClosure error_cb)
+      : VP9VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
   MOCK_METHOD2(Initialize,
                bool(const VideoEncodeAccelerator::Config&,
                     const VaapiVideoEncoderDelegate::Config&));
@@ -150,13 +151,14 @@ class VaapiVideoEncodeAcceleratorTest
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
     vaapi_encoder->vaapi_wrapper_ = mock_vaapi_wrapper_;
-    vaapi_encoder->encoder_ = std::make_unique<MockVP9Encoder>(
-        mock_vaapi_wrapper_,
-        base::BindRepeating(&VaapiVideoEncodeAcceleratorTest::OnError,
-                            base::Unretained(this)));
+    vaapi_encoder->encoder_ =
+        std::make_unique<MockVP9VaapiVideoEncoderDelegate>(
+            mock_vaapi_wrapper_,
+            base::BindRepeating(&VaapiVideoEncodeAcceleratorTest::OnError,
+                                base::Unretained(this)));
     EXPECT_CALL(*this, OnError()).Times(0);
-    mock_encoder_ =
-        reinterpret_cast<MockVP9Encoder*>(vaapi_encoder->encoder_.get());
+    mock_encoder_ = reinterpret_cast<MockVP9VaapiVideoEncoderDelegate*>(
+        vaapi_encoder->encoder_.get());
   }
 
   void SetDefaultMocksBehavior(const VideoEncodeAccelerator::Config& config) {
@@ -247,11 +249,12 @@ class VaapiVideoEncodeAcceleratorTest
               }
               auto* vaapi_encoder =
                   reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
-              job->AddPostExecuteCallback(
-                  base::BindOnce(&VP9Encoder::NotifyEncodedChunkSize,
-                                 base::Unretained(reinterpret_cast<VP9Encoder*>(
-                                     vaapi_encoder->encoder_.get())),
-                                 kCodedBufferId, kInputSurfaceId));
+              job->AddPostExecuteCallback(base::BindOnce(
+                  &VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
+                  base::Unretained(
+                      reinterpret_cast<VP9VaapiVideoEncoderDelegate*>(
+                          vaapi_encoder->encoder_.get())),
+                  kCodedBufferId, kInputSurfaceId));
               return true;
             }));
     EXPECT_CALL(
@@ -279,7 +282,7 @@ class VaapiVideoEncodeAcceleratorTest
     EXPECT_CALL(*mock_encoder_, GetMetadata(_, kEncodedChunkSize))
         .WillOnce(WithArgs<0, 1>(
             [](VaapiVideoEncoderDelegate::EncodeJob* job, size_t payload_size) {
-              // Same implementation in VP9Encoder.
+              // Same implementation in VP9VaapiVideoEncoderDelegate.
               BitstreamBufferMetadata metadata(
                   payload_size, job->IsKeyframeRequested(), job->timestamp());
               CodecPicture* picture = job->picture().get();
@@ -316,7 +319,7 @@ class VaapiVideoEncodeAcceleratorTest
   MockVideoEncodeAcceleratorClient client_;
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
-  MockVP9Encoder* mock_encoder_ = nullptr;
+  MockVP9VaapiVideoEncoderDelegate* mock_encoder_ = nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {
