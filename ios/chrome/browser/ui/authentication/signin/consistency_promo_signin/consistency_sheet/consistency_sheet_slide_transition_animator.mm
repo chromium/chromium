@@ -55,7 +55,9 @@ const CGFloat kAnimationDuration = 0.25;
   }
   [transitionContext.containerView addSubview:toView];
 
-  CGSize toViewSize = [self.navigationController layoutFittingSize];
+  CGFloat viewControllerWidth = self.navigationController.view.frame.size.width;
+  CGSize toViewSize =
+      [self.navigationController layoutFittingSizeForWidth:viewControllerWidth];
   CGFloat sizeDifference = toViewSize.height - fromView.frame.size.height;
   CGRect fromViewFrameAfterAnimation = fromView.frame;
   CGRect toViewFrameBeforeAnimation = fromView.frame;
@@ -74,8 +76,16 @@ const CGFloat kAnimationDuration = 0.25;
       break;
   }
   toView.frame = toViewFrameBeforeAnimation;
-  navigationFrameAfterAnimation.origin.y -= sizeDifference;
-  navigationFrameAfterAnimation.size.height += sizeDifference;
+  switch (self.navigationController.displayStyle) {
+    case ConsistencySheetDisplayStyleBottom:
+      navigationFrameAfterAnimation.origin.y -= sizeDifference;
+      navigationFrameAfterAnimation.size.height += sizeDifference;
+      break;
+    case ConsistencySheetDisplayStyleCentered:
+      navigationFrameAfterAnimation.origin.y -= sizeDifference / 2.;
+      navigationFrameAfterAnimation.size.height += sizeDifference;
+      break;
+  }
 
   NSTimeInterval duration = [self transitionDuration:transitionContext];
   void (^animations)() = ^() {

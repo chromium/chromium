@@ -53,9 +53,31 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
 - (CGRect)frameOfPresentedViewInContainerView {
   CGRect presentedViewFrame = self.containerView.frame;
-  CGSize size = [self.navigationController layoutFittingSize];
-  presentedViewFrame.origin.y = presentedViewFrame.size.height - size.height;
-  presentedViewFrame.size = size;
+  switch (self.navigationController.displayStyle) {
+    case ConsistencySheetDisplayStyleCentered: {
+      CGFloat availableWidth = CGRectGetWidth(presentedViewFrame);
+      CGFloat availableHeight = CGRectGetHeight(presentedViewFrame);
+
+      CGFloat width = availableWidth / 2.;
+      CGFloat height = MIN(
+          [self.navigationController layoutFittingSizeForWidth:width].height,
+          availableHeight / 2.);
+
+      presentedViewFrame.origin.x += (availableWidth - width) / 2.;
+      presentedViewFrame.origin.y += (availableHeight - height) / 2.;
+      presentedViewFrame.size.width = width;
+      presentedViewFrame.size.height = height;
+      break;
+    }
+    case ConsistencySheetDisplayStyleBottom: {
+      CGSize size = [self.navigationController
+          layoutFittingSizeForWidth:self.containerView.frame.size.width];
+      presentedViewFrame.origin.y =
+          presentedViewFrame.size.height - size.height;
+      presentedViewFrame.size = size;
+      break;
+    }
+  }
   return presentedViewFrame;
 }
 
@@ -77,10 +99,21 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   AddSameConstraints(self.containerView, self.backgroundDimmerView);
 
   // Add presented view controller.
-  [self.containerView addSubview:self.presentedViewController.view];
-  CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
-  presentedFrame.origin.y = self.containerView.bounds.size.height;
-  self.presentedViewController.view.frame = presentedFrame;
+  switch (self.navigationController.displayStyle) {
+    case ConsistencySheetDisplayStyleCentered: {
+      [self.containerView addSubview:self.presentedViewController.view];
+      CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
+      presentedFrame.origin.y = self.containerView.bounds.size.height;
+      self.presentedViewController.view.frame = presentedFrame;
+      break;
+    }
+    case ConsistencySheetDisplayStyleBottom: {
+      [self.containerView addSubview:self.presentedViewController.view];
+      self.presentedViewController.view.frame =
+          [self frameOfPresentedViewInContainerView];
+      break;
+    }
+  }
 
   // Update the dimmer view and background transparency view.
   [self.navigationController didUpdateControllerViewFrame];

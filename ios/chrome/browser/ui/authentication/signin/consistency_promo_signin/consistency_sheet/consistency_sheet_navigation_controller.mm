@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
+#import "base/notreached.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,7 +19,9 @@ namespace {
 
 // Maximum height for ConsistencySheetNavigationController. This is a ratio
 // related the window height.
-CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
+constexpr CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
+// Corner radius for centered style dialog.
+constexpr CGFloat kCornerRadius = 12.;
 
 }  // namespace
 
@@ -31,8 +34,7 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 @implementation ConsistencySheetNavigationController
 
-- (CGSize)layoutFittingSize {
-  CGFloat width = self.view.frame.size.width;
+- (CGSize)layoutFittingSizeForWidth:(CGFloat)width {
   UINavigationController* navigationController =
       self.childViewControllers.lastObject;
   DCHECK([navigationController
@@ -52,6 +54,12 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
   self.backgroundView.frame = self.view.bounds;
 }
 
+#pragma mark - Properties
+
+- (ConsistencySheetDisplayStyle)displayStyle {
+  return [self displayStyleWithTraitcollection:self.traitCollection];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -59,12 +67,15 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
   self.backgroundView = PrimaryBackgroundBlurView();
   [self.view insertSubview:self.backgroundView atIndex:0];
   self.backgroundView.frame = self.view.bounds;
+  self.view.layer.masksToBounds = YES;
+  self.view.clipsToBounds = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
                            forBarMetrics:UIBarMetricsDefault];
+  [self updateViewWithTraitCollection:self.traitCollection];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -79,6 +90,45 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
   DCHECK([viewController
       conformsToProtocol:@protocol(ChildConsistencySheetViewController)]);
   [super pushViewController:viewController animated:animated];
+}
+
+#pragma mark - UIContentContainer
+
+- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
+              withTransitionCoordinator:
+                  (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [self updateViewWithTraitCollection:newCollection];
+}
+
+#pragma mark - Private
+
+// Updates the view according to the trait collection.
+- (void)updateViewWithTraitCollection:(UITraitCollection*)collection {
+  switch ([self displayStyleWithTraitcollection:collection]) {
+    case ConsistencySheetDisplayStyleBottom:
+      self.view.layer.cornerRadius = 0;
+      break;
+    case ConsistencySheetDisplayStyleCentered:
+      self.view.layer.cornerRadius = kCornerRadius;
+      break;
+  }
+}
+
+// Returns the display style.
+- (ConsistencySheetDisplayStyle)displayStyleWithTraitcollection:
+    (UITraitCollection*)collection {
+  switch (collection.horizontalSizeClass) {
+    case UIUserInterfaceSizeClassCompact:
+      return ConsistencySheetDisplayStyleBottom;
+      break;
+    case UIUserInterfaceSizeClassRegular:
+      return ConsistencySheetDisplayStyleCentered;
+      break;
+    case UIUserInterfaceSizeClassUnspecified:
+      NOTREACHED();
+      break;
+  }
+  return ConsistencySheetDisplayStyleBottom;
 }
 
 @end

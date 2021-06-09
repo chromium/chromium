@@ -7,6 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+// Style to display the consistency sheet.
+typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
+  // Bottom sheet at the bottom of the screen (for compact size).
+  ConsistencySheetDisplayStyleBottom,
+  // Bottom sheet centered in the middle of the screen (for regular size).
+  ConsistencySheetDisplayStyleCentered,
+};
+
 // Navigation controller presented from the bottom. The pushed view controllers
 // view have to be UIScrollView. This is required to support high font size
 // (related to accessibility) with small devices (like iPhone SE).
@@ -17,9 +25,13 @@
 // ChildConsistencySheetViewController protocol.
 @interface ConsistencySheetNavigationController : UINavigationController
 
+// Display style according to the window size.
+@property(nonatomic, assign, readonly)
+    ConsistencySheetDisplayStyle displayStyle;
+
 // Returns the desired size related to the current view controller shown by
-// |ConsistencySheetNavigationController|.
-- (CGSize)layoutFittingSize;
+// |ConsistencySheetNavigationController|, based on |width|.
+- (CGSize)layoutFittingSizeForWidth:(CGFloat)width;
 
 // Updates internal views according to the consistency sheet view position.
 - (void)didUpdateControllerViewFrame;
