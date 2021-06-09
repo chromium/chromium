@@ -12,8 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
@@ -174,7 +172,6 @@ class NavigationManagerTest : public PlatformTest {
   FakeBrowserState browser_state_;
   FakeWebState web_state_;
   MockNavigationManagerDelegate delegate_;
-  base::test::ScopedFeatureList feature_;
   std::unique_ptr<NavigationManagerImpl> manager_;
 
  private:
@@ -804,8 +801,6 @@ TEST_F(NavigationManagerTest, AddPendingItemIfDiffernetURL) {
 // Tests that when the last committed item exists, adding a pending item with
 // the same URL fails if the new item is not form submission.
 TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfNotFormSubmission) {
-  feature_.InitAndEnableFeature(
-      autofill::features::kAutofillAddressProfileSavePrompt);
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -846,8 +841,6 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfNotFormSubmission) {
 // the same URL updates the existing committed item if the form submission isn't
 // using POST.
 TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfGETFormSubmission) {
-  feature_.InitAndEnableFeature(
-      autofill::features::kAutofillAddressProfileSavePrompt);
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -885,8 +878,6 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfGETFormSubmission) {
 // Tests that when the last committed item exists, adding a pending item with
 // the same URL creates a new pending item if the form submission is using POST.
 TEST_F(NavigationManagerTest, AddSameUrlPendingItemIfPOSTFormSubmission) {
-  feature_.InitAndEnableFeature(
-      autofill::features::kAutofillAddressProfileSavePrompt);
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -923,8 +914,6 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItemIfPOSTFormSubmission) {
 // Tests that when the last committed item exists, adding a pending item with
 // the same URL fails if the user agent override option is INHERIT.
 TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfOverrideInherit) {
-  feature_.InitAndEnableFeature(
-      autofill::features::kAutofillAddressProfileSavePrompt);
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -963,8 +952,6 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfOverrideInherit) {
 // Tests that when the last committed item exists, adding a pending item with
 // the same URL succeeds.
 TEST_F(NavigationManagerTest, AddSameUrlPendingItem) {
-  feature_.InitAndEnableFeature(
-      autofill::features::kAutofillAddressProfileSavePrompt);
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
