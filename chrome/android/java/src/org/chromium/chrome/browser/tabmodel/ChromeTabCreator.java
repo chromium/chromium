@@ -39,8 +39,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.Referrer;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -325,18 +323,15 @@ public class ChromeTabCreator extends TabCreator {
      * several link from the same application, we reuse the same tab so as to not open too many
      * tabs.
      * @param url the URL to open
-     * @param referer The referer url if provided, null otherwise.
-     * @param headers HTTP headers to send alongside the URL.
      * @param appId the ID of the application that triggered that URL navigation.
      * @param forceNewTab whether the URL should be opened in a new tab. If false, an existing tab
      *                    already opened by the same app will be reused.
      * @param intent the source of url if it isn't null.
-     * @param intentTimestamp the time the intent was received.
      * @return the tab the URL was opened in, could be a new tab or a reused one.
      */
     // TODO(crbug.com/1081924): Clean up the launches from SearchActivity/Chrome.
-    public Tab launchUrlFromExternalApp(String url, String referer, String headers, String appId,
-            boolean forceNewTab, Intent intent, long intentTimestamp) {
+    public Tab launchUrlFromExternalApp(
+            LoadUrlParams loadUrlParams, String appId, boolean forceNewTab, Intent intent) {
         assert !mIncognito;
         // Don't re-use tabs for intents from Chrome. Note that this can be spoofed so shouldn't be
         // relied on for anything security sensitive.
@@ -346,32 +341,6 @@ public class ChromeTabCreator extends TabCreator {
             // We don't associate the tab with that app ID, as it is assumed that if the
             // application wanted to open this tab as a new tab, it probably does not want it
             // reused either.
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-            loadUrlParams.setIntentReceivedTimestamp(intentTimestamp);
-            if (referer != null) {
-                loadUrlParams.setReferrer(
-                        new Referrer(referer, IntentHandler.getReferrerPolicyFromIntent(intent)));
-            }
-            // Handle post data case.
-            if (IntentHandler.wasIntentSenderChrome(intent)) {
-                String postDataType =
-                        IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_POST_DATA_TYPE);
-                byte[] postData =
-                        IntentUtils.safeGetByteArrayExtra(intent, IntentHandler.EXTRA_POST_DATA);
-                if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
-                    StringBuilder appendToHeader = new StringBuilder();
-                    appendToHeader.append("Content-Type: ");
-                    appendToHeader.append(postDataType);
-                    if (TextUtils.isEmpty(headers)) {
-                        headers = appendToHeader.toString();
-                    } else {
-                        headers = headers + "\r\n" + appendToHeader.toString();
-                    }
-
-                    loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
-                }
-            }
-            loadUrlParams.setVerbatimHeaders(headers);
 
             // Using FROM_LINK ensures the tab is parented to the current tab, which allows
             // the back button to close these tabs and restore selection to the previous
@@ -394,8 +363,6 @@ public class ChromeTabCreator extends TabCreator {
                 // We don't reuse the tab, we create a new one at the same index instead.
                 // Reusing a tab would require clearing the navigation history and clearing the
                 // contents (we would not want the previous content to show).
-                LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-                loadUrlParams.setIntentReceivedTimestamp(intentTimestamp);
                 Tab newTab = createNewTab(
                         loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, i, intent);
                 TabAssociatedApp.from(newTab).setAppId(appId);
@@ -405,7 +372,7 @@ public class ChromeTabCreator extends TabCreator {
         }
 
         // No tab for that app, we'll have to create a new one.
-        Tab tab = launchUrl(url, TabLaunchType.FROM_EXTERNAL_APP, intent, intentTimestamp);
+        Tab tab = createNewTab(loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, intent);
         TabAssociatedApp.from(tab).setAppId(appId);
         return tab;
     }
