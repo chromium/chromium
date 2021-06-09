@@ -16,10 +16,9 @@ namespace content {
 
 namespace {
 
-// Returns true if all candidates pass the inspection.
-bool InspectCandidates(
+bool CandidatesAreValid(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
-  for (auto& candidate : candidates) {
+  for (const auto& candidate : candidates) {
     // These non-http candidates should be filtered out in Blink and
     // SpeculationHostImpl should not see them. If SpeculationHostImpl receives
     // non-http candidates, it may mean the renderer process has a bug
@@ -68,7 +67,7 @@ SpeculationHostImpl::~SpeculationHostImpl() = default;
 void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!InspectCandidates(candidates))
+  if (!CandidatesAreValid(candidates))
     return;
 
   // Only handle messages from an active main frame.
