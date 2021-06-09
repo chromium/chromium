@@ -12,8 +12,6 @@ var pass = chrome.test.callbackPass;
 var fail = chrome.test.callbackFail;
 var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
-var scriptUrl =
-    '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
 
 var kWindowRect = {
   'width': 400,
@@ -24,9 +22,7 @@ function log(message) {
   console.log(new Date().toLocaleTimeString() + ' - ' + message);
 }
 
-let loadScript = chrome.test.loadScript(scriptUrl);
-loadScript.then(() => {chrome.test.runTests([
-
+chrome.test.runTests([
   function captureVisibleTabRace() {
     // Simulate a callback being added to make sure that the test isn't
     // considered complete until all of the 8 windows are tested (this happens
@@ -84,4 +80,4 @@ loadScript.then(() => {chrome.test.runTests([
       });
     });
  }
-])});
+]);

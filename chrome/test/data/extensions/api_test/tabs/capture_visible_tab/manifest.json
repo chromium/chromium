@@ -3,9 +3,5 @@
   "version": "0.1",
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.tabs.captureVisibleTab",
-  "background": {
-    "scripts": ["test_race.js"],
-    "persistent": true
-  },
   "permissions": ["tabs", "<all_urls>"]
 }

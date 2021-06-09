@@ -5,7 +5,6 @@
   "description": "end-to-end browser test for chrome.tabs.captureVisibleTab",
   "permissions": [ "tabs", "<all_urls>" ],
   "background": {
-    "scripts": [ "background.js" ],
-    "persistent": true
+    "scripts": [ "background.js" ]
   }
 }
