@@ -17,7 +17,6 @@
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "ui/gfx/geometry/size.h"

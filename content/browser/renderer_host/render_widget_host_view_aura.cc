@@ -51,7 +51,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/accessibility_switches.h"

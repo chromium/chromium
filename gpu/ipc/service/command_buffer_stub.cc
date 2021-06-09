@@ -32,7 +32,6 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"

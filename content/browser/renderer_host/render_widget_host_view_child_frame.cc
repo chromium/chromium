@@ -33,7 +33,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/public/browser/render_process_host.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"

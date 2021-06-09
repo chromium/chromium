@@ -8,14 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "gpu_messages.h": [
-    "+third_party/skia/include/gpu/GrTypes.h",
-    "+third_party/skia/include/core/SkImageInfo.h",
-  ],
   "dxgi_helpers.cc": [
     "+third_party/libyuv/include/libyuv/planar_functions.h",
-  ],
-  "surface_origin_mojom_traits.h": [
-    "+third_party/skia/include/gpu/GrTypes.h",
   ],
 }

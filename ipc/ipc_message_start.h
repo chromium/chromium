@@ -16,7 +16,6 @@ enum IPCMessageStart {
   TestMsgStart,
   WorkerMsgStart,
   NaClMsgStart,
-  GpuChannelMsgStart,
   MediaMsgStart,
   PpapiMsgStart,
   ExtensionMsgStart,

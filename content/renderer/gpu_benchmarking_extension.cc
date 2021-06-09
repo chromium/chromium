@@ -45,7 +45,6 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"

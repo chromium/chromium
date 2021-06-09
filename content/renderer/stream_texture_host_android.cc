@@ -9,7 +9,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ipc/ipc_message_macros.h"
 

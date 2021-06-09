@@ -12,8 +12,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
-#include "gpu/ipc/common/gpu_param_traits_macros.h"
 #include "ui/gfx/gpu_fence.h"
 
 namespace gpu {

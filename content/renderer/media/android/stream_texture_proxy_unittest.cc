@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ipc/ipc_listener.h"
 

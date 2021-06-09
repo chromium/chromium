@@ -44,7 +44,6 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"

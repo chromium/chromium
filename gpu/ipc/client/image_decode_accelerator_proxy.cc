@@ -17,7 +17,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 

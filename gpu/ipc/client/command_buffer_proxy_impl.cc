@@ -29,8 +29,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_messages.h"
-#include "gpu/ipc/common/gpu_param_traits.h"
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"

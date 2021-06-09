@@ -18,8 +18,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
-#include "gpu/ipc/common/gpu_param_traits_macros.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_sync_message.h"

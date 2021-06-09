@@ -44,7 +44,6 @@
 #include "content/test/stub_render_widget_host_owner_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"

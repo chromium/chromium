@@ -31,9 +31,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case NaClMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL;
       break;
-    case GpuChannelMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_GPU_CHANNEL;
-      break;
     case MediaMsgStart:
       message_class = ChromeLegacyIpc::CLASS_MEDIA;
       break;

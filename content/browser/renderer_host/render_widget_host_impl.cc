@@ -103,7 +103,6 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
