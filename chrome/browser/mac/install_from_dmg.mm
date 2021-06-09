@@ -121,7 +121,7 @@ bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
     image_path->clear();
   }
 
-  if (base::mac::IsOSLaterThan11_DontCallThis()) {
+  if (base::mac::IsAtLeastOS12()) {
     // Starting with macOS 12 "Monterey", the IOMedia has an ancestor of
     // type "AppleDiskImageDevice" that has a property "DiskImageURL" of string
     // type.

@@ -388,9 +388,6 @@ int MacOSVersionInternal() {
   // correspondence between Darwin's major version numbers and macOS major
   // version numbers.
   int macos_major_version = darwin_major_version - 9;
-  DLOG_IF(WARNING, darwin_major_version > 20)
-      << "Assuming Darwin " << base::NumberToString(darwin_major_version)
-      << " is macOS " << base::NumberToString(macos_major_version);
 
   return macos_major_version * 100;
 }

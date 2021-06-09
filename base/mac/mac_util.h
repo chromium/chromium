@@ -117,9 +117,6 @@ BASE_EXPORT int MacOSVersion();
     return internal::MacOSVersion() >= 1000 + V;                    \
   }
 
-// TODO(https://crbug.com/1105187): Update MAC_OS_X_VERSION_MIN_REQUIRED to
-// whatever macro it turns into in the future.
-
 #define DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
   inline bool IsOS##V() {                                             \
     DEPLOYMENT_TARGET_TEST(>, V, false)                               \
@@ -161,19 +158,20 @@ DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(11, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_OLD_IS_OS_FUNCS(12, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_OLD_IS_OS_FUNCS(13, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_OLD_IS_OS_FUNCS(14, OLD_TEST_DEPLOYMENT_TARGET)
+DEFINE_OLD_IS_OS_FUNCS(15, OLD_TEST_DEPLOYMENT_TARGET)
 
 // Versions of macOS supported at runtime and whose SDK is supported for
 // building.
-#ifdef MAC_OS_X_VERSION_10_15
-DEFINE_OLD_IS_OS_FUNCS(15, OLD_TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_OLD_IS_OS_FUNCS(15, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
 #ifdef MAC_OS_VERSION_11_0
 DEFINE_IS_OS_FUNCS(11, TEST_DEPLOYMENT_TARGET)
 #else
 DEFINE_IS_OS_FUNCS(11, IGNORE_DEPLOYMENT_TARGET)
+#endif
+
+#ifdef MAC_OS_VERSION_12_0
+DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
+#else
+DEFINE_IS_OS_FUNCS(12, IGNORE_DEPLOYMENT_TARGET)
 #endif
 
 #undef DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
@@ -187,8 +185,8 @@ DEFINE_IS_OS_FUNCS(11, IGNORE_DEPLOYMENT_TARGET)
 // This should be infrequently used. It only makes sense to use this to avoid
 // codepaths that are very likely to break on future (unreleased, untested,
 // unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan11_DontCallThis() {
-  return !IsAtMostOS11();
+inline bool IsOSLaterThan12_DontCallThis() {
+  return !IsAtMostOS12();
 }
 
 enum class CPUType {

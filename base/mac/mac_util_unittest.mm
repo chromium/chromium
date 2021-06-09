@@ -183,8 +183,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       TEST_FOR_FUTURE_10_OS(14);
       TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
 
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
     } else if (minor == 12) {
       EXPECT_FALSE(IsOS10_11());
       EXPECT_FALSE(IsAtMostOS10_11());
@@ -194,8 +195,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       TEST_FOR_FUTURE_10_OS(14);
       TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
 
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
     } else if (minor == 13) {
       EXPECT_FALSE(IsOS10_11());
       EXPECT_FALSE(IsAtMostOS10_11());
@@ -205,8 +207,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       TEST_FOR_FUTURE_10_OS(14);
       TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
 
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
     } else if (minor == 14) {
       EXPECT_FALSE(IsOS10_11());
       EXPECT_FALSE(IsAtMostOS10_11());
@@ -216,8 +219,9 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       TEST_FOR_SAME_10_OS(14);
       TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
 
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
     } else if (minor == 15) {
       EXPECT_FALSE(IsOS10_11());
       EXPECT_FALSE(IsAtMostOS10_11());
@@ -227,11 +231,12 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
       TEST_FOR_PAST_10_OS(14);
       TEST_FOR_SAME_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
 
-      EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
     } else {
       // macOS 10.15 was the end of the line.
-      EXPECT_TRUE(false);
+      FAIL() << "Unexpected 10.x macOS.";
     }
   } else if (major == 11) {
     EXPECT_FALSE(IsOS10_11());
@@ -242,11 +247,24 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
     TEST_FOR_PAST_10_OS(14);
     TEST_FOR_PAST_10_OS(15);
     TEST_FOR_SAME_OS(11);
+    TEST_FOR_FUTURE_OS(12);
 
-    EXPECT_FALSE(IsOSLaterThan11_DontCallThis());
+    EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
+  } else if (major == 12) {
+    EXPECT_FALSE(IsOS10_11());
+    EXPECT_FALSE(IsAtMostOS10_11());
+
+    TEST_FOR_PAST_10_OS(12);
+    TEST_FOR_PAST_10_OS(13);
+    TEST_FOR_PAST_10_OS(14);
+    TEST_FOR_PAST_10_OS(15);
+    TEST_FOR_PAST_OS(11);
+    TEST_FOR_SAME_OS(12);
+
+    EXPECT_FALSE(IsOSLaterThan12_DontCallThis());
   } else {
     // The spooky future.
-    EXPECT_FALSE(true);
+    FAIL() << "Time to update the OS macros!";
   }
 }
 
