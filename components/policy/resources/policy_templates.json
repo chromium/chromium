@@ -9366,7 +9366,7 @@
         'minimum': -2,
         'maximum': 365
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:92-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9399,7 +9399,7 @@
         'minimum': -2,
         'maximum': 365
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:92-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
