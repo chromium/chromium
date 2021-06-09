@@ -14,6 +14,8 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     super([
       'fetchCollections',
       'fetchImagesForCollection',
+      'getLocalImages',
+      'getLocalImageThumbnail',
       'getCurrentWallpaper',
       'selectWallpaper',
     ]);
@@ -94,6 +96,19 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     return Promise.resolve({images: this.images_});
   }
 
+  /** @override */
+  getLocalImages() {
+    this.methodCalled('getLocalImages');
+    return Promise.resolve({images: []});
+  }
+
+  /** @override */
+  getLocalImageThumbnail(id) {
+    this.methodCalled('getLocalImageThumbnail', id);
+    return Promise.resolve({data: ''});
+  }
+
+  /** @override */
   getCurrentWallpaper() {
     this.methodCalled('getCurrentWallpaper');
     return Promise.resolve({image: this.currentWallpaper});

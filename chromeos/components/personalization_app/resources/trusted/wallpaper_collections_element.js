@@ -60,6 +60,15 @@ export class WallpaperCollections extends PolymerElement {
         value: null,
       },
 
+      /**
+       * @private
+       * @type {!Array<string>}
+       */
+      localImages_: {
+        type: Array,
+        value: [],
+      },
+
       /** @private */
       isLoading_: {
         type: Boolean,
@@ -93,6 +102,7 @@ export class WallpaperCollections extends PolymerElement {
   ready() {
     super.ready();
     this.fetchCollections_();
+    this.fetchLocalImages_();
   }
 
   /** @override */
@@ -125,6 +135,30 @@ export class WallpaperCollections extends PolymerElement {
       console.warn('Fetching wallpaper collections failed', e);
     } finally {
       this.isLoading_ = false;
+    }
+  }
+
+  /**
+   * TODO(b/189968254) clean up data fetching and move display into untrusted
+   * container.
+   * @private
+   */
+  async fetchLocalImages_() {
+    const {images} = await this.wallpaperProvider_.getLocalImages();
+    if (!Array.isArray(images)) {
+      console.warn('Error fetching local images');
+      return;
+    }
+    // TODO(b/189968254) only show first ten until follow-up CL.
+    images.length = Math.min(10, images.length);
+    for (const image of images) {
+      const {data} =
+          await this.wallpaperProvider_.getLocalImageThumbnail(image.id);
+      if (!data) {
+        console.warn('Error fetching image data');
+        continue;
+      }
+      this.push('localImages_', data);
     }
   }
 

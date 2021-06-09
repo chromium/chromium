@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import './personalization_app.mojom-lite.js';
 import {assert} from '/assert.m.js';

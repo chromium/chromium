@@ -333,7 +333,7 @@ class WallpaperPrivateGetLocalImagePathsFunction : public ExtensionFunction {
 
  private:
   // Responds with the list of collected image paths.
-  void OnGetImagePathsComplete(const std::vector<std::string>& image_paths);
+  void OnGetImagePathsComplete(const std::vector<base::FilePath>& image_paths);
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetLocalImagePathsFunction);
 };

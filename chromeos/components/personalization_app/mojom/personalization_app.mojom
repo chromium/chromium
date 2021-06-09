@@ -4,6 +4,7 @@
 
 module chromeos.personalization_app.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
 // WallpaperCollection contains a list of |WallpaperImage| objects.
@@ -30,6 +31,14 @@ struct WallpaperImage {
     uint64 asset_id;
 };
 
+struct LocalImage {
+  // Id to be used for fetching the image thumbnail data.
+  mojo_base.mojom.UnguessableToken id;
+
+  // Name of this local asset to be displayed to the user.
+  string name;
+};
+
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
 // the Personalization App (chrome://personalization). It is a mojom wrapper for
 // APIs found in |backdrop_wallpaper.proto|.
@@ -44,6 +53,15 @@ interface WallpaperProvider {
     // set as the user's wallpaper. |images| will be null on error.
     FetchImagesForCollection(string collection_id) => (
         array<WallpaperImage>? images);
+
+    // Fetch a list of LocalImage objects from the local file system. |images|
+    // will be null on failure.
+    GetLocalImages() => (array<LocalImage>? images);
+
+    // Fetch a thumbnail data url for the given LocalImage |id|. |data| will be
+    // empty string on failure.
+    GetLocalImageThumbnail(mojo_base.mojom.UnguessableToken id) =>
+        (string data);
 
     // Get information about the currently set wallpaper. |image| will be null
     // on failure.

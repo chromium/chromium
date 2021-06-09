@@ -11,10 +11,17 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+namespace ash {
+class ThumbnailLoader;
+}  // namespace ash
 
 namespace backdrop {
 class Collection;
@@ -60,6 +67,11 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
 
+  void GetLocalImages(GetLocalImagesCallback callback) override;
+
+  void GetLocalImageThumbnail(const base::UnguessableToken& file_path,
+                              GetLocalImageThumbnailCallback callback) override;
+
   void GetCurrentWallpaper(GetCurrentWallpaperCallback callback) override;
 
   void SelectWallpaper(uint64_t image_asset_id,
@@ -78,11 +90,20 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                                const std::string& collection_id,
                                const std::vector<backdrop::Image>& images);
 
+  void OnGetLocalImages(GetLocalImagesCallback callback,
+                        const std::vector<base::FilePath>& images);
+
+  void OnGetLocalImageThumbnail(GetLocalImageThumbnailCallback callback,
+                                const SkBitmap* bitmap,
+                                base::File::Error error);
+
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_images_info_fetcher_;
+
+  std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 
   struct ImageInfo {
     GURL image_url;
@@ -93,8 +114,17 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   // user wallpaper selections.
   std::map<uint64_t, ImageInfo> image_asset_id_map_;
 
+  // When local images are fetched, assign each one a random |UnguessableToken|
+  // id. Store a mapping from these tokens to |FilePath|. The SWA passes a token
+  // id to get an image thumbnail preview.
+  std::map<base::UnguessableToken, base::FilePath> local_image_id_map_;
+
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
+
+  // Used for interacting with local filesystem.
+  base::WeakPtrFactory<ChromePersonalizationAppUiDelegate>
+      backend_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_

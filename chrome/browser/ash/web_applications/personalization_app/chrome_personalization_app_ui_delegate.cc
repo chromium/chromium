@@ -17,20 +17,30 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+namespace {
+constexpr int kLocalImageThumbnailSizeDip = 128;
+}  // namespace
 
 namespace mojo {
 
@@ -71,6 +81,17 @@ struct TypeConverter<chromeos::personalization_app::mojom::WallpaperImagePtr,
 
     return chromeos::personalization_app::mojom::WallpaperImage::New(
         GURL(image.image_url()), std::move(attribution), image.asset_id());
+  }
+};
+
+template <>
+struct TypeConverter<chromeos::personalization_app::mojom::LocalImagePtr,
+                     base::FilePath> {
+  static chromeos::personalization_app::mojom::LocalImagePtr Convert(
+      const base::FilePath& path) {
+    auto token = base::UnguessableToken::Create();
+    std::string name = path.BaseName().RemoveExtension().value();
+    return chromeos::personalization_app::mojom::LocalImage::New(token, name);
   }
 };
 
@@ -120,6 +141,40 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
       base::Unretained(this), std::move(callback)));
 }
 
+void ChromePersonalizationAppUiDelegate::GetLocalImages(
+    GetLocalImagesCallback callback) {
+  // TODO(b/190062481) also load images from android files.
+  ash::EnumerateLocalWallpaperFiles(
+      profile_,
+      base::BindOnce(&ChromePersonalizationAppUiDelegate::OnGetLocalImages,
+                     backend_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void ChromePersonalizationAppUiDelegate::GetLocalImageThumbnail(
+    const base::UnguessableToken& id,
+    GetLocalImageThumbnailCallback callback) {
+  const auto& entry = local_image_id_map_.find(id);
+  if (entry == local_image_id_map_.end()) {
+    mojo::ReportBadMessage("Invalid local image id received");
+    return;
+  }
+  const base::FilePath& file_path = entry->second;
+
+  if (!thumbnail_loader_)
+    thumbnail_loader_ = std::make_unique<ash::ThumbnailLoader>(profile_);
+
+  ash::ThumbnailLoader::ThumbnailRequest request(
+      file_path,
+      gfx::Size(kLocalImageThumbnailSizeDip, kLocalImageThumbnailSizeDip));
+
+  thumbnail_loader_->Load(
+      request,
+      base::BindOnce(
+          &ChromePersonalizationAppUiDelegate::OnGetLocalImageThumbnail,
+          base::Unretained(this), std::move(callback)));
+}
+
 void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
     GetCurrentWallpaperCallback callback) {
   auto* client = WallpaperControllerClientImpl::Get();
@@ -149,8 +204,7 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
       std::move(callback).Run(nullptr);
       return;
     case ash::WallpaperType::WALLPAPER_TYPE_COUNT:
-      NOTREACHED() << "Impossible WallpaperType";
-      std::move(callback).Run(nullptr);
+      mojo::ReportBadMessage("Impossible WallpaperType received");
       return;
   }
 }
@@ -161,8 +215,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
   const auto& it = image_asset_id_map_.find(image_asset_id);
 
   if (it == image_asset_id_map_.end()) {
-    LOG(WARNING) << "Invalid image asset_id selected";
-    std::move(callback).Run(false);
+    mojo::ReportBadMessage("Invalid image asset_id selected");
     return;
   }
 
@@ -234,4 +287,33 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
   }
   std::move(callback).Run(std::move(result));
   wallpaper_images_info_fetcher_.reset();
+}
+
+void ChromePersonalizationAppUiDelegate::OnGetLocalImages(
+    GetLocalImagesCallback callback,
+    const std::vector<base::FilePath>& images) {
+  local_image_id_map_.clear();
+  std::vector<chromeos::personalization_app::mojom::LocalImagePtr> result;
+  for (const auto& image_path : images) {
+    auto local_image =
+        chromeos::personalization_app::mojom::LocalImage::From<base::FilePath>(
+            image_path);
+
+    local_image_id_map_.insert({local_image->id, image_path});
+    result.push_back(std::move(local_image));
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void ChromePersonalizationAppUiDelegate::OnGetLocalImageThumbnail(
+    GetLocalImageThumbnailCallback callback,
+    const SkBitmap* bitmap,
+    base::File::Error error) {
+  if (error != base::File::Error::FILE_OK) {
+    // Do not call |mojom::ReportBadMessage| here. The message is valid, but
+    // the file may be corrupt or unreadable.
+    std::move(callback).Run(std::string());
+    return;
+  }
+  std::move(callback).Run(webui::GetBitmapDataUrl(*bitmap));
 }

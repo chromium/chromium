@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -46,6 +47,17 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   images.push_back(chromeos::personalization_app::mojom::WallpaperImage::New(
       GURL(), std::vector<std::string>(), 0));
   std::move(callback).Run(std::move(images));
+}
+
+void FakePersonalizationAppUiDelegate::GetLocalImages(
+    GetLocalImagesCallback callback) {
+  std::move(callback).Run({});
+}
+
+void FakePersonalizationAppUiDelegate::GetLocalImageThumbnail(
+    const base::UnguessableToken& id,
+    GetLocalImageThumbnailCallback callback) {
+  std::move(callback).Run(std::string());
 }
 
 void FakePersonalizationAppUiDelegate::GetCurrentWallpaper(
