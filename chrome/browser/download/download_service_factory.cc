@@ -165,8 +165,7 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
   }
 
   // Build in memory download service for incognito profile.
-  if (key->IsOffTheRecord() &&
-      base::FeatureList::IsEnabled(download::kDownloadServiceIncognito)) {
+  if (key->IsOffTheRecord()) {
     auto blob_context_getter_factory =
         std::make_unique<DownloadBlobContextGetterFactory>(key);
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =

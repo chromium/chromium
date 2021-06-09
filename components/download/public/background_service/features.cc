@@ -9,7 +9,4 @@ namespace download {
 const base::Feature kDownloadServiceFeature{"DownloadService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDownloadServiceIncognito{"DownloadServiceIncognito",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace download
