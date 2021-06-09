@@ -16,11 +16,11 @@ src/common/framework/query/validQueryPart.ts
 src/common/framework/query/parseQuery.ts
 src/common/framework/logging/test_case_recorder.ts
 src/common/framework/fixture.ts
+src/common/framework/params_builder.ts
 src/common/framework/test_group.ts
 src/common/framework/test_suite_listing.ts
 src/common/framework/tree.ts
 src/common/framework/file_loader.ts
-src/common/framework/params_builder.ts
 src/common/framework/preprocessor.ts
 src/common/framework/version.ts
 src/common/framework/logging/logger.ts
