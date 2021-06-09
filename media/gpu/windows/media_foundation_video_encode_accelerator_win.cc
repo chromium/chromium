@@ -1304,8 +1304,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
       .InputWidth = input_desc.Width,
       .InputHeight = input_desc.Height,
       .OutputFrameRate = {60, 1},
-      .OutputWidth = input_visible_size_.width(),
-      .OutputHeight = input_visible_size_.height(),
+      .OutputWidth = static_cast<UINT>(input_visible_size_.width()),
+      .OutputHeight = static_cast<UINT>(input_visible_size_.height()),
       .Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL};
 
   Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
@@ -1336,8 +1336,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
       video_processor.Get(), 0, FALSE);
 
   D3D11_TEXTURE2D_DESC scaled_desc = {
-      .Width = input_visible_size_.width(),
-      .Height = input_visible_size_.height(),
+      .Width = static_cast<UINT>(input_visible_size_.width()),
+      .Height = static_cast<UINT>(input_visible_size_.height()),
       .MipLevels = 1,
       .ArraySize = 1,
       .Format = DXGI_FORMAT_NV12,
@@ -1423,15 +1423,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
 
     D3D11_TEXTURE2D_DESC input_texture_desc = {};
     input_texture->GetDesc(&input_texture_desc);
-    RECT source_rect = {0, 0, input_texture_desc.Width,
-                        input_texture_desc.Height};
+    RECT source_rect = {0, 0, static_cast<LONG>(input_texture_desc.Width),
+                        static_cast<LONG>(input_texture_desc.Height)};
     video_context_->VideoProcessorSetStreamSourceRect(video_processor_.Get(), 0,
                                                       TRUE, &source_rect);
 
     D3D11_TEXTURE2D_DESC output_texture_desc = {};
     scaled_d3d11_texture_->GetDesc(&output_texture_desc);
-    RECT dest_rect = {0, 0, output_texture_desc.Width,
-                      output_texture_desc.Height};
+    RECT dest_rect = {0, 0, static_cast<LONG>(output_texture_desc.Width),
+                      static_cast<LONG>(output_texture_desc.Height)};
     video_context_->VideoProcessorSetOutputTargetRect(video_processor_.Get(),
                                                       TRUE, &dest_rect);
     video_context_->VideoProcessorSetStreamDestRect(video_processor_.Get(), 0,

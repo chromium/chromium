@@ -137,10 +137,10 @@ bool IsResolutionSupportedForDevice(const gfx::Size& resolution_to_test,
                                     ID3D11VideoDevice* video_device,
                                     DXGI_FORMAT format) {
   D3D11_VIDEO_DECODER_DESC desc = {
-      decoder_guid,                 // Guid
-      resolution_to_test.width(),   // SampleWidth
-      resolution_to_test.height(),  // SampleHeight
-      format                        // OutputFormat
+      decoder_guid,                                    // Guid
+      static_cast<UINT>(resolution_to_test.width()),   // SampleWidth
+      static_cast<UINT>(resolution_to_test.height()),  // SampleHeight
+      format                                           // OutputFormat
   };
 
   // We've chosen the least expensive test for identifying if a given resolution

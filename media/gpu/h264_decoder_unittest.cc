@@ -575,7 +575,7 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
   const std::vector<SubsampleEntry> subsamples = {
       // No encrypted bytes. This test only checks whether the data is passed
       // thru to the acclerator so making this completely clear.
-      {bitstream.size(), 0},
+      {static_cast<uint32_t>(bitstream.size()), 0},
   };
 
   std::unique_ptr<DecryptConfig> decrypt_config =

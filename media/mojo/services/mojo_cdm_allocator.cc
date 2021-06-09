@@ -141,7 +141,9 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
             natural_size, std::move(handle), buffer_size,
             {PlaneOffset(cdm::kYPlane), PlaneOffset(cdm::kUPlane),
              PlaneOffset(cdm::kVPlane)},
-            {Stride(cdm::kYPlane), Stride(cdm::kUPlane), Stride(cdm::kVPlane)},
+            {static_cast<int32_t>(Stride(cdm::kYPlane)),
+             static_cast<int32_t>(Stride(cdm::kUPlane)),
+             static_cast<int32_t>(Stride(cdm::kVPlane))},
             base::TimeDelta::FromMicroseconds(Timestamp()));
 
     // |frame| could fail to be created if the memory can't be mapped into

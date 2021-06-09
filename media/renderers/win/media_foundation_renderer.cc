@@ -621,7 +621,8 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
                 << hr;
     native_video_size_ = {640, 320};
   } else {
-    native_video_size_ = {native_width, native_height};
+    native_video_size_ = {static_cast<int>(native_width),
+                          static_cast<int>(native_height)};
   }
 
   // TODO(frankli): Use actual dest rect provided by client instead of video

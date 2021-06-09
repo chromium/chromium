@@ -22,8 +22,8 @@ base::win::ScopedHandle CreateNV12Texture(ID3D11Device* d3d11_device,
                                           const gfx::Size& size) {
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
   D3D11_TEXTURE2D_DESC desc = {
-      .Width = size.width(),
-      .Height = size.height(),
+      .Width = static_cast<UINT>(size.width()),
+      .Height = static_cast<UINT>(size.height()),
       .MipLevels = 1,
       .ArraySize = 1,
       .Format = dxgi_format,
