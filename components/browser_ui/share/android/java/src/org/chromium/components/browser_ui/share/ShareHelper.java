@@ -86,8 +86,14 @@ public class ShareHelper {
     @IntDef({ShareSourceAndroid.ANDROID_SHARE_SHEET, ShareSourceAndroid.CHROME_SHARE_SHEET,
             ShareSourceAndroid.DIRECT_SHARE})
     public @interface ShareSourceAndroid {
+        // This share is going via the Android share sheet.
         int ANDROID_SHARE_SHEET = 0;
+
+        // This share is going via Chrome's share sheet.
         int CHROME_SHARE_SHEET = 1;
+
+        // This share is happening via directly intenting to a specific share
+        // target.
         int DIRECT_SHARE = 2;
         int COUNT = 3;
     };

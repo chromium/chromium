@@ -41,6 +41,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 
@@ -626,6 +627,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
         if (id == android.R.id.shareText) {
             RecordUserAction.record("Omnibox.LongPress.Share");
+            ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
         }
 
         return super.onTextContextMenuItem(id);
