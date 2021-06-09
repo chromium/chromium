@@ -27,7 +27,6 @@ namespace {
 void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
                          content::BrowserContext* context,
                          extensions::ExtensionId extension_id,
-                         KeyPermissionsService* key_permissions_service,
                          std::unique_ptr<base::Value> value) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
@@ -38,7 +37,7 @@ void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
   std::move(callback).Run(std::make_unique<ExtensionKeyPermissionsService>(
       extension_id, extensions::ExtensionSystem::Get(profile)->state_store(),
       std::move(value), profile->GetProfilePolicyConnector()->policy_service(),
-      key_permissions_service));
+      context));
 }
 
 }  // namespace
@@ -47,10 +46,8 @@ void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
 void ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
     GetExtensionKeyPermissionsServiceCallback callback,
     content::BrowserContext* context,
-    extensions::ExtensionId extension_id,
-    KeyPermissionsService* key_permissions_service) {
+    extensions::ExtensionId extension_id) {
   DCHECK(context);
-  DCHECK(key_permissions_service);
 
   extensions::StateStore* const state_store =
       extensions::ExtensionSystem::Get(context)->state_store();
@@ -62,7 +59,7 @@ void ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
   state_store->GetExtensionValue(
       extension_id, kStateStorePlatformKeys,
       base::BindOnce(OnGotExtensionValue, std::move(callback), context,
-                     extension_id, key_permissions_service));
+                     extension_id));
 }
 
 ExtensionKeyPermissionsServiceFactory::ExtensionKeyPermissionsServiceFactory() =

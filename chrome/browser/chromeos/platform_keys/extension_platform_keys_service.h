@@ -209,8 +209,6 @@ class ExtensionPlatformKeysService : public KeyedService {
                     platform_keys::Status status);
 
   content::BrowserContext* const browser_context_ = nullptr;
-  platform_keys::KeyPermissionsService* const key_permissions_service_ =
-      nullptr;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;

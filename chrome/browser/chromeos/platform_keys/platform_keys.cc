@@ -143,6 +143,7 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
     case KeystoreError::kUnknown:
     case KeystoreError::kUnsupportedKeystoreType:
     case KeystoreError::kUnsupportedAlgorithmType:
+    case KeystoreError::kUnsupportedKeyTag:
       DCHECK(false);
       return Status::kErrorInternal;
 

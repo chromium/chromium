@@ -12,6 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -26,10 +29,12 @@ namespace policy {
 class PolicyService;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace chromeos {
 namespace platform_keys {
-
-class KeyPermissionsService;
 
 // PlatformKeys is a field stored in each extension's state store. It saves
 // signing permissions of keys in the context of a (Profile, Extension) pair.
@@ -46,12 +51,16 @@ const char kStateStorePlatformKeys[] = "PlatformKeys";
 using CanUseKeyForSigningCallback = base::OnceCallback<void(bool allowed)>;
 
 using RegisterKeyForCorporateUsageCallback =
-    base::OnceCallback<void(Status status)>;
+    base::OnceCallback<void(bool is_error,
+                            crosapi::mojom::KeystoreError error)>;
 
 using SetUserGrantedPermissionCallback =
-    base::OnceCallback<void(Status status)>;
+    base::OnceCallback<void(bool is_error,
+                            crosapi::mojom::KeystoreError error)>;
 
-using SetKeyUsedForSigningCallback = base::OnceCallback<void(Status status)>;
+using SetKeyUsedForSigningCallback =
+    base::OnceCallback<void(bool is_error,
+                            crosapi::mojom::KeystoreError error)>;
 
 // ** ExtensionKeyPermissionsService Responsibility **
 // - Managing signing permissions for a (Profile, Extension) pair.
@@ -97,12 +106,11 @@ class ExtensionKeyPermissionsService {
   // |extension_id|. Don't use this constructor directly. Call
   // |ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension|
   // instead.
-  ExtensionKeyPermissionsService(
-      const std::string& extension_id,
-      extensions::StateStore* state_store,
-      std::unique_ptr<base::Value> state_store_value,
-      policy::PolicyService* profile_policies,
-      KeyPermissionsService* key_permissions_service);
+  ExtensionKeyPermissionsService(const std::string& extension_id,
+                                 extensions::StateStore* state_store,
+                                 std::unique_ptr<base::Value> state_store_value,
+                                 policy::PolicyService* profile_policies,
+                                 content::BrowserContext* browser_context);
 
   ExtensionKeyPermissionsService(const ExtensionKeyPermissionsService&) =
       delete;
@@ -194,10 +202,10 @@ class ExtensionKeyPermissionsService {
 
   bool PolicyAllowsCorporateKeyUsage() const;
 
-  void CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
-                                    bool sign_unlimited_allowed,
-                                    absl::optional<bool> is_corporate_key,
-                                    Status is_corporate_key_status);
+  void CanUseKeyForSigningWithFlags(
+      CanUseKeyForSigningCallback callback,
+      bool sign_unlimited_allowed,
+      crosapi::mojom::GetKeyTagsResultPtr key_tags);
 
   void SetUserGrantedPermissionWithFlag(
       const std::string& public_key_spki_der,
@@ -208,7 +216,7 @@ class ExtensionKeyPermissionsService {
   extensions::StateStore* extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   policy::PolicyService* const profile_policies_;
-  KeyPermissionsService* const key_permissions_service_;
+  mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 

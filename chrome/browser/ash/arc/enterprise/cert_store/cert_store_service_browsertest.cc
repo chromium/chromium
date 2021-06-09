@@ -233,23 +233,14 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
   }
 
   void RegisterCorporateKey(CERTCertificate* cert) {
-    chromeos::platform_keys::KeyPermissionsService* const
-        key_permissions_service =
-            chromeos::platform_keys::KeyPermissionsServiceFactory::
-                GetForBrowserContext(browser()->profile());
-
-    ASSERT_TRUE(key_permissions_service);
-
-    {
-      base::RunLoop run_loop;
-      chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
-          GetForBrowserContextAndExtension(
-              base::BindOnce(&CertStoreServiceTest::GotPermissionsForExtension,
-                             base::Unretained(this), cert,
-                             run_loop.QuitClosure()),
-              browser()->profile(), kFakeExtensionId, key_permissions_service);
-      run_loop.Run();
-    }
+    base::RunLoop run_loop;
+    chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
+        GetForBrowserContextAndExtension(
+            base::BindOnce(&CertStoreServiceTest::GotPermissionsForExtension,
+                           base::Unretained(this), cert,
+                           run_loop.QuitClosure()),
+            browser()->profile(), kFakeExtensionId);
+    run_loop.Run();
   }
 
   void SetUpCerts(const std::vector<std::string>& keys_file_names,
@@ -352,8 +343,9 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
       std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service,
       base::OnceClosure done_callback,
-      chromeos::platform_keys::Status status) {
-    ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
+      bool is_error,
+      crosapi::mojom::KeystoreError error) {
+    ASSERT_FALSE(is_error) << static_cast<int>(error);
     std::move(done_callback).Run();
   }
 

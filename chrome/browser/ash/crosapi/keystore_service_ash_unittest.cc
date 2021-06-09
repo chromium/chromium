@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
@@ -34,6 +35,7 @@ namespace {
 using base::test::RunOnceCallback;
 using chromeos::platform_keys::BuildMockPlatformKeysService;
 using chromeos::platform_keys::HashAlgorithm;
+using chromeos::platform_keys::MockKeyPermissionsService;
 using chromeos::platform_keys::MockPlatformKeysService;
 using chromeos::platform_keys::Status;
 using chromeos::platform_keys::TokenId;
@@ -101,29 +103,21 @@ const std::vector<uint8_t>& GetDataBin() {
 void AssertBlobEq(const mojom::KeystoreBinaryResultPtr& result,
                   const std::vector<uint8_t>& expected_blob) {
   ASSERT_TRUE(result);
-  ASSERT_EQ(result->which(), mojom::KeystoreBinaryResult::Tag::kBlob);
+  ASSERT_TRUE(result->is_blob());
   EXPECT_EQ(result->get_blob(), expected_blob);
 }
 
-void AssertErrorEq(const mojom::KeystoreBinaryResultPtr& result,
-                   mojom::KeystoreError expected_error) {
+template <typename T>
+void AssertErrorEq(const T& result, mojom::KeystoreError expected_error) {
   ASSERT_TRUE(result);
-  ASSERT_EQ(result->which(), mojom::KeystoreBinaryResult::Tag::kError);
-  EXPECT_EQ(result->get_error(), expected_error);
-}
-
-void AssertErrorEq(
-    const mojom::KeystoreSelectClientCertificatesResultPtr& result,
-    mojom::KeystoreError expected_error) {
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->which(),
-            mojom::KeystoreSelectClientCertificatesResult::Tag::kError);
+  ASSERT_TRUE(result->is_error());
   EXPECT_EQ(result->get_error(), expected_error);
 }
 
 class KeystoreServiceAshTest : public testing::Test {
  public:
-  KeystoreServiceAshTest() : keystore_service_(&platform_keys_service_) {}
+  KeystoreServiceAshTest()
+      : keystore_service_(&platform_keys_service_, &key_permissions_service_) {}
   KeystoreServiceAshTest(const KeystoreServiceAshTest&) = delete;
   auto operator=(const KeystoreServiceAshTest&) = delete;
   ~KeystoreServiceAshTest() override = default;
@@ -133,21 +127,28 @@ class KeystoreServiceAshTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   StrictMock<MockPlatformKeysService> platform_keys_service_;
+  StrictMock<MockKeyPermissionsService> key_permissions_service_;
   KeystoreServiceAsh keystore_service_;
 };
 
-// A mock for observing binary results returned via a callback.
-struct BinaryCallbackObserver {
-  MOCK_METHOD(void, Callback, (mojom::KeystoreBinaryResultPtr result));
+// A mock for observing callbacks that return a singe result of the type |T| and
+// saving it.
+template <typename T>
+struct CallbackObserver {
+  MOCK_METHOD(void, Callback, (T result));
 
   auto GetCallback() {
     EXPECT_CALL(*this, Callback).WillOnce(MoveArg<0>(&result));
-    return base::BindOnce(&BinaryCallbackObserver::Callback,
+    return base::BindOnce(&CallbackObserver<T>::Callback,
                           base::Unretained(this));
   }
 
-  mojom::KeystoreBinaryResultPtr result;
+  T result;
 };
+
+using BinaryCallbackObserver = CallbackObserver<mojom::KeystoreBinaryResultPtr>;
+using SelectCertsCallbackObserver =
+    CallbackObserver<mojom::KeystoreSelectClientCertificatesResultPtr>;
 
 // A mock for observing status results returned via a callback.
 struct StatusCallbackObserver {
@@ -165,29 +166,13 @@ struct StatusCallbackObserver {
   mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
 };
 
-// A mock for observing SelectClientCertificates() results returned via a
-// callback.
-struct SelectCertsCallbackObserver {
-  MOCK_METHOD(void,
-              Callback,
-              (mojom::KeystoreSelectClientCertificatesResultPtr result));
-
-  auto GetCallback() {
-    EXPECT_CALL(*this, Callback).WillOnce(MoveArg<0>(&result));
-    return base::BindOnce(&SelectCertsCallbackObserver::Callback,
-                          base::Unretained(this));
-  }
-
-  mojom::KeystoreSelectClientCertificatesResultPtr result;
-};
-
 TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
   const unsigned int modulus_length = 2048;
 
   EXPECT_CALL(platform_keys_service_,
               GenerateRSAKey(TokenId::kUser, modulus_length, /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(GetPublicKeyStr(), Status::kSuccess));
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(mojom::KeystoreType::kUser,
                                 MakeRsaKeystoreSigningAlgorithm(modulus_length),
                                 observer.GetCallback());
@@ -343,6 +328,70 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
   keystore_service_.SelectClientCertificates({}, observer.GetCallback());
 
   AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
+  EXPECT_CALL(key_permissions_service_,
+              IsCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(
+          RunOnceCallback<1>(absl::optional<bool>(true), Status::kSuccess));
+
+  CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
+  keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
+
+  ASSERT_TRUE(observer.result);
+  ASSERT_EQ(observer.result->which(), mojom::GetKeyTagsResult::Tag::kTags);
+  EXPECT_EQ(observer.result->get_tags(),
+            static_cast<uint64_t>(mojom::KeyTag::kCorporate));
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
+  EXPECT_CALL(key_permissions_service_, IsCorporateKey)
+      .WillOnce(RunOnceCallback<1>(absl::nullopt, Status::kErrorInternal));
+
+  CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
+  keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
+
+  AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
+}
+
+TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
+  const uint64_t tags = static_cast<uint64_t>(mojom::KeyTag::kCorporate);
+
+  EXPECT_CALL(key_permissions_service_,
+              SetCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(Status::kSuccess));
+
+  StatusCallbackObserver observer;
+  keystore_service_.AddKeyTags(GetPublicKeyBin(), tags, observer.GetCallback());
+
+  EXPECT_EQ(observer.result_is_error, false);
+}
+
+TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
+  const uint64_t tags = static_cast<uint64_t>(mojom::KeyTag::kCorporate);
+
+  EXPECT_CALL(key_permissions_service_,
+              SetCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(Status::kErrorInternal));
+
+  StatusCallbackObserver observer;
+  keystore_service_.AddKeyTags(GetPublicKeyBin(), tags, observer.GetCallback());
+
+  EXPECT_EQ(observer.result_is_error, true);
+  EXPECT_EQ(observer.result_error, mojom::KeystoreError::kInternal);
+}
+
+TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
+  EXPECT_CALL(key_permissions_service_,
+              CanUserGrantPermissionForKey(GetPublicKeyStr(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(false));
+
+  CallbackObserver<bool> observer;
+  keystore_service_.CanUserGrantPermissionForKey(GetPublicKeyBin(),
+                                                 observer.GetCallback());
+
+  EXPECT_EQ(observer.result, false);
 }
 
 }  // namespace

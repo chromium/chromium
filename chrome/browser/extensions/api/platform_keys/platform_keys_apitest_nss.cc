@@ -135,18 +135,12 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     const extensions::Extension* const fake_gen_extension =
         LoadExtension(test_data_dir_.AppendASCII("platform_keys_genkey"));
 
-    chromeos::platform_keys::KeyPermissionsService* const
-        key_permissions_service = chromeos::platform_keys::
-            KeyPermissionsServiceFactory::GetForBrowserContext(profile());
-
-    ASSERT_TRUE(key_permissions_service);
-
     base::RunLoop run_loop;
     chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
             base::BindOnce(&PlatformKeysTest::GotPermissionsForExtension,
                            base::Unretained(this), run_loop.QuitClosure()),
-            profile(), fake_gen_extension->id(), key_permissions_service);
+            profile(), fake_gen_extension->id());
     run_loop.Run();
   }
 
@@ -174,8 +168,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
       std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service,
       base::OnceClosure done_callback,
-      chromeos::platform_keys::Status status) {
-    ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
+      bool is_error,
+      crosapi::mojom::KeystoreError error) {
+    ASSERT_FALSE(is_error) << static_cast<int>(error);
     std::move(done_callback).Run();
   }
 

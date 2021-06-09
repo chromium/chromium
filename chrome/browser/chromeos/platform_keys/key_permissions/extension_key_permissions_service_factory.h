@@ -18,7 +18,6 @@ namespace chromeos {
 namespace platform_keys {
 
 class ExtensionKeyPermissionsService;
-class KeyPermissionsService;
 
 using GetExtensionKeyPermissionsServiceCallback =
     base::OnceCallback<void(std::unique_ptr<ExtensionKeyPermissionsService>
@@ -27,23 +26,14 @@ using GetExtensionKeyPermissionsServiceCallback =
 // ExtensionKeyPermissionsServiceFactory can be used for retrieving
 // ExtensionKeyPermissionsService instances for a specific (Profile, Extension)
 // pair.
-//
-// Note: The underlying KeyPermissionsService instance used by a provided
-// ExtensionKeyPermissionsService is only valid during the lifetime of the given
-// BrowserContext, i.e., it is the responsibility of the service consumer to
-// make sure that the BrowserContext is valid during the lifetime of the
-// service.
 class ExtensionKeyPermissionsServiceFactory {
  public:
-  // |context| and |key_permissions_service| must not be nullptr and must
-  // outlive the provided ExtensionKeyPermissionsService instance.
-  // |key_permissions_service| must be a KeyPermissionsService instance
-  // corresponding to |context|.
+  // |context| must not be nullptr and must outlive the provided
+  // ExtensionKeyPermissionsService instance.
   static void GetForBrowserContextAndExtension(
       GetExtensionKeyPermissionsServiceCallback callback,
       content::BrowserContext* context,
-      extensions::ExtensionId extension_id,
-      KeyPermissionsService* key_permissions_service);
+      extensions::ExtensionId extension_id);
 
  private:
   ExtensionKeyPermissionsServiceFactory();

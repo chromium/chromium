@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -31,6 +33,7 @@ using PlatformKeysService = chromeos::platform_keys::PlatformKeysService;
 using TokenId = chromeos::platform_keys::TokenId;
 using SigningAlgorithmName = mojom::KeystoreSigningAlgorithmName;
 using SigningScheme = mojom::KeystoreSigningScheme;
+using KeyPermissionsService = chromeos::platform_keys::KeyPermissionsService;
 
 namespace {
 
@@ -139,14 +142,21 @@ bool UnpackSigningScheme(
 KeystoreServiceAsh::KeystoreServiceAsh(content::BrowserContext* fixed_context)
     : fixed_platform_keys_service_(
           chromeos::platform_keys::PlatformKeysServiceFactory::
+              GetForBrowserContext(fixed_context)),
+      fixed_key_permissions_service_(
+          chromeos::platform_keys::KeyPermissionsServiceFactory::
               GetForBrowserContext(fixed_context)) {
   CHECK(fixed_platform_keys_service_);
+  CHECK(fixed_key_permissions_service_);
 }
 
 KeystoreServiceAsh::KeystoreServiceAsh(
-    chromeos::platform_keys::PlatformKeysService* platform_keys_service)
-    : fixed_platform_keys_service_(platform_keys_service) {
+    PlatformKeysService* platform_keys_service,
+    KeyPermissionsService* key_permissions_service)
+    : fixed_platform_keys_service_(platform_keys_service),
+      fixed_key_permissions_service_(key_permissions_service) {
   CHECK(fixed_platform_keys_service_);
+  CHECK(fixed_key_permissions_service_);
 }
 
 KeystoreServiceAsh::KeystoreServiceAsh() = default;
@@ -165,6 +175,18 @@ PlatformKeysService* KeystoreServiceAsh::GetPlatformKeys() {
   PlatformKeysService* service =
       chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
+  CHECK(service);
+  return service;
+}
+
+KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
+  if (fixed_key_permissions_service_) {
+    return fixed_key_permissions_service_;
+  }
+
+  KeyPermissionsService* service =
+      chromeos::platform_keys::KeyPermissionsServiceFactory::
+          GetForBrowserContext(ProfileManager::GetPrimaryUserProfile());
   CHECK(service);
   return service;
 }
@@ -802,6 +824,100 @@ void KeystoreServiceAsh::DidSign(SignCallback callback,
     std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
         chromeos::platform_keys::StatusToKeystoreError(status)));
   }
+}
+
+//------------------------------------------------------------------------------
+
+void KeystoreServiceAsh::GetKeyTags(const std::vector<uint8_t>& public_key,
+                                    GetKeyTagsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string public_key_str(public_key.begin(), public_key.end());
+  GetKeyPermissions()->IsCorporateKey(
+      std::move(public_key_str),
+      base::BindOnce(&KeystoreServiceAsh::DidGetKeyTags, std::move(callback)));
+}
+
+// static
+void KeystoreServiceAsh::DidGetKeyTags(GetKeyTagsCallback callback,
+                                       absl::optional<bool> corporate,
+                                       chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  using KeyTag = crosapi::mojom::KeyTag;
+
+  crosapi::mojom::GetKeyTagsResultPtr result_ptr =
+      mojom::GetKeyTagsResult::New();
+
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    DCHECK(corporate.has_value());
+    static_assert(sizeof(uint64_t) >= sizeof(KeyTag),
+                  "Too many enum values for uint64_t");
+
+    uint64_t tags = static_cast<uint64_t>(KeyTag::kNoTags);
+    if (corporate.value()) {
+      tags |= static_cast<uint64_t>(KeyTag::kCorporate);
+    }
+    result_ptr->set_tags(tags);
+  } else {
+    result_ptr->set_error(
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+
+  std::move(callback).Run(std::move(result_ptr));
+}
+
+//------------------------------------------------------------------------------
+
+void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
+                                    uint64_t tags,
+                                    AddKeyTagsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (tags == static_cast<uint64_t>(mojom::KeyTag::kNoTags)) {
+    std::move(callback).Run(/*is_error=*/false,
+                            crosapi::mojom::KeystoreError::kUnknown);
+    return;
+  }
+
+  if (tags == static_cast<uint64_t>(mojom::KeyTag::kCorporate)) {
+    std::string public_key_str(public_key.begin(), public_key.end());
+    GetKeyPermissions()->SetCorporateKey(
+        std::move(public_key_str),
+        base::BindOnce(&KeystoreServiceAsh::DidAddKeyTags,
+                       std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(/*is_error=*/true,
+                          crosapi::mojom::KeystoreError::kUnsupportedKeyTag);
+}
+
+// static
+void KeystoreServiceAsh::DidAddKeyTags(AddKeyTagsCallback callback,
+                                       chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+  } else {
+    std::move(callback).Run(
+        /*is_error=*/true,
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void KeystoreServiceAsh::CanUserGrantPermissionForKey(
+    const std::vector<uint8_t>& public_key,
+    CanUserGrantPermissionForKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string public_key_str(public_key.begin(), public_key.end());
+  // Strictly speaking, crosapi::CanUserGrantPermissionForKeyCallback is a
+  // different type than platform_keys::CanUserGrantPermissionForKeyCallback.
+  // But as long as signatures are the same, we can just pass `callback`.
+  GetKeyPermissions()->CanUserGrantPermissionForKey(std::move(public_key_str),
+                                                    std::move(callback));
 }
 
 }  // namespace crosapi
