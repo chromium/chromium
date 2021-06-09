@@ -356,9 +356,11 @@ apps::IconLoader* AppServiceProxyBase::OverrideInnerIconLoaderForTesting(
 
 std::vector<std::string> AppServiceProxyBase::GetAppIdsForUrl(
     const GURL& url,
-    bool exclude_browsers) {
+    bool exclude_browsers,
+    bool exclude_browser_tab_apps) {
   auto intent_launch_info =
-      GetAppsForIntent(apps_util::CreateIntentFromUrl(url), exclude_browsers);
+      GetAppsForIntent(apps_util::CreateIntentFromUrl(url), exclude_browsers,
+                       exclude_browser_tab_apps);
   std::vector<std::string> app_ids;
   for (auto& entry : intent_launch_info) {
     app_ids.push_back(std::move(entry.app_id));
@@ -368,7 +370,8 @@ std::vector<std::string> AppServiceProxyBase::GetAppIdsForUrl(
 
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     const apps::mojom::IntentPtr& intent,
-    bool exclude_browsers) {
+    bool exclude_browsers,
+    bool exclude_browser_tab_apps) {
   std::vector<IntentLaunchInfo> intent_launch_info;
   if (apps_util::OnlyShareToDrive(intent) ||
       !apps_util::IsIntentValid(intent)) {
@@ -377,10 +380,15 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
 
   if (app_service_.is_bound()) {
     app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
-                                    &exclude_browsers](
+                                    &exclude_browsers,
+                                    &exclude_browser_tab_apps](
                                        const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()) ||
           update.ShowInLauncher() != apps::mojom::OptionalBool::kTrue) {
+        return;
+      }
+      if (exclude_browser_tab_apps &&
+          update.WindowMode() == mojom::WindowMode::kBrowser) {
         return;
       }
       std::set<std::string> existing_activities;

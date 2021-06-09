@@ -185,7 +185,7 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::vector<std::string> app_ids =
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browser=*/true);
+          url, /*exclude_browser=*/true, /*exclude_browser_tab_apps=*/false);
 
   for (auto app_id : app_ids) {
     if (IsAppDisabled(app_id)) {

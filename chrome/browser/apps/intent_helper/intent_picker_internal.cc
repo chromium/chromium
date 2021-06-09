@@ -76,6 +76,11 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
     return apps;
 
   auto* const provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
+      web_app::DisplayMode::kBrowser) {
+    return apps;
+  }
+
   ui::ImageModel icon_model =
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
           provider->icon_manager().GetFavicon(*app_id)));
