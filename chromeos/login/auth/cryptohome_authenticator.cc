@@ -93,7 +93,7 @@ const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
     case CryptohomeAuthenticator::CREATE_NEW:
       return "CREATE_NEW";
     case CryptohomeAuthenticator::RECOVER_MOUNT:
-      return "RECOVER_MONUT";
+      return "RECOVER_MOUNT";
     case CryptohomeAuthenticator::POSSIBLE_PW_CHANGE:
       return "POSSIBLE_PW_CHANGE";
     case CryptohomeAuthenticator::NEED_NEW_PW:
@@ -171,7 +171,7 @@ void RecordKeyErrorAndResolve(const base::WeakPtr<AuthAttemptState>& attempt,
   resolver->Resolve();
 }
 
-// Callback invoked when cryptohome's GetSantiziedUsername() method has
+// Callback invoked when cryptohome's GetSanitizedUsername() method has
 // finished.
 void OnGetSanitizedUsername(
     base::OnceCallback<void(bool, const std::string&)> callback,
@@ -182,7 +182,7 @@ void OnGetSanitizedUsername(
   std::move(callback).Run(!res.empty(), res);
 }
 
-// Callback invoked when a crypotyhome *Ex method, which only returns a
+// Callback invoked when a cryptohome *Ex method, which only returns a
 // base::Reply, finishes.
 template <typename ReplyType>
 void OnReplyMethod(const base::WeakPtr<AuthAttemptState>& attempt,
@@ -232,7 +232,7 @@ void DoMount(const base::WeakPtr<AuthAttemptState>& attempt,
   CHECK_NE(Key::KEY_TYPE_PASSWORD_PLAIN, key->GetKeyType());
 
   // Set state that username_hash is requested here so that test implementation
-  // that returns directly would not generate 2 OnLoginSucces() calls.
+  // that returns directly would not generate 2 OnLoginSuccess() calls.
   attempt->UsernameHashRequested();
 
   const cryptohome::AuthorizationRequest auth =

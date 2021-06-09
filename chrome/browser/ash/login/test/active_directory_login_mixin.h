@@ -65,7 +65,8 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
   void SubmitActiveDirectoryCredentials(const std::string& username,
                                         const std::string& password);
 
-  // Sets username and password for the Active Directory login and submits it.
+  // Sets old and new passwords for the Active Directory password change and
+  // submits it.
   void SubmitActiveDirectoryPasswordChangeCredentials(
       const std::string& old_password,
       const std::string& new_password1,

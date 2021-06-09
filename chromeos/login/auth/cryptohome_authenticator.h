@@ -37,7 +37,7 @@ class AuthStatusConsumer;
 //
 // At a high, level, here's what happens:
 // AuthenticateToLogin() calls a Cryptohome's method to perform offline login.
-// Resultes are stored in a AuthAttemptState owned by CryptohomeAuthenticator
+// Results are stored in a AuthAttemptState owned by CryptohomeAuthenticator
 // and then call Resolve().  Resolve() will attempt to
 // determine which AuthState we're in, based on the info at hand.
 // It then triggers further action based on the calculated AuthState; this

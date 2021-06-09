@@ -199,7 +199,8 @@ void ActiveDirectoryLoginMixin::SubmitActiveDirectoryCredentials(
   test::OobeJS().ClickOnPath(kAdCredsButton);
 }
 
-// Sets username and password for the Active Directory login and submits it.
+// Sets old and new passwords for the Active Directory password change and
+// submits it.
 void ActiveDirectoryLoginMixin::SubmitActiveDirectoryPasswordChangeCredentials(
     const std::string& old_password,
     const std::string& new_password1,
