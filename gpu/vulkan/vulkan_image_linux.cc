@@ -33,7 +33,8 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    uint32_t queue_family_index) {
   if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     DLOG(ERROR) << "GpuMemoryBuffer is not supported. type:" << gmb_handle.type;
     return false;

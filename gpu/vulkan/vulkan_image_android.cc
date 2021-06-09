@@ -19,7 +19,8 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    uint32_t queue_family_index) {
   if (gmb_handle.type != gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER) {
     DLOG(ERROR) << "gmb_handle.type is not supported. type:" << gmb_handle.type;
     return false;
@@ -132,8 +133,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     return false;
   }
 
-  // VkImage is imported from external.
-  queue_family_index_ = VK_QUEUE_FAMILY_FOREIGN_EXT;
+  queue_family_index_ = queue_family_index;
 
   if (ahb_format_props.format == VK_FORMAT_UNDEFINED) {
     ycbcr_info_.emplace(VK_FORMAT_UNDEFINED, ahb_format_props.externalFormat,

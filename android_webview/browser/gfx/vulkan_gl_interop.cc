@@ -297,7 +297,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
     auto vulkan_image = gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
         device_queue, std::move(gmb_handle),
         gfx::Size(params.width, params.height), VK_FORMAT_R8G8B8A8_UNORM,
-        0 /* usage */);
+        /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+        /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
     if (!vulkan_image) {
       LOG(ERROR) << "Could not create VkImage from AHB.";
       return;

@@ -172,7 +172,9 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
     EXPECT_EQ(gmb_handle.type,
               gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
     auto image = VulkanImage::CreateFromGpuMemoryBufferHandle(
-        device_queue, std::move(gmb_handle), size, format.vk, usage);
+        device_queue, std::move(gmb_handle), size, format.vk, usage,
+        /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+        /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
     EXPECT_TRUE(image);
     EXPECT_EQ(image->size(), size);
     EXPECT_EQ(image->format(), format.vk);

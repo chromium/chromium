@@ -187,7 +187,7 @@ VulkanImplementationX11::CreateImageFromGpuMemoryHandle(
                     : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
   return VulkanImage::CreateFromGpuMemoryBufferHandle(
       device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
-      tiling);
+      tiling, VK_QUEUE_FAMILY_EXTERNAL);
 }
 
 }  // namespace gpu

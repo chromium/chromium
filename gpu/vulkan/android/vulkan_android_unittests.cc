@@ -133,8 +133,8 @@ TEST_F(VulkanImplementationAndroidTest, CreateVkImageFromAHB) {
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(handle));
   auto vulkan_image = VulkanImage::CreateFromGpuMemoryBufferHandle(
       device_queue, std::move(gmb_handle), size, VK_FORMAT_R8G8B8A8_UNORM,
-      0 /* usage */);
-
+      /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+      /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
   EXPECT_TRUE(vulkan_image);
   vulkan_image->Destroy();
 }

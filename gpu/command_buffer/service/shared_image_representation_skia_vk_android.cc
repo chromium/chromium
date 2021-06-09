@@ -89,13 +89,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
     surface_msaa_count_ = final_msaa_count;
   }
 
-  // If the backing could be used for scanout, we always set the layout to
-  // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR after each accessing.
-  if (android_backing()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
-    *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_FOREIGN_EXT);
-  }
-
+  *end_state = GetEndAccessState();
   return surface_;
 }
 
@@ -111,13 +105,7 @@ SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
                    base::ScopedFD()))
     return nullptr;
 
-  // If the backing could be used for scanout, we always set the layout to
-  // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR after each accessing.
-  if (android_backing()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
-    *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_FOREIGN_EXT);
-  }
-
+  *end_state = GetEndAccessState();
   return promise_texture_;
 }
 
@@ -152,13 +140,7 @@ SharedImageRepresentationSkiaVkAndroid::BeginReadAccess(
                    std::move(init_read_fence_)))
     return nullptr;
 
-  // If the backing could be used for scanout, we always set the layout to
-  // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR after each accessing.
-  if (android_backing()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
-    *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_QUEUE_FAMILY_IGNORED);
-  }
-
+  *end_state = GetEndAccessState();
   return promise_texture_;
 }
 
@@ -286,6 +268,29 @@ void SharedImageRepresentationSkiaVkAndroid::EndAccess(bool readonly) {
   }
 
   mode_ = RepresentationAccessMode::kNone;
+}
+
+std::unique_ptr<GrBackendSurfaceMutableState>
+SharedImageRepresentationSkiaVkAndroid::GetEndAccessState() {
+  // There is no layout to change if there is no image.
+  if (!vulkan_image_)
+    return nullptr;
+
+  const uint32_t kSingleDeviceUsage = SHARED_IMAGE_USAGE_DISPLAY |
+                                      SHARED_IMAGE_USAGE_RASTER |
+                                      SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+
+  // If SharedImage is used outside of current VkDeviceQueue we need to transfer
+  // image back to it's original queue. Note, that for multithreading we use
+  // same vkDevice, so technically we could transfer between queues instead of
+  // jumping to external queue. But currently it's not possible because we
+  // create new vkImage each time.
+  if ((android_backing()->usage() & ~kSingleDeviceUsage) ||
+      android_backing()->is_thread_safe()) {
+    return std::make_unique<GrBackendSurfaceMutableState>(
+        VK_IMAGE_LAYOUT_UNDEFINED, vulkan_image_->queue_family_index());
+  }
+  return nullptr;
 }
 
 }  // namespace gpu

@@ -169,7 +169,8 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,
     SharedContextState* context_state,
     const gfx::Size& size,
-    const viz::ResourceFormat& format) {
+    const viz::ResourceFormat& format,
+    uint32_t queue_family_index) {
   DCHECK(context_state);
   DCHECK(context_state->GrContextIsVulkan());
 
@@ -177,7 +178,8 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(ahb_handle));
   return VulkanImage::CreateFromGpuMemoryBufferHandle(
       device_queue, std::move(gmb_handle), size, ToVkFormat(format),
-      0 /* usage */);
+      /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+      /*queue_family_index=*/queue_family_index);
 }
 
 }  // namespace gpu
