@@ -41,18 +41,18 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   ScriptPromise requestDevice(ScriptState* script_state,
                               GPUDeviceDescriptor* descriptor);
 
- private:
-  void OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
-                               const GPUDeviceDescriptor* descriptor,
-                               WGPUDevice dawn_device);
-  void InitializeFeatureNameList();
-
   // Console warnings should generally be attributed to a GPUDevice, but in
   // cases where there is no device warnings can be surfaced here. It's expected
   // that very few warning will need to be shown for a given adapter, and as a
   // result the maximum allowed warnings is lower than the per-device count.
   void AddConsoleWarning(ExecutionContext* execution_context,
                          const char* message);
+
+ private:
+  void OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
+                               const GPUDeviceDescriptor* descriptor,
+                               WGPUDevice dawn_device);
+  void InitializeFeatureNameList();
 
   String name_;
   uint32_t adapter_service_id_;

@@ -8,6 +8,11 @@
     ActiveScriptWrappable,
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUCanvasContext {
+    GPUTextureFormat getPreferredFormat(GPUAdapter adapter);
+    [RaisesException] void configure(GPUSwapChainDescriptor descriptor);
+    [RaisesException] GPUTexture getCurrentTexture();
+
+    // Deprecated
     [RaisesException] GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
-    GPUTextureFormat getSwapChainPreferredFormat(GPUAdapter adapter);
+    [CallWith=ExecutionContext] GPUTextureFormat getSwapChainPreferredFormat(GPUAdapter adapter);
 };

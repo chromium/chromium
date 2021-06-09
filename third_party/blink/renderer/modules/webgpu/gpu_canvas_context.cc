@@ -106,22 +106,72 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       swapchain_->TransferToStaticBitmapImage());
 }
 
-// gpu_canvas_context.idl
+// gpu_presentation_context.idl
+void GPUCanvasContext::configure(const GPUSwapChainDescriptor* descriptor,
+                                 ExceptionState& exception_state) {
+  ConfigureInternal(descriptor, exception_state);
+}
+
+String GPUCanvasContext::getPreferredFormat(const GPUAdapter* adapter) {
+  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+  return "bgra8unorm";
+}
+
+GPUTexture* GPUCanvasContext::getCurrentTexture(
+    ExceptionState& exception_state) {
+  if (!swapchain_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "context is not configured");
+    return nullptr;
+  }
+  return swapchain_->getCurrentTexture();
+}
+
+// gpu_canvas_context.idl (Deprecated)
 GPUSwapChain* GPUCanvasContext::configureSwapChain(
     const GPUSwapChainDescriptor* descriptor,
     ExceptionState& exception_state) {
+  descriptor->device()->AddConsoleWarning(
+      "configureSwapChain() is deprecated. Use configure() instead and call "
+      "getCurrentTexture() directly on the context. Note that configure() must "
+      "also be called if you want to change the size of the textures returned "
+      "by getCurrentTexture()");
+  ConfigureInternal(descriptor, exception_state, true);
+  return swapchain_;
+}
+
+String GPUCanvasContext::getSwapChainPreferredFormat(
+    ExecutionContext* execution_context,
+    GPUAdapter* adapter) {
+  adapter->AddConsoleWarning(
+      execution_context,
+      "getSwapChainPreferredFormat() is deprecated. Use getPreferredFormat() "
+      "instead.");
+  return getPreferredFormat(adapter);
+}
+
+void GPUCanvasContext::ConfigureInternal(
+    const GPUSwapChainDescriptor* descriptor,
+    ExceptionState& exception_state,
+    bool deprecated_resize_behavior) {
   if (stopped_) {
     // This is probably not possible, or at least would only happen during page
     // shutdown.
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
                                       "canvas has been destroyed");
-    return nullptr;
+    return;
   }
 
   if (swapchain_) {
     // Tell any previous swapchain that it will no longer be used and can
     // destroy all its resources (and produce errors when used).
     swapchain_->Neuter();
+    swapchain_ = nullptr;
+  }
+
+  // Passing a null descriptor explicitly clears the configuration.
+  if (!descriptor) {
+    return;
   }
 
   WGPUTextureUsage usage = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
@@ -134,29 +184,42 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kUnknownError,
           "rgba16float swap chain is not yet supported");
-      return nullptr;
+      return;
     default:
       exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                         "unsupported swap chain format");
-      return nullptr;
+      return;
+  }
+
+  // Set the default size.
+  IntSize size;
+  if (deprecated_resize_behavior) {
+    // A negative size will indicate to the swap chain that it should follow the
+    // deprecated behavior of resizing to match the canvas size each frame.
+    size = IntSize(-1, -1);
+  } else if (descriptor->hasSize()) {
+    WGPUExtent3D dawn_extent =
+        AsDawnType(&descriptor->size(), descriptor->device());
+    size = IntSize(dawn_extent.width, dawn_extent.height);
+
+    if (dawn_extent.depthOrArrayLayers != 1) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "swap chain size must have depthOrArrayLayers set to 1");
+      return;
+    }
+  } else {
+    size = CanvasSize();
   }
 
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
-      this, descriptor->device(), usage, format, filter_quality_);
+      this, descriptor->device(), usage, format, filter_quality_, size);
   swapchain_->CcLayer()->SetContentsOpaque(!CreationAttributes().alpha);
   swapchain_->setLabel(descriptor->label());
 
   // If we don't notify the host that something has changed it may never check
   // for the new cc::Layer.
   Host()->SetNeedsCompositingUpdate();
-
-  return swapchain_;
-}
-
-String GPUCanvasContext::getSwapChainPreferredFormat(
-    const GPUAdapter* adapter) {
-  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
-  return "bgra8unorm";
 }
 
 }  // namespace blink

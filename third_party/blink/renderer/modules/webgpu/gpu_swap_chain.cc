@@ -19,11 +19,13 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            GPUDevice* device,
                            WGPUTextureUsage usage,
                            WGPUTextureFormat format,
-                           SkFilterQuality filter_quality)
+                           SkFilterQuality filter_quality,
+                           IntSize size)
     : DawnObjectImpl(device),
       context_(context),
       usage_(usage),
-      format_(format) {
+      format_(format),
+      size_(size) {
   // TODO: Use label from GPUObjectDescriptorBase.
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, GetDawnControlClient(), device->GetHandle(), usage_, format));
@@ -143,8 +145,11 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
     return texture_;
   }
 
-  WGPUTexture dawn_client_texture =
-      swap_buffers_->GetNewTexture(context_->CanvasSize());
+  // A negative size indicates we're on the deprecated path which automatically
+  // adjusts to the canvas width/height attributes.
+  // TODO(bajones@chromium.org): Remove automatic path after deprecation period.
+  IntSize texture_size = size_.Width() >= 0 ? size_ : context_->CanvasSize();
+  WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(texture_size);
   DCHECK(dawn_client_texture);
   texture_ = MakeGarbageCollected<GPUTexture>(device_, dawn_client_texture,
                                               format_, usage_);

@@ -29,7 +29,8 @@ class GPUSwapChain : public DawnObjectImpl,
                         GPUDevice*,
                         WGPUTextureUsage,
                         WGPUTextureFormat,
-                        SkFilterQuality);
+                        SkFilterQuality,
+                        IntSize);
   ~GPUSwapChain() override;
 
   void Trace(Visitor* visitor) const override;
@@ -62,6 +63,7 @@ class GPUSwapChain : public DawnObjectImpl,
   Member<GPUCanvasContext> context_;
   WGPUTextureUsage usage_;
   WGPUTextureFormat format_;
+  const IntSize size_;
 
   Member<GPUTexture> texture_;
 };
