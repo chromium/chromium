@@ -196,6 +196,8 @@
       previewingViewController);
 }
 
+#endif  // End of >iOS13 deprecated block.
+
 - (void)webView:(WKWebView*)webView
     contextMenuConfigurationForElement:(WKContextMenuElementInfo*)elementInfo
                      completionHandler:
@@ -213,8 +215,6 @@
   delegate->ContextMenuConfiguration(
       self.webStateImpl, params, /*preview_provider=*/nil, completionHandler);
 }
-
-#endif  // End of >iOS13 deprecated block.
 
 - (void)webView:(WKWebView*)webView
     contextMenuDidEndForElement:(WKContextMenuElementInfo*)elementInfo
