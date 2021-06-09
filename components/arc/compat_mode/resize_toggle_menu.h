@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/scoped_observation.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Rect;
@@ -16,14 +19,13 @@ class Rect;
 namespace views {
 class BubbleDialogDelegateView;
 class Button;
-class Widget;
 }  // namespace views
 
 namespace arc {
 
 class ArcResizeLockPrefDelegate;
 
-class ResizeToggleMenu {
+class ResizeToggleMenu : public views::WidgetObserver {
  public:
   enum class CommandId {
     kResizePhone,
@@ -36,12 +38,19 @@ class ResizeToggleMenu {
                    ArcResizeLockPrefDelegate* pref_delegate);
   ResizeToggleMenu(const ResizeToggleMenu&) = delete;
   ResizeToggleMenu& operator=(const ResizeToggleMenu&) = delete;
-  ~ResizeToggleMenu();
+  ~ResizeToggleMenu() override;
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
  private:
   friend class ResizeToggleMenuTest;
 
   void ExecuteCommand(CommandId command_id);
+
+  gfx::Rect GetAnchorRect() const;
 
   std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
       views::Widget* parent,
@@ -51,6 +60,9 @@ class ResizeToggleMenu {
   views::Widget* widget_;
 
   ArcResizeLockPrefDelegate* pref_delegate_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   // Store only for testing.
   views::Widget* bubble_widget_{nullptr};
