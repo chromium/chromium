@@ -34,10 +34,6 @@ per-file *font_config_ipc_linux*=file://ipc/SECURITY_OWNERS
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-# Accessibility
-per-file accessibility_node_data.*=dmazzoni@chromium.org
-per-file accessibility_node_data.*=dtseng@chromium.org
-
 # AppCache
 per-file appcache_interfaces.h=enne@chromium.org
 per-file appcache_interfaces.h=mek@chromium.org
