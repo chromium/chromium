@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.feed;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
+import android.view.View;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -157,6 +160,17 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
         RecordHistogram.recordEnumeratedHistogram(
                 getVideoHistogramName(isMutedAutoplay, "PlayError"), error,
                 VideoPlayError.NUM_ENTRIES);
+    }
+
+    @Override
+    public Rect getToolbarGlobalVisibleRect() {
+        Rect bounds = new Rect();
+        View toolbarView = mActivity.findViewById(R.id.toolbar);
+        if (toolbarView == null) {
+            return bounds;
+        }
+        toolbarView.getGlobalVisibleRect(bounds);
+        return bounds;
     }
 
     private static String getVideoHistogramName(boolean isMutedAutoplay, String partName) {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 
 import androidx.annotation.Nullable;
 
@@ -148,4 +149,11 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
      * @param error The error to report.
      */
     default void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {}
+
+    /**
+     * Returns the bounds of the toolbar in global (root) coordinates.
+     */
+    default Rect getToolbarGlobalVisibleRect() {
+        return new Rect();
+    }
 }
