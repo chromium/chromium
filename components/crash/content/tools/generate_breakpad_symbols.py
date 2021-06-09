@@ -9,15 +9,16 @@ Currently, the tool only supports Linux, Android, and Mac. Support for other
 platforms is planned.
 """
 
+from __future__ import print_function
 import collections
 import errno
 import glob
 import multiprocessing
 import optparse
 import os
-import Queue
 import re
 import shutil
+import six.moves.queue
 import subprocess
 import sys
 import threading
@@ -40,7 +41,7 @@ def GetDumpSymsBinary(build_dir=None):
   DUMP_SYMS = 'dump_syms'
   dump_syms_bin = os.path.join(os.path.expanduser(build_dir), DUMP_SYMS)
   if not os.access(dump_syms_bin, os.X_OK):
-    print 'Cannot find %s.' % dump_syms_bin
+    print('Cannot find %s.' % dump_syms_bin)
     return None
 
   return dump_syms_bin
@@ -134,7 +135,7 @@ def GetDeveloperDirMac():
   for path in candidate_paths:
     if os.path.exists(path):
       return path
-  print 'WARNING: no value found for DEVELOPER_DIR. Some commands may fail.'
+  print('WARNING: no value found for DEVELOPER_DIR. Some commands may fail.')
 
 
 def GetSharedLibraryDependenciesMac(binary, exe_path):
@@ -200,10 +201,10 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
       if dep:
         deps.append(os.path.normpath(dep))
       else:
-        print >>sys.stderr, (
+        print((
             'ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
             'rpaths %s' % (m.group(1), exe_path, loader_path,
-                           ', '.join(rpaths)))
+                           ', '.join(rpaths))), file=sys.stderr)
         sys.exit(1)
   return deps
 
@@ -228,7 +229,7 @@ def GetSharedLibraryDependencies(options, binary, exe_path):
   elif options.platform == 'chromeos':
     deps = GetSharedLibraryDependenciesChromeOS(binary)
   else:
-    print "Platform not supported."
+    print("Platform not supported.")
     sys.exit(1)
 
   result = []
@@ -260,7 +261,7 @@ def GetTransitiveDependencies(options):
       binaries |= new_deps
       queue.extend(list(new_deps))
     return binaries
-  print "Platform not supported."
+  print("Platform not supported.")
   sys.exit(1)
 
 
@@ -298,7 +299,7 @@ def CreateSymbolDir(options, output_dir, relative_hash_dir):
 def GenerateSymbols(options, binaries):
   """Dumps the symbols of binary and places them in the given directory."""
 
-  queue = Queue.Queue()
+  queue = six.moves.queue.Queue()
   print_lock = threading.Lock()
 
   def _Worker():
@@ -348,22 +349,22 @@ def GenerateSymbols(options, binaries):
       if not should_dump_syms:
         if options.verbose:
           with print_lock:
-            print "Skipping %s (%s)" % (binary, reason)
+            print("Skipping %s (%s)" % (binary, reason))
         queue.task_done()
         continue
 
       if options.verbose:
         with print_lock:
-          print "Generating symbols for %s" % binary
+          print("Generating symbols for %s" % binary)
 
       CreateSymbolDir(options, output_dir, binary_info.hash)
       try:
         with open(output_path, 'wb') as f:
           subprocess.check_call([dump_syms, '-r', binary], stdout=f)
-      except Exception, e:
+      except Exception as e:
         # Not much we can do about this.
         with print_lock:
-          print e
+          print(e)
 
       queue.task_done()
 
@@ -399,19 +400,19 @@ def main():
   (options, _) = parser.parse_args()
 
   if not options.symbols_dir:
-    print "Required option --symbols-dir missing."
+    print("Required option --symbols-dir missing.")
     return 1
 
   if not options.build_dir:
-    print "Required option --build-dir missing."
+    print("Required option --build-dir missing.")
     return 1
 
   if not options.binary:
-    print "Required option --binary missing."
+    print("Required option --binary missing.")
     return 1
 
   if not os.access(options.binary, os.X_OK):
-    print "Cannot find %s." % options.binary
+    print("Cannot find %s." % options.binary)
     return 1
 
   if options.clear:
