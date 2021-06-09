@@ -1800,6 +1800,20 @@ if (is_linux || is_chromeos) {
 
       deps = [ "//third_party/angle:libGLESv2" ]
     }
+    if(!is_chromeos) {
+      extract_symbols("angle_libvulkan_symbols") {
+        binary = "$root_out_dir/libvulkan.so.1"
+
+        if (current_cpu == "x86") {
+          # GYP used "ia32" so keep that naming for back-compat.
+          symbol_file = "$root_out_dir/angle_libvulkan.breakpad.ia32"
+        } else {
+          symbol_file = "$root_out_dir/angle_libvulkan.breakpad.$current_cpu"
+        }
+
+        deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      }
+    }
   }
 
   # Copies some scripts and resources that are used for desktop integration.
