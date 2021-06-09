@@ -63,8 +63,6 @@ template("python_library") {
   }
 }
 
-_is_python2 = exec_script("//build/util/is_python2.py", [], "json")
-
 # This is a wrapper around action() that ensures that the script is
 # run under a Python2 executable, even if the main script_executable is
 # Python3.
@@ -92,19 +90,17 @@ template("python2_action") {
                              "visibility",
                            ])
 
-    if (!_is_python2) {
-      script = "//build/util/python2_action.py"
-      _rebased_script = rebase_path(invoker.script, root_build_dir)
-      inputs = []
-      inputs = [ invoker.script ]
-      if (defined(invoker.inputs)) {
-        inputs += invoker.inputs
-      }
-      args = []
-      args = [ _rebased_script ]
-      if (defined(invoker.args)) {
-        args += invoker.args
-      }
+    script = "//build/util/python2_action.py"
+    _rebased_script = rebase_path(invoker.script, root_build_dir)
+    inputs = []
+    inputs = [ invoker.script ]
+    if (defined(invoker.inputs)) {
+      inputs += invoker.inputs
+    }
+    args = []
+    args = [ _rebased_script ]
+    if (defined(invoker.args)) {
+      args += invoker.args
     }
   }
 }
@@ -165,8 +161,7 @@ template("action_with_pydeps") {
     _script_dir = get_path_info(_pydeps_file, "dir")
     inputs += rebase_path(_pydeps_entries, ".", _script_dir)
 
-    if (defined(invoker.run_under_python2) && invoker.run_under_python2 &&
-        !_is_python2) {
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
       inputs += [ invoker.script ]
       _args = args
       args = []
@@ -217,8 +212,7 @@ template("action_foreach_with_pydeps") {
     _script_dir = get_path_info(script, "dir")
     inputs += rebase_path(_pydeps_entries, ".", _script_dir)
 
-    if (defined(invoker.run_under_python2) && invoker.run_under_python2 &&
-        !_is_python2) {
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
       inputs += [ invoker.script ]
       _args = args
       args = []
