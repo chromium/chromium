@@ -78,7 +78,6 @@ void FrameCenterButton::SetText(absl::optional<std::u16string> text) {
     std::unique_ptr<gfx::RenderText> render_text =
         gfx::RenderText::CreateRenderText();
     render_text->SetFontList(views::CustomFrameView::GetWindowTitleFontList());
-    render_text->SetColor(GetButtonColor(GetBackgroundColor()));
     render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     render_text->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     text_ = std::move(render_text);
@@ -156,6 +155,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
         std::min(text_->GetStringSize().width(), available_text_width),
         text_->GetStringSize().height());
     text_->SetDisplayRect(text_bounds);
+    text_->SetColor(
+        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
     text_->Draw(canvas);
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }
