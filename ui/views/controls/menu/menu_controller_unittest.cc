@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +35,7 @@
 #include "ui/views/controls/menu/menu_host_root_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/menu_test_utils.h"
@@ -377,6 +379,11 @@ class MenuControllerTest : public ViewsTestBase,
 
   gfx::Rect CalculateBubbleMenuBounds(const MenuBoundsOptions& options) {
     return CalculateBubbleMenuBounds(options, menu_item_.get());
+  }
+
+  static MenuAnchorPosition AdjustAnchorPositionForRtl(
+      MenuAnchorPosition position) {
+    return MenuController::AdjustAnchorPositionForRtl(position);
   }
 
 #if defined(USE_AURA)
@@ -2186,6 +2193,37 @@ TEST_F(MenuControllerTest, CalculateMenuBoundsAnchorTest) {
         options.menu_size.height());
   }
   EXPECT_EQ(expected, CalculateMenuBounds(options));
+}
+
+// Regression test for https://crbug.com/1217711
+TEST_F(MenuControllerTest, MenuAnchorPositionFlippedInRtl) {
+  ASSERT_FALSE(base::i18n::IsRTL());
+
+  // Test the AdjustAnchorPositionForRtl() method directly, rather than running
+  // the menu, because it's awkward to access the menu's window. Also, the menu
+  // bounds are already tested separately.
+  EXPECT_EQ(MenuAnchorPosition::kTopLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopLeft));
+  EXPECT_EQ(MenuAnchorPosition::kTopRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleRight));
+
+  base::i18n::SetRTLForTesting(true);
+
+  // Anchor positions are left/right flipped in RTL.
+  EXPECT_EQ(MenuAnchorPosition::kTopLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopRight));
+  EXPECT_EQ(MenuAnchorPosition::kTopRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleLeft));
+
+  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(MenuControllerTest, CalculateMenuBoundsMonitorFitTest) {

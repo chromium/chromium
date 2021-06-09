@@ -377,6 +377,11 @@ class VIEWS_EXPORT MenuController
                              MenuAnchorPosition position,
                              bool context_menu);
 
+  // Returns the anchor position adjusted for RTL languages. For example,
+  // in RTL MenuAnchorPosition::kBubbleLeft is mapped to kBubbleRight.
+  static MenuAnchorPosition AdjustAnchorPositionForRtl(
+      MenuAnchorPosition position);
+
   // Invoked when the user accepts the selected item. This is only used
   // when blocking. This schedules the loop to quit.
   void Accept(MenuItemView* item, int event_flags);

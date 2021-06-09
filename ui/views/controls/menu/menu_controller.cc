@@ -1702,16 +1702,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
                                            bool context_menu) {
   pending_state_.context_menu = context_menu;
   pending_state_.initial_bounds = bounds;
-
-  // Reverse anchor position for RTL languages.
-  if (base::i18n::IsRTL() && (position == MenuAnchorPosition::kTopRight ||
-                              position == MenuAnchorPosition::kTopLeft)) {
-    pending_state_.anchor = position == MenuAnchorPosition::kTopRight
-                                ? MenuAnchorPosition::kTopLeft
-                                : MenuAnchorPosition::kTopRight;
-  } else {
-    pending_state_.anchor = position;
-  }
+  pending_state_.anchor = AdjustAnchorPositionForRtl(position);
 
   // Calculate the bounds of the monitor we'll show menus on. Do this once to
   // avoid repeated system queries for the info.
@@ -1727,6 +1718,34 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
                                  .bounds();
     if (monitor_area.Contains(bounds))
       pending_state_.monitor_bounds = monitor_area;
+  }
+}
+
+// static
+MenuAnchorPosition MenuController::AdjustAnchorPositionForRtl(
+    MenuAnchorPosition position) {
+  // Reverse anchor position for RTL languages.
+  switch (position) {
+    case MenuAnchorPosition::kTopLeft:
+      return base::i18n::IsRTL() ? MenuAnchorPosition::kTopRight
+                                 : MenuAnchorPosition::kTopLeft;
+      break;
+    case MenuAnchorPosition::kTopRight:
+      return base::i18n::IsRTL() ? MenuAnchorPosition::kTopLeft
+                                 : MenuAnchorPosition::kTopRight;
+      break;
+    case MenuAnchorPosition::kBubbleLeft:
+      return base::i18n::IsRTL() ? MenuAnchorPosition::kBubbleRight
+                                 : MenuAnchorPosition::kBubbleLeft;
+      break;
+    case MenuAnchorPosition::kBubbleRight:
+      return base::i18n::IsRTL() ? MenuAnchorPosition::kBubbleLeft
+                                 : MenuAnchorPosition::kBubbleRight;
+      break;
+    case MenuAnchorPosition::kBottomCenter:
+    case MenuAnchorPosition::kBubbleAbove:
+    case MenuAnchorPosition::kBubbleBelow:
+      return position;
   }
 }
 
