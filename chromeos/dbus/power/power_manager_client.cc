@@ -659,7 +659,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     }
   }
 
-  void NotifiyIntiailization() {
+  void NotifyInitialization() {
     for (auto& observer : observers_)
       observer.PowerManagerInitialized();
   }
@@ -798,9 +798,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
   void OnGetPowerSupplyPropertiesMethod(dbus::Response* response) {
     // This is the last callback to run after all the initialization in |Init|.
     // Notify all observers that the initialization is complete.
-    base::ScopedClosureRunner(
-        base::BindOnce(&PowerManagerClientImpl::NotifiyIntiailization,
-                       base::Unretained(this)));
+    base::ScopedClosureRunner notify_runner(base::BindOnce(
+        &PowerManagerClientImpl::NotifyInitialization, base::Unretained(this)));
 
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
