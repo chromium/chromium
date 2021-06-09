@@ -16,7 +16,7 @@ TEST(Crc32Unittest, ByteTest) {
     // Externally calculated at http://crc32-checksum.waraxe.us/
     int crc;
   } kData[] = {
-      {"Hello", 5, 0xF7D18982},
+      {"Hello", 5, static_cast<int>(0xF7D18982)},
       {"Google", 6, 0x62B0F067},
       {"", 0, 0x0},
       {"One more string.", 16, 0x0CA14970},
@@ -35,11 +35,11 @@ TEST(Crc32Unittest, CharTest) {
     // Externally calculated at http://crc32-checksum.waraxe.us/
     int crc;
   } kData[] = {
-      {"Hello", 0xF7D18982},
+      {"Hello", static_cast<int>(0xF7D18982)},
       {"Google", 0x62B0F067},
       {"", 0x0},
       {"One more string.", 0x0CA14970},
-      {"Google\r\n", 0x83A3E860},
+      {"Google\r\n", static_cast<int>(0x83A3E860)},
       {nullptr, 0x0},
   };
 
