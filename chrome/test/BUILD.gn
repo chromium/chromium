@@ -5338,6 +5338,7 @@ test("unit_tests") {
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
       "//chrome/browser/optimization_guide/android:native_java_unittests",
       "//chrome/browser/password_check/android:unit_tests",
+      "//chrome/browser/policy/android:delegate_public_impl_java",
       "//chrome/browser/reading_list/android:unit_tests",
       "//chrome/browser/share",
       "//chrome/browser/supervised_user/kids_chrome_management:proto",

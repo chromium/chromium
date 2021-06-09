@@ -8,8 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 
-import java.util.UUID;
-
 /**
  * Allows access to cloud management functionalities implemented downstream.
  */
@@ -29,19 +27,7 @@ public class CloudManagementAndroidConnection {
     private final CloudManagementAndroidConnectionDelegate mDelegate;
 
     private CloudManagementAndroidConnection() {
-        mDelegate = new CloudManagementAndroidConnectionDelegate() {
-            /* Returns the client ID to be used in the DM token generation. By default a random UUID
-             * is generated for development and testing purposes. Any device that uses randomly
-             * generated UUID as client id for CBCM might be wiped out from the server without
-             * notice.
-             *
-             * TODO(http://crbug.com/1210116): Move this implementation to its own class once the
-             * Google Chrome-specific implementation has been landed internally. */
-            @Override
-            public String generateClientId() {
-                return UUID.randomUUID().toString();
-            }
-        };
+        mDelegate = new CloudManagementAndroidConnectionDelegateImpl();
     }
 
     /* Returns the client ID to be used in the DM token generation. Once generated, the ID is saved
