@@ -17,6 +17,8 @@
 #include "content/common/content_export.h"
 #include "content/renderer/stream_texture_host_android.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -122,8 +124,6 @@ class CONTENT_EXPORT StreamTextureFactory
   friend class base::RefCountedThreadSafe<StreamTextureFactory>;
   StreamTextureFactory(scoped_refptr<gpu::GpuChannelHost> channel);
   ~StreamTextureFactory();
-  // Creates a gpu::StreamTexture and returns its id.
-  unsigned CreateStreamTexture();
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;

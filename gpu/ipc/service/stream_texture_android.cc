@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -24,7 +25,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/android/scoped_surface_request_conduit.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "ui/gfx/color_space.h"
@@ -57,15 +58,18 @@ TextureOwner::Mode GetTextureOwnerMode() {
 }  // namespace
 
 // static
-scoped_refptr<StreamTexture> StreamTexture::Create(GpuChannel* channel,
-                                                   int stream_id) {
+scoped_refptr<StreamTexture> StreamTexture::Create(
+    GpuChannel* channel,
+    int stream_id,
+    mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver) {
   ContextResult result;
   auto context_state =
       channel->gpu_channel_manager()->GetSharedContextState(&result);
   if (result != ContextResult::kSuccess)
     return nullptr;
   auto scoped_make_current = MakeCurrent(context_state.get());
-  return new StreamTexture(channel, stream_id, std::move(context_state));
+  return new StreamTexture(channel, stream_id, std::move(receiver),
+                           std::move(context_state));
 }
 
 // static
@@ -82,17 +86,17 @@ void StreamTexture::RunCallback(
   }
 }
 
-StreamTexture::StreamTexture(GpuChannel* channel,
-                             int32_t route_id,
-                             scoped_refptr<SharedContextState> context_state)
+StreamTexture::StreamTexture(
+    GpuChannel* channel,
+    int32_t route_id,
+    mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver,
+    scoped_refptr<SharedContextState> context_state)
     : texture_owner_(
           TextureOwner::Create(TextureOwner::CreateTexture(context_state),
                                GetTextureOwnerMode(),
                                context_state)),
       has_pending_frame_(false),
       channel_(channel),
-      route_id_(route_id),
-      has_listener_(false),
       context_state_(std::move(context_state)),
       sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
                                                       channel_->task_runner())),
@@ -101,9 +105,13 @@ StreamTexture::StreamTexture(GpuChannel* channel,
               CommandBufferNamespace::GPU_IO,
               CommandBufferIdFromChannelAndRoute(channel_->client_id(),
                                                  route_id),
-              sequence_)) {
+              sequence_)),
+      receiver_(
+          this,
+          std::move(receiver),
+          base::MakeRefCounted<SchedulerTaskRunner>(*channel_->scheduler(),
+                                                    sequence_)) {
   context_state_->AddContextLostObserver(this);
-  channel->AddRoute(route_id, sequence_, this);
 
   texture_owner_->SetFrameAvailableCallback(base::BindRepeating(
       &StreamTexture::RunCallback, base::ThreadTaskRunnerHandle::Get(),
@@ -119,7 +127,7 @@ StreamTexture::~StreamTexture() {
 
 void StreamTexture::ReleaseChannel() {
   DCHECK(channel_);
-  channel_->RemoveRoute(route_id_);
+  receiver_.ResetFromAnotherSequenceUnsafe();
   channel_->scheduler()->DestroySequence(sequence_);
   sequence_ = SequenceId();
   sync_point_client_state_->Destroy();
@@ -249,7 +257,7 @@ bool StreamTexture::CopyTexImage(unsigned target) {
 void StreamTexture::OnFrameAvailable() {
   has_pending_frame_ = true;
 
-  if (!has_listener_ || !channel_ || !texture_owner_)
+  if (!client_ || !texture_owner_)
     return;
 
   // We haven't received size for first time yet from the MediaPlayer we will
@@ -279,10 +287,10 @@ void StreamTexture::OnFrameAvailable() {
     auto ycbcr_info =
         SharedImageVideo::GetYcbcrInfo(texture_owner_.get(), context_state_);
 
-    channel_->Send(new GpuStreamTextureMsg_FrameWithInfoAvailable(
-        route_id_, mailbox, coded_size, visible_rect, ycbcr_info));
+    client_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
+                                      ycbcr_info);
   } else {
-    channel_->Send(new GpuStreamTextureMsg_FrameAvailable(route_id_));
+    client_->OnFrameAvailable();
   }
 }
 
@@ -298,27 +306,12 @@ unsigned StreamTexture::GetDataType() {
   return GL_UNSIGNED_BYTE;
 }
 
-bool StreamTexture::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(StreamTexture, message)
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_StartListening, OnStartListening)
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_ForwardForSurfaceRequest,
-                        OnForwardForSurfaceRequest)
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
-                        OnUpdateRotatedVisibleSize)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  DCHECK(handled);
-  return handled;
+void StreamTexture::StartListening(
+    mojo::PendingAssociatedRemote<mojom::StreamTextureClient> client) {
+  client_.Bind(std::move(client));
 }
 
-void StreamTexture::OnStartListening() {
-  DCHECK(!has_listener_);
-  has_listener_ = true;
-}
-
-void StreamTexture::OnForwardForSurfaceRequest(
+void StreamTexture::ForwardForSurfaceRequest(
     const base::UnguessableToken& request_token) {
   if (!channel_)
     return;
@@ -350,7 +343,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   return mailbox;
 }
 
-void StreamTexture::OnUpdateRotatedVisibleSize(
+void StreamTexture::UpdateRotatedVisibleSize(
     const gfx::Size& rotated_visible_size) {
   DCHECK(channel_);
   bool was_empty = rotated_visible_size_.IsEmpty();
