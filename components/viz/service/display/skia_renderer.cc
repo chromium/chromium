@@ -2657,6 +2657,9 @@ void SkiaRenderer::DidChangeVisibility() {
 }
 
 void SkiaRenderer::FinishDrawingQuadList() {
+  if (!current_canvas_)
+    return;
+
   if (!batched_quads_.empty())
     FlushBatchedQuads();
 
