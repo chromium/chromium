@@ -2,7 +2,5 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++image name=''
-++++++image ignored
-++++++image ignored
 ++++++image
 ++++++image name='full'

@@ -315,31 +315,6 @@ static bool IsLinkable(const AXObject& object) {
          object.GetLayoutObject()->IsText();
 }
 
-bool AXLayoutObject::IsLineBreakingObject() const {
-  if (IsDetached())
-    return false;
-
-  // Presentational objects should not contribute any of their remove semantic
-  // meaning to the accessibility tree, including to its text representation.
-  if (IsPresentational())
-    return false;
-
-  // Without this condition, LayoutNG reports list markers as line breaking
-  // objects (legacy layout does not).
-  if (RoleValue() == ax::mojom::blink::Role::kListMarker)
-    return false;
-
-  const LayoutObject* layout_object = GetLayoutObject();
-  if (layout_object->IsBR() || layout_object->IsLayoutBlock() ||
-      layout_object->IsTableSection() || layout_object->IsAnonymousBlock() ||
-      (layout_object->IsLayoutBlockFlow() &&
-       layout_object->StyleRef().IsDisplayBlockContainer())) {
-    return true;
-  }
-
-  return AXNodeObject::IsLineBreakingObject();
-}
-
 bool AXLayoutObject::IsLinked() const {
   if (!IsLinkable(*this))
     return false;

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -14,6 +16,10 @@
 
 namespace blink {
 namespace test {
+
+using testing::Each;
+using testing::Property;
+using testing::SafeMatcherCast;
 
 TEST_F(AccessibilityTest, IsDescendantOf) {
   SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
@@ -865,65 +871,175 @@ TEST_P(ParameterizedAccessibilityTest, NextOnLine) {
   EXPECT_EQ("b", next->GetNode()->textContent());
 }
 
-TEST_F(AccessibilityTest, AxObjectPreservedWhitespaceIsLineBreakingObjects) {
+TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
-    <span style="white-space: pre-line" id="preserved">
-      First Paragraph
-      Second Paragraph
-      Third Paragraph
-    </span>)HTML");
+      <table id="table">
+      <caption>Caption</caption>
+        <tr id="row">
+          <td id="cell">Cell</td>
+        </tr>
+      </table>
+      )HTML");
 
-  const AXObject* root = GetAXRootObject();
-  ASSERT_NE(nullptr, root);
+  const AXObject* table = GetAXObjectByElementId("table");
+  ASSERT_NE(nullptr, table);
+  ASSERT_EQ(ax::mojom::Role::kTable, table->RoleValue());
+  EXPECT_TRUE(table->IsLineBreakingObject());
+
+  const AXObject* row = GetAXObjectByElementId("row");
+  ASSERT_NE(nullptr, row);
+  ASSERT_EQ(ax::mojom::Role::kRow, row->RoleValue());
+  EXPECT_TRUE(row->IsLineBreakingObject());
+
+  const AXObject* cell = GetAXObjectByElementId("cell");
+  ASSERT_NE(nullptr, cell);
+  ASSERT_EQ(ax::mojom::Role::kCell, cell->RoleValue());
+  EXPECT_TRUE(cell->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest,
+       PreservedWhitespaceWithInitialLineBreakIsLineBreakingObject) {
+  SetBodyInnerHTML(R"HTML(
+      <span style="white-space: pre-line" id="preserved">
+        First Paragraph
+        Second Paragraph
+        Third Paragraph
+      </span>)HTML");
 
   const AXObject* preserved_span = GetAXObjectByElementId("preserved");
   ASSERT_NE(nullptr, preserved_span);
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, preserved_span->RoleValue());
-  ASSERT_EQ(1, preserved_span->ChildCountIncludingIgnored());
+  ASSERT_EQ(1, preserved_span->UnignoredChildCount());
   EXPECT_FALSE(preserved_span->IsLineBreakingObject());
 
   AXObject* preserved_text = preserved_span->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, preserved_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, preserved_text->RoleValue());
-  EXPECT_FALSE(preserved_text->IsLineBreakingObject());
+  EXPECT_TRUE(preserved_text->IsLineBreakingObject())
+      << "This text node starts with a line break character, so it should be a "
+         "paragraph boundary.";
 
-  // Expect 7 kInlineTextBox children
-  // 3 lines of text, and 4 newlines
+  // Expect 7 kInlineTextBox children.
+  // 3 lines of text, and 4 newlines including one a the start of the text.
   preserved_text->LoadInlineTextBoxes();
-  ASSERT_EQ(7, preserved_text->ChildCountIncludingIgnored());
-  bool all_children_are_inline_text_boxes = true;
-  for (const AXObject* child : preserved_text->ChildrenIncludingIgnored()) {
-    if (child->RoleValue() != ax::mojom::Role::kInlineTextBox) {
-      all_children_are_inline_text_boxes = false;
-      break;
-    }
-  }
-  ASSERT_TRUE(all_children_are_inline_text_boxes);
+  ASSERT_EQ(7, preserved_text->UnignoredChildCount());
+  ASSERT_THAT(preserved_text->UnignoredChildren(),
+              Each(SafeMatcherCast<AXObject*>(
+                  Property("AXObject::RoleValue()", &AXObject::RoleValue,
+                           ax::mojom::Role::kInlineTextBox))));
 
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(0)->ComputedName(), "\n");
-  EXPECT_TRUE(
-      preserved_text->ChildAtIncludingIgnored(0)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(1)->ComputedName(),
+  ASSERT_EQ(preserved_text->UnignoredChildAt(0)->ComputedName(), "\n");
+  EXPECT_TRUE(preserved_text->UnignoredChildAt(0)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(1)->ComputedName(),
             "First Paragraph");
-  EXPECT_FALSE(
-      preserved_text->ChildAtIncludingIgnored(1)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(2)->ComputedName(), "\n");
-  EXPECT_TRUE(
-      preserved_text->ChildAtIncludingIgnored(2)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(3)->ComputedName(),
+  EXPECT_FALSE(preserved_text->UnignoredChildAt(1)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(2)->ComputedName(), "\n");
+  EXPECT_TRUE(preserved_text->UnignoredChildAt(2)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(3)->ComputedName(),
             "Second Paragraph");
-  EXPECT_FALSE(
-      preserved_text->ChildAtIncludingIgnored(3)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(4)->ComputedName(), "\n");
-  EXPECT_TRUE(
-      preserved_text->ChildAtIncludingIgnored(4)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(5)->ComputedName(),
+  EXPECT_FALSE(preserved_text->UnignoredChildAt(3)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(4)->ComputedName(), "\n");
+  EXPECT_TRUE(preserved_text->UnignoredChildAt(4)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(5)->ComputedName(),
             "Third Paragraph");
-  EXPECT_FALSE(
-      preserved_text->ChildAtIncludingIgnored(5)->IsLineBreakingObject());
-  ASSERT_EQ(preserved_text->ChildAtIncludingIgnored(6)->ComputedName(), "\n");
-  EXPECT_TRUE(
-      preserved_text->ChildAtIncludingIgnored(6)->IsLineBreakingObject());
+  EXPECT_FALSE(preserved_text->UnignoredChildAt(5)->IsLineBreakingObject());
+  ASSERT_EQ(preserved_text->UnignoredChildAt(6)->ComputedName(), "\n");
+  EXPECT_TRUE(preserved_text->UnignoredChildAt(6)->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest, DivWithFirstLetterIsLineBreakingObject) {
+  SetBodyInnerHTML(R"HTML(
+      <style>div::first-letter { color: "red"; }</style>
+      <div id="firstLetter">First letter</div>)HTML");
+
+  const AXObject* div = GetAXObjectByElementId("firstLetter");
+  ASSERT_NE(nullptr, div);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, div->RoleValue());
+  ASSERT_EQ(1, div->UnignoredChildCount());
+  EXPECT_TRUE(div->IsLineBreakingObject());
+
+  AXObject* div_text = div->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, div_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, div_text->RoleValue());
+  EXPECT_FALSE(div_text->IsLineBreakingObject());
+
+  div_text->LoadInlineTextBoxes();
+  ASSERT_EQ(1, div_text->UnignoredChildCount());
+  ASSERT_EQ(ax::mojom::Role::kInlineTextBox,
+            div_text->UnignoredChildAt(0)->RoleValue());
+  ASSERT_EQ(div_text->UnignoredChildAt(0)->ComputedName(), "First letter");
+  EXPECT_FALSE(div_text->UnignoredChildAt(0)->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest, SlotIsLineBreakingObject) {
+  // Even though a <span>, <b> and <i> element are not line-breaking, a
+  // paragraph element in the shadow DOM should be.
+  const char* body_content = R"HTML(
+      <span id="host">
+        <b slot="slot1" id="slot1">slot1</b>
+        <i slot="slot2" id="slot2">slot2</i>
+      </span>)HTML";
+  const char* shadow_content = R"HTML(
+      <p><slot name="slot1"></slot></p>
+      <p><slot name="slot2"></slot></p>
+      )HTML";
+  SetBodyContent(body_content);
+  ShadowRoot& shadow_root =
+      GetElementById("host")->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(String::FromUTF8(shadow_content),
+                           ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  const AXObject* host = GetAXObjectByElementId("host");
+  ASSERT_NE(nullptr, host);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, host->RoleValue());
+  EXPECT_FALSE(host->IsLineBreakingObject());
+  EXPECT_TRUE(host->ParentObjectUnignored()->IsLineBreakingObject());
+
+  const AXObject* slot1 = GetAXObjectByElementId("slot1");
+  ASSERT_NE(nullptr, slot1);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, slot1->RoleValue());
+  EXPECT_FALSE(slot1->IsLineBreakingObject());
+  EXPECT_TRUE(slot1->ParentObjectUnignored()->IsLineBreakingObject());
+
+  const AXObject* slot2 = GetAXObjectByElementId("slot2");
+  ASSERT_NE(nullptr, slot2);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, slot2->RoleValue());
+  EXPECT_FALSE(slot2->IsLineBreakingObject());
+  EXPECT_TRUE(slot2->ParentObjectUnignored()->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="spacer"
+          style="height: 30000px; contain-intrinsic-size: 1px 30000px;"></div>
+      <p id="lockedContainer" style="content-visibility: auto">
+        Line 1
+        <br id="br" style="content-visibility: hidden">
+        Line 2
+      </p>
+      )HTML");
+
+  const AXObject* paragraph = GetAXObjectByElementId("lockedContainer");
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->RoleValue());
+  ASSERT_EQ(3, paragraph->UnignoredChildCount());
+  ASSERT_EQ(paragraph->GetNode(),
+            DisplayLockUtilities::NearestLockedInclusiveAncestor(
+                *paragraph->GetNode()))
+      << "The <p> element should be display locked.";
+  EXPECT_TRUE(paragraph->IsLineBreakingObject());
+
+  const AXObject* br = GetAXObjectByElementId("br");
+  ASSERT_NE(nullptr, br);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, br->RoleValue())
+      << "The <br> child should be display locked and thus have a generic "
+         "role.";
+  ASSERT_EQ(
+      paragraph->GetNode(),
+      DisplayLockUtilities::NearestLockedInclusiveAncestor(*br->GetNode()))
+      << "The <br> child should be display locked.";
+  EXPECT_TRUE(br->IsLineBreakingObject());
 }
 
 TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {

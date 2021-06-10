@@ -2517,10 +2517,14 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       TextUnit_Line, "<div style='display:inline-block'>a</div>", {L"a"});
 
   // This tests a weird edge-case; TextUnit_Line breaks at the beginning of an
-  // inline-block, but not at the end.
+  // "inline-block", but not at the end. Consequently, a line break should not
+  // be added after an "inline-block", in contrast to a "block".
   AssertMoveByUnitForMarkup(TextUnit_Line,
                             "a<div style='display:inline-block'>b</div>c",
-                            {L"a", L"b\nc"});
+                            {L"a", L"bc"});
+  AssertMoveByUnitForMarkup(TextUnit_Line,
+                            "a<div style='display:block'>b</div>c",
+                            {L"a", L"b", L"c"});
 
   AssertMoveByUnitForMarkup(
       TextUnit_Line,

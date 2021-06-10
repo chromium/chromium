@@ -1928,7 +1928,11 @@ bool AXObject::IsHovered() const {
 }
 
 bool AXObject::IsLineBreakingObject() const {
-  return false;
+  // Not all AXObjects have an associated node or layout object. They could be
+  // virtual accessibility nodes, for example.
+  //
+  // We assume that most images on the Web are inline.
+  return !IsImage() && ui::IsStructure(RoleValue());
 }
 
 bool AXObject::IsLinked() const {
@@ -2480,6 +2484,16 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Always pass through Line Breaking objects, this is necessary to
   // detect paragraph edges, which are defined as hard-line breaks.
   if (IsLineBreakingObject())
+    return true;
+
+  // Ruby annotations (i.e. <rt> elements) need to be included because they are
+  // used for calculating an accessible description for the ruby. We explicitly
+  // exclude from the tree any <rp> elements, even though they also have the
+  // kRubyAnnotation role, because such elements provide fallback content for
+  // browsers that do not support ruby. Hence, their contents should not be
+  // included in the accessible description, unless another condition in this
+  // method decides to keep them in the tree for some reason.
+  if (element->HasTagName(html_names::kRtTag))
     return true;
 
   // Preserve SVG grouping elements.

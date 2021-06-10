@@ -510,7 +510,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
   virtual AccessibilityGrabbedState IsGrabbed() const;
   virtual bool IsHovered() const;
+
+  // Returns true if this object starts a new paragraph in the accessibility
+  // tree's text representation.
   virtual bool IsLineBreakingObject() const;
+
   virtual bool IsLinked() const;
   virtual bool IsLoaded() const;
   virtual bool IsModal() const;

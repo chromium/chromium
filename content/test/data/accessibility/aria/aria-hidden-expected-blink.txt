@@ -15,4 +15,4 @@ rootWebArea isLineBreakingObject=true
 ++++++genericContainer invisible name='blockDisplay Hiddentruefocusable' isLineBreakingObject=true
 ++++++++staticText ignored invisible name='blockDisplay Hiddentruefocusable'
 ++++++genericContainer ignored invisible
-++++++++heading invisible name='noneDisplayParent Hiddenfalse'
+++++++++heading invisible name='noneDisplayParent Hiddenfalse' isLineBreakingObject=true

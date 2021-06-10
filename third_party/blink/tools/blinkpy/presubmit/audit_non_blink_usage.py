@@ -531,6 +531,7 @@ _CONFIG = [
             'ui::IsLandmark',
             'ui::IsPlatformDocument',
             'ui::IsPresentational',
+            'ui::IsStructure',
             'ui::IsTableLike',
             'ui::IsTableRow',
             'ui::IsTableHeader',

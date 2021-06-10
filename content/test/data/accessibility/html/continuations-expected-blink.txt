@@ -3,7 +3,7 @@ rootWebArea isLineBreakingObject=true
 ++++genericContainer ignored isLineBreakingObject=true
 ++++++group display='block' name='Group 1' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++button display='inline-block' name='Before' isLineBreakingObject=true
+++++++++++button display='inline-block' name='Before'
 ++++++++++++staticText display='inline-block' name='Before'
 ++++++++++++++inlineTextBox display='inline-block' name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
