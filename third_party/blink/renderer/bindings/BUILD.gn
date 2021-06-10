@@ -197,17 +197,21 @@ template("generate_bindings") {
     outputs = invoker.outputs
 
     args = [
-             "--web_idl_database",
-             rebase_path(web_idl_database, root_build_dir),
-             "--root_src_dir",
-             rebase_path("//", root_build_dir),
-             "--root_gen_dir",
-             rebase_path(root_gen_dir, root_build_dir),
-             "--output_core_reldir",
-             rebase_path("${bindings_output_dir}/core/v8/", root_gen_dir),
-             "--output_modules_reldir",
-             rebase_path("${bindings_output_dir}/modules/v8/", root_gen_dir),
-           ] + invoker.targets
+      "--web_idl_database",
+      rebase_path(web_idl_database, root_build_dir),
+      "--root_src_dir",
+      rebase_path("//", root_build_dir),
+      "--root_gen_dir",
+      rebase_path(root_gen_dir, root_build_dir),
+      "--output_core_reldir",
+      rebase_path("${bindings_output_dir}/core/v8/", root_gen_dir),
+      "--output_modules_reldir",
+      rebase_path("${bindings_output_dir}/modules/v8/", root_gen_dir),
+    ]
+    if (blink_enable_generated_code_formatting) {
+      args += [ "--format_generated_files" ]
+    }
+    args += invoker.targets
 
     deps = [ ":web_idl_database" ]
   }

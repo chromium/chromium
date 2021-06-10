@@ -6,16 +6,24 @@ import os.path
 import subprocess
 import sys
 
+_enable_style_format = None
 _clang_format_command_path = None
 _gn_command_path = None
 
 
-def init(root_src_dir):
+def init(root_src_dir, enable_style_format=True):
+    assert isinstance(root_src_dir, str)
+    assert isinstance(enable_style_format, bool)
+
+    global _enable_style_format
     global _clang_format_command_path
     global _gn_command_path
 
+    assert _enable_style_format is None
     assert _clang_format_command_path is None
     assert _gn_command_path is None
+
+    _enable_style_format = enable_style_format
 
     root_src_dir = os.path.abspath(root_src_dir)
 
@@ -70,6 +78,12 @@ def gn_format(contents, filename=None):
 
 
 def _invoke_format_command(command_line, filename, contents):
+    if not _enable_style_format:
+        return StyleFormatResult(stdout_output=contents,
+                                 stderr_output="",
+                                 exit_code=0,
+                                 filename=filename)
+
     kwargs = {}
     if sys.version_info.major != 2:
         kwargs['encoding'] = 'utf-8'

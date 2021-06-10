@@ -38,6 +38,12 @@ def parse_options():
         help='output directory for "modules" component relative '
         'to root_gen_dir')
     parser.add_option(
+        '--format_generated_files',
+        action="store_true",
+        default=False,
+        help=("format the resulting generated files by applying clang-format, "
+              "etc."))
+    parser.add_option(
         '--single_process',
         action="store_true",
         default=False,
@@ -83,7 +89,8 @@ def main():
     bind_gen.init(web_idl_database_path=options.web_idl_database,
                   root_src_dir=options.root_src_dir,
                   root_gen_dir=options.root_gen_dir,
-                  component_reldirs=component_reldirs)
+                  component_reldirs=component_reldirs,
+                  enable_style_format=options.format_generated_files)
 
     task_queue = bind_gen.TaskQueue(single_process=options.single_process)
 
