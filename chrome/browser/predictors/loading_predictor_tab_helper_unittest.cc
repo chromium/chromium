@@ -90,7 +90,8 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
   // Owned by |loading_predictor_|.
   StrictMock<MockLoadingDataCollector>* mock_collector_;
   // Owned elsewhere.
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service_;
+  NiceMock<MockOptimizationGuideKeyedService>*
+      mock_optimization_guide_keyed_service_;
   // Owned by |web_contents()|.
   LoadingPredictorTabHelper* tab_helper_;
 };
@@ -99,14 +100,14 @@ void LoadingPredictorTabHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   CreateSessionServiceTabHelper(web_contents());
   mock_optimization_guide_keyed_service_ =
-      static_cast<MockOptimizationGuideKeyedService*>(
+      static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
           OptimizationGuideKeyedServiceFactory::GetInstance()
               ->SetTestingFactoryAndUse(
                   profile(),
                   base::BindRepeating([](content::BrowserContext* context)
                                           -> std::unique_ptr<KeyedService> {
-                    return std::make_unique<MockOptimizationGuideKeyedService>(
-                        context);
+                    return std::make_unique<
+                        NiceMock<MockOptimizationGuideKeyedService>>(context);
                   })));
   LoadingPredictorTabHelper::CreateForWebContents(web_contents());
   tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());
