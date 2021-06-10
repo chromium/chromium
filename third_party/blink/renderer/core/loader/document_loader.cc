@@ -2703,8 +2703,12 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
                                                    &embedder_default_csp);
   for (const auto& header : embedder_default_csp) {
-    csp->AddPolicies(ParseContentSecurityPolicies(
-        header.header_value, header.type, header.source, Url()));
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+        parsed_embedder_policies = ParseContentSecurityPolicies(
+            header.header_value, header.type, header.source, Url());
+    policy_container_->AddContentSecurityPolicies(
+        mojo::Clone(parsed_embedder_policies));
+    csp->AddPolicies(std::move(parsed_embedder_policies));
   }
 
   // Retrieve CSP stored in the OriginPolicy and add them to the policy

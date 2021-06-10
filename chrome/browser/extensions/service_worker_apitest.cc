@@ -2460,14 +2460,25 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
         window.domAutomationController.send('FAIL');
       } catch (e) {
         const result = e.message.includes('scriptExecuted is not defined')
-          ? 'PASS' : 'FAIL';
+          ? 'PASS' : 'FAIL: ' + e.message;
         window.domAutomationController.send(result);
       }
     })();
   )";
   std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(), kScript, &result));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      content::ExecuteScriptAndExtractString(web_contents, kScript, &result));
+  EXPECT_EQ("PASS", result);
+
+  // Also ensure that a local scheme subframe in the extension page correctly
+  // inherits the extension CSP.
+  result = "";
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(iframe, kScript, &result));
   EXPECT_EQ("PASS", result);
 }
 
