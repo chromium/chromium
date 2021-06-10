@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
@@ -101,12 +102,19 @@ namespace java_script_features {
 
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
-  return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
-          FindInPageJavaScriptFeature::GetInstance(),
-          GetFaviconJavaScriptFeature(),
-          GetPluginPlaceholderJavaScriptFeature(),
-          GetScrollHelperJavaScriptFeature(),
-          GetWindowErrorJavaScriptFeature()};
+  std::vector<JavaScriptFeature*> features = {
+      ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
+      FindInPageJavaScriptFeature::GetInstance(), GetFaviconJavaScriptFeature(),
+      GetScrollHelperJavaScriptFeature(), GetWindowErrorJavaScriptFeature()};
+
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (!base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    features.push_back(GetPluginPlaceholderJavaScriptFeature());
+  }
+
+  return features;
 }
 
 ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {

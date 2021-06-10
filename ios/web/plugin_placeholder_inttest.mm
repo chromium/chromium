@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#import "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ios/testing/embedded_test_server_handlers.h"
@@ -51,6 +52,13 @@ class PluginPlaceholderTest : public WebTestWithWebState {
 
 // Tests that a large <applet> with text fallback is untouched.
 TEST_F(PluginPlaceholderTest, AppletFallback) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Applet, text fallback";
   const char kFallbackText[] = "Java? On iOS? C'mon.";
   const std::string page =
@@ -76,8 +84,14 @@ TEST_F(PluginPlaceholderTest, AppletFallback) {
 }
 
 // Tests placeholder for a large <applet> with no fallback.
-// TODO(crbug.com/1217175): Test failing on iOS 14.5.
-TEST_F(PluginPlaceholderTest, DISABLED_AppletOnly) {
+TEST_F(PluginPlaceholderTest, AppletOnly) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Applet, no fallback";
   const std::string page =
       base::StringPrintf("<html><body width='800' height='600'>"
@@ -102,6 +116,13 @@ TEST_F(PluginPlaceholderTest, DISABLED_AppletOnly) {
 
 // Tests placeholder for a large <object> with a flash embed fallback.
 TEST_F(PluginPlaceholderTest, ObjectFlashEmbedFallback) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Object, embed fallback";
   const std::string page = base::StringPrintf(
       "<html><body width='800' height='600'>"
@@ -132,6 +153,13 @@ TEST_F(PluginPlaceholderTest, ObjectFlashEmbedFallback) {
 // Tests that a large <object> with an embed fallback of unspecified type is
 // untouched.
 TEST_F(PluginPlaceholderTest, ObjectUndefinedEmbedFallback) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Object, embed fallback";
   const std::string page = base::StringPrintf(
       "<html><body width='800' height='600'>"
@@ -159,6 +187,13 @@ TEST_F(PluginPlaceholderTest, ObjectUndefinedEmbedFallback) {
 
 // Tests that a large <object> with text fallback is untouched.
 TEST_F(PluginPlaceholderTest, ObjectFallback) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Object, text fallback";
   const char kFallbackText[] = "You don't have Flash. Tough luck!";
   const std::string page = base::StringPrintf(
@@ -187,6 +222,13 @@ TEST_F(PluginPlaceholderTest, ObjectFallback) {
 
 // Tests placeholder for a large <object> with no fallback.
 TEST_F(PluginPlaceholderTest, ObjectOnly) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Object, no fallback";
   const std::string page = base::StringPrintf(
       "<html><body width='800' height='600'>"
@@ -212,6 +254,13 @@ TEST_F(PluginPlaceholderTest, ObjectOnly) {
 
 // Tests that a large png <object> is untouched.
 TEST_F(PluginPlaceholderTest, PNGObject) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "PNG object";
   const std::string page = base::StringPrintf(
       "<html><body width='800' height='600'>"
@@ -235,6 +284,13 @@ TEST_F(PluginPlaceholderTest, PNGObject) {
 
 // Test that non-major plugins (e.g., top/side ads) don't get placeholders.
 TEST_F(PluginPlaceholderTest, SmallFlash) {
+  // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
+  // completely removed.
+  // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
+  if (base::ios::IsRunningOnOrLater(14, 5, 0)) {
+    return;
+  }
+
   const char kPageDescription[] = "Flash ads";
   const std::string page = base::StringPrintf(
       "<html><body width='800' height='600'>"
