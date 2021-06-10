@@ -69,6 +69,8 @@
 #include "ui/base/hit_test.h"
 #endif
 
+using content::EvalJs;
+using content::ExecJs;
 using ::testing::_;
 
 namespace {
@@ -235,10 +237,7 @@ class PictureInPictureWindowControllerBrowserTest
 
     SetUpWindowController(active_web_contents);
 
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
+    ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   }
 
   // The WebContents that is passed to this method must have a
@@ -249,11 +248,7 @@ class PictureInPictureWindowControllerBrowserTest
     // 'leavepictureinpicture' is the title of the tab when the event is
     // received.
     WaitForTitle(web_contents, u"leavepictureinpicture");
-
-    bool in_picture_in_picture = true;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-    EXPECT_FALSE(in_picture_in_picture);
+    EXPECT_EQ(false, EvalJs(web_contents, "isInPictureInPicture();"));
   }
 
   void WaitForPlaybackState(content::WebContents* web_contents,
@@ -326,10 +321,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(window_controller()->GetWindowForTesting() != nullptr);
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
@@ -497,10 +489,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "play();"));
 
   TakeOverlayWindowScreenshot({402, 268}, /*controls_visible=*/false);
 
@@ -523,10 +512,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "play();"));
 
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
@@ -557,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   ASSERT_TRUE(ReadImageFile(expected_pause_image_path, &expected_image));
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.pause();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.pause();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPaused);
   TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
@@ -587,10 +573,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   EXPECT_TRUE(active_web_contents->HasPictureInPictureVideo());
 
@@ -621,10 +604,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(GetOverlayWindow(), nullptr);
   ASSERT_FALSE(GetOverlayWindow()->IsVisible());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   GetOverlayWindow()->SetSize(gfx::Size(400, 400));
 
@@ -647,28 +627,14 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-
-  window_controller()->Close(true /* should_pause_video */);
+  window_controller()->Close(/*should_pause_video=*/true);
 
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
-
-  bool is_paused = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_TRUE(is_paused);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isPaused();"));
 }
 
 // Ditto, when the video isn't playing.
@@ -684,19 +650,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(active_web_contents);
 
   SetUpWindowController(active_web_contents);
-
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
   ASSERT_TRUE(window_controller());
-  window_controller()->Close(true /* should_pause_video */);
+  window_controller()->Close(/*should_pause_video=*/true);
 
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 }
@@ -715,22 +673,17 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(active_web_contents);
 
   SetUpWindowController(active_web_contents);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "tryToEnterPictureInPictureAfterLeaving();",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      active_web_contents, "tryToEnterPictureInPictureAfterLeaving();"));
-
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   ASSERT_TRUE(window_controller());
-  window_controller()->Close(true /* should_pause_video */);
+  window_controller()->Close(/*should_pause_video=*/true);
 
   WaitForTitle(active_web_contents,
                u"failed to enter Picture-in-Picture after leaving");
@@ -752,25 +705,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "exitPictureInPicture();"));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  EXPECT_TRUE(
-      content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
-
-  // 'left' is sent when the first video leaves Picture-in-Picture.
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
-
-  bool is_paused = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 }
 
 // Tests that when starting a new Picture-in-Picture session from the same
@@ -789,42 +729,17 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
+  ASSERT_TRUE(ExecJs(active_web_contents, "exitPictureInPicture();"));
 
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-
-  EXPECT_TRUE(
-      content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
-
-  // 'left' is sent when the video leaves Picture-in-Picture.
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
-  in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-
-  bool is_paused = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 }
 
 // Tests that when starting a new Picture-in-Picture session from the same tab,
@@ -843,27 +758,15 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-
-  EXPECT_TRUE(
-      content::ExecuteScript(active_web_contents, "secondPictureInPicture();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "secondPictureInPicture();"));
 
   ExpectLeavePictureInPicture(active_web_contents);
 
-  bool is_paused = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
   EXPECT_TRUE(GetOverlayWindow()->IsVisible());
 
@@ -884,12 +787,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.src = null;"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.src = null;"));
 
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
@@ -908,15 +808,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrc();", &result));
-  EXPECT_TRUE(result);
-
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "changeVideoSrc();"));
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
@@ -936,15 +829,10 @@ IN_PROC_BROWSER_TEST_F(
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrcToMediaStream();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true,
+            EvalJs(active_web_contents, "changeVideoSrcToMediaStream();"));
 
-  bool in_picture_in_picture = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
@@ -972,10 +860,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   SetUpWindowController(active_web_contents);
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 }
 
 // Tests that calling PictureInPictureWindowController::Close() twice has no
@@ -994,35 +879,23 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   window_controller()->Close(true /* should_pause_video */);
 
   // Wait for the window to close.
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 
-  bool video_paused = false;
-
   // Video is paused after Picture-in-Picture window was closed.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "isPaused();", &video_paused));
-  EXPECT_TRUE(video_paused);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isPaused();"));
 
   // Resume playback.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "isPaused();", &video_paused));
-  EXPECT_FALSE(video_paused);
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
   // This should be a no-op because the window is not visible.
   window_controller()->Close(true /* should_pause_video */);
-
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "isPaused();", &video_paused));
-  EXPECT_FALSE(video_paused);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 }
 
 // Checks entering Picture-in-Picture on multiple tabs, where the initial tab
@@ -1039,14 +912,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(active_web_contents != nullptr);
 
   SetUpWindowController(active_web_contents);
-
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   ASSERT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Open a new tab in the browser.
@@ -1065,14 +931,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(active_web_contents != nullptr);
 
   SetUpWindowController(active_web_contents);
-
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   ASSERT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
@@ -1090,14 +949,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(initial_web_contents != nullptr);
 
   SetUpWindowController(initial_web_contents);
-
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        initial_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
+  ASSERT_EQ(true, EvalJs(initial_web_contents, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Open a new tab in the browser and starts Picture-in-Picture.
@@ -1109,21 +961,13 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(new_web_contents != nullptr);
 
-  {
-    content::PictureInPictureWindowController* pip_window_controller =
-        content::PictureInPictureWindowController::GetOrCreateForWebContents(
-            new_web_contents);
+  content::PictureInPictureWindowController* pip_window_controller =
+      content::PictureInPictureWindowController::GetOrCreateForWebContents(
+          new_web_contents);
+  ASSERT_EQ(true, EvalJs(new_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(pip_window_controller->GetWindowForTesting()->IsVisible());
 
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        new_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-
-    EXPECT_TRUE(pip_window_controller->GetWindowForTesting()->IsVisible());
-
-    // 'left' is sent when the first tab leaves Picture-in-Picture.
-    WaitForTitle(initial_web_contents, u"leavepictureinpicture");
-  }
+  WaitForTitle(initial_web_contents, u"leavepictureinpicture");
 
   // Closing the initial tab should not get the new tab to leave
   // Picture-in-Picture.
@@ -1133,10 +977,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   base::RunLoop().RunUntilIdle();
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      new_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(new_web_contents, "isInPictureInPicture();"));
 }
 
 // Killing an iframe that lost Picture-in-Picture because the main frame entered
@@ -1164,52 +1005,27 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        iframe, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
+  ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   base::RunLoop().RunUntilIdle();
 
-  {
-    bool in_picture_in_picture = false;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractBool(iframe,
-                                    "window.domAutomationController.send(!!"
-                                    "document.pictureInPictureElement);",
-                                    &in_picture_in_picture));
-    EXPECT_FALSE(in_picture_in_picture);
-  }
+  EXPECT_EQ(false, EvalJs(iframe, "document.pictureInPictureElement == video"));
 
   // Removing the iframe should not lead to the main frame leaving
   // Picture-in-Picture.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "removeFrame();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
   EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   base::RunLoop().RunUntilIdle();
 
-  {
-    bool in_picture_in_picture = false;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractBool(active_web_contents,
-                                    "window.domAutomationController.send(!!"
-                                    "document.pictureInPictureElement);",
-                                    &in_picture_in_picture));
-    EXPECT_TRUE(in_picture_in_picture);
-  }
+  EXPECT_EQ(true, EvalJs(active_web_contents,
+                         "document.pictureInPictureElement == video"));
 }
 
 // Checks setting disablePictureInPicture on video just after requesting
@@ -1227,10 +1043,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   SetUpWindowController(active_web_contents);
 
-  bool result = true;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "requestPictureInPictureAndDisable();", &result));
-  EXPECT_FALSE(result);
+  ASSERT_EQ("rejected", EvalJs(active_web_contents,
+                               "requestPictureInPictureAndDisable();"));
 
   ASSERT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
@@ -1259,17 +1073,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
-  // Wait for video metadata to load.
-  WaitForTitle(active_web_contents, u"loadedmetadata");
-
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      iframe, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
+  ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "removeFrame();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
   EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
@@ -1300,17 +1107,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
-  // Wait for video metadata to load.
-  WaitForTitle(active_web_contents, u"loadedmetadata");
-
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      iframe, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
+  ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "removeFrame();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
   EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
@@ -1349,16 +1149,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Same document navigations should not close Picture-in-Picture window.
-  EXPECT_TRUE(content::ExecuteScript(
-      active_web_contents, "window.location = '#foo'; window.history.back();"));
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "window.location = '#foo'; window.history.back();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Picture-in-Picture window should be closed after navigating away.
@@ -1398,12 +1194,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
 
-  bool is_paused = true;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
@@ -1412,30 +1205,19 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
 
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "exitPictureInPicture();"));
 
   content::TestNavigationObserver observer(active_web_contents, 1);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
 
-  {
-    content::WebContents* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+  active_web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        active_web_contents, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
-    bool is_paused = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                            &is_paused));
-    EXPECT_TRUE(is_paused);
-
-    EXPECT_EQ(GetOverlayWindow()->playback_state_for_testing(),
-              OverlayWindowViews::PlaybackState::kPaused);
-  }
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isPaused();"));
+  EXPECT_EQ(GetOverlayWindow()->playback_state_for_testing(),
+            OverlayWindowViews::PlaybackState::kPaused);
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
@@ -1508,20 +1290,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   SetUpWindowController(active_web_contents);
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(active_web_contents,
-                                                   "play();", &result));
-  ASSERT_TRUE(result);
-
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  ASSERT_TRUE(result);
-
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeSrcAndLoad();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "changeSrcAndLoad();"));
 
   window_controller()->Close(true /* should_pause_video */);
 
@@ -1554,20 +1324,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
-  // Wait for video metadata to load.
-  WaitForTitle(active_web_contents, u"loadedmetadata");
-
   // Attaching devtools triggers the change in timing that leads to the crash.
   DevToolsWindow* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser(), true /*is_docked=*/);
 
-  {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        iframe, "enterPictureInPicture();", &result));
-    EXPECT_TRUE(result);
-  }
-
+  ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   EXPECT_EQ(2u, active_web_contents->GetAllFrames().size());
@@ -1608,10 +1369,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(GetOverlayWindow(), nullptr);
   ASSERT_FALSE(GetOverlayWindow()->IsVisible());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   // The PiP window starts in the bottom-right quadrant of the screen.
   gfx::Rect bottom_right_bounds = GetOverlayWindow()->GetBounds();
@@ -1708,17 +1466,13 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 
   // Play/Pause button is hidden if video is a mediastream.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrcToMediaStream();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true,
+            EvalJs(active_web_contents, "changeVideoSrcToMediaStream();"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Play/Pause button is not hidden anymore when video is not a mediastream.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrc();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "changeVideoSrc();"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 }
@@ -1736,8 +1490,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "addVisibilityChangeEventListener();"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "addVisibilityChangeEventListener();"));
 
   // Hide page and check that the document visibility is hidden.
   active_web_contents->WasHidden();
@@ -1764,52 +1518,36 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   ASSERT_NE(nullptr, active_web_contents);
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
 
-  bool is_paused = true;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "addVisibilityChangeEventListener();"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "addVisibilityChangeEventListener();"));
 
   // Hide page and check that the document visibility is hidden.
   active_web_contents->WasHidden();
   WaitForTitle(active_web_contents, u"hidden");
 
   // Check that the video is still in Picture-in-Picture and playing.
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
   // Show page and check that the document visibility is visible.
   active_web_contents->WasShown();
   WaitForTitle(active_web_contents, u"visible");
 
   // Check that the video is still in Picture-in-Picture and playing.
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 
   // Occlude page and check that the document visibility is hidden.
   active_web_contents->WasOccluded();
   WaitForTitle(active_web_contents, u"hidden");
 
   // Check that the video is still in Picture-in-Picture and playing.
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(active_web_contents, "isPaused();",
-                                          &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
 }
 
 class MediaSessionPictureInPictureWindowControllerBrowserTest
@@ -1843,14 +1581,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Skip Ad button is displayed if a media session action handler has been set.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('skipad');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('skipad');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Skip Ad button is not displayed.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "unsetMediaSessionActionHandler('skipad');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "unsetMediaSessionActionHandler('skipad');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false));
 }
@@ -1869,44 +1607,39 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Play/Pause button is hidden if playing video is a mediastream.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrcToMediaStream();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true,
+            EvalJs(active_web_contents, "changeVideoSrcToMediaStream();"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Set Media Session action "play" handler and check that Play/Pause button
   // is still hidden.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "setMediaSessionActionHandler('play');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Set Media Session action "pause" handler and check that Play/Pause button
   // is now displayed.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "setMediaSessionActionHandler('pause');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('pause');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 
   // Unset Media Session action "pause" handler and check that Play/Pause button
   // is hidden.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "unsetMediaSessionActionHandler('pause');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "unsetMediaSessionActionHandler('pause');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "exitPictureInPicture();"));
 
   // Reset Media Session action "pause" handler and check that Play/Pause
   // button is now displayed Picture-in-Picture is entered again.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "setMediaSessionActionHandler('pause');"));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('pause');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 }
@@ -1928,14 +1661,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   // Next Track button is displayed if a media session action handler has been
   // set.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('nexttrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->next_track_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Next Track button is not displayed.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "unsetMediaSessionActionHandler('nexttrack');"));
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "unsetMediaSessionActionHandler('nexttrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->next_track_controls_view_for_testing()}, false));
 }
@@ -1956,14 +1689,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   // Previous Track button is displayed if a media session action handler has
   // been set.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('previoustrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->previous_track_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Previous Track button is not displayed.
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "unsetMediaSessionActionHandler('previoustrack');"));
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "unsetMediaSessionActionHandler('previoustrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
 }
@@ -1976,12 +1709,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('skipad');"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('skipad');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
@@ -2005,30 +1735,24 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   // Move the second player out of the way to simplify the "active/inactive"
   // media session state handling.
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "secondVideo.src = '';"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "secondVideo.src = '';"));
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "setMediaSessionActionHandler('play');"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "setMediaSessionActionHandler('pause');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('pause');"));
 
   // Make sure the action handlers are set before trying to invoke the actions.
   // In the case of MediaStream, the play/pause button is only visible if the
   // action handlers are set.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrcToMediaStream();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true,
+            EvalJs(active_web_contents, "changeVideoSrcToMediaStream();"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
   // Now we can switch back to regular src=, which is needed to be able to
   // unpause the video later (the MediaStream player leaves the media session
   // when paused, so no more Media Session action handling there).
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrc();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "changeVideoSrc();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
@@ -2037,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   window_controller()->TogglePlayPause();
   WaitForTitle(active_web_contents, u"pause");
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.pause();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.pause();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPaused);
 
@@ -2055,12 +1779,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('nexttrack');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
@@ -2082,12 +1803,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('previoustrack');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
@@ -2108,10 +1826,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
@@ -2144,21 +1859,18 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "video.autoPictureInPicture = true;"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "addVisibilityChangeEventListener();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "video.autoPictureInPicture = true;"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "addVisibilityChangeEventListener();"));
 
   // Hide page and check that there is no video that enters Picture-in-Picture
   // automatically.
   active_web_contents->WasHidden();
   WaitForTitle(active_web_contents, u"hidden");
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isInPictureInPicture();"));
 }
 
 // Show page and check that exiting Auto Picture-in-Picture is triggered.
@@ -2175,15 +1887,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "video.autoPictureInPicture = true;"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "video.autoPictureInPicture = true;"));
 
   // Enter Picture-in-Picture manually.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   active_web_contents->WasHidden();
 
@@ -2191,10 +1900,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
   active_web_contents->WasShown();
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(active_web_contents, "isInPictureInPicture();"));
 }
 
 namespace {
@@ -2265,12 +1971,8 @@ class WebAppPictureInPictureWindowControllerBrowserTest
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoEnterPictureInPicture) {
   InstallAndLaunchPWA(main_url());
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
 
   // Hide page and check that video entered Picture-in-Picture automatically.
   web_contents()->WasHidden();
@@ -2281,16 +1983,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoExitPictureInPicture) {
   InstallAndLaunchPWA(main_url());
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "enterPictureInPicture();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "enterPictureInPicture();"));
 
   web_contents()->WasHidden();
 
@@ -2311,22 +2006,15 @@ IN_PROC_BROWSER_TEST_F(
   web_app::NavigateToURLAndWait(app_browser, main_url());
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
 
   // Hide page and check that the video did not entered
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"hidden");
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Show pwa page and check that Auto Picture-in-Picture is not triggered if
@@ -2334,22 +2022,15 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureNotTriggeredIfVideoNotPlaying) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
-  bool is_paused = false;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractBool(web_contents(), "isPaused();", &is_paused));
-  EXPECT_TRUE(is_paused);
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
+  EXPECT_EQ(true, EvalJs(web_contents(), "isPaused();"));
 
   // Hide page and check that the video did not entered
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"hidden");
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Check that Auto Picture-in-Picture is not triggered if there's already a
@@ -2361,18 +2042,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Enter Picture-in-Picture for the first video and set Auto
   // Picture-in-Picture for the second video.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "playSecondVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents(), "secondVideo.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "enterPictureInPicture();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playSecondVideo();"));
+  ASSERT_TRUE(
+      ExecJs(web_contents(), "secondVideo.autoPictureInPicture = true;"));
 
   // Hide page and check that the second video did not entered
   // Picture-in-Picture automatically.
@@ -2380,10 +2054,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForTitle(web_contents(), u"hidden");
 
   // Check that the first video is still in Picture-in-Picture.
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Check that video does not leave Picture-in-Picture automatically when it
@@ -2392,16 +2063,10 @@ IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = false;"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = false;"));
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "enterPictureInPicture();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "enterPictureInPicture();"));
 
   web_contents()->WasHidden();
 
@@ -2412,10 +2077,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForTitle(web_contents(), u"visible");
 
   // Check that the video is still in Picture-in-Picture.
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Check that Auto Picture-in-Picture applies only to the video element whose
@@ -2423,18 +2085,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAttributeAppliesToLastElement) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(),
-                             "video.autoPictureInPicture = true;"
-                             "secondVideo.autoPictureInPicture = true;"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "playSecondVideo();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "video.autoPictureInPicture = true;"
+                     "secondVideo.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playSecondVideo();"));
 
   // Hide page and check that second video is the video that enters
   // Picture-in-Picture automatically.
@@ -2445,16 +2100,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAttributeAppliesToInsertedElement) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "addHtmlVideoWithAutoPictureInPicture();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true,
+            EvalJs(web_contents(), "addHtmlVideoWithAutoPictureInPicture();"));
 
   // Hide the page and check that the inserted video is the video that enters
   // Picture-in-Picture automatically.
@@ -2465,63 +2114,41 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureCanBeUnset) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
 
   // Unset autoPictureInPicture and check that the video doesn't enter
   // Picture-in-Picture automatically.
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = false;"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = false;"));
 
-  bool in_picture_in_picture;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"hidden");
 
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(),
-                             "video.autoPictureInPicture = true;"
-                             "secondVideo.autoPictureInPicture = true;"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "playSecondVideo();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "video.autoPictureInPicture = true;"
+                     "secondVideo.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playSecondVideo();"));
 
   // Unset autoPictureInPicture on the element where it was set last, and check
   // that the first video enters Picture-in-Picture automatically.
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents(), "secondVideo.autoPictureInPicture = false;"));
+  ASSERT_TRUE(
+      ExecJs(web_contents(), "secondVideo.autoPictureInPicture = false;"));
 
-  bool in_picture_in_picture;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_FALSE(in_picture_in_picture);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"video.enterpictureinpicture");
 
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Check that video does not leave Picture-in-Picture automatically when it is
@@ -2530,22 +2157,12 @@ IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNotEnteredAutoPictureInPicture) {
   InstallAndLaunchPWA(main_url());
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(),
-                             "video.autoPictureInPicture = true;"
-                             "secondVideo.autoPictureInPicture = true;"));
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "playVideo();", &result));
-  ASSERT_TRUE(result);
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "playSecondVideo();", &result));
-  ASSERT_TRUE(result);
-  result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "enterPictureInPicture();", &result));
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "video.autoPictureInPicture = true;"
+                     "secondVideo.autoPictureInPicture = true;"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "playSecondVideo();"));
+  ASSERT_EQ(true, EvalJs(web_contents(), "enterPictureInPicture();"));
 
   web_contents()->WasHidden();
 
@@ -2556,10 +2173,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForTitle(web_contents(), u"visible");
 
   // Check that the video is still in Picture-in-Picture.
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  EXPECT_EQ(true, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
 // Check that video with no audio that is paused when hidden is still eligible
@@ -2569,12 +2183,9 @@ IN_PROC_BROWSER_TEST_F(
     AutoPictureInPictureTriggeredOnPageHiddenIfVideoPausedWhenHidden) {
   InstallAndLaunchPWA(main_url());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "changeVideoSrcToNoAudioTrackVideo();", &result));
-  EXPECT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
+  ASSERT_EQ(true,
+            EvalJs(web_contents(), "changeVideoSrcToNoAudioTrackVideo();"));
+  ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
 
   // Hide page and check that video entered Picture-in-Picture automatically
   // and is playing.
@@ -2582,10 +2193,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForTitle(web_contents(), u"video.enterpictureinpicture");
 
   // Check that video playback is still playing.
-  bool is_paused = false;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractBool(web_contents(), "isPaused();", &is_paused));
-  EXPECT_FALSE(is_paused);
+  EXPECT_EQ(false, EvalJs(web_contents(), "isPaused();"));
 }
 
 // Check that video with no audio that is paused when hidden resumes playback
@@ -2601,25 +2209,19 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrcToNoAudioTrackVideo();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents,
+                         "changeVideoSrcToNoAudioTrackVideo();"));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "addPauseEventListener();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "addPauseEventListener();"));
 
   // Hide page and check that the video is paused first.
   active_web_contents->WasHidden();
   WaitForTitle(active_web_contents, u"pause");
 
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "addPlayEventListener();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "addPlayEventListener();"));
 
   // Enter Picture-in-Picture.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
   // Check that video playback has resumed.
   WaitForTitle(active_web_contents, u"play");
@@ -2634,10 +2236,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "video.src=''; exitPictureInPicture();"));
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "video.src=''; exitPictureInPicture();"));
 
-  // 'left' is sent when the first video leaves Picture-in-Picture.
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 }
 
@@ -2651,16 +2252,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Video should be in Picture-in-Picture.
-  {
-    bool in_picture_in_picture = false;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(active_web_contents,
-                                            "isInPictureInPicture();",
-                                            &in_picture_in_picture));
-    EXPECT_TRUE(in_picture_in_picture);
-  }
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
 
   // Reset video source and wait for the notification.
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "resetVideo();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "resetVideo();"));
   WaitForTitle(active_web_contents, u"emptied");
 
   window_controller()->Close(true /* should_pause_video */);
@@ -2679,9 +2274,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  ASSERT_TRUE(
-      content::ExecuteScript(active_web_contents, "addPauseEventListener();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "video.play();"));
+  ASSERT_TRUE(ExecJs(active_web_contents, "addPauseEventListener();"));
 
   ASSERT_NE(GetOverlayWindow(), nullptr);
   ASSERT_FALSE(GetOverlayWindow()->GetFocusManager()->GetFocusedView());

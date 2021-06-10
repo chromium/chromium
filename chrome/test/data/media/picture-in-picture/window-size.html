@@ -17,13 +17,43 @@
   secondVideo.src = '../bigbuck.webm';
   secondVideo.load();
 
-  function requestPictureInPictureAndDisable() {
-    enterPictureInPictureInternal();
+  async function requestPictureInPictureAndDisable() {
+    const promise = video.requestPictureInPicture();
     video.disablePictureInPicture = true;
+    try {
+      await promise;
+    } catch(e) {
+      return "rejected";
+    }
+    return true;
   }
 
-  function enterPictureInPicture() {
-    enterPictureInPictureInternal();
+  async function enterPictureInPicture() {
+    await _waitForMetadata();
+    const pip_window = await video.requestPictureInPicture();
+
+    pip_window.addEventListener('resize', () => {
+      document.title = 'resized';
+    }, { once: true });
+
+    video.addEventListener('leavepictureinpicture', () => {
+      document.title = 'leavepictureinpicture';
+    }, { once: true });
+
+    return true;
+  }
+
+  function _waitForMetadata() {
+    return new Promise(resolve => {
+      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        resolve();
+        return;
+      }
+
+      video.addEventListener('loadedmetadata', () => {
+        resolve();
+      }, { once: true });
+    });
   }
 
   function exitPictureInPicture() {
@@ -31,68 +61,44 @@
   }
 
   function isInPictureInPicture() {
-    window.domAutomationController.send(document.pictureInPictureElement == video);
+    return document.pictureInPictureElement == video;
   }
 
   function isPaused() {
-    window.domAutomationController.send(video.paused);
-  }
-
-  function enterPictureInPictureInternal() {
-    video.requestPictureInPicture()
-    .then(win => {
-      win.addEventListener('resize', () => {
-        document.title = 'resized';
-      }, { once: true });
-
-      video.addEventListener('leavepictureinpicture', () => {
-        document.title = 'leavepictureinpicture';
-      }, { once: true });
-
-      window.domAutomationController.send(true);
-    })
-    .catch(e => {
-      window.domAutomationController.send(false);
-    });
+    return video.paused;
   }
 
   function secondPictureInPicture() {
     secondVideo.requestPictureInPicture();
   }
 
-  function enterFullscreen() {
-    video.webkitRequestFullscreen();
-
-    video.addEventListener('webkitfullscreenchange', () => {
-      document.title = 'fullscreen';
-    }, { once: true });
+  async function ensureVideoIsPlaying() {
+    await video.play();
+    return true;
   }
 
-  function ensureVideoIsPlaying() {
-    video.play()
-    .then(_ => { window.domAutomationController.send(true); })
-    .catch(e => { window.domAutomationController.send(false); });
-  }
-
-  function changeVideoSrc() {
+  async function changeVideoSrc() {
     if (video.srcObject) {
       video.srcObject.getTracks().forEach(track => track.stop());
       video.srcObject = null;
     }
     video.src = '../bigbuck.webm';
-    ensureVideoIsPlaying();
+    await video.play();
+    return true;
   }
 
-  function changeVideoSrcToMediaStream() {
+  async function changeVideoSrcToMediaStream() {
     const canvas = document.createElement('canvas');
     canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
     video.srcObject = canvas.captureStream();
-    ensureVideoIsPlaying();
+    await video.play();
+    return true;
   }
 
-  function changeVideoSrcToNoAudioTrackVideo() {
+  async function changeVideoSrcToNoAudioTrackVideo() {
     video.src = '../engagement/engagement_no_audio_track.webm';
-    ensureVideoIsPlaying();
+    await video.play();
+    return true;
   }
 
   function addVisibilityChangeEventListener() {

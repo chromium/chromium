@@ -16,11 +16,8 @@ navigator.mediaSession.setCameraActive(isCameraActive);
 
 async function enterPictureInPicture() {
   await video.play();
-  video.requestPictureInPicture().then(() => {
-    window.domAutomationController.send(true);
-  }).catch(e => {
-    window.domAutomationController.send(false);
-  });
+  await video.requestPictureInPicture();
+  return true;
 }
 
 navigator.mediaSession.setActionHandler('togglemicrophone', () => {

@@ -270,10 +270,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), test_page_url));
 
   // Execute picture-in-picture on the page.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(web_contents(), "enterPictureInPicture();"));
 
   content::RenderFrameDeletedObserver deleted(current_frame_host());
 
