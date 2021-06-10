@@ -407,6 +407,12 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     return;
   }
 
+  Profile* web_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (web_profile != profile()) {
+    return;
+  }
+
   absl::optional<web_app::AppId> web_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
                                               /*window_only=*/false);
