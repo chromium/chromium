@@ -27,6 +27,7 @@ using blink::mojom::WebBluetoothRequestDeviceOptionsPtr;
 using device::BluetoothUUID;
 using device::BluetoothUUIDHash;
 using permissions::BluetoothChooserContext;
+using testing::NiceMock;
 
 namespace {
 
@@ -152,21 +153,22 @@ class BluetoothChooserContextTest : public testing::Test {
     return chooser_context;
   }
 
-  std::unique_ptr<FakeBluetoothDevice> GetBluetoothDevice(const char* name,
-                                                          std::string address) {
-    return std::make_unique<FakeBluetoothDevice>(fake_adapter_.get(), name,
-                                                 address);
+  std::unique_ptr<NiceMock<FakeBluetoothDevice>> GetBluetoothDevice(
+      const char* name,
+      std::string address) {
+    return std::make_unique<NiceMock<FakeBluetoothDevice>>(fake_adapter_.get(),
+                                                           name, address);
   }
 
   // Mock Observer
-  permissions::MockPermissionObserver mock_permission_observer_;
+  NiceMock<permissions::MockPermissionObserver> mock_permission_observer_;
 
   const GURL foo_url_;
   const GURL bar_url_;
   const url::Origin foo_origin_;
   const url::Origin bar_origin_;
-  std::unique_ptr<FakeBluetoothDevice> fake_device1_;
-  std::unique_ptr<FakeBluetoothDevice> fake_device2_;
+  std::unique_ptr<NiceMock<FakeBluetoothDevice>> fake_device1_;
+  std::unique_ptr<NiceMock<FakeBluetoothDevice>> fake_device2_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
