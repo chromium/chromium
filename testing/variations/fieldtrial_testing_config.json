@@ -8209,6 +8209,27 @@
             ]
         }
     ],
+    "UseOzonePlatform": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20210609",
+                    "disable_features": [
+                        "UseOzonePlatform"
+                    ]
+                },
+                {
+                    "name": "Enabled_20210609",
+                    "enable_features": [
+                        "UseOzonePlatform"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSkiaRenderer": [
         {
             "platforms": [
