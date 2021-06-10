@@ -443,6 +443,9 @@ as required builders.
 * [ios-simulator-rts](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-rts))
   * Experiment percentage: 1.0
 
+* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-arm-generic-rel))
+  * Experiment percentage: 1.0
+
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-1mbu-compile-fyi-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-1mbu-compile-fyi-rel))
   * Experiment percentage: 10.0
 
