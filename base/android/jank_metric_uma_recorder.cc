@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/JankMetricUMARecorder_jni.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 
@@ -53,12 +52,13 @@ void RecordJankMetrics(
       base::StrCat({"Android.Jank.MissedFrames.", scenario_name});
 
   for (const int64_t frame_duration_ns : durations_ns) {
-    UMA_HISTOGRAM_TIMES(frame_duration_histogram_name,
-                        base::TimeDelta::FromNanoseconds(frame_duration_ns));
+    base::UmaHistogramTimes(
+        frame_duration_histogram_name,
+        base::TimeDelta::FromNanoseconds(frame_duration_ns));
   }
 
   for (const int64_t jank_burst_duration_ns : jank_bursts_ns) {
-    UMA_HISTOGRAM_TIMES(
+    base::UmaHistogramTimes(
         jank_burst_histogram_name,
         base::TimeDelta::FromNanoseconds(jank_burst_duration_ns));
   }
