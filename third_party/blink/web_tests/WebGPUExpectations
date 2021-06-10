@@ -86,9 +86,11 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 # Many cases failing on Windows.
 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToTexture";* [ Failure ]
 
-# Win missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE
-crbug.com/dawn/603 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure Crash Timeout ]
-crbug.com/dawn/603 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="StencilTest";* [ Failure Crash Timeout ]
+# Dawn validation requires that aspects of attachments is "all", which the tests don't do.
+# See also crbug.com/dawn/603 for missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE that happens on the same tests.
+# The [ Crash Timeout ] annotations can be removed after dawn:812 is fixed.
+crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";format="depth24plus-stencil8";* [ Failure Crash Timeout ]
+crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="StencilTest";format="depth24plus-stencil8";* [ Failure Crash Timeout ]
 
 # Only on Mac Intel
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";mipLevelCount=5;sliceCount=7;* [ Failure ]
