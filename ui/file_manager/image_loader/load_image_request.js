@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {ImageOrientation, ImageTransformParam} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
-// clang-format on
+import {ImageOrientation, ImageTransformParam} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-/* #ignore */ 'use strict';
 
 /**
  * Response status.
  *
  * @enum {string}
  */
-/* #export */ const LoadImageResponseStatus = {
+export const LoadImageResponseStatus = {
   SUCCESS: 'success',
   ERROR: 'error'
 };
@@ -25,7 +22,7 @@
  *
  * @struct
  */
-/* #export */ class LoadImageResponse {
+export class LoadImageResponse {
   /**
    * @param {!LoadImageResponseStatus} status
    * @param {?number} taskId or null if fulfilled by the client-side cache.
@@ -101,7 +98,7 @@
  *
  * @struct
  */
-/* #export */ class LoadImageRequest {
+export class LoadImageRequest {
   constructor() {
     // Parts that uniquely identify the request.
 

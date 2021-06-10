@@ -5,8 +5,8 @@
 import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {ImageLoaderUtil} from './image_loader_util.m.js';
-import {LoadImageRequest} from './load_image_request.m.js';
+import {ImageLoaderUtil} from './image_loader_util.js';
+import {LoadImageRequest} from './load_image_request.js';
 
 
 /**

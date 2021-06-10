@@ -5,8 +5,8 @@
 import {reportPromise} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/test_error_reporting.m.js';
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {ImageLoaderClient} from './image_loader_client.m.js';
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
+import {ImageLoaderClient} from './image_loader_client.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
 /** @suppress {const|checkTypes} */
 export function setUp() {

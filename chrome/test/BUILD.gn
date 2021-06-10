@@ -2140,7 +2140,6 @@ if (!is_android) {
         "//ui/file_manager/file_manager/foreground/js/metadata:modulize_runtime_data",
         "//ui/file_manager/file_manager/foreground/js/ui:modulize_runtime_data",
         "//ui/file_manager/file_manager/foreground/js/ui/table:modulize_runtime_data",
-        "//ui/file_manager/image_loader:modulize_runtime_data",
       ]
 
       if (use_dbus) {

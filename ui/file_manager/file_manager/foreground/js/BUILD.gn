@@ -1641,8 +1641,8 @@ js_library("quick_view_controller.m") {
     "//ui/file_manager/file_manager/externs:command_handler_deps.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -1879,7 +1879,6 @@ js_library("thumbnail_loader") {
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/image_loader:image_loader_client",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -1889,8 +1888,8 @@ js_library("thumbnail_loader.m") {
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -1903,8 +1902,8 @@ js_unittest("thumbnail_loader_unittest.m") {
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry.m",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:load_image_request",
   ]
 }
 

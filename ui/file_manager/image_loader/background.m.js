@@ -6,7 +6,7 @@
  * @fileoverview Entry point for Image Loader.
  */
 
-import {ImageLoader} from './image_loader.m.js';
+import {ImageLoader} from './image_loader.js';
 
 // Load the extension.
 ImageLoader.getInstance();

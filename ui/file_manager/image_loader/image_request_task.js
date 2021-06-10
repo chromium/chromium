@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ImageCache} from './cache.m.js';
-// #import {ImageLoaderUtil} from './image_loader_util.m.js';
-// #import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
-// #import {PiexLoader} from './piex_loader.m.js';
-// #import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.m.js';
-// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.m.js';
+import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+
+import {ImageCache} from './cache.js';
+import {ImageLoaderUtil} from './image_loader_util.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
+import {PiexLoader} from './piex_loader.js';
 
 /**
  * Creates and starts downloading and then resizing of the image. Finally,
@@ -22,7 +21,7 @@
  * @param {function(!LoadImageResponse)} callback Response handler.
  * @constructor
  */
-/* #export */ function ImageRequestTask(id, cache, request, callback) {
+export function ImageRequestTask(id, cache, request, callback) {
   /**
    * Global ID (concatenated client ID and client request ID).
    * @type {string}

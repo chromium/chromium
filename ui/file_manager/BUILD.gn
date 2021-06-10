@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 grit("resources") {
   source = "file_manager_resources.grd"
+  defines = [ "optimize_webui=$optimize_webui" ]
   outputs = [
     "grit/file_manager_resources.h",
     "grit/file_manager_resources_map.cc",
@@ -92,6 +93,14 @@ preprocess_if_expr("preprocess_static") {
 
     # Image Loader:
     "image_loader/background.m.js",
+    "image_loader/cache.js",
+    "image_loader/image_loader.js",
+    "image_loader/image_loader_client.js",
+    "image_loader/image_loader_util.js",
+    "image_loader/image_request_task.js",
+    "image_loader/load_image_request.js",
+    "image_loader/piex_loader.js",
+    "image_loader/scheduler.js",
 
     # Video Player:
     "video_player/js/background.js",
@@ -110,6 +119,7 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
     "//ui/file_manager/image_loader:background.m",
+    "//ui/file_manager/image_loader:js_modules",
     "//ui/file_manager/video_player/js:js_modules",
     "//ui/file_manager/video_player/js:main.m",
     "//ui/file_manager/video_player/js:main_background.m",
@@ -327,16 +337,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/table/table_list.m.js",
     "file_manager/foreground/js/ui/table/table_splitter.m.js",
 
-    # Image Loader:
-    "image_loader/cache.m.js",
-    "image_loader/image_loader.m.js",
-    "image_loader/image_loader_client.m.js",
-    "image_loader/image_loader_util.m.js",
-    "image_loader/image_request_task.m.js",
-    "image_loader/load_image_request.m.js",
-    "image_loader/piex_loader.m.js",
-    "image_loader/scheduler.m.js",
-
     # Metadata:
     "file_manager/foreground/js/metadata/byte_reader.m.js",
     "file_manager/foreground/js/metadata/content_metadata_provider.m.js",
@@ -375,7 +375,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
     "//ui/file_manager/file_manager/foreground/js/ui:modulize",
     "//ui/file_manager/file_manager/foreground/js/ui/table:modulize",
-    "//ui/file_manager/image_loader:modulize",
   ]
 }
 
@@ -437,8 +436,6 @@ generate_grd("build_grd") {
       "file_manager/externs/volume_info_list.m.js",
       "file_manager/externs/volume_manager.m.js",
       "file_manager/foreground/js/metadata/image_orientation.m.js",
-      "image_loader/image_loader_client.m.js",
-      "image_loader/load_image_request.m.js",
 
       "file_manager/background/js/main_background.m.rollup.js",
       "file_manager/foreground/js/deferred_elements.m.rollup.js",

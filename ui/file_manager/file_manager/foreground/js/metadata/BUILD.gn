@@ -22,6 +22,7 @@ group("closure_compile") {
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
                     "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
@@ -79,8 +80,8 @@ js_library("content_metadata_provider.m") {
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert.m",
   ]
 

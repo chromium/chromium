@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {LoadImageRequest} from './load_image_request.m.js';
+import {LoadImageRequest} from './load_image_request.js';
 
 
 export function testCreateCacheKey() {

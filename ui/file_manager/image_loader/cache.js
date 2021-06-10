@@ -6,7 +6,7 @@
  * Persistent cache storing images in an indexed database on the hard disk.
  * @constructor
  */
-/* #export */ function ImageCache() {
+export function ImageCache() {
   /**
    * IndexedDB database handle.
    * @type {IDBDatabase}

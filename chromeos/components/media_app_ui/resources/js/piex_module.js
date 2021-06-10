@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PIEX_LOADER_TEST_ONLY, PiexLoader} from './piex_loader.m.js';
+import {PIEX_LOADER_TEST_ONLY, PiexLoader} from './piex_loader.js';
 
 /**
  * Set when PiexLoader has an unrecoverable error to disable future attempts.

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
-import {ImageRequestTask} from './image_request_task.m.js';
-import {Scheduler} from './scheduler.m.js';
+import {ImageRequestTask} from './image_request_task.js';
+import {Scheduler} from './scheduler.js';
 
 
 /**
