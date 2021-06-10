@@ -189,8 +189,9 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   // image with either "native" size (raster images) or size scaled by effective
   // zoom.
   const FloatSize default_object_size(border_image_rect.size);
-  FloatSize image_size = style_image->ImageSize(
-      style.EffectiveZoom(), default_object_size, kRespectImageOrientation);
+  FloatSize image_size =
+      style_image->ImageSize(document, style.EffectiveZoom(),
+                             default_object_size, kRespectImageOrientation);
   scoped_refptr<Image> image =
       style_image->GetImage(observer, document, style, image_size);
   if (!image)
@@ -200,7 +201,7 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   // yield the size in CSS pixels. This is the unit/scale we expect the
   // 'border-image-slice' values to be in.
   FloatSize unzoomed_image_size = style_image->ImageSize(
-      1, default_object_size.ScaledBy(1 / style.EffectiveZoom()),
+      document, 1, default_object_size.ScaledBy(1 / style.EffectiveZoom()),
       kRespectImageOrientation);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(

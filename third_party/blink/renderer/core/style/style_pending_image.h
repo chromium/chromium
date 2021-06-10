@@ -55,7 +55,8 @@ class StylePendingImage final : public StyleImage {
                              bool allow_visited_style) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
-  FloatSize ImageSize(float,
+  FloatSize ImageSize(const Document&,
+                      float,
                       const FloatSize&,
                       RespectImageOrientationEnum) const override {
     return FloatSize();

@@ -61,7 +61,8 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
   return image_generator_value_;
 }
 
-FloatSize StyleGeneratedImage::ImageSize(float multiplier,
+FloatSize StyleGeneratedImage::ImageSize(const Document&,
+                                         float multiplier,
                                          const FloatSize& default_object_size,
                                          RespectImageOrientationEnum) const {
   return default_object_size;

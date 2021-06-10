@@ -102,6 +102,7 @@ bool StyleFetchedImageSet::IsAccessAllowed(String& failing_url) const {
 }
 
 FloatSize StyleFetchedImageSet::ImageSize(
+    const Document&,
     float multiplier,
     const FloatSize& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {

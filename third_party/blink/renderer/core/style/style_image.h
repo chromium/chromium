@@ -94,7 +94,8 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   //
   // The size will respect the image orientation if requested and if the image
   // supports it.
-  virtual FloatSize ImageSize(float multiplier,
+  virtual FloatSize ImageSize(const Document&,
+                              float multiplier,
                               const FloatSize& default_object_size,
                               RespectImageOrientationEnum) const = 0;
 
