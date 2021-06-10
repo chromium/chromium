@@ -156,7 +156,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "chrome/common/chrome_paths.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/upload_list/crash_upload_list.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -257,7 +256,9 @@ class TestSearchEngineDelegate
 
 class RemoveCookieTester {
  public:
-  RemoveCookieTester() {}
+  RemoveCookieTester() = default;
+  RemoveCookieTester(const RemoveCookieTester&) = delete;
+  RemoveCookieTester& operator=(const RemoveCookieTester&) = delete;
 
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie() {
@@ -305,8 +306,6 @@ class RemoveCookieTester {
   const GURL cookie_url_{"http://host1.com:1"};
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
 
 class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
@@ -337,6 +336,11 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
     SetCookieManager(std::move(cookie_manager));
   }
 
+  RemoveSafeBrowsingCookieTester(const RemoveSafeBrowsingCookieTester&) =
+      delete;
+  RemoveSafeBrowsingCookieTester& operator=(
+      const RemoveSafeBrowsingCookieTester&) = delete;
+
   virtual ~RemoveSafeBrowsingCookieTester() {
     browser_process_->safe_browsing_service()->ShutDown();
     base::RunLoop().RunUntilIdle();
@@ -345,13 +349,14 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
 
  private:
   TestingBrowserProcess* browser_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveSafeBrowsingCookieTester);
 };
 
 class RemoveHistoryTester {
  public:
-  RemoveHistoryTester() {}
+  RemoveHistoryTester() = default;
+
+  RemoveHistoryTester(const RemoveHistoryTester&) = delete;
+  RemoveHistoryTester& operator=(const RemoveHistoryTester&) = delete;
 
   bool Init(Profile* profile) WARN_UNUSED_RESULT {
     history_service_ = HistoryServiceFactory::GetForProfile(
@@ -389,13 +394,13 @@ class RemoveHistoryTester {
  private:
   // TestingProfile owns the history service; we shouldn't delete it.
   history::HistoryService* history_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveHistoryTester);
 };
 
 class RemoveFaviconTester {
  public:
-  RemoveFaviconTester() {}
+  RemoveFaviconTester() = default;
+  RemoveFaviconTester(const RemoveFaviconTester&) = delete;
+  RemoveFaviconTester& operator=(const RemoveFaviconTester&) = delete;
 
   bool Init(Profile* profile) WARN_UNUSED_RESULT {
     // Create the history service if it has not been created yet.
@@ -473,8 +478,6 @@ class RemoveFaviconTester {
   // Owned by TestingProfile.
   history::HistoryService* history_service_ = nullptr;
   favicon::FaviconService* favicon_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveFaviconTester);
 };
 
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
@@ -558,6 +561,9 @@ class RemovePasswordsTester {
     OSCryptMocker::SetUp();
   }
 
+  RemovePasswordsTester(const RemovePasswordsTester&) = delete;
+  RemovePasswordsTester& operator=(const RemovePasswordsTester&) = delete;
+
   ~RemovePasswordsTester() { OSCryptMocker::TearDown(); }
 
   password_manager::MockPasswordStore* profile_store() {
@@ -576,8 +582,6 @@ class RemovePasswordsTester {
   password_manager::MockPasswordStore* profile_store_;
   password_manager::MockPasswordStore* account_store_;
   password_manager::MockPasswordSyncMetadataStore account_metadata_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePasswordsTester);
 };
 
 class RemovePermissionPromptCountsTest {
@@ -585,6 +589,10 @@ class RemovePermissionPromptCountsTest {
   explicit RemovePermissionPromptCountsTest(TestingProfile* profile)
       : autoblocker_(
             PermissionDecisionAutoBlockerFactory::GetForProfile(profile)) {}
+  RemovePermissionPromptCountsTest(const RemovePermissionPromptCountsTest&) =
+      delete;
+  RemovePermissionPromptCountsTest& operator=(
+      const RemovePermissionPromptCountsTest&) = delete;
 
   int GetDismissCount(const GURL& url, ContentSettingsType permission) {
     return autoblocker_->GetDismissCount(url, permission);
@@ -612,8 +620,6 @@ class RemovePermissionPromptCountsTest {
 
  private:
   permissions::PermissionDecisionAutoBlocker* autoblocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePermissionPromptCountsTest);
 };
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
@@ -687,7 +693,7 @@ base::Time AnHourAgo() {
 class RemoveDownloadsTester {
  public:
   explicit RemoveDownloadsTester(TestingProfile* testing_profile)
-      : download_manager_(new content::MockDownloadManager()) {
+      : download_manager_(new testing::NiceMock<content::MockDownloadManager>) {
     testing_profile->SetDownloadManagerForTesting(
         base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
@@ -702,6 +708,9 @@ class RemoveDownloadsTester {
     EXPECT_CALL(*download_manager_, Shutdown());
   }
 
+  RemoveDownloadsTester(const RemoveDownloadsTester&) = delete;
+  RemoveDownloadsTester& operator=(const RemoveDownloadsTester&) = delete;
+
   ~RemoveDownloadsTester() {
     service_->SetDownloadManagerDelegateForTesting(nullptr);
   }
@@ -712,8 +721,6 @@ class RemoveDownloadsTester {
   DownloadCoreService* service_;
   content::MockDownloadManager* download_manager_;  // Owned by testing profile.
   ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveDownloadsTester);
 };
 
 }  // namespace
@@ -725,7 +732,7 @@ ACTION(QuitMainMessageLoop) {
 class PersonalDataLoadedObserverMock
     : public autofill::PersonalDataManagerObserver {
  public:
-  PersonalDataLoadedObserverMock() {}
+  PersonalDataLoadedObserverMock() = default;
   ~PersonalDataLoadedObserverMock() override {}
   MOCK_METHOD0(OnPersonalDataChanged, void());
   MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
@@ -741,6 +748,9 @@ class RemoveAutofillTester {
     autofill::test::DisableSystemServices(profile->GetPrefs());
     personal_data_manager_->AddObserver(&personal_data_observer_);
   }
+
+  RemoveAutofillTester(const RemoveAutofillTester&) = delete;
+  RemoveAutofillTester& operator=(const RemoveAutofillTester&) = delete;
 
   ~RemoveAutofillTester() {
     personal_data_manager_->RemoveObserver(&personal_data_observer_);
@@ -822,8 +832,7 @@ class RemoveAutofillTester {
   }
 
   autofill::PersonalDataManager* personal_data_manager_;
-  PersonalDataLoadedObserverMock personal_data_observer_;
-  DISALLOW_COPY_AND_ASSIGN(RemoveAutofillTester);
+  testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
 };
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -831,9 +840,12 @@ class MockReportingService : public net::ReportingService {
  public:
   MockReportingService() = default;
 
-  // net::ReportingService implementation:
+  MockReportingService(const MockReportingService&) = delete;
+  MockReportingService& operator=(const MockReportingService&) = delete;
 
   ~MockReportingService() override = default;
+
+  // net::ReportingService implementation:
 
   void SetDocumentReportingEndpoints(
       const url::Origin& origin,
@@ -898,8 +910,6 @@ class MockReportingService : public net::ReportingService {
   int remove_all_calls_ = 0;
   uint64_t last_data_type_mask_ = 0;
   base::RepeatingCallback<bool(const GURL&)> last_origin_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockReportingService);
 };
 
 namespace autofill {
@@ -959,9 +969,14 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
  public:
   MockNetworkErrorLoggingService() = default;
 
-  // net::NetworkErrorLoggingService implementation:
+  MockNetworkErrorLoggingService(const MockNetworkErrorLoggingService&) =
+      delete;
+  MockNetworkErrorLoggingService& operator=(
+      const MockNetworkErrorLoggingService&) = delete;
 
   ~MockNetworkErrorLoggingService() override = default;
+
+  // net::NetworkErrorLoggingService implementation:
 
   void OnHeader(const net::NetworkIsolationKey& network_isolation_key,
                 const url::Origin& origin,
@@ -997,8 +1012,6 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
   int remove_calls_ = 0;
   int remove_all_calls_ = 0;
   base::RepeatingCallback<bool(const GURL&)> last_origin_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkErrorLoggingService);
 };
 
 class ClearNetworkErrorLoggingTester {
@@ -1012,6 +1025,11 @@ class ClearNetworkErrorLoggingTester {
     url_request_context_->set_network_error_logging_service(service_.get());
   }
 
+  ClearNetworkErrorLoggingTester(const ClearNetworkErrorLoggingTester&) =
+      delete;
+  ClearNetworkErrorLoggingTester& operator=(
+      const ClearNetworkErrorLoggingTester&) = delete;
+
   ~ClearNetworkErrorLoggingTester() {
     DCHECK_EQ(service_.get(),
               url_request_context_->network_error_logging_service());
@@ -1023,8 +1041,6 @@ class ClearNetworkErrorLoggingTester {
  private:
   net::URLRequestContext* url_request_context_;
   std::unique_ptr<MockNetworkErrorLoggingService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearNetworkErrorLoggingTester);
 };
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
@@ -1033,6 +1049,10 @@ class ClearNetworkErrorLoggingTester {
 class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
  public:
   ChromeBrowsingDataRemoverDelegateTest() = default;
+  ChromeBrowsingDataRemoverDelegateTest(
+      const ChromeBrowsingDataRemoverDelegateTest&) = delete;
+  ChromeBrowsingDataRemoverDelegateTest& operator=(
+      const ChromeBrowsingDataRemoverDelegateTest&) = delete;
   ~ChromeBrowsingDataRemoverDelegateTest() override = default;
 
   void SetUp() override {
@@ -1198,8 +1218,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfile> profile_;
   GURL dse_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegateTest);
 };
 
 // TODO(crbug.com/812589): Disabled due to flakiness in cookie store
