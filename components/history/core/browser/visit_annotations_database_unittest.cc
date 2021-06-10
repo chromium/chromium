@@ -42,6 +42,20 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
     AddVisit(&visit_row, VisitSource::SOURCE_BROWSED);
   }
 
+  void ExpectContextAnnotations(VisitContextAnnotations actual,
+                                VisitContextAnnotations expected) {
+    EXPECT_EQ(actual.omnibox_url_copied, expected.omnibox_url_copied);
+    EXPECT_EQ(actual.is_existing_part_of_tab_group,
+              expected.is_existing_part_of_tab_group);
+    EXPECT_EQ(actual.is_placed_in_tab_group, expected.is_placed_in_tab_group);
+    EXPECT_EQ(actual.is_existing_bookmark, expected.is_existing_bookmark);
+    EXPECT_EQ(actual.is_new_bookmark, expected.is_new_bookmark);
+    EXPECT_EQ(actual.is_ntp_custom_link, expected.is_ntp_custom_link);
+    EXPECT_EQ(actual.duration_since_last_visit,
+              expected.duration_since_last_visit);
+    EXPECT_EQ(actual.page_end_reason, expected.page_end_reason);
+  }
+
  private:
   // Test setup.
   void SetUp() override {
@@ -93,36 +107,40 @@ TEST_F(VisitAnnotationsDatabaseTest, AddGetAndDeleteContextAnnotations) {
   AddVisitWithDetails(1, IntToTime(30));
   AddVisitWithDetails(2, IntToTime(10));
 
-  // Verify `AddContextAnnotationsForVisit()` and `GetAnnotatedVisits()`.
-  AddContextAnnotationsForVisit(1, {true});   // Ordered 2nd
-  AddContextAnnotationsForVisit(2, {false});  // Ordered 1st
-  AddContextAnnotationsForVisit(3, {false});  // Ordered 3rd
+  std::vector<VisitContextAnnotations> visit_contest_annotations_list = {
+      {true, false, true, true, false, false},
+      {false, true, false, false, false, true},
+      {false, true, true, false, true, false},
+  };
 
-  std::vector<AnnotatedVisitRow> rows = GetAnnotatedVisits(10);
-  ASSERT_EQ(rows.size(), 3u);
-  EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
-  EXPECT_EQ(rows[1].visit_id, 1);
-  EXPECT_TRUE(rows[1].context_annotations.omnibox_url_copied);
-  EXPECT_EQ(rows[2].visit_id, 3);
-  EXPECT_FALSE(rows[2].context_annotations.omnibox_url_copied);
+  // Verify `AddContextAnnotationsForVisit()` and `GetAnnotatedVisits()`.
+  AddContextAnnotationsForVisit(1, visit_contest_annotations_list[0]);
+  AddContextAnnotationsForVisit(2, visit_contest_annotations_list[1]);
+  AddContextAnnotationsForVisit(3, visit_contest_annotations_list[2]);
+
+  // Helper to verify `GetAnnotatedVisits()` contains the correct visits and
+  // context annotations.
+  const auto expect_visits = [&](std::vector<AnnotatedVisitRow> rows,
+                                 std::vector<VisitID> expected_visit_ids) {
+    ASSERT_EQ(rows.size(), expected_visit_ids.size());
+    for (size_t i = 0; i < rows.size(); ++i) {
+      EXPECT_EQ(rows[i].visit_id, expected_visit_ids[i]);
+      ExpectContextAnnotations(
+          rows[i].context_annotations,
+          visit_contest_annotations_list[expected_visit_ids[i] - 1]);
+    }
+  };
+
+  expect_visits(GetAnnotatedVisits(10), {2, 1, 3});
 
   // Verify `max_results` param of `GetAnnotatedVisits()`.
-  rows = GetAnnotatedVisits(2);
-  ASSERT_EQ(rows.size(), 2u);
-  EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
-  EXPECT_EQ(rows[1].visit_id, 1);
-  EXPECT_TRUE(rows[1].context_annotations.omnibox_url_copied);
+  expect_visits(GetAnnotatedVisits(2), {2, 1});
 
   // Verify `DeleteAnnotationsForVisit()`.
   DeleteAnnotationsForVisit(1);
   DeleteAnnotationsForVisit(3);
 
-  rows = GetAnnotatedVisits(10);
-  ASSERT_EQ(rows.size(), 1u);
-  EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
+  expect_visits(GetAnnotatedVisits(10), {2});
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {

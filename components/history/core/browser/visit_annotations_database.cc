@@ -95,19 +95,22 @@ enum class ContextAnnotationFlags : uint64_t {
 };
 
 int64_t ContextAnnotationsToFlags(VisitContextAnnotations context_annotations) {
-  return (context_annotations.omnibox_url_copied &
-          static_cast<uint64_t>(ContextAnnotationFlags::kOmniboxUrlCopied)) |
-         (context_annotations.is_existing_part_of_tab_group &
-          static_cast<uint64_t>(
-              ContextAnnotationFlags::kIsExistingPartOfTabGroup)) |
-         (context_annotations.is_placed_in_tab_group &
-          static_cast<uint64_t>(ContextAnnotationFlags::kIsPlacedInTabGroup)) |
-         (context_annotations.is_existing_bookmark &
-          static_cast<uint64_t>(ContextAnnotationFlags::kIsExistingBookmark)) |
-         (context_annotations.is_new_bookmark &
-          static_cast<uint64_t>(ContextAnnotationFlags::kIsNewBookmark)) |
-         (context_annotations.is_ntp_custom_link &
-          static_cast<uint64_t>(ContextAnnotationFlags::kIsNtpCustomLink));
+  int64_t flags = 0;
+  if (context_annotations.omnibox_url_copied)
+    flags |= static_cast<uint64_t>(ContextAnnotationFlags::kOmniboxUrlCopied);
+  if (context_annotations.is_existing_part_of_tab_group) {
+    flags |= static_cast<uint64_t>(
+        ContextAnnotationFlags::kIsExistingPartOfTabGroup);
+  }
+  if (context_annotations.is_placed_in_tab_group)
+    flags |= static_cast<uint64_t>(ContextAnnotationFlags::kIsPlacedInTabGroup);
+  if (context_annotations.is_existing_bookmark)
+    flags |= static_cast<uint64_t>(ContextAnnotationFlags::kIsExistingBookmark);
+  if (context_annotations.is_new_bookmark)
+    flags |= static_cast<uint64_t>(ContextAnnotationFlags::kIsNewBookmark);
+  if (context_annotations.is_ntp_custom_link)
+    flags |= static_cast<uint64_t>(ContextAnnotationFlags::kIsNtpCustomLink);
+  return flags;
 }
 
 VisitContextAnnotations ConstructContextAnnotationsWithFlags(
