@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/affiliation_mixin.h"
+#include "chrome/browser/chromeos/policy/affiliation/affiliation_mixin.h"
 
 #include <set>
 #include <string>
 
-#include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
+#include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"

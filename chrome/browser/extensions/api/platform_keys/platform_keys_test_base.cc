@@ -8,7 +8,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
+#include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/browser.h"

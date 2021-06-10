@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_TEST_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_TEST_HELPER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_TEST_HELPER_H_
 
 #include <set>
 #include <string>
@@ -92,12 +92,12 @@ class AffiliationTestHelper {
 
   ManagementType management_type_;
   chromeos::FakeSessionManagerClient*
-      fake_session_manager_client_;                          // Not owned.
-  chromeos::FakeAuthPolicyClient* fake_authpolicy_client_;   // Not owned.
+      fake_session_manager_client_;                         // Not owned.
+  chromeos::FakeAuthPolicyClient* fake_authpolicy_client_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(AffiliationTestHelper);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_TEST_HELPER_H_

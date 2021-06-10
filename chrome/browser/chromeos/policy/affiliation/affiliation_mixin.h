@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_MIXIN_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_MIXIN_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_MIXIN_H_
 
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
+#include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -66,4 +66,4 @@ class AffiliationMixin final : public InProcessBrowserTestMixin {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_MIXIN_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATION_AFFILIATION_MIXIN_H_
