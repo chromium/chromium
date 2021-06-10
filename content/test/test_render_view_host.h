@@ -118,6 +118,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   viz::SurfaceId GetCurrentSurfaceId() const override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
+  ui::Compositor* GetCompositor() override;
 
   bool is_showing() const { return is_showing_; }
   bool is_occluded() const { return is_occluded_; }
@@ -128,6 +129,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
                            base::TimeTicks activation_time) override;
 
   const WebCursor& last_cursor() const { return last_cursor_; }
+
+  void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
 
  protected:
   // RenderWidgetHostViewBase:
@@ -154,6 +157,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 #endif
 
   absl::optional<DisplayFeature> display_feature_;
+
+  ui::Compositor* compositor_ = nullptr;
 };
 
 // TestRenderViewHost ----------------------------------------------------------

@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/cursor_manager.h"
@@ -7327,5 +7328,126 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
       TransformRectToQuadF(hit_test_data[2])));
   EXPECT_EQ(kSlowHitTestFlags, hit_test_data[2].flags);
 }
+
+#if defined(USE_AURA)
+class SitePerProcessDelegatedInkBrowserTest
+    : public SitePerProcessHitTestBrowserTest {
+ public:
+  SitePerProcessDelegatedInkBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessHitTestBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DelegatedInkTrails");
+  }
+};
+
+// Test confirms that a point hitting an OOPIF that is requesting delegated ink
+// trails results in the metadata being correctly sent to the child's
+// RenderWidgetHost and is usable for sending delegated ink points.
+IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
+                       MetadataAndPointGoThroughOOPIF) {
+  // Delegated ink is only supported on Skia Renderer for now.
+  if (!features::IsUsingSkiaRenderer())
+    return;
+
+  GURL main_url(embedded_test_server()->GetURL(
+      "/frame_tree/page_with_positioned_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  ASSERT_EQ(1U, root->child_count());
+
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL site_url(embedded_test_server()->GetURL("baz.com", "/title1.html"));
+  EXPECT_EQ(site_url, child->current_url());
+  EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  // Make sure the child frame is indeed a OOPIF
+  EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
+
+  EXPECT_TRUE(ExecJs(child->current_frame_host(), R"(
+      let presenter = null;
+      navigator.ink.requestPresenter('delegated-ink-trail').then(e => {
+        presenter = e;
+      });
+      let style = { color: 'green', diameter: 21 };
+
+      window.addEventListener('pointermove' , evt => {
+        presenter.updateInkTrailStartPoint(evt, style);
+        document.write('Force a new frame so that an updated ' +
+        'RenderFrameMetadata is sent to the browser process.');
+      });
+      )"));
+
+  RenderWidgetHostImpl* root_rwh =
+      root->current_frame_host()->GetRenderWidgetHost();
+  RenderWidgetHostImpl* child_rwh =
+      child->current_frame_host()->GetRenderWidgetHost();
+
+  // Create listeners for mouse events.
+  RenderWidgetHostMouseEventMonitor main_frame_monitor(root_rwh);
+  RenderWidgetHostMouseEventMonitor child_frame_monitor(child_rwh);
+
+  WaitForHitTestData(child->current_frame_host());
+
+  RenderWidgetHostViewBase* root_view =
+      static_cast<RenderWidgetHostViewBase*>(root_rwh->GetView());
+  RenderWidgetHostViewBase* rwhv_child =
+      static_cast<RenderWidgetHostViewBase*>(child_rwh->GetView());
+
+  RenderWidgetHostInputEventRouter* router =
+      web_contents()->GetInputEventRouter();
+
+  EXPECT_FALSE(router->IsDelegatedInkRendererBoundForTest());
+
+  // Target MouseMove to child frame.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseMove,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  SetWebEventPositions(&mouse_event, gfx::Point(55, 55), root_view);
+
+  RouteMouseEventAndWaitUntilDispatch(router, root_view, rwhv_child,
+                                      &mouse_event);
+
+  // Dispatch twice because the router generates an extra MouseLeave for the
+  // main frame.
+  main_frame_monitor.ResetEventReceived();
+  child_frame_monitor.ResetEventReceived();
+
+  RouteMouseEventAndWaitUntilDispatch(router, root_view, rwhv_child,
+                                      &mouse_event);
+  EXPECT_FALSE(main_frame_monitor.EventWasReceived());
+  EXPECT_TRUE(child_frame_monitor.EventWasReceived());
+
+  RunUntilInputProcessed(root_rwh);
+
+  // Confirm that the metadata is what we expect and accessible from the child's
+  // RenderWidgetHost.
+  const cc::RenderFrameMetadata& last_metadata =
+      child_rwh->render_frame_metadata_provider()->LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.delegated_ink_metadata.has_value());
+  EXPECT_TRUE(
+      last_metadata.delegated_ink_metadata.value().delegated_ink_is_hovering);
+
+  // Send one more mouse move event and confirm that it causes the forwarding
+  // to occur, which will result in the |delegated_ink_point_renderer_| mojom
+  // remote being bound.
+  main_frame_monitor.ResetEventReceived();
+  child_frame_monitor.ResetEventReceived();
+  SetWebEventPositions(&mouse_event, gfx::Point(57, 57), root_view);
+  RouteMouseEventAndWaitUntilDispatch(router, root_view, rwhv_child,
+                                      &mouse_event);
+
+  EXPECT_FALSE(main_frame_monitor.EventWasReceived());
+  EXPECT_TRUE(child_frame_monitor.EventWasReceived());
+  EXPECT_TRUE(router->IsDelegatedInkRendererBoundForTest());
+}
+#endif  // USE_AURA
 
 }  // namespace content

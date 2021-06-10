@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/layout.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace {
@@ -641,6 +643,14 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
     mouse_capture_target_ = target;
   }
 
+  if (target) {
+    ui::EventType type = mouse_event.GetTypeAsUiEventType();
+    bool hovering =
+        (type ^ ui::ET_MOUSE_DRAGGED) && (type ^ ui::ET_MOUSE_PRESSED);
+    ForwardDelegatedInkPoint(target, root_view, mouse_event, mouse_event,
+                             hovering);
+  }
+
   DCHECK(target_location.has_value());
   blink::WebMouseEvent event = mouse_event;
   event.SetPositionInWidget(target_location->x(), target_location->y());
@@ -863,6 +873,11 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
                     "View.";
     touch_target_ = nullptr;
     base::debug::DumpWithoutCrashing();
+  }
+
+  if (touch_target_) {
+    ForwardDelegatedInkPoint(touch_target_, root_view, touch_event,
+                             touch_event.touches[0], touch_event.hovering);
   }
 
   TouchEventAckQueue::TouchEventSource event_source =
@@ -1989,6 +2004,73 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
 void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
     bool is_autoscroll_in_progress) {
   event_targeter_->SetIsAutoScrollInProgress(is_autoscroll_in_progress);
+}
+
+bool IsMoveEvent(ui::EventType type) {
+  return type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED ||
+         type == ui::ET_TOUCH_MOVED;
+}
+
+void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
+    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewBase* root_view,
+    const blink::WebInputEvent& input_event,
+    const blink::WebPointerProperties& pointer_properties,
+    bool hovering) {
+  const absl::optional<cc::DelegatedInkBrowserMetadata>& metadata =
+      target_view->host()
+          ->render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .delegated_ink_metadata;
+
+  if (IsMoveEvent(input_event.GetTypeAsUiEventType()) && metadata &&
+      hovering == metadata.value().delegated_ink_is_hovering) {
+    if (!delegated_ink_point_renderer_.is_bound()) {
+      ui::Compositor* compositor = target_view->GetCompositor();
+
+      // The remote can't be bound if the compositor is null, so bail if that
+      // is the case so we don't crash by trying to use an unbound remote.
+      if (!compositor)
+        return;
+
+      TRACE_EVENT_INSTANT0("input",
+                           "Binding mojo interface for delegated ink points.",
+                           TRACE_EVENT_SCOPE_THREAD);
+      compositor->SetDelegatedInkPointRenderer(
+          delegated_ink_point_renderer_.BindNewPipeAndPassReceiver());
+      delegated_ink_point_renderer_.reset_on_disconnect();
+    }
+
+    gfx::PointF position = pointer_properties.PositionInWidget();
+    root_view->TransformPointToRootSurface(&position);
+    position.Scale(target_view->GetDeviceScaleFactor());
+
+    gfx::DelegatedInkPoint delegated_ink_point(
+        position, input_event.TimeStamp(), pointer_properties.id);
+    TRACE_EVENT_INSTANT1("input",
+                         "Forwarding delegated ink point from browser.",
+                         TRACE_EVENT_SCOPE_THREAD, "delegated point",
+                         delegated_ink_point.ToString());
+
+    // Calling this will result in IPC calls to get |delegated_ink_point| to
+    // viz. The decision to do this here was made with the understanding that
+    // the IPC overhead will result in a minor increase in latency for getting
+    // this event to the renderer. However, by sending it here, the event is
+    // given the greatest possible chance to make it to viz before
+    // DrawAndSwap() is called, allowing more points to be drawn as part of
+    // the delegated ink trail, and thus reducing user perceived latency.
+    delegated_ink_point_renderer_->StoreDelegatedInkPoint(delegated_ink_point);
+    ended_delegated_ink_trail_ = false;
+  } else if (delegated_ink_point_renderer_.is_bound() &&
+             !ended_delegated_ink_trail_) {
+    // Let viz know that the most recent point it received from us is probably
+    // the last point the user is inking, so it shouldn't predict anything
+    // beyond it.
+    TRACE_EVENT_INSTANT0("input", "Delegated ink trail ended",
+                         TRACE_EVENT_SCOPE_THREAD);
+    delegated_ink_point_renderer_->ResetPrediction();
+    ended_delegated_ink_trail_ = true;
+  }
 }
 
 }  // namespace content

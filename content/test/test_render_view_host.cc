@@ -234,6 +234,10 @@ absl::optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
   return display_feature_;
 }
 
+ui::Compositor* TestRenderWidgetHostView::GetCompositor() {
+  return compositor_;
+}
+
 TestRenderViewHost::TestRenderViewHost(
     FrameTree* frame_tree,
     SiteInstance* instance,
