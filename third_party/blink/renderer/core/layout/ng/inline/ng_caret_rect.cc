@@ -89,7 +89,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
                                           : cursor.Current().Size().width;
   LayoutUnit caret_top;
 
-  LayoutUnit caret_left = cursor.InlinePositionForOffset(offset);
+  LayoutUnit caret_left = cursor.CaretInlinePositionForOffset(offset);
   if (!cursor.Current().IsLineBreak())
     caret_left -= caret_width / 2;
 

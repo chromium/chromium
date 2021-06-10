@@ -519,10 +519,10 @@ PhysicalRect NGInlineCursor::CurrentRectInBlockFlow() const {
   return rect;
 }
 
-LayoutUnit NGInlineCursor::InlinePositionForOffset(unsigned offset) const {
+LayoutUnit NGInlineCursor::CaretInlinePositionForOffset(unsigned offset) const {
   DCHECK(Current().IsText());
   if (current_.item_) {
-    return current_.item_->InlinePositionForOffset(
+    return current_.item_->CaretInlinePositionForOffset(
         current_.item_->Text(*fragment_items_), offset);
   }
   NOTREACHED();

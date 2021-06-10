@@ -358,9 +358,9 @@ class CORE_EXPORT NGInlineCursor {
     return CurrentRectInBlockFlow().offset;
   }
 
-  // Relative to fragment of the current position. It is error to call other
-  // than text.
-  LayoutUnit InlinePositionForOffset(unsigned offset) const;
+  // Returns inline position relative to current text fragment for
+  // |LocalCaretRect|. It is error to call other than text.
+  LayoutUnit CaretInlinePositionForOffset(unsigned offset) const;
 
   // Converts the given point, relative to the fragment itself, into a position
   // in DOM tree within the range of |this|. This variation ignores the inline

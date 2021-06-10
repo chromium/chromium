@@ -856,8 +856,8 @@ LayoutUnit NGFragmentItem::InlinePositionForOffset(
   return IsHorizontal() ? Size().width : Size().height;
 }
 
-LayoutUnit NGFragmentItem::InlinePositionForOffset(StringView text,
-                                                   unsigned offset) const {
+LayoutUnit NGFragmentItem::CaretInlinePositionForOffset(StringView text,
+                                                        unsigned offset) const {
   return InlinePositionForOffset(text, offset, LayoutUnit::FromFloatRound,
                                  AdjustMidCluster::kToEnd);
 }
