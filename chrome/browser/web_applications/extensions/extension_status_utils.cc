@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/common/constants.h"
 
 namespace {
@@ -44,6 +45,24 @@ bool IsExtensionInstalled(content::BrowserContext* context,
   auto* registry = ExtensionRegistry::Get(context);
   // May be nullptr in unit tests.
   return registry && registry->GetInstalledExtension(extension_id);
+}
+
+bool IsExtensionForceInstalled(content::BrowserContext* context,
+                               const std::string& extension_id,
+                               std::u16string* reason) {
+  auto* registry = ExtensionRegistry::Get(context);
+  // May be nullptr in unit tests.
+  if (!registry)
+    return false;
+
+  auto* extension_system = ExtensionSystem::Get(context);
+  if (!extension_system)
+    return false;
+
+  const Extension* extension = registry->GetInstalledExtension(extension_id);
+  return extension &&
+         extension_system->management_policy()->MustRemainInstalled(extension,
+                                                                    reason);
 }
 
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
