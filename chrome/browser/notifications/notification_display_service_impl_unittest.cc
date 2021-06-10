@@ -11,13 +11,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
-#include "chrome/browser/notifications/stub_notification_platform_bridge.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,12 +96,6 @@ class NotificationDisplayServiceImplTest : public testing::Test {
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
-    TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
-    if (browser_process) {
-      browser_process->SetNotificationPlatformBridge(
-          std::make_unique<StubNotificationPlatformBridge>());
-    }
-
     service_ = std::make_unique<NotificationDisplayServiceImpl>(&profile_);
 
     auto notification_delegator =

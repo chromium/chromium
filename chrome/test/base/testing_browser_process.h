@@ -163,8 +163,6 @@ class TestingBrowserProcess : public BrowserProcess {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   void SetNotificationUIManager(
       std::unique_ptr<NotificationUIManager> notification_ui_manager);
-  void SetNotificationPlatformBridge(
-      std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge);
   void SetSystemNotificationHelper(
       std::unique_ptr<SystemNotificationHelper> system_notification_helper);
   void SetShuttingDown(bool is_shutting_down);

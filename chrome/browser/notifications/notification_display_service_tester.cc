@@ -4,21 +4,14 @@
 
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 
-#include <set>
-
 #include "base/bind.h"
-#include "build/buildflag.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
-#include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/base/buildflags.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
@@ -55,14 +48,6 @@ class NotificationDisplayServiceShutdownNotifierFactory
 NotificationDisplayServiceTester::NotificationDisplayServiceTester(
     Profile* profile)
     : profile_(profile) {
-#if !BUILDFLAG(ENABLE_MESSAGE_CENTER)
-  TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
-  if (browser_process) {
-    browser_process->SetNotificationPlatformBridge(
-        std::make_unique<StubNotificationPlatformBridge>());
-  }
-#endif
-
   // TODO(peter): Remove the StubNotificationDisplayService in favor of having
   // a fully functional MockNotificationPlatformBridge.
   if (profile_) {

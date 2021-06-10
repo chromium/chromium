@@ -20,6 +20,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
+#include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -99,7 +100,7 @@ void TestingBrowserProcess::DeleteInstance() {
 TestingBrowserProcess::TestingBrowserProcess()
     : notification_service_(content::NotificationService::Create()),
       app_locale_("en"),
-      platform_part_(new TestingBrowserProcessPlatformPart()) {}
+      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()) {}
 
 TestingBrowserProcess::~TestingBrowserProcess() {
   EXPECT_FALSE(local_state_);
@@ -308,6 +309,10 @@ NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
 
 NotificationPlatformBridge*
 TestingBrowserProcess::notification_platform_bridge() {
+  if (!notification_platform_bridge_.get()) {
+    notification_platform_bridge_ =
+        std::make_unique<StubNotificationPlatformBridge>();
+  }
   return notification_platform_bridge_.get();
 }
 
@@ -462,11 +467,6 @@ void TestingBrowserProcess::SetSharedURLLoaderFactory(
 void TestingBrowserProcess::SetNotificationUIManager(
     std::unique_ptr<NotificationUIManager> notification_ui_manager) {
   notification_ui_manager_.swap(notification_ui_manager);
-}
-
-void TestingBrowserProcess::SetNotificationPlatformBridge(
-    std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge) {
-  notification_platform_bridge_.swap(notification_platform_bridge);
 }
 
 void TestingBrowserProcess::SetSystemNotificationHelper(

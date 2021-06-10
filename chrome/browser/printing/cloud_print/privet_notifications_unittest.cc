@@ -10,7 +10,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/printing/cloud_print/privet_http_asynchronous_factory.h"
 #include "chrome/browser/printing/cloud_print/privet_http_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -253,9 +252,6 @@ class PrivetNotificationsNotificationTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile("test-user");
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
-
-    TestingBrowserProcess::GetGlobal()->SetNotificationUIManager(
-        std::make_unique<StubNotificationUIManager>());
   }
 
   void TearDown() override {
