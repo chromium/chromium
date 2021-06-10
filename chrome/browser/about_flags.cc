@@ -4452,7 +4452,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_ANDROID)
     {"omnibox-spare-renderer", flag_descriptions::kOmniboxSpareRendererName,
      flag_descriptions::kOmniboxSpareRendererDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOmniboxSpareRenderer)},
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSpareRenderer)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

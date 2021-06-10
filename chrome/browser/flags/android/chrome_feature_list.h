@@ -98,7 +98,6 @@ extern const base::Feature kNotificationSuspender;
 extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kOfflineIndicatorV2;
 extern const base::Feature kOfflineMeasurementsBackgroundTask;
-extern const base::Feature kOmniboxSpareRenderer;
 extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 extern const base::Feature kProbabilisticCryptidRenderer;

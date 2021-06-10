@@ -302,25 +302,6 @@ public class WarmupManager {
     }
 
     /**
-     * Warms up a spare, empty RenderProcessHost that may be used for subsequent navigations.
-     *
-     * The spare RenderProcessHost will be used automatically in subsequent navigations.
-     * There is nothing further the WarmupManager needs to do to enable that use.
-     *
-     * This uses a different mechanism than createSpareWebContents, below, and is subject
-     * to fewer restrictions.
-     *
-     * This must be called from the UI thread.
-     */
-    public void createSpareRenderProcessHost(Profile profile) {
-        ThreadUtils.assertOnUiThread();
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-
-        destroySpareWebContents();
-        WarmupManagerJni.get().warmupSpareRenderer(profile);
-    }
-
-    /**
      * Creates and initializes a spare WebContents, to be used in a subsequent navigation.
      *
      * This creates a renderer that is suitable for any navigation. It can be picked up by any tab.
@@ -398,6 +379,5 @@ public class WarmupManager {
     interface Natives {
         void startPreconnectPredictorInitialization(Profile profile);
         void preconnectUrlAndSubresources(Profile profile, String url);
-        void warmupSpareRenderer(Profile profile);
     }
 }

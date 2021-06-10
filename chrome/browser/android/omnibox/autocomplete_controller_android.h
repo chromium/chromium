@@ -127,6 +127,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   void NotifySuggestionsReceived(
       const AutocompleteResult& autocomplete_result);
 
+  // Prepare renderer process. Called in zero-prefix context.
+  // This call may get triggered multiple time during User interaction with the
+  // Omnibox - these requests are deduplicated down the call chain.
+  void WarmUpRenderProcess() const;
+
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 
   // Last input we sent to the autocomplete controller.
@@ -143,6 +148,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Whether the omnibox input is a query that starts building
   // by clicking on an image tile.
   bool is_query_started_from_tiles_ = false;
+
+  base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteControllerAndroid);
 };

@@ -3,16 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/WarmupManager_jni.h"
-#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
-#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "content/public/browser/render_process_host.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -42,14 +38,5 @@ static void JNI_WarmupManager_PreconnectUrlAndSubresources(
       loading_predictor->PrepareForPageLoad(url,
                                             predictors::HintOrigin::EXTERNAL);
     }
-  }
-}
-
-static void JNI_WarmupManager_WarmupSpareRenderer(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  if (profile) {
-    content::RenderProcessHost::WarmupSpareRenderProcessHost(profile);
   }
 }

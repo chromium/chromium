@@ -208,7 +208,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationSuspender,
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
-    &kOmniboxSpareRenderer,
     &kPageAnnotationsService,
     &kProbabilisticCryptidRenderer,
     &kPwaUpdateDialogForNameAndIcon,
@@ -281,6 +280,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kCompactSuggestions,
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,
+    &omnibox::kOmniboxSpareRenderer,
     &optimization_guide::features::kPushNotifications,
     &password_manager::features::kEditPasswordsInSettings,
     &password_manager::features::kPasswordScriptsFetching,
@@ -579,9 +579,6 @@ const base::Feature kOfflineIndicatorV2{"OfflineIndicatorV2",
 
 const base::Feature kOfflineMeasurementsBackgroundTask{
     "OfflineMeasurementsBackgroundTask", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPageAnnotationsService{"PageAnnotationsService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

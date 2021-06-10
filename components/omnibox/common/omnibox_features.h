@@ -87,6 +87,7 @@ extern const base::Feature kUpdatedConnectionSecurityIndicators;
 // Navigation experiments.
 extern const base::Feature kDefaultTypedNavigationsToHttps;
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
+extern const base::Feature kOmniboxSpareRenderer;
 
 }  // namespace omnibox
 

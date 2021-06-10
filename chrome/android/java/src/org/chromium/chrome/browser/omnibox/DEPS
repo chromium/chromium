@@ -4,8 +4,6 @@ include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
   "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
 
-  "+chrome/android/java/src/org/chromium/chrome/browser/WarmupManager.java",
-
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/feature_engagement",
   "+chrome/browser/flags",

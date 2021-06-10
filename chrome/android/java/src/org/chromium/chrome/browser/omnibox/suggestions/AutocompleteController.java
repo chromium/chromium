@@ -10,19 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -49,14 +43,6 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
-    // The delay between the Omnibox being opened and a spare renderer being started. Starting a
-    // spare renderer is a very expensive operation, so this value must always be great enough for
-    // the Omnibox to be fully rendered and otherwise not doing anything important but not so great
-    // that the user navigates before it occurs. Experimentation between 1s, 2s, 3s found that 1s
-    // was the most ideal.
-    private static final int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
-
-    private final @NonNull Callback<Profile> mSpareRendererCreator;
     private final @NonNull Profile mProfile;
     private final @NonNull Runnable mControllerDestroyedCallback;
     private final @NonNull Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
@@ -70,7 +56,6 @@ public class AutocompleteController {
     }
 
     protected AutocompleteController(@NonNull Profile profile,
-            @NonNull Callback<Profile> spareRendererCreator,
             @NonNull Runnable controllerDestroyedCallback) {
         assert profile != null : "Invalid profile used to construct AutocompleteController";
         mProfile = profile;
@@ -81,7 +66,6 @@ public class AutocompleteController {
         // When mocking JNI calls, please make sure to supply a Mock AutocompleteController to
         // AutocompleteControllerFactory.
         assert mNativeController != 0 : "Could not acquire Native Controller.";
-        mSpareRendererCreator = spareRendererCreator;
         mControllerDestroyedCallback = controllerDestroyedCallback;
     }
 
@@ -152,26 +136,6 @@ public class AutocompleteController {
             int pageClassification, @NonNull String title) {
         assert !TextUtils.isEmpty(url);
         if (TextUtils.isEmpty(url)) return;
-
-        // Proactively start up a renderer, to reduce the time to display search results,
-        // especially if a Service Worker is used. This is done in a PostTask with a
-        // experiment-configured delay so that the CPU usage associated with starting a new renderer
-        // process does not impact the Omnibox initialization. Note that there's a small chance the
-        // renderer will be started after the next navigation if the delay is too long, but the
-        // spare renderer will probably get used anyways by a later navigation.
-        if (!mProfile.isOffTheRecord() && !UrlUtilities.isNTPUrl(url)
-                && pageClassification != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
-            // It is ok for this to get called multiple times since all the requests will get
-            // de-duplicated to the first one.
-            PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
-                    // clang-format off
-                    () -> mSpareRendererCreator.onResult(mProfile),
-                    // clang-format on
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                            ChromeFeatureList.OMNIBOX_SPARE_RENDERER,
-                            "omnibox_spare_renderer_delay_ms", OMNIBOX_SPARE_RENDERER_DELAY_MS));
-        }
 
         AutocompleteControllerJni.get().onOmniboxFocused(
                 mNativeController, omniboxText, url, pageClassification, title);

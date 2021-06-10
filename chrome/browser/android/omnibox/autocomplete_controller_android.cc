@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/android/chrome_jni_headers/AutocompleteController_jni.h"
@@ -62,6 +63,9 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/escape.h"
@@ -87,6 +91,13 @@ using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
 namespace {
+// The delay between the Omnibox being opened and a spare renderer being
+// started. Starting a spare renderer is a very expensive operation, so this
+// value must always be great enough for the Omnibox to be fully rendered and
+// otherwise not doing anything important but not so great that the user
+// navigates before it occurs. Experimentation between 1s, 2s, 3s found that 1s
+// was the most ideal.
+static constexpr int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
 
 void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
   if (match_type != AutocompleteMatchType::CLIPBOARD_URL &&
@@ -260,10 +271,33 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
       !current_url.SchemeIs(browser_ui::kChromeUINativeScheme))
     omnibox_text = url;
 
-  input_ = AutocompleteInput(
-      omnibox_text,
-      OmniboxEventProto::PageClassification(j_page_classification),
-      ChromeAutocompleteSchemeClassifier(profile_));
+  auto page_class =
+      OmniboxEventProto::PageClassification(j_page_classification);
+
+  // Proactively start up a renderer, to reduce the time to display search
+  // results, especially if a Service Worker is used. This is done in a PostTask
+  // with a experiment-configured delay so that the CPU usage associated with
+  // starting a new renderer process does not impact the Omnibox initialization.
+  // Note that there's a small chance the renderer will be started after the
+  // next navigation if the delay is too long, but the spare renderer will
+  // probably get used anyways by a later navigation.
+  if (!profile_->IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxSpareRenderer) &&
+      page_class != OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
+      !BaseSearchProvider::IsNTPPage(page_class)) {
+    auto renderer_delay_ms = base::GetFieldTrialParamByFeatureAsInt(
+        omnibox::kOmniboxSpareRenderer, "omnibox_spare_renderer_delay_ms",
+        OMNIBOX_SPARE_RENDERER_DELAY_MS);
+
+    base::PostDelayedTask(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::TimeDelta::FromMilliseconds(renderer_delay_ms));
+  }
+
+  input_ = AutocompleteInput(omnibox_text, page_class,
+                             ChromeAutocompleteSchemeClassifier(profile_));
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
   input_.set_focus_type(OmniboxFocusType::ON_FOCUS);
@@ -464,6 +498,12 @@ AutocompleteControllerAndroid::Factory::~Factory() = default;
 KeyedService* AutocompleteControllerAndroid::Factory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new AutocompleteControllerAndroid(static_cast<Profile*>(profile));
+}
+
+void AutocompleteControllerAndroid::WarmUpRenderProcess() const {
+  // It is ok for this to get called multiple times since all the requests
+  // will get de-duplicated to the first one.
+  content::RenderProcessHost::WarmupSpareRenderProcessHost(profile_);
 }
 
 AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;

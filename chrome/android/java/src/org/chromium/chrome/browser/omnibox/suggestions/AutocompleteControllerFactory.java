@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
@@ -42,9 +41,7 @@ public class AutocompleteControllerFactory {
         AutocompleteController controller = sControllers.get(profile);
         if (controller != null) return controller;
 
-        controller = new AutocompleteController(profile,
-                WarmupManager.getInstance()::createSpareRenderProcessHost,
-                () -> removeController(profile));
+        controller = new AutocompleteController(profile, () -> removeController(profile));
 
         sControllers.put(profile, controller);
         return controller;
