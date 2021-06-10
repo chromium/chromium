@@ -48,6 +48,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   void FileSelected(const base::FilePath& path,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback for the "getDownloadLocationText" message.  Converts actual
