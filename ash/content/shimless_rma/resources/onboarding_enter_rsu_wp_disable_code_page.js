@@ -4,11 +4,12 @@
 
 import './shimless_rma_shared_css.js';
 import './base_page.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -31,6 +32,12 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
         type: Object,
         value: {},
       },
+
+      /** @protected {string} */
+      rsuCode_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -40,8 +47,15 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextButtonClicked that will:
-  //  - call shimlessRmaService_.rsuDisableWriteProtect(code) when code entered.
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    if (this.rsuCode_) {
+      return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
+          this.rsuCode_);
+    } else {
+      return Promise.reject(new Error('No RSU code set'));
+    }
+  }
 };
 
 customElements.define(

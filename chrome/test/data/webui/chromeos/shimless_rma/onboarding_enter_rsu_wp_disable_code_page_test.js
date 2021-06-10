@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingEnterRsuWpDisableCodePageElement} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
-
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
 
 export function onboardingEnterRsuWpDisableCodePageTest() {
   /** @type {?OnboardingEnterRsuWpDisableCodePageElement} */
@@ -47,8 +47,32 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
 
   test('EnterRsuWpDisableCodePageInitializes', async () => {
     await initializeEnterRsuWpDisableCodePage();
-    const manualDisableComponent =
-        component.shadowRoot.querySelector('#rsuCode');
-    assertFalse(manualDisableComponent.hidden);
+    const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
+    assertFalse(rsuCodeComponent.hidden);
   });
+
+  test(
+      'EnterRsuWpDisableCodePageSetCodeOnNextCallsSetRsuDisableWriteProtectCode',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeEnterRsuWpDisableCodePage();
+        let expectedCode = 'rsu code';
+        let savedCode = '';
+        service.setRsuDisableWriteProtectCode = (code) => {
+          savedCode = code;
+          return resolver.promise;
+        };
+        const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
+        rsuCodeComponent.value = expectedCode;
+
+        let expectedResult = {foo: 'bar'};
+        let savedResult;
+        component.onNextButtonClick().then((result) => savedResult = result);
+        // Resolve to a distinct result to confirm it was not modified.
+        resolver.resolve(expectedResult);
+        await flushTasks();
+
+        assertDeepEquals(savedCode, expectedCode);
+        assertDeepEquals(savedResult, expectedResult);
+      });
 }

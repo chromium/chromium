@@ -7,7 +7,11 @@
     <h1>Enter RSU Hardware Write Protection Disable Code</h1>
   </div>
   <div slot="body">
-    <label for="rsuCode">RSU Code: </label>
-    <input type="text" id="rsuCode" value="">
+    <cr-input
+        label="RSU Code:"
+        placeholder="Enter RSU Code"
+        id="rsuCode"
+        value="{{rsuCode_}}">
+    </cr-input>
   </div>
 </base-page>
