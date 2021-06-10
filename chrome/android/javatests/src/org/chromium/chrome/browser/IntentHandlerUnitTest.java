@@ -471,20 +471,6 @@ public class IntentHandlerUnitTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testKeepCustomHeaderFromInternalIntents() {
-        Bundle bundle = new Bundle();
-        bundle.putString("X-Some-Header", "1");
-        Intent headersIntent = new Intent(Intent.ACTION_VIEW);
-        headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
-        IntentHandler.addTrustedIntentExtrasInternal(headersIntent);
-        Assert.assertEquals(
-                "X-Some-Header: 1", IntentHandler.getExtraHeadersFromIntent(headersIntent));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Android-AppBase"})
     public void testStripNonCorsSafelistedCustomHeader() {
         Bundle bundle = new Bundle();
         bundle.putString("X-Some-Header", "1");

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_ENTER_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_EXIT_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_PACKAGE_NAME;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.EXTRA_UI_TYPE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.isTrustedCustomTab;
 
@@ -79,8 +78,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
         mAnimationBundle = IntentUtils.safeGetBundleExtra(
                 intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
-        mIsOpenedByChrome =
-                IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OPENED_BY_CHROME, false);
+        mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
         // Only allow first-parties to change the styling.
         mColorProvider = new IncognitoCustomTabColorProvider(context);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);

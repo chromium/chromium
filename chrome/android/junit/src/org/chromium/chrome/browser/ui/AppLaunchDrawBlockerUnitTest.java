@@ -298,7 +298,6 @@ public class AppLaunchDrawBlockerUnitTest {
         mIntent = IntentHandler.createTrustedOpenNewTabIntent(
                 ApplicationProvider.getApplicationContext(), true);
         mIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, true);
-        IntentHandler.setForceIntentSenderChromeToTrue(true);
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
 
         mInflationObserver.onPostInflationStartup();
@@ -308,8 +307,6 @@ public class AppLaunchDrawBlockerUnitTest {
 
         assertAccuracyHistogram(false, false);
         assertDurationHistogram(false, 0);
-
-        IntentHandler.setForceIntentSenderChromeToTrue(false);
     }
 
     @Test

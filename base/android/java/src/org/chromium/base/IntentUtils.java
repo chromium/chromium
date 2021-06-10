@@ -4,7 +4,9 @@
 
 package org.chromium.base;
 
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -45,6 +47,19 @@ public class IntentUtils {
 
     // TODO(mthiesse): Move to ApiHelperForS when it exist.
     private static final int FLAG_MUTABLE = 1 << 25;
+
+    /**
+     * Intent extra used to identify the sending application.
+     */
+    public static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
+
+    /**
+     * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
+     */
+    private static ComponentName sFakeComponentName;
+    private static final Object COMPONENT_NAME_LOCK = new Object();
+
+    private static boolean sForceTrustedIntentForTesting;
 
     /**
      * Whether the given ResolveInfo object refers to Instant Apps as a launcher.
@@ -537,5 +552,70 @@ public class IntentUtils {
             return !hasComponent;
         }
         return false;
+    }
+
+    private static ComponentName getFakeComponentName(String packageName) {
+        synchronized (COMPONENT_NAME_LOCK) {
+            if (sFakeComponentName == null) {
+                sFakeComponentName = new ComponentName(packageName, "FakeClass");
+            }
+        }
+
+        return sFakeComponentName;
+    }
+
+    private static PendingIntent getAuthenticationToken() {
+        Intent fakeIntent = new Intent();
+        Context appContext = ContextUtils.getApplicationContext();
+        fakeIntent.setComponent(getFakeComponentName(appContext.getPackageName()));
+        return PendingIntent.getActivity(
+                appContext, 0, fakeIntent, getPendingIntentMutabilityFlag(false));
+    }
+
+    /**
+     * Sets TRUSTED_APPLICATION_CODE_EXTRA on the provided intent to identify it as coming from
+     * a trusted source.
+     *
+     * @param intent An Intent that targets either current package, or explicitly targets a
+     *         component of the current package.
+     */
+    public static void addTrustedIntentExtras(Intent intent) {
+        // It is crucial that we never leak the authentication token to other packages, because
+        // then the other package could be used to impersonate us/do things as us.
+        boolean toSelf =
+                IntentUtils.intentTargetsSelf(ContextUtils.getApplicationContext(), intent);
+        assert toSelf;
+        // For security reasons we have to check the asserted condition anyways.
+        if (!toSelf) return;
+
+        // The PendingIntent functions as an authentication token --- it could only have come
+        // from us. Stash it in the real Intent as an extra we can validate upon receiving it.
+        intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
+    }
+
+    /**
+     * @param intent An Intent to be checked.
+     * @return Whether an intent originates from the current app.
+     */
+    public static boolean isTrustedIntentFromSelf(@Nullable Intent intent) {
+        if (intent == null) return false;
+
+        if (sForceTrustedIntentForTesting) return true;
+
+        // Fetch the authentication token (a PendingIntent) created by
+        // addTrustedIntentExtras, if any. If anything goes wrong trying to retrieve the
+        // token (examples include BadParcelableException or ClassNotFoundException), fail closed.
+        PendingIntent token =
+                IntentUtils.safeGetParcelableExtra(intent, TRUSTED_APPLICATION_CODE_EXTRA);
+        if (token == null) return false;
+
+        // Fetch what should be a matching token. If the PendingIntents are equal, we know that the
+        // sender was us.
+        PendingIntent pending = getAuthenticationToken();
+        return pending.equals(token);
+    }
+
+    public static void setForceIsTrustedIntentForTesting(boolean isTrusted) {
+        sForceTrustedIntentForTesting = isTrusted;
     }
 }

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandle
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -322,8 +321,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             }
         }
 
-        boolean isIntentSenderChrome = IntentHandler.wasIntentSenderChrome(intent);
-
         // If |uri| is a content:// URI, we want to propagate the URI permissions. This can't be
         // achieved by simply adding the FLAG_GRANT_READ_URI_PERMISSION to the Intent, since the
         // data URI on the Intent isn't |uri|, it just has |uri| as a query parameter.
@@ -351,14 +348,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             // Force a new document to ensure the proper task/stack creation.
             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        }
-
-        // If the previous caller was not Chrome, but added EXTRA_IS_OPENED_BY_CHROME
-        // for malicious purpose, remove it. The new intent will be sent by Chrome, but was not
-        // sent by Chrome initially.
-        if (!isIntentSenderChrome) {
-            IntentUtils.safeRemoveExtra(
-                    newIntent, CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME);
         }
 
         return newIntent;

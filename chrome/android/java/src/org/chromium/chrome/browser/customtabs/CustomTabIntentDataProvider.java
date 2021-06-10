@@ -98,13 +98,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String BUNDLE_EXIT_ANIMATION_RESOURCE =
             ANIMATION_BUNDLE_PREFIX + "animExitRes";
 
-    /**
-     * Extra that indicates whether or not the Custom Tab is being launched by an Intent fired by
-     * Chrome itself.
-     */
-    public static final String EXTRA_IS_OPENED_BY_CHROME =
-            "org.chromium.chrome.browser.customtabs.IS_OPENED_BY_CHROME";
-
     /** URL that should be loaded in place of the URL passed along in the data. */
     public static final String EXTRA_MEDIA_VIEWER_URL =
             "org.chromium.chrome.browser.customtabs.MEDIA_VIEWER_URL";
@@ -219,7 +212,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static void addReaderModeUIExtras(Intent intent) {
         intent.putExtra(EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
-        intent.putExtra(EXTRA_IS_OPENED_BY_CHROME, true);
         IntentHandler.addTrustedIntentExtras(intent);
     }
 
@@ -259,8 +251,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mKeepAliveServiceIntent = IntentUtils.safeGetParcelableExtra(intent, EXTRA_KEEP_ALIVE);
 
-        mIsOpenedByChrome = IntentUtils.safeGetBooleanExtra(
-                intent, EXTRA_IS_OPENED_BY_CHROME, false);
+        mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
 
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);

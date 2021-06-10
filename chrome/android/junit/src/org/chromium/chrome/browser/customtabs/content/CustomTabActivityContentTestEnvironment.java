@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -73,13 +74,13 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public static final String SPECULATED_URL = JUnitTestGURLs.SPECULATED_URL;
     public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    public final Intent intent = new Intent();
+    public final Intent mIntent = new Intent();
 
     // clang-format off
     @Mock public CustomTabDelegateFactory customTabDelegateFactory;
     @Mock public ChromeActivity activity;
     @Mock public CustomTabsConnection connection;
-  @Mock public ColorProvider colorProvider;
+    @Mock public ColorProvider colorProvider;
     @Mock public CustomTabIntentDataProvider intentDataProvider;
     @Mock public TabObserverRegistrar tabObserverRegistrar;
     @Mock public CompositorViewHolder compositorViewHolder;
@@ -129,7 +130,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
         tabFromFactory = prepareTab();
 
-        when(intentDataProvider.getIntent()).thenReturn(intent);
+        when(intentDataProvider.getIntent()).thenReturn(mIntent);
         when(intentDataProvider.getSession()).thenReturn(session);
         when(intentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
         when(intentDataProvider.getActivityType()).thenReturn(ActivityType.CUSTOM_TAB);
@@ -224,8 +225,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         WebContents webContents = mock(WebContents.class);
         realAsyncTabParamsManager.add(
                 tabId, new AsyncTabCreationParams(mock(LoadUrlParams.class), webContents));
-        IntentHandler.setTabId(intent, tabId);
-        IntentHandler.setForceIntentSenderChromeToTrue(true);
+        IntentHandler.setTabId(mIntent, tabId);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
         return webContents;
     }
 

@@ -130,11 +130,6 @@ public class IntentHandler {
             "org.chromium.chrome.browser.incognito.invoked_from_launch_new_incognito_tab";
 
     /**
-     * Intent extra used to identify the sending application.
-     */
-    private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
-
-    /**
      * Intent extra used to deliver the original activity referrer.
      */
     public static final String EXTRA_ACTIVITY_REFERRER =
@@ -209,13 +204,6 @@ public class IntentHandler {
      */
     public static final String EXTRA_STARTED_TABBED_CHROME_TASK =
             "org.chromium.chrome.browser.started_chrome_task";
-
-    /**
-     * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
-     */
-    private static ComponentName sFakeComponentName;
-
-    private static final Object LOCK = new Object();
 
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
@@ -299,16 +287,6 @@ public class IntentHandler {
         int NUM_ENTRIES = 5;
     }
 
-    private static ComponentName getFakeComponentName(String packageName) {
-        synchronized (LOCK) {
-            if (sFakeComponentName == null) {
-                sFakeComponentName = new ComponentName(packageName, "FakeClass");
-            }
-        }
-
-        return sFakeComponentName;
-    }
-
     /** Intent extra to open an incognito tab. */
     public static final String EXTRA_OPEN_NEW_INCOGNITO_TAB =
             "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB";
@@ -319,7 +297,6 @@ public class IntentHandler {
             GOOGLECHROME_SCHEME + "://navigate?url=";
 
     private static boolean sTestIntentsEnabled;
-    private static boolean sTestForceIntentSenderChromeToTrue;
 
     private final IntentHandlerDelegate mDelegate;
     private final Activity mActivity;
@@ -395,17 +372,6 @@ public class IntentHandler {
     @VisibleForTesting
     public static void setTestIntentsEnabled(boolean enabled) {
         sTestIntentsEnabled = enabled;
-    }
-
-    /**
-     * If |value| is true, wasIntentSenderChrome() does no checks and always returns true. For this
-     * to have any effect, you also need to supply EXTRA_IS_OPENED_BY_CHROME with a value of true in
-     * the intent. This method is intended for tests to avoid triggering the chooser for which
-     * chrome to open.
-     */
-    @VisibleForTesting
-    public static void setForceIntentSenderChromeToTrue(boolean value) {
-        sTestForceIntentSenderChromeToTrue = value;
     }
 
     public IntentHandler(Activity activity, IntentHandlerDelegate delegate) {
@@ -760,14 +726,6 @@ public class IntentHandler {
         }, Profile.getLastUsedRegularProfile());
     }
 
-    private static PendingIntent getAuthenticationToken() {
-        Intent fakeIntent = new Intent();
-        Context appContext = ContextUtils.getApplicationContext();
-        fakeIntent.setComponent(getFakeComponentName(appContext.getPackageName()));
-        return PendingIntent.getActivity(
-                appContext, 0, fakeIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
-    }
-
     /**
      * Start activity for the given trusted Intent.
      *
@@ -817,31 +775,9 @@ public class IntentHandler {
         appContext.startActivity(copiedIntent);
     }
 
-    /**
-     * Sets TRUSTED_APPLICATION_CODE_EXTRA on the provided intent to identify it as coming from
-     * a trusted source.
-     *
-     * @param intent An Intent that targets either the Chrome package, or explicitly targets a
-     *         Chrome component.
-     */
+    /** @see {@link IntentUtils#addTrustedIntentExtras} */
     public static void addTrustedIntentExtras(Intent intent) {
-        boolean toChrome =
-                IntentUtils.intentTargetsSelf(ContextUtils.getApplicationContext(), intent);
-        assert toChrome;
-        // For security reasons we have to check the asserted condition anyways.
-        if (toChrome) addTrustedIntentExtrasInternal(intent);
-    }
-
-    @VisibleForTesting
-    static void addTrustedIntentExtrasInternal(Intent intent) {
-        // It is crucial that we never leak the authentication token to other packages, because
-        // then the other package could be used to impersonate us/do things as us. Therefore,
-        // scope the real Intent to our package.
-        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-        // The PendingIntent functions as an authentication token --- it could only have come
-        // from us. Stash it in the real Intent as an extra. shouldIgnoreIntent will retrieve it
-        // and check it with isIntentChromeInternal.
-        intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
+        IntentUtils.addTrustedIntentExtras(intent);
     }
 
     /**
@@ -1060,36 +996,11 @@ public class IntentHandler {
     }
 
     /**
-     * Fetch the authentication token (a PendingIntent) created by startActivityForTrustedIntent,
-     * if any. If anything goes wrong trying to retrieve the token (examples include
-     * BadParcelableException or ClassNotFoundException), fail closed.
-     */
-    private static PendingIntent fetchAuthenticationTokenFromIntent(Intent intent) {
-        return (PendingIntent) IntentUtils.safeGetParcelableExtra(
-                intent, TRUSTED_APPLICATION_CODE_EXTRA);
-    }
-
-    private static boolean isChromeToken(PendingIntent token) {
-        // Fetch what should be a matching token.
-        PendingIntent pending = getAuthenticationToken();
-        return pending.equals(token);
-    }
-
-    /**
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from Chrome.
      */
     public static boolean wasIntentSenderChrome(@Nullable Intent intent) {
-        if (sTestForceIntentSenderChromeToTrue) return true;
-
-        if (intent == null) return false;
-
-        PendingIntent token = fetchAuthenticationTokenFromIntent(intent);
-        if (token == null) return false;
-
-        // Do not ignore a valid URL Intent if the sender is Chrome. (If the PendingIntents are
-        // equal, we know that the sender was us.)
-        return isChromeToken(token);
+        return IntentUtils.isTrustedIntentFromSelf(intent);
     }
 
     /**
@@ -1111,14 +1022,12 @@ public class IntentHandler {
     public static boolean notSecureIsIntentChromeOrFirstParty(Intent intent) {
         if (intent == null) return false;
 
-        PendingIntent token = fetchAuthenticationTokenFromIntent(intent);
-        if (token == null) return false;
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) return true;
 
-        // Do not ignore a valid URL Intent if the sender is Chrome. (If the PendingIntents are
-        // equal, we know that the sender was us.)
-        if (isChromeToken(token)) {
-            return true;
-        }
+        // First-party Google apps re-use the secure application code extra for historical reasons.
+        PendingIntent token = IntentUtils.safeGetParcelableExtra(
+                intent, IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+        if (token == null) return false;
         if (ExternalAuthUtils.getInstance().isGoogleSigned(token.getCreatorPackage())) {
             return true;
         }

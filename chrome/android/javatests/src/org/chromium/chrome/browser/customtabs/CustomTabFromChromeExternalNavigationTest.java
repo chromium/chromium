@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory.CustomTabNavigationDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -63,15 +64,7 @@ public class CustomTabFromChromeExternalNavigationTest {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
                     InstrumentationRegistry.getTargetContext(), intent);
-            if (markFromChrome) {
-                // Explicitly not marking this as a trusted intent.  If you add the trusted bit,
-                // then it prohibits launching external apps.  We want to allow external apps
-                // to be launched, so we are intentionally not adding that for now.  Ideally,
-                // being opened by Chrome would only be allowed with the corresponding trusted
-                // flag, but that requires additional refactoring in our external navigation
-                // handling.
-                intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
-            }
+            IntentHandler.addTrustedIntentExtras(intent);
             return intent;
         });
     }

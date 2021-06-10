@@ -369,9 +369,7 @@ public class CustomTabActivityAppMenuTest {
         intent.setComponent(new ComponentName(
                 InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // These ensure the open in chrome chooser is not shown.
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
-        IntentHandler.setForceIntentSenderChromeToTrue(true);
+        IntentHandler.addTrustedIntentExtras(intent);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         assertEquals(1,
