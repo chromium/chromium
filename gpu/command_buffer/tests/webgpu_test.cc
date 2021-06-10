@@ -301,16 +301,13 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
 
   // Create device with unsupported extensions, expect to fail to create and
   // return nullptr
-  GetDecoder()->MockUnsupportedExtensionForTest(true);
+  WGPUDeviceProperties unsupported_device_properties = {};
+  unsupported_device_properties.invalidExtension = true;
   WGPUDevice device = nullptr;
   bool done = false;
 
-  int lost_count = 0;
-  webgpu()->SetLostContextCallback(base::BindOnce(&CountCallback, &lost_count));
-  EXPECT_EQ(0, lost_count);
-
   webgpu()->RequestDeviceAsync(
-      GetAdapterId(), GetDeviceProperties(),
+      GetAdapterId(), unsupported_device_properties,
       base::BindOnce(
           [](WGPUDevice* result, bool* done, WGPUDevice device) {
             *result = device;
@@ -325,7 +322,6 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
 
   // Create device again with supported extensions, expect success and not
   // blocked by the last failure
-  GetDecoder()->MockUnsupportedExtensionForTest(false);
   GetNewDevice();
 }
 

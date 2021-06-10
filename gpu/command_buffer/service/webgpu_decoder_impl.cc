@@ -558,12 +558,8 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   if (request_device_properties.depthClamping) {
     device_descriptor.requiredExtensions.push_back("depth_clamping");
   }
-
-  // Enabled by WebGPUDecoder::MockUnsupportedExtensionForTest() for testing
-  // create device failed with unsupported extension
-  if (mock_unsupported_extension_for_test) {
-    device_descriptor.requiredExtensions.push_back(
-        "not_supported_extension_for_test");
+  if (request_device_properties.invalidExtension) {
+    device_descriptor.requiredExtensions.push_back("invalid_extension");
   }
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
