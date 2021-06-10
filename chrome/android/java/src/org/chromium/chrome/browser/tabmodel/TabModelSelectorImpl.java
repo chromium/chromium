@@ -161,19 +161,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             }
 
             @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                tab.getId();
-            }
-
-            @Override
-            public void onPageLoadFailed(Tab tab, int errorCode) {
-                tab.getId();
-            }
-
-            @Override
             public void onCrash(Tab tab) {
                 if (SadTab.isShowing(tab)) mTabContentManager.removeTabThumbnail(tab.getId());
-                tab.getId();
             }
 
             @Override
