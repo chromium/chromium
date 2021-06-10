@@ -2300,6 +2300,18 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationNotShownWhenInGuestMode) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should not be shown at login.
+  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
        StartupNotificationShownOnlyOnce) {
   // Set up the shell and controller.
   SetUpLater(/*improved_shortcuts_enabled=*/true);
