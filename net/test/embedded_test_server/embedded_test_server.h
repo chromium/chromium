@@ -425,6 +425,10 @@ class EmbeddedTestServer {
   // |directory| directory, relative to DIR_SOURCE_ROOT.
   void AddDefaultHandlers(const base::FilePath& directory);
 
+  // Adds all default handlers except, without serving additional files from any
+  // directory.
+  void AddDefaultHandlers();
+
   // Adds a request handler that can perform any general-purpose processing.
   // |callback| will be invoked on the server's IO thread. Note that:
   // 1. All handlers must be registered before the server is Start()ed.

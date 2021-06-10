@@ -2109,6 +2109,8 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
   entry_ = nullptr;
   new_entry_ = nullptr;
 
+  SetResponse(HttpResponseInfo());
+
   // Bypass the cache for timeout scenario.
   if (result == ERR_CACHE_LOCK_TIMEOUT)
     effective_load_flags_ |= LOAD_DISABLE_CACHE;
