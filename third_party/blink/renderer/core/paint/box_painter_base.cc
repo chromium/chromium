@@ -550,7 +550,8 @@ bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
                                   Vector<Color>* animated_colors,
                                   Vector<double>* offsets,
                                   absl::optional<double>* progress) {
-  if (!info.should_paint_color_with_paint_worklet_image)
+  if (!info.should_paint_color_with_paint_worklet_image ||
+      !document->GetFrame())
     return false;
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
@@ -570,6 +571,8 @@ void FillRectWithPaintWorklet(const Document* document,
                               const Vector<double>& offsets,
                               const absl::optional<double>& progress) {
   FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
+  // This function is called after GetBGColorPaintWorkletParams(), which means
+  // the generator won't be nullptr.
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image = generator->Paint(

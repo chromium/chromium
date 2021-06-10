@@ -329,6 +329,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           bool background_transfers_to_view = false;
           Animation* compositable_animation = nullptr;
           if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
+            // Not having a layout object is a reason for not compositing marked
+            // in CompositorAnimations::CheckCanStartElementOnCompositor.
+            if (!layout_object)
+              continue;
             BackgroundColorPaintImageGenerator* generator =
                 target_element.GetDocument()
                     .GetFrame()
@@ -353,7 +357,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // BackgroundColorPaintWorklet, as a result, we should not composite
           // the background color animation on the table rows or cols.
           if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
-              !layout_object || layout_object->IsLayoutTableCol() ||
+              layout_object->IsLayoutTableCol() ||
               layout_object->IsTableRow() || background_transfers_to_view ||
               !compositable_animation) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
