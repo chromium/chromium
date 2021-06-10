@@ -6257,9 +6257,6 @@ crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infini
 crbug.com/1177996 [ Linux ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
 crbug.com/1178018 [ Win7 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html [ Failure Pass ]
 
-# Sheriff 2021-02-16
-crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass Failure ]
-
 # Expected to fail - Chrome's WebXR Depth Sensing API implementation does not currently support `gpu-optimized` usage mode.
 crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_dataUnavailable.https.html [ Failure ]
 crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_inactiveFrame.https.html [ Failure ]
@@ -6268,8 +6265,6 @@ crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_staleVi
 
 # Sheriff 2021-02-17
 crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
-crbug.com/1179263 [ Linux ] http/tests/devtools/console/console-format-es6-symbols-error.js [ Pass Failure ]
-crbug.com/1179263 [ Linux ] http/tests/devtools/console/console-linkify-relative-links.js [ Pass Failure ]
 
 # Ecosystem-Infra Sheriff 2021-02-17
 crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-currentSrc.html [ Failure ]
@@ -6303,7 +6298,6 @@ crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-acce
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Pass Failure ]
 crbug.com/1045052 [ Linux ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Failure Timeout ]
 crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Failure Timeout ]
-crbug.com/1181740 [ Linux ] http/tests/devtools/tracing/timeline-time/timeline-time-stamp.js [ Pass Failure ]
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Pass Failure ]
 crbug.com/1181886 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html [ Pass Timeout ]
 
@@ -6331,9 +6325,6 @@ crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-li
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
 
-# Sheriff 2021-03-11
-crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomplete.js [ Pass Failure ]
-
 # Updating virtual suite from virtual/threaded/fast/scroll-snap to
 # virtual/threaded-prefer-compositing/fast/scroll-snap exposes additional
 # tests that fail on the composited code path.
@@ -6348,20 +6339,8 @@ crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fil
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.html [ Failure ]
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.transparency.html [ Failure ]
 
-# Sheriff 2021-03-15
-crbug.com/1188098 [ Linux ] http/tests/devtools/sources/debugger-pause/skip-pauses-until-reload.js [ Pass Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/elements/styles-1/color-aware-property-value-edit.js [ Pass Failure ]
-
 # Sheriff 2021-03-17
 crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Timeout ]
-
-# Failing on WebKit Linux Leak
-crbug.com/1188098 [ Linux ] http/tests/devtools/indexeddb/database-structure.js [ Pass Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Pass Crash Timeout Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/network/network-worker-fetch-blocked.js [ Pass Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/profiler/cpu-profiler-flame-chart-overview.js [ Pass Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/service-workers/service-worker-pause.js [ Pass Failure ]
-crbug.com/1188098 [ Linux ] http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Pass Failure ]
 
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Skip ]
@@ -6517,9 +6496,6 @@ crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Pass Failure ]
 
 # Sheriff 2021-04-26
 crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout ]
-
-# Sheriff 2021-04-27
-crbug.com/1203309 [ Linux ] http/tests/devtools/tracing/trace-event-self-time.js [ Pass Failure ]
 
 # Sheriff 2021-04-29
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-paint-api/idlharness.html [ Pass Failure Timeout ]

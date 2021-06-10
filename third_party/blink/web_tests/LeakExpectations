@@ -44,7 +44,6 @@ crbug.com/1151861 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.
 # Flakily leaks
 # -----------------------------------------------------------------
 crbug.com/780386 external/wpt/html/dom/reflection-grouping.html [ Failure Pass ]
-crbug.com/667560 [ Linux ] http/tests/devtools/console/console-search.js [ Failure Pass ]
 crbug.com/835943 [ Linux ] http/tests/appcache/non-html.xhtml [ Failure Pass ]
 
 crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
@@ -68,12 +67,6 @@ crbug.com/878724 [ Linux ] editing/selection/modify_extend/extend_by_character.h
 crbug.com/878724 [ Linux ] editing/selection/modify_move/move_right_word_09_ltr_multi_line.html [ Pass Failure ]
 
 crbug.com/733494 [ Linux ] media/autoplay/document-user-activation.html [ Pass Failure ]
-
-# Sheriff 2019-01-07
-crbug.com/919497 [ Linux ] virtual/threaded/http/tests/devtools/tracing/timeline-gpu-tasks.js [ Pass Failure ]
-
-# Sheriff 2019-02-21
-crbug.com/934144 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Pass Failure ]
 
 # Sheriff 2019-08-21
 crbug.com/996235 [ Linux ] media/controls/doubletap-to-jump-backwards-at-start.html [ Pass Failure ]
@@ -158,23 +151,8 @@ crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.htt
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Pass Failure ]
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
 
-# These tests are flaky on the Leak bots but seem reliable elsewhere
-crbug.com/1164553 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-error-a11y-test.js [ Pass Failure ]
-
-# Sheriff 2021-04-16
-crbug.com/1199904 [ Linux ] virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass Failure ]
-
 # Sheriff 2021-05-03
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
-
-# Sheriff 2021-06-09
-crbug.com/1217831 [ Linux ] virtual/plz-service-worker/http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/plz-service-worker/http/tests/devtools/console/console-repeat-count.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-async/async-callstack-middle-run.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-script-first-stmt.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-by-source-code.js [ Pass Failure ]
-crbug.com/1217831 [ Linux ] virtual/synchronous_html_parser/http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-script-first-stmt.js [ Pass Failure ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
