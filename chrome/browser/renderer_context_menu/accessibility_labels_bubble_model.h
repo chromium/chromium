@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 
@@ -16,12 +17,17 @@ class WebContents;
 
 // A class that implements a bubble menu shown when we confirm a user allows
 // integrating the accessibility labels service of Google to Chrome.
-class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
+class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel,
+                                       public content::WebContentsObserver {
  public:
   AccessibilityLabelsBubbleModel(Profile* profile,
                                  content::WebContents* web_contents,
                                  bool enable_always);
   ~AccessibilityLabelsBubbleModel() override;
+  AccessibilityLabelsBubbleModel(const AccessibilityLabelsBubbleModel&) =
+      delete;
+  AccessibilityLabelsBubbleModel& operator=(
+      const AccessibilityLabelsBubbleModel&) = delete;
 
   // ConfirmBubbleModel implementation.
   base::string16 GetTitle() const override;
@@ -37,11 +43,11 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
   // Set the profile preferences to enable or disable the feature.
   void SetPref(bool enabled);
 
+  // Unowned.
   Profile* profile_;
-  content::WebContents* web_contents_;
-  bool enable_always_;
 
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsBubbleModel);
+  // Whether to always enable or just enable once.
+  bool enable_always_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
