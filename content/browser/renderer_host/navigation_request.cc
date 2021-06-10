@@ -3990,7 +3990,9 @@ void NavigationRequest::CommitPageActivation() {
       return;
     }
 
-    // The prerender page might have navigated.
+    // The prerender page might have navigated. Update the URL and the redirect
+    // chain, as the prerendered page might have been redirected or performed
+    // a same-document navigation.
     // TODO(https://crbug.com/1181712): Ensure that the tests that navigate
     // MPArch activation flow do not crash. This is a hack to unblock the basic
     // MPArch activation flow for now. There are probably other parameters which
@@ -4000,6 +4002,11 @@ void NavigationRequest::CommitPageActivation() {
     // in the main frame of the prerender frame tree).
     common_params_->url =
         activated_entry->render_frame_host->GetLastCommittedURL();
+    // TODO(https://crbug.com/1181712): We may have to add the entire redirect
+    // chain.
+    redirect_chain_.clear();
+    redirect_chain_.push_back(
+        activated_entry->render_frame_host->GetLastCommittedURL());
   }
 
   base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());

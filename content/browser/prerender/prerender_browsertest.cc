@@ -437,6 +437,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
   shell()->Close();
 }
 
+namespace {
+
+class RedirectChainObserver : public WebContentsObserver {
+ public:
+  RedirectChainObserver(WebContents& web_contents, const GURL& url)
+      : WebContentsObserver(&web_contents), url_(url) {}
+  std::vector<GURL>& redirect_chain() { return redirect_chain_; }
+
+ private:
+  void DidFinishNavigation(NavigationHandle* handle) override {
+    if (handle->GetURL() != url_)
+      return;
+    redirect_chain_ = handle->GetRedirectChain();
+  }
+
+  const GURL url_;
+  std::vector<GURL> redirect_chain_;
+};
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -446,14 +467,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
   const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
   const GURL kPrerenderingUrl =
       GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
   AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kPrerenderingUrl, redirect_chain_observer.redirect_chain()[0]);
+  EXPECT_EQ(kRedirectedUrl, redirect_chain_observer.redirect_chain()[1]);
 
   // The prerender host should be registered for the initial request URL, not
   // the redirected URL.
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
+
+  // Regression test for https://crbug.com/1211274. Make sure that we don't
+  // crash when activating a prerendered page which performed a same-origin
+  // redirect.
+  RedirectChainObserver activation_redirect_chain_observer(
+      *shell()->web_contents(), kRedirectedUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kRedirectedUrl,
+            activation_redirect_chain_observer.redirect_chain()[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginRedirection) {
@@ -715,8 +752,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameSamePageNavigation) {
   NavigatePrerenderedPage(host_id, kAnchorUrl);
   WaitForPrerenderLoadCompleted(host_id);
 
-  // Activate
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kAnchorUrl);
+
+  // Activate.
   NavigatePrimaryPage(kPrerenderingUrl);
+  // Regression test for https://crbug.com/1211274. Make sure that we don't
+  // crash when activating a prerendered page which performed a same-document
+  // navigation.
+  ASSERT_EQ(1u, redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kAnchorUrl, redirect_chain_observer.redirect_chain()[0]);
+
   // Make sure the render is not dead by doing a same page navigation.
   NavigatePrimaryPage(kAnchorUrl);
 
