@@ -28,7 +28,6 @@ namespace extensions {
 
 bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   const char* const kAllowed[] = {
-    extension_misc::kCastExtensionIdRelease,
     extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS_ASH)

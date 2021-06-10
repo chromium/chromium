@@ -9,7 +9,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
@@ -24,8 +23,7 @@
 namespace extensions {
 
 ExternalComponentLoader::ExternalComponentLoader(Profile* profile)
-    : profile_(profile) {
-}
+    : profile_(profile) {}
 
 ExternalComponentLoader::~ExternalComponentLoader() {}
 
@@ -43,11 +41,6 @@ void ExternalComponentLoader::StartLoading() {
                            prefs.get());
   }
 #endif
-
-  if (media_router::MediaRouterEnabled(profile_) &&
-      FeatureSwitch::load_media_router_component_extension()->IsEnabled()) {
-    AddExternalExtension(extension_misc::kCastExtensionIdRelease, prefs.get());
-  }
 
   LoadFinished(std::move(prefs));
 }

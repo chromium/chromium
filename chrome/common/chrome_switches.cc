@@ -368,10 +368,6 @@ const char kKioskMode[]                     = "kiosk";
 // Enable automatically pressing the print button in print preview.
 const char kKioskModePrinting[]             = "kiosk-printing";
 
-// Loads the Media Router component extension on startup.
-const char kLoadMediaRouterComponentExtension[] =
-    "load-media-router-component-extension";
-
 // Makes Chrome default browser
 const char kMakeDefaultBrowser[]            = "make-default-browser";
 
