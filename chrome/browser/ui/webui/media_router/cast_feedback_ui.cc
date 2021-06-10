@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -116,8 +118,21 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
   MediaRouter* const router =
       media_router::MediaRouterFactory::GetApiForBrowserContext(
           web_contents_->GetBrowserContext());
+
+  std::string log_data;
+
+  // Reserve a few kb of space to hopefully avoid multiple allocations later.
+  log_data.reserve(8192);
+
+  JSONStringValueSerializer serializer(&log_data);
+  serializer.set_pretty_print(true);
+  if (!serializer.Serialize(router->GetState()))
+    log_data.clear();
+
   LoggerImpl* const logger = router->GetLogger();
-  source->AddString("logData", logger->GetLogsAsJson());
+  log_data += logger->GetLogsAsJson();
+
+  source->AddString("logData", log_data);
 
   source->AddBoolean("globalMediaControlsCastStartStop",
                      GlobalMediaControlsCastStartStopEnabled());
