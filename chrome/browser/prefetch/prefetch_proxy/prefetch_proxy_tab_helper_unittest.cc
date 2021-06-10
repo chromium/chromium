@@ -54,6 +54,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using testing::NiceMock;
+
 namespace {
 
 const int kTotalTimeDuration = 1337;
@@ -161,7 +163,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void TriggerRedirectHistogramRecording() {
-    content::MockNavigationHandle handle(web_contents());
+    NiceMock<content::MockNavigationHandle> handle(web_contents());
     tab_helper_->DidStartNavigation(&handle);
   }
 
@@ -212,7 +214,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void Navigate(const GURL& url) {
-    content::MockNavigationHandle handle(web_contents());
+    NiceMock<content::MockNavigationHandle> handle(web_contents());
     handle.set_url(url);
     tab_helper_->DidStartNavigation(&handle);
     handle.set_has_committed(true);
@@ -223,7 +225,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
   void NavigateSomewhere() { Navigate(GURL("https://test.com")); }
 
   void NavigateSameDocument() {
-    content::MockNavigationHandle handle(web_contents());
+    NiceMock<content::MockNavigationHandle> handle(web_contents());
     handle.set_url(GURL("https://test.com"));
     handle.set_is_same_document(true);
     tab_helper_->DidStartNavigation(&handle);
@@ -1930,7 +1932,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Insecure_Continued) {
 
   GURL final_url("http://final.com/");
 
-  content::MockNavigationHandle handle(web_contents());
+  NiceMock<content::MockNavigationHandle> handle(web_contents());
   handle.set_url(url);
   tab_helper()->DidStartNavigation(&handle);
   handle.set_has_committed(true);
