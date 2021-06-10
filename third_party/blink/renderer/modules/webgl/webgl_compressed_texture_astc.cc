@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_astc.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {

@@ -32,7 +32,7 @@
 
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/scoped_command_line.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy_unittest.h"

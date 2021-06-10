@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/crypto.h"

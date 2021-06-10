@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

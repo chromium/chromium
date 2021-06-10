@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/hash/md5.h"
-#include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"

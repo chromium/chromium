@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/frame_content_as_text.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"

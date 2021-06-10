@@ -6,7 +6,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
 
 #include <hb-ot.h>

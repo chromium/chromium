@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"

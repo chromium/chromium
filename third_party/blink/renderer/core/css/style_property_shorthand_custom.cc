@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace blink {
 

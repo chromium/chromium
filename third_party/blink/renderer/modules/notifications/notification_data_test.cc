@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"

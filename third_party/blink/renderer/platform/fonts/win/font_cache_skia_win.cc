@@ -39,9 +39,9 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -56,7 +56,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
-
 
 namespace blink {
 

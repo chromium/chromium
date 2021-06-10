@@ -32,8 +32,8 @@
 
 #include <fstream>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/bidi_test_harness.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"

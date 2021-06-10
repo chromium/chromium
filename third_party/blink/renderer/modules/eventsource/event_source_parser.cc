@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
