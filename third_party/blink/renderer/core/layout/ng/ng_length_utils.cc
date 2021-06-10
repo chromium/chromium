@@ -752,6 +752,14 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
 
 namespace {
 
+// Returns the default natural size.
+LogicalSize ComputeDefaultNaturalSize(const NGBlockNode& node) {
+  const auto& style = node.Style();
+  PhysicalSize natural_size(LayoutUnit(300), LayoutUnit(150));
+  natural_size.Scale(style.EffectiveZoom());
+  return natural_size.ConvertToLogical(style.GetWritingMode());
+}
+
 // This takes the aspect-ratio, and natural-sizes and normalizes them returning
 // the border-box natural-size.
 //
@@ -768,30 +776,25 @@ absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
     const NGBoxStrut& border_padding,
     const EBoxSizing box_sizing,
     const LogicalSize& aspect_ratio) {
-  // Returns the default natural size (if we have no aspect-ratio).
-  auto NaturalSize = [&]() -> LogicalSize {
-    DCHECK(aspect_ratio.IsEmpty());
-    const auto& style = node.Style();
-    PhysicalSize natural_size(LayoutUnit(300), LayoutUnit(150));
-    natural_size.Scale(style.EffectiveZoom());
-    return natural_size.ConvertToLogical(style.GetWritingMode());
-  };
-
   absl::optional<LayoutUnit> intrinsic_inline;
   absl::optional<LayoutUnit> intrinsic_block;
   node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
 
   // Add the border-padding. If we *don't* have an aspect-ratio use the default
   // natural size (300x150).
-  if (intrinsic_inline)
+  if (intrinsic_inline) {
     intrinsic_inline = *intrinsic_inline + border_padding.InlineSum();
-  else if (aspect_ratio.IsEmpty())
-    intrinsic_inline = NaturalSize().inline_size + border_padding.InlineSum();
+  } else if (aspect_ratio.IsEmpty()) {
+    intrinsic_inline = ComputeDefaultNaturalSize(node).inline_size +
+                       border_padding.InlineSum();
+  }
 
-  if (intrinsic_block)
+  if (intrinsic_block) {
     intrinsic_block = *intrinsic_block + border_padding.BlockSum();
-  else if (aspect_ratio.IsEmpty())
-    intrinsic_block = NaturalSize().block_size + border_padding.BlockSum();
+  } else if (aspect_ratio.IsEmpty()) {
+    intrinsic_block =
+        ComputeDefaultNaturalSize(node).block_size + border_padding.BlockSum();
+  }
 
   // If we have one natural size reflect via. the aspect-ratio.
   if (!intrinsic_inline && intrinsic_block) {
@@ -831,8 +834,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
-
   const Length& block_length = style.LogicalHeight();
+
   MinMaxSizes block_min_max_sizes;
   absl::optional<LayoutUnit> replaced_block;
   if (mode == ReplacedSizeMode::kIgnoreBlockLengths) {
@@ -909,15 +912,23 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   const LogicalSize aspect_ratio = node.GetAspectRatio();
   const absl::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
       node, border_padding, box_sizing, aspect_ratio);
+  const Length& inline_length = style.LogicalWidth();
 
   auto StretchFit = [&]() -> LayoutUnit {
-    // Only stretch to the available-size if it is definite.
-    LayoutUnit size =
-        (space.AvailableSize().inline_size == kIndefiniteSize)
-            ? border_padding.InlineSum()
-            : ResolveMainInlineLength<absl::optional<MinMaxSizes>>(
-                  space, style, border_padding, absl::nullopt,
-                  Length::FillAvailable(), available_inline_size_adjustment);
+    LayoutUnit size;
+    if (space.AvailableSize().inline_size == kIndefiniteSize) {
+      size = border_padding.InlineSum();
+      // TODO(crbug.com/1218055): Instead of using the default natural size, we
+      // should be using the initial containing block size. When doing this
+      // we'll need to invalidated (sparingly) on window resize.
+      if (inline_length.IsPercentOrCalc())
+        size += ComputeDefaultNaturalSize(node).inline_size;
+    } else {
+      // Stretch to the available-size if it is definite.
+      size = ResolveMainInlineLength<absl::optional<MinMaxSizes>>(
+          space, style, border_padding, absl::nullopt, Length::FillAvailable(),
+          available_inline_size_adjustment);
+    }
 
     // If stretch-fit applies we must have an aspect-ratio.
     DCHECK(!aspect_ratio.IsEmpty());
@@ -952,7 +963,6 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     return {sizes, /* depends_on_block_constraints */ false};
   };
 
-  const Length& inline_length = style.LogicalWidth();
   MinMaxSizes inline_min_max_sizes;
   absl::optional<LayoutUnit> replaced_inline;
   if (mode == ReplacedSizeMode::kIgnoreInlineLengths) {
