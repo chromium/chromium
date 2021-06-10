@@ -45,6 +45,7 @@ class DownloadItem;
 }  // namespace download
 
 namespace content {
+class BackForwardCacheCanStoreDocumentResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
 class FrameTreeNode;
@@ -142,7 +143,9 @@ bool ShouldBypassCSP(const NavigationRequest& nav_request);
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item);
 
-void BackForwardCacheNotUsed(const NavigationRequest* nav_request);
+void BackForwardCacheNotUsed(
+    const NavigationRequest* nav_request,
+    const BackForwardCacheCanStoreDocumentResult* result);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

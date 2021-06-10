@@ -7625,6 +7625,124 @@ domain Page
       string name
       Network.MonotonicTime timestamp
 
+  # List of not restored reasons for back-forward cache.
+  experimental type BackForwardCacheNotRestoredReason extends string
+    enum
+      NotMainFrame
+      BackForwardCacheDisabled
+      RelatedActiveContentsExist
+      HTTPStatusNotOK
+      SchemeNotHTTPOrHTTPS
+      Loading
+      WasGrantedMediaAccess
+      DisableForRenderFrameHostCalled
+      DomainNotAllowed
+      HTTPMethodNotGET
+      SubframeIsNavigating
+      Timeout
+      CacheLimit
+      JavaScriptExecution
+      RendererProcessKilled
+      RendererProcessCrashed
+      GrantedMediaStreamAccess
+      SchedulerTrackedFeatureUsed
+      ConflictingBrowsingInstance
+      CacheFlushed
+      ServiceWorkerVersionActivation
+      SessionRestored
+      ServiceWorkerPostMessage
+      EnteredBackForwardCacheBeforeServiceWorkerHostAdded
+      RenderFrameHostReused_SameSite
+      RenderFrameHostReused_CrossSite
+      ServiceWorkerClaim
+      IgnoreEventAndEvict
+      HaveInnerContents
+      TimeoutPuttingInCache
+      BackForwardCacheDisabledByLowMemory
+      BackForwardCacheDisabledByCommandLine
+      NetworkRequestDatapipeDrainedAsBytesConsumer
+      NetworkRequestRedirected
+      NetworkRequestTimeout
+      NetworkExceedsBufferLimit
+      NavigationCancelledWhileRestoring
+      NotMostRecentNavigationEntry
+      BackForwardCacheDisabledForPrerender
+      UserAgentOverrideDiffers
+      ForegroundCacheLimit
+      BrowsingInstanceNotSwapped
+      BackForwardCacheDisabledForDelegate
+      OptInUnloadHeaderNotPresent
+      UnloadHandlerExistsInMainFrame
+      UnloadHandlerExistsInSubFrame
+      # Blocklisted features
+      WebSocket
+      WebRTC
+      MainResourceHasCacheControlNoStore
+      MainResourceHasCacheControlNoCache
+      SubresourceHasCacheControlNoStore
+      SubresourceHasCacheControlNoCache
+      PageShowEventListener
+      PageHideEventListener
+      BeforeUnloadEventListener
+      UnloadEventListener
+      FreezeEventListener
+      ResumeEventListener
+      ContainsPlugins
+      DocumentLoaded
+      DedicatedWorkerOrWorklet
+      OutstandingNetworkRequestOthers
+      OutstandingIndexedDBTransaction
+      RequestedGeolocationPermission
+      RequestedNotificationsPermission
+      RequestedMIDIPermission
+      RequestedAudioCapturePermission
+      RequestedVideoCapturePermission
+      RequestedBackForwardCacheBlockedSensors
+      RequestedBackgroundWorkPermission
+      BroadcastChannel
+      IndexedDBConnection
+      WebVR
+      WebXR
+      SharedWorker
+      WebLocks
+      WebHID
+      WebShare
+      RequestedStorageAccessGrant
+      WebNfc
+      WebFileSystem
+      OutstandingNetworkRequestFetch
+      OutstandingNetworkRequestXHR
+      AppBanner
+      Printing
+      WebDatabase
+      PictureInPicture
+      Portal
+      SpeechRecognizer
+      IdleManager
+      PaymentManager
+      SpeechSynthesis
+      KeyboardLock
+      WebOTPService
+      OutstandingNetworkRequestDirectSocket
+      IsolatedWorldScript
+      InjectedStyleSheet
+      MediaSessionImplOnServiceCreated
+      Unknown
+
+  # Types of not restored reasons for back-forward cache.
+  experimental type BackForwardCacheNotRestoredReasonType extends string
+    enum
+      SupportPending
+      PageSupportNeeded
+      Circumstantial
+
+  experimental type BackForwardCacheNotRestoredExplanation extends object
+    properties
+      # Type of the reason
+      BackForwardCacheNotRestoredReasonType type
+      # Not restored reason
+      BackForwardCacheNotRestoredReason reason
+
   # Fired for failed bfcache history navigations if BackForwardCache feature is enabled. Do
   # not assume any ordering with the Page.frameNavigated event. This event is fired only for
   # main-frame history navigation where the document changes (non-same-document navigations),
@@ -7635,6 +7753,8 @@ domain Page
       Network.LoaderId loaderId
       # The frame id of the associated frame.
       FrameId frameId
+      # Array of reasons why the page could not be cached. This must not be empty.
+      array of BackForwardCacheNotRestoredExplanation notRestoredExplanations
 
   event loadEventFired
     parameters

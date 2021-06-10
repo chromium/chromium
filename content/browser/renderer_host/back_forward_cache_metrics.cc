@@ -162,7 +162,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
                                             back_forward_cache_allowed);
     RecordHistoryNavigationUkm(navigation);
     if (!navigation->IsServedFromBackForwardCache()) {
-      devtools_instrumentation::BackForwardCacheNotUsed(navigation);
+      devtools_instrumentation::BackForwardCacheNotUsed(
+          navigation, page_store_result_.get());
     }
   }
 

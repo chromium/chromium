@@ -46,6 +46,7 @@ struct DeviceEmulationParams;
 
 namespace content {
 
+class BackForwardCacheCanStoreDocumentResult;
 class DevToolsAgentHostImpl;
 class FrameTreeNode;
 class NavigationRequest;
@@ -97,8 +98,10 @@ class PageHandler : public DevToolsDomainHandler,
 
   WebContentsImpl* GetWebContents();
 
-  void BackForwardCacheNotUsed(const NavigationRequest* nav_request);
   bool ShouldBypassCSP();
+  void BackForwardCacheNotUsed(
+      const NavigationRequest* nav_request,
+      const BackForwardCacheCanStoreDocumentResult* result);
 
   Response Enable() override;
   Response Disable() override;

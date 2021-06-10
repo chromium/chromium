@@ -1278,7 +1278,430 @@ Response PageHandler::SetBypassCSP(bool enabled) {
   return Response::FallThrough();
 }
 
-void PageHandler::BackForwardCacheNotUsed(const NavigationRequest* navigation) {
+Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
+    BackForwardCacheMetrics::NotRestoredReason reason) {
+  using Reason = BackForwardCacheMetrics::NotRestoredReason;
+  switch (reason) {
+    case Reason::kNotMainFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::NotMainFrame;
+    case Reason::kBackForwardCacheDisabled:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BackForwardCacheDisabled;
+    case Reason::kRelatedActiveContentsExist:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RelatedActiveContentsExist;
+    case Reason::kHTTPStatusNotOK:
+      return Page::BackForwardCacheNotRestoredReasonEnum::HTTPStatusNotOK;
+    case Reason::kSchemeNotHTTPOrHTTPS:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SchemeNotHTTPOrHTTPS;
+    case Reason::kLoading:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Loading;
+    case Reason::kWasGrantedMediaAccess:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WasGrantedMediaAccess;
+    case Reason::kDisableForRenderFrameHostCalled:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          DisableForRenderFrameHostCalled;
+    case Reason::kDomainNotAllowed:
+      return Page::BackForwardCacheNotRestoredReasonEnum::DomainNotAllowed;
+    case Reason::kHTTPMethodNotGET:
+      return Page::BackForwardCacheNotRestoredReasonEnum::HTTPMethodNotGET;
+    case Reason::kSubframeIsNavigating:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SubframeIsNavigating;
+    case Reason::kTimeout:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Timeout;
+    case Reason::kCacheLimit:
+      return Page::BackForwardCacheNotRestoredReasonEnum::CacheLimit;
+    case Reason::kJavaScriptExecution:
+      return Page::BackForwardCacheNotRestoredReasonEnum::JavaScriptExecution;
+    case Reason::kRendererProcessKilled:
+      return Page::BackForwardCacheNotRestoredReasonEnum::RendererProcessKilled;
+    case Reason::kRendererProcessCrashed:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RendererProcessCrashed;
+    case Reason::kGrantedMediaStreamAccess:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          GrantedMediaStreamAccess;
+    case Reason::kSchedulerTrackedFeatureUsed:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          SchedulerTrackedFeatureUsed;
+    case Reason::kConflictingBrowsingInstance:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ConflictingBrowsingInstance;
+    case Reason::kCacheFlushed:
+      return Page::BackForwardCacheNotRestoredReasonEnum::CacheFlushed;
+    case Reason::kServiceWorkerVersionActivation:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ServiceWorkerVersionActivation;
+    case Reason::kSessionRestored:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SessionRestored;
+    case Reason::kServiceWorkerPostMessage:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ServiceWorkerPostMessage;
+    case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          EnteredBackForwardCacheBeforeServiceWorkerHostAdded;
+    case Reason::kNotMostRecentNavigationEntry:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          NotMostRecentNavigationEntry;
+    case Reason::kServiceWorkerClaim:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ServiceWorkerClaim;
+    case Reason::kIgnoreEventAndEvict:
+      return Page::BackForwardCacheNotRestoredReasonEnum::IgnoreEventAndEvict;
+    case Reason::kHaveInnerContents:
+      return Page::BackForwardCacheNotRestoredReasonEnum::HaveInnerContents;
+    case Reason::kTimeoutPuttingInCache:
+      return Page::BackForwardCacheNotRestoredReasonEnum::TimeoutPuttingInCache;
+    case Reason::kBackForwardCacheDisabledByLowMemory:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BackForwardCacheDisabledByLowMemory;
+    case Reason::kBackForwardCacheDisabledByCommandLine:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BackForwardCacheDisabledByCommandLine;
+    case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          NetworkRequestDatapipeDrainedAsBytesConsumer;
+    case Reason::kNetworkRequestRedirected:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          NetworkRequestRedirected;
+    case Reason::kNetworkRequestTimeout:
+      return Page::BackForwardCacheNotRestoredReasonEnum::NetworkRequestTimeout;
+    case Reason::kNetworkExceedsBufferLimit:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          NetworkExceedsBufferLimit;
+    case Reason::kNavigationCancelledWhileRestoring:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          NavigationCancelledWhileRestoring;
+    case Reason::kBackForwardCacheDisabledForPrerender:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BackForwardCacheDisabledForPrerender;
+    case Reason::kUserAgentOverrideDiffers:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          UserAgentOverrideDiffers;
+    case Reason::kForegroundCacheLimit:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ForegroundCacheLimit;
+    case Reason::kBrowsingInstanceNotSwapped:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BrowsingInstanceNotSwapped;
+    case Reason::kBackForwardCacheDisabledForDelegate:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BackForwardCacheDisabledForDelegate;
+    case Reason::kOptInUnloadHeaderNotPresent:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OptInUnloadHeaderNotPresent;
+    case Reason::kUnloadHandlerExistsInMainFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          UnloadHandlerExistsInMainFrame;
+    case Reason::kUnloadHandlerExistsInSubFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          UnloadHandlerExistsInSubFrame;
+    case Reason::kBlocklistedFeatures:
+      // Blocklisted features should be handled separately and be broken down
+      // into sub reasons.
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case Reason::kUnknown:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+  }
+}
+
+using blink::scheduler::WebSchedulerTrackedFeature;
+Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
+    WebSchedulerTrackedFeature feature) {
+  switch (feature) {
+    case WebSchedulerTrackedFeature::kWebSocket:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebSocket;
+    case WebSchedulerTrackedFeature::kWebRTC:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebRTC;
+    case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          MainResourceHasCacheControlNoCache;
+    case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          MainResourceHasCacheControlNoStore;
+    case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          SubresourceHasCacheControlNoCache;
+    case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          SubresourceHasCacheControlNoStore;
+    case WebSchedulerTrackedFeature::kPageShowEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::PageShowEventListener;
+    case WebSchedulerTrackedFeature::kPageHideEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::PageHideEventListener;
+    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BeforeUnloadEventListener;
+    case WebSchedulerTrackedFeature::kUnloadEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::UnloadEventListener;
+    case WebSchedulerTrackedFeature::kFreezeEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::FreezeEventListener;
+    case WebSchedulerTrackedFeature::kResumeEventListener:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ResumeEventListener;
+    case WebSchedulerTrackedFeature::kContainsPlugins:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ContainsPlugins;
+    case WebSchedulerTrackedFeature::kDocumentLoaded:
+      return Page::BackForwardCacheNotRestoredReasonEnum::DocumentLoaded;
+    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          DedicatedWorkerOrWorklet;
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OutstandingNetworkRequestOthers;
+    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OutstandingIndexedDBTransaction;
+    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedGeolocationPermission;
+    case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedNotificationsPermission;
+    case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedMIDIPermission;
+    case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedAudioCapturePermission;
+    case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedVideoCapturePermission;
+    case WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedBackForwardCacheBlockedSensors;
+    case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedBackgroundWorkPermission;
+    case WebSchedulerTrackedFeature::kBroadcastChannel:
+      return Page::BackForwardCacheNotRestoredReasonEnum::BroadcastChannel;
+    case WebSchedulerTrackedFeature::kIndexedDBConnection:
+      return Page::BackForwardCacheNotRestoredReasonEnum::IndexedDBConnection;
+    case WebSchedulerTrackedFeature::kWebVR:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebVR;
+    case WebSchedulerTrackedFeature::kWebXR:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebXR;
+    case WebSchedulerTrackedFeature::kSharedWorker:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SharedWorker;
+    case WebSchedulerTrackedFeature::kWebLocks:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebLocks;
+    case WebSchedulerTrackedFeature::kWebHID:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebHID;
+    case WebSchedulerTrackedFeature::kWebShare:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebShare;
+    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          RequestedStorageAccessGrant;
+    case WebSchedulerTrackedFeature::kWebNfc:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebNfc;
+    case WebSchedulerTrackedFeature::kWebFileSystem:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebFileSystem;
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OutstandingNetworkRequestFetch;
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OutstandingNetworkRequestXHR;
+    case WebSchedulerTrackedFeature::kAppBanner:
+      return Page::BackForwardCacheNotRestoredReasonEnum::AppBanner;
+    case WebSchedulerTrackedFeature::kPrinting:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Printing;
+    case WebSchedulerTrackedFeature::kWebDatabase:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebDatabase;
+    case WebSchedulerTrackedFeature::kPictureInPicture:
+      return Page::BackForwardCacheNotRestoredReasonEnum::PictureInPicture;
+    case WebSchedulerTrackedFeature::kPortal:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Portal;
+    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SpeechRecognizer;
+    case WebSchedulerTrackedFeature::kIdleManager:
+      return Page::BackForwardCacheNotRestoredReasonEnum::IdleManager;
+    case WebSchedulerTrackedFeature::kPaymentManager:
+      return Page::BackForwardCacheNotRestoredReasonEnum::PaymentManager;
+    case WebSchedulerTrackedFeature::kSpeechSynthesis:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SpeechSynthesis;
+    case WebSchedulerTrackedFeature::kKeyboardLock:
+      return Page::BackForwardCacheNotRestoredReasonEnum::KeyboardLock;
+    case WebSchedulerTrackedFeature::kWebOTPService:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebOTPService;
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          OutstandingNetworkRequestDirectSocket;
+    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
+      return Page::BackForwardCacheNotRestoredReasonEnum::IsolatedWorldScript;
+    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
+      return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
+    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          MediaSessionImplOnServiceCreated;
+  }
+}
+
+Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
+    BackForwardCacheMetrics::NotRestoredReason reason) {
+  using Reason = BackForwardCacheMetrics::NotRestoredReason;
+  switch (reason) {
+    case Reason::kNotMainFrame:
+    case Reason::kBackForwardCacheDisabled:
+    case Reason::kRelatedActiveContentsExist:
+    case Reason::kHTTPStatusNotOK:
+    case Reason::kSchemeNotHTTPOrHTTPS:
+    case Reason::kLoading:
+    case Reason::kWasGrantedMediaAccess:
+    case Reason::kDisableForRenderFrameHostCalled:
+    case Reason::kDomainNotAllowed:
+    case Reason::kHTTPMethodNotGET:
+    case Reason::kSubframeIsNavigating:
+    case Reason::kTimeout:
+    case Reason::kCacheLimit:
+    case Reason::kJavaScriptExecution:
+    case Reason::kRendererProcessKilled:
+    case Reason::kRendererProcessCrashed:
+    case Reason::kGrantedMediaStreamAccess:
+    case Reason::kSchedulerTrackedFeatureUsed:
+    case Reason::kConflictingBrowsingInstance:
+    case Reason::kCacheFlushed:
+    case Reason::kServiceWorkerVersionActivation:
+    case Reason::kSessionRestored:
+    case Reason::kServiceWorkerPostMessage:
+    case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
+    case Reason::kNotMostRecentNavigationEntry:
+    case Reason::kServiceWorkerClaim:
+    case Reason::kIgnoreEventAndEvict:
+    case Reason::kHaveInnerContents:
+    case Reason::kTimeoutPuttingInCache:
+    case Reason::kBackForwardCacheDisabledByLowMemory:
+    case Reason::kBackForwardCacheDisabledByCommandLine:
+    case Reason::kNetworkRequestRedirected:
+    case Reason::kNetworkRequestTimeout:
+    case Reason::kNetworkExceedsBufferLimit:
+    case Reason::kNavigationCancelledWhileRestoring:
+    case Reason::kForegroundCacheLimit:
+    case Reason::kUserAgentOverrideDiffers:
+    case Reason::kBrowsingInstanceNotSwapped:
+    case Reason::kBackForwardCacheDisabledForDelegate:
+    case Reason::kBackForwardCacheDisabledForPrerender:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
+    case Reason::kOptInUnloadHeaderNotPresent:
+    case Reason::kUnloadHandlerExistsInMainFrame:
+    case Reason::kUnloadHandlerExistsInSubFrame:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
+    case Reason::kUnknown:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
+    case Reason::kBlocklistedFeatures:
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+  }
+}
+
+Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
+    WebSchedulerTrackedFeature feature) {
+  switch (feature) {
+    case WebSchedulerTrackedFeature::kWebRTC:
+    case WebSchedulerTrackedFeature::kPageShowEventListener:
+    case WebSchedulerTrackedFeature::kPageHideEventListener:
+    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
+    case WebSchedulerTrackedFeature::kUnloadEventListener:
+    case WebSchedulerTrackedFeature::kFreezeEventListener:
+    case WebSchedulerTrackedFeature::kResumeEventListener:
+    case WebSchedulerTrackedFeature::kContainsPlugins:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
+    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
+    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
+    case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
+    case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
+    case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
+    case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:
+    case WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors:
+    case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
+    case WebSchedulerTrackedFeature::kBroadcastChannel:
+    case WebSchedulerTrackedFeature::kIndexedDBConnection:
+    case WebSchedulerTrackedFeature::kWebVR:
+    case WebSchedulerTrackedFeature::kWebXR:
+    case WebSchedulerTrackedFeature::kSharedWorker:
+    case WebSchedulerTrackedFeature::kWebLocks:
+    case WebSchedulerTrackedFeature::kWebHID:
+    case WebSchedulerTrackedFeature::kWebShare:
+    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
+    case WebSchedulerTrackedFeature::kWebNfc:
+    case WebSchedulerTrackedFeature::kWebFileSystem:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
+    case WebSchedulerTrackedFeature::kPrinting:
+    case WebSchedulerTrackedFeature::kWebDatabase:
+    case WebSchedulerTrackedFeature::kPictureInPicture:
+    case WebSchedulerTrackedFeature::kPortal:
+    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+    case WebSchedulerTrackedFeature::kIdleManager:
+    case WebSchedulerTrackedFeature::kPaymentManager:
+    case WebSchedulerTrackedFeature::kSpeechSynthesis:
+    case WebSchedulerTrackedFeature::kKeyboardLock:
+    case WebSchedulerTrackedFeature::kWebOTPService:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
+    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
+    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case WebSchedulerTrackedFeature::kAppBanner:
+    case WebSchedulerTrackedFeature::kWebSocket:
+    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
+    case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
+    case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
+    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
+    case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
+    case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
+    case WebSchedulerTrackedFeature::kDocumentLoaded:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
+  }
+}
+
+std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
+CreateNotRestoredExplanation(
+    const BackForwardCacheCanStoreDocumentResult::NotStoredReasons
+        not_stored_reasons,
+    const uint64_t blocklisted_features) {
+  auto reasons = std::make_unique<
+      protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
+
+  for (size_t i = 0;
+       i <= static_cast<size_t>(
+                BackForwardCacheMetrics::NotRestoredReason::kMaxValue);
+       i++) {
+    if (!not_stored_reasons.test(i)) {
+      // Reason at index i does not exist.
+      continue;
+    }
+    auto reason = static_cast<BackForwardCacheMetrics::NotRestoredReason>(i);
+    if (reason ==
+        BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
+      DCHECK(blocklisted_features);
+      for (uint32_t j = 0;
+           j <= static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue);
+           ++j) {
+        // Add the blocklisted reason if the blocklisted reason exists.
+        if (blocklisted_features & (1ULL << j)) {
+          blink::scheduler::WebSchedulerTrackedFeature feature =
+              static_cast<blink::scheduler::WebSchedulerTrackedFeature>(j);
+          reasons->emplace_back(
+              Page::BackForwardCacheNotRestoredExplanation::Create()
+                  .SetType(MapBlocklistedFeatureToType(feature))
+                  .SetReason(BlocklistedFeatureToProtocol(feature))
+                  .Build());
+        }
+      }
+    } else {
+      reasons->emplace_back(
+          Page::BackForwardCacheNotRestoredExplanation::Create()
+              .SetType(MapNotRestoredReasonToType(reason))
+              .SetReason(NotRestoredReasonToProtocol(reason))
+              .Build());
+    }
+  }
+  return reasons;
+}
+
+void PageHandler::BackForwardCacheNotUsed(
+    const NavigationRequest* navigation,
+    const BackForwardCacheCanStoreDocumentResult* result) {
   if (!enabled_)
     return;
 
@@ -1287,7 +1710,11 @@ void PageHandler::BackForwardCacheNotUsed(const NavigationRequest* navigation) {
       navigation->devtools_navigation_token().ToString();
   std::string frame_id = ftn->devtools_frame_token().ToString();
 
-  frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id);
+  auto explanation = CreateNotRestoredExplanation(
+      result->not_stored_reasons(), result->blocklisted_features());
+
+  frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id,
+                                     std::move(explanation));
 }
 
 bool PageHandler::ShouldBypassCSP() {
