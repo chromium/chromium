@@ -36,7 +36,6 @@ class AssociatedInterfaceProvider;
 class InterfaceRegistry;
 class LocalFrame;
 class MessageEvent;
-class RemoteFrameClient;
 struct FrameLoadRequest;
 class ChildFrameCompositingHelper;
 class WebFrameWidget;
@@ -52,7 +51,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.
-  RemoteFrame(RemoteFrameClient*,
+  RemoteFrame(FrameClient*,
               Page&,
               FrameOwner*,
               Frame* parent,
@@ -104,8 +103,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   mojom::blink::RemoteFrameHost& GetRemoteFrameHostRemote();
 
   RemoteFrameView* View() const override;
-
-  RemoteFrameClient* Client() const;
 
   bool IsIgnoredForHitTest() const;
 

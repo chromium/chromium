@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -31,7 +30,11 @@ RemoteFrameClientImpl::RemoteFrameClientImpl(WebRemoteFrameImpl* web_frame)
 
 void RemoteFrameClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(web_frame_);
-  RemoteFrameClient::Trace(visitor);
+  FrameClient::Trace(visitor);
+}
+
+bool RemoteFrameClientImpl::IsRemoteFrameClient() const {
+  return true;
 }
 
 bool RemoteFrameClientImpl::InShadowTree() const {
@@ -67,11 +70,6 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
 
 unsigned RemoteFrameClientImpl::BackForwardLength() {
   return To<WebViewImpl>(web_frame_->View())->HistoryListLength();
-}
-
-AssociatedInterfaceProvider*
-RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
-  return web_frame_->Client()->GetRemoteAssociatedInterfaces();
 }
 
 }  // namespace blink

@@ -19,6 +19,8 @@ class IntRect;
 
 class CORE_EXPORT FrameClient : public GarbageCollected<FrameClient> {
  public:
+  virtual bool IsRemoteFrameClient() const = 0;
+
   virtual bool InShadowTree() const = 0;
 
   virtual void Detached(FrameDetachType) = 0;
