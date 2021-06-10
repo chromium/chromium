@@ -408,6 +408,9 @@ const char kForceHappinessTrackingSystem[] = "force-happiness-tracking-system";
 const char kForceHWIDCheckFailureForTest[] =
     "force-hwid-check-failure-for-test";
 
+// Forces FullRestoreService to launch browser for telemetry tests.
+const char kForceLaunchBrowser[] = "force-launch-browser";
+
 // Usually in browser tests the usual login manager bringup is skipped so that
 // tests can change how it's brought up. This flag disables that.
 const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";

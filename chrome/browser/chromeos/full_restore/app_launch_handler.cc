@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -116,7 +117,9 @@ bool AppLaunchHandler::HasRestoreData() {
 }
 
 void AppLaunchHandler::LaunchBrowserWhenReady() {
-  if (g_launch_browser_for_testing) {
+  if (g_launch_browser_for_testing ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kForceLaunchBrowser)) {
     ForceLaunchBrowserForTesting();
     return;
   }
@@ -224,12 +227,12 @@ void AppLaunchHandler::LaunchBrowser() {
 
   if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kHideCrashRestoreBubble);
+        ::switches::kHideCrashRestoreBubble);
   }
 
   // Modify the command line to restore browser sessions.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kRestoreLastSession);
+      ::switches::kRestoreLastSession);
 
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
