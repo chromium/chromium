@@ -61,6 +61,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1341651618736211726">Luapan</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Ciutkan menu</translation>
+<translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1391102559483454063">Aktif</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
@@ -130,8 +131,8 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" /> yang terhormat,</translation>
 <translation id="1978498689038657292">Masukan teks</translation>
 <translation id="1989113344093894667">Tidak dapat menangkap konten</translation>
+<translation id="1990046457226896323">File ucapan didownload</translation>
 <translation id="1993072747612765854">Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru</translation>
-<translation id="1995660704900986789">Matikan perangkat</translation>
 <translation id="1998100899771863792">Desktop saat ini</translation>
 <translation id="2016340657076538683">Ketik pesan</translation>
 <translation id="2018630726571919839">Ceritakan lelucon</translation>
@@ -437,6 +438,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4451374464530248585">Pintasan keyboard Alt + Panah Bawah telah diubah. Untuk menggunakan tombol Page Down, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Bawah.</translation>
 <translation id="445864333228800152">Selamat sore,</translation>
 <translation id="4458688154122353284">Hentikan perekaman layar</translation>
+<translation id="4471354919263203780">Mendownload file pengenalan ucapan ... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4477892968187500306">Perangkat ini dapat memuat aplikasi yang belum diverifikasi oleh Google.</translation>

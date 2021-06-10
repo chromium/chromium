@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Nakaraang Oras</translation>
 <translation id="1941314575388338491">I-double tap upang kopyahin.</translation>
 <translation id="1952172573699511566">Magpapakita ang mga website ng text sa iyong gustong wika, kung posible.</translation>
-<translation id="1952728750904661634">Mag-sign in gamit ang isang pinamamahalaang account</translation>
 <translation id="1965935827552890526">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chrome.</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -695,7 +694,6 @@ Dahil pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, made-dele
 <translation id="7887198238286927132">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang field na ito.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">I-export Password...</translation>
-<translation id="7947953824732555851">I-accept, mag-sign in</translation>
 <translation id="794799177247607889">Ihinto ang Pag-log</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Walang nakompromisong password}=1{{COUNT} Nakompromisong password}one{{COUNT} Nakompromisong password}other{{COUNT} na Nakompromisong password}}</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>

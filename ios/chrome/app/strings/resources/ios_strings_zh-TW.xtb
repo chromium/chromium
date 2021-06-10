@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
-<translation id="1952728750904661634">使用受管理的帳戶登入</translation>
 <translation id="1965935827552890526">請完成你在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
-<translation id="7947953824732555851">接受並登入</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{有 {COUNT} 組密碼遭外洩}other{有 {COUNT} 組密碼遭外洩}}</translation>
 <translation id="7961015016161918242">一律不要</translation>

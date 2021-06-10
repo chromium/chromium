@@ -39,7 +39,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Vérifiez si vous êtes bien connecté à Chrome sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="1807517590912578995">Créer un profil Chrome séparé ?</translation>
-<translation id="1810203443153428607">L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre appareil.</translation>
+<translation id="1810203443153428607">L'installation de Chrome OS va écraser toutes les données de votre appareil.</translation>
 <translation id="1812689907177901597">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chrome</translation>
 <translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
@@ -61,9 +61,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="234869673307233423">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="235650106824528204">Toutes les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe etc.) peuvent être supprimées par l'administrateur du profil professionnel. <ph name="LEARN_MORE" /></translation>
 <translation id="2409866122341731384">Effacer le disque dur et installer Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chrome OS ! Si vous poursuivez l'opération :
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chrome OS ! Si vous poursuivez :
           <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Les fichiers, les données ainsi que votre système d'exploitation actuel seront supprimés.
+          <ph name="LIST_ITEM" />Les fichiers, les données et votre système d'exploitation actuel seront effacés.
           <ph name="LIST_ITEM" />Chrome OS sera installé.
           <ph name="LIST_ITEM" />Votre appareil s'éteindra une fois l'installation terminée.
           <ph name="END_LIST" />
@@ -185,10 +185,10 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5434383153637353914">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. Ils seront accessibles depuis le navigateur Chrome et l'appli Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chrome OS va écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google n'est pas responsable de la perte de données et ne garantit pas que Chrome OS fonctionnera sur les modèles non certifiés. Consultez [à déterminer] pour en savoir plus sur les modèles certifiés.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />En savoir plus sur l'installation de Chrome OS et l'effacement des données : [URL à déterminer]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Lorsque vous êtes prêt à continuer, cliquez sur "Installer Chrome OS". Nous vous guiderons lors de l'installation (deux étapes simples). Vous pourrez confirmer chaque modification apportée à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
+          <ph name="BEGIN_PARAGRAPH4" />Quand vous serez prêt, cliquez sur "Installer Chrome OS". Nous vous guiderons lors de l'installation en quelques étapes simples. Vous pourrez confirmer les changements avant qu'ils soient appliqués à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Tentative d'affichage des mots de passe dans Google Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

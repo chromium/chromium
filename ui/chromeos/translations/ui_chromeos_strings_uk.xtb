@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу перемістіть їх у папку з файлами в ОС Windows.</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1119069657431255176">Архів у форматі TAR зі стисненням Bzip2</translation>
+<translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1120073797882051782">Клавіатура хангул (ромаджа)</translation>
 <translation id="112387589102719461">Англійська (США), розкладка Дворака для програмістів</translation>
 <translation id="1134697384939541955">Англійська (США), розширена розкладка</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1576937952766665062">Бенгальська, транслітерація</translation>
+<translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португальська, міжнародна розкладка США</translation>
 <translation id="1641780993263690097">Китайська, піньїнь</translation>
 <translation id="1646019627374511909">Файли (<ph name="NUMBER_OF_ITEMS" />) завантажуються на пристрій</translation>
 <translation id="164969095109328410">Пристрій Chrome</translation>
+<translation id="1661867754829461514">Відсутній PIN-код</translation>
 <translation id="1665611772925418501">Файл неможливо змінити.</translation>
 <translation id="1673103856845176271">Доступ до файлу неможливо отримати з міркувань безпеки.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Іврит, транслітерація</translation>
 <translation id="1747761757048858544">Нідерландська (Нідерланди)</translation>
 <translation id="174937106936716857">Усього файлів</translation>
+<translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="1775381402323441512">Інформація про відео</translation>
 <translation id="180035236176489073">Щоб отримати доступ до цих файлів, потрібно перебувати в режимі онлайн.</translation>
 <translation id="1807938677607439181">Усі файли</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">Архів у форматі RAR</translation>
 <translation id="2037845485764049925">Російська</translation>
+<translation id="2044023416777079300">Модем не зареєстровано</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2070909990982335904">Імена, які починаються з крапки, зарезервовані для системи. Виберіть інше ім’я.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">Видалено елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Вміст цієї папки можна лише переглядати. Деякі дії не підтримуються.</translation>
 <translation id="2542049655219295786">Таблиця Google</translation>
+<translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
 <translation id="2547921442987553570">Додати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Міжнародна (США)</translation>
 <translation id="2562685439590298522">Документи</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
 <translation id="2579959351793446050">Орія</translation>
 <translation id="2614589611416690597">Відео <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2620090360073999360">Зараз неможливо отримати доступ до Google Диска.</translation>
 <translation id="2638942478653899953">Диск Google недоступний. <ph name="BEGIN_LINK" />Вийдіть<ph name="END_LINK" /> і ввійдіть знову.</translation>
 <translation id="2649120831653069427">Золота рибка</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Не вдалося відкрити файл "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Підготовка</translation>
 <translation id="3280987981688031357">Вінілова платівка</translation>
+<translation id="3295357220137379386">Пристрій зайнятий</translation>
 <translation id="3296763833017966289">Грузинська</translation>
 <translation id="3307875152560779385">Українська</translation>
 <translation id="3326821416087822643">Архівування файлу <ph name="FILE_NAME" />…</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Курдська сорані, розкладка на основі арабської</translation>
 <translation id="4363958938297989186">Російська, фонетична розкладка</translation>
 <translation id="4364327530094270451">Диня</translation>
+<translation id="4387004326333427325">Сертифікат автентифікації відхилений дистанційно</translation>
 <translation id="4394214039309501350">Зовнішнє посилання</translation>
 <translation id="4418686080762064601">Створіть ярлики для своїх файлів</translation>
 <translation id="4425149324548788773">Мій диск</translation>
+<translation id="4442424173763614572">Помилка пошуку DNS</translation>
 <translation id="4470564870223067757">Клавіатура хангул із 2 наборами клавіш</translation>
 <translation id="4477002475007461989">Румунська</translation>
 <translation id="4477219268485577442">Болгарська (фонетична)</translation>
+<translation id="4508265954913339219">Помилка активації</translation>
 <translation id="4509667233588080747">Англійська (США), розкладка Workman International</translation>
 <translation id="4522570452068850558">Деталі</translation>
 <translation id="4527800702232535228">Додаток Parallels Desktop має доступ до цієї папки</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Керувати доступом додатка Parallels Desktop</translation>
 <translation id="5038625366300922036">Більше…</translation>
 <translation id="5044852990838351217">Вірменська</translation>
+<translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="5059127710849015030">Непальська, транслітерація</translation>
 <translation id="5068919226082848014">Піца</translation>
 <translation id="5081517858322016911">Буде видалено файли загальним обсягом <ph name="TOTAL_FILE_SIZE" /></translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">З вибраного видалено всі записи.</translation>
 <translation id="5838825566232597749">US Workman, міжнародна</translation>
 <translation id="5851063901794976166">Тут нічого немає…</translation>
+<translation id="5864471791310927901">Помилка пошуку DHCP</translation>
 <translation id="5911887972742538906">Сталася помилка під час встановлення додатка Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Не вдалося скопіювати. Неочікувана помилка: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Увімкнути субтитри</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
+<translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6321303798550928047">Помах рукою</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
 <translation id="6346310558342052870">Доступ обмежено</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Французька (Франція), розкладка Bépo</translation>
 <translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6732801395666424405">Сертифікати не завантажено</translation>
 <translation id="6751256176799620176">Вибрано 1 папку</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     Знайдено: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Догори дригом</translation>
+<translation id="6943836128787782965">Помилка HTTP</translation>
 <translation id="6949408524333579394">Сербська, транслітерація</translation>
 <translation id="696203921837389374">Увімкнути синхронізацію через мобільний Інтернет</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;шукати на Диску&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада, фонетична розкладка</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Помилка налаштування мережі</translation>
+<translation id="7170041865419449892">За межами досяжності</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Зберегти файл як</translation>
+<translation id="7229570126336867161">Потрібна мережа EVDO</translation>
 <translation id="7238097264433196391">Назва диска</translation>
 <translation id="7248671827512403053">Додаток</translation>
+<translation id="7256405249507348194">Нерозпізнана помилка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступні сервіси</translation>
 <translation id="7283041136720745563">Квота Google Диска замала.</translation>
 <translation id="7294063083760278948">Телугу, транслітерація</translation>
 <translation id="7295662345261934369">Надати доступ іншим користувачам</translation>
+<translation id="7297443947353982503">Неправильне ім’я користувача чи пароль або помилка автентифікації за протоколом EAP</translation>
 <translation id="7309413087278791451">Німецька (Бельгія)</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7343393116438664539">В'єтнамська, телекс</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Вимкнути субтитри</translation>
 <translation id="78946041517601018">Спільні диски</translation>
 <translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
+<translation id="7925247922861151263">Помилка перевірки AAA</translation>
 <translation id="7925686952655276919">Не використовувати мобільне передавання даних для синхронізації</translation>
 <translation id="7928710562641958568">Витягнути пристрій</translation>
 <translation id="7943385054491506837">Розкладка Colemak (США)</translation>
 <translation id="7953739707111622108">Не вдається відкрити пристрій, оскільки його файлову систему не розпізнано.</translation>
 <translation id="7969525169268594403">Словенська</translation>
 <translation id="7972920761225148017">Французька (Швейцарія)</translation>
+<translation id="7973962044839454485">Помилка автентифікації PPP через неправильне ім’я користувача або пароль</translation>
 <translation id="7980421588063892270">Англійська (США), розкладка Colemak</translation>
 <translation id="79907182588096956">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="8008366997883261463">Собака</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8297012244086013755">Клавіатура хангул із 3 наборами клавіш (без клавіші Shift)</translation>
 <translation id="8299269255470343364">Японська</translation>
+<translation id="8300849813060516376">Помилка OTASP</translation>
 <translation id="8312871300878166382">Вставити в папку</translation>
 <translation id="8329978297633540474">Звичайний текст</translation>
 <translation id="8335587457941836791">Відкріпити від панелі запуску</translation>
 <translation id="8335837413233998004">Білоруська</translation>
 <translation id="8336153091935557858">Учора <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Файл або каталог з таким же ім’ям уже існує.</translation>
+<translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8372852072747894550">Грецька</translation>
 <translation id="8395901698320285466">Розміри</translation>
 <translation id="8437209419043462667">Американська</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Концентричні кола</translation>
 <translation id="8484284835977497781">Вибирайте зі своїх нещодавніх фотографій.</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
+<translation id="8492972329130824181">Домашня мережа недоступна. Щоб підключитися, потрібно ввімкнути роумінг мобільних даних.</translation>
 <translation id="8521441079177373948">Англійська (Велика Британія)</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="853494022971700746">Французька (Франція)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
 <translation id="8609695766746872526">Ісландська</translation>
+<translation id="8688591111840995413">Неправильний пароль</translation>
 <translation id="8698464937041809063">Малюнок Google</translation>
 <translation id="8712637175834984815">Виконано</translation>
 <translation id="8713112442029511308">Мальтійська</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9035012421917565900">Елементи не можна перенести назад у розташування "<ph name="DESTINATION_NAME" />", тож ви не зможете відмінити цю дію.</translation>
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
+<translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="908378762078012445">Російська, фонетична розкладка AATSEEL</translation>
 <translation id="9099674669267916096">Кількість сторінок</translation>
 <translation id="9110990317705400362">Ми постійно шукаємо способи зробити перегляд веб-сторінок безпечнішим. Раніше будь-який веб-сайт міг пропонувати вам додати розширення у веб-переглядач. В останніх версіях Google Chrome ви маєте чітко вказати, що хочете встановити ці розширення, додавши їх на сторінці "Розширення". <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

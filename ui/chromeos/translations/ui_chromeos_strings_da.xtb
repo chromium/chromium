@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først flytte dem til mappen med Windows-filer.</translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1119069657431255176">Bzip2-komprimeret tar-arkiv</translation>
+<translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engelsk (USA) med Dvorak-programmeringstastatur</translation>
 <translation id="1134697384939541955">Engelsk (USA) med udvidet tastatur</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome-enheder</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1576937952766665062">Bangla translitteration</translation>
+<translation id="158849752021629804">Hjemmenetværk mangler</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer gøres tilgængelige offline</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
+<translation id="1661867754829461514">Pinkode mangler</translation>
 <translation id="1665611772925418501">Filen kunne ikke ændres.</translation>
 <translation id="1673103856845176271">Der kunne ikke opnås adgang til filen af sikkerhedsmæssige årsager.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebræisk translitteration</translation>
 <translation id="1747761757048858544">Hollandsk (Holland)</translation>
 <translation id="174937106936716857">Samlet antal filer</translation>
+<translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
 <translation id="180035236176489073">Du skal være online for at få adgang til disse filer.</translation>
 <translation id="1807938677607439181">Alle filer</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinsk</translation>
 <translation id="2028997212275086731">RAR-arkiv</translation>
 <translation id="2037845485764049925">Russisk</translation>
+<translation id="2044023416777079300">Der blev ikke registreret noget modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Navne, der begynder med punktum, må kun bruges af systemet. Vælg et andet navn.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementer blev slettet</translation>
 <translation id="2541377937973966830">Indholdet i denne mappe er skrivebeskyttet. Det er ikke alle aktiviteter, der understøttes.</translation>
 <translation id="2542049655219295786">Google-tabel</translation>
+<translation id="2544853746127077729">Godkendelsescertifikatet blev afvist af netværk</translation>
 <translation id="2547921442987553570">Føj til <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Amerikansk (internationalt)</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamil fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
+<translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2620090360073999360">Der er ikke adgang til Google Drev på nuværende tidspunkt.</translation>
 <translation id="2638942478653899953">Der kunne ikke oprettes forbindelse til Google Drev. <ph name="BEGIN_LINK" />Log ud <ph name="END_LINK" />, og log ind igen.</translation>
 <translation id="2649120831653069427">Regnbuefisk</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" kunne ikke åbnes</translation>
 <translation id="3280431534455935878">Forbereder</translation>
 <translation id="3280987981688031357">Vinylplade</translation>
+<translation id="3295357220137379386">Enheden er optaget</translation>
 <translation id="3296763833017966289">Georgisk</translation>
 <translation id="3307875152560779385">Ukrainsk</translation>
 <translation id="3326821416087822643">Komprimerer <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Sorani-kurdisk med arabiskbaseret tastatur</translation>
 <translation id="4363958938297989186">Russisk med fonetisk tastatur</translation>
 <translation id="4364327530094270451">Melon</translation>
+<translation id="4387004326333427325">Godkendelsescertifikatet blev afvist eksternt</translation>
 <translation id="4394214039309501350">Eksternt link</translation>
 <translation id="4418686080762064601">Opret en genvej til dine filer</translation>
 <translation id="4425149324548788773">Mit drev</translation>
+<translation id="4442424173763614572">DNS-opslag mislykkedes</translation>
 <translation id="4470564870223067757">Hangul 2-sæt</translation>
 <translation id="4477002475007461989">Rumænsk</translation>
 <translation id="4477219268485577442">Bulgarsk (fonetisk)</translation>
+<translation id="4508265954913339219">Aktiveringen mislykkedes</translation>
 <translation id="4509667233588080747">Engelsk (USA) med internationalt Workman-tastatur</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4527800702232535228">Denne mappe er delt med Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Administrer deling med Parallels Desktop</translation>
 <translation id="5038625366300922036">Få flere oplysninger...</translation>
 <translation id="5044852990838351217">Armensk</translation>
+<translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="5059127710849015030">Nepalesisk translitteration</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> filer slettes</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Markeringen af alle elementer blev fjernet.</translation>
 <translation id="5838825566232597749">Internationalt amerikansk Workman</translation>
 <translation id="5851063901794976166">Der er intet at se her...</translation>
+<translation id="5864471791310927901">DHCP-opslag mislykkedes</translation>
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiering mislykkedes, uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Aktivér undertekster</translation>
 <translation id="6269630227984243955">Malajisk</translation>
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
+<translation id="6312403991423642364">Ukendt netværksfejl</translation>
 <translation id="6321303798550928047">Vink</translation>
 <translation id="6339145975392024142">Amerikansk internationalt (pc)</translation>
 <translation id="6346310558342052870">Begrænset adgang</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Fransk (Frankrig) Bépo-tastatur</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Forrige</translation>
+<translation id="6732801395666424405">Certifikaterne blev ikke indlæst</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     Der blev fundet <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">På hovedet</translation>
+<translation id="6943836128787782965">Det lykkedes ikke at hente HTTP</translation>
 <translation id="6949408524333579394">Serbisk translitteration</translation>
 <translation id="696203921837389374">Aktivér synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;søg i Drev&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisk)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Netværket kunne ikke konfigureres</translation>
+<translation id="7170041865419449892">Intet signal</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gem fil som</translation>
+<translation id="7229570126336867161">EVDO mangler</translation>
 <translation id="7238097264433196391">Navn på drev</translation>
 <translation id="7248671827512403053">Applikation</translation>
+<translation id="7256405249507348194">Ukendt fejl: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgængelige tjenester</translation>
 <translation id="7283041136720745563">Dine Google Drev-kvote er ikke stor nok.</translation>
 <translation id="7294063083760278948">Telugu translitteration</translation>
 <translation id="7295662345261934369">Del med andre</translation>
+<translation id="7297443947353982503">Brugernavn/adgangskode er forkert, eller også mislykkedes EAP-godkendelsen</translation>
 <translation id="7309413087278791451">Tysk (Belgien)</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Deaktiver undertekster</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
+<translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
 <translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
 <translation id="7928710562641958568">Skub enheden ud</translation>
 <translation id="7943385054491506837">Amerikansk (Colemak)</translation>
 <translation id="7953739707111622108">Denne enhed kan ikke åbnes, fordi dens filsystem ikke blev genkendt.</translation>
 <translation id="7969525169268594403">Slovensk</translation>
 <translation id="7972920761225148017">Fransk (Schweiz)</translation>
+<translation id="7973962044839454485">PPP-godkendelsen mislykkedes på grund af forkert brugernavn eller adgangskode</translation>
 <translation id="7980421588063892270">Engelsk (USA) med Colemak-tastatur</translation>
 <translation id="79907182588096956">Denne fil er beregnet til en pc med Windows-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297012244086013755">Hangul 3-sæt (ingen Shift)</translation>
 <translation id="8299269255470343364">Japansk</translation>
+<translation id="8300849813060516376">OTASP mislykkedes</translation>
 <translation id="8312871300878166382">Indsæt i mappe</translation>
 <translation id="8329978297633540474">Almindelig tekst</translation>
 <translation id="8335587457941836791">Frigør fra hylden</translation>
 <translation id="8335837413233998004">Hviderussisk</translation>
 <translation id="8336153091935557858">I går <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Der findes allerede en fil eller en mappe med samme navn.</translation>
+<translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8484284835977497781">Vælg blandt dine seneste billeder.</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
+<translation id="8492972329130824181">Hjemmenetværket er ikke tilgængeligt. Dataroaming med mobildata skal være aktiveret, før du kan oprette forbindelse.</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="8688591111840995413">Forkert adgangskode</translation>
 <translation id="8698464937041809063">Google-tegning</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8713112442029511308">Maltesisk</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Elementerne kan ikke flyttes tilbage til "<ph name="DESTINATION_NAME" />", så du kan ikke fortryde denne handling.</translation>
 <translation id="9038620279323455325">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vælg et andet navn.</translation>
+<translation id="9046895021617826162">Forbindelsen mislykkedes</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9099674669267916096">Sideantal</translation>
 <translation id="9110990317705400362">Vi leder hele tiden efter nye metoder til at gøre din browsing mere sikker. Før kunne ethvert website anmode dig om at tilføje en udvidelse i din browser. I de nyeste versioner af Google Chrome skal du udtrykkeligt give Chrome besked om, at du vil installere udvidelser, ved at tilføje dem via siden Udvidelser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

@@ -61,6 +61,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1341651618736211726">Rozšírené</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Zbaliť ponuku</translation>
+<translation id="1383597849754832576">Súbory s balíkmi reči sa nedajú stiahnuť. Skúste to neskôr.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1391102559483454063">Zapnuté</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
@@ -130,8 +131,8 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1972950159383891558">Dobrý deň, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Zadávanie textu</translation>
 <translation id="1989113344093894667">Obsah nie je možné nasnímať</translation>
+<translation id="1990046457226896323">Súbory s balíkmi reči boli stiahnuté</translation>
 <translation id="1993072747612765854">Ďalšie informácie o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Vypnúť</translation>
 <translation id="1998100899771863792">Aktuálna plocha</translation>
 <translation id="2016340657076538683">Zadajte správu</translation>
 <translation id="2018630726571919839">Povedz mi vtip</translation>
@@ -437,6 +438,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4451374464530248585">Klávesová skratka Alt + šípka nadol bola zmenená. Ak chcete použiť kláves Page Down, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nadol.</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastaviť nahrávanie obrazovky</translation>
+<translation id="4471354919263203780">Sťahujú sa súbory rozpoznávania reči… <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4477350412780666475">Ďalšia stopa</translation>
 <translation id="4477892968187500306">Toto zariadenie môže obsahovať aplikácie, ktoré neboli overené Googlom.</translation>

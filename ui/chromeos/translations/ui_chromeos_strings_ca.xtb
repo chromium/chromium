@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Per obrir fitxers amb <ph name="APP_NAME" />, primer mou-los a la carpeta de fitxers de Windows.</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1119069657431255176">Arxiu tar comprimit Bzip2</translation>
+<translation id="1119447706177454957">Error intern</translation>
 <translation id="1120073797882051782">Romaja de hangul</translation>
 <translation id="112387589102719461">Anglès (EUA) amb teclat Dvorak per a programadors</translation>
 <translation id="1134697384939541955">Anglès (EUA) amb teclat ampliat</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">dispositius Chrome</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
 <translation id="1576937952766665062">Bengalí (transliteració)</translation>
+<translation id="158849752021629804">Es necessita una xarxa domèstica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="162175252992296058">Portuguès amb teclat internacional dels EUA</translation>
 <translation id="1641780993263690097">Xinès (pinyin)</translation>
 <translation id="1646019627374511909">S'està fent que <ph name="NUMBER_OF_ITEMS" /> fitxers estiguin disponibles sense connexió</translation>
 <translation id="164969095109328410">Dispositiu Chrome</translation>
+<translation id="1661867754829461514">Falta el PIN</translation>
 <translation id="1665611772925418501">El fitxer no s'ha pogut modificar.</translation>
 <translation id="1673103856845176271">No s'ha pogut accedir al fitxer per qüestions de seguretat.</translation>
 <translation id="169515659049020177">Maj</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebreu (transliteració)</translation>
 <translation id="1747761757048858544">Neerlandès (Països Baixos)</translation>
 <translation id="174937106936716857">Total de fitxers</translation>
+<translation id="1773212559869067373">S'ha rebutjat el certificat d'autenticació de manera local</translation>
 <translation id="1775381402323441512">Informació del vídeo</translation>
 <translation id="180035236176489073">Heu d'estar en línia per accedir a aquests fitxers.</translation>
 <translation id="1807938677607439181">Tots els fitxers</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arxiu RAR</translation>
 <translation id="2037845485764049925">Rus</translation>
+<translation id="2044023416777079300">Mòdem no registrat</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Els noms que comencen amb punt estan reservats per al sistema. Trieu un altre nom.</translation>
 <translation id="2079545284768500474">Desfés</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elements suprimits</translation>
 <translation id="2541377937973966830">El contingut d'aquesta carpeta és només de lectura. Algunes activitats no s'admeten.</translation>
 <translation id="2542049655219295786">Taula de Google</translation>
+<translation id="2544853746127077729">La xarxa ha rebutjat el certificat d'autenticació</translation>
 <translation id="2547921442987553570">Afegeix a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2562685439590298522">Google Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tàmil fonètic</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2620090360073999360">No es pot contactar amb Google Drive en aquest moment.</translation>
 <translation id="2638942478653899953">No s'ha pogut accedir a Google Drive. <ph name="BEGIN_LINK" />Tanqueu la sessió<ph name="END_LINK" /> i torneu-la a iniciar.</translation>
 <translation id="2649120831653069427">Peix arc iris</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089"><ph name="PATH" /> no s'ha pogut obrir</translation>
 <translation id="3280431534455935878">S'està preparant</translation>
 <translation id="3280987981688031357">Disc de vinil</translation>
+<translation id="3295357220137379386">El dispositiu està ocupat</translation>
 <translation id="3296763833017966289">Georgià</translation>
 <translation id="3307875152560779385">Ucraïnès</translation>
 <translation id="3326821416087822643">S'està comprimint <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Kurd sorani amb teclat basat en l'àrab</translation>
 <translation id="4363958938297989186">Rus amb teclat fonètic</translation>
 <translation id="4364327530094270451">Meló</translation>
+<translation id="4387004326333427325">S'ha rebutjat el certificat d'autenticació de manera remota</translation>
 <translation id="4394214039309501350">Enllaç extern</translation>
 <translation id="4418686080762064601">Crea una drecera per als fitxers</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
+<translation id="4442424173763614572">La cerca de DNS ha fallat</translation>
 <translation id="4470564870223067757">Configuració 2 de hangul</translation>
 <translation id="4477002475007461989">Romanès</translation>
 <translation id="4477219268485577442">Fonètic búlgar</translation>
+<translation id="4508265954913339219">S'ha produït un error en l'activació.</translation>
 <translation id="4509667233588080747">Anglès (EUA) amb teclat Workman internacional</translation>
 <translation id="4522570452068850558">Detalls</translation>
 <translation id="4527800702232535228">Aquesta carpeta es comparteix amb Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Gestiona la compartició amb Parallels Desktop</translation>
 <translation id="5038625366300922036">Mostra'n més...</translation>
 <translation id="5044852990838351217">Armeni</translation>
+<translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="5059127710849015030">Nepalès (transliteració)</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Se suprimiran <ph name="TOTAL_FILE_SIZE" /> de fitxers</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">S'han suprimit totes les entrades de la selecció.</translation>
 <translation id="5838825566232597749">Workman nord-americà internacional</translation>
 <translation id="5851063901794976166">Això és buit...</translation>
+<translation id="5864471791310927901">Error en la cerca de DHCP</translation>
 <translation id="5911887972742538906">S'ha produït un error en instal·lar l'aplicació per a Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">L'operació de còpia ha fallat; s'ha produït un error inesperat: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Activa els subtítols</translation>
 <translation id="6269630227984243955">Malai</translation>
 <translation id="6287852322318138013">Selecció d'una aplicació per obrir el fitxer</translation>
+<translation id="6312403991423642364">Error de la xarxa desconegut</translation>
 <translation id="6321303798550928047">Salutació</translation>
 <translation id="6339145975392024142">Teclat internacional dels EUA (PC)</translation>
 <translation id="6346310558342052870">Accés restringit</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Francès (França) amb teclat BÉPO</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Anterior</translation>
+<translation id="6732801395666424405">Els certificats no s'han carregat.</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     S'han trobat <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Cap per avall</translation>
+<translation id="6943836128787782965">La sol·licitud HTTP ha fallat</translation>
 <translation id="6949408524333579394">Serbi (transliteració)</translation>
 <translation id="696203921837389374">Activa la sincronització mitjançant dades mòbils</translation>
 <translation id="6965382102122355670">D'acord</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;cerca a Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonètic</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">No s'ha pogut configurar la xarxa</translation>
+<translation id="7170041865419449892">Fora de l'interval</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Anomena i desa</translation>
+<translation id="7229570126336867161">Es necessita EVDO</translation>
 <translation id="7238097264433196391">Nom de la unitat</translation>
 <translation id="7248671827512403053">Aplicació</translation>
+<translation id="7256405249507348194">Error no reconegut: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serveis disponibles</translation>
 <translation id="7283041136720745563">La teva quota d'emmagatzematge de Google Drive no és prou gran.</translation>
 <translation id="7294063083760278948">Telugu (transliteració)</translation>
 <translation id="7295662345261934369">Comparteix amb altres persones</translation>
+<translation id="7297443947353982503">El nom d'usuari o la contrasenya és incorrecte o no s'ha pogut realitzar l'autorització d'EAP.</translation>
 <translation id="7309413087278791451">Alemany (Bèlgica)</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7343393116438664539">Vietnamita (tèlex)</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Desactiva els subtítols</translation>
 <translation id="78946041517601018">Unitats compartides</translation>
 <translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
+<translation id="7925247922861151263">Error en la comprovació d'AAA</translation>
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
 <translation id="7928710562641958568">Expulsa el dispositiu</translation>
 <translation id="7943385054491506837">Colemak nord-americà</translation>
 <translation id="7953739707111622108">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no s'ha reconegut.</translation>
 <translation id="7969525169268594403">Eslovè</translation>
 <translation id="7972920761225148017">Francès (Suïssa)</translation>
+<translation id="7973962044839454485">L'autenticació de PPA ha fallat perquè el nom d'usuari o la contrasenya no eren correctes</translation>
 <translation id="7980421588063892270">Anglès (EUA) amb teclat Colemak</translation>
 <translation id="79907182588096956">Aquest fitxer està dissenyat per a un ordinador amb programari Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="8008366997883261463">Gos</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Font</translation>
 <translation id="8297012244086013755">Configuració 3 de hangul (sense majúscules)</translation>
 <translation id="8299269255470343364">Japonès</translation>
+<translation id="8300849813060516376">Error d'OTASP</translation>
 <translation id="8312871300878166382">Enganxa a la carpeta</translation>
 <translation id="8329978297633540474">Text sense format</translation>
 <translation id="8335587457941836791">Deixa de fixar al prestatge</translation>
 <translation id="8335837413233998004">Bielorús</translation>
 <translation id="8336153091935557858">Ahir a les <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ja existeix un fitxer o un directori amb aquest nom.</translation>
+<translation id="8372369524088641025">Clau WEP no vàlida</translation>
 <translation id="8372852072747894550">Grec</translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">Nord-americà</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Cercles concèntrics</translation>
 <translation id="8484284835977497781">Tria de les teves fotos recents.</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
+<translation id="8492972329130824181">La xarxa domèstica no està disponible. La itinerància de dades mòbils ha d'estar activada per poder connectar-t'hi.</translation>
 <translation id="8521441079177373948">Regne Unit</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="853494022971700746">Francès (França)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>
+<translation id="8688591111840995413">Contrasenya incorrecta</translation>
 <translation id="8698464937041809063">Dibuix de Google</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8713112442029511308">Maltès</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
 <translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
+<translation id="9046895021617826162">S'ha produït un error en la connexió</translation>
 <translation id="908378762078012445">Rus amb teclat AATSEEL fonètic</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>
 <translation id="9110990317705400362">Mai no deixem de cercar maneres de millorar la seguretat de la navegació. Anteriorment, des de qualsevol lloc web se us podia demanar que afegíssiu una extensió al navegador. A les versions més recents de Google Chrome, heu d'afegir aquestes extensions mitjançant la pàgina Extensions per fer saber explícitament a Chrome que voleu instal·lar-les. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

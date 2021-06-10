@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
 <translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
-<translation id="1952728750904661634">Вход в управляемый аккаунт</translation>
 <translation id="1965935827552890526">Завершите то, что вы делали в другом открытом окне Chrome.</translation>
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>
-<translation id="7947953824732555851">Принять и войти</translation>
 <translation id="794799177247607889">Остановить запись журнала</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Нет раскрытых паролей.}=1{Раскрыт {COUNT} пароль.}one{Раскрыт {COUNT} пароль.}few{Раскрыто {COUNT} пароля.}many{Раскрыто {COUNT} паролей.}other{Раскрыто {COUNT} пароля.}}</translation>
 <translation id="7961015016161918242">Нет</translation>

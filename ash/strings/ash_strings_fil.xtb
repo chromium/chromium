@@ -61,6 +61,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
+<translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1391102559483454063">Naka-on</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
@@ -130,8 +131,8 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1972950159383891558">Kumusta, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Pag-input ng text</translation>
 <translation id="1989113344093894667">Hindi ma-capture ang content</translation>
+<translation id="1990046457226896323">Na-download na ang mga speech file</translation>
 <translation id="1993072747612765854">Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">I-off</translation>
 <translation id="1998100899771863792">Kasalukuyang desk</translation>
 <translation id="2016340657076538683">Mag-type ng mensahe</translation>
 <translation id="2018630726571919839">Pahingi ng joke</translation>
@@ -437,6 +438,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4451374464530248585">Nagbago ang keyboard shortcut na Alt + Pababang Arrow. Para magamit ang Page Down key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pababang Arrow.</translation>
 <translation id="445864333228800152">Magandang gabi,</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
+<translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4477892968187500306">Posibleng naglalaman ang device na ito ng mga app na hindi pa nave-verify ng Google.</translation>

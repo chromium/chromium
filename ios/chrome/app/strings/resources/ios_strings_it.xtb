@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Ultima ora</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
-<translation id="1952728750904661634">Accedi con l'account gestito</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
 <translation id="1973912524893600642">Conserva i dati</translation>
 <translation id="1974060860693918893">Avanzate</translation>
@@ -695,7 +694,6 @@ Poiché il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, i tuoi dati di
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esporta password...</translation>
-<translation id="7947953824732555851">Accetta e accedi</translation>
 <translation id="794799177247607889">Interrompi logging</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="7961015016161918242">Mai</translation>

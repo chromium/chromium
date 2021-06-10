@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna köçürün.</translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1119069657431255176">Bzip2 sıxılmış tar arxivi</translation>
+<translation id="1119447706177454957">Daxili xəta</translation>
 <translation id="1120073797882051782">Hanqıl Romaca</translation>
 <translation id="112387589102719461">Proqramçı Dvorak klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="1134697384939541955">Genişləndirilmiş klaviatura ilə İngilis dili (ABŞ)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome cihazları</translation>
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
 <translation id="1576937952766665062">Benqal dilində Transliterasiya</translation>
+<translation id="158849752021629804">Ev şəbəkəsi lazımdır</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">ABŞ Beynəlxalq klaviaturası ilə Portuqal dili</translation>
 <translation id="1641780993263690097">Çin dili (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fayl oflayn əlçatan edilir</translation>
 <translation id="164969095109328410">Chrome cihazı</translation>
+<translation id="1661867754829461514">PIN çatışmır</translation>
 <translation id="1665611772925418501">Fayl dəyişdirilə bilməz.</translation>
 <translation id="1673103856845176271">Fayl təhlükəsizlik məqsədilə əldə edilə bilməz.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">İvrit dilində Transliterasiya</translation>
 <translation id="1747761757048858544">Holland (Niderland)</translation>
 <translation id="174937106936716857">Ümumi fayl sayı</translation>
+<translation id="1773212559869067373">Doğrulama təsdiqi lokal olaraq ləğv edildi</translation>
 <translation id="1775381402323441512">Video məlumatı</translation>
 <translation id="180035236176489073">Bu fayllara daxil olmaq üçün onlayn olmalısınız.</translation>
 <translation id="1807938677607439181">Bütün fayllar</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tiqrin</translation>
 <translation id="2028997212275086731">RAR arxivi</translation>
 <translation id="2037845485764049925">Rus</translation>
+<translation id="2044023416777079300">Modem qeydiyyatdan keçirilməyib</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Nöqtə ilə başlayan adlar sistem üçündür. Lütfən, başqa ad seçin.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> element silindi</translation>
 <translation id="2541377937973966830">Bu qovluğun məzmunları yalnız oxunandır. Bəzi fəaliyyətlər dəstəklənmir.</translation>
 <translation id="2542049655219295786">Google cədvəl</translation>
+<translation id="2544853746127077729">Doğrulama təsdiqi şəbəkə tərəfindən ləğv edildi</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> atırmasına əlavə edin</translation>
 <translation id="255937426064304553">ABŞ Beynəlxalq</translation>
 <translation id="2562685439590298522">Sənəd</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamil dili (Fonetik)</translation>
 <translation id="2579959351793446050">Oriya dili</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videosu</translation>
+<translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2620090360073999360">Hazırda Google Diskə daxil olmaq mümkün deyil.</translation>
 <translation id="2638942478653899953">Google Diskə daxil olmaq alınmadı. Lütfən, <ph name="BEGIN_LINK" />hesabdan çıxın<ph name="END_LINK" /> və yenidən daxil olun.</translation>
 <translation id="2649120831653069427">Göyqurşaqlı balıq</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" açılmadı</translation>
 <translation id="3280431534455935878">Hazırlanır</translation>
 <translation id="3280987981688031357">Vinil yazısı</translation>
+<translation id="3295357220137379386">Cihaz məşğuldur</translation>
 <translation id="3296763833017966289">Gürcü Dili</translation>
 <translation id="3307875152560779385">Ukrayna</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> sıxılır...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Ərəb dili klaviaturası ilə Sorani Kürd dili</translation>
 <translation id="4363958938297989186">Fonetik klaviatura ilə Rus dili</translation>
 <translation id="4364327530094270451">Yemiş</translation>
+<translation id="4387004326333427325">Doğrulama təsdiqi uzaqdan ləğv edildi</translation>
 <translation id="4394214039309501350">Xarici keçid</translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
 <translation id="4425149324548788773">Diskim</translation>
+<translation id="4442424173763614572">DNS sistemi uğursuz oldu</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
 <translation id="4477002475007461989">Rumın</translation>
 <translation id="4477219268485577442">Bolqar fonetikası</translation>
+<translation id="4508265954913339219">Aktivləşdirilmə uğursuz oldu</translation>
 <translation id="4509667233588080747">Beynəlxalq Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop paylaşmasını idarə edin</translation>
 <translation id="5038625366300922036">Digərini görün...</translation>
 <translation id="5044852990838351217">Erməni</translation>
+<translation id="5045550434625856497">Yanlış parol</translation>
 <translation id="5059127710849015030">Nepal dilində Transliterasiya</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> həcmində fayllar silinəcək</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">Bütün daxiletmələr seçimdən silindi.</translation>
 <translation id="5838825566232597749">ABŞ Beynəlxalq İşçisi</translation>
 <translation id="5851063901794976166">Burada baxmalı heç nə yoxdur...</translation>
+<translation id="5864471791310927901">DHCP axtarış uğursuz oldu</translation>
 <translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopyalamaq alınmadı, gözlənilməz xəta:<ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">Subtitri aktiv edin</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Bu faylı açmaq üçün bir tətbiq seçin</translation>
+<translation id="6312403991423642364">Naməlum şəbəkə xətası</translation>
 <translation id="6321303798550928047">Əl yelləyir</translation>
 <translation id="6339145975392024142">ABŞ beynəlxalq (PC) klaviaturası</translation>
 <translation id="6346310558342052870">Giriş məhdudlaşdırılıb</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">Bépo klaviaturası ilə Fransız (Fransa)</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
+<translation id="6732801395666424405">Sertifikatlar yüklənilmədi</translation>
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> nəticə</translation>
 <translation id="6935521024859866267">Alt tərəfi aşağı</translation>
+<translation id="6943836128787782965">HTTP uğursuz oldu</translation>
 <translation id="6949408524333579394">Serb dilində Transliterasiya</translation>
 <translation id="696203921837389374">Mobil data üzərindən sinxronlaşmanı aktiv edin</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Diskdə axtarın&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Fonetikası</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Şəbəkəni konfiqurasiya etmək uğursuz oldu</translation>
+<translation id="7170041865419449892">Xətdən kənar</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Faylın saxlanma formatı:</translation>
+<translation id="7229570126336867161">EVDO lazımdır</translation>
 <translation id="7238097264433196391">Cihazın adı</translation>
 <translation id="7248671827512403053">Tətbiq</translation>
+<translation id="7256405249507348194">Naməlum xəta: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Əlçatan xidmətlər</translation>
 <translation id="7283041136720745563">Google Disk kvotanız kifayət qədər böyük deyil.</translation>
 <translation id="7294063083760278948">Teluqu dilində Transliterasiya</translation>
 <translation id="7295662345261934369">Başqaları ilə paylaşın</translation>
+<translation id="7297443947353982503">İstifadəçi adı/parol yanlışdır və ya EAP-doğrulama uğursuz oldu</translation>
 <translation id="7309413087278791451">Alman dili (Belçika)</translation>
 <translation id="7339898014177206373">Yeni pəncərə</translation>
 <translation id="7343393116438664539">Vyetnam dili (Teleks)</translation>
@@ -646,12 +667,14 @@
 <translation id="7881969471599061635">Subtitri deaktiv edin</translation>
 <translation id="78946041517601018">Paylaşılmış disklər</translation>
 <translation id="7908793776359722643">Hissənin format edilməsi ilə orada saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
+<translation id="7925247922861151263">AAA yoxlanışı uğursuz oldu</translation>
 <translation id="7925686952655276919">Sinxronizasiya üçün mobil data istifadə etməyin</translation>
 <translation id="7928710562641958568">Cihazı çıxarın</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Bu fayl açıla bilməz, çünki onun fayl sistemi tanınmadı.</translation>
 <translation id="7969525169268594403">Sloven</translation>
 <translation id="7972920761225148017">Fransız (İsveçrə)</translation>
+<translation id="7973962044839454485">PPP identifikasiyası yanlış istifadəçi adı və ya parol səbəbindən uğursuz oldu</translation>
 <translation id="7980421588063892270">Colemak klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="79907182588096956">Bu fayl Windows proqram təminatından istifadə edən stolüstü kompüter üçündür. Bu, Chrome OS işlədən cihazınız üçün uyğun deyil. Chrome OS'də faylların açılması barədə <ph name="BEGIN_LINK_HELP" />ətraflı məlumat<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
@@ -681,12 +704,14 @@
 <translation id="8294431847097064396">Mənbə</translation>
 <translation id="8297012244086013755">Hangul 3 Set (Sürüşdürmə yoxdur)</translation>
 <translation id="8299269255470343364">Yapon</translation>
+<translation id="8300849813060516376">OTASP uğursuz oldu</translation>
 <translation id="8312871300878166382">Qovluğa yerləşdirin</translation>
 <translation id="8329978297633540474">Tam mətn</translation>
 <translation id="8335587457941836791">Buferdən çıxarın</translation>
 <translation id="8335837413233998004">Belarus</translation>
 <translation id="8336153091935557858">Dünən <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Eyni adlı fayl və ya kataloq var.</translation>
+<translation id="8372369524088641025">Səhv WEP açarı</translation>
 <translation id="8372852072747894550">Yunan</translation>
 <translation id="8395901698320285466">Ölçülər</translation>
 <translation id="8437209419043462667">ABŞ</translation>
@@ -699,6 +724,7 @@
 <translation id="8477649328507734757">Dairə</translation>
 <translation id="8484284835977497781">Son fotolarınızdan seçin.</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
+<translation id="8492972329130824181">Ev şəbəkəsi əlçatan deyil. Qoşulmaq üçün mobil data rouminqi aktiv edilməlidir.</translation>
 <translation id="8521441079177373948">Böyük Britaniya</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="853494022971700746">Fransız (Fransa)</translation>
@@ -714,6 +740,7 @@
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
 <translation id="8609695766746872526">İsland</translation>
+<translation id="8688591111840995413">Yanlış parol</translation>
 <translation id="8698464937041809063">Google çertyoj</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8713112442029511308">Malta</translation>
@@ -739,6 +766,7 @@
 <translation id="9034924485347205037">Linux faylları</translation>
 <translation id="9035012421917565900">Element yenidən "<ph name="DESTINATION_NAME" />" təyinatına köçürülə bilməz, ona görə də bu əməliyyat geri qaytara bilməyəcəksiniz.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı fayl artıq mövcuddur. Fərqli ad seçin.</translation>
+<translation id="9046895021617826162">Qoşulma uğursuz oldu</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klaviaturası ilə Rus dili</translation>
 <translation id="9099674669267916096">Səhifə sayı</translation>
 <translation id="9110990317705400362">Brauzerinizi güvənli etməyin yollarını daima axtarırıq. Son Chrome versiyasında artırmaları əlavə etmək üçün bunu Chrome'a açıq şəkildə deməlisiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

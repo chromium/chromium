@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមផ្លាស់ទីឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="1062407476771304334">ជំនួស</translation>
 <translation id="1119069657431255176">Bzip2 បានបង្រួមបណ្ណាសារ tar</translation>
+<translation id="1119447706177454957">កំហុសឆ្គងខាងក្នុង</translation>
 <translation id="1120073797882051782">រ៉ូម៉ាចាហានគុល</translation>
 <translation id="112387589102719461">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុច Dvorak សម្រាប់អ្នកសរសេរកម្មវិធី</translation>
 <translation id="1134697384939541955">ភាសា​អង់គ្លេស (សហរដ្ឋ​អាមេរិក) ដែលប្រើ​ក្ដារចុចបន្ថែម</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">ឧបករណ៍ Chrome</translation>
 <translation id="1572585716423026576">កំណត់​ជា​ផ្ទាំង​រូបភាព</translation>
 <translation id="1576937952766665062">ការសរសេរតាម​សូរសព្ទជា​ភាសា​បេងហ្គាល់</translation>
+<translation id="158849752021629804">ត្រូវការបណ្តាញនៅតាមផ្ទះ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="162175252992296058">ភាសាព័រទុយហ្កាល់​ដែលប្រើ​ក្ដារចុច​អាមេរិកអន្តរជាតិ</translation>
 <translation id="1641780993263690097">ភាសាចិន​ភីងអ៊ីង</translation>
 <translation id="1646019627374511909">កំពុង​កំណត់​ឱ្យ​ឯកសារ <ph name="NUMBER_OF_ITEMS" /> អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="164969095109328410">ឧបករណ៍ Chrome</translation>
+<translation id="1661867754829461514">បាត់បង់លេខសម្គាល់</translation>
 <translation id="1665611772925418501">ឯកសារនេះមិនអាចកែសម្រួលទេ។</translation>
 <translation id="1673103856845176271">ឯកសារនេះមិនអាចត្រូវបានចូលប្រើទេដោយសារហេតុផលសុវត្ថិភាព។</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ការសរសេរតាម​សូរសព្ទជាភាសាហេប្រឺ</translation>
 <translation id="1747761757048858544">ភាសា​ហូឡង់ (ហូឡង់)</translation>
 <translation id="174937106936716857">ការរាប់ឯកសារសរុប</translation>
+<translation id="1773212559869067373">វិញ្ញាបនប័ត្រសម្គាល់អត្តសញ្ញាណបានបដិសេធជាមូលដ្ឋាន</translation>
 <translation id="1775381402323441512">ព័ត៌មានអំពី​​វីដេអូ</translation>
 <translation id="180035236176489073">អ្នកត្រូវតែមានអ៊ីនធឺណិតដើម្បីចូលប្រើឯកសារទាំងនេះ។</translation>
 <translation id="1807938677607439181">ឯកសារទាំងអស់</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">ភាសាទីរិនយា</translation>
 <translation id="2028997212275086731">ឯកសារបណ្ណាសារ RAR</translation>
 <translation id="2037845485764049925">ភាសា​រុស្ស៊ី</translation>
+<translation id="2044023416777079300">មិនបានចុះឈ្មោះម៉ូដឹមទេ</translation>
 <translation id="2046702855113914483">មីរ៉ាមេន</translation>
 <translation id="2070909990982335904">ឈ្មោះដែលចាប់ផ្តើមជាមួយសញ្ញាចុចត្រូវបានរក្សាទុកសម្រាប់ប្រព័ន្ធ។ សូមជ្រើសរើសឈ្មោះដ៏ទៃទៀត។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">បានលុបធាតុ <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">ខ្លឹមសារនៃថតនេះគឺសម្រាប់​តែអានប៉ុណ្ណោះ។ មិនអាច​ប្រើសកម្មភាព​មួយចំនួន​បានទេ។</translation>
 <translation id="2542049655219295786">តារាង Google</translation>
+<translation id="2544853746127077729">វិញ្ញាបនប័ត្រសម្គាល់អត្តសញ្ញាណត្រូវបានបដិសេធដោយបណ្តាញ</translation>
 <translation id="2547921442987553570">បន្ថែមទៅ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US អន្តរជាតិ</translation>
 <translation id="2562685439590298522">ឯកសារ</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">សូរសព្ទជាភាសា​តាមិល</translation>
 <translation id="2579959351793446050">ភាសា​អូឌៀ</translation>
 <translation id="2614589611416690597">វីដេអូ <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">ស៊ីមកាតជាប់សោ</translation>
 <translation id="2620090360073999360">មិនអាចទៅកាន់ Google Drive បានទេនៅពេលនេះ។</translation>
 <translation id="2638942478653899953">មិនអាចទៅកាន់ Google Drive ទេ។ សូម <ph name="BEGIN_LINK" />ចាកចេញ<ph name="END_LINK" /> ហើយចូលត្រលប់វិញ។</translation>
 <translation id="2649120831653069427">ត្រីឥន្ធនូ</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">មិនអាចបើក "<ph name="PATH" />" បានទេ</translation>
 <translation id="3280431534455935878">កំពុងរៀបចំ</translation>
 <translation id="3280987981688031357">ថាសសំឡេងវីនីល</translation>
+<translation id="3295357220137379386">ឧបករណ៍​កំពុង​ជាប់រវល់</translation>
 <translation id="3296763833017966289">ភាសាចរជៀ</translation>
 <translation id="3307875152560779385">ភាសា​អ៊ុយក្រែន</translation>
 <translation id="3326821416087822643">កំពុងបង្រួម <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">ភាសាសូរ៉ានី​ឃឺដ​ដែលប្រើ​ក្ដារចុច​ផ្អែកលើ​ភាសា​អារ៉ាប់</translation>
 <translation id="4363958938297989186">ភាសារុស្ស៊ី​ដែលប្រើ​ក្ដារចុច​តាម​សូរសព្ទ</translation>
 <translation id="4364327530094270451">ត្រសក់​ផ្អែម</translation>
+<translation id="4387004326333427325">វិញ្ញាបនប័ត្រសម្គាល់អត្តសញ្ញាណបានបដិសេធពីចម្ងាយ</translation>
 <translation id="4394214039309501350">តំណ​ខាង​ក្រៅ</translation>
 <translation id="4418686080762064601">បង្កើត​ផ្លូវកាត់​សម្រាប់​ឯកសារ​របស់អ្នក</translation>
 <translation id="4425149324548788773">ដ្រាយរបស់ខ្ញុំ</translation>
+<translation id="4442424173763614572">DNS lookup បានបរាជ័យ</translation>
 <translation id="4470564870223067757">ហានគុល 2 ឈុត</translation>
 <translation id="4477002475007461989">ភាសា​រូម៉ានី</translation>
 <translation id="4477219268485577442">សូរសព្ទប៊ុលហ្គារី</translation>
+<translation id="4508265954913339219">ការធ្វើសកម្មភាពបានបរាជ័យ</translation>
 <translation id="4509667233588080747">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុចអន្តរជាតិ Workman</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
 <translation id="4527800702232535228">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">គ្រប់គ្រង​ការចែករំលែក Parallels Desktop</translation>
 <translation id="5038625366300922036">មើលបន្ថែមទៀត...</translation>
 <translation id="5044852990838351217">ភាសាអាមេនី</translation>
+<translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="5059127710849015030">ការ​សរសេរ​តាម​សូរសព្ទជាភាសានេប៉ាល់</translation>
 <translation id="5068919226082848014">ភីហ្សា</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> នៃឯកសារ​នឹងត្រូវលុប</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">បានលុបធាតុទាំងអស់​ចេញពីការជ្រើសរើស។</translation>
 <translation id="5838825566232597749">US Workman អន្តរជាតិ</translation>
 <translation id="5851063901794976166">គ្មានអ្វីមើលទេនៅទីនេះ...</translation>
+<translation id="5864471791310927901">DHCP lookup បានបរាជ័យ</translation>
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
 <translation id="5912396950572065471">ទម្រង់</translation>
 <translation id="5913638992615760742">មិនអាចចម្លង​ប្រតិបត្តិការ​បានទេ បញ្ហាមិនបានរំពឹងទុក៖ <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">បើកដំណើរការចំណងជើងរង</translation>
 <translation id="6269630227984243955">ភាសា​ម៉ាឡេ</translation>
 <translation id="6287852322318138013">ជ្រើសរើសកម្មវិធីដើម្បីបើកឯកសារនេះ</translation>
+<translation id="6312403991423642364">កំហុសឆ្គងបណ្តាញដែលមិនស្គាល់</translation>
 <translation id="6321303798550928047">បក់​ដៃ</translation>
 <translation id="6339145975392024142">អាមេរិក​អន្តរជាតិ (PC)</translation>
 <translation id="6346310558342052870">បាន​រឹតបន្តឹង​ការ​ចូលប្រើ​</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">ភាសា​បារាំង (បារាំង) ដែលប្រើ​ក្ដារចុច Bépo</translation>
 <translation id="6710022688720561421">មនុស្សយន្ត</translation>
 <translation id="6710213216561001401">មុន</translation>
+<translation id="6732801395666424405">វិញ្ញាបនប័ត្រមិនត្រូវបានដំណើរការទេ</translation>
 <translation id="6751256176799620176">បានជ្រើសថតឯកសារ 1</translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6795884519221689054">ខ្លាឃ្មុំ​ផេនដា</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     បានរកឃើញ <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">ផ្កាប់ចុះក្រោម</translation>
+<translation id="6943836128787782965">HTTP បានបរាជ័យ</translation>
 <translation id="6949408524333579394">ការសរសេរតាម​សូរសព្ទជាភាសាស៊ែប៊ី</translation>
 <translation id="696203921837389374">បើកដំណើរការធ្វើសមកម្មនៅលើទិន្នន័យចល័ត</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ស្វែងរក Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">សូរសព្ទ​ជាភាសាកាន់ណាដា</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">បានបរាជ័យក្នុងការកំណត់បណ្តាាញ</translation>
+<translation id="7170041865419449892">នៅក្រៅសេវា</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">រក្សាទុកឯកសារជា</translation>
+<translation id="7229570126336867161">ត្រូវការ EVDO</translation>
 <translation id="7238097264433196391">ឈ្មោះ​ឧបករណ៍ USB</translation>
 <translation id="7248671827512403053">កម្មវិធី</translation>
+<translation id="7256405249507348194">កំហុសឆ្គងដែលមិនបានសម្គាល់៖ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">មានសេវាកម្ម</translation>
 <translation id="7283041136720745563">កម្រិត​កំណត់​នៃ Google ថាស​របស់អ្នក​មិនមាន​ទំហំធំ​គ្រប់គ្រាន់​ទេ។</translation>
 <translation id="7294063083760278948">ការសរសេរតាម​សូរសព្ទជាភាសា​តេលូហ្គូ</translation>
 <translation id="7295662345261934369">ចែក​រំលែក​ជាមួយ​អ្នកដទៃ</translation>
+<translation id="7297443947353982503">ឈ្មោះអ្នកប្រើ/ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬ EAP-auth បានបរាជ័យ</translation>
 <translation id="7309413087278791451">ភាសា​អាល្លឺម៉ង់ (បែលហ្ស៊ិក)</translation>
 <translation id="7339898014177206373">ផ្ទាំងថ្មី</translation>
 <translation id="7343393116438664539">ភាសាវៀតណាម​ថេឡិច</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">បិទដំណើរការចំណងជើងរង</translation>
 <translation id="78946041517601018">ថាស​ដែលបាន​ចែករំលែក</translation>
 <translation id="7908793776359722643">ការសម្អាតផ្នែកណាមួយនឹងលុបទិន្នន័យទាំងអស់ ដែលបានរក្សាទុកនៅក្នុងនោះ។ សកម្មភាព​នេះ​មិន​អាច​​ត្រឡប់វិញ​បានទេ។</translation>
+<translation id="7925247922861151263">ការពិនិត្យ AAA បានបរាជ័យ</translation>
 <translation id="7925686952655276919">កុំប្រើទិន្នន័យទូរស័ព្ទសម្រាប់ធ្វើសមកម្ម</translation>
 <translation id="7928710562641958568">បញ្ចេញឧបករណ៍</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">ឧបករណ៍នេះមិនអាចបើកទេ ពីព្រោះប្រព័ន្ធឯកសាររបស់វាមិនត្រូវបានស្គាល់ទេ។</translation>
 <translation id="7969525169268594403">ភាសាស្លូវ៉ានី</translation>
 <translation id="7972920761225148017">ភាសា​បារាំង (ស្វ៊ីស)</translation>
+<translation id="7973962044839454485">ការសម្គាល់អត្តសញ្ញាណ PPP បានបរាជ័យដោយសារឈ្មោះ និងពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="7980421588063892270">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុច Colemak</translation>
 <translation id="79907182588096956">ឯកសារនេះ​ត្រូវបានរចនាឡើង​សម្រាប់កុំព្យូទ័រ​ដែលប្រើ​កម្មវិធី Windows។ ឯកសារនេះ​មិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក ដែល​ដំណើរការប្រព័ន្ធប្រតិបត្តិការ Chrome ទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពីការបើកឯកសារនៅលើ​ប្រព័ន្ធប្រតិបត្តិការ Chrome។</translation>
 <translation id="8008366997883261463">សត្វឆ្កែ</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">ប្រភព</translation>
 <translation id="8297012244086013755">ហានគុល 3 ឈុត (គ្មាន Shift)</translation>
 <translation id="8299269255470343364">ភាសាជប៉ុន</translation>
+<translation id="8300849813060516376">OTASP បានបរាជ័យ</translation>
 <translation id="8312871300878166382">បិទភ្ជាប់ទៅក្នុងថតឯកសារ</translation>
 <translation id="8329978297633540474">អត្ថបទធម្មតា</translation>
 <translation id="8335587457941836791">ដកការដៅចេញពីធ្នើ</translation>
 <translation id="8335837413233998004">ភាសា​បេឡារុស</translation>
 <translation id="8336153091935557858">ម្សិលមិញ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">មានឯកសារ ឬថតឯកសារដែលមានឈ្មោះដូចនេះមានរួចទៅហើយ។</translation>
+<translation id="8372369524088641025">សោ WEP មិនល្អ</translation>
 <translation id="8372852072747894550">ភាសា​ក្រិក</translation>
 <translation id="8395901698320285466">ទំហំ</translation>
 <translation id="8437209419043462667">អាមេរិក</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8484284835977497781">ជ្រើសរើសពី​រូបថតថ្មីៗ​របស់អ្នក។</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
+<translation id="8492972329130824181">មិនអាចប្រើបណ្ដាញ​​នៅផ្ទះបានទេ។ ត្រូវតែបើកការ​រ៉ូមីង​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីភ្ជាប់។</translation>
 <translation id="8521441079177373948">ភាសាអង់គ្លេស</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
 <translation id="853494022971700746">ភាសា​បារាំង (បារាំង)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">បញ្ជីឯកសារ​បានប្ដូរទៅទិដ្ឋភាព​រូបភាពតូចៗ។</translation>
 <translation id="8601932370724196034">ឯកសារ​រូបភាព Crostini</translation>
 <translation id="8609695766746872526">ភាសា​អ៊ីស្លង់</translation>
+<translation id="8688591111840995413">ពាក្យសម្ងាត់មិនល្អ</translation>
 <translation id="8698464937041809063">គំនូរ Google</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8713112442029511308">ភាសា​ម៉ាល់តា</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">ឯកសារ Linux</translation>
 <translation id="9035012421917565900">ធាតុ​ទាំងនេះ​មិនអាច​ផ្លាស់ទី​ទៅក្នុង '<ph name="DESTINATION_NAME" />' បានទេ ដូច្នេះ​អ្នកនឹង​មិនអាច​ត្រឡប់​សកម្មភាព​នេះវិញ​បានទេ។</translation>
 <translation id="9038620279323455325">ឯកសារដែល​ដាក់ឈ្មោះ "<ph name="FILE_NAME" />" មានរួចហើយ។ សូមជ្រើសរើស​ឈ្មោះផ្សេង។</translation>
+<translation id="9046895021617826162">ការភ្ជាប់បានបរាជ័យ</translation>
 <translation id="908378762078012445">ភាសារុស្ស៊ី​ដែលប្រើ​ក្ដារចុចតាម​សូរសព្ទ AATSEEL</translation>
 <translation id="9099674669267916096">ចំនួន​ទំព័រ</translation>
 <translation id="9110990317705400362">យើងតែងតែស្វែងរកមធ្យោបាយដើម្បីធ្វើឲ្យការរុករករបស់អ្នកមានសុវត្ថិភាពជាងមុនជានិច្ច។ កាលពីមុន គេហទំព័រទាំងឡាយអាចជម្រុញអ្នកឲ្យបន្ថែមកម្មវិធីបន្ថែមទៅក្នុងកម្មវិធីរុករករបស់អ្នក។ នៅក្នុងកំណែចុងក្រោយនៃ Google Chrome អ្នកត្រូវប្រាប់ Chrome ឲ្យច្បាស់ថាអ្នកចង់តំឡើងកម្មវិធីទាំងនេះ ដោយការបន្ថែមពួកវាតាមរយៈទំព័រកម្មវិធីបន្ថែម។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>

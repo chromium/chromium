@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件移至“Windows 文件”文件夹。</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1119069657431255176">bzip2 压缩的 tar 归档</translation>
+<translation id="1119447706177454957">内部错误</translation>
 <translation id="1120073797882051782">韩语（罗马字）</translation>
 <translation id="112387589102719461">英语（美国）Programmer Dvorak 键盘</translation>
 <translation id="1134697384939541955">英语（美国）扩展键盘</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome 设备</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1576937952766665062">孟加拉语音译</translation>
+<translation id="158849752021629804">需要家庭网络</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="162175252992296058">葡萄牙语美式国际键盘</translation>
 <translation id="1641780993263690097">中文拼音</translation>
 <translation id="1646019627374511909">正在将 <ph name="NUMBER_OF_ITEMS" /> 个文件设为“可离线使用”</translation>
 <translation id="164969095109328410">Chrome设备</translation>
+<translation id="1661867754829461514">缺少 PIN</translation>
 <translation id="1665611772925418501">无法修改该文件。</translation>
 <translation id="1673103856845176271">出于安全原因，无法访问该文件。</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">希伯来语音译</translation>
 <translation id="1747761757048858544">荷兰语（荷兰）</translation>
 <translation id="174937106936716857">文件总数</translation>
+<translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
 <translation id="180035236176489073">您必须在线访问这些文件。</translation>
 <translation id="1807938677607439181">所有文件</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">蒂格尼亚语</translation>
 <translation id="2028997212275086731">RAR 归档</translation>
 <translation id="2037845485764049925">俄语</translation>
+<translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="2046702855113914483">拉面</translation>
 <translation id="2070909990982335904">以点开头的名称仅适用于系统文件，请选择其他名称。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2541377937973966830">此文件夹中的内容都是处于只读状态，所以不支持某些活动。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
+<translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
 <translation id="2547921442987553570">添加到“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="255937426064304553">美国英语（国际）</translation>
 <translation id="2562685439590298522">文档</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 视频</translation>
+<translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2620090360073999360">Google 云端硬盘目前无法访问。</translation>
 <translation id="2638942478653899953">无法访问 Google 云端硬盘。请先<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />，然后再重新登录。</translation>
 <translation id="2649120831653069427">彩虹鱼</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">无法打开“<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">正在准备</translation>
 <translation id="3280987981688031357">黑胶唱片</translation>
+<translation id="3295357220137379386">设备正忙</translation>
 <translation id="3296763833017966289">格鲁吉亚语</translation>
 <translation id="3307875152560779385">乌克兰语</translation>
 <translation id="3326821416087822643">正在压缩<ph name="FILE_NAME" />…</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">索拉尼库尔德语（阿拉伯语字母）键盘</translation>
 <translation id="4363958938297989186">俄语注音键盘</translation>
 <translation id="4364327530094270451">甜瓜</translation>
+<translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4394214039309501350">外部链接</translation>
 <translation id="4418686080762064601">为您的文件创建快捷方式</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
+<translation id="4442424173763614572">DNS 查找失败</translation>
 <translation id="4470564870223067757">韩语(2 Set)</translation>
 <translation id="4477002475007461989">罗马尼亚语</translation>
 <translation id="4477219268485577442">保加利亚语（注音）</translation>
+<translation id="4508265954913339219">激活失败</translation>
 <translation id="4509667233588080747">英语（美国）Workman 国际键盘</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4527800702232535228">已与 Parallels Desktop 共享此文件夹</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">管理与 Parallels Desktop 的共享</translation>
 <translation id="5038625366300922036">查看更多…</translation>
 <translation id="5044852990838351217">亚美尼亚语</translation>
+<translation id="5045550434625856497">密码不正确</translation>
 <translation id="5059127710849015030">尼泊尔语音译</translation>
 <translation id="5068919226082848014">披萨</translation>
 <translation id="5081517858322016911">其中的所有文件（共计 <ph name="TOTAL_FILE_SIZE" />）都将被删除</translation>
@@ -452,6 +464,7 @@
 <translation id="5838451609423551646">已取消选择所有条目。</translation>
 <translation id="5838825566232597749">美式 Workman 国际</translation>
 <translation id="5851063901794976166">此处没有可显示的内容…</translation>
+<translation id="5864471791310927901">DHCP 查找失败</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
 <translation id="5913638992615760742">复制操作失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
@@ -487,6 +500,7 @@
 <translation id="6248400709929739064">启用字幕</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
+<translation id="6312403991423642364">未知网络错误</translation>
 <translation id="6321303798550928047">挥手</translation>
 <translation id="6339145975392024142">美式国际 (PC) 键盘</translation>
 <translation id="6346310558342052870">访问权限受限</translation>
@@ -516,6 +530,7 @@
 <translation id="6673674183150363784">法语（法国）Bépo 键盘</translation>
 <translation id="6710022688720561421">机器人</translation>
 <translation id="6710213216561001401">上一项</translation>
+<translation id="6732801395666424405">未加载证书</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6795884519221689054">熊猫</translation>
@@ -542,6 +557,7 @@
     <ph name="LINE_BREAK1" />
     找到了 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">倒栽葱蝴蝶</translation>
+<translation id="6943836128787782965">HTTP 获取请求失败</translation>
 <translation id="6949408524333579394">塞尔维亚语音译</translation>
 <translation id="696203921837389374">在移动数据网络中启用同步功能</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -565,15 +581,20 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - 搜索云端硬盘&lt;em&gt;&lt;/em&gt;</translation>
 <translation id="7135561821015524160">卡纳达语注音</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">无法配置网络</translation>
+<translation id="7170041865419449892">超出范围</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">文件另存为</translation>
+<translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7238097264433196391">驱动器名称</translation>
 <translation id="7248671827512403053">应用</translation>
+<translation id="7256405249507348194">无法识别的错误：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服务</translation>
 <translation id="7283041136720745563">您的 Google 云端硬盘配额不足。</translation>
 <translation id="7294063083760278948">泰卢固语音译</translation>
 <translation id="7295662345261934369">与他人共享</translation>
+<translation id="7297443947353982503">用户名/密码错误或 EAP 身份验证失败</translation>
 <translation id="7309413087278791451">德语（比利时）</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7343393116438664539">越南语电传机键盘</translation>
@@ -644,12 +665,14 @@
 <translation id="7881969471599061635">停用字幕</translation>
 <translation id="78946041517601018">共享云端硬盘</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
+<translation id="7925247922861151263">AAA 检查失败</translation>
 <translation id="7925686952655276919">不使用移动数据进行同步</translation>
 <translation id="7928710562641958568">卸载设备</translation>
 <translation id="7943385054491506837">美国英语(Colemak)</translation>
 <translation id="7953739707111622108">无法识别此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="7969525169268594403">斯洛维尼亚语</translation>
 <translation id="7972920761225148017">法语（瑞士）</translation>
+<translation id="7973962044839454485">用户名或密码不正确，导致 PPP 身份验证失败</translation>
 <translation id="7980421588063892270">英语（美国）Colemak 键盘</translation>
 <translation id="79907182588096956">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="8008366997883261463">杰克罗素梗犬</translation>
@@ -679,12 +702,14 @@
 <translation id="8294431847097064396">来源</translation>
 <translation id="8297012244086013755">韩语（3 Set，无Shift按键版）</translation>
 <translation id="8299269255470343364">日语</translation>
+<translation id="8300849813060516376">OTASP 失败</translation>
 <translation id="8312871300878166382">粘贴到文件夹中</translation>
 <translation id="8329978297633540474">纯文本</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8335837413233998004">白俄罗斯语</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">已存在具有相同名称的文件或目录。</translation>
+<translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8372852072747894550">希腊语</translation>
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8437209419043462667">美国英语</translation>
@@ -697,6 +722,7 @@
 <translation id="8477649328507734757">同心圆</translation>
 <translation id="8484284835977497781">从您的近期照片中选择。</translation>
 <translation id="8487700953926739672">可离线使用</translation>
+<translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
 <translation id="8521441079177373948">英国英语</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="853494022971700746">法语（法国）</translation>
@@ -712,6 +738,7 @@
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
 <translation id="8609695766746872526">冰岛语</translation>
+<translation id="8688591111840995413">密码错误</translation>
 <translation id="8698464937041809063">Google 绘图</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8713112442029511308">马耳他语</translation>
@@ -737,6 +764,7 @@
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9035012421917565900">这些内容一旦移出“<ph name="DESTINATION_NAME" />”便无法移回，因此您将无法撤消这项操作。</translation>
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
+<translation id="9046895021617826162">连接失败</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
 <translation id="9099674669267916096">页数</translation>
 <translation id="9110990317705400362">我们在不断寻找各种方式来提高上网安全。之前，任何网站都可以提示您在浏览器中添加扩展程序；而在最新版本的Google Chrome中，您必须明确告诉Chrome您想要安装这些扩展程序（即：在“扩展程序”页添加它们）后才可以。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

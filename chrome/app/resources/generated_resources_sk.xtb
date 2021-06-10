@@ -548,7 +548,6 @@
 <translation id="1587275751631642843">&amp;Konzola jazyka JavaScript</translation>
 <translation id="1587907146729660231">Dotknite sa prstom vypínača</translation>
 <translation id="1588438908519853928">Normálny</translation>
-<translation id="158849752021629804">Je potrebná domáca sieť</translation>
 <translation id="1588870296199743671">Otvoriť odkaz pomocou...</translation>
 <translation id="1588919647604819635">Pravým tlačidlom kliknite na kartu</translation>
 <translation id="1589055389569595240">Zobraziť pravopis a gramatiku</translation>
@@ -631,7 +630,6 @@
 <translation id="1660204651932907780">Povoliť webom prehrávať zvuk (odporúčané)</translation>
 <translation id="1660763353352708040">Problém s nabíjačkou</translation>
 <translation id="1661156625580498328">Vynúťte šifrovanie AES (odporúča sa).</translation>
-<translation id="1661867754829461514">Chýba kód PIN</translation>
 <translation id="16620462294541761">Vaše heslo sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="166278006618318542">Algoritmus verejného kľúča subjektu</translation>
 <translation id="166439687370499867">Zmena konfigurácií zdieľanej siete nie je povolená</translation>
@@ -737,7 +735,6 @@
 <translation id="1768212860412467516">Odoslanie spätnej väzby k experimentu <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1768278914020124551">Ojoj! Pri pokuse o kontaktovanie registračného servera sa vyskytol problém. Skontrolujte pripojenie k sieti a názov domény a potom to skúste znova.</translation>
 <translation id="1769104665586091481">Otvoriť odkaz v novom &amp;okne</translation>
-<translation id="1773212559869067373">Certifikát na overenie totožnosti bol zamietnutý miestne</translation>
 <translation id="177336675152937177">Dáta hostených aplikácií</translation>
 <translation id="1775706469381199282">Nepovoliť webom používať JavaScript</translation>
 <translation id="1776712937009046120">Pridať používateľa</translation>
@@ -990,7 +987,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2040460856718599782">Hops, pri overovaní vašej totožnosti sa vyskytla chyba. Skontrolujte znova svoje prihlasovacie údaje a skúste to znova.</translation>
 <translation id="2042279886444479655">Aktívne profily</translation>
 <translation id="2044014337866019681">Ak chcete túto reláciu odblokovať, overte účet <ph name="ACCOUNT" />.</translation>
-<translation id="2044023416777079300">Modem nebol zaregistrovaný</translation>
 <translation id="204497730941176055">Názov šablóny certifikátu od spoločnosti Microsoft</translation>
 <translation id="2045117674524495717">Pomocník klávesových skratiek</translation>
 <translation id="2045969484888636535">Pokračovať v blokovaní súborov cookie</translation>
@@ -1475,7 +1471,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2541706104884128042">Bola nastavená nová večierka</translation>
 <translation id="2542050502251273923">Nastaví úroveň ladenia správcu pripojenia k sieti a ďalších služieb príkazom ff_debug.</translation>
 <translation id="2544352060595557290">Táto karta</translation>
-<translation id="2544853746127077729">Certifikát na overenie totožnosti bol zamietnutý sieťou</translation>
 <translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
 <translation id="2548347166720081527">Povoľujete <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Resetovať vyrovnávaciu pamäť profilu eSIM</translation>
@@ -2152,7 +2147,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="32939749466444286">Kontajner Linux sa nespustil. Skúste to znova.</translation>
 <translation id="3294437725009624529">Hosť</translation>
 <translation id="3294686910656423119">Štatistiky používania a prehľady zrútení</translation>
-<translation id="3295357220137379386">Zariadenie je zaneprázdnené</translation>
 <translation id="329838636886466101">Opraviť</translation>
 <translation id="3298789223962368867">Zadali ste neplatnú webovú adresu.</translation>
 <translation id="32991397311664836">Zariadenia:</translation>
@@ -3148,7 +3142,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4384652540891215547">Aktivovať rozšírenie</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385905942116811558">Vyhľadávajú sa zariadenia s rozhraniami Bluetooth a USB</translation>
-<translation id="4387004326333427325">Certifikát na overenie totožnosti bol zamietnutý na diaľku</translation>
 <translation id="4387890294700445764">Prelomené heslá</translation>
 <translation id="4389091756366370506">Používateľ <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a ďalšie (<ph name="NUMBER_OF_OTHER_SWITCHES" />) prepínače</translation>
@@ -3203,7 +3196,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4441147046941420429">Ak chcete pokračovať, vyberte bezpečnostný kľúč zo svojho zariadenia, potom ho znova vložte a klepnite naň</translation>
 <translation id="444134486829715816">Rozbaliť...</translation>
 <translation id="4441928470323187829">Pripnuté vaším správcom</translation>
-<translation id="4442424173763614572">Vyhľadanie DNS zlyhalo</translation>
 <translation id="4443536555189480885">&amp;Pomocník</translation>
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
@@ -3259,7 +3251,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4504940961672722399">Rozšírenie použijete stlačením klávesov <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Slovo už bolo pridané</translation>
 <translation id="4507128560633489176">Dáta boli vymazané.</translation>
-<translation id="4508265954913339219">Aktivácia zlyhala</translation>
 <translation id="4508765956121923607">&amp;Zobraziť zdrojový kód</translation>
 <translation id="4510195992002502722">Spätnú väzbu sa nepodarilo odoslať. Pokus sa opakuje...</translation>
 <translation id="4510479820467554003">Zoznam účtov rodičov</translation>
@@ -4472,7 +4463,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5862319196656206789">Nastaviť pripojené zariadenia</translation>
 <translation id="5863445608433396414">Aktivovať funkcie ladenia</translation>
 <translation id="5864195618110239517">Použiť merané pripojenie</translation>
-<translation id="5864471791310927901">Vyhľadanie servera DHCP zlyhalo</translation>
 <translation id="5864754048328252126">Akcia pri nečinnosti počas nabíjania</translation>
 <translation id="5865508026715185451">Aplikácia <ph name="APP_NAME" /> bude čoskoro pozastavená</translation>
 <translation id="586567932979200359">Prehliadač <ph name="PRODUCT_NAME" /> je spustený z jeho obrazu disku. Inštalácia do počítača vám umožní spustiť ho bez obrazu disku a zabezpečí jeho aktualizáciu.</translation>
@@ -4882,7 +4872,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6309510305002439352">Mikrofón je vypnutý</translation>
 <translation id="6310141306111263820">Profil eSIM karty sa nepodarilo nainštalovať. Požiadajte o pomoc operátora.</translation>
 <translation id="6311220991371174222">Chrome nie je možné spustiť, pretože pri otváraní profilu nastala chyba. Skúste Chrome reštartovať.</translation>
-<translation id="6312403991423642364">Neznáma chyba siete</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrola bezpečnosti prebehla pred 1 dňom}few{Kontrola bezpečnosti prebehla pred {NUM_DAYS} dňami}many{Kontrola bezpečnosti prebehla pred {NUM_DAYS} dňa}other{Kontrola bezpečnosti prebehla pred {NUM_DAYS} dňami}}</translation>
 <translation id="6312638141433622592">Ponúkať zobrazenie článkov v režime čítačky (ak je podporované)</translation>
 <translation id="6313641880021325787">UKONČIŤ VR</translation>
@@ -5255,7 +5244,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="67269783048918309">Odosielať údaje o využití a diagnostiky. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o používaní zariadenia a aplikácií. Nebudú slúžiť na zistenie totožnosti vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie vylepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom Androidu. Používanie tohto <ph name="BEGIN_LINK1" />nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Ak pre dieťa aktivujete dodatočnú aktivitu na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Pripojené, <ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
-<translation id="6732801395666424405">Certifikáty neboli načítané</translation>
 <translation id="6735304988756581115">Zobraziť súbory cookie a ďalšie dáta webov…</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
@@ -5449,7 +5437,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6941937518557314510">Ak chcete vykonať overenie pre hostiteľa <ph name="HOST_NAME" /> pomocou svojho certifikátu, prihláste sa do <ph name="TOKEN_NAME" />.</translation>
 <translation id="6943060957016121200">Povoliť dynamický tethering</translation>
 <translation id="6943176775188458830">Zrušiť tlač</translation>
-<translation id="6943836128787782965">Príkaz get protokolu HTTP zlyhal</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="694592694773692225">Presmerovanie bolo zablokované na tejto stránke.</translation>
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
@@ -5645,12 +5632,10 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7154130902455071009">Zmeniť úvodnú stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existujúca fotka z fotoaparátu alebo súboru</translation>
 <translation id="7163202347044721291">Overuje sa aktivačný kód…</translation>
-<translation id="7165320105431587207">Sieť sa nepodarilo nakonfigurovať</translation>
 <translation id="716640248772308851">Rozšírenie <ph name="EXTENSION" /> môže čítať obrázky, video a zvukové súbory vo vybratých umiestneniach.</translation>
 <translation id="7167486101654761064">&amp;Vždy otvárať súbory tohto typu</translation>
 <translation id="716810439572026343">Sťahuje sa súbor <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimálna veľkosť písma</translation>
-<translation id="7170041865419449892">Mimo rozsah</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
 <translation id="7171000599584840888">Pridať profil…</translation>
 <translation id="7171259390164035663">Nezaregistrovať</translation>
@@ -5705,7 +5690,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7225179976675429563">Chýba typ siete</translation>
 <translation id="7228479291753472782">Upravujte nastavenia, ktoré určujú, či weby môžu používať funkcie, ako sú geolokácia, mikrofón, kamera atď.</translation>
 <translation id="7228523857728654909">Zámka obrazovky a prihlásenie</translation>
-<translation id="7229570126336867161">Je potrebné pripojenie EVDO</translation>
 <translation id="7230787553283372882">Prispôsobiť veľkosť textu</translation>
 <translation id="7232750842195536390">Nepodarilo sa premenovať</translation>
 <translation id="7234010996000898150">Ruší sa obnovenie systému Linux</translation>
@@ -5733,7 +5717,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7255002516883565667">Momentálne máte jednu kartu, ktorú je možné použiť iba v tomto zariadení</translation>
 <translation id="7255935316994522020">Použiť</translation>
 <translation id="7256069762010468647">Web používa vašu kameru</translation>
-<translation id="7256405249507348194">Nerozpoznaná chyba: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Otvárať na karte</translation>
 <translation id="7257173066616499747">Siete Wi‑Fi</translation>
 <translation id="725758059478686223">Tlačová služba</translation>
@@ -5765,7 +5748,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7290242001003353852">Prihlasovacia služba hostená doménou <ph name="SAML_DOMAIN" /> pristupuje k vášmu fotoaparátu.</translation>
 <translation id="7295614427631867477">Upozorňujeme, že Android, Play a príslušné aplikácie sa riadia vlastnými pravidlami zhromažďovania údajov a používania.</translation>
 <translation id="729583233778673644">Povoľte šifrovania AES a RC4. Šifry RC4 sú nezabezpečené, takže použitím tejto možnosti zvýšite riziko.</translation>
-<translation id="7297443947353982503">Používateľské meno alebo heslo je nesprávne alebo zlyhalo overenie EAP-auth</translation>
 <translation id="729761647156315797">Výber jazyka a klávesnice</translation>
 <translation id="7297726121602187087">Tmavozelená</translation>
 <translation id="7299337219131431707">Povoliť hosťovské prehliadanie</translation>
@@ -6366,7 +6348,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7924358170328001543">Chyba presmerovania portu</translation>
 <translation id="7925108652071887026">Údaje automatického dopĺňania</translation>
 <translation id="792514962475806987">Úroveň ukotvenej lupy:</translation>
-<translation id="7925247922861151263">Kontrola AAA zlyhala</translation>
 <translation id="7925285046818567682">Čakanie na <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To som nebol(a) ja.</translation>
 <translation id="7926975587469166629">Prezývka karty</translation>
@@ -6415,7 +6396,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7972714317346275248">Štandard PKCS #1 SHA-384 so šifrovaním RSA</translation>
 <translation id="7973776233567882054">Ktorá z nasledujúcich možností najlepšie opisuje vašu sieť?</translation>
 <translation id="797394244396603170">Vyberte zariadenie, s ktorým chcete zdieľať súbory</translation>
-<translation id="7973962044839454485">Overenie PKS zlyhalo z dôvodu nesprávneho používateľského mena alebo hesla</translation>
 <translation id="7974566588408714340">Skúsiť znova pomocou rozšírenia <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Predvolená farba</translation>
 <translation id="7974936243149753750">Presah obsahu</translation>
@@ -6725,7 +6705,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8299319456683969623">Momentálne ste v režime offline.</translation>
 <translation id="8300011035382349091">Upraviť záložku pre túto kartu</translation>
 <translation id="8300374739238450534">Polnočná modrá</translation>
-<translation id="8300849813060516376">Zlyhanie služby OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresa}few{# adresy}many{# addresses}other{# adries}}</translation>
 <translation id="8304383784961451596">Nemáte oprávnenie používať toto zariadenie. Požiadajte správcu o povolenie na prihlásenie alebo sa prihláste účtom Google pod dohľadom aplikácie Family Link.</translation>
 <translation id="8308016398665340540">Túto sieť zdieľate s ďalšími používateľmi tohto zariadenia</translation>
@@ -6778,7 +6757,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8370294614544004647">Po zavretí laptopu prejsť do režimu spánku</translation>
 <translation id="8371695176452482769">Hovorte…</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnúť zvuk webu}few{Vypnúť zvuk webov}many{Vypnúť zvuk webov}other{Vypnúť zvuk webov}}</translation>
-<translation id="8372369524088641025">Zlý kľúč WEP</translation>
 <translation id="8373652277231415614">Zdieľané adresáre v systéme Crostini</translation>
 <translation id="8376137163494131156">Informujte nás, čo sa deje so zariadením Google Cast.</translation>
 <translation id="8376384591331888629">Vrátane súborov cookie tretích strán na tomto webe</translation>
@@ -6877,7 +6855,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8492685019009920170">Klepnite na senzor odtlačkov prstov. Vaše údaje sú uložené bezpečne a nikdy sa nedostanú mimo zariadenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Weby môžu odosielať vyskakovacie okná a používať presmerovania</translation>
 <translation id="8492960370534528742">Spätná väzba týkajúca sa zariadenia Google Cast</translation>
-<translation id="8492972329130824181">Domáca sieť nie je k dispozícii. Ak sa chcete pripojiť, musíte zapnúť mobilný dátový roaming.</translation>
 <translation id="8493236660459102203">Mikrofón:</translation>
 <translation id="8496717697661868878">Spustenie tohto doplnku</translation>
 <translation id="8497219075884839166">Nástroje systému Windows</translation>
@@ -7051,7 +7028,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8681614230122836773">Chrome našiel vo vašom počítači škodlivý softvér</translation>
 <translation id="8682730193597992579">Tlačiareň <ph name="PRINTER_NAME" /> je pripojená a k dispozícii</translation>
 <translation id="8683081248374354009">Resetovať skupinu</translation>
-<translation id="8688591111840995413">Nesprávne heslo</translation>
 <translation id="8688672835843460752">K dispozícii</translation>
 <translation id="8690129572193755009">Weby môžu žiadať o obsluhu protokolov</translation>
 <translation id="8695139659682234808">Pridajte po nastavení rodičovskú kontrolu</translation>
@@ -7406,7 +7382,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="904451693890288097">Zadajte prístupový kľúč pre zariadenie „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9044646465488564462">Nepodarilo sa pripojiť k sieti: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Odošle Googlu webovú adresu stránky, na ktorú sa pokúšate prejsť</translation>
-<translation id="9046895021617826162">Zlyhanie pripojenia</translation>
 <translation id="9048745018038487540">Vybrať všetky písma</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="9052208328806230490">Tlačiarne ste zaregistrovali v službe <ph name="CLOUD_PRINT_NAME" /> prostredníctvom účtu <ph name="EMAIL" /></translation>

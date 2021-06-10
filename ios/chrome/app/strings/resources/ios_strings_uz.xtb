@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">So‘nggi soat</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
 <translation id="1952172573699511566">Imkoni bo‘lishi bilan sayt matni siz tanlagan tilda ko‘rinadi.</translation>
-<translation id="1952728750904661634">Boshqariladigan hisobga kirish</translation>
 <translation id="1965935827552890526">Yopilmagan Chrome oynangizdagi ishni davom ettiring.</translation>
 <translation id="1973912524893600642">Maʼlumotlar joyida qolsin</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
@@ -695,7 +694,6 @@ Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, undan chiqsangiz, 
 <translation id="7887198238286927132">Maxfiyligingizni muhofaza qilish uchun Chrome axborotlarni bu maydonga kiritmaydi.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Parollarni eksport qilish...</translation>
-<translation id="7947953824732555851">Qabul qilish va kirish</translation>
 <translation id="794799177247607889">Yozib olishni bas qilish</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Hech qaysi parolingiz oshkor etilmagan}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="7961015016161918242">Hech qachon</translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
 <translation id="1952172573699511566">網站將盡可能以您偏好的語言顯示文字。</translation>
-<translation id="1952728750904661634">登入受管理的帳戶</translation>
 <translation id="1965935827552890526">請完成您在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
@@ -693,7 +692,6 @@
 <translation id="7887198238286927132">為保障您的私隱，Chrome 不會自動填入此欄位。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼…</translation>
-<translation id="7947953824732555851">接受並登入</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{沒有密碼被盜用}=1{{COUNT} 個密碼被盜用}other{{COUNT} 個密碼被盜用}}</translation>
 <translation id="7961015016161918242">從來沒有</translation>
@@ -809,7 +807,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9152539721251340337">建立二維條碼</translation>
 <translation id="9157836665414082580">隱藏對話框</translation>
-<translation id="9183059292653643328">這個瀏覽器是由貴機構管理</translation>
+<translation id="9183059292653643328">此瀏覽器由您的機構管理</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>

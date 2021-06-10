@@ -38,6 +38,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1807517590912578995">Chrome প্রোফাইল আলাদা করতে চান?</translation>
+<translation id="1810203443153428607">Chrome OS ইনস্টল করলে আপনার ডিভাইসে থাকা সব ডেটা মুছে যাবে।</translation>
 <translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
 <translation id="1860536484129686729">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরায় অ্যাক্সেস দিতে হবে</translation>
 <translation id="1873233029667955273">Google Chrome আপনার ডিফল্ট ব্রাউজার নয়</translation>
@@ -58,6 +59,16 @@
 <translation id="2348335408836342058">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরা এবং মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="234869673307233423">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">হার্ড ড্রাইভের ডেটা মুছে ফেলে Chrome OS ইনস্টল করুন</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />আমরা Chrome OS ইনস্টল করার জন্য প্রস্তুত! একবার শুরু করে ফেললে:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />সব ফাইল, ডেটা ও আপনার বর্তমান অপারেটিং সিস্টেম মুছে যাবে।
+          <ph name="LIST_ITEM" />Chrome OS ইনস্টল করা হবে।
+          <ph name="LIST_ITEM" />ইনস্টল করা হয়ে গেলে আপনার ডিভাইস বন্ধ হয়ে যাবে।
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে। দরকারি সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Google Chrome সিঙ্ক করতে পারেনি৷</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -171,6 +182,10 @@
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="5434383153637353914">এই পৃষ্ঠা থেকে আপনি সাইন-করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। এইসব অ্যাকাউন্ট Chrome ব্রাউজার ও Play Store অ্যাপ সহ Gmail, Drive ও YouTube-এর মতো পরিষেবায় উপলভ্য। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />শুরু করার আগে দেখে নিন, আপনার ডেটা সংক্রান্ত ব্যাক-আপ আপ-টু-ডেট করা আছে কিনা। Chrome OS ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google কোনও ডেটা নষ্টের জন্য দায়ী হবে না এবং সার্টিফায়েড নয় এমন কোনও মডেলে কাজ Chrome OS কাজ করবে, এই গ্যারেন্টিও দিচ্ছে না। সার্টিফায়েড মডেল সম্বন্ধে আরও জানতে [TBD] দেখুন।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chrome OS ইনস্টল করা ও ডেটা মুছে দেওয়া সম্বন্ধে আরও জানুন: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />শুরু করার জন্য প্রস্তুত থাকলে, “Chrome OS ইনস্টল করুন” বিকল্পে ক্লিক করুন। আমরা কয়েকটি সহজ পদ্ধতিতে ইনস্টল করার ব্যাপারে আপনাকে গাইড করব। আপনার কম্পিউটারে আমরা কোনও পরিবর্তন করার আগে, কনফার্ম করার জন্য আপনি আরেকটি সুযোগ পাবেন।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS ইনস্টল করুন</translation>
 <translation id="556024056938947818">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,6 +221,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS সিস্টেম</translation>
+<translation id="664235759707825982">Chrome OS ইনস্টলের জন্য প্রস্তুত</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
 <translation id="6679975945624592337">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="6739177684496155661">নতুন Chrome প্রোফাইলে কাজ চালিয়ে যেতে চান?</translation>
@@ -225,6 +241,7 @@
 <translation id="7155997830309522122">যদি তাই হয়, তাহলে Chrome-এ আপনার সেভ করা পাসওয়ার্ড এডিট করুন যাতে এটি আপনার নতুন পাসওয়ার্ডের সাথে ম্যাচ করে।</translation>
 <translation id="7161904924553537242">Google Chrome-এ আপনাকে স্বাগতম</translation>
 <translation id="7242029209006116544">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Google Chrome প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chrome ডেটা, যেমন অ্যাপ, বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টের ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে পারবেন, কিন্তু অন্য অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ বিকল্প হিসেবে আপনি আপনার বিদ্যমান Chrome ডেটা আলাদা রাখার জন্য একটি নতুন প্রোফাইল তৈরি করতে পারেন৷ <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS ইনস্টল করা চলছে</translation>
 <translation id="7295052994004373688">Google Chrome UI-এ দেখানোর জন্য এই ভাষা ব্যবহার করা হয়</translation>
 <translation id="7296210096911315575">ব্যবহার ও নিরাপত্তা সম্পর্কে গুরুত্বপূর্ণ তথ্য</translation>
 <translation id="7303916856901595720">নতুন কোনও Chrome প্রোফাইলে অ্যাকাউন্ট সরিয়ে নিয়ে যেতে চান?</translation>

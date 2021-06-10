@@ -545,7 +545,6 @@
 <translation id="1587275751631642843">&amp;JavaScript системийн удирдлагын мессеж</translation>
 <translation id="1587907146729660231">Асаах товчийг хуруугаараа товшино уу</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
-<translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1588870296199743671">Холбоосыг хэрхэн нээх...</translation>
 <translation id="1588919647604819635">Баруун талыг товших карт</translation>
 <translation id="1589055389569595240">Үг үсэг болон дүрмийн алдааг харуул</translation>
@@ -628,7 +627,6 @@
 <translation id="1660204651932907780">Сайтуудад дуу тоглуулахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="1660763353352708040">Тэжээлийн залгуурын асуудал</translation>
 <translation id="1661156625580498328">AES шрифтийг мөрдөх (санал болгосон).</translation>
-<translation id="1661867754829461514">ПИН байхгүй байна</translation>
 <translation id="16620462294541761">Уучлаарай, таны нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="166439687370499867">Хуваалцсан сүлжээний тохиргоог өөрчлөх боломжгүй</translation>
@@ -742,7 +740,6 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />-д санал хүсэлт илгээнэ үү.</translation>
 <translation id="1768278914020124551">Уучлаарай, нэвтэрсэн сервертэй холбогдоход асуудал гарлаа. Сүлжээнийхээ холболт, домайны нэрийг шалгаад дахин оролдоно уу.</translation>
 <translation id="1769104665586091481">Холбоосыг шинэ цонхонд нээх</translation>
-<translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="177336675152937177">Аппликейшний өгөгдлийг зохион байгуулсан</translation>
 <translation id="1775706469381199282">Сайтуудад JavaScript ашиглахыг бүү зөвшөөр</translation>
 <translation id="1776712937009046120">Хэрэглэгч нэмэх</translation>
@@ -996,7 +993,6 @@
 <translation id="2040460856718599782">Өө! Таныг таниулахыг оролдож байх үед ямар нэг зүйл ажиллахаа больсон байна. Бүртгэлийн мэдээллээ давхар шалгаад дахин оролдож үзнэ үү.</translation>
 <translation id="2042279886444479655">Идэвхтэй профайлууд</translation>
 <translation id="2044014337866019681">Та харилцан үйлдлийн түгжээг тайлахын тулд <ph name="ACCOUNT" />-г баталгаажуулж байгаа эсэхээ шалгана уу.</translation>
-<translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="204497730941176055">Майкрософт гэрчилгээний загварын нэр</translation>
 <translation id="2045117674524495717">Товчлуурын шууд холбоосын туслагч</translation>
 <translation id="2045969484888636535">Үүсмэл мэдээллийг үргэ</translation>
@@ -1484,7 +1480,6 @@
 <translation id="2541706104884128042">Унтах цагийн шинэ тохируулга</translation>
 <translation id="2542050502251273923">ff_debug-г ашиглан сүлжээний холболтын менежер болон бусад сүлжээний дебагийн түвшнийг тохируулна.</translation>
 <translation id="2544352060595557290">Энэ таб</translation>
-<translation id="2544853746127077729">Таниулах гэрчилгээг сүлжээнээс цуцалсан байна</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="2548545707296594436">eSIM профайлын завсрын санах ойг шинэчлэх</translation>
@@ -2161,7 +2156,6 @@
 <translation id="32939749466444286">Linux контейнер эхэлсэнгүй. Дахин оролдоно уу.</translation>
 <translation id="3294437725009624529">Зочин</translation>
 <translation id="3294686910656423119">Статистик хэрэглээ болон гэмтлийн тайлан</translation>
-<translation id="3295357220137379386">Төхөөрөмж завгүй байна</translation>
 <translation id="329838636886466101">Засах</translation>
 <translation id="3298789223962368867">Хүчин төгөлдөр бус холбоос оруулсан байна.</translation>
 <translation id="32991397311664836">Төхөөрөмжүүд:</translation>
@@ -3156,7 +3150,6 @@
 <translation id="4384652540891215547">Өргөтгөлийг идэвхжүүлэх</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385905942116811558">Bluetooth болон USB төхөөрөмжүүдийг хайж байна</translation>
-<translation id="4387004326333427325">Баталгаажуулах сертификатыг алсаас цуцалсан байна.</translation>
 <translation id="4387890294700445764">Алдагдсан нууц үгс</translation>
 <translation id="4389091756366370506">Хэрэглэгчийн <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр <ph name="NUMBER_OF_OTHER_SWITCHES" /> сэлгүүр</translation>
@@ -3211,7 +3204,6 @@
 <translation id="4441147046941420429">Үргэлжлүүлэхийн тулд аюулгүй байдлын түлхүүрээ төхөөрөмжөөсөө устгаж, дараа нь дахин залгаад дээр нь хүрнэ үү</translation>
 <translation id="444134486829715816">Өргөтгө...</translation>
 <translation id="4441928470323187829">Таны администратор бэхэлсэн</translation>
-<translation id="4442424173763614572">DNS хайлт амжилтгүй боллоо</translation>
 <translation id="4443536555189480885">Тусламж</translation>
 <translation id="4444304522807523469">USB-ээр эсвэл дотоод сүлжээнд холбогдсон бичиг баримт сканердагч руу нэвтрэх</translation>
 <translation id="4444512841222467874">Хэрэв хангалттай зай байхгүй бол хэрэглэгч болон өгөгдлийг автоматаар устгана.</translation>
@@ -3268,7 +3260,6 @@
 <translation id="4504940961672722399">Энэ дүрс дээр дарж эсвэл <ph name="EXTENSION_SHORTCUT" />  дээр дарж энэ өргөтгөлийг ашиглана уу.</translation>
 <translation id="450552327874992444">Үгийг аль хэдийн нэмсэн</translation>
 <translation id="4507128560633489176">Өгөгдлийг арилгасан.</translation>
-<translation id="4508265954913339219">Идэвхжүүлэлт амжилтгүй боллоо</translation>
 <translation id="4508765956121923607">Эх үүсвэрийг харах</translation>
 <translation id="4510195992002502722">Санал хүсэлтийг илгээж чадсангүй. Дахин оролдож байна...</translation>
 <translation id="4510479820467554003">Эцэг эхийн бүртгэлийн жагсаалт</translation>
@@ -4482,7 +4473,6 @@
 <translation id="5862319196656206789">Холбогдсон төхөөрөмжүүдийг тохируулах</translation>
 <translation id="5863445608433396414">Debugging features-г идэвхгүй болгох</translation>
 <translation id="5864195618110239517">Хязгаартай холболт ашиглах</translation>
-<translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5864754048328252126">Цэнэглэж байх үед идэвхгүй төлөвт хийх үйлдэл</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> удахгүй түр зогсоно</translation>
 <translation id="586567932979200359">Та <ph name="PRODUCT_NAME" />-ийг дискний дүрснээс нь ажилуулж байна. Үүнийг компьютер дээрээ суулгаснаар та үүн дээр дискний дүрсгүйгээр ажиллах боломжтой болох бөгөөд үргэлж шинэчлэгдэж байх болно.</translation>
@@ -4891,7 +4881,6 @@
 <translation id="6309510305002439352">Микрофоныг унтраасан байна.</translation>
 <translation id="6310141306111263820">eSIM профайлыг суулгаж чадсангүй. Тусламж авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6311220991371174222">Таны профайлыг нээх явцад алдаа гарсан тул Chrome-г эхлүүлэх боломжгүй байна. Chrome-г дахин эхлүүлээд үзнэ үү.</translation>
-<translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Аюулгүй байдлын шалгалтыг 1 өдрийн өмнө хийсэн}other{Аюулгүй байдлын шалгалтыг {NUM_DAYS} өдрийн өмнө хийсэн}}</translation>
 <translation id="6312638141433622592">Нийтлэлийг уншигчийн горимд (дэмжсэн үед) харуулахыг санал болгох</translation>
 <translation id="6313641880021325787">VR-С ГАРАХ</translation>
@@ -5264,7 +5253,6 @@
 <translation id="67269783048918309">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Энэ төхөөрөмж одоогоор оношилгоо, төхөөрөмж болон аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээж байна. Үүнийг таны хүүхдийг тодорхойлоход ашиглахгүй бөгөөд энэ нь систем, аппын тогтвортой байдал болон бусад зүйлийг сайжруулахад тусална. Зарим хуримтлуулсан өгөгдөл нь Google аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд мөн адил тусална. Энэ <ph name="BEGIN_LINK1" />тохиргоог<ph name="END_LINK1" /> хэрэглэгчийн зүгээс хэрэгжүүлнэ. Хэрэв таны хүүхдийн Веб, Аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг тэдний Google бүртгэлд хадгалж болзошгүй. <ph name="BEGIN_LINK2" />Нэмэлт мэдээлэл авах<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камер</translation>
-<translation id="6732801395666424405">Гэрчилгээнүүдийг ачаалласангүй</translation>
 <translation id="6735304988756581115">Cookies болон бусад сайтын мэдээллийг харуулах ...</translation>
 <translation id="6736243959894955139">Хаяг</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
@@ -5458,7 +5446,6 @@
 <translation id="6941937518557314510"><ph name="HOST_NAME" />-д гэрчилгээтэйгээ баталгаажуулахын тулд <ph name="TOKEN_NAME" />-д нэвтэрнэ үү.</translation>
 <translation id="6943060957016121200">Шуурхай модем болгохыг идэвхжүүлэх</translation>
 <translation id="6943176775188458830">Хэвлэхийг цуцлах</translation>
-<translation id="6943836128787782965">HTTP амжилтгүй болсон</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="694592694773692225">Энэ хуудсанд дахин чиглүүлэлтийг блоклосон байна.</translation>
 <translation id="6949434160682548041">Нууц үг (сонголтот)</translation>
@@ -5654,12 +5641,10 @@
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>
 <translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7163202347044721291">Идэвхжүүлэх кодыг бататгаж байна...</translation>
-<translation id="7165320105431587207">Сүлжээг тохируулж чадсангүй</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" нь шалгасан байрлал дахь зураг, видео бичлэг болон дууны файлуудыг уншиж чадна.</translation>
 <translation id="7167486101654761064">&amp; Үргэлж энэ төрлийн файлыг нээх</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" />-ыг татаж авч байна</translation>
 <translation id="7168109975831002660">Үсгийн хамгийн бага хэмжээ</translation>
-<translation id="7170041865419449892">Хамрах хүрээнээс гадуур</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>
 <translation id="7171000599584840888">Профайл нэмэх...</translation>
 <translation id="7171259390164035663">Битгий бүртгүүл</translation>
@@ -5714,7 +5699,6 @@
 <translation id="7225179976675429563">Сүлжээний төрөл алга байна</translation>
 <translation id="7228479291753472782">Гео байршил, микрофон, камер зэрэг онцлог ашиглах боломжтой веб хуудасны тохиргоог тодорхойлдог.</translation>
 <translation id="7228523857728654909">Дэлгэцийн түгжээ болон нэвтрэлт</translation>
-<translation id="7229570126336867161">EVDO хэрэгтэй байна</translation>
 <translation id="7230787553283372882">Текстийн хэмжээгээ өөрчлөх</translation>
 <translation id="7232750842195536390">Нэрийг өөрчилж чадсангүй</translation>
 <translation id="7234010996000898150">Linux-г сэргээхийг цуцалж байна</translation>
@@ -5742,7 +5726,6 @@
 <translation id="7255002516883565667">Танд одоогоор зөвхөн энэ төхөөрөмж дээр ашиглах боломжтой нэг карт байна</translation>
 <translation id="7255935316994522020">Хэрэглэх</translation>
 <translation id="7256069762010468647">Сайт таны камерыг ашиглаж байна</translation>
-<translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Шинэ цонхонд нээх</translation>
 <translation id="7257173066616499747">Wi-Fi сүлжээ</translation>
 <translation id="725758059478686223">Хэвлэх үйлчилгээ</translation>
@@ -5774,7 +5757,6 @@
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />-н хост хийсэн энэхүү нэвтрэх төхөөрөмж нь таны камерт хандаж байна.</translation>
 <translation id="7295614427631867477">Android, Play болон холбоотой аппууд нь өөрсдийн өгөгдлийн цуглуулга болон ашиглалтын удирдамжид захирагддаг болохыг анхаарна уу.</translation>
 <translation id="729583233778673644">AES болон RC4 шифрлэлтийг зөвшөөрнө үү. RC4 цифр нь аюултай учир энэхүү сонголтыг ашигласнаар таны эрсдэлийг нэмэгдүүлнэ.</translation>
-<translation id="7297443947353982503">Хэрэглэгчийн нэр/нууц үг буруу эсвэл EAP-Auth амжилтгүй болсон байна</translation>
 <translation id="729761647156315797">Хэл, гараа сонгоно уу</translation>
 <translation id="7297726121602187087">Бараан ногоон</translation>
 <translation id="7299337219131431707">Зочин хөтөчийг идэвхжүүлэх</translation>
@@ -6375,7 +6357,6 @@
 <translation id="7924358170328001543">Порт дамжуулахад алдаа гарлаа</translation>
 <translation id="7925108652071887026">Автоматаар бөглөх мэдээлэл</translation>
 <translation id="792514962475806987">Суурилуулсан томруулалтын түвшин:</translation>
-<translation id="7925247922861151263">AAA шалгалт амжилтгүй боллоо</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ийг хүлээж байна...</translation>
 <translation id="7926423016278357561">Би байгаагүй.</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
@@ -6424,7 +6405,6 @@
 <translation id="7972714317346275248">RSA шифрлэлттэй PKCS # 1 SHA-384</translation>
 <translation id="7973776233567882054">Дараахаас аль нь таны сүлжээг хамгийн сайн тодорхойлж байна вэ?</translation>
 <translation id="797394244396603170">Файл хуваалцахыг хүссэн төхөөрөмжөө сонгох</translation>
-<translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />-ыг ашиглан дахин оролдож үзнэ үү</translation>
 <translation id="7974713334845253259">Өгөгдмөл өнгө</translation>
 <translation id="7974936243149753750">Дэлгэцийн дүрсийг бүтнээр нь гаргахгүй байх</translation>
@@ -6732,7 +6712,6 @@
 <translation id="8299319456683969623">Та одоогоор офлайн байна.</translation>
 <translation id="8300011035382349091">Энэ табын хавчуургыг засах</translation>
 <translation id="8300374739238450534">Хар хөх</translation>
-<translation id="8300849813060516376">OTASP амжилтгүй болсон</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Хаяг}other{# хаяг}}</translation>
 <translation id="8304383784961451596">Та энэ төхөөрөмжийг ашиглах зөвшөөрөлгүй байна. Нэвтрэх зөвшөөрөл авахын тулд администратортай холбогдох буюу эсхүл Family Link-р хянадаг Google Бүртгэлээр нэвтэрнэ үү.</translation>
 <translation id="8308016398665340540">Та энэ сүлжээг энэ төхөөрөмжийн бусад хэрэглэгчтэй хуваалцаж байна</translation>
@@ -6785,7 +6764,6 @@
 <translation id="8370294614544004647">Зөөврийн компьютерыг хаасан үед идэвхгүй болох</translation>
 <translation id="8371695176452482769">Одоо ярьж болно</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Сайтын дууг хаах}other{Сайтуудын дууг хаах}}</translation>
-<translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8373652277231415614">Crostini-н хуваалцсан лавлахууд</translation>
 <translation id="8376137163494131156">Google Cast-д юу болж байгааг бидэнд хэлнэ үү.</translation>
 <translation id="8376384591331888629">Энэ сайт дээрх гуравдагч талын күүкитэй цуг</translation>
@@ -6884,7 +6862,6 @@
 <translation id="8492685019009920170">Хуруугаараа хурууны хээ мэдрэгчид хүрнэ үү. Таны өгөгдлийг аюулгүй хадгалдаг бөгөөд таны <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="8492822722330266509">Сайтууд попапыг илгээж, дахин чиглүүлэлтийг ашиглах боломжтой</translation>
 <translation id="8492960370534528742">Google Cast-н cанал хүсэлт</translation>
-<translation id="8492972329130824181">Гэрийн сүлжээ боломжгүй байна. Холбогдохын тулд мобайл дата роумингийг идэвхжүүлсэн байх ёстой.</translation>
 <translation id="8493236660459102203">Микрофон:</translation>
 <translation id="8496717697661868878">Энэ нэмэлт өргөтгөлийг ажиллуул</translation>
 <translation id="8497219075884839166">Windows хэрэгсэл</translation>
@@ -7058,7 +7035,6 @@
 <translation id="8681614230122836773">Chrome таны компьютер дээрээс аюултай программ хангамж оллоо</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> хэдийн холбогдсон, бэлэн байна</translation>
 <translation id="8683081248374354009">Бүлгийг шинэчлэх</translation>
-<translation id="8688591111840995413">Муу нууц үг</translation>
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="8690129572193755009">Сайтууд протокол зохицуулахыг хүсэх боломжтой</translation>
 <translation id="8695139659682234808">Тохируулгын дараа эцэг эхийн хяналтыг нэмэх</translation>
@@ -7409,7 +7385,6 @@
 <translation id="904451693890288097">"<ph name="DEVICE_NAME" />"-д нэвтрэх түлхүүрийг оруулна уу. Үүнд:</translation>
 <translation id="9044646465488564462">Сүлжээнд холбогдож чадсангүй: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Таны хандахыг хүсэж буй хуудасны веб хаягийг Google-д илгээдэг</translation>
-<translation id="9046895021617826162">Холболт амжилтгүй боллоо</translation>
 <translation id="9048745018038487540">Бүх фонтыг сонгох</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>
 <translation id="9052208328806230490">Та <ph name="EMAIL" /> бүртгэлийг ашиглан принтерийг <ph name="CLOUD_PRINT_NAME" /> руу бүртгүүлсэн байна.</translation>

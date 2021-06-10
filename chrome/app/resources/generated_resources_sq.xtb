@@ -543,7 +543,6 @@
 <translation id="1587275751631642843">Paneli i &amp;JavaScript</translation>
 <translation id="1587907146729660231">Prek butonin e energjisë me gisht</translation>
 <translation id="1588438908519853928">Normal</translation>
-<translation id="158849752021629804">Nevojitet rrjeti i shtëpisë</translation>
 <translation id="1588870296199743671">Hape lidhjen me...</translation>
 <translation id="1588919647604819635">Kliko me të djathtin te karta</translation>
 <translation id="1589055389569595240">Shfaq drejtshkrimin dhe gramatikën</translation>
@@ -626,7 +625,6 @@
 <translation id="1660204651932907780">Lejo që sajtet të luajnë tinguj (rekomandohet)</translation>
 <translation id="1660763353352708040">Problem me përshtatësin elektrik</translation>
 <translation id="1661156625580498328">Detyro enkriptimin AES (rekomandohet).</translation>
-<translation id="1661867754829461514">Kodi PIN mungon</translation>
 <translation id="16620462294541761">Na vjen keq, fjalëkalimi nuk mund të verifikohej. Provo sërish.</translation>
 <translation id="166278006618318542">Algoritmi i çelësit publik të subjektit</translation>
 <translation id="166439687370499867">Nuk lejohet ndryshimi i konfigurimeve të rrjetit</translation>
@@ -732,7 +730,6 @@
 <translation id="1768212860412467516">Dërgo komente për <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Kishte një problem gjatë kontaktimit të serverit të identifikimit. Kontrollo lidhjen me rrjetin dhe emrin e domenit, më pas provo sërish.</translation>
 <translation id="1769104665586091481">Hape lidhjen në dritare &amp;të re</translation>
-<translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="177336675152937177">Të dhënat e strehuara të aplikacionit</translation>
 <translation id="1775706469381199282">Mos lejo që sajtet të përdorin JavaScript</translation>
 <translation id="1776712937009046120">Shto përdorues</translation>
@@ -985,7 +982,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
 <translation id="2042279886444479655">Profilet aktive</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
-<translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">Ndihmësi i shkurtoreve të tastierës</translation>
 <translation id="2045969484888636535">Vazhdo bllokimin e kukive</translation>
@@ -1471,7 +1467,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2541706104884128042">U vendos orari i ri i gjumit</translation>
 <translation id="2542050502251273923">Cakton nivelin e korrigjimit për menaxherin e lidhjes së rrjetit dhe shërbimet e tjera duke përdorur ff_debug.</translation>
 <translation id="2544352060595557290">Kjo skedë</translation>
-<translation id="2544853746127077729">Certifikata e vërtetimit u refuzua nga rrjeti</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> është lejuar</translation>
 <translation id="2548545707296594436">Rivendos memorien specifike të profilit të eSIM</translation>
@@ -2147,7 +2142,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="32939749466444286">Kontejneri i Linux nuk filloi. Provo sërish.</translation>
 <translation id="3294437725009624529">Vizitor</translation>
 <translation id="3294686910656423119">Raportet e statistikave të përdorimit dhe të ndërprerjeve aksidentale</translation>
-<translation id="3295357220137379386">Pajisja është e zënë</translation>
 <translation id="329838636886466101">Riparoje</translation>
 <translation id="3298789223962368867">U fut URL e pavlefshme.</translation>
 <translation id="32991397311664836">Pajisjet:</translation>
@@ -3143,7 +3137,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4384652540891215547">Aktivizo shtesën</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385905942116811558">Po kërkon për pajisjet me Bluetooth dhe USB</translation>
-<translation id="4387004326333427325">Certifikata e vërtetimit u refuzua në largësi</translation>
 <translation id="4387890294700445764">Fjalëkalimet e komprometuara</translation>
 <translation id="4389091756366370506">Përdoruesi <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe <ph name="NUMBER_OF_OTHER_SWITCHES" /> çelësa të tjerë</translation>
@@ -3198,7 +3191,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4441147046941420429">Për të vazhduar, hiqe çelësin tënd të sigurisë nga pajisja jote dhe më pas fute përsëri dhe preke atë</translation>
 <translation id="444134486829715816">Zgjero...</translation>
 <translation id="4441928470323187829">Gozhduar nga administratori yt</translation>
-<translation id="4442424173763614572">Kërkimi i DNS-së dështoi</translation>
 <translation id="4443536555189480885">&amp;Ndihma</translation>
 <translation id="4444304522807523469">Qasu te skanerët e dokumenteve të lidhur me USB ose në rrjetin lokal</translation>
 <translation id="4444512841222467874">Nëse nuk është bërë e disponueshme hapësira, përdoruesit dhe të dhënat mund të hiqen automatikisht.</translation>
@@ -3254,7 +3246,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4504940961672722399">Përdore këtë shtesë duke klikuar këtë ikonë ose duke shtypur <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Fjala është shtuar tashmë</translation>
 <translation id="4507128560633489176">Të dhënat u pastruan.</translation>
-<translation id="4508265954913339219">Aktivizimi dështoi</translation>
 <translation id="4508765956121923607">Shiko b&amp;urimin</translation>
 <translation id="4510195992002502722">Dërgimi i komentit dështoi. Po riprovon...</translation>
 <translation id="4510479820467554003">Lista e llogarive të prindërve</translation>
@@ -4467,7 +4458,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5862319196656206789">Konfiguro pajisjet e lidhura</translation>
 <translation id="5863445608433396414">Aktivizo funksionet e korrigjimit</translation>
 <translation id="5864195618110239517">Përdor lidhjen me matje</translation>
-<translation id="5864471791310927901">Kërkimi i DHCP-së dështoi</translation>
 <translation id="5864754048328252126">Veprimi i gjendjes joaktive gjatë karikimit</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> do të vendoset në pauzë së shpejti</translation>
 <translation id="586567932979200359">Po e ekzekuton <ph name="PRODUCT_NAME" /> nga imazhi i tij i diskut. Instalimi i tij në kompjuter lejon që ta ekzekutosh pa imazhin e diskut dhe garanton se do të mbahet i përditësuar.</translation>
@@ -4877,7 +4867,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6309510305002439352">Mikrofoni është çaktivizuar</translation>
 <translation id="6310141306111263820">Profili i kartës eSIM nuk mund të instalohej. Për ndihmë, kontakto me operatorin celular.</translation>
 <translation id="6311220991371174222">Chrome nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo ta rinisësh Chrome.</translation>
-<translation id="6312403991423642364">Gabim i panjohur në rrjet</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 ditë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_DAYS} ditë më parë}}</translation>
 <translation id="6312638141433622592">Ofro shfaqjen e artikujve në modalitetin e lexuesit, kur mbështetet</translation>
 <translation id="6313641880021325787">DIL NGA VR</translation>
@@ -5250,7 +5239,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="67269783048918309">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">E lidhur, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6732801395666424405">Certifikatat nuk janë ngarkuar</translation>
 <translation id="6735304988756581115">Shfaq kukit dhe të dhëna të tjera të faqes...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5444,7 +5432,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6941937518557314510">Identifikohu te <ph name="TOKEN_NAME" /> për t'u verifikuar te <ph name="HOST_NAME" /> me certifikatën tënde.</translation>
 <translation id="6943060957016121200">Aktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="6943176775188458830">Anulo printimin</translation>
-<translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="694592694773692225">Ridrejtimi u bllokua në këtë faqe.</translation>
 <translation id="6949434160682548041">Fjalëkalimi (opsional)</translation>
@@ -5640,12 +5627,10 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7154130902455071009">Ndrysho faqen tënde të nisjes te: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Fotografi ekzistuese nga kamera ose skedari</translation>
 <translation id="7163202347044721291">Po verifikon kodin e aktivizimit...</translation>
-<translation id="7165320105431587207">Konfigurimi i rrjetit dështoi</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" mund të lexojë imazhe, video dhe skedarë audio në vendndodhjet e verifikuara.</translation>
 <translation id="7167486101654761064">&amp;Hapi gjithmonë skedarët e këtij lloji</translation>
 <translation id="716810439572026343">Po shkarkon <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Madhësia minimale e shkrimit</translation>
-<translation id="7170041865419449892">Jashtë mbulimit</translation>
 <translation id="7170236477717446850">Fotografia e profilit</translation>
 <translation id="7171000599584840888">Shto profil...</translation>
 <translation id="7171259390164035663">Mos u regjistro</translation>
@@ -5700,7 +5685,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7225179976675429563">Mungon lloji i rrjetit</translation>
 <translation id="7228479291753472782">Manipulo cilësimet që specifikojnë nëse sajtet e uebit mund të përdorin funksione si vendndodhja gjeografike, mikrofoni, kamera etj.</translation>
 <translation id="7228523857728654909">Kyçja e ekranit dhe identifikimi</translation>
-<translation id="7229570126336867161">Nevojitet EVDO</translation>
 <translation id="7230787553283372882">Personalizo madhësinë e tekstit</translation>
 <translation id="7232750842195536390">Riemërtimi dështoi</translation>
 <translation id="7234010996000898150">Po anulohet restaurimi i Linux</translation>
@@ -5728,7 +5712,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7255002516883565667">Në këtë moment, ke një kartë që mund të përdoret vetëm në këtë pajisje</translation>
 <translation id="7255935316994522020">Zbato</translation>
 <translation id="7256069762010468647">Sajti po përdor kamerën tënde</translation>
-<translation id="7256405249507348194">Gabim i panjohur: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Hap në një skedë</translation>
 <translation id="7257173066616499747">Rrjetet Wi-Fi</translation>
 <translation id="725758059478686223">Shërbimi i printimit</translation>
@@ -5760,7 +5743,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7290242001003353852">Ky shërbim identifikimi i strehuar nga <ph name="SAML_DOMAIN" />, ka qasje te kamera jote.</translation>
 <translation id="7295614427631867477">Ki parasysh se Android, Play dhe aplikacionet shoqëruese drejtohen nga politikat e tyre të mbledhjes dhe të përdorimit të të dhënave.</translation>
 <translation id="729583233778673644">Lejo enkriptimin AES dhe RC4. Përdorimi i këtij opsioni rrit rrezikun për ty, pasi shifrat RC4 nuk janë të sigurta.</translation>
-<translation id="7297443947353982503">Emri i përdoruesit/fjalëkalimi është i pasaktë ose vërtetimi i EAP-së dështoi</translation>
 <translation id="729761647156315797">Zgjidh gjuhën dhe tastierën</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
 <translation id="7299337219131431707">Aktivizo shfletimin "vizitor"</translation>
@@ -6360,7 +6342,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7924358170328001543">Gabim në transferimin e portës</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
 <translation id="792514962475806987">Niveli i zmadhimit të stacionimit:</translation>
-<translation id="7925247922861151263">Kontrolli AAA dështoi</translation>
 <translation id="7925285046818567682">Po pret për <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nuk isha unë.</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
@@ -6409,7 +6390,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
 <translation id="7973776233567882054">Cilat nga të mëposhtmet e përshkruan më mirë rrjetin tënd?</translation>
 <translation id="797394244396603170">Zgjidh pajisjen me të cilën dëshiron të ndash skedarë</translation>
-<translation id="7973962044839454485">Vërtetimi i PPP-së dështoi për shkak të emrit të përdoruesit ose fjalëkalimit të gabuar</translation>
 <translation id="7974566588408714340">Riprovo duke përdorur <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Ngjyra e parazgjedhur</translation>
 <translation id="7974936243149753750">Kapërcimi i ekranit</translation>
@@ -6719,7 +6699,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8299319456683969623">Aktualisht je jashtë linje.</translation>
 <translation id="8300011035382349091">Modifiko faqeshënuesin për këtë skedë</translation>
 <translation id="8300374739238450534">Blu mesnate</translation>
-<translation id="8300849813060516376">OTASP dështoi</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresë}other{# adresa}}</translation>
 <translation id="8304383784961451596">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për lejen e identifikimit ose identifikohu me një "Llogari të Google" të mbikëqyrur nga Family Link.</translation>
 <translation id="8308016398665340540">Po e ndan këtë rrjet me përdoruesit e tjerë të kësaj pajisjeje</translation>
@@ -6772,7 +6751,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8370294614544004647">Në gjumë kur mbyllet laptopi</translation>
 <translation id="8371695176452482769">Fol tani</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Çaktivizo zërin e sajtit}other{Çaktivizo zërin e sajteve}}</translation>
-<translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8373652277231415614">Direktoritë e ndara të Crostini</translation>
 <translation id="8376137163494131156">Na trego se çfarë po ndodh me Google Cast.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
@@ -6871,7 +6849,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8492685019009920170">Prek me gisht sensorin e gjurmës së gishtit. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sajtet mund të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>
 <translation id="8492960370534528742">Komentet për Google Cast</translation>
-<translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8493236660459102203">Mikrofoni:</translation>
 <translation id="8496717697661868878">Ekzekuto këtë përbërës shtesë</translation>
 <translation id="8497219075884839166">Programet ndihmëse të Windows</translation>
@@ -7045,7 +7022,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8681614230122836773">Chrome gjeti softuer keqdashës në kompjuterin tënd</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> është lidhur dhe është gati</translation>
 <translation id="8683081248374354009">Rivendos grupin</translation>
-<translation id="8688591111840995413">Fjalëkalim i gabuar</translation>
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="8690129572193755009">Sajtet mund të kërkojnë të menaxhojnë protokollet</translation>
 <translation id="8695139659682234808">Shto kontrollet prindërore pas konfigurimit</translation>
@@ -7398,7 +7374,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="904451693890288097">Fut çelësin e kalimit për "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Dërgon adresat e uebit në faqen që po përpiqesh të arrish në Google</translation>
-<translation id="9046895021617826162">Lidhja dështoi</translation>
 <translation id="9048745018038487540">Zgjidh të gjitha fontet</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>
 <translation id="9052208328806230490">Ke regjistruar printerët e tu me <ph name="CLOUD_PRINT_NAME" /> duke përdorur llogarinë <ph name="EMAIL" /></translation>

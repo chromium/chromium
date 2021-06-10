@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">শেষ ঘণ্টা</translation>
 <translation id="1941314575388338491">কপি করতে দুবার আলতো চাপুন।</translation>
 <translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
-<translation id="1952728750904661634">পরিচালিত অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="1965935827552890526">আপনার খুলে রাখা অন্যান্য Chrome উইন্ডোতে যেসব কাজ করছেন, সেগুলি সম্পূর্ণ করুন।</translation>
 <translation id="1973912524893600642">ডেটা রাখুন</translation>
 <translation id="1974060860693918893">উন্নত</translation>
@@ -696,7 +695,6 @@
 <translation id="7887198238286927132">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রটি নিজে থেকে পূরণ করবে না।</translation>
 <translation id="7938254975914653459">ফেসটাইম</translation>
 <translation id="7939128259257418052">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
-<translation id="7947953824732555851">সম্মত হয়ে সাইন-ইন করুন</translation>
 <translation id="794799177247607889">লগ করা বন্ধ করুন</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}one{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}other{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}}</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
@@ -812,6 +810,7 @@
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9152539721251340337">একটি QR কোড তৈরি করুন</translation>
 <translation id="9157836665414082580">ডায়ালগ রুদ্ধ করুন</translation>
+<translation id="9183059292653643328">আপনার সংস্থা ব্রাউজারটি ম্যানেজ করছে</translation>
 <translation id="9188680907066685419">ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করুন</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>

@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows கோப்புகள் கோப்புறைக்கு நகர்த்தவும்.</translation>
 <translation id="1062407476771304334">மாற்றியமை</translation>
 <translation id="1119069657431255176">Bzip2 compressed tar archive</translation>
+<translation id="1119447706177454957">அகப் பிழை</translation>
 <translation id="1120073797882051782">ஹாங்குல் ரோமஜா</translation>
 <translation id="112387589102719461">ஆங்கிலம் (யூஎஸ்) - புரோகிராமர் டிவோர்க் கீபோர்டு</translation>
 <translation id="1134697384939541955">ஆங்கிலம் (யூஎஸ்) - நீட்டிக்கப்பட்ட கீபோர்டு</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome சாதனங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
 <translation id="1576937952766665062">வங்காளம் ஒலிபெயர்ப்பு</translation>
+<translation id="158849752021629804">உள்ளூர் நெட்வொர்க் தேவை</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> பெ.பை.</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="162175252992296058">போர்ச்சுகீஸ் - யூஎஸ் சர்வதேசக் கீபோர்டு</translation>
 <translation id="1641780993263690097">சீனம் (பின்யின்)</translation>
 <translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> கோப்புகளைப் பதிவிறக்குகிறது</translation>
 <translation id="164969095109328410">Chrome சாதனம்</translation>
+<translation id="1661867754829461514">PIN இல்லை</translation>
 <translation id="1665611772925418501">கோப்பை மாற்ற முடியவில்லை.</translation>
 <translation id="1673103856845176271">பாதுகாப்பு காரணங்களுக்காக கோப்பை அணுக முடியவில்லை.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ஹீப்ரு ஒலிபெயர்ப்பு</translation>
 <translation id="1747761757048858544">டச்சு (நெதர்லாந்து)</translation>
 <translation id="174937106936716857">மொத்த கோப்பின் எண்ணிக்கை</translation>
+<translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
 <translation id="180035236176489073">இந்தக் கோப்புகளை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="1807938677607439181">எல்லா கோப்புகளும்</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">டிக்ரின்யா</translation>
 <translation id="2028997212275086731">RAR archive</translation>
 <translation id="2037845485764049925">ரஷ்யன்</translation>
+<translation id="2044023416777079300">மோடம் பதிவுசெய்யப்படவில்லை</translation>
 <translation id="2046702855113914483">ரேமன்</translation>
 <translation id="2070909990982335904">புள்ளியுடன் தொடங்கும் பெயர்களை கணினி முன்பதிவு செய்துள்ளதால், வேறொரு பெயரைத் தேர்வுசெய்க.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2541377937973966830">இந்தக் கோப்புறையில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
+<translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> இல் சேர்</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
 <translation id="2579959351793446050">ஒடியா</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> வீடியோ</translation>
+<translation id="2617342710774726426">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="2620090360073999360">இந்த நேரத்தில் Google இயக்ககத்தை அடைய முடியாது.</translation>
 <translation id="2638942478653899953">Google இயக்ககத்தை அடைய முடியவில்லை. <ph name="BEGIN_LINK" />வெளியேறி<ph name="END_LINK" /> திரும்பவும் உள்நுழையவும்.</translation>
 <translation id="2649120831653069427">ரெய்ன்போஃபிஷ்</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" காப்பகத்தைத் திறக்க முடியவில்லை</translation>
 <translation id="3280431534455935878">தயாராகிறது</translation>
 <translation id="3280987981688031357">வினைல் ரெக்கார்டு</translation>
+<translation id="3295357220137379386">சாதனம் பிஸியாக உள்ளது</translation>
 <translation id="3296763833017966289">ஜார்ஜியன்</translation>
 <translation id="3307875152560779385">உக்ரைனியன்</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ஐ ஜிப் செய்கிறது...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">சொரானி குர்திஷ் (அரபிக் கீபோர்டு)</translation>
 <translation id="4363958938297989186">ரஷ்யன் - ஒலிப்புமுறை கீபோர்டு</translation>
 <translation id="4364327530094270451">முலாம்பழம்</translation>
+<translation id="4387004326333427325">அங்கீகரிப்புச் சான்றிதழ் தொலைநிலையில் நிராகரிக்கப்பட்டது</translation>
 <translation id="4394214039309501350">வெளிப்புற இணைப்பு</translation>
 <translation id="4418686080762064601">உங்கள் கோப்புகளுக்கான ஷார்ட்கட்டை உருவாக்குதல்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
+<translation id="4442424173763614572">DNS தேடுதல் தோல்வி</translation>
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
 <translation id="4477002475007461989">ரொமானியன்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
+<translation id="4508265954913339219">செயலாக்கம் தோல்வியுற்றது</translation>
 <translation id="4509667233588080747">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் சர்வதேசக் கீபோர்டு</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4527800702232535228">Parallels Desktopபுடன் இந்தக் கோப்புறை பகிரப்பட்டுள்ளது</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop பகிர்வை நிர்வகிக்கவும்</translation>
 <translation id="5038625366300922036">மேலும் காட்டு...</translation>
 <translation id="5044852990838351217">ஆர்மீனியன்</translation>
+<translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="5059127710849015030">நேபாளி ஒலிபெயர்ப்பு</translation>
 <translation id="5068919226082848014">பீட்சா</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> அளவுள்ள கோப்புகள் நீக்கப்படும்</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">தேர்ந்தெடுக்கப்பட்டதில் உள்ள அனைத்து உள்ளீடுகளும் அகற்றப்பட்டன.</translation>
 <translation id="5838825566232597749">யுஎஸ் ஒர்க்மேன் இன்டர்நேஷனல்</translation>
 <translation id="5851063901794976166">காண்பதற்கு இங்கே ஒன்றுமில்லை...</translation>
+<translation id="5864471791310927901">DHCP பார்வையிடுதல் தோல்வி</translation>
 <translation id="5911887972742538906">உங்கள் Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="5912396950572065471">ஃபார்மேட்</translation>
 <translation id="5913638992615760742">நகலெடுக்க முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">வசனங்களை இயக்கு</translation>
 <translation id="6269630227984243955">மலாய்</translation>
 <translation id="6287852322318138013">இந்தக் கோப்பை திறக்க பயன்பாட்டைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="6312403991423642364">அறியப்படாத நெட்வொர்க் பிழை</translation>
 <translation id="6321303798550928047">கை அசைத்தல்</translation>
 <translation id="6339145975392024142">யுஎஸ் சர்வதேச கீபோர்டு (PC)</translation>
 <translation id="6346310558342052870">அணுகல் கட்டுப்படுத்தப்பட்டுள்ளது</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">ஃபிரெஞ்சு (ஃபிரான்ஸ்) - Bépo கீபோர்டு</translation>
 <translation id="6710022688720561421">ரோபோட்</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
+<translation id="6732801395666424405">சான்றிதழ்கள் ஏற்றப்படவில்லை</translation>
 <translation id="6751256176799620176">1 கோப்புறை தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6795884519221689054">பாண்டா</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> உள்ளது</translation>
 <translation id="6935521024859866267">தலைகீழ்</translation>
+<translation id="6943836128787782965">HTTP தோல்வியடைந்தது</translation>
 <translation id="6949408524333579394">செர்பியன் ஒலிபெயர்ப்பு</translation>
 <translation id="696203921837389374">மொபைல் டேட்டாவுடன் ஒத்திசை</translation>
 <translation id="6965382102122355670">சரி</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;இயக்ககத்தில் தேடு&lt;/em&gt;</translation>
 <translation id="7135561821015524160">கன்னட ஒலிப்புமுறை</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">நெட்வொர்க் உள்ளமைவு தோல்வியடைந்தது</translation>
+<translation id="7170041865419449892">வரம்புக்கு வெளியே</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ஜி.பை.</translation>
 <translation id="7191454237977785534">கோப்பை இவ்வாறு சேமி </translation>
+<translation id="7229570126336867161">EVDO தேவை</translation>
 <translation id="7238097264433196391">இயக்ககத்தின் பெயர்</translation>
 <translation id="7248671827512403053">ஆப்ஸ்</translation>
+<translation id="7256405249507348194">அறியப்படாத பிழை: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
 <translation id="7283041136720745563">உங்கள் Google இயக்கக ஒதுக்கீடு போதுமானதாக இல்லை.</translation>
 <translation id="7294063083760278948">தெலுங்கு ஒலிபெயர்ப்பு</translation>
 <translation id="7295662345261934369">பிறருடன் பகிர்</translation>
+<translation id="7297443947353982503">பயனர்பெயர்/கடவுச்சொல் தவறானது அல்லது EAP-அங்கீகாரம் தோல்வி</translation>
 <translation id="7309413087278791451">ஜெர்மன் (பெல்ஜியம்)</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
 <translation id="7343393116438664539">வியட்நாமீஸ் (டெலெக்ஸ்)</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">வசனங்களை முடக்கு</translation>
 <translation id="78946041517601018">பகிர்ந்த இயக்ககங்கள்</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
+<translation id="7925247922861151263">AAA சோதனை தோல்வியுற்றது</translation>
 <translation id="7925686952655276919">ஒத்திசைப்பதற்கு, மொபைல் டேட்டா பயன்படுத்தாதே</translation>
 <translation id="7928710562641958568">சாதனத்தை வெளித்தள்ளு</translation>
 <translation id="7943385054491506837">யு.எஸ். கோல்மேக்</translation>
 <translation id="7953739707111622108">இந்த சாதனத்தின் கோப்புமுறைமை அறியப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="7969525169268594403">ஸ்லோவேனியன்</translation>
 <translation id="7972920761225148017">ஃபிரெஞ்சு (சுவிட்சர்லாந்து)</translation>
+<translation id="7973962044839454485">தவறான பயனர்பெயர் அல்லது கடவுச்சொல் காரணமாக PPP அங்கீகாரம் தோல்வியடைந்தது</translation>
 <translation id="7980421588063892270">ஆங்கிலம் (யூஎஸ்) - கோல்மக் கீபோர்டு</translation>
 <translation id="79907182588096956">Windows மென்பொருளைப் பயன்படுத்தும் PCக்காக இந்தக் கோப்பு வடிவமைக்கப்பட்டுள்ளது. Chrome OSஸில் இயங்கும் உங்கள் சாதனத்தில் இதைத் திறக்க முடியாது. Chrome OSஸில் கோப்புகளைத் திறப்பது குறித்து <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">ஜாக் ரஸ்ஸல் டெர்ரியர்</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297012244086013755">ஹாங்குல் 3 செட் (ஷிஃப்ட் இல்லை)</translation>
 <translation id="8299269255470343364">ஜாப்பனீஸ்</translation>
+<translation id="8300849813060516376">OTASP தோல்வியுற்றது</translation>
 <translation id="8312871300878166382">கோப்புறையில் ஒட்டு</translation>
 <translation id="8329978297633540474">எளிய உரை</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
 <translation id="8335837413233998004">பெலாரஷ்யன்</translation>
 <translation id="8336153091935557858">நேற்று <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ஒரே பெயருடைய கோப்பு  அல்லது கோப்பகம் ஏற்கனவே உள்ளன.</translation>
+<translation id="8372369524088641025">மோசமான WEP விசை</translation>
 <translation id="8372852072747894550">கிரேக்கம்</translation>
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">சுழல்</translation>
 <translation id="8484284835977497781">உங்கள் சமீபத்திய படங்களில் இருந்து தேர்வுசெய்யுங்கள்.</translation>
 <translation id="8487700953926739672">ஆஃப்லைனில் இருக்கிறது</translation>
+<translation id="8492972329130824181">வீட்டு நெட்வொர்க் கிடைக்கவில்லை. இணைக்க மொபைல் டேட்டா ரோமிங்கை இயக்க வேண்டும்.</translation>
 <translation id="8521441079177373948">யு.கே.</translation>
 <translation id="8525306231823319788">முழுத்திரை</translation>
 <translation id="853494022971700746">ஃபிரெஞ்சு (ஃபிரான்ஸ்)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">கோப்புப் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini படக் கோப்பு</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
+<translation id="8688591111840995413">தவறான கடவுச்சொல்</translation>
 <translation id="8698464937041809063">Google வரைதல்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8713112442029511308">மால்டீஸ்</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux கோப்புகள்</translation>
 <translation id="9035012421917565900">கோப்புகளை '<ph name="DESTINATION_NAME" />'க்கு மீண்டும் நகர்த்த முடியாது என்பதால், இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" என்ற பெயருள்ள கோப்பு ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
+<translation id="9046895021617826162">இணைப்பு தோல்வியடைந்தது</translation>
 <translation id="908378762078012445">ரஷ்யன் - ஒலிப்புமுறை (AATSEEL) கீபோர்டு</translation>
 <translation id="9099674669267916096">பக்க எண்ணிக்கை</translation>
 <translation id="9110990317705400362">உங்கள் உலாவலைத் பாதுகாப்பாக்கும் வழிகளைத் தொடர்ந்து தேடுகிறோம். முன்னர், எந்த இணையதளமும் நீட்டிப்பை உங்கள் உலாவியில் சேர்க்கக் கேட்கலாம். சமீபத்திய Google Chrome பதிப்புகளில், நீட்டிப்புகள் பக்கம் வழியாக அவற்றைச் சேர்ப்பதன் மூலம், இந்த நீட்டிப்புகளை நிறுவ விரும்புகிறீர்களா என்பதை வெளிப்படையாக Chromeக்குக் கூற வேண்டும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>

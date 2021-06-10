@@ -7,6 +7,7 @@
 <translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1119069657431255176">bzip2 で圧縮された tar アーカイブ</translation>
+<translation id="1119447706177454957">内部エラー</translation>
 <translation id="1120073797882051782">ハングル（ローマ字式）</translation>
 <translation id="112387589102719461">英語（アメリカ）（Programmer Dvorak）キーボード</translation>
 <translation id="1134697384939541955">英語（アメリカ）（拡張）キーボード</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome デバイス</translation>
 <translation id="1572585716423026576">壁紙に設定</translation>
 <translation id="1576937952766665062">ベンガル語（文字変換）</translation>
+<translation id="158849752021629804">ホーム ネットワークが必要です</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="162175252992296058">ポルトガル語（US インターナショナル）キーボード</translation>
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
+<translation id="1661867754829461514">PIN がありません</translation>
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
 <translation id="1673103856845176271">セキュリティ上の理由で、ファイルにアクセスできませんでした。</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ヘブライ語（文字変換）</translation>
 <translation id="1747761757048858544">オランダ語（オランダ）</translation>
 <translation id="174937106936716857">合計ファイル数</translation>
+<translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
 <translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
 <translation id="1807938677607439181">すべてのファイル</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2028997212275086731">RAR アーカイブ</translation>
 <translation id="2037845485764049925">ロシア語</translation>
+<translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
 <translation id="2070909990982335904">ドットで始まる名前はシステム専用です。別の名前を指定してください。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
 <translation id="2541377937973966830">このフォルダのコンテンツは読み取り専用です。一部の操作は行えません。</translation>
 <translation id="2542049655219295786">Google Table</translation>
+<translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> に追加</translation>
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2562685439590298522">ドキュメント</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
 <translation id="2614589611416690597">動画（<ph name="VIDEO_TYPE" />）</translation>
+<translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2620090360073999360">現在 Google ドライブにアクセスできません。</translation>
 <translation id="2638942478653899953">Google ドライブにアクセスできませんでした。<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してもう一度ログインしてください。</translation>
 <translation id="2649120831653069427">熱帯魚</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">「<ph name="PATH" />」を開けませんでした</translation>
 <translation id="3280431534455935878">準備中</translation>
 <translation id="3280987981688031357">レコード</translation>
+<translation id="3295357220137379386">デバイスはビジーです</translation>
 <translation id="3296763833017966289">グルジア語</translation>
 <translation id="3307875152560779385">ウクライナ語</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> を圧縮しています...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">ソラニークルド語（アラビア語ベース）キーボード</translation>
 <translation id="4363958938297989186">ロシア語（表音）キーボード</translation>
 <translation id="4364327530094270451">メロン</translation>
+<translation id="4387004326333427325">認証証明書がリモートで拒否されました</translation>
 <translation id="4394214039309501350">外部リンク</translation>
 <translation id="4418686080762064601">ファイルのショートカットを作成</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
+<translation id="4442424173763614572">DNS を検索できませんでした</translation>
 <translation id="4470564870223067757">ハングル（2 ボル式）</translation>
 <translation id="4477002475007461989">ルーマニア語</translation>
 <translation id="4477219268485577442">ブルガリア語（表音）</translation>
+<translation id="4508265954913339219">起動に失敗しました</translation>
 <translation id="4509667233588080747">英語（アメリカ）（Workman インターナショナル）キーボード</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4527800702232535228">このフォルダは Parallels Desktop と共有されています</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop との共有を管理</translation>
 <translation id="5038625366300922036">もっと見る...</translation>
 <translation id="5044852990838351217">アルメニア語</translation>
+<translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5059127710849015030">ネパール語（文字変換）</translation>
 <translation id="5068919226082848014">ピザ</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> 分のファイルが削除されます</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
 <translation id="5851063901794976166">ここには何もありません...</translation>
+<translation id="5864471791310927901">DHCP を検索できませんでした</translation>
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
 <translation id="5913638992615760742">コピーできませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">字幕を有効にする</translation>
 <translation id="6269630227984243955">マレー語</translation>
 <translation id="6287852322318138013">このファイルを開くアプリを選択してください</translation>
+<translation id="6312403991423642364">ネットワークが不明なためエラーが発生しました</translation>
 <translation id="6321303798550928047">手を振る</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
 <translation id="6346310558342052870">アクセスが制限されています</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">フランス語（フランス）（BÉPO）キーボード</translation>
 <translation id="6710022688720561421">ロボット</translation>
 <translation id="6710213216561001401">前へ</translation>
+<translation id="6732801395666424405">証明書が読み込まれていません</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6795884519221689054">パンダ</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />が見つかりました</translation>
 <translation id="6935521024859866267">逆さま</translation>
+<translation id="6943836128787782965">HTTP を取得できませんでした</translation>
 <translation id="6949408524333579394">セルビア語（文字変換）</translation>
 <translation id="696203921837389374">モバイルデータとの同期を有効にする</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」 - &lt;em&gt;&lt;/em&gt;ドライブを検索</translation>
 <translation id="7135561821015524160">カンナダ語（表音）</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">ネットワークを設定できませんでした</translation>
+<translation id="7170041865419449892">圏外</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">名前を付けて保存</translation>
+<translation id="7229570126336867161">EVDO が必要です</translation>
 <translation id="7238097264433196391">ドライブ名</translation>
 <translation id="7248671827512403053">アプリケーション</translation>
+<translation id="7256405249507348194">不明なエラー: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">利用可能なサービス</translation>
 <translation id="7283041136720745563">Google ドライブの割り当て容量が十分にありません。</translation>
 <translation id="7294063083760278948">テルグ語（文字変換）</translation>
 <translation id="7295662345261934369">他のユーザーと共有</translation>
+<translation id="7297443947353982503">ユーザー名/パスワードが正しくないか、EAP 認証に失敗しました</translation>
 <translation id="7309413087278791451">ドイツ語（ベルギー）</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7343393116438664539">ベトナム語（テレックス）</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">字幕を無効にする</translation>
 <translation id="78946041517601018">共有ドライブ</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
+<translation id="7925247922861151263">AAA を確認できませんでした</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
 <translation id="7943385054491506837">US Colemak 配列</translation>
 <translation id="7953739707111622108">ファイルシステムが認識されなかったため、このデバイスを開くことはできません。</translation>
 <translation id="7969525169268594403">スロベニア語</translation>
 <translation id="7972920761225148017">フランス語（スイス）</translation>
+<translation id="7973962044839454485">ユーザー名またはパスワードが正しくないため、PPP 認証に失敗しました</translation>
 <translation id="7980421588063892270">英語（アメリカ）（Colemak）キーボード</translation>
 <translation id="79907182588096956">このファイルは Windows ソフトウェアを使用する PC 向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="8008366997883261463">犬</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8297012244086013755">ハングル（3 ボル式、Shift なし）</translation>
 <translation id="8299269255470343364">日本語</translation>
+<translation id="8300849813060516376">OTASP に失敗しました</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
 <translation id="8335837413233998004">ベラルーシ語</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
+<translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
 <translation id="8395901698320285466">サイズ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">スピン</translation>
 <translation id="8484284835977497781">最近撮影した写真をピックアップ。</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
+<translation id="8492972329130824181">ホーム ネットワークは使用できません。接続するには、モバイルデータ ローミングを有効にする必要があります。</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="853494022971700746">フランス語（フランス）</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini 画像ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
+<translation id="8688591111840995413">不正なパスワード</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8713112442029511308">マルタ語</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9035012421917565900">この操作は元に戻せません（これらのアイテムを「<ph name="DESTINATION_NAME" />」に戻すことはできません）。</translation>
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
+<translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9099674669267916096">ページ数</translation>
 <translation id="9110990317705400362">Google では、より安全にウェブを閲覧できる方法を常に追求しています。以前は、どのウェブサイトでも、ブラウザに拡張機能を追加するように指示することができました。Google Chrome の最新バージョンでは、ユーザーのインストールの意思をより明確に確認するため、拡張機能の追加は拡張機能ページで行うこととなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

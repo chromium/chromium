@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Υπερχείλιση</translation>
 <translation id="1346748346194534595">Δεξιά</translation>
 <translation id="1351937230027495976">Σύμπτυξη μενού</translation>
+<translation id="1383597849754832576">Δεν είναι δυνατή η λήψη αρχείων ομιλίας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1391102559483454063">Ενεργό</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Γεια σας, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Εισαγωγή κειμένου</translation>
 <translation id="1989113344093894667">Δεν είναι δυνατή η λήψη του περιεχομένου</translation>
+<translation id="1990046457226896323">Έγινε λήψη των αρχείων ομιλίας.</translation>
 <translation id="1993072747612765854">Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Απενεργοποίηση</translation>
 <translation id="1998100899771863792">Τρέχον γραφείο</translation>
 <translation id="2016340657076538683">Πληκτρολογήστε ένα μήνυμα</translation>
 <translation id="2018630726571919839">Πες μου ένα ανέκδοτο</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Η συντόμευση πληκτρολογίου Alt + Κάτω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Down, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Κάτω βέλος.</translation>
 <translation id="445864333228800152">Καλησπέρα,</translation>
 <translation id="4458688154122353284">Διακοπή εγγραφής οθόνης</translation>
+<translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4477350412780666475">Επόμενο κομμάτι</translation>
 <translation id="4477892968187500306">Αυτή η συσκευή μπορεί να περιέχει εφαρμογές που δεν έχουν επαληθευτεί από την Google.</translation>

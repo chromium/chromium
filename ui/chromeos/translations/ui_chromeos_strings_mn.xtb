@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Файлуудыг <ph name="APP_NAME" />-р нээхийн тулд эхлээд тэдгээрийг Windows-н файлын фолдерт зөөнө үү.</translation>
 <translation id="1062407476771304334">Солих</translation>
 <translation id="1119069657431255176">Bzip2 файл нэгтгэн хадгалах программ</translation>
+<translation id="1119447706177454957">Дотоод алдаа</translation>
 <translation id="1120073797882051782">Хангыль Ромажа</translation>
 <translation id="112387589102719461">Programmer Dvorak гартай англи (АНУ)</translation>
 <translation id="1134697384939541955">Өргөтгөсөн гартай англи (АНУ)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome төхөөрөмжүүд</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1576937952766665062">Бенгал галиг</translation>
+<translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="162175252992296058">АНУ-ын олон улсын гартай португал</translation>
 <translation id="1641780993263690097">Хятад пиньинь</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файлыг офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="164969095109328410">Chrome төхөөрөмж</translation>
+<translation id="1661867754829461514">ПИН байхгүй байна</translation>
 <translation id="1665611772925418501">Энэ файлыг өөрчилж чадсангүй.</translation>
 <translation id="1673103856845176271">Файлд аюулгүй байдлын үүднээс нэвтэрч чадсангүй.</translation>
 <translation id="169515659049020177">Солих</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Еврей галиг</translation>
 <translation id="1747761757048858544">Голланд (Нидерланд)</translation>
 <translation id="174937106936716857">Нийт файлын тоо</translation>
+<translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
 <translation id="1807938677607439181">Бүх файлууд</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">RAR архив</translation>
 <translation id="2037845485764049925">Орос</translation>
+<translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2070909990982335904">Цэгээр эхэлсэн нэрсийг системд хадгалсан байгаа тул өөр нэр сонгоно уу.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгасан</translation>
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
+<translation id="2544853746127077729">Таниулах гэрчилгээг сүлжээнээс цуцалсан байна</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-д нэмэх</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Тамил авиа зүй</translation>
 <translation id="2579959351793446050">Одиа</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> видео</translation>
+<translation id="2617342710774726426">SIM карт түгжигдсэн</translation>
 <translation id="2620090360073999360">Google Drive-д одоогоор хандаж болохгүй байна.</translation>
 <translation id="2638942478653899953">Google Drive-тай холбогдож чадсангүй. <ph name="BEGIN_LINK" /> руу ороод <ph name="END_LINK" />-ээс гараад дахин нэвтэрнэ үү.</translation>
 <translation id="2649120831653069427">Солонгон загас</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />"-г нээж чадсангүй</translation>
 <translation id="3280431534455935878">Бэлдэж байна</translation>
 <translation id="3280987981688031357">Пянзны бичлэг</translation>
+<translation id="3295357220137379386">Төхөөрөмж завгүй байна</translation>
 <translation id="3296763833017966289">Гүрж хэл</translation>
 <translation id="3307875152560779385">Украин</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />-ийг нэгтгэж байна...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Араб суурьтай гартай сорани курд</translation>
 <translation id="4363958938297989186">Авиа зүйн гартай орос</translation>
 <translation id="4364327530094270451">Амтат гуа</translation>
+<translation id="4387004326333427325">Баталгаажуулах сертификатыг алсаас цуцалсан байна.</translation>
 <translation id="4394214039309501350">Гадаад холбоос</translation>
 <translation id="4418686080762064601">Файлууддаа товчлол үүсгэх</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
+<translation id="4442424173763614572">DNS хайлт амжилтгүй боллоо</translation>
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
+<translation id="4508265954913339219">Идэвхжүүлэлт амжилтгүй боллоо</translation>
 <translation id="4509667233588080747">Workman олон улсын гартай англи (АНУ)</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4527800702232535228">Энэ фолдерыг Parallels Desktop-тай хуваалцсан байна</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop-тай хуваалцахыг удирдах</translation>
 <translation id="5038625366300922036">Дэлгэрэнгүйг үзнэ үү...</translation>
 <translation id="5044852990838351217">Армени</translation>
+<translation id="5045550434625856497">Буруу нууц үг</translation>
 <translation id="5059127710849015030">Балба галиг</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл устгагдах болно</translation>
@@ -454,6 +466,7 @@
 <translation id="5838451609423551646">Сонголт хийх хэсгээс бүх оролтыг хассан.</translation>
 <translation id="5838825566232597749">Олон улсын US Workman гар</translation>
 <translation id="5851063901794976166">Энд харах зүйл алга..</translation>
+<translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5911887972742538906">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Дараах санамсаргүй алдаа гарсан тул хуулж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
@@ -489,6 +502,7 @@
 <translation id="6248400709929739064">Хадмалыг идэвхжүүлэх</translation>
 <translation id="6269630227984243955">Малай</translation>
 <translation id="6287852322318138013">Аппликейшнээ сонгоод файлаа нээ</translation>
+<translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
 <translation id="6321303798550928047">Даллаж байна</translation>
 <translation id="6339145975392024142">АНУ-н олон улсын (PC)</translation>
 <translation id="6346310558342052870">Хандалтыг хязгаарласан</translation>
@@ -518,6 +532,7 @@
 <translation id="6673674183150363784">Bépo гартай франц (Франц)</translation>
 <translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
+<translation id="6732801395666424405">Гэрчилгээнүүдийг ачаалласангүй</translation>
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
@@ -544,6 +559,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> олдсон</translation>
 <translation id="6935521024859866267">180 хэм эргэсэн</translation>
+<translation id="6943836128787782965">HTTP амжилтгүй болсон</translation>
 <translation id="6949408524333579394">Серби галиг</translation>
 <translation id="696203921837389374">Гар утасны мэдээллийн синкийг идэвхжүүл</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -567,15 +583,20 @@
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада авиа зүй</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Сүлжээг тохируулж чадсангүй</translation>
+<translation id="7170041865419449892">Хамрах хүрээнээс гадуур</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>
+<translation id="7229570126336867161">EVDO хэрэгтэй байна</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>
+<translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
 <translation id="7283041136720745563">Таны Google Драйвын багтаамж бага байна.</translation>
 <translation id="7294063083760278948">Тэлүгү галиг</translation>
 <translation id="7295662345261934369">Бусадтай хуваалцах</translation>
+<translation id="7297443947353982503">Хэрэглэгчийн нэр/нууц үг буруу эсвэл EAP-Auth амжилтгүй болсон байна</translation>
 <translation id="7309413087278791451">Герман (Бельги)</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7343393116438664539">Вьетнам телекс</translation>
@@ -646,12 +667,14 @@
 <translation id="7881969471599061635">Хадмалыг цуцлах</translation>
 <translation id="78946041517601018">Дундын драйв</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
+<translation id="7925247922861151263">AAA шалгалт амжилтгүй боллоо</translation>
 <translation id="7925686952655276919">Синхрончилоход үүрэн холбооны датаг бүү ашигла</translation>
 <translation id="7928710562641958568">Төхөөрөмжийг гаргах</translation>
 <translation id="7943385054491506837">АНУ-ын Colemak</translation>
 <translation id="7953739707111622108">Энэ төхөөрөмжийн файлын системийг таньж чадаагүй учраас нээж болохгүй  байна.</translation>
 <translation id="7969525169268594403">Словени</translation>
 <translation id="7972920761225148017">Франц (Швейцар)</translation>
+<translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7980421588063892270">Colemak гартай англи (АНУ)</translation>
 <translation id="79907182588096956">Энэ файл нь Windows программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны Chrome үйлдлийн системийг ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome үйлдлийн систем дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
@@ -681,12 +704,14 @@
 <translation id="8294431847097064396">Эх сурвалж</translation>
 <translation id="8297012244086013755">Хангыль 3 Багц (Солихгүй)</translation>
 <translation id="8299269255470343364">Япон</translation>
+<translation id="8300849813060516376">OTASP амжилтгүй болсон</translation>
 <translation id="8312871300878166382">Хавтас руу наах</translation>
 <translation id="8329978297633540474">Энгийн текст</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8335837413233998004">Беларусь</translation>
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
+<translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8372852072747894550">Грек</translation>
 <translation id="8395901698320285466">Хэмжээ</translation>
 <translation id="8437209419043462667">АНУ</translation>
@@ -699,6 +724,7 @@
 <translation id="8477649328507734757">Тойрог</translation>
 <translation id="8484284835977497781">Саяхны зургаасаа сонгоно уу.</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
+<translation id="8492972329130824181">Гэрийн сүлжээ боломжгүй байна. Холбогдохын тулд мобайл дата роумингийг идэвхжүүлсэн байх ёстой.</translation>
 <translation id="8521441079177373948">Их Британи</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="853494022971700746">Франц (Франц)</translation>
@@ -714,6 +740,7 @@
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
 <translation id="8609695766746872526">Исланд</translation>
+<translation id="8688591111840995413">Муу нууц үг</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8713112442029511308">Мальта</translation>
@@ -739,6 +766,7 @@
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9035012421917565900">Зүйлийг буцааж '<ph name="DESTINATION_NAME" />' руу зөөх боломжгүй тул та энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
+<translation id="9046895021617826162">Холболт амжилтгүй боллоо</translation>
 <translation id="908378762078012445">AATSEEL авиа зүйн гартай орос</translation>
 <translation id="9099674669267916096">Хуудасны тоо</translation>
 <translation id="9110990317705400362">Бид таны веб хөтчийг илүү аюулгүй болгох аргыг үргэлж хайж байдаг. Өмнө нь ямар ч вебсайт таны веб хөтчид өргөтгөл нэмэхийг таниас хүсэж болдог байсан. Google Chrome-ийн сүүлийн үеийн хувилбаруудын тусламжтай та эдгээр өргөтгөлүүдийг Өргөтгөлийн хуудсанд нэмсэнээр суурьлуулж болох сонголтыг Chrome-д хийж болно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй мэдээллийг<ph name="END_LINK" /></translation>

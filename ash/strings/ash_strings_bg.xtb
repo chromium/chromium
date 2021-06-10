@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Препълване</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
+<translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Здравейте, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Въвеждане на текст</translation>
 <translation id="1989113344093894667">Не е възможно заснемане на съдържание</translation>
+<translation id="1990046457226896323">Файловете за говор бяха изтеглени</translation>
 <translation id="1993072747612765854">Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Изключване</translation>
 <translation id="1998100899771863792">Настоящ работен кът</translation>
 <translation id="2016340657076538683">Въведете съобщение</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Клавишната комбинация Alt + стрелка надолу се промени. За да използвате клавиша Page Down, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надолу.</translation>
 <translation id="445864333228800152">Добър вечер,</translation>
 <translation id="4458688154122353284">Спиране на записа на екрана</translation>
+<translation id="4471354919263203780">Файловете за разпознаване на говор се изтеглят... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>

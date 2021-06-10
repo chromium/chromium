@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">ওভারফ্লো</translation>
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
+<translation id="1383597849754832576">স্পিচ ফাইল ডাউনলোড করা যাবে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">চালু করা আছে</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">হাই, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">টেক্সট লেখার ফিল্ড</translation>
 <translation id="1989113344093894667">কন্টেন্ট ক্যাপচার করা যাবে না</translation>
+<translation id="1990046457226896323">স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="1993072747612765854">সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন</translation>
-<translation id="1995660704900986789">পাওয়ার বন্ধ করুন</translation>
 <translation id="1998100899771863792">বর্তমান ডেক্স</translation>
 <translation id="2016340657076538683">একটি মেসেজ লিখুন</translation>
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Down কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Down Arrow কী প্রেস করুন।</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
+<translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
 <translation id="4477892968187500306">Google যাচাই করেনি এমন অ্যাপও এই ডিভাইসে থাকে পারে।</translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Վերջին ժամը</translation>
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
 <translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
-<translation id="1952728750904661634">Մուտք գործեք կառավարվող հաշիվ</translation>
 <translation id="1965935827552890526">Ավարտեք աշխատանքը Chrome-ի մյուս բացված պատուհանում։</translation>
 <translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
@@ -695,7 +694,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7887198238286927132">Ձեր գաղտնիությունը պաշտպանելու նպատակով Chrome-ն ավտոմատ չի լրացնի այս դաշտը:</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Գաղտնաբառերի արտահանում...</translation>
-<translation id="7947953824732555851">Ընդունել և մտնել</translation>
 <translation id="794799177247607889">Դադարեցնել գրանցումը</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="7961015016161918242">Երբեք</translation>

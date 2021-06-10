@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Presiona dos veces para copiar.</translation>
 <translation id="1952172573699511566">Los sitios web mostrarán texto en tu idioma preferido, cuando sea posible.</translation>
-<translation id="1952728750904661634">Acceder con una cuenta administrada</translation>
 <translation id="1965935827552890526">Completa las tareas que tenías en curso en otra ventana abierta de Chrome.</translation>
 <translation id="1973912524893600642">Conservar los datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -695,7 +694,6 @@ Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, los datos de Chrome se bo
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no completará este campo de forma automática.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
-<translation id="7947953824732555851">Aceptar y acceder</translation>
 <translation id="794799177247607889">Detener registro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -811,6 +809,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9148126808321036104">Accede nuevamente</translation>
 <translation id="9152539721251340337">Crear un código QR</translation>
 <translation id="9157836665414082580">Suprimir diálogos</translation>
+<translation id="9183059292653643328">Tu organización administra este navegador.</translation>
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>

@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Če želite datoteke odpreti z aplikacijo <ph name="APP_NAME" />, jih najprej premaknite v mapo z datotekami sistema Windows.</translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1119069657431255176">Stisnjen arhiv tar Bzip2</translation>
+<translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1120073797882051782">Hangulski način Romaja</translation>
 <translation id="112387589102719461">angleščina (ZDA) s tipkovnico Dvorak za programerje</translation>
 <translation id="1134697384939541955">angleščina (ZDA) z razširjeno tipkovnico</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Naprave Chrome</translation>
 <translation id="1572585716423026576">Nastavi kot ozadje</translation>
 <translation id="1576937952766665062">bengalščina (transkripcija)</translation>
+<translation id="158849752021629804">Potrebno je domače omrežje</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugalščina z mednarodno tipkovnico za angleščino (Združene države)</translation>
 <translation id="1641780993263690097">kitajščina (pinjin)</translation>
 <translation id="1646019627374511909">Omogočanje datotek (<ph name="NUMBER_OF_ITEMS" />) za dostop brez povezave</translation>
 <translation id="164969095109328410">Naprava Chrome</translation>
+<translation id="1661867754829461514">Manjka PIN</translation>
 <translation id="1665611772925418501">Datoteke ni bilo mogoče spremeniti.</translation>
 <translation id="1673103856845176271">Do datoteke zaradi varnosti ni bilo mogoče dostopati.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">hebrejščina (transkripcija)</translation>
 <translation id="1747761757048858544">nizozemščina (Nizozemska)</translation>
 <translation id="174937106936716857">Skupno število datotek</translation>
+<translation id="1773212559869067373">Potrdilo za preverjanje pristnosti je bilo zavrnjeno lokalno</translation>
 <translation id="1775381402323441512">Podatki o videoposnetku</translation>
 <translation id="180035236176489073">Če želite dostopati do datotek, mora biti vzpostavljena povezava z internetom.</translation>
 <translation id="1807938677607439181">Vse datoteke</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">Arhiv RAR</translation>
 <translation id="2037845485764049925">ruščina</translation>
+<translation id="2044023416777079300">Modem ni registriran</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Imena, ki se začnejo s piko, so rezervirana za sistem. Izberite drugo ime.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">Št. izbrisanih elementov: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Vsebina te mape je samo za branje. Nekatere dejavnosti niso podprte.</translation>
 <translation id="2542049655219295786">Googlova tabela</translation>
+<translation id="2544853746127077729">Omrežje je zavrnilo potrdilo za preverjanje pristnosti</translation>
 <translation id="2547921442987553570">Dodajanje za: <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Združene države – mednarodna</translation>
 <translation id="2562685439590298522">Google Dokumenti</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">tamilščina (fonetična)</translation>
 <translation id="2579959351793446050">odijščina</translation>
 <translation id="2614589611416690597">Videoposnetek <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2620090360073999360">Storitev Google Drive trenutno ni na voljo.</translation>
 <translation id="2638942478653899953">Google Drive ni dosegljiv. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" /> in se znova prijavite.</translation>
 <translation id="2649120831653069427">Riba mavričarka</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Arhiva »<ph name="PATH" />« ni bilo mogoče odpreti.</translation>
 <translation id="3280431534455935878">Priprava</translation>
 <translation id="3280987981688031357">Vinilna plošča</translation>
+<translation id="3295357220137379386">Naprava je zasedena</translation>
 <translation id="3296763833017966289">gruzinščina</translation>
 <translation id="3307875152560779385">ukrajinščina</translation>
 <translation id="3326821416087822643">Stiskanje datoteke <ph name="FILE_NAME" /> ...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">soranska kurdščina s tipkovnico na arabski osnovi</translation>
 <translation id="4363958938297989186">ruščina s fonetično tipkovnico</translation>
 <translation id="4364327530094270451">Melona</translation>
+<translation id="4387004326333427325">Potrdilo za preverjanje pristnosti je bilo zavrnjeno na oddaljeni lokaciji</translation>
 <translation id="4394214039309501350">Zunanja povezava</translation>
 <translation id="4418686080762064601">Ustvarite bližnjico za svoje datoteke</translation>
 <translation id="4425149324548788773">Moj disk</translation>
+<translation id="4442424173763614572">Iskanje DNS ni uspelo</translation>
 <translation id="4470564870223067757">Dvodelni hangulski način</translation>
 <translation id="4477002475007461989">romunščina</translation>
 <translation id="4477219268485577442">bolgarščina (fonetična)</translation>
+<translation id="4508265954913339219">Aktiviranje ni uspelo</translation>
 <translation id="4509667233588080747">angleščina (ZDA) z mednarodno tipkovnico Workman</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Ta mapa je deljena s programom Parallels Desktop.</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Upravljanje deljenja v programu Parallels Desktop</translation>
 <translation id="5038625366300922036">Več ...</translation>
 <translation id="5044852990838351217">armenščina</translation>
+<translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="5059127710849015030">transkripcija nepalščine</translation>
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911">Izbrisanih bo za <ph name="TOTAL_FILE_SIZE" /> datotek</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Vsi vnosi so bili odstranjeni iz izbora.</translation>
 <translation id="5838825566232597749">Združene države – mednarodna (Workman)</translation>
 <translation id="5851063901794976166">Tu ni kaj videti ...</translation>
+<translation id="5864471791310927901">Iskanje DHCP-ja ni uspelo</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
 <translation id="5913638992615760742">Operacija kopiranja ni uspela, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Omogoči podnapise</translation>
 <translation id="6269630227984243955">malajščina</translation>
 <translation id="6287852322318138013">Izberite aplikacijo za odpiranje te datoteke</translation>
+<translation id="6312403991423642364">Neznana napaka v omrežju</translation>
 <translation id="6321303798550928047">Mahanje</translation>
 <translation id="6339145975392024142">Mednarodna tipkovnica za angleščino (Združene države, PC)</translation>
 <translation id="6346310558342052870">Dostop je omejen</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">francoščina (Francija) s tipkovnico Bépo</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
+<translation id="6732801395666424405">Potrdila niso naložena</translation>
 <translation id="6751256176799620176">Izbrana je 1 mapa</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     Št. najdenih: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Obrnjeno</translation>
+<translation id="6943836128787782965">Ukaz HTTP get ni uspel</translation>
 <translation id="6949408524333579394">srbščina (transkripcija)</translation>
 <translation id="696203921837389374">Omogoči sinhronizacijo prek prenosa podatkov v mobilnih omrežjih</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">»&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;« – &lt;em&gt;iskanje v storitvi Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kanareščina (fonetična)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Omrežja ni bilo mogoče konfigurirati</translation>
+<translation id="7170041865419449892">Zunaj dosega</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Shrani datoteko kot</translation>
+<translation id="7229570126336867161">Potreben je EVDO</translation>
 <translation id="7238097264433196391">Ime pogona</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
+<translation id="7256405249507348194">Neprepoznana napaka: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Razpoložljive storitve</translation>
 <translation id="7283041136720745563">Vaša kvota za Google Drive ni dovolj velika.</translation>
 <translation id="7294063083760278948">teluščina (transkripcija)</translation>
 <translation id="7295662345261934369">Deljenje z drugimi</translation>
+<translation id="7297443947353982503">Napačno uporabniško ime/geslo ali preverjanje pristnosti EAP ni uspelo</translation>
 <translation id="7309413087278791451">nemščina (Belgija)</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7343393116438664539">vietnamščina (Telex)</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Onemogočanje podnapisov</translation>
 <translation id="78946041517601018">Diski v skupni rabi</translation>
 <translation id="7908793776359722643">Če formatirate particijo, se izbrišejo vsi podatki, shranjeni na njej. Tega dejanja ni mogoče razveljaviti.</translation>
+<translation id="7925247922861151263">Preverjanje AAA ni uspelo</translation>
 <translation id="7925686952655276919">Ne uporabi mobilnih podatkov za sinhronizacijo</translation>
 <translation id="7928710562641958568">Izpni napravo</translation>
 <translation id="7943385054491506837">Združene države – Colemak</translation>
 <translation id="7953739707111622108">Naprave ni mogoče odpreti, ker njen datotečni sistem ni bil prepoznan.</translation>
 <translation id="7969525169268594403">slovenščina</translation>
 <translation id="7972920761225148017">francoščina (Švica)</translation>
+<translation id="7973962044839454485">Preverjanje pristnosti PPP ni uspelo zaradi napačnega uporabniškega imena ali gesla</translation>
 <translation id="7980421588063892270">angleščina (ZDA) s tipkovnico Colemak</translation>
 <translation id="79907182588096956">Ta datoteka je namenjena za računalnike s programsko opremo Windows in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="8008366997883261463">Pes</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Vir</translation>
 <translation id="8297012244086013755">Trodelni hangulski način (brez tipk Shift)</translation>
 <translation id="8299269255470343364">japonščina</translation>
+<translation id="8300849813060516376">Storitev OTASP ni uspela</translation>
 <translation id="8312871300878166382">Prilepi v mapo</translation>
 <translation id="8329978297633540474">Golo besedilo</translation>
 <translation id="8335587457941836791">Odpenjanje s police</translation>
 <translation id="8335837413233998004">beloruščina</translation>
 <translation id="8336153091935557858">Včeraj <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Datoteka ali imenik s tem imenom že obstaja.</translation>
+<translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
 <translation id="8395901698320285466">Mere</translation>
 <translation id="8437209419043462667">Združene države</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Krogci</translation>
 <translation id="8484284835977497781">Izberite med nedavnimi fotografijami.</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
+<translation id="8492972329130824181">Domače omrežje ni na voljo. Za povezavo mora biti omogočeno mobilno podatkovno gostovanje.</translation>
 <translation id="8521441079177373948">Združeno kraljestvo</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="853494022971700746">francoščina (Francija)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
 <translation id="8609695766746872526">islandščina</translation>
+<translation id="8688591111840995413">Napačno geslo</translation>
 <translation id="8698464937041809063">Googlova risba</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8713112442029511308">malteščina</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9035012421917565900">Elementov ni mogoče premakniti nazaj v »<ph name="DESTINATION_NAME" />«, zato tega dejanja ne bo mogoče razveljaviti.</translation>
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
+<translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
 <translation id="9099674669267916096">Število strani</translation>
 <translation id="9110990317705400362">Stalno si prizadevamo zagotoviti, da bi bilo brskanje varnejše. Prej vas je lahko vsako spletno mesto pozvalo, da dodate razširitev v brskalnik. V zadnjih različicah Google Chroma pa morate Chromu izrecno povedati, da želite te razširitve namestiti, tako da jih dodate na strani »Razširitve«. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>

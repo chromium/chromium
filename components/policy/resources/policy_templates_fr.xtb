@@ -2307,13 +2307,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
           Si cette règle n'est pas configurée, les touches persistantes sont initialement désactivées sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
 <translation id="3932553013632130433">
-      Indique si SharedArrayBuffers peut être utilisé
+      Indique si SharedArrayBuffer peut être utilisé
       dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, Chrome nécessitera
-      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffers à partir de Chrome 91
+      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffer à partir de Chrome 91
       (25/05/2021). Pour en savoir plus, accédez à la page
       https://developer.chrome.com/blog/enabling-shared-array-buffer/.
       Lorsque cette règle est définie sur "True", les sites peuvent utiliser SharedArrayBuffer sans aucune restriction.
-      Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser les SharedArrayBuffers que dans un contexte isolé multi-origine.</translation>
+      Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser SharedArrayBuffer que dans un contexte isolé multi-origine.</translation>
 <translation id="3942041691320538491">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 1, vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
 
       En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.</translation>
@@ -6212,7 +6212,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="9087434639296483430">Signale les événements de connexion/déconnexion des utilisateurs sur les appareils enregistrés, y compris les échecs de connexion.
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
-      Si elle est définie sur "True", les événements de connexion et de déconnexion de l'appareil seront transmis.</translation>
+      Si elle est définie sur "True", les événements de connexion/déconnexion de l'appareil seront transmis.</translation>
 <translation id="9088191250434406767">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent rechercher avec leur appareil photo à l'aide de <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche lorsque la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo est compatible.</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Azken ordukoak</translation>
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
 <translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
-<translation id="1952728750904661634">Hasi saioa kontu kudeatuarekin</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
 <translation id="1973912524893600642">Mantendu datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
@@ -695,7 +694,6 @@ Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, saioa amaitzen du
 <translation id="7887198238286927132">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki beteko eremu hau.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esportatu pasahitzak…</translation>
-<translation id="7947953824732555851">Onartu eta hasi saioa</translation>
 <translation id="794799177247607889">Utzi erregistratzeari</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ez dago pasahitzik arriskuan}=1{{COUNT} pasahitz arriskuan}other{{COUNT} pasahitz arriskuan}}</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>

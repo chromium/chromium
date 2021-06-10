@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их преместите у директоријум са Windows датотекама.</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1119069657431255176">Bzip2 компримована tar архива</translation>
+<translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1120073797882051782">Хангул ромаџа</translation>
 <translation id="112387589102719461">енглески (САД) са тастатуром Programmer Dvorak</translation>
 <translation id="1134697384939541955">енглески (САД) са проширеном тастатуром</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome уређаји</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1576937952766665062">бенгалски (транслитерација)</translation>
+<translation id="158849752021629804">Потребна је матична мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски са америчком интернационалном тастатуром</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
 <translation id="1646019627374511909">Омогућава се коришћење фајлова офлајн (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome уређај</translation>
+<translation id="1661867754829461514">Недостаје PIN</translation>
 <translation id="1665611772925418501">Није могуће изменити датотеку.</translation>
 <translation id="1673103856845176271">Није могуће приступити датотеци из безбедносних разлога.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">хебрејски, транслитерација</translation>
 <translation id="1747761757048858544">холандски (Холандија)</translation>
 <translation id="174937106936716857">Укупан број датотека</translation>
+<translation id="1773212559869067373">Сертификат за потврду аутентичности је одбијен локално</translation>
 <translation id="1775381402323441512">Информације о видео датотеци</translation>
 <translation id="180035236176489073">Морате да будете на мрежи да бисте приступили овим датотекама.</translation>
 <translation id="1807938677607439181">Све датотеке</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">тигриња</translation>
 <translation id="2028997212275086731">RAR архива</translation>
 <translation id="2037845485764049925">руски</translation>
+<translation id="2044023416777079300">Модем није регистрован</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2070909990982335904">Називи који почињу тачком резервисани су за систем. Изаберите други назив.</translation>
 <translation id="2079545284768500474">Опозови</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">Избрисаних ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Садржај овог фолдера је само за читање. Неке активности нису подржане.</translation>
 <translation id="2542049655219295786">Google табела</translation>
+<translation id="2544853746127077729">Мрежа је одбила сертификат за потврду аутентичности</translation>
 <translation id="2547921442987553570">Додај у <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">међународна америчка</translation>
 <translation id="2562685439590298522">Документи</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">орија</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2620090360073999360">Тренутно није могуће успоставити везу са Google диском.</translation>
 <translation id="2638942478653899953">Није могуће успоставити везу са Google диском. <ph name="BEGIN_LINK" />Одјавите се<ph name="END_LINK" />, па се поново пријавите.</translation>
 <translation id="2649120831653069427">Риба</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Није успело отварање архиве „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Припрема</translation>
 <translation id="3280987981688031357">Грамофонска плоча</translation>
+<translation id="3295357220137379386">Уређај је заузет</translation>
 <translation id="3296763833017966289">грузијски</translation>
 <translation id="3307875152560779385">украјински</translation>
 <translation id="3326821416087822643">Додавање датотеке <ph name="FILE_NAME" /> у zip датотеку...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">сорани курдски са тастатуром заснованом на арапском</translation>
 <translation id="4363958938297989186">руски са фонетском тастатуром</translation>
 <translation id="4364327530094270451">Диња</translation>
+<translation id="4387004326333427325">Сертификат за потврду аутентичности је одбијен даљински</translation>
 <translation id="4394214039309501350">Спољни линк</translation>
 <translation id="4418686080762064601">Направите пречицу за фајлове</translation>
 <translation id="4425149324548788773">Мој диск</translation>
+<translation id="4442424173763614572">DNS претрага није успела</translation>
 <translation id="4470564870223067757">Хангул, 2 реда</translation>
 <translation id="4477002475007461989">румунски</translation>
 <translation id="4477219268485577442">бугарска фонетска</translation>
+<translation id="4508265954913339219">Активација није успела</translation>
 <translation id="4509667233588080747">енглески (САД) са тастатуром Workman International</translation>
 <translation id="4522570452068850558">Детаљи</translation>
 <translation id="4527800702232535228">Овај фолдер се дели помоћу Parallels Desktop-а</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Управљајте дељењем помоћу Parallels Desktop-а</translation>
 <translation id="5038625366300922036">Прикажи више...</translation>
 <translation id="5044852990838351217">јерменски</translation>
+<translation id="5045550434625856497">Неисправна лозинка</translation>
 <translation id="5059127710849015030">непалски, транслитерација</translation>
 <translation id="5068919226082848014">Пица</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> датотека ће се избрисати</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Уклонили сте све ставке из избора.</translation>
 <translation id="5838825566232597749">Америчка Workman интернационална</translation>
 <translation id="5851063901794976166">Овде нема ничега...</translation>
+<translation id="5864471791310927901">Проналажење DHCP-а није успело</translation>
 <translation id="5911887972742538906">Дошло је до грешке током инсталирања Linux апликације.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Операција копирања није успела, неочекивана грешка: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Омогући титлове</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
+<translation id="6312403991423642364">Непозната грешка на мрежи</translation>
 <translation id="6321303798550928047">Махање</translation>
 <translation id="6339145975392024142">Америчка интернационална тастатура (PC)</translation>
 <translation id="6346310558342052870">Приступ је ограничен</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">француски (Француска) са Bépo тастатуром</translation>
 <translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Претходно</translation>
+<translation id="6732801395666424405">Сертификати нису отпремљени</translation>
 <translation id="6751256176799620176">Изабран је 1 директоријум</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     Пронађене су датотеке (<ph name="FILE_COUNT" />)</translation>
 <translation id="6935521024859866267">Наопачке</translation>
+<translation id="6943836128787782965">HTTP get није успео</translation>
 <translation id="6949408524333579394">транслитерација српског</translation>
 <translation id="696203921837389374">Омогући синхронизацију преко мобилне везе за пренос података</translation>
 <translation id="6965382102122355670">Потврди</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;претражи Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">канада фонетска</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Конфигурација мреже није успела</translation>
+<translation id="7170041865419449892">Изван опсега</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Сачувај датотеку као</translation>
+<translation id="7229570126336867161">Потребан је EVDO</translation>
 <translation id="7238097264433196391">Назив диска</translation>
 <translation id="7248671827512403053">Апликација</translation>
+<translation id="7256405249507348194">Непозната грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступне услуге</translation>
 <translation id="7283041136720745563">Квота за Google диск није довољно велика.</translation>
 <translation id="7294063083760278948">транслитерација телугуа</translation>
 <translation id="7295662345261934369">Делите са другима</translation>
+<translation id="7297443947353982503">Корисничко име/лозинка је нетачна или EAP потврда аутентичности није успела</translation>
 <translation id="7309413087278791451">немачки (Белгија)</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="7343393116438664539">вијетнамски (Telex)</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Онемогући титлове</translation>
 <translation id="78946041517601018">Дељени дискови</translation>
 <translation id="7908793776359722643">Ако форматирате партицију, бришете све податке на њој. Ова радња не може да се опозове.</translation>
+<translation id="7925247922861151263">Провера потврде идентитета, овлашћења и приступа није успела</translation>
 <translation id="7925686952655276919">Не користи податке за мобилне уређаје за синхронизацију</translation>
 <translation id="7928710562641958568">Избаци уређај</translation>
 <translation id="7943385054491506837">америчка Colemak</translation>
 <translation id="7953739707111622108">Овај уређај не може да се отвори јер његов систем датотека није препознат.</translation>
 <translation id="7969525169268594403">словеначки</translation>
 <translation id="7972920761225148017">француски (Швајцарска)</translation>
+<translation id="7973962044839454485">Провера аутентичности преко протокола PPP није успела због нетачног корисничког имена или лозинке</translation>
 <translation id="7980421588063892270">енглески (САД) са тастатуром Colemak</translation>
 <translation id="79907182588096956">Овај фајл је осмишљен за рачунар који користи Windows софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="8008366997883261463">Пас</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297012244086013755">Хангул, 3 реда (No Shift)</translation>
 <translation id="8299269255470343364">јапански</translation>
+<translation id="8300849813060516376">OTASP није успео</translation>
 <translation id="8312871300878166382">Налепи у директоријум</translation>
 <translation id="8329978297633540474">Чисти текст</translation>
 <translation id="8335587457941836791">Откачи са полице</translation>
 <translation id="8335837413233998004">белоруски</translation>
 <translation id="8336153091935557858">Јуче у <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Већ постоји датотека или директоријум са истим називом.</translation>
+<translation id="8372369524088641025">Неисправна WEP шифра</translation>
 <translation id="8372852072747894550">грчки</translation>
 <translation id="8395901698320285466">Димензије</translation>
 <translation id="8437209419043462667">америчка</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Окретање</translation>
 <translation id="8484284835977497781">Одаберите неку од недавних слика.</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
+<translation id="8492972329130824181">Кућна мрежа није доступна. Пренос података у ромингу мора да буде омогућен ради повезивања.</translation>
 <translation id="8521441079177373948">УК</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="853494022971700746">француски (Француска)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>
+<translation id="8688591111840995413">Погрешна лозинка</translation>
 <translation id="8698464937041809063">Google цртеж</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8713112442029511308">малтешки</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9035012421917565900">Ставке не могу да се врате у „<ph name="DESTINATION_NAME" />“, па нећете моћи да опозовете ову радњу.</translation>
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
+<translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9099674669267916096">Број страница</translation>
 <translation id="9110990317705400362">Стално тражимо нове начине да учинимо прегледање безбеднијим. Раније је сваки веб-сајт могао да вам затражи да додате додатак у прегледач. У најновијим верзијама Google Chrome-а морате експлицитно да кажете Chrome-у да желите да инсталирате те додатке тако што ћете их додати преко странице Додаци. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>

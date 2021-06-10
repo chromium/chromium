@@ -7,6 +7,7 @@
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് മാറ്റുക.</translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1119069657431255176">Bzip2 ഉൾക്കൊള്ളിച്ച tar ആർക്കൈവ്</translation>
+<translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1120073797882051782">ഹംഗുൽ റോമജ</translation>
 <translation id="112387589102719461">Programmer Dvorak കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="1134697384939541955">Extended കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome ഉപകരണങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="1576937952766665062">ബംഗ്ലാ (ലിപ്യന്തരണം)</translation>
+<translation id="158849752021629804">ഹോം നെറ്റ്‍വര്‍ക്ക് ആവശ്യമുണ്ട്</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="162175252992296058">യുഎസ് അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള പോർച്ചുഗീസ്</translation>
 <translation id="1641780993263690097">ചൈനീസ് പിൻയിൻ</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="164969095109328410">Chrome ഉപകരണം</translation>
+<translation id="1661867754829461514">PIN കാണാനില്ല</translation>
 <translation id="1665611772925418501">ഫയൽ പരിഷ്‌ക്കരിക്കാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="1673103856845176271">സുരക്ഷാ കാരണങ്ങളാൽ ഫയൽ ആക്‌സസ്സുചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ഹീബ്രൂ ലിപ്യന്തരണം</translation>
 <translation id="1747761757048858544">ഡച്ച് (നെതർലൻഡ്‌സ്)</translation>
 <translation id="174937106936716857">മൊത്തം ഫയലുകളുടെ എണ്ണം</translation>
+<translation id="1773212559869067373">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് പ്രാദേശികമായി നിരസിച്ചു</translation>
 <translation id="1775381402323441512">വീഡിയോ വിവരം</translation>
 <translation id="180035236176489073">ഈ ഫയലുകൾ ആക്‌സസ്സുചെയ്യുന്നതിന് നിങ്ങൾ ഓൺലൈനിലായിരിക്കണം.</translation>
 <translation id="1807938677607439181">എല്ലാ ഫയലുകളും</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">ടിഗ്രിന്യ</translation>
 <translation id="2028997212275086731">RAR ആർക്കൈവ്</translation>
 <translation id="2037845485764049925">റഷ്യൻ</translation>
+<translation id="2044023416777079300">മോഡം രജിസ്‌റ്റർ ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2046702855113914483">റാമെൻ</translation>
 <translation id="2070909990982335904">ഡോട്ടോട് കൂടി ആരംഭിക്കുന്ന പേരുകൾ സിസ്റ്റത്തിനായി കരുതി വച്ചിരിക്കുന്നു. മറ്റൊരു പേര് ദയവായി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കി</translation>
 <translation id="2541377937973966830">ഈ ഫോൾഡറിലെ ഉള്ളടക്കങ്ങൾ വായിക്കാൻ മാത്രമുള്ളതാണ്. ചില ആക്റ്റിവിറ്റികൾക്ക് പിന്തുണയില്ല.</translation>
 <translation id="2542049655219295786">Google പട്ടിക</translation>
+<translation id="2544853746127077729">നെറ്റ്‌വർക്ക്, പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് നിരസിച്ചു</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-ൽ ചേർക്കുക</translation>
 <translation id="255937426064304553">യുഎസ് ഇന്റർനാഷണൽ</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">തമിഴ് ഉച്ചാരണ ശബ്‌ദം</translation>
 <translation id="2579959351793446050">ഒഡിയ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> വീഡിയോ</translation>
+<translation id="2617342710774726426">സിം കാർഡ് ലോക്കുചെയ്‌തു</translation>
 <translation id="2620090360073999360">Google ഡ്രൈവിൽ ഇപ്പോൾ എത്തിച്ചേരാൻ കഴിയില്ല.</translation>
 <translation id="2638942478653899953">Google ഡ്രൈവിൽ പ്രവേശിക്കാനായില്ല. <ph name="BEGIN_LINK" />ലോഗ് ഔട്ട്<ph name="END_LINK" /> ചെയ്‌ത ശേഷം തിരികെ ലോഗ് ഇൻ ചെയ്യുക.</translation>
 <translation id="2649120831653069427">റെയിൻബോഫിഷ്</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" തുറക്കാനായില്ല</translation>
 <translation id="3280431534455935878">തയ്യാറെടുക്കുന്നു</translation>
 <translation id="3280987981688031357">വിനൈൽ റെക്കോർഡ്</translation>
+<translation id="3295357220137379386">ഉപകരണം തിരക്കിലാണ്</translation>
 <translation id="3296763833017966289">ജോര്‍ജ്ജിയന്‍</translation>
 <translation id="3307875152560779385">ഉക്രേനിയൻ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> zip ചെയ്യുന്നു...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">അറബി അധിഷ്‌ഠിത കീബോർഡ് ഉള്ള സൊറാനി കുർദ്ദിഷ്</translation>
 <translation id="4363958938297989186">ഫൊണറ്റിക് കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="4364327530094270451">മത്തങ്ങ</translation>
+<translation id="4387004326333427325">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് വിദൂരമായി നിരസിച്ചു</translation>
 <translation id="4394214039309501350">ബാഹ്യ ലിങ്ക്</translation>
 <translation id="4418686080762064601">നിങ്ങളുടെ ഫയലുകൾക്കുള്ള കുറുക്കുവഴി സൃഷ്ടിക്കുക</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
+<translation id="4442424173763614572">DNS തിരയൽ പരാജയപ്പെട്ടു</translation>
 <translation id="4470564870223067757">ഹാംഗുൽ 2 സെറ്റ് മോഡ്</translation>
 <translation id="4477002475007461989">റുമാനിയൻ</translation>
 <translation id="4477219268485577442">ബൾഗേറിയൻ സ്വരസൂചകം</translation>
+<translation id="4508265954913339219">സജീവമാക്കല്‍ പരാജയപ്പെട്ടു</translation>
 <translation id="4509667233588080747">Workman അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
 <translation id="4527800702232535228">Parallels Desktop-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="5038625366300922036">കൂടുതൽ കാണുക...</translation>
 <translation id="5044852990838351217">അർമേനിയൻ</translation>
+<translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5059127710849015030">നേപ്പാളി ലിപ്യന്തരണം</translation>
 <translation id="5068919226082848014">പിസ്സ</translation>
 <translation id="5081517858322016911">ഫയലുകളിൽ <ph name="TOTAL_FILE_SIZE" /> ഇല്ലാതാക്കപ്പെടും</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">തിരഞ്ഞെടുക്കലിൽ നിന്ന് എല്ലാ എൻട്രികളും നീക്കം ചെയ്‌തു.</translation>
 <translation id="5838825566232597749">യുഎസ് വർക്ക്‌മാൻ ഇന്റർനാഷണൽ</translation>
 <translation id="5851063901794976166">ഇവിടെ കാണാൻ ഒന്നുമില്ല...</translation>
+<translation id="5864471791310927901">DHCP തിരയൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux അപ്ലിക്കേഷൻ ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5912396950572065471">ഫോർമാറ്റ്</translation>
 <translation id="5913638992615760742">അപ്രതീക്ഷിത പിശക് കാരണം പകർത്താനായില്ല: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>
 <translation id="6287852322318138013">ഈ ഫയൽ തുറക്കാനായി ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6312403991423642364">അറിയാത്ത നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="6321303798550928047">കൈവീശുന്നു</translation>
 <translation id="6339145975392024142">യുഎസ് അന്തര്‍ദേശീയ (PC)</translation>
 <translation id="6346310558342052870">ആക്‌സസ് നിയന്ത്രിതമാണ്</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">BÉPO കീബോർഡ് ഉള്ള ഫ്രഞ്ച് (ഫ്രാൻസ്)</translation>
 <translation id="6710022688720561421">റോബോട്ട്</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
+<translation id="6732801395666424405">സർട്ടിഫിക്കറ്റുകൾ ലോഡുചെയ്‌തില്ല</translation>
 <translation id="6751256176799620176">ഒരു ഫോൾഡർ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> കണ്ടെത്തി</translation>
 <translation id="6935521024859866267">അപ്‌സൈഡ് ഡൗൺ</translation>
+<translation id="6943836128787782965">HTTP പരാജയപ്പെട്ടു</translation>
 <translation id="6949408524333579394">സെർബിയൻ ലിപ്യന്തരണം</translation>
 <translation id="696203921837389374">മൊബൈൽ ഡാറ്റയിലൂടെയുള്ള സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;തിരയൽ ഡ്രൈവ്&lt;/em&gt;</translation>
 <translation id="7135561821015524160">കന്നഡ ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</translation>
+<translation id="7170041865419449892">പരിധിയ്ക്ക് പുറത്താണ്</translation>
 <translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ഇതായി ഫയൽ സംരക്ഷിക്കുക</translation>
+<translation id="7229570126336867161">EVDO ആവശ്യമുണ്ട്</translation>
 <translation id="7238097264433196391">ഡ്രൈവിൻ്റെ പേര്</translation>
 <translation id="7248671827512403053">ആപ്പ്</translation>
+<translation id="7256405249507348194">തിരിച്ചറിയാനാകാത്ത പിശക്: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ലഭ്യമായ സേവനങ്ങൾ</translation>
 <translation id="7283041136720745563">നിങ്ങളുടെ Google ഡ്രൈവ് ക്വോട്ടയ്ക്ക് ആവശ്യമായ വലിപ്പമില്ല.</translation>
 <translation id="7294063083760278948">തെലുങ്ക് ലിപ്യന്തരണം</translation>
 <translation id="7295662345261934369">മറ്റുള്ളവരുമായി പങ്കിടുക</translation>
+<translation id="7297443947353982503">ഉപയോക്തൃനാമം/പാസ്‌വേഡ് ശരിയല്ല അല്ലെങ്കിൽ EAP പരിശോധിച്ചുറപ്പിക്കൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7309413087278791451">ജർമ്മൻ (ബെൽജിയം)</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="7343393116438664539">വിയറ്റ്നാമീസ് ടെലക്‌സ്</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="78946041517601018">പങ്കിട്ട ഡ്രൈവുകൾ</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
+<translation id="7925247922861151263">AAA പരിശോധന പരാജയപ്പെട്ടു</translation>
 <translation id="7925686952655276919">സമന്വയത്തിനായി മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കരുത്</translation>
 <translation id="7928710562641958568">ഉപകരണം നീക്കംചെയ്യുക</translation>
 <translation id="7943385054491506837">യുഎസ് കോൾമാക്ക്</translation>
 <translation id="7953739707111622108">ഈ ഉപകരണത്തിന്റെ ഫയൽ സിസ്റ്റം അംഗീകൃതമല്ലാത്തതിനാൽ ഇത് തുറക്കാനായില്ല.</translation>
 <translation id="7969525169268594403">സ്ലോവേനിയന്‍</translation>
 <translation id="7972920761225148017">ഫ്രഞ്ച് (സ്വിറ്റ്സർലൻഡ്)</translation>
+<translation id="7973962044839454485">തെറ്റായ ഉപയോക്തൃനാമമോ പാസ്‌വേഡോ കാരണം PPP പരിശോധിച്ചുറപ്പിക്കൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7980421588063892270">Colemak കീബോർഡ് ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="79907182588096956">ഈ ഫയൽ, Windows സോഫ്‌റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന PC-ക്കായി രൂപകൽപ്പന ചെയ്‌തിരിക്കുന്നു. Chrome OS-ൽ റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിന് ഇത് അനുയോജ്യമല്ല. Chrome OS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">ജാക്ക് റസ്സൽ ടെറിയർ</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8297012244086013755">ഹംഗുൽ 3 സെറ്റ് (Shift ഇല്ല)</translation>
 <translation id="8299269255470343364">ജാപ്പനീസ്</translation>
+<translation id="8300849813060516376">OTASP പരാജയപ്പെട്ടു</translation>
 <translation id="8312871300878166382">ഫോൾഡറിൽ ഒട്ടിക്കുക</translation>
 <translation id="8329978297633540474">പ്ലെയിന്‍ വാചകം</translation>
 <translation id="8335587457941836791">ഷെൽഫിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="8335837413233998004">ബെലാറുഷ്യൻ</translation>
 <translation id="8336153091935557858">ഇന്നലെ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">സമാന പേരിലുള്ള ഫയൽ അല്ലെങ്കിൽ ഡയറക്‌റ്ററി ഇതിനകം നിലവിലുണ്ട്.</translation>
+<translation id="8372369524088641025">മോശം WEP കീ</translation>
 <translation id="8372852072747894550">ഗ്രീക്ക്</translation>
 <translation id="8395901698320285466">തലങ്ങൾ</translation>
 <translation id="8437209419043462667">യുഎസ്</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">സ്പിൻ</translation>
 <translation id="8484284835977497781">നിങ്ങളുടെ അടുത്തിടെയുള്ള ഫോട്ടോകളിൽ നിന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>
+<translation id="8492972329130824181">വീട്ടിലെ നെറ്റ്‌വർക്ക് ലഭ്യമല്ല. കണക്റ്റ് ചെയ്യാൻ മൊബൈൽ ഡാറ്റ റോമിംഗ് പ്രവർത്തനക്ഷമമാക്കണം.</translation>
 <translation id="8521441079177373948">യുകെ</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="853494022971700746">ഫ്രഞ്ച് (ഫ്രാൻസ്)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">ഫയൽ ലിസ്‌റ്റ് ലഘുചിത്ര കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="8601932370724196034">Crostini ചിത്ര ഫയൽ</translation>
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>
+<translation id="8688591111840995413">പാസ്‌വേഡ് മോശമാണ്</translation>
 <translation id="8698464937041809063">Google ഡ്രോയിംഗ്</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8713112442029511308">മാള്‍ട്ടീസ്</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux ഫയലുകൾ</translation>
 <translation id="9035012421917565900">ഇനങ്ങൾ '<ph name="DESTINATION_NAME" />' എന്നതിലേക്ക് തിരികെ നീക്കാൻ കഴിയാത്തതിനാൽ, ഈ പ്രവൃത്തി നിങ്ങൾക്ക് പഴയപടിയാക്കാനാവില്ല.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" എന്ന പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. മറ്റൊരു പേര് തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="9046895021617826162">ബന്ധിപ്പിക്കല്‍ പരാജയപ്പെട്ടു</translation>
 <translation id="908378762078012445">ഫൊണറ്റിക് AATSEEL കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="9099674669267916096">പേജിന്റെ എണ്ണം</translation>
 <translation id="9110990317705400362">നിങ്ങളുടെ ബ്രൗസിംഗ് സുരക്ഷിതമാക്കുന്നതിനുള്ള മാർഗങ്ങൾക്കായി ഞങ്ങൾ സ്ഥിരമായി തിരയുന്നു. മുമ്പ്, എല്ലാ വെബ്‌സൈറ്റും നിങ്ങളുടെ ബ്രൗസറിൽ ഒരു വിപുലീകരണം ചേർക്കുന്നതിന് ആവശ്യപ്പെടുമായിരുന്നു. Google Chrome-ന്റെ ഏറ്റവും പുതിയ പതിപ്പുകളിൽ, വിപുലീകരണങ്ങളുടെ പേജ് മുഖേന ഈ വിപുലീകരണങ്ങൾ ചേർത്ത് അവ ഇൻസ്റ്റാൾ ചെയ്യണമെന്ന് നിങ്ങൾ Chrome-നോട് സ്പഷ്‌ടമായി പറയേണ്ടതുണ്ട്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>

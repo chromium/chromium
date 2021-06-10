@@ -542,7 +542,6 @@
 <translation id="1587275751631642843">&amp;JavaScript कन्सोल</translation>
 <translation id="1587907146729660231">आफ्ना औँलाले पावर बटनमा छुनुहोस्</translation>
 <translation id="1588438908519853928">सामान्य</translation>
-<translation id="158849752021629804">गृह नेटवर्क आवश्यक छ</translation>
 <translation id="1588870296199743671">यस मार्फत लिङ्क खोल्नुहोस्...</translation>
 <translation id="1588919647604819635">दायाँ क्लिक कार्ड</translation>
 <translation id="1589055389569595240">हिज्जे र व्याकरण देखाउनुहोस्</translation>
@@ -625,7 +624,6 @@
 <translation id="1660204651932907780">साइटहरूलाई आवाज प्ले गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="1660763353352708040">पावर एडाप्टरसम्बन्धी समस्या</translation>
 <translation id="1661156625580498328">AES इन्क्रिप्सन लागू गर्नुहोस् (सिफारिस गरिएको)।</translation>
-<translation id="1661867754829461514">पिन छुटिरहेको छ</translation>
 <translation id="16620462294541761">माफ गर्नुहोला, तपाइँको पासवर्ड रुजू गर्न सकिएन। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="166278006618318542">विषय सार्वजनिक कुञ्जी अल्गोरिदम</translation>
 <translation id="166439687370499867">साझा गरिएको नेटवर्कको कन्फिगरेसनहरू परिवर्तन गर्न अनुमति छैन</translation>
@@ -731,7 +729,6 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> का बारेमा प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="1768278914020124551">हत्तेरिका! लगअनको सर्भरलाई सम्पर्क गर्दा एउटा समस्या भयो। कृपया आफ्नो नेटवर्क जडान र डोमेनको नाम जाँच्नुहोस्, त्यसपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1769104665586091481">लिङ्कलाई नयाँ &amp;विन्डोमा खोल्नुहोस्</translation>
-<translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र स्थायी रूपमा अस्विकार गरियो</translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="1775706469381199282">साइटहरूलाई JavaScript प्रयोग गर्ने अनुमति नदिइयोस्</translation>
 <translation id="1776712937009046120">प्रयोगकर्ता थप्नुहोस्</translation>
@@ -983,7 +980,6 @@
 <translation id="2040460856718599782">ओहो! तपाईं प्रमाणीकरण गर्न प्रयास गर्दा केही गल्ती भयो। आफ्नो साइन इन प्रमाणहरू डबल जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2042279886444479655">सक्रिय प्रोफाइलहरू</translation>
 <translation id="2044014337866019681">कृपया तपाईं यो सत्र अनलक गर्न <ph name="ACCOUNT" /> पुष्टि गर्दै हुनुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
-<translation id="2044023416777079300">मोडेम दर्ता गरिएको छैन</translation>
 <translation id="204497730941176055">Microsoft प्रमाणपत्र ट्याम्प्लेट नाम</translation>
 <translation id="2045117674524495717">किबोर्ड सर्टकटको सहयोगी</translation>
 <translation id="2045969484888636535">कुकीहरू ब्लकिङ जारी राख्नुहोस्</translation>
@@ -1467,7 +1463,6 @@
 <translation id="2541706104884128042">सुत्ने समयको सीमा अद्यावधिक गरियो</translation>
 <translation id="2542050502251273923">यसले ff_debug प्रयोग गरी नेटवर्क कनेक्सन म्यानेजर तथा अन्य सेवाहरूको डिबग प्रक्रियाको स्तर निर्धारण गर्छ।</translation>
 <translation id="2544352060595557290">यो ट्याब</translation>
-<translation id="2544853746127077729">प्रमाणीकरण प्रमाणपत्र नेटवर्क अस्विकार</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="2548545707296594436">eSIM प्रोफाइलको क्यास रिसेट गर्नुहोस्</translation>
@@ -1656,6 +1651,7 @@
 <translation id="2755349111255270002">यो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्</translation>
 <translation id="2755367719610958252">पहुँच सम्बन्धी सुविधाहरूलाई व्यवस्थापन गर्नुहोस्</translation>
 <translation id="275662540872599901">स्क्रिन निष्क्रिय छ</translation>
+<translation id="2757161511365746634">प्रिन्टरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="2757338480560142065">तपाईंले सुरक्षित गर्न लाग्नुभएको पासवर्ड तपाईंको <ph name="WEBSITE" /> को पासवर्डसँग मेल खान्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2762441749940182211">क्यामेरा प्रयोग गर्नमाथि रोक लगाइयो</translation>
 <translation id="2764786626780673772">VPN सम्बन्धी विवरण</translation>
@@ -1698,6 +1694,7 @@
 <translation id="2799223571221894425">पुन: सुरुवात गर्नुहोस्</translation>
 <translation id="2800760947029405028">कुनै छवि अपलोड गर्नुहोस्</translation>
 <translation id="2801954693771979815">स्क्रिनको आकार</translation>
+<translation id="2802557211515765772">व्यवस्थापन गरिएको कुनै पनि प्रिन्टर छैन।</translation>
 <translation id="2803313416453193357">फोल्डर खोल्नुहोस्</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2804043232879091219">वैकल्पिक ब्राउजर खोल्न सकिएन</translation>
@@ -3134,7 +3131,6 @@
 <translation id="4384652540891215547">विस्तार सक्रिय गर्नुहोस्</translation>
 <translation id="438503109373656455">साराटोगा</translation>
 <translation id="4385905942116811558">ब्लुटुथ तथा USB यन्त्रहरू खोजिँदै छ</translation>
-<translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्रलाई सीधै अस्वीकार गर्‍यो</translation>
 <translation id="4387890294700445764">अरूले देखेका पासवर्डहरू</translation>
 <translation id="4389091756366370506">प्रयोगकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र अन्य <ph name="NUMBER_OF_OTHER_SWITCHES" /> वटा स्विच थपिए</translation>
@@ -3189,7 +3185,6 @@
 <translation id="4441147046941420429">जारी राख्न, आफ्नो यन्त्रबाट सुरक्षा साँचो हटाउनुहोस्, त्यसपछि उक्त साँचो पुनः छिराउनुहोस् र त्यसमा छुनुहोस्</translation>
 <translation id="444134486829715816">विस्तृत गर्नुहोस्</translation>
 <translation id="4441928470323187829">तपाईंका एड्मिनले पिन गर्नुभएको</translation>
-<translation id="4442424173763614572">DNS लुकअप असफल भयो</translation>
 <translation id="4443536555189480885">&amp;मद्दत</translation>
 <translation id="4444304522807523469">USB मार्फत वा स्थानीय सञ्जालमा सम्मिलित कागजात स्क्यानरहरू पहुँच गर्नुहोस्</translation>
 <translation id="4444512841222467874">खाली ठाउँ उपलब्ध गराइएन भने प्रयोगकर्ता र डेटालाई स्वतः हटाइन सक्छ।</translation>
@@ -3245,7 +3240,6 @@
 <translation id="4504940961672722399">यस प्रतिमामा क्लिक गरेर वा <ph name="EXTENSION_SHORTCUT" /> थिचेर यो विस्तार प्रयोग गर्नुहोस्।</translation>
 <translation id="450552327874992444">यो शब्द थपिसकिएको छ</translation>
 <translation id="4507128560633489176">डेटा हटाइयो।</translation>
-<translation id="4508265954913339219">सक्रिय बनाउने कार्य असफल भयो</translation>
 <translation id="4508765956121923607">स्रो&amp;त हेर्नुहोस्</translation>
 <translation id="4510195992002502722">प्रतिक्रिया पठाउन सकिएन। फेरि प्रयास गरिँदै छ...</translation>
 <translation id="4510479820467554003">अभिभावकको खाताको सूची</translation>
@@ -3838,6 +3832,7 @@
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5171343362375269016">स्वाप गरिएको मेमोरी</translation>
+<translation id="5172855596271336236">व्यवस्थापन गरिएको एउटा प्रिन्टर छ।</translation>
 <translation id="5173668317844998239">आफ्नो सुरक्षा साँचोमा फिंगरप्रिन्ट हाल्नुहोस् वा त्यसमा सुरक्षित गरिएका फिंगरप्रिन्टहरू मेट्नुहोस्</translation>
 <translation id="5175379009094579629">डिभाइसको नाम अमान्य छ। फेरि प्रयास गर्न यन्त्रको मान्य नाम प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5177479852722101802">क्यामेरा र माइक्रोफोन पहु</translation>
@@ -4453,7 +4448,6 @@
 <translation id="5862319196656206789">कनेक्ट गरिएका यन्त्रहरू सेटअप गर्नुहोस्</translation>
 <translation id="5863445608433396414">डिबग सुविधाहरू सक्षम गर्नुहोस्</translation>
 <translation id="5864195618110239517">डेटाको सीमा भएको इन्टरनेट प्रयोग गर्नुहोस्</translation>
-<translation id="5864471791310927901">DHCP खोज्ने असफल भयो</translation>
 <translation id="5864754048328252126">चार्ज भइरहेका बेला यन्त्र निष्क्रिय हुँदा गर्नु पर्ने कारबाही</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> चाँडै पज हुने छ</translation>
 <translation id="586567932979200359">तपाईंले <ph name="PRODUCT_NAME" /> लाई यसको डिस्क छविबाट चलाइरहनु भएको छ। यसलाई तपाईंको कम्प्युटरमा स्थापना गर्नाले यसले तपाईंलाई डिस्क छवि बिना चालू गर्न अनुमति दिन्छ, र यो नवीनतम रहने सुनिश्चित गर्छ।</translation>
@@ -4860,7 +4854,6 @@
 <translation id="6309510305002439352">माइक्रोफोन निष्क्रिय पारियो</translation>
 <translation id="6310141306111263820">eSIM प्रोफाइल इन्स्टल गर्न सकिएन। यस सम्बन्धमा मद्दत प्राप्त गर्न कृपया आफ्नो मोबाइल सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="6311220991371174222">तपाईँको प्रोफाइल खोल्दा केही गडबड भएको हुनाले Chrome लाई सुरु गर्न सकिँदैन। Chrome लाई पुनः सुरु गर्ने प्रयास गर्नुहोस्।</translation>
-<translation id="6312403991423642364">अज्ञात सञ्जाल त्रुटि</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{१ दिनअघि सुरक्षा जाँच गरिएको थियो}other{{NUM_DAYS} दिनअघि सुरक्षा जाँच गरिएको थियो}}</translation>
 <translation id="6312638141433622592">सुविधा उपलब्ध हुँदा, पढ्न मिल्ने मोडमा लेखहरू प्रदर्शित गर्ने प्रस्ताव</translation>
 <translation id="6313641880021325787">VR बाट बाहिर निस्कनुहोस्</translation>
@@ -5232,7 +5225,6 @@
 <translation id="67269783048918309">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यस्तो डेटा तपाईंका बालकको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। तपाईंका बालकको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
-<translation id="6732801395666424405">प्रमाणपत्रहरू लोड भएन</translation>
 <translation id="6735304988756581115">कूकीहरू र अन्य साइट डाटा देखाउनुहोस्...</translation>
 <translation id="6736243959894955139">ठेगाना</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5426,7 +5418,6 @@
 <translation id="6941937518557314510">आफ्नो प्रमाणपत्र मार्फत <ph name="HOST_NAME" /> मा प्रमाणित ठहराउन <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="6943060957016121200">तात्कालिक टेदरिङ सक्षम पार्नुहोस्</translation>
 <translation id="6943176775188458830">प्रिन्टिङ रद्द गर्नुहोस्</translation>
-<translation id="6943836128787782965">HTTP प्राप्त असफल भयो</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="694592694773692225">यो पृष्ठमा रिडिरेक्ट गर्ने सेवामाथि रोक लगाइयो।</translation>
 <translation id="6949434160682548041">पासवर्ड (ऐच्छिक)</translation>
@@ -5622,12 +5613,10 @@
 <translation id="7154130902455071009">आफ्नो सुरुवात पृष्ठलाई यसमा परिवर्तन गर्नुहोस्: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7163202347044721291">सक्रिय गर्ने कोड पुष्टि गरिँदै छ...</translation>
-<translation id="7165320105431587207">नेटवर्क कन्फिगर गर्न असफल</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" ले चेक गरिएको स्थानहरूमा छविहरू, भिडियो, र आवाज पढ्न सक्छ।</translation>
 <translation id="7167486101654761064">यस किसिमको फाइलहरू &amp;सधैं खोल्नुहोस्</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> डाउनलोड हुँदै</translation>
 <translation id="7168109975831002660">न्यूनतम फन्ट साइज</translation>
-<translation id="7170041865419449892">सीमाभन्दा बाहिर</translation>
 <translation id="7170236477717446850">प्रोफाइल तस्बिर</translation>
 <translation id="7171000599584840888">प्रोफाइल हाल्नुहोस्...</translation>
 <translation id="7171259390164035663">दर्ता नगर्नुहोस्</translation>
@@ -5682,7 +5671,6 @@
 <translation id="7225179976675429563">नेटवर्क प्रकार छैन</translation>
 <translation id="7228479291753472782">वेबसाइटहरूले भूस्थान, माइक्रोफोन, क्यामेरा जस्ता सुविधाहरूको प्रयोग गर्न सक्छन् वा सक्दैनन् भन्ने कुरा निर्दिष्ट गर्ने सेटिङहरूलाई फेरबदल गर्नुहोस्।</translation>
 <translation id="7228523857728654909">स्क्रिन लक तथा साइन इन</translation>
-<translation id="7229570126336867161">EVDO आवश्यक छ</translation>
 <translation id="7230787553283372882">आफ्नो पाठको आकार आफू अनुकूल पार्नुहोस्</translation>
 <translation id="7232750842195536390">पुनः नामकरण गर्न सकिएन</translation>
 <translation id="7234010996000898150">Linux को पुनर्स्थापना रद्द गरिँदै</translation>
@@ -5710,7 +5698,6 @@
 <translation id="7255002516883565667">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने एउटा कार्ड छ</translation>
 <translation id="7255935316994522020">लागू गर्नुहोस्</translation>
 <translation id="7256069762010468647">साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
-<translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">एउटा ट्याबमा खोल्नुहोस्</translation>
 <translation id="7257173066616499747">Wi-Fi नेटवर्क</translation>
 <translation id="725758059478686223">छपाइसम्बन्धी सेवा</translation>
@@ -5742,7 +5729,6 @@
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिएको यस साइन-इन सेवाले तपाईँको क्यामेरामाथि पहुँच राख्दैछ।</translation>
 <translation id="7295614427631867477">Android, Play र सम्बद्ध अनुप्रयोगहरूका हकमा उनीहरूको आफ्नै डेटाको सङ्कलन र प्रयोगसम्बन्धी नीतिहरू लागू हुन्छन् भन्ने कुरा ख्याल गर्नुहोस्।</translation>
 <translation id="729583233778673644">AES र RC4 इन्क्रिप्सनलाई अनुमति दिनुहोस्। RC4 साइफरहरू असुरक्षित हुने हुनाले यो विकल्पको प्रयोग गर्नुले तपाईंको जोखिममा वृद्धि हुन्छ।</translation>
-<translation id="7297443947353982503">एक-पटके टेक्स्ट म्यासेज/पासवर्ड गलत वा EAP-प्रमाणीकरणअसफल</translation>
 <translation id="729761647156315797">आफ्नो भाषा र किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7297726121602187087">गाढा हरियो</translation>
 <translation id="7299337219131431707">पाहुना ब्राउजिङ सक्षम गर्नुहोस्</translation>
@@ -6095,6 +6081,7 @@
 <translation id="7674542105240814168">यो साइटलाई स्थानसम्बन्धी जानकारी प्रयोग गर्न दिइएन</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' खोज्दा <ph name="NUM" /> ट्याब भेटियो</translation>
 <translation id="7676867886086876795">कुनै पनि पाठ क्षेत्रमा श्रुतिलेखन गर्ने सुविधा सक्षम पार्न आफ्नो आवाज Google मा पठाउनुहोस्।</translation>
+<translation id="7679171213002716280">व्यवस्थापन गरिएका <ph name="PRINTER_COUNT" /> वटा प्रिन्टर छन्।</translation>
 <translation id="7680416688940118410">टचस्क्रिन क्यालिब्रेसन</translation>
 <translation id="7681095912841365527">साइटले ब्लुटुथ प्रयोग गर्न सक्छ</translation>
 <translation id="7681597159868843240">साइटहरूले भर्चुअल रियालिटी वा फिटनेस ट्र्याकिङ जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको डिभाइसका मोसन सेन्सर प्रयोग गर्छन्</translation>
@@ -6343,7 +6330,6 @@
 <translation id="7924358170328001543">पोर्ट थप्ने क्रममा त्रुटि भयो</translation>
 <translation id="7925108652071887026">स्वतः भरण डेटा</translation>
 <translation id="792514962475806987">डक गरिएको जुमको स्तर:</translation>
-<translation id="7925247922861151263">AAA जाँच असफल भयो</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> को लागि प्रतिक्षा गर्दै...</translation>
 <translation id="7926423016278357561">यो म थिइन।</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
@@ -6392,7 +6378,6 @@
 <translation id="7972714317346275248">RSA गुप्तिकरणको साथमा PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">निम्नमध्ये कुन विकल्पले तपाईंको नेटवर्कको उत्कृष्ट तरिकाले वर्णन गर्छ?</translation>
 <translation id="797394244396603170">आफूले फाइल सेयर गर्न चाहेको यन्त्र चयन गर्नुहोस्</translation>
-<translation id="7973962044839454485">गलत एक-पटके टेक्स्ट म्यासेज वा पासवर्डको कारणले गर्दा PPP प्रमाणीकरण असफल भयो</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> प्रयोग गर्न पुनः प्रयास गर्नुहोस्</translation>
 <translation id="7974713334845253259">डिफल्ट रङ</translation>
 <translation id="7974936243149753750">ओभरस्क्यान</translation>
@@ -6702,7 +6687,6 @@
 <translation id="8299319456683969623">तपाईं हाल अफलाइन हुनुहुन्छ।</translation>
 <translation id="8300011035382349091">यस ट्याबको पुस्तक चिन्ह सम्पादन गर्नुहोस्</translation>
 <translation id="8300374739238450534">Midnight Blue</translation>
-<translation id="8300849813060516376">OTASP असफल</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{ठेगाना}other{# वटा ठेगाना}}</translation>
 <translation id="8304383784961451596">तपाईंलाई यो डिभाइस प्रयोग गर्नेे अधिकार दिइएको छैन। कृपया साइन इन गर्ने अनुमति प्राप्त गर्न एड्मिनसँग सम्पर्क गर्नुहोस् वा Family Link मार्फत सुपरिवेक्षण गरिएको Google खाता प्रयोग गरी साइन इन गर्नुहोस्।</translation>
 <translation id="8308016398665340540">तपाईं यस डिभाइसका अन्य प्रयोगकर्ताहरूसँग यो इन्टरनेट सेयर गरिरहनुभएको छ</translation>
@@ -6755,7 +6739,6 @@
 <translation id="8370294614544004647">ल्यापटप बन्द गरिएका बेला स्लिप मोडमा लगियोस्</translation>
 <translation id="8371695176452482769">अब बोल्नुहोस्</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्युट गर्नुहोस्}other{साइटहरू म्युट गर्नुहोस्}}</translation>
-<translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8373652277231415614">Crostini बाट सेयर गरिएका डिरेक्टरीहरू</translation>
 <translation id="8376137163494131156">हामीलाई Google Cast मा के भइरहेको छ भन्ने कुरा बताउनुहोस्।</translation>
 <translation id="8376384591331888629">यस साइटका तेस्रो पक्षीय कुकीसमेत</translation>
@@ -6854,7 +6837,6 @@
 <translation id="8492685019009920170">औँलाले फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको जानकारी सुरक्षित रूपमा भण्डारण गरिन्छ र यो जानकारी तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="8492822722330266509">साइटहरूले पप-अप पठाउन र रिडिरेक्ट गर्न सक्छन्</translation>
 <translation id="8492960370534528742">Google Cast सम्बन्धी प्रतिक्रिया</translation>
-<translation id="8492972329130824181">घरको नेटवर्क उपलब्ध छैन। कनेक्ट गर्न मोबाइल डेटा रोमिङ अन गर्नु पर्ने हुन्छ।</translation>
 <translation id="8493236660459102203">माइक्रोफोन:</translation>
 <translation id="8496717697661868878">यो प्लगइन चलाउनुहोस्</translation>
 <translation id="8497219075884839166">विन्डोका उपयोगिताहरू</translation>
@@ -7026,7 +7008,6 @@
 <translation id="8680251145628383637">तपाईंको सबै  यन्त्रहरूमा ट्याबहरू, पुस्तक चिन्हहरू, इतिहास र अन्य सेटिङहरू प्राप्त गर्न साइन इन गर्नुहोस्। तपाईं आफ्नो Google सेवाहरूमा स्वाचालित रूपमा साइन इन पनि हुनुहुनेछ।</translation>
 <translation id="8681614230122836773">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर फेला पार्‍यो</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> जोडियो र छाप्नका लागि तयार छ</translation>
-<translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="8690129572193755009">साइटहरूले प्रोटोकोल व्यवस्थापन गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="8695139659682234808">सेटअप पूरा गरिसकेपछि अभिभावकीय नियन्त्रणहरू थप्नुहोस्</translation>
@@ -7379,7 +7360,6 @@
 <translation id="904451693890288097">कृपया "<ph name="DEVICE_NAME" />" को लागि पासकि प्रविष्टि गर्नुहोस्:</translation>
 <translation id="9044646465488564462">सञ्जालमा जडान गर्न असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">तपाईंले पहुँच राख्न खोजिरहनुभएको पृष्ठको वेब ठेगाना Google मा पठाउँछ</translation>
-<translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9048745018038487540">सबै फन्ट चयन गर्नुहोस्</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>
 <translation id="9052208328806230490">तपाइँले तपाइँका मुद्रकहरू <ph name="CLOUD_PRINT_NAME" /> द्वारा खाता <ph name="EMAIL" /> प्रयोग गर्दै दर्ता गर्नुभएको छ</translation>
@@ -7572,6 +7552,7 @@
 <translation id="965211523698323809">आफ्नो <ph name="DEVICE_TYPE" /> बाट टेक्स्ट म्यासेजहरू सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">कुनै पनि साइटलाई HID यन्त्रहरूमाथि पहुँच राख्ने अनुमति नदिनुहोस्</translation>
 <translation id="967624055006145463">डेटा भण्डारण गरियो</translation>
+<translation id="96774243435178359">व्यवस्थापन गरिएका प्रिन्टरहरू</translation>
 <translation id="968000525894980488">Google Play services सक्रिय गर्नुहोस्।</translation>
 <translation id="968037381421390582">“<ph name="SEARCH_TERMS" />” टाँसेर खोजी गर्नुहोस्</translation>
 <translation id="968174221497644223">एप क्यास</translation>

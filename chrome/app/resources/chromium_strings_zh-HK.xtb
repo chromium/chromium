@@ -76,13 +76,13 @@
 <translation id="3350761136195634146">此帳戶已有 Chromium 設定檔</translation>
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
 <translation id="3430503420100763906">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
-<translation id="3433271666494956603">正在安裝 Chromium OS</translation>
+<translation id="3433271666494956603">正在安裝 Chromium 作業系統</translation>
 <translation id="347328004046849135">如果您使用被盜用的密碼登入帳戶，Chromium 會通知您</translation>
 <translation id="3474745554856756813">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換唔同嘅 Chromium 設定檔</translation>
 <translation id="3509308970982693815">請關閉所有 Chromium 視窗，然後再試一次。</translation>
 <translation id="3575459661164320785">在您的電腦上發現有害軟件。Chromium 可移除該軟件、復原設定及停用擴充程式，讓瀏覽器恢復正常運作。</translation>
-<translation id="3610776674893128619">清除硬碟資料並安裝 Chromium OS</translation>
+<translation id="3610776674893128619">清除硬碟資料並安裝 Chromium 作業系統</translation>
 <translation id="3639635944603682591">此使用者的瀏覽資料將從裝置上刪除。如要復原資料，請以「<ph name="USER_EMAIL" />」身分登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
@@ -166,11 +166,11 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6134968993075716475">「安全瀏覽」功能已停用。Chromium 建議啟用此功能。</translation>
 <translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Chromium OS 安裝程序已就緒！一旦繼續執行：
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />我們已準備好安裝 Chromium 作業系統！一旦繼續執行：
           <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />系統會清除你的檔案、資料和目前的作業系統。
-          <ph name="LIST_ITEM" />Chromium OS 將進行安裝。
-          <ph name="LIST_ITEM" />你的裝置會在安裝完成後關機。
+          <ph name="LIST_ITEM" />系統會清除您的檔案、資料和目前的作業系統。
+          <ph name="LIST_ITEM" />系統將會安裝 Chromium 作業系統。
+          <ph name="LIST_ITEM" />您的裝置會在安裝完成後關機。
           <ph name="END_LIST" />
           <ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />最後請注意，安裝程序會清除整個硬碟的資料。請確認重要資料皆已完成備份。<ph name="END_PARAGRAPH2" />
@@ -192,7 +192,7 @@
 <translation id="6434250628340475518">Chromium 作業系統</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
-<translation id="646620589868199210">現在可以安裝 Chromium OS 了</translation>
+<translation id="646620589868199210">現在可以安裝 Chromium 作業系統了</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="6542839706527980775">每個設定檔都會保存本身專屬的 Chromium 資料，例如書籤、記錄、密碼等</translation>
@@ -207,7 +207,7 @@
 <translation id="6734291798041940871">已為您電腦上的所有使用者安裝 Chromium。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取 Chromium 資料，請登入並開啟同步處理功能。</translation>
 <translation id="6774082503108938489">您的家長已停用 Chromium 的「網站、應用程式和擴充程式權限」設定，因此您無法啟用此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
-<translation id="6827182711503025204">安裝 Chrome OS 將會覆寫裝置上的所有資料。</translation>
+<translation id="6827182711503025204">安裝 Chromium 作業系統將會覆寫裝置上所有資料。</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製至 Chromium)</translation>
@@ -240,10 +240,10 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7585853947355360626">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chromium 作業系統設定<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium 正在使用您的相機和麥克風。</translation>
 <translation id="7617377681829253106">Chromium 現在更進一步</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />開始之前，請務必準備好最新的備份資料。安裝 Chromium OS 將會覆寫硬碟上的所有資料。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google 對任何資料遺失情形概不負責，也不保證 Chromium OS 能夠在未經認證的機型上正常運作。如要進一步瞭解獲得認證的機型，請前往[TBD]。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />進一步瞭解如何安裝 Chromium OS 及清除資料：[TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />如果準備好繼續作業，請按一下 [安裝 Chromium OS]，系統接著會引導你執行幾個簡單步驟以完成安裝作業。請放心，系統會先讓你再次確認，才對你的電腦做出變更。<ph name="END_PARAGRAPH4" /></translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />開始之前，請務必準備好最新的備份資料。安裝 Chromium 作業系統將會覆寫硬碟上所有資料。<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google 對任何資料遺失概不負責，亦不保證 Chromium 作業系統能夠在未經認證的型號上正常運作。如要進一步瞭解獲認證的型號，請前往[TBD]。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />進一步瞭解如何安裝 Chromium 作業系統及清除資料：[TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />如果準備好繼續，請按一下 [安裝 Chromium 作業系統]，然後系統會引導您執行幾個簡單步驟以完成安裝。系統會先向您再次確認，才對您的電腦作出變更。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium 不是您的預設瀏覽器</translation>
 <translation id="7689606757190482937">在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="7729447699958282447">您的網域無法使用「同步功能」，因此 Chromium 無法同步處理您的數據。</translation>

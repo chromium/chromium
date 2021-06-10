@@ -61,6 +61,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1341651618736211726">Ampliado</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
+<translation id="1383597849754832576">No se pueden descargar los videos de Subtitulado instantáneo. Vuelve a intentarlo más tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Sí</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
@@ -130,8 +131,8 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ingreso de texto</translation>
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
+<translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1993072747612765854">Más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Apagar</translation>
 <translation id="1998100899771863792">Escritorio actual</translation>
 <translation id="2016340657076538683">Escribe un mensaje</translation>
 <translation id="2018630726571919839">Cuéntame un chiste</translation>
@@ -438,6 +439,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4451374464530248585">Se modificó la combinación de teclas Alt + flecha hacia abajo. Para usar la tecla Av Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo.</translation>
 <translation id="445864333228800152">Buenas noches:</translation>
 <translation id="4458688154122353284">Detener la grabación de pantalla</translation>
+<translation id="4471354919263203780">Descargando archivos de reconocimiento de voz… <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
 <translation id="4477892968187500306">Es posible que este dispositivo incluya apps que Google no verificó.</translation>

@@ -61,6 +61,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1341651618736211726">Yfirflæði</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351937230027495976">Draga valmynd saman</translation>
+<translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1391102559483454063">Kveikt</translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
@@ -130,8 +131,8 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1972950159383891558">Hæ, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textainnsláttur</translation>
 <translation id="1989113344093894667">Ekki er hægt að taka skjámynd af efni</translation>
+<translation id="1990046457226896323">Talskrár sóttar</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Slökkva</translation>
 <translation id="1998100899771863792">Núverandi skrifborð</translation>
 <translation id="2016340657076538683">Sláðu inn skilaboð</translation>
 <translation id="2018630726571919839">Segðu mér brandara</translation>
@@ -437,6 +438,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4451374464530248585">Flýtilyklinum „Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" /> + ör niður til að nota Page Down-lykilinn.</translation>
 <translation id="445864333228800152">Gott kvöld,</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
+<translation id="4471354919263203780">Sækir raddgreiningarskrár... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Hefjast handa</translation>
 <translation id="4477350412780666475">Næsta lag</translation>
 <translation id="4477892968187500306">Þetta tæki kann að innihalda forrit sem hafa ekki verið staðfest af Google.</translation>

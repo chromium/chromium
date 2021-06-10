@@ -39,6 +39,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पाहा.</translation>
 <translation id="1807517590912578995">Chrome प्रोफाइल स्वतंत्र ठेवायची आहे का?</translation>
+<translation id="1810203443153428607">Chrome OS इंस्टॉल केल्याने, तुमच्या डिव्हाइसवरील सर्व डेटा ओव्हरराइट केला जाईल.</translation>
 <translation id="1812689907177901597">हे बंद करून, तुम्ही Chrome वर साइन इन न करता Gmail सारख्या Google साइटवर साइन इन करू शकता</translation>
 <translation id="1860536484129686729">या साइटसाठी Chrome ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="1873233029667955273">Google Chrome तुमचा डीफॉल्ट ब्राउझर नाही</translation>
@@ -59,6 +60,16 @@
 <translation id="2348335408836342058">या साइटसाठी Chrome ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="234869673307233423">Chrome तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">हार्ड ड्राइव्ह मिटवा आणि Chrome OS इंस्टॉल करा</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />आम्ही Chrome OS इंस्टॉल करण्यासाठी तयार आहोत! तुम्ही पुढे सुरू ठेवल्यानंतर:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />फाइल, डेटा आणि तुमची सध्याची ऑपरेटिंग सिस्टम मिटवली जाईल.
+          <ph name="LIST_ITEM" />Chrome OS इंस्टॉल केले जाईल.
+          <ph name="LIST_ITEM" />इंस्टॉलेशन पूर्ण झाल्यानंतर, तुमचे डिव्हाइस एकदा बंद होईल.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />एक शेवटचा रिमाइंडर: इंस्टॉलेशन तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल. कृपया तुमच्यासाठी महत्त्वाच्या असलेल्या डेटाचा तुम्ही बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -173,6 +184,10 @@
 
 Google Chrome तुमची सेटिंग्ज पुन्हा मिळवू शकत नाही.</translation>
 <translation id="5434383153637353914">हे पेज तुम्हाला तुमची साइन-इन केलेली Google खाती व्यवस्थापित करण्याची अनुमती देते. ही खाती Chrome ब्राउझर आणि Play Store अ‍ॅप्समध्ये तसेच, Gmail, Drive व YouTube यांसारख्या सेवांमध्ये उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />आम्ही सुरुवात करण्यापूर्वी, कृपया तुमच्याकडे तुमच्या डेटाचा अप टू डेट बॅकअप असल्याची खात्री करा. Chrome OS इंस्टॉल केल्याने, तुमच्या हार्ड ड्राइव्हवरील सर्व डेटा ओव्हरराइट केला जाईल.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />कोणताही डेटा गहाळ होण्यासाठी Google जबाबदार नाही आणि Chrome OS अप्रमाणित मॉडेलवर काम करेल याची कोणतीही हमी देत नाही. कृपया प्रमाणित मॉडेलविषयी अधिक जाणून घेण्यासाठी [TBD] ला भेट द्या.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chrome OS इंस्टॉल करणे आणि डेटा मिटवणे याविषयी अधिक जाणून घ्या: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />तुम्ही पुढे प्रक्रिया करण्यासाठी तयार असल्यास, “Chrome OS इंस्टॉल करा” वर क्लिक करा आणि फक्त काही सोप्या पायऱ्यांमध्ये पूर्ण होणाऱ्या इंस्टॉलेशनच्या प्रक्रियेत आम्ही तुम्हाला मार्गदर्शन करू. आम्ही तुमच्या काँप्युटरमध्ये कोणतेही बदल करण्यापूर्वी त्यांची खात्री करण्यासाठी, तुमच्याकडे दुसरी संधी असेल.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS इंस्टॉल करा</translation>
 <translation id="556024056938947818">Google Chrome पासवर्ड दर्शवण्याचा प्रयत्न करत आहे.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-मध्ये)</translation>
@@ -208,6 +223,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6566149418543181476">Google Chrome अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
+<translation id="664235759707825982">Chrome OS इंस्टॉल करण्यासाठी तयार आहे</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>
@@ -227,6 +243,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7155997830309522122">कृपया Chrome मध्ये सेव्ह केलेला तुमचा पासवर्ड संपादित करा जेणेकरून तो नवीन पासवर्डशी जुळेल.</translation>
 <translation id="7161904924553537242">Google Chromeमध्ये तुमचे स्वागत आहे</translation>
 <translation id="7242029209006116544">तुम्ही एका व्यवस्थापित खात्यासह साइन इन करत आहात आणि तुमच्या Google Chrome प्रोफाइलवर त्याच्या ॲडमिनिस्ट्रेटरला नियंत्रण देत आहात. तुमचा Chrome डेटा, जसे की तुमचे अ‍ॅप्स, बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_NAME" /> वर कायमच्या बद्ध होतील. तुम्ही Google खाती डॅशबोर्डद्वारे हा डेटा हटवण्यात सक्षम व्हाल, परंतु तुम्ही दुसर्‍या खात्यासह हा डेटा संबद्ध करण्यात सक्षम असणार नाही. तुम्ही तुमचा विद्यमान Chrome डेटा वेगळा ठेवण्यासाठी एक नवीन प्रोफाइल वैकल्पिकपणे तयार करू शकता. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS चे इंस्टॉलेशन प्रगतीपथावर आहे</translation>
 <translation id="7295052994004373688">ही भाषा Google Chrome UI दाखवण्यासाठी वापरली जाते</translation>
 <translation id="7296210096911315575">महत्त्वाचा वापर आणि सुरक्षा माहिती</translation>
 <translation id="7303916856901595720">खाते नवीन Chrome प्रोफाइलवर हलवायचे आहे का?</translation>

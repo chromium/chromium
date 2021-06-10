@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">展開</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">摺埋選單</translation>
+<translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1391102559483454063">已開啟</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1989113344093894667">無法擷取內容</translation>
+<translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
-<translation id="1995660704900986789">關機</translation>
 <translation id="1998100899771863792">目前的桌面</translation>
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講笑話</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">「Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 Page Down 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向下箭咀。</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止螢幕錄影</translation>
+<translation id="4471354919263203780">正在下載語音識別檔案… <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4477892968187500306">此裝置可能包含未經 Google 驗證的的應用程式。</translation>

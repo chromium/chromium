@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">پچھلے گھنٹے</translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
-<translation id="1952728750904661634">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
 <translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
@@ -695,7 +694,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7887198238286927132">‏آپ کی رازداری کے تحفظ کے لیے، Chrome اس فیلڈ کو آٹو فل نہیں کرے گا۔</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">پاس ورڈز برآمد کریں...</translation>
-<translation id="7947953824732555851">قبول و سائن ان کریں</translation>
 <translation id="794799177247607889">لاگ کرنا روکیں</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
@@ -810,6 +808,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9152539721251340337">‏QR کوڈ تخلیق کریں</translation>
 <translation id="9157836665414082580">ڈائیلاگز کو دبائیں</translation>
+<translation id="9183059292653643328">یہ براؤزر آپ کی تنظیم کے زیر انتظام ہے</translation>
 <translation id="9188680907066685419">نظم کردہ اکاؤنٹ سے سائن آؤٹ کریں</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> دن پہلے</translation>
 <translation id="9203116392574189331">Handoff</translation>

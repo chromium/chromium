@@ -61,6 +61,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
+<translation id="1383597849754832576">Nevar lejupielādēt automātisko subtitru failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1391102559483454063">Ieslēgta</translation>
 <translation id="1407069428457324124">Tumšais motīvs</translation>
@@ -130,8 +131,8 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1972950159383891558">Sveiki, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Teksta ievade</translation>
 <translation id="1989113344093894667">Nevar izveidot satura ekrānuzņēmumu</translation>
+<translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
 <translation id="1993072747612765854">Uzzināt vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu</translation>
-<translation id="1995660704900986789">Izslēgt</translation>
 <translation id="1998100899771863792">Pašreizējā darbvieta</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
@@ -437,6 +438,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4451374464530248585">Šie īsinājumtaustiņi ir mainījušies: Alt + lejupvērstais bulttaustiņš. Lai izmantotu lejupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + lejupvērstais bulttaustiņš.</translation>
 <translation id="445864333228800152">Labvakar!</translation>
 <translation id="4458688154122353284">Apturēt ekrāna ierakstīšanu</translation>
+<translation id="4471354919263203780">Notiek runas atpazīšanas failu lejupielāde... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
 <translation id="4477892968187500306">Iespējams, šajā ierīcē ir lietotnes, ko uzņēmums Google nav verificējis.</translation>

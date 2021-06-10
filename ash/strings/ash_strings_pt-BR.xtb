@@ -61,6 +61,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1341651618736211726">Botão flutuante</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1351937230027495976">Recolher menu</translation>
+<translation id="1383597849754832576">Não foi possível fazer o download dos arquivos de fala. Tente novamente mais tarde.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativado</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
@@ -130,8 +131,8 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
 <translation id="1989113344093894667">Não é possível fazer uma captura do conteúdo</translation>
+<translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Desligar</translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
 <translation id="2018630726571919839">Conte uma piada</translation>
@@ -437,6 +438,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4451374464530248585">O atalho de teclado Alt + seta para baixo mudou. Para usar a tecla Page Down, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para baixo.</translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação da tela</translation>
+<translation id="4471354919263203780">Fazendo o download dos arquivos de reconhecimento de fala… <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4477892968187500306">O dispositivo pode conter apps que não foram verificados pelo Google.</translation>

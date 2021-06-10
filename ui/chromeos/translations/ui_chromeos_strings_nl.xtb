@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Als je bestanden wilt openen met <ph name="APP_NAME" />, verplaats je ze eerst naar de bestandsmap van Windows.</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1119069657431255176">Tot bzip2 gecomprimeerd tar-archief</translation>
+<translation id="1119447706177454957">Interne fout</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engels (VS) met Programmer Dvorak-toetsenbord</translation>
 <translation id="1134697384939541955">Engels (VS) met Extended-toetsenbord</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome-apparaten</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1576937952766665062">Bangla (transliteratie)</translation>
+<translation id="158849752021629804">Thuisnetwerk vereist</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Portugees met Amerikaans toetsenbord (internationaal)</translation>
 <translation id="1641780993263690097">Chinees (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> bestanden offline beschikbaar maken</translation>
 <translation id="164969095109328410">Chrome-apparaat</translation>
+<translation id="1661867754829461514">Pincode ontbreekt</translation>
 <translation id="1665611772925418501">Het bestand kan niet worden aangepast.</translation>
 <translation id="1673103856845176271">Uit veiligheidsoverwegingen kan het bestand niet worden geopend.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebreeuws (transliteratie)</translation>
 <translation id="1747761757048858544">Nederlands (Nederland)</translation>
 <translation id="174937106936716857">Totaal aantal bestanden</translation>
+<translation id="1773212559869067373">Verificatiecertificaat lokaal geweigerd</translation>
 <translation id="1775381402323441512">Videogegevens</translation>
 <translation id="180035236176489073">Je moet online zijn om deze bestanden te openen.</translation>
 <translation id="1807938677607439181">Alle bestanden</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR-archief</translation>
 <translation id="2037845485764049925">Russisch</translation>
+<translation id="2044023416777079300">Modem niet geregistreerd</translation>
 <translation id="2046702855113914483">Noedelsoep</translation>
 <translation id="2070909990982335904">Namen die beginnen met een stip, zijn gereserveerd voor het systeem. Kies een andere naam.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items verwijderd</translation>
 <translation id="2541377937973966830">De inhoud van deze map is alleen-lezen. Sommige activiteiten worden niet ondersteund.</translation>
 <translation id="2542049655219295786">Google-tabel</translation>
+<translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
 <translation id="2547921442987553570">Toevoegen aan <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
 <translation id="2562685439590298522">Documenten</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
+<translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2620090360073999360">Kan Google Drive momenteel niet bereiken.</translation>
 <translation id="2638942478653899953">Google Drive kan niet worden bereikt. <ph name="BEGIN_LINK" />Log uit<ph name="END_LINK" /> en log weer in.</translation>
 <translation id="2649120831653069427">Regenboogvis</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Kan '<ph name="PATH" />' niet openen</translation>
 <translation id="3280431534455935878">Voorbereiden</translation>
 <translation id="3280987981688031357">Lp</translation>
+<translation id="3295357220137379386">Apparaat is bezig</translation>
 <translation id="3296763833017966289">Georgisch</translation>
 <translation id="3307875152560779385">Oekraïens</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> inpakken...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Koerdisch Sorani met Arabisch toetsenbord</translation>
 <translation id="4363958938297989186">Russisch met fonetisch toetsenbord</translation>
 <translation id="4364327530094270451">Meloen</translation>
+<translation id="4387004326333427325">Verificatiecertificaat afgewezen op afstand</translation>
 <translation id="4394214039309501350">Externe link</translation>
 <translation id="4418686080762064601">Een snelkoppeling maken voor je bestanden</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
+<translation id="4442424173763614572">DNS-lookup mislukt</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Roemeens</translation>
 <translation id="4477219268485577442">Bulgaars fonetisch</translation>
+<translation id="4508265954913339219">Activering mislukt</translation>
 <translation id="4509667233588080747">Engels (VS) met Workman International-toetsenbord</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">Deze map is gedeeld met Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Delen met Parallels Desktop beheren</translation>
 <translation id="5038625366300922036">Meer tonen…</translation>
 <translation id="5044852990838351217">Armeens</translation>
+<translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5059127710849015030">Nepalees (transliteratie)</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> van alle bestanden wordt verwijderd</translation>
@@ -458,6 +470,7 @@
 <translation id="5838451609423551646">Alle items uit selectie zijn verwijderd.</translation>
 <translation id="5838825566232597749">Amerikaans Workman (internationaal)</translation>
 <translation id="5851063901794976166">Er is hier niets te zien…</translation>
+<translation id="5864471791310927901">Opzoeken van DHCP mislukt</translation>
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
 <translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
@@ -493,6 +506,7 @@
 <translation id="6248400709929739064">Ondertiteling aanzetten</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Een app selecteren om dit bestand te openen</translation>
+<translation id="6312403991423642364">Onbekende netwerkfout</translation>
 <translation id="6321303798550928047">Zwaaien</translation>
 <translation id="6339145975392024142">Amerikaans internationaal (pc)</translation>
 <translation id="6346310558342052870">Beperkte toegang</translation>
@@ -522,6 +536,7 @@
 <translation id="6673674183150363784">Frans (Frankrijk) met Bépo-toetsenbord</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Vorige</translation>
+<translation id="6732801395666424405">Certificaten niet geladen</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -548,6 +563,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> gevonden</translation>
 <translation id="6935521024859866267">Ondersteboven</translation>
+<translation id="6943836128787782965">Ophalen van HTTP mislukt</translation>
 <translation id="6949408524333579394">Servisch (transliteratie)</translation>
 <translation id="696203921837389374">Synchronisatie via mobiele data aanzetten</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -571,15 +587,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;zoeken in Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisch)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Kan netwerk niet configureren</translation>
+<translation id="7170041865419449892">Geen bereik</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Bestand opslaan als</translation>
+<translation id="7229570126336867161">EVDO vereist</translation>
 <translation id="7238097264433196391">Drive-naam</translation>
 <translation id="7248671827512403053">Applicatie</translation>
+<translation id="7256405249507348194">Onbekende fout: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beschikbare services</translation>
 <translation id="7283041136720745563">Je Google Drive-quotum is niet groot genoeg.</translation>
 <translation id="7294063083760278948">Telugu (transliteratie)</translation>
 <translation id="7295662345261934369">Delen met anderen</translation>
+<translation id="7297443947353982503">Gebruikersnaam/wachtwoord onjuist of EAP-verificatie mislukt</translation>
 <translation id="7309413087278791451">Duits (België)</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7343393116438664539">Vietnamees (Telex)</translation>
@@ -650,12 +671,14 @@
 <translation id="7881969471599061635">Ondertiteling uitzetten</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
 <translation id="7908793776359722643">Tijdens het formatteren van een partitie worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
+<translation id="7925247922861151263">AAA-controle mislukt</translation>
 <translation id="7925686952655276919">Geen mobiele data gebruiken voor synchronisatie</translation>
 <translation id="7928710562641958568">Apparaat uitwerpen</translation>
 <translation id="7943385054491506837">Amerikaans Colemak</translation>
 <translation id="7953739707111622108">Dit apparaat kan niet worden geopend omdat het bijbehorende bestandssysteem niet wordt herkend.</translation>
 <translation id="7969525169268594403">Sloveens</translation>
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
+<translation id="7973962044839454485">PPP-verificatie mislukt wegens een onjuiste gebruikersnaam of wachtwoord</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
 <translation id="79907182588096956">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
@@ -685,12 +708,14 @@
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Japans</translation>
+<translation id="8300849813060516376">OTASP mislukt</translation>
 <translation id="8312871300878166382">Plakken in map</translation>
 <translation id="8329978297633540474">Platte tekst</translation>
 <translation id="8335587457941836791">Losmaken van plank</translation>
 <translation id="8335837413233998004">Wit-Russisch</translation>
 <translation id="8336153091935557858">Gisteren <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Er bestaat al een bestand of map met dezelfde naam.</translation>
+<translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
 <translation id="8395901698320285466">Afmetingen</translation>
 <translation id="8437209419043462667">Amerikaans</translation>
@@ -703,6 +728,7 @@
 <translation id="8477649328507734757">Spinnen</translation>
 <translation id="8484284835977497781">Kies uit je recente foto's.</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
+<translation id="8492972329130824181">Thuisnetwerk is niet beschikbaar. Mobiele dataroaming moet aanstaan om verbinding te maken.</translation>
 <translation id="8521441079177373948">VK</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="853494022971700746">Frans (Frankrijk)</translation>
@@ -718,6 +744,7 @@
 <translation id="8600173386174225982">Bestandslijst is gewijzigd naar miniatuurweergave.</translation>
 <translation id="8601932370724196034">Crostini-afbeeldingsbestand</translation>
 <translation id="8609695766746872526">IJslands</translation>
+<translation id="8688591111840995413">Ongeldig wachtwoord</translation>
 <translation id="8698464937041809063">Google-tekening</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8713112442029511308">Maltees</translation>
@@ -743,6 +770,7 @@
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
+<translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>
 <translation id="9110990317705400362">We zijn altijd op zoek naar manieren om het surfen veiliger te maken. Vroeger kon elke website je vragen een extensie toe te voegen aan je browser. In de nieuwste versies van Google Chrome moet je Chrome expliciet toestemming geven om deze extensies te installeren door ze toe te voegen via de pagina 'Extensies'. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>

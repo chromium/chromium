@@ -61,6 +61,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1341651618736211726">Menú addicional</translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
+<translation id="1383597849754832576">No es poden baixar fitxers de veu. Torna-ho a provar més tard.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
@@ -130,8 +131,8 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Introducció de text</translation>
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
+<translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
 <translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Apaga</translation>
 <translation id="1998100899771863792">Escriptori actual</translation>
 <translation id="2016340657076538683">Escriu un missatge</translation>
 <translation id="2018630726571919839">Explica'm un acudit</translation>
@@ -437,6 +438,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4451374464530248585">La tecla de drecera Alt+fletxa avall ha canviat. Per fer servir la tecla d'avançar pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa avall.</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
+<translation id="4471354919263203780">S'estan baixant els fitxers de reconeixement de parla... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4477350412780666475">Pista següent</translation>
 <translation id="4477892968187500306">Aquest dispositiu pot contenir aplicacions que Google no ha verificat.</translation>

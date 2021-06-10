@@ -36,6 +36,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Ellenőrizze, hogy bejelentkezett-e a Chrome-ba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="1807517590912578995">Elkülöníti a Chrome-profilt?</translation>
+<translation id="1810203443153428607">A Chrome OS telepítése az eszközön tárolt összes adatot felülírja.</translation>
 <translation id="1812689907177901597">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chrome-ba is bejelentkezne</translation>
 <translation id="1860536484129686729">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
 <translation id="1873233029667955273">Nem a Google Chrome az alapértelmezett böngésző</translation>
@@ -56,6 +57,16 @@
 <translation id="2348335408836342058">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
 <translation id="234869673307233423">A Chrome nem tudja ellenőrizni a jelszavait. Próbálkozzon később.</translation>
 <translation id="235650106824528204">A profil használata során generált összes Chrome-adatot (pl. könyvjelzőket, előzményeket, jelszavakat és egyéb beállításokat) eltávolíthatja a munkaprofil rendszergazdája. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">Merevlemez törlése és a Chrome OS telepítése</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Készen állunk a Chrome OS telepítésére! A továbblépést követően:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />A fájlok, az adatok és az aktuális operációs rendszer törlődik.
+          <ph name="LIST_ITEM" />A Chrome OS telepítve lesz.
+          <ph name="LIST_ITEM" />Az eszköze kikapcsol a telepítés befejezése után.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Egy utolsó emlékeztető: a telepítéssel törlődik az egész merevlemez. Győződjön meg róla, hogy minden fontos adatról van biztonsági másolata<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Miután kezdetét vette a telepítés, már nem lehet megszakítani.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">A Google Chrome nem tudta szinkronizálni az adatait, mert a szinkronizálás nem érhető el az Ön domainjénél.</translation>
 <translation id="2467438592969358367">A Google Chrome exportálni szeretné a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
@@ -167,6 +178,10 @@
 <translation id="5394833366792865639">Chrome-lap megosztása</translation>
 <translation id="5430073640787465221">A beállításait tartalmazó fájl hibás vagy érvénytelen. A Google Chrome nem tudja helyreállítani a beállításait.</translation>
 <translation id="5434383153637353914">Ezen az oldalon kezelheti a bejelentkezett Google-fiókjait. Ezeket a fiókokat használhatja majd a Chrome böngészőben és a Play Áruház alkalmazásaiban, valamint olyan szolgáltatásokban, mint a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Mielőtt elkezdenénk, győződjön meg róla, hogy adatainak van naprakész biztonsági másolata. A Chrome OS telepítése a merevlemezen tárolt összes adatot felülírja.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />A Google semmilyen adatvesztésért nem felelős, és nem garantálja a Chrome OS működését tanúsítvánnyal nem rendelkező modelleken. A tanúsítvánnyal rendelkező modellekkel kapcsolatos további információért látogasson el a következő oldalra: [még nem ismert].<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />További információ a Chrome OS operációs rendszerről és az adattörlésről: [még nem ismert URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />Ha készen áll a folytatásra, kattintson „A Chrome OS telepítése” lehetőségre, és végigvezetjük Önt a telepítés folyamatán néhány egyszerű lépésben. Még egy lehetősége lesz a jóváhagyásra, mielőtt módosításokat hajtanánk végre a számítógépén.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">A Chrome OS telepítése</translation>
 <translation id="556024056938947818">A Google Chrome megpróbálja megjeleníteni a jelszavakat.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -201,6 +216,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">A Google Chrome frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS rendszer</translation>
+<translation id="664235759707825982">A Chrome OS készen áll a telepítésre</translation>
 <translation id="6676384891291319759">Internetelérés</translation>
 <translation id="6679975945624592337">A Google Chrome futhat a háttérben</translation>
 <translation id="6739177684496155661">Biztosan új Chrome-profilban folytatja?</translation>
@@ -220,6 +236,7 @@
 <translation id="7155997830309522122">Ha igen, akkor módosítsa a Chrome böngészőben mentett jelszót az új jelszóra.</translation>
 <translation id="7161904924553537242">Üdvözli Önt a Google Chrome!</translation>
 <translation id="7242029209006116544">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Google Chrome-profiljához. Chrome-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chrome-adatainak külön tárolásához. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">A Chrome OS telepítése folyamatban van</translation>
 <translation id="7295052994004373688">A Google Chrome kezelőfelülete ezen a nyelven jelenik meg.</translation>
 <translation id="7296210096911315575">Fontos használati és biztonsági információk</translation>
 <translation id="7303916856901595720">Biztosan áthelyezi a fiókot az új Chrome-profilba?</translation>

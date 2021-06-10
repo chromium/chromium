@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Son Bir Saat</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1952172573699511566">Web siteleri, mümkün olduğunda metni tercih ettiğiniz dilde gösterir.</translation>
-<translation id="1952728750904661634">Yönetilen hesapla oturum açın</translation>
 <translation id="1965935827552890526">Açık olan diğer Chrome pencerenizde yaptığınız işlemi tamamlayın.</translation>
 <translation id="1973912524893600642">Verileri Koru</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
@@ -695,7 +694,6 @@ Hesabınız <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için oturumun
 <translation id="7887198238286927132">Gizliliğinizi korumak için Chrome bu alanı otomatik olarak doldurmayacaktır.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Şifreleri Dışa Aktar...</translation>
-<translation id="7947953824732555851">Kabul et ve oturum aç</translation>
 <translation id="794799177247607889">Günlüğe Kaydetmeyi Durdur</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Güvenliği ihlal edilmiş şifre yok}=1{Güvenliği ihlal edilmiş {COUNT} şifre var}other{Güvenliği ihlal edilmiş {COUNT} şifre var}}</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippen Sie zum Kopieren hier doppelt.</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in Ihrer bevorzugten Sprache angezeigt.</translation>
-<translation id="1952728750904661634">Mit verwaltetem Konto anmelden</translation>
 <translation id="1965935827552890526">Sie können zu Ihrem offenem Chrome-Fenster zurückkehren, um Ihre vorherige Aktion abzuschließen.</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
@@ -695,7 +694,6 @@ Da Ihr Konto von <ph name="HOSTED_DOMAIN" /> verwaltet wird, werden Ihre Chrome-
 <translation id="7887198238286927132">Um Ihre Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Passwörter exportieren…</translation>
-<translation id="7947953824732555851">Akzeptieren und anmelden</translation>
 <translation id="794799177247607889">Protokollierung anhalten</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -811,6 +809,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9152539721251340337">QR-Code erstellen</translation>
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
+<translation id="9183059292653643328">Dieser Browser wird von Ihrer Organisation verwaltet</translation>
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>

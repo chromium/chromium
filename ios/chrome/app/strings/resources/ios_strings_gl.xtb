@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
-<translation id="1952728750904661634">Iniciar sesión cunha conta xestionada</translation>
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -695,7 +694,6 @@ Ademais, dado que a conta está xestionada por <ph name="HOSTED_DOMAIN" />, os t
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
-<translation id="7947953824732555851">Acep. e iniciar ses.</translation>
 <translation id="794799177247607889">Deter rexistro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="7961015016161918242">Nunca</translation>

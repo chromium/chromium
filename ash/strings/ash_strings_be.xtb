@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Адкрыць меню</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
+<translation id="1383597849754832576">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Паўтарыце спробу пазней.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1391102559483454063">Уключана</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Вітаем, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Увод тэксту</translation>
 <translation id="1989113344093894667">Здыманне змесціва немагчымае</translation>
+<translation id="1990046457226896323">Файлы для ператварэння маўлення ў тэкст спампаваны</translation>
 <translation id="1993072747612765854">Даведацца больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Выключыць</translation>
 <translation id="1998100899771863792">Бягучы працоўны стол</translation>
 <translation id="2016340657076538683">Напішыце паведамленне</translation>
 <translation id="2018630726571919839">Раскажы мне жарт</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы Page Down, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз.</translation>
 <translation id="445864333228800152">Добры вечар,</translation>
 <translation id="4458688154122353284">Спыніць запіс экрана</translation>
+<translation id="4471354919263203780">Ідзе спампоўванне файлаў распазнавання маўлення... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
 <translation id="4477892968187500306">На гэтай прыладзе могуць знаходзіцца праграмы, якія не былі спраўджаны Google.</translation>

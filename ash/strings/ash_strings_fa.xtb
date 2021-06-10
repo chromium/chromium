@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">سرریز</translation>
 <translation id="1346748346194534595">راست</translation>
 <translation id="1351937230027495976">کوچک کردن منو</translation>
+<translation id="1383597849754832576">نمی‌توان فایل‌های گفتاری را بارگیری کرد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1391102559483454063">روشن</translation>
 <translation id="1407069428457324124">طرح زمینه تیره</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ورودی نوشتاری</translation>
 <translation id="1989113344093894667">نمی‌توان محتوا را ضبط کرد</translation>
+<translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
-<translation id="1995660704900986789">خاموش کردن</translation>
 <translation id="1998100899771863792">میزکار کنونی</translation>
 <translation id="2016340657076538683">پیامی تایپ کنید</translation>
 <translation id="2018630726571919839">‏Tell me a joke (لطیفه‌ای بگو)</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «صفحه بعدی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای پایین» را فشار دهید.</translation>
 <translation id="445864333228800152">عصر به‌خیر،</translation>
 <translation id="4458688154122353284">توقف ضبط صفحه‌نمایش</translation>
+<translation id="4471354919263203780">درحال بارگیری فایل‌های تشخیص گفتار... <ph name="PERCENT" />٪</translation>
 <translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
 <translation id="4477892968187500306">‏ممکن است این دستگاه حاوی برنامه‌هایی باشد که Google آن‌ها را تأیید نکرده است.</translation>

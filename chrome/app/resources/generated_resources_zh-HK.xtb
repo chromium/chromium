@@ -549,7 +549,6 @@
 <translation id="1587275751631642843">JavaScript 控制器(&amp;J)</translation>
 <translation id="1587907146729660231">用手指輕觸開關按鈕</translation>
 <translation id="1588438908519853928">一般</translation>
-<translation id="158849752021629804">需要住宅網絡</translation>
 <translation id="1588870296199743671">使用其他程式開啟連結…</translation>
 <translation id="1588919647604819635">按一下右鍵資訊卡</translation>
 <translation id="1589055389569595240">顯示拼字和文法</translation>
@@ -632,7 +631,6 @@
 <translation id="1660204651932907780">允許網站播放音效 (建議)</translation>
 <translation id="1660763353352708040">電源適配器問題</translation>
 <translation id="1661156625580498328">強制執行 AES 加密 (建議)。</translation>
-<translation id="1661867754829461514">找不到 PIN</translation>
 <translation id="16620462294541761">很抱歉，系統無法驗證您的密碼，請再試一次。</translation>
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="166439687370499867">不允許變更共用網絡設定</translation>
@@ -745,7 +743,6 @@
 <translation id="1768212860412467516">提供您對「<ph name="EXPERIMENT_NAME" />」的意見。</translation>
 <translation id="1768278914020124551">抱歉！連線至登入伺服器時發生問題。請檢查互聯網連線和網域名稱，然後再試一次。</translation>
 <translation id="1769104665586091481">在新視窗中開啟連結(&amp;W)</translation>
-<translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="177336675152937177">代管應用程式數據</translation>
 <translation id="1775706469381199282">不允許網站使用 JavaScript</translation>
 <translation id="1776712937009046120">新增使用者</translation>
@@ -999,7 +996,6 @@
 <translation id="2040460856718599782">糟糕！嘗試驗證您的身分時發生錯誤。請重新檢查您的登入憑證，然後再試一次。</translation>
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2044014337866019681">請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
-<translation id="2044023416777079300">數據機未登記</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045117674524495717">鍵盤快速鍵助手</translation>
 <translation id="2045969484888636535">繼續封鎖 Cookie</translation>
@@ -1487,7 +1483,6 @@
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網絡連線管理員及其他服務的偵錯等級。</translation>
 <translation id="2544352060595557290">這個分頁</translation>
-<translation id="2544853746127077729">網絡已拒絕驗證憑證</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
@@ -1676,7 +1671,7 @@
 <translation id="2755349111255270002">重設此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理無障礙功能</translation>
 <translation id="275662540872599901">螢幕已關閉</translation>
-<translation id="2757161511365746634">查看印表機</translation>
+<translation id="2757161511365746634">查看打印機</translation>
 <translation id="2757338480560142065">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="2762441749940182211">已禁止使用相機</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
@@ -1719,7 +1714,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2800760947029405028">上載圖片</translation>
 <translation id="2801954693771979815">螢幕大小</translation>
-<translation id="2802557211515765772">沒有受管理的印表機。</translation>
+<translation id="2802557211515765772">冇受管理嘅打印機。</translation>
 <translation id="2803313416453193357">開啟資料夾</translation>
 <translation id="2803375539583399270">請輸入 PIN</translation>
 <translation id="2804043232879091219">無法開啟替代瀏覽器</translation>
@@ -2164,7 +2159,6 @@
 <translation id="32939749466444286">Linux 容器無法啟動。請再試一次。</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3294686910656423119">使用情況統計和當機報告</translation>
-<translation id="3295357220137379386">裝置忙碌中</translation>
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">輸入的網址無效。</translation>
 <translation id="32991397311664836">裝置：</translation>
@@ -3160,7 +3154,6 @@
 <translation id="4384652540891215547">啟用擴充功能</translation>
 <translation id="438503109373656455">赤兔馬</translation>
 <translation id="4385905942116811558">搜尋藍牙裝置和 USB 裝置</translation>
-<translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4387890294700445764">被盜用的密碼</translation>
 <translation id="4389091756366370506">使用者 <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 以及另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個按鈕裝置</translation>
@@ -3215,7 +3208,6 @@
 <translation id="4441147046941420429">如要繼續，請從裝置上移除安全密鑰，然後重新插入並輕觸密鑰</translation>
 <translation id="444134486829715816">展開…</translation>
 <translation id="4441928470323187829">已由管理員固定</translation>
-<translation id="4442424173763614572">DNS 查詢失敗</translation>
 <translation id="4443536555189480885">說明(&amp;H)</translation>
 <translation id="4444304522807523469">存取透過 USB 外接或區域網絡上的文件掃描器</translation>
 <translation id="4444512841222467874">如未釋出可用儲存空間，系統可能會自動移除使用者和資料。</translation>
@@ -3272,7 +3264,6 @@
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>
 <translation id="450552327874992444">已新增的字詞</translation>
 <translation id="4507128560633489176">清除咗資料。</translation>
-<translation id="4508265954913339219">啟用失敗</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
 <translation id="4510195992002502722">無法傳送意見，正在重試…</translation>
 <translation id="4510479820467554003">家長帳戶清單</translation>
@@ -3868,7 +3859,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5171343362375269016">儲存在 Swap 空間的記憶體</translation>
-<translation id="5172855596271336236">有 1 部受管理的印表機。</translation>
+<translation id="5172855596271336236">有 1 部受管理嘅打印機。</translation>
 <translation id="5173668317844998239">新增及刪除安全密鑰上儲存的指紋</translation>
 <translation id="5175379009094579629">裝置名稱無效。請輸入有效的裝置名稱並再試一次。</translation>
 <translation id="5177479852722101802">繼續封鎖存取相機和麥克風</translation>
@@ -4485,7 +4476,6 @@
 <translation id="5862319196656206789">設定已連接的裝置</translation>
 <translation id="5863445608433396414">啟用偵錯功能</translation>
 <translation id="5864195618110239517">使用按用量收費的連線</translation>
-<translation id="5864471791310927901">DHCP 查閱失敗</translation>
 <translation id="5864754048328252126">叉緊電時嘅閒置動作</translation>
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">您正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。如直接在電腦上安裝程式，以後無需透過磁碟映像即可直接執行，並且能隨時使用最新的版本。</translation>
@@ -4895,7 +4885,6 @@
 <translation id="6309510305002439352">已關閉麥克風</translation>
 <translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請聯絡您的流動網絡供應商。</translation>
 <translation id="6311220991371174222">由於開啟您的設定檔時發生錯誤，因此無法啟動 Chrome。請嘗試重新啟動 Chrome。</translation>
-<translation id="6312403991423642364">不明的網絡錯誤</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
 <translation id="6312638141433622592">允許以閱讀器模式顯示文章 (如支援)</translation>
 <translation id="6313641880021325787">離開 VR</translation>
@@ -5268,7 +5257,6 @@
 <translation id="67269783048918309">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">已連接，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">攝錄機</translation>
-<translation id="6732801395666424405">未載入憑證</translation>
 <translation id="6735304988756581115">顯示 Cookie 和其他網站數據…</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5462,7 +5450,6 @@
 <translation id="6941937518557314510">登入 <ph name="TOKEN_NAME" /> 即可使用您的憑證為 <ph name="HOST_NAME" /> 進行驗證。</translation>
 <translation id="6943060957016121200">啟用「即時網絡共享」</translation>
 <translation id="6943176775188458830">取消列印</translation>
-<translation id="6943836128787782965">HTTP 擷取失敗</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在此網頁禁止重新導向。</translation>
 <translation id="6949434160682548041">密碼 (選填)</translation>
@@ -5658,12 +5645,10 @@
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
-<translation id="7165320105431587207">無法設定網絡</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和音效檔案具有讀取權限。</translation>
 <translation id="7167486101654761064">保持開啟這類檔案(&amp;A)</translation>
 <translation id="716810439572026343">正在下載 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字型大小</translation>
-<translation id="7170041865419449892">超出範圍</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
@@ -5718,7 +5703,6 @@
 <translation id="7225179976675429563">找不到網絡類型</translation>
 <translation id="7228479291753472782">控制各種設定，包括指定網站能否使用地理位置、麥克風和相機等功能。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
-<translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7230787553283372882">自訂文字大小</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
@@ -5746,7 +5730,6 @@
 <translation id="7255002516883565667">目前您有 1 張卡只可在此裝置上使用</translation>
 <translation id="7255935316994522020">套用</translation>
 <translation id="7256069762010468647">網站正在使用您的相機</translation>
-<translation id="7256405249507348194">無法識別的錯誤：<ph name="DESC" /></translation>
 <translation id="7256710573727326513">在分頁中開啟</translation>
 <translation id="7257173066616499747">Wi-Fi 網絡</translation>
 <translation id="725758059478686223">列印服務</translation>
@@ -5778,7 +5761,6 @@
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
 <translation id="729583233778673644">強制使用 AES 和 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
-<translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="729761647156315797">選擇語言和鍵盤</translation>
 <translation id="7297726121602187087">深綠色</translation>
 <translation id="7299337219131431707">啟用訪客瀏覽</translation>
@@ -6131,7 +6113,7 @@
 <translation id="7674542105240814168">存取位置被拒</translation>
 <translation id="7676119992609591770">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="7676867886086876795">傳送語音給 Google，透過語音輸入填寫文字欄位。</translation>
-<translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 部受管理的印表機。</translation>
+<translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 部受管理嘅打印機。</translation>
 <translation id="7680416688940118410">觸控螢幕校正</translation>
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器，以提供虛擬實境或追蹤健身狀況等功能</translation>
@@ -6380,7 +6362,6 @@
 <translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
 <translation id="792514962475806987">固定放大鏡的縮放等級：</translation>
-<translation id="7925247922861151263">AAA 檢查失敗</translation>
 <translation id="7925285046818567682">正在等候 <ph name="HOST_NAME" />…</translation>
 <translation id="7926423016278357561">這不是我本人。</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>
@@ -6429,7 +6410,6 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
 <translation id="7973776233567882054">下列哪一項最符合您的網絡使用情況？</translation>
 <translation id="797394244396603170">選取您要分享檔案的裝置</translation>
-<translation id="7973962044839454485">使用者名稱或密碼錯誤，導致 PPP 驗證失敗</translation>
 <translation id="7974566588408714340">使用「<ph name="EXTENSIONNAME" />」重試</translation>
 <translation id="7974713334845253259">預設顏色</translation>
 <translation id="7974936243149753750">溢出掃描</translation>
@@ -6739,7 +6719,6 @@
 <translation id="8299319456683969623">您目前處於離線狀態。</translation>
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍色</translation>
-<translation id="8300849813060516376">OTASP 失敗</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 個地址}}</translation>
 <translation id="8304383784961451596">您無權使用此裝置。請與管理員聯絡，要求對方授予登入權限，或使用 Family Link 監管的 Google 帳戶登入。</translation>
 <translation id="8308016398665340540">您正在與此裝置的其他使用者共用此網絡</translation>
@@ -6792,7 +6771,6 @@
 <translation id="8370294614544004647">蓋上手提電腦時進入休眠狀態</translation>
 <translation id="8371695176452482769">請說話</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{將單一網站靜音}other{將多個網站靜音}}</translation>
-<translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8373652277231415614">Crostini 共用目錄</translation>
 <translation id="8376137163494131156">將 Google Cast 的問題告訴我們。</translation>
 <translation id="8376384591331888629">包括在此網站上的第三方 Cookie</translation>
@@ -6891,7 +6869,6 @@
 <translation id="8492685019009920170">用手指輕觸指紋感應器。系統會妥善地將您的資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="8492822722330266509">網頁可傳送彈出式視窗和使用重新導向</translation>
 <translation id="8492960370534528742">Google Cast 意見反映</translation>
-<translation id="8492972329130824181">無法使用住宅網絡，您必須啟用流動數據漫遊服務才能連線。</translation>
 <translation id="8493236660459102203">麥克風：</translation>
 <translation id="8496717697661868878">執行這個外掛程式</translation>
 <translation id="8497219075884839166">Windows 公用處理程序</translation>
@@ -7064,7 +7041,6 @@
 <translation id="8681614230122836773">Chrome 在您的電腦上發現了有害軟件</translation>
 <translation id="8682730193597992579">已連接 <ph name="PRINTER_NAME" /> 並準備就緒</translation>
 <translation id="8683081248374354009">重設群組</translation>
-<translation id="8688591111840995413">密碼錯誤</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="8690129572193755009">網站可要求處理通訊協定</translation>
 <translation id="8695139659682234808">設定完成後新增家長監控設定</translation>
@@ -7417,7 +7393,6 @@
 <translation id="904451693890288097">請輸入「<ph name="DEVICE_NAME" />」的密碼金鑰：</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
-<translation id="9046895021617826162">連線失敗</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9052208328806230490">您已透過 <ph name="EMAIL" /> 帳戶並使用 <ph name="CLOUD_PRINT_NAME" /> 為您的打印機註冊</translation>
@@ -7610,7 +7585,7 @@
 <translation id="965211523698323809">在 <ph name="DEVICE_TYPE" /> 上收發短訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">禁止任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
-<translation id="96774243435178359">受管理的印表機</translation>
+<translation id="96774243435178359">受管理的打印機</translation>
 <translation id="968000525894980488">開啟「Google Play 服務」。</translation>
 <translation id="968037381421390582">貼上並搜尋「<ph name="SEARCH_TERMS" />」 (&amp;S)</translation>
 <translation id="968174221497644223">應用程式快取</translation>

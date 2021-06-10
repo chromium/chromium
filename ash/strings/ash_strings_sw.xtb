@@ -61,6 +61,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1341651618736211726">Menyu ya vipengee vya ziada</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1351937230027495976">Kunja menyu</translation>
+<translation id="1383597849754832576">Imeshindwa kupakua faili za matamshi. Jaribu tena baadaye.</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1391102559483454063">Umewashwa</translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
@@ -130,8 +131,8 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1972950159383891558">Hujambo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Uingizaji wa maandishi</translation>
 <translation id="1989113344093894667">Huwezi kupiga picha ya maudhui</translation>
+<translation id="1990046457226896323">Faili za matamshi zimepakuliwa</translation>
 <translation id="1993072747612765854">Pata maelezo zaidi kuhusu sasisho la hivi majuzi la <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Zima</translation>
 <translation id="1998100899771863792">Eneokazi la sasa</translation>
 <translation id="2016340657076538683">Andika ujumbe</translation>
 <translation id="2018630726571919839">Nipe kichekesho</translation>
@@ -437,6 +438,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4451374464530248585">Mikato ya kibodi ya Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha Page Down, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Chini.</translation>
 <translation id="445864333228800152">Habari za jioni,</translation>
 <translation id="4458688154122353284">Acha kunasa skrini</translation>
+<translation id="4471354919263203780">Inapakua faili za utambuzi wa matamshi... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4477350412780666475">Wimbo Unaofuata</translation>
 <translation id="4477892968187500306">Huenda kifaa hiki kina programu ambazo hazijathibitishwa na Google.</translation>

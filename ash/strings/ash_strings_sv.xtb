@@ -61,6 +61,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
+<translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
@@ -130,8 +131,8 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textinmatning</translation>
 <translation id="1989113344093894667">Det gick inte att ta en skärmbild/skärminspelning på innehållet</translation>
+<translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Stäng av</translation>
 <translation id="1998100899771863792">Aktuellt skrivbord</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
@@ -437,6 +438,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4451374464530248585">Kortkommandot Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + nedåtpil för att använda Page Down-tangenten.</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
+<translation id="4471354919263203780">Filer för taligenkänning laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
 <translation id="4477892968187500306">Den här enheten kan innehålla appar som inte har verifierats av Google.</translation>

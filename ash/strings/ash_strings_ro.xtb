@@ -61,6 +61,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
+<translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1391102559483454063">Activată</translation>
 <translation id="1407069428457324124">Temă întunecată</translation>
@@ -130,8 +131,8 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1972950159383891558">Bună ziua, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Introducere text</translation>
 <translation id="1989113344093894667">Nu se poate captura conținutul</translation>
+<translation id="1990046457226896323">Fișierele de redare în scris a vorbirii s-au descărcat</translation>
 <translation id="1993072747612765854">Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Oprește alimentarea</translation>
 <translation id="1998100899771863792">Desktopul actual</translation>
 <translation id="2016340657076538683">Scrie un mesaj</translation>
 <translation id="2018630726571919839">Spune-mi o glumă</translation>
@@ -437,6 +438,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4451374464530248585">Comanda rapidă de la tastatură Alt + săgeată în jos s-a schimbat. Ca să folosești tasta Page Down, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în jos.</translation>
 <translation id="445864333228800152">Bună seara!</translation>
 <translation id="4458688154122353284">Oprește înregistrarea ecranului</translation>
+<translation id="4471354919263203780">Se descarcă fișierele pentru recunoașterea vocală... <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4477892968187500306">Dispozitivul poate conține aplicații care nu au fost verificate de Google.</translation>

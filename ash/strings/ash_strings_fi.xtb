@@ -61,6 +61,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1341651618736211726">Ylivuoto</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
+<translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1391102559483454063">Päällä</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
@@ -130,8 +131,8 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1972950159383891558">Hei <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
 <translation id="1989113344093894667">Sisältöä ei voi tallentaa</translation>
+<translation id="1990046457226896323">Puhetiedostot ladattu</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
-<translation id="1995660704900986789">Virta pois</translation>
 <translation id="1998100899771863792">Nykyinen työpöytä</translation>
 <translation id="2016340657076538683">Kirjoita viesti</translation>
 <translation id="2018630726571919839">Kerro vitsi</translation>
@@ -437,6 +438,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4451374464530248585">Pikanäppäinyhdistelmä Alt + alanuoli on muuttunut. Jos haluat käyttää Page Down ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + alanuoli.</translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
+<translation id="4471354919263203780">Ladataan puheentunnistustiedostoja… <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4477350412780666475">Seuraava kappale</translation>
 <translation id="4477892968187500306">Laitteessa voi olla sovelluksia, joita Google ei ole vahvistanut.</translation>
@@ -751,7 +753,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7045595904618419789">Käynnistä suurennus</translation>
 <translation id="7055910611768509537">Näyttökynää ei ole käytetty yli viikkoon</translation>
 <translation id="7066646422045619941">Järjestelmänvalvoja on poistanut tämän verkon käytöstä.</translation>
-<translation id="7067196344162293536">Automaattinen kierto</translation>
+<translation id="7067196344162293536">Autom.kierto</translation>
 <translation id="7068360136237591149">Avaa tiedostot</translation>
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>

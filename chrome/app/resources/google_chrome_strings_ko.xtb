@@ -40,6 +40,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1807517590912578995">Chrome 프로필을 분리하시겠습니까?</translation>
+<translation id="1810203443153428607">Chrome OS를 설치하면 기기의 모든 데이터를 덮어쓰게 됩니다</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1860536484129686729">이 사이트에서 카메라에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
@@ -60,6 +61,16 @@
 <translation id="2348335408836342058">이 사이트에서 카메라와 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="234869673307233423">Chrome에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">하드 드라이브 삭제 및 Chrome OS 설치</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS를 설치할 준비가 완료되었습니다. 설치 시 다음 사항이 적용됩니다.
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />파일, 데이터, 현재 운영체제가 삭제됩니다.
+          <ph name="LIST_ITEM" />Chrome OS가 설치됩니다.
+          <ph name="LIST_ITEM" />설치가 완료되면 기기가 종료됩니다.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />한 번 더 알려드립니다. 설치를 진행하면 하드 드라이브에 있는 모든 데이터가 삭제됩니다. 중요한 데이터를 모두 백업했는지 확인해 주시기 바랍니다.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">도메인에서 동기화를 사용할 수 없어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -175,6 +186,10 @@
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5434383153637353914">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. Gmail, Drive, YouTube 등의 서비스와 Chrome 브라우저, Play 스토어 앱에서 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />시작하기 전에 최신 상태의 데이터를 백업했는지 확인하세요. Chrome OS를 설치하면 하드 드라이브에 있는 모든 데이터를 덮어쓰게 됩니다.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google은 데이터 손실에 대한 책임을 지지 않으며, Chrome OS가 인증되지 않은 모델에서 작동할 것이라고 보장하지 않습니다. 인증된 모델에 관해 자세히 알아보려면 [TBD] 페이지로 이동하세요.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chrome OS 설치 및 데이터 삭제에 관해 자세히 알아보세요. [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />진행할 준비가 되었다면 'Chrome OS 설치'를 클릭하세요. 몇 가지 간단한 단계로 구성된 설치 과정을 안내해 드리겠습니다. 컴퓨터가 변경되기 전에 한 번 더 확인할 기회가 제공됩니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS 설치</translation>
 <translation id="556024056938947818">Chrome에서 비밀번호를 표시하려고 합니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
@@ -210,6 +225,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
 <translation id="6566149418543181476">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS 시스템</translation>
+<translation id="664235759707825982">Chrome OS 설치 준비 완료</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="6679975945624592337">백그라운드에서 Chrome을 실행</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
@@ -229,6 +245,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
 <translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS 설치 진행 중</translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7303916856901595720">계정을 새 Chrome 프로필로 이동하시겠습니까?</translation>

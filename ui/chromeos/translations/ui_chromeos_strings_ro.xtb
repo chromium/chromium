@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi mută-le în dosarul cu fișiere Windows.</translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1119069657431255176">Arhivă .tar comprimată Bzip2</translation>
+<translation id="1119447706177454957">Eroare internă</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engleză (S.U.A.) cu tastatură pentru programatori Dvorak</translation>
 <translation id="1134697384939541955">Engleză (S.U.A.) cu tastatură extinsă</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Dispozitivele Chrome</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1576937952766665062">Bengaleză, transliterație</translation>
+<translation id="158849752021629804">Este necesară rețeaua de domiciliu</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="162175252992296058">Portugheză cu tastatură S.U.A. internațională</translation>
 <translation id="1641780993263690097">Chineză Pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fișiere devin disponibile offline</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
+<translation id="1661867754829461514">Codul PIN lipsește</translation>
 <translation id="1665611772925418501">Fișierul nu a putut fi modificat.</translation>
 <translation id="1673103856845176271">Fișierul nu a putut fi accesat din motive de securitate.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Ebraică, transliterație</translation>
 <translation id="1747761757048858544">Neerlandeză (Țările de Jos)</translation>
 <translation id="174937106936716857">Numărul total de fișiere</translation>
+<translation id="1773212559869067373">Certificatul de autentificare a fost respins local</translation>
 <translation id="1775381402323441512">Informații despre fișierul video</translation>
 <translation id="180035236176489073">Trebuie să fiți online pentru a accesa aceste fișiere.</translation>
 <translation id="1807938677607439181">Toate fișierele</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arhivă RAR</translation>
 <translation id="2037845485764049925">Rusă</translation>
+<translation id="2044023416777079300">Modemul nu este înregistrat</translation>
 <translation id="2046702855113914483">Supă ramen</translation>
 <translation id="2070909990982335904">Numele care încep cu punct sunt rezervate pentru sistem. Alege alt nume.</translation>
 <translation id="2079545284768500474">Anulează</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Conținutul acestui dosar este numai în citire. Unele acțiuni nu sunt acceptate.</translation>
 <translation id="2542049655219295786">Tabel Google</translation>
+<translation id="2544853746127077729">Certificatul de autentificare a fost respins de rețea</translation>
 <translation id="2547921442987553570">Adaugă la <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">S.U.A. internațională</translation>
 <translation id="2562685439590298522">Documente</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2620090360073999360">Disc Google nu poate fi accesat în acest moment.</translation>
 <translation id="2638942478653899953">Google Drive nu a putut fi accesat. <ph name="BEGIN_LINK" />Deconectați-vă<ph name="END_LINK" /> și conectați-vă din nou.</translation>
 <translation id="2649120831653069427">Pește</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Nu se poate deschide „<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Se pregătește</translation>
 <translation id="3280987981688031357">Disc de vinil</translation>
+<translation id="3295357220137379386">Dispozitivul este ocupat</translation>
 <translation id="3296763833017966289">Georgiană</translation>
 <translation id="3307875152560779385">Ucraineană</translation>
 <translation id="3326821416087822643">Se arhivează <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Tastatură kurdă sorani bazată pe arabă</translation>
 <translation id="4363958938297989186">Tastatură rusă fonetică</translation>
 <translation id="4364327530094270451">Pepene galben</translation>
+<translation id="4387004326333427325">Certificatul de autentificare a fost respins de la distanță</translation>
 <translation id="4394214039309501350">Link extern</translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
+<translation id="4442424173763614572">Căutarea DNS nu a reușit</translation>
 <translation id="4470564870223067757">Hangul setul 2</translation>
 <translation id="4477002475007461989">Română</translation>
 <translation id="4477219268485577442">Bulgară fonetică</translation>
+<translation id="4508265954913339219">Activarea nu a reușit</translation>
 <translation id="4509667233588080747">Engleză (S.U.A.) cu tastatură Workman internațională</translation>
 <translation id="4522570452068850558">Detalii</translation>
 <translation id="4527800702232535228">Parallels Desktop are acces la acest dosar</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Gestionează permiterea accesului Parallels Desktop</translation>
 <translation id="5038625366300922036">Mai multe detalii...</translation>
 <translation id="5044852990838351217">Armeană</translation>
+<translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="5059127710849015030">Nepaleză, transliterație</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> fișiere vor fi șterse</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">S-au eliminat toate intrările din selecție.</translation>
 <translation id="5838825566232597749">Tastatură S.U.A. Workman internațională</translation>
 <translation id="5851063901794976166">Nimic de văzut aici...</translation>
+<translation id="5864471791310927901">Căutarea DHCP nu a reușit</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Nu s-a putut copia, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Activează subtitrările</translation>
 <translation id="6269630227984243955">Malaieză</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
+<translation id="6312403991423642364">Eroare de rețea necunoscută</translation>
 <translation id="6321303798550928047">Semn cu mâna</translation>
 <translation id="6339145975392024142">S.U.A. internațională (PC)</translation>
 <translation id="6346310558342052870">Acces restricționat</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Franceză (Franța) cu tastatură Bépo</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Înapoi</translation>
+<translation id="6732801395666424405">Certificatele nu s-au încărcat</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     S-au găsit <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Răsturnat</translation>
+<translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
 <translation id="696203921837389374">Activează sincronizarea prin date mobile</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;căutați în Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonetică</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Rețeaua nu a putut fi configurată</translation>
+<translation id="7170041865419449892">Fără acoperire</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salvează fișierul ca</translation>
+<translation id="7229570126336867161">Este necesar EVDO</translation>
 <translation id="7238097264433196391">Numele unității</translation>
 <translation id="7248671827512403053">Aplicație</translation>
+<translation id="7256405249507348194">Eroare nerecunoscută: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicii disponibile</translation>
 <translation id="7283041136720745563">Cota Google Drive nu este suficient de mare.</translation>
 <translation id="7294063083760278948">Telugu, transliterație</translation>
 <translation id="7295662345261934369">Permite accesul altor utilizatori</translation>
+<translation id="7297443947353982503">Numele de utilizator sau parola sunt incorecte sau autentificarea EAP nu a reușit</translation>
 <translation id="7309413087278791451">Germană (Belgia)</translation>
 <translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7343393116438664539">Telex pentru vietnameză</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Dezactivează subtitrările</translation>
 <translation id="78946041517601018">Drive-uri în comun</translation>
 <translation id="7908793776359722643">Formatarea partiției va șterge toate datele stocate pe partiție. Această acțiune nu poate fi anulată.</translation>
+<translation id="7925247922861151263">Verificarea AAA nu a reușit</translation>
 <translation id="7925686952655276919">Nu utilizați date mobile pentru sincronizare</translation>
 <translation id="7928710562641958568">Scoateți dispozitivul</translation>
 <translation id="7943385054491506837">S.U.A. Colemak</translation>
 <translation id="7953739707111622108">Acest dispozitiv nu poate fi deschis deoarece sistemul său de fișiere nu a fost recunoscut.</translation>
 <translation id="7969525169268594403">Slovenă</translation>
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
+<translation id="7973962044839454485">Autentificarea PPP nu a reușit, din cauza unui nume de utilizator sau a unei parole greșite</translation>
 <translation id="7980421588063892270">Engleză (S.U.A.) cu tastatură Colemak</translation>
 <translation id="79907182588096956">Fișierul este creat pentru un PC care folosește software Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="8008366997883261463">Terier</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297012244086013755">Hangul setul 3 (Fără Shift)</translation>
 <translation id="8299269255470343364">Japoneză</translation>
+<translation id="8300849813060516376">OTASP nu a reușit</translation>
 <translation id="8312871300878166382">Inserați în dosar</translation>
 <translation id="8329978297633540474">Text simplu</translation>
 <translation id="8335587457941836791">Anulați fixarea din raft</translation>
 <translation id="8335837413233998004">Belarusă</translation>
 <translation id="8336153091935557858">Ieri, la <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Un fișier sau un director cu același nume există deja.</translation>
+<translation id="8372369524088641025">Cheie WEP greșită</translation>
 <translation id="8372852072747894550">Greacă</translation>
 <translation id="8395901698320285466">Dimensiuni</translation>
 <translation id="8437209419043462667">S.U.A.</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Cercuri</translation>
 <translation id="8484284835977497781">Alege dintre fotografiile recente.</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
+<translation id="8492972329130824181">Rețeaua de domiciliu nu este disponibilă. Trebuie să activezi roamingul de date mobile pentru a te conecta.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="853494022971700746">Franceză (Franța)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
 <translation id="8609695766746872526">Islandeză</translation>
+<translation id="8688591111840995413">Parolă greșită</translation>
 <translation id="8698464937041809063">Desen Google</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8713112442029511308">Malteză</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9035012421917565900">Articolele nu pot fi mutate înapoi în „<ph name="DESTINATION_NAME" />”, prin urmare, nu vei putea să anulezi această acțiune.</translation>
 <translation id="9038620279323455325">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Alege un alt nume.</translation>
+<translation id="9046895021617826162">Conectare nereușită</translation>
 <translation id="908378762078012445">Tastatură rusă fonetică AATSEEL</translation>
 <translation id="9099674669267916096">Numărul de pagini</translation>
 <translation id="9110990317705400362">Google caută mereu modalități de a face navigarea mai sigură. Înainte, orice site îți putea solicita să adaugi o extensie în browser. În ultimele versiuni Google Chrome, trebuie să indici explicit că dorești să instalezi aceste extensii, adăugându-le în pagina Extensii. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

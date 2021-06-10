@@ -549,7 +549,6 @@
 <translation id="1587275751631642843">&amp;JavaScript console</translation>
 <translation id="1587907146729660231">Touch the power button with your finger</translation>
 <translation id="1588438908519853928">Normal</translation>
-<translation id="158849752021629804">Need home network</translation>
 <translation id="1588870296199743671">Open link with...</translation>
 <translation id="1588919647604819635">Right-click card</translation>
 <translation id="1589055389569595240">Show spelling and grammar</translation>
@@ -632,7 +631,6 @@
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1660763353352708040">Power adaptor issue</translation>
 <translation id="1661156625580498328">Enforce AES encryption (recommended).</translation>
-<translation id="1661867754829461514">PIN missing</translation>
 <translation id="16620462294541761">Sorry, your password could not be verified. Please try again.</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="166439687370499867">Changing shared network configurations is not allowed</translation>
@@ -746,7 +744,6 @@
 <translation id="1768212860412467516">Send feedback for <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Oops!  There was a problem contacting the logon server. Please check your network connection and the domain name, then try again.</translation>
 <translation id="1769104665586091481">Open Link in New &amp;Window</translation>
-<translation id="1773212559869067373">Authentication certificate rejected locally</translation>
 <translation id="177336675152937177">Hosted app data</translation>
 <translation id="1775706469381199282">Don't allow sites to use Javascript</translation>
 <translation id="1776712937009046120">Add user</translation>
@@ -1000,7 +997,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
 <translation id="2042279886444479655">Active profiles</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
-<translation id="2044023416777079300">Modem not registered</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
 <translation id="2045117674524495717">Keyboard Shortcut Helper</translation>
 <translation id="2045969484888636535">Continue blocking cookies</translation>
@@ -1488,7 +1484,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2541706104884128042">New bedtime set</translation>
 <translation id="2542050502251273923">Sets the debugging level of the network connection manager and other services using ff_debug.</translation>
 <translation id="2544352060595557290">This Tab</translation>
-<translation id="2544853746127077729">Authentication certificate rejected by network</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2548347166720081527">Allowed <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Reset eSIM profile cache</translation>
@@ -2165,7 +2160,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="32939749466444286">The Linux container didn't start. Please try again.</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3294686910656423119">Usage statistics and crash reports</translation>
-<translation id="3295357220137379386">Device is busy</translation>
 <translation id="329838636886466101">Repair</translation>
 <translation id="3298789223962368867">Invalid URL entered.</translation>
 <translation id="32991397311664836">Devices:</translation>
@@ -3161,7 +3155,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4384652540891215547">Activate the extension</translation>
 <translation id="438503109373656455">Spirit</translation>
 <translation id="4385905942116811558">Searching for Bluetooth and USB devices</translation>
-<translation id="4387004326333427325">Authentication certificate rejected remotely</translation>
 <translation id="4387890294700445764">Compromised passwords</translation>
 <translation id="4389091756366370506">User <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and <ph name="NUMBER_OF_OTHER_SWITCHES" /> more switches</translation>
@@ -3216,7 +3209,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4441147046941420429">To continue, remove your security key from your device, then reinsert and touch it</translation>
 <translation id="444134486829715816">Expand...</translation>
 <translation id="4441928470323187829">Pinned by your administrator</translation>
-<translation id="4442424173763614572">DNS lookup failed</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
 <translation id="4444512841222467874">If space isn’t made available, users and data may be automatically removed.</translation>
@@ -3273,7 +3265,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4504940961672722399">Use this extension by clicking on this icon or by pressing <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Word already added</translation>
 <translation id="4507128560633489176">Data cleared.</translation>
-<translation id="4508265954913339219">Activation failed</translation>
 <translation id="4508765956121923607">View S&amp;ource</translation>
 <translation id="4510195992002502722">Failed to send feedback. Retrying…</translation>
 <translation id="4510479820467554003">Parent account list</translation>
@@ -4486,7 +4477,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5862319196656206789">Set up connected devices</translation>
 <translation id="5863445608433396414">Enable debugging features</translation>
 <translation id="5864195618110239517">Use metered connection</translation>
-<translation id="5864471791310927901">DHCP look-up failed</translation>
 <translation id="5864754048328252126">Idle action while charging</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
@@ -4896,7 +4886,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6309510305002439352">Microphone turned off</translation>
 <translation id="6310141306111263820">Couldn't install eSIM profile. For help, please contact your operator.</translation>
 <translation id="6311220991371174222">Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.</translation>
-<translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Safety check ran 1 day ago}other{Safety check ran {NUM_DAYS} days ago}}</translation>
 <translation id="6312638141433622592">Offer to show articles in reader mode, when supported</translation>
 <translation id="6313641880021325787">EXIT VR</translation>
@@ -5269,7 +5258,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="67269783048918309">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732087373923685049">camera</translation>
-<translation id="6732801395666424405">Certificates not loaded</translation>
 <translation id="6735304988756581115">Show cookies and other site data...</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5463,7 +5451,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6941937518557314510">Please sign in to <ph name="TOKEN_NAME" /> to authenticate to <ph name="HOST_NAME" /> with your certificate.</translation>
 <translation id="6943060957016121200">Enable Instant Tethering</translation>
 <translation id="6943176775188458830">Cancel printing</translation>
-<translation id="6943836128787782965">HTTP get failed</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="694592694773692225">Redirect blocked on this page.</translation>
 <translation id="6949434160682548041">Password (optional)</translation>
@@ -5659,12 +5646,10 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
-<translation id="7165320105431587207">Failed to configure network</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" can read images, video and sound files in the ticked locations.</translation>
 <translation id="7167486101654761064">&amp;Always open files of this type</translation>
 <translation id="716810439572026343">Downloading <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimum font size</translation>
-<translation id="7170041865419449892">Out of range</translation>
 <translation id="7170236477717446850">Profile picture</translation>
 <translation id="7171000599584840888">Add profile…</translation>
 <translation id="7171259390164035663">Don't enrol</translation>
@@ -5719,7 +5704,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7225179976675429563">Network type missing</translation>
 <translation id="7228479291753472782">Manipulate settings that specify whether websites can use features such as geo-location, microphone, camera, etc.</translation>
 <translation id="7228523857728654909">Screen lock and sign-in</translation>
-<translation id="7229570126336867161">Need EVDO</translation>
 <translation id="7230787553283372882">Customise your text size</translation>
 <translation id="7232750842195536390">Renaming failed</translation>
 <translation id="7234010996000898150">Cancelling Linux restore</translation>
@@ -5747,7 +5731,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7255002516883565667">At the moment, you have one card that can only be used on this device</translation>
 <translation id="7255935316994522020">Apply</translation>
 <translation id="7256069762010468647">Site is using your camera</translation>
-<translation id="7256405249507348194">Unrecognised error: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Open in a tab</translation>
 <translation id="7257173066616499747">Wi-Fi networks</translation>
 <translation id="725758059478686223">Printing Service</translation>
@@ -5779,7 +5762,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7295614427631867477">Note that Android, Play and associated apps are governed by their own data collection and use policies.</translation>
 <translation id="729583233778673644">Allow AES and RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
-<translation id="7297443947353982503">Username/password incorrect or EAP-auth failed</translation>
 <translation id="729761647156315797">Choose your language &amp; keyboard</translation>
 <translation id="7297726121602187087">Dark green</translation>
 <translation id="7299337219131431707">Enable Guest browsing</translation>
@@ -6381,7 +6363,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>
 <translation id="7925108652071887026">Auto-fill data</translation>
 <translation id="792514962475806987">Docked zoom level:</translation>
-<translation id="7925247922861151263">AAA check failed</translation>
 <translation id="7925285046818567682">Waiting for <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">This wasn't me.</translation>
 <translation id="7926975587469166629">Card nickname</translation>
@@ -6430,7 +6411,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
 <translation id="7973776233567882054">Which of the following best describes your network?</translation>
 <translation id="797394244396603170">Select the device to which you’d like to share files</translation>
-<translation id="7973962044839454485">PPP authentication failed due to an incorrect username or password</translation>
 <translation id="7974566588408714340">Retry using <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Default colour</translation>
 <translation id="7974936243149753750">Overscan</translation>
@@ -6741,7 +6721,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8299319456683969623">You are currently offline.</translation>
 <translation id="8300011035382349091">Edit bookmark for this tab</translation>
 <translation id="8300374739238450534">Midnight blue</translation>
-<translation id="8300849813060516376">OTASP failed</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Address}other{# addresses}}</translation>
 <translation id="8304383784961451596">You are not authorised to use this device. Please contact the administrator for sign-in permission or sign in with a Google Account supervised by Family Link.</translation>
 <translation id="8308016398665340540">You are sharing this network with other users of this device</translation>
@@ -6794,7 +6773,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8370294614544004647">Sleep when laptop is closed</translation>
 <translation id="8371695176452482769">Speak now</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Mute Site}other{Mute Sites}}</translation>
-<translation id="8372369524088641025">Bad WEP key</translation>
 <translation id="8373652277231415614">Crostini shared directories</translation>
 <translation id="8376137163494131156">Tell us what's happening with Google Cast.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
@@ -6893,7 +6871,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8492685019009920170">Touch the fingerprint sensor with your finger. Your data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>
 <translation id="8492960370534528742">Google Cast feedback</translation>
-<translation id="8492972329130824181">Home network is not available. Mobile data roaming must be enabled to connect.</translation>
 <translation id="8493236660459102203">Microphone:</translation>
 <translation id="8496717697661868878">Run This Plug-in</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
@@ -7067,7 +7044,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8681614230122836773">Chrome found harmful software on your computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is connected and ready</translation>
 <translation id="8683081248374354009">Reset group</translation>
-<translation id="8688591111840995413">Bad password</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="8690129572193755009">Sites can ask to handle protocols</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
@@ -7420,7 +7396,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="904451693890288097">Please enter the passkey for "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
-<translation id="9046895021617826162">Connection failed</translation>
 <translation id="9048745018038487540">Select all fonts</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052208328806230490">You have registered your printers with <ph name="CLOUD_PRINT_NAME" />, using the account <ph name="EMAIL" /></translation>

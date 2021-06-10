@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案移至 Windows 檔案資料夾。</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1119069657431255176">Bzip2 壓縮 tar 封存</translation>
+<translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1120073797882051782">韓文羅馬拼音</translation>
 <translation id="112387589102719461">英文 (美國) 搭配 Programmer Dvorak 鍵盤</translation>
 <translation id="1134697384939541955">英文 (美國) 搭配改良鍵盤</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome 裝置</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1576937952766665062">孟加拉文 (音譯)</translation>
+<translation id="158849752021629804">需要家用網路</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="162175252992296058">葡萄牙文搭配美式國際鍵盤</translation>
 <translation id="1641780993263690097">中文 (拼音)</translation>
 <translation id="1646019627374511909">正在將 <ph name="NUMBER_OF_ITEMS" /> 個檔案設為可離線存取</translation>
 <translation id="164969095109328410">Chrome 裝置</translation>
+<translation id="1661867754829461514">找不到 PIN</translation>
 <translation id="1665611772925418501">無法修改檔案。</translation>
 <translation id="1673103856845176271">基於安全理由，你無法存取檔案。</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">希伯來文 (音譯)</translation>
 <translation id="1747761757048858544">荷蘭文 (荷蘭)</translation>
 <translation id="174937106936716857">檔案總數</translation>
+<translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資訊</translation>
 <translation id="180035236176489073">你必須連上網路才能存取這些檔案。</translation>
 <translation id="1807938677607439181">所有檔案</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">蒂格里亞文</translation>
 <translation id="2028997212275086731">RAR 封存</translation>
 <translation id="2037845485764049925">俄文</translation>
+<translation id="2044023416777079300">數據機尚未註冊</translation>
 <translation id="2046702855113914483">拉麵</translation>
 <translation id="2070909990982335904">以點號開頭的名稱僅供系統使用，請選擇其他名稱。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2541377937973966830">這個資料夾的內容為唯讀檔案，因此不支援部分活動。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
+<translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
 <translation id="2547921442987553570">加入「<ph name="EXTENSION_NAME" />」中</translation>
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2562685439590298522">文件</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
+<translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2620090360073999360">目前無法使用 Google 雲端硬碟。</translation>
 <translation id="2638942478653899953">無法連上 Google 雲端硬碟。請<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />並重新登入帳戶。</translation>
 <translation id="2649120831653069427">彩虹魚</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">無法開啟「<ph name="PATH" />」</translation>
 <translation id="3280431534455935878">準備中</translation>
 <translation id="3280987981688031357">黑膠唱片</translation>
+<translation id="3295357220137379386">裝置忙碌中</translation>
 <translation id="3296763833017966289">喬治亞文</translation>
 <translation id="3307875152560779385">烏克蘭文</translation>
 <translation id="3326821416087822643">正在壓縮 <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">索拉尼庫爾德文搭配阿拉伯文鍵盤</translation>
 <translation id="4363958938297989186">俄文搭配拼音鍵盤</translation>
 <translation id="4364327530094270451">瓜</translation>
+<translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
+<translation id="4442424173763614572">DNS 查詢失敗</translation>
 <translation id="4470564870223067757">韓文 2 Set</translation>
 <translation id="4477002475007461989">羅馬尼亞文</translation>
 <translation id="4477219268485577442">保加利亞文 (拼音)</translation>
+<translation id="4508265954913339219">啟用失敗</translation>
 <translation id="4509667233588080747">英文 (美國) 搭配 Workman 國際鍵盤</translation>
 <translation id="4522570452068850558">詳細資料</translation>
 <translation id="4527800702232535228">已與 Parallls Desktop 共用這個資料夾</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">管理 Parallels Desktop 共用項目</translation>
 <translation id="5038625366300922036">顯示更多...</translation>
 <translation id="5044852990838351217">亞美尼亞文</translation>
+<translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5059127710849015030">尼泊爾文 (音譯)</translation>
 <translation id="5068919226082848014">披薩</translation>
 <translation id="5081517858322016911">系統將刪除 <ph name="TOTAL_FILE_SIZE" /> 的檔案</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">從所選範圍中移除所有項目。</translation>
 <translation id="5838825566232597749">美式 Workman 國際</translation>
 <translation id="5851063901794976166">這裡沒有任何內容...</translation>
+<translation id="5864471791310927901">DHCP 查閱失敗</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
 <translation id="5913638992615760742">複製作業失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">啟用字幕</translation>
 <translation id="6269630227984243955">馬來文</translation>
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
+<translation id="6312403991423642364">不明的網路錯誤</translation>
 <translation id="6321303798550928047">揮手</translation>
 <translation id="6339145975392024142">美式國際鍵盤 (PC)</translation>
 <translation id="6346310558342052870">權限受到限制</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">法文 (法國) 搭配 Bépo 鍵盤</translation>
 <translation id="6710022688720561421">機器人</translation>
 <translation id="6710213216561001401">返回</translation>
+<translation id="6732801395666424405">未載入憑證</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6795884519221689054">熊貓</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     找到 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">上下顛倒</translation>
+<translation id="6943836128787782965">HTTP 擷取失敗</translation>
 <translation id="6949408524333579394">塞爾維亞文 (音譯)</translation>
 <translation id="696203921837389374">啟用透過行動數據進行同步處理的功能</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」- 搜尋雲端硬碟</translation>
 <translation id="7135561821015524160">卡納達文 (拼音)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">無法設定網路</translation>
+<translation id="7170041865419449892">超出範圍</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">另存新檔</translation>
+<translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7238097264433196391">硬碟名稱</translation>
 <translation id="7248671827512403053">應用程式</translation>
+<translation id="7256405249507348194">無法辨識的錯誤：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用的服務</translation>
 <translation id="7283041136720745563">你的 Google 雲端硬碟配額不足。</translation>
 <translation id="7294063083760278948">泰盧固文 (音譯)</translation>
 <translation id="7295662345261934369">與他人共用</translation>
+<translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="7309413087278791451">德文 (比利時)</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7343393116438664539">越南文 (Telex)</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">停用字幕</translation>
 <translation id="78946041517601018">共用的雲端硬碟</translation>
 <translation id="7908793776359722643">若將分割區格式化，其中儲存的所有資料都將遭到清除。這項操作無法復原。</translation>
+<translation id="7925247922861151263">AAA 檢查失敗</translation>
 <translation id="7925686952655276919">請勿使用行動數據進行同步處理</translation>
 <translation id="7928710562641958568">退出裝置</translation>
 <translation id="7943385054491506837">Colemak 美式配置</translation>
 <translation id="7953739707111622108">這個裝置所用的檔案系統無法識別，因此系統無法開啟這個裝置。</translation>
 <translation id="7969525169268594403">斯洛維尼亞文</translation>
 <translation id="7972920761225148017">法文 (瑞士)</translation>
+<translation id="7973962044839454485">使用者名稱或密碼錯誤，導致 PPP 驗證失敗</translation>
 <translation id="7980421588063892270">英文 (美國) 搭配 Colemak 鍵盤</translation>
 <translation id="79907182588096956">這個檔案是專為使用 Windows 軟體的個人電腦所設計，與搭載 Chrome 作業系統的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8008366997883261463">傑克羅素梗</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297012244086013755">韓文 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">日文</translation>
+<translation id="8300849813060516376">OTASP 失敗</translation>
 <translation id="8312871300878166382">貼入資料夾</translation>
 <translation id="8329978297633540474">純文字</translation>
 <translation id="8335587457941836791">從檔案櫃中取消固定</translation>
 <translation id="8335837413233998004">白俄羅斯文</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>
+<translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8437209419043462667">美式配置</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">同心圓</translation>
 <translation id="8484284835977497781">請從最近的相片中選擇。</translation>
 <translation id="8487700953926739672">可離線使用</translation>
+<translation id="8492972329130824181">無法使用家用網路，你必須啟用行動數據漫遊服務才能連線。</translation>
 <translation id="8521441079177373948">英式配置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="853494022971700746">法文 (法國)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">檔案清單已變更為縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 圖片檔</translation>
 <translation id="8609695766746872526">冰島文</translation>
+<translation id="8688591111840995413">密碼錯誤</translation>
 <translation id="8698464937041809063">Google 繪圖</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8713112442029511308">馬爾他文</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9035012421917565900">這些項目無法移回「<ph name="DESTINATION_NAME" />」，因此無法復原這項操作。</translation>
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
+<translation id="9046895021617826162">連線失敗</translation>
 <translation id="908378762078012445">俄文搭配拼音 (AATSEEL) 鍵盤</translation>
 <translation id="9099674669267916096">頁數</translation>
 <translation id="9110990317705400362">我們不斷努力提升網路瀏覽的安全性。過去，任何網站都可以提示你在瀏覽器中新增擴充功能。在最新版本的 Google Chrome 中，你必須統一透過「擴充功能」頁面新增擴充功能，讓 Chrome 確實瞭解你要安裝的各項擴充功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

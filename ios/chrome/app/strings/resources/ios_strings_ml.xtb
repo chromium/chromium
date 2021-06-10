@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">കഴിഞ്ഞ മണിക്കൂർ</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1952172573699511566">വെബ്സൈറ്റുകൾ, സാധ്യമാകുന്നിടത്തെല്ലാം, നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ ടെക്‌സ്‌റ്റ് കാണിക്കും.</translation>
-<translation id="1952728750904661634">മാനേജ് ചെയ്‌ത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1965935827552890526">തുറന്ന മറ്റ് Chrome വിൻഡോയിൽ നിങ്ങൾ ചെയ്ത് കൊണ്ടിരുന്നത് പൂർത്തിയാക്കുക.</translation>
 <translation id="1973912524893600642">ഡാറ്റ നിലനിർത്തുക</translation>
 <translation id="1974060860693918893">നൂതനം</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക...</translation>
-<translation id="7947953824732555851">അംഗീകരിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="794799177247607889">ലോഗിംഗ് നിർത്തുക</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{{COUNT} അപഹരിക്കപ്പെട്ട പാസ്‌വേഡ്}other{{COUNT} അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ}}</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
@@ -811,6 +809,7 @@
 <translation id="9148126808321036104">വീണ്ടും പ്രവേശിക്കുക</translation>
 <translation id="9152539721251340337">QR കോഡ് സൃഷ്ടിക്കുക</translation>
 <translation id="9157836665414082580">ഡയലോഗുകൾ നിയന്ത്രിക്കുക</translation>
+<translation id="9183059292653643328">ഈ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്</translation>
 <translation id="9188680907066685419">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ദിവസം മുമ്പ്</translation>
 <translation id="9203116392574189331">ഹാൻഡ്ഓഫ്</translation>

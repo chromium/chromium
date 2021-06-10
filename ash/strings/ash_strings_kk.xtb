@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Қосымша мәзір</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
+<translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1391102559483454063">Қосулы</translation>
 <translation id="1407069428457324124">Қараңғы тақырып</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Сәлем, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Мәтін енгізу</translation>
 <translation id="1989113344093894667">Мазмұнды түсіру мүмкін емес</translation>
+<translation id="1990046457226896323">Автоматты субтитр файлдары жүктеп алынды.</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> қолданбасының ең соңғы жаңартылған нұсқасы туралы толығырақ</translation>
-<translation id="1995660704900986789">Өшіру</translation>
 <translation id="1998100899771863792">Қазіргі жұмыс үстелі</translation>
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. Page Down пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
+<translation id="4471354919263203780">Айтылған сөзді тану файлдары жүктеп алынуда... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
 <translation id="4477892968187500306">Құрылғыда Google растамаған қолданбалар болуы мүмкін.</translation>

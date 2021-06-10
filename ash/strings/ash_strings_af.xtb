@@ -61,6 +61,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1341651618736211726">Oorloop</translation>
 <translation id="1346748346194534595">Regs</translation>
 <translation id="1351937230027495976">Vou kieslys in</translation>
+<translation id="1383597849754832576">Kan nie spraaklêers aflaai nie Probeer later weer.</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donkertema</translation>
@@ -130,8 +131,8 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Teksinvoer</translation>
 <translation id="1989113344093894667">Kan nie inhoud vasvang nie</translation>
+<translation id="1990046457226896323">Spraaklêers is afgelaai</translation>
 <translation id="1993072747612765854">Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering</translation>
-<translation id="1995660704900986789">Skakel af</translation>
 <translation id="1998100899771863792">Huidige lessenaar</translation>
 <translation id="2016340657076538683">Tik 'n boodskap</translation>
 <translation id="2018630726571919839">Vertel vir my 'n grappie</translation>
@@ -438,6 +439,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4451374464530248585">Die kortpadsleutel Alt + afpyl het verander. Om die Page Down-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + afpyl druk.</translation>
 <translation id="445864333228800152">Goeienaand</translation>
 <translation id="4458688154122353284">Stop skermopname</translation>
+<translation id="4471354919263203780">Laai tans spraakherkenninglêers af … <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4477350412780666475">Volgende snit</translation>
 <translation id="4477892968187500306">Hierdie toestel kan programme bevat wat nie deur Google geverifieer is nie.</translation>

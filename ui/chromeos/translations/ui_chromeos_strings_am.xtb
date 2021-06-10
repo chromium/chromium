@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣ መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይውሰዷቸው።</translation>
 <translation id="1062407476771304334">ተካ</translation>
 <translation id="1119069657431255176">Bzip2 የተጨመቀ የtar ማህደር</translation>
+<translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1120073797882051782">ሃንጉል ሮማጃ</translation>
 <translation id="112387589102719461">እንግሊዝኛ (አሜሪካ) በፕሮግራመር ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="1134697384939541955">እንግሊዝኛ (አሜሪካ) በተራዘመ ቁልፍ ሰሌዳ</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome መሣሪያዎች</translation>
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1576937952766665062">በባንግላ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="158849752021629804">የቤት አውታረ መረብ ያስፈልጋል</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ፔባ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="162175252992296058">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="1641780993263690097">የቻይንኛ ፒንዪን</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጪ እንዲገኙ በመደረግ ላይ</translation>
 <translation id="164969095109328410">የChrome መሣሪያ</translation>
+<translation id="1661867754829461514">ፒን ይጎድላል</translation>
 <translation id="1665611772925418501">ይህ ፋይል ሊቀየር አልቻለም።</translation>
 <translation id="1673103856845176271">ይህ ፋይል በደህንነት ምክንያቶች ሊደረስበት አልተቻለም።</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">በዕብራይስጥ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="1747761757048858544">ደች (ኔዘርላንድስ)</translation>
 <translation id="174937106936716857">ጠቅላላ ፋይል ብዛት</translation>
+<translation id="1773212559869067373">የማረጋገጫ ምስክር ወረቀት በአካባቢው ተቀባይነት አላገኘም</translation>
 <translation id="1775381402323441512">የቪዲዮ መረጃ</translation>
 <translation id="180035236176489073">እነዚህን ፋይሎች ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
 <translation id="1807938677607439181">ሁሉም ፋይሎች</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">ትግርኛ</translation>
 <translation id="2028997212275086731">RAR ማህደር</translation>
 <translation id="2037845485764049925">ሩሲያኛ</translation>
+<translation id="2044023416777079300">ሞደም አልተመዘገበም</translation>
 <translation id="2046702855113914483">ራመን</translation>
 <translation id="2070909990982335904">በነጥብ የሚጀምሩ ስሞች ለስርዓቱ የተቀመጡ ናቸው። እባክዎ ሌላ ስም ይምረጡ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="2541377937973966830">የዚህ አቃፊ ይዘቶች ተነባቢ-ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
+<translation id="2544853746127077729">የማረጋገጫ ምስክር ወረቀት በአውታረ መረቡ ተቀባይነት አላገኘም</translation>
 <translation id="2547921442987553570">ወደ <ph name="EXTENSION_NAME" /> አክል</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
 <translation id="2562685439590298522">ሰነዶች</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">ታሚልኛ ፎነቲክ</translation>
 <translation id="2579959351793446050">ኦዲያ</translation>
 <translation id="2614589611416690597">የ<ph name="VIDEO_TYPE" /> ቪዲዮ</translation>
+<translation id="2617342710774726426">ሲም ካርድ ተዘግቷል</translation>
 <translation id="2620090360073999360">Google Drive በዚህ ጊዜ ሊደረስበት አይችልም።</translation>
 <translation id="2638942478653899953">Google Drive ሊደረስበት አልተቻለም። እባክዎ <ph name="BEGIN_LINK" />ዘግተው ይውጡ<ph name="END_LINK" />ና ተመልሰው ይግቡ።</translation>
 <translation id="2649120831653069427">የቀስተዳመና አሳ</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">«<ph name="PATH" />» መክፈት አልተቻለም</translation>
 <translation id="3280431534455935878">በማዘጋጀት ላይ</translation>
 <translation id="3280987981688031357">ቪኒል መዝገብ</translation>
+<translation id="3295357220137379386">መሣሪያው ስራ ላይ ነው</translation>
 <translation id="3296763833017966289">ጆርጂያኛ</translation>
 <translation id="3307875152560779385">ዩክሬንኛ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />ን በማጨቅ ላይ...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">ሶራኒ ኩርዲኛ በአረብኛ ላይ በተመሠረተ ቁልፍ ሰሌዳ</translation>
 <translation id="4363958938297989186">ሩሲያኛ በፎነቲክ ቁልፍ ሰሌዳ</translation>
 <translation id="4364327530094270451">ሐብሐብ</translation>
+<translation id="4387004326333427325">የማረጋገጫ ምስክር ወረቀት በርቀት ተቀባይነት አላገኘም</translation>
 <translation id="4394214039309501350">ውጫዊ አገናኝ</translation>
 <translation id="4418686080762064601">ለፋይሎችዎ አቋራጭ ይፍጠሩ</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
+<translation id="4442424173763614572">የዲ ኤን ኤስ ፍለጋ አልተሳካም</translation>
 <translation id="4470564870223067757">ሃንጉል 2 ስብስብ</translation>
 <translation id="4477002475007461989">ሮማኒያኛ</translation>
 <translation id="4477219268485577442">የቡልጋሪያኛ ፎነቲክ</translation>
+<translation id="4508265954913339219">ማግበር አልተሳካም</translation>
 <translation id="4509667233588080747">እንግሊዝኛ (አሜሪካ) በዎርክማን ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">የParallels ዴስክቶፕ ማጋራትን አቀናብር</translation>
 <translation id="5038625366300922036">ተጨማሪ ይመልከቱ...</translation>
 <translation id="5044852990838351217">አርሜኒያኛ</translation>
+<translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
 <translation id="5059127710849015030">በኔፓል ቋንቋ ፊደል መጻፍ</translation>
 <translation id="5068919226082848014">ፒዛ</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ከፋይሎች ይሰረዛል</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">ሁሉም ግቤቶች ከምርጫ ተወግደዋል።</translation>
 <translation id="5838825566232597749">አሜሪካ ዎርክማን ዓለምአቀፍ</translation>
 <translation id="5851063901794976166">እዚህ ላይ ምንም የሚታይ ነገር የለም...</translation>
+<translation id="5864471791310927901">የDHCP ፍለጋ አልተሳካም</translation>
 <translation id="5911887972742538906">የእርስዎን የLinux መተግበሪያ በመጫን ወቅት ስህተት አጋጥሟል።</translation>
 <translation id="5912396950572065471">ቅርጸት</translation>
 <translation id="5913638992615760742">የመቅዳት ክወና አልተሳካም፣ ያልተጠበቀ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">የግርጌ ጽሑፎችን አንቃ</translation>
 <translation id="6269630227984243955">ማላይኛ</translation>
 <translation id="6287852322318138013">ይህን ፋይል የሚከፍቱበት መተግበሪያ ይምረጡ</translation>
+<translation id="6312403991423642364">ያልታወቀ የአውታረ መረብ ስህተት</translation>
 <translation id="6321303798550928047">ማውለብለብ</translation>
 <translation id="6339145975392024142">የአሜሪካ ዓለምአቀፍ (ተኮ)</translation>
 <translation id="6346310558342052870">መዳረሻ ተገድቧል</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">ፈረንሳይኛ (ፈረንሳይ) በBépo ቁልፍ ሰሌዳ</translation>
 <translation id="6710022688720561421">ሮቦት</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
+<translation id="6732801395666424405">የእውቅና ማረጋገጫዎች አልተጫኑም</translation>
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6795884519221689054">ፓንዳ</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> ተገኝቷል</translation>
 <translation id="6935521024859866267">ወደ ታች የተገለበጠ</translation>
+<translation id="6943836128787782965">ኤችቲቲፒ ማግኘት አልተሳካም</translation>
 <translation id="6949408524333579394">በሰርቢያኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="696203921837389374">በሞባይል ውሂብ ላይ ማመሳሰልን አንቃ</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">«&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;» - &lt;em&gt;Driveን ይፈልጉ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ከናዳ ፎነቲክ</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">አውታረ መረቡን ማዋቀር አልተሳካም</translation>
+<translation id="7170041865419449892">ከክልል ውጪ</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ጊባ</translation>
 <translation id="7191454237977785534">ፋይል አስቀምጥ እንደ</translation>
+<translation id="7229570126336867161">ኢቪዲኦ ያስፈልጋል</translation>
 <translation id="7238097264433196391">የአንጻፊ ስም</translation>
 <translation id="7248671827512403053">መተግበሪያ</translation>
+<translation id="7256405249507348194">ያልታወቀ ስህተት፦ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">የሚገኙ አገልግሎቶች</translation>
 <translation id="7283041136720745563">የእርስዎ Google Drive ኮታ ያን ያህል በቂ አይደለም።</translation>
 <translation id="7294063083760278948">በተለጉ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="7295662345261934369">ከሌሎች ጋር ተጋራ</translation>
+<translation id="7297443947353982503">የተጠቃሚ ስም/ይለፍ ቃል ትክክል አይደለም ወይም EAP-auth አልተሳካም</translation>
 <translation id="7309413087278791451">ጀርመንኛ (ቤልጂየም)</translation>
 <translation id="7339898014177206373">አዲሰ መስኮት</translation>
 <translation id="7343393116438664539">የቬትናምኛ ቴሌክስ</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">የግርጌ ጽሑፎችን አሰናክል</translation>
 <translation id="78946041517601018">የተጋሩ Drives</translation>
 <translation id="7908793776359722643">በክፍልፍል ላይ ቅርጸት መስራት በእሱ ላይ የተከማቸውን ሁሉም ውሂብ ያጠፋል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
+<translation id="7925247922861151263">የAAA ማረጋገጥ አልተሳካም</translation>
 <translation id="7925686952655276919">ለማመሳሰል የተንቀሳቃሽ ስልክ ውሂብን አትጠቀም</translation>
 <translation id="7928710562641958568">መሣሪያን አውጣ</translation>
 <translation id="7943385054491506837">የአሜሪካ ኮልማክ</translation>
 <translation id="7953739707111622108">የዚህ መሣሪያ ስርዓተ ፋይል ስላልታወቀ ሊከፈት አይችልም።</translation>
 <translation id="7969525169268594403">ስሎቪኛ</translation>
 <translation id="7972920761225148017">ፈረንሳይኛ (ስዊዘርላንድ)</translation>
+<translation id="7973962044839454485">PPP ማረጋገጫ በተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል ምክንያት አልተሳካም</translation>
 <translation id="7980421588063892270">እንግሊዝኛ (አሜሪካ) ከኮልማክ ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="79907182588096956">ይህ ፍፋይል የWindows ሶፍትዌርን ለሚጠቀም ፒሲ የተነደፈ ነው። ይህ Chrome OS ከሚያሄደው መሣሪያዎ ጋር ተኳኋኝ አይደለም። በChrome OS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>
 <translation id="8008366997883261463">ጃክ ራሰል ቴሪየር</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">ምንጭ</translation>
 <translation id="8297012244086013755">ሃንጉል 3 ስብስብ (Shift የለም)</translation>
 <translation id="8299269255470343364">ጃፓንኛ</translation>
+<translation id="8300849813060516376">OTASP አልተሳካም</translation>
 <translation id="8312871300878166382">ወደ አቃፊ ውስጥ ይለጥፉ</translation>
 <translation id="8329978297633540474">ስነጣ አልባ ጽሑፍ</translation>
 <translation id="8335587457941836791">ከመደርደሪያ ንቀል</translation>
 <translation id="8335837413233998004">ቤላሩስኛ</translation>
 <translation id="8336153091935557858">ትላንትና <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ተመሳሳዩን ስም የያዘ ፋይል ወይም አቃፊ አስቀድሞ አለ።</translation>
+<translation id="8372369524088641025">መጥፎ የWEP ቁልፍ</translation>
 <translation id="8372852072747894550">ግሪክኛ</translation>
 <translation id="8395901698320285466">ልኬቶች</translation>
 <translation id="8437209419043462667">አሜሪካ</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">አሹር</translation>
 <translation id="8484284835977497781">ከቅርብ ጊዜ ፎቶዎችዎ ውስጥ ይምረጡ።</translation>
 <translation id="8487700953926739672">ከመስመር ውጪ ይገኛል</translation>
+<translation id="8492972329130824181">የቤት አውታረ መረብ አይገኝም። ለማገናኘት የተንቀሳቃሽ ስልክ የውሂብ ዝውውር መንቃት አለበት።</translation>
 <translation id="8521441079177373948">ዩኬ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
 <translation id="853494022971700746">ፈረንሳይኛ (ፈረንሳይ)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">የፋይል ዝርዝር ወደ ድንክየ ዕይታ ተለውጧል።</translation>
 <translation id="8601932370724196034">የCrostini ምስል ፋይል</translation>
 <translation id="8609695766746872526">አይስላንድኛ</translation>
+<translation id="8688591111840995413">መጥፎ የይለፍ ቃል</translation>
 <translation id="8698464937041809063">Google ስዕል</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8713112442029511308">ማልታኛ</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">የLinux ፋይሎች</translation>
 <translation id="9035012421917565900">ንጥሎቹ ተመልሰው ወደ «<ph name="DESTINATION_NAME" />» ሊወሰዱ አይችሉም፤ ስለዚህ ይህን ድርጊት መቀልበስ አይችሉም።</translation>
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» የሚባለው ፋይል አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
+<translation id="9046895021617826162">ማገናኘት አልተሳካም</translation>
 <translation id="908378762078012445">ሩሲያኛ በፎነቲክ በAATSEEL ቁልፍ ሰሌዳ</translation>
 <translation id="9099674669267916096">የገጽ ብዛት</translation>
 <translation id="9110990317705400362">የእርስዎን አሰሳ ይበልጥ ደህንነቱ የተጠበቀ የሚሆንባቸው መንገዶችን በቋሚነት እየፈለግን ነው። ከዚህ ቀደም ማንኛውም ድር ጣቢያ ቅጥያ በአሳሽዎ ላይ እንዲያክሉ ሊጠይቅዎ ይችል ነበር። በቅርቦቹ የGoogle Chrome ስሪቶች ላይ እነዚህን ቅጥያዎች በቅጥያዎች ገጹ በኩል በማከል እንደሚፈልጓቸው በግልጽ ለChrome መንገር አለብዎት። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>

@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">ഓവര്‍ഫ്ലോ</translation>
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
+<translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">ഹായ്, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ടെക്‌സ്‌റ്റ് ഇൻപുട്ട്</translation>
 <translation id="1989113344093894667">ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
+<translation id="1990046457226896323">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="1993072747612765854">ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
-<translation id="1995660704900986789">പവർ ഓഫാക്കുക</translation>
 <translation id="1998100899771863792">നിലവിലെ ഡെസ്‌ക്</translation>
 <translation id="2016340657076538683">ഒരു സന്ദേശം ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2018630726571919839">എന്നോട് ഒരു തമാശ പറയൂ</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">'Alt + താഴേക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Page Down കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + താഴേക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="445864333228800152">ഗുഡ് ഈവനിംഗ്,</translation>
 <translation id="4458688154122353284">സ്ക്രീൻ റെക്കോർഡിംഗ് നിർത്തുക</translation>
+<translation id="4471354919263203780">സംഭാഷണം തിരിച്ചറിയൽ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">ആരംഭിക്കാം</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>

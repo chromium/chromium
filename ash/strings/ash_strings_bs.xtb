@@ -61,6 +61,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1341651618736211726">Preklopni meni</translation>
 <translation id="1346748346194534595">Desno</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
+<translation id="1383597849754832576">Nije moguće preuzeti fajlove govora. Pokušajte ponovo kasnije.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
@@ -130,8 +131,8 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
 <translation id="1989113344093894667">Nije moguće snimanje sadržaja</translation>
+<translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Isključi</translation>
 <translation id="1998100899771863792">Trenutna radna površina</translation>
 <translation id="2016340657076538683">Napišite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
@@ -437,6 +438,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4451374464530248585">Prečica na tastaturi Alt + strelica nadolje je promijenjena. Da koristite tipku Page Down, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nadolje.</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavljanje snimanja ekrana</translation>
+<translation id="4471354919263203780">Preuzimanje fajlova za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4477350412780666475">Sljedeća numera</translation>
 <translation id="4477892968187500306">Ovaj uređaj može sadržavati aplikacije koje Google nije potvrdio.</translation>

@@ -543,7 +543,6 @@
 <translation id="1587275751631642843">Consola &amp;JavaScript</translation>
 <translation id="1587907146729660231">Toca el botón de encendido con el dedo</translation>
 <translation id="1588438908519853928">Normal</translation>
-<translation id="158849752021629804">Se necesita red local</translation>
 <translation id="1588870296199743671">Abrir vínculo con...</translation>
 <translation id="1588919647604819635">Hacer clic con el botón derecho en la tarjeta</translation>
 <translation id="1589055389569595240">Mostrar ortografía y gramática</translation>
@@ -626,7 +625,6 @@
 <translation id="1660204651932907780">Permitir que los sitios reproduzcan sonido (recomendado)</translation>
 <translation id="1660763353352708040">Problema en el adaptador de alimentación</translation>
 <translation id="1661156625580498328">Implementa la encriptación AES (recomendado).</translation>
-<translation id="1661867754829461514">Falta el número de PIN </translation>
 <translation id="16620462294541761">No es posible verificar tu contraseña. Inténtalo nuevamente.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública del sujeto</translation>
 <translation id="166439687370499867">No se permite cambiar las opciones de configuración de la red compartida</translation>
@@ -732,7 +730,6 @@
 <translation id="1768212860412467516">Envía comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Se produjo un error al contactar el servidor de acceso. Comprueba la conexión de tu red y el nombre del dominio; luego, vuelve a intentarlo.</translation>
 <translation id="1769104665586091481">Abrir vínculo en una ventana &amp;nueva</translation>
-<translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="177336675152937177">Datos de aplicaciones alojadas</translation>
 <translation id="1775706469381199282">No permitir que los sitios usen JavaScript</translation>
 <translation id="1776712937009046120">Agregar usuario</translation>
@@ -985,7 +982,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2040460856718599782">Se produjo un error cuando intentábamos autenticarte. Verifica tus credenciales de acceso y vuelve a intentarlo.</translation>
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Para desbloquear la sesión, asegúrate de verificar <ph name="ACCOUNT" />.</translation>
-<translation id="2044023416777079300">El módem no está registrado</translation>
 <translation id="204497730941176055">Nombre de la plantilla de certificado de Microsoft</translation>
 <translation id="2045117674524495717">Asistente de combinaciones de teclas</translation>
 <translation id="2045969484888636535">Continuar bloqueando las cookies</translation>
@@ -1470,7 +1466,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2541706104884128042">Se estableció una nueva hora de dormir</translation>
 <translation id="2542050502251273923">Establece el nivel de depuración del administrador de conexiones de red y otros servicios mediante ff_debug.</translation>
 <translation id="2544352060595557290">Esta pestaña</translation>
-<translation id="2544853746127077729">Certificado de autenticación rechazado por la red</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="2548347166720081527">Se permite <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Reiniciar la caché del perfil de eSIM</translation>
@@ -1659,6 +1654,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2755349111255270002">Restablecer este dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Administrar funciones de accesibilidad</translation>
 <translation id="275662540872599901">Pantalla apagada</translation>
+<translation id="2757161511365746634">Ver impresora</translation>
 <translation id="2757338480560142065">Asegúrate de que la contraseña que guardes coincida con tu contraseña de <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
 <translation id="2764786626780673772">Detalles de VPN</translation>
@@ -1701,6 +1697,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800760947029405028">Cargar una imagen</translation>
 <translation id="2801954693771979815">Tamaño de pantalla</translation>
+<translation id="2802557211515765772">No hay impresoras administradas.</translation>
 <translation id="2803313416453193357">Abrir carpeta</translation>
 <translation id="2803375539583399270">Ingresar PIN</translation>
 <translation id="2804043232879091219">No se pudo abrir el otro navegador</translation>
@@ -2145,7 +2142,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="32939749466444286">No se inició el contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3294686910656423119">Estadísticas de uso e informes de fallas</translation>
-<translation id="3295357220137379386">El dispositivo está ocupado</translation>
 <translation id="329838636886466101">Reparar</translation>
 <translation id="3298789223962368867">Se ingresó un URL no válido.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
@@ -3141,7 +3137,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4384652540891215547">Activar la extensión</translation>
 <translation id="438503109373656455">Rocinante</translation>
 <translation id="4385905942116811558">Buscando dispositivos Bluetooth y USB</translation>
-<translation id="4387004326333427325">Certificado de autenticación rechazado de forma remota</translation>
 <translation id="4387890294700445764">Contraseñas hackeadas</translation>
 <translation id="4389091756366370506">Usuario <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores más</translation>
@@ -3196,7 +3191,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4441147046941420429">Para continuar, quita la llave de seguridad del dispositivo y, luego, vuelve a colocarla y tócala</translation>
 <translation id="444134486829715816">Mostrar...</translation>
 <translation id="4441928470323187829">Fijado por tu administrador</translation>
-<translation id="4442424173763614572">Error al buscar DNS</translation>
 <translation id="4443536555189480885">&amp;Ayuda</translation>
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
 <translation id="4444512841222467874">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
@@ -3252,7 +3246,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4504940961672722399">Para usar esta extensión, haz clic en este ícono o presiona <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Ya se agregó esta palabra</translation>
 <translation id="4507128560633489176">Se borraron los datos.</translation>
-<translation id="4508265954913339219">Falló la activación</translation>
 <translation id="4508765956121923607">Ver códig&amp;o fuente</translation>
 <translation id="4510195992002502722">No se pudieron enviar los comentarios. Reintentando…</translation>
 <translation id="4510479820467554003">Lista de cuentas parentales</translation>
@@ -3848,6 +3841,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
 <translation id="5171343362375269016">Memoria en el espacio de intercambio</translation>
+<translation id="5172855596271336236">Hay 1 impresora administrada.</translation>
 <translation id="5173668317844998239">Agrega huellas dactilares y borra las que están guardadas en tu llave de seguridad</translation>
 <translation id="5175379009094579629">El nombre del dispositivo no es válido. Ingresa uno que sí lo sea y vuelve a intentarlo.</translation>
 <translation id="5177479852722101802">Continuar el bloqueo del acceso a la cámara y al micrófono</translation>
@@ -4464,7 +4458,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5862319196656206789">Configurar los dispositivos conectados</translation>
 <translation id="5863445608433396414">Habilitar funciones de depuración</translation>
 <translation id="5864195618110239517">Usar la conexión de uso medido</translation>
-<translation id="5864471791310927901">Falló la búsqueda de DHCP</translation>
 <translation id="5864754048328252126">Acción de inactividad durante la carga</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
@@ -4874,7 +4867,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6309510305002439352">Se apagó el micrófono</translation>
 <translation id="6310141306111263820">No fue posible instalar el perfil de eSIM. Para obtener ayuda, comunícate con el proveedor.</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se produjo un error al abrir tu perfil. Intenta reiniciar Chrome.</translation>
-<translation id="6312403991423642364">Error de red desconocido</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Se ejecutó hace 1 día la verificación de seguridad}other{Se ejecutó hace {NUM_DAYS} días la verificación de seguridad}}</translation>
 <translation id="6312638141433622592">Ofrece mostrar artículos en el modo de lectura, cuando sea compatible</translation>
 <translation id="6313641880021325787">SALIR DE RV</translation>
@@ -5247,7 +5239,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="67269783048918309">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="6732087373923685049">cámara</translation>
-<translation id="6732801395666424405">No se cargaron los certificados.</translation>
 <translation id="6735304988756581115">Mostrar cookies y otros datos de sitio...</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5441,7 +5432,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6941937518557314510">Accede a <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="6943060957016121200">Habilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="6943176775188458830">Cancelar impresión</translation>
-<translation id="6943836128787782965">Error al obtener HTTP</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se bloqueó el redireccionamiento en esta página.</translation>
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
@@ -5637,12 +5627,10 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7154130902455071009">Cambiar la página de inicio por <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente de la cámara o archivo</translation>
 <translation id="7163202347044721291">Verificando el código de activación…</translation>
-<translation id="7165320105431587207">Error al configurar la red</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" puede leer archivos de video, sonido e imágenes en las ubicaciones seleccionadas.</translation>
 <translation id="7167486101654761064">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño de fuente mínimo</translation>
-<translation id="7170041865419449892">Fuera de alcance</translation>
 <translation id="7170236477717446850">Foto de perfil</translation>
 <translation id="7171000599584840888">Agregar perfil…</translation>
 <translation id="7171259390164035663">No inscribir</translation>
@@ -5697,7 +5685,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
 <translation id="7228479291753472782">Se manipularán las opciones de configuración que especifican si los sitios web pueden usar funciones, como la ubicación geográfica, el micrófono, la cámara, etc.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla y acceso</translation>
-<translation id="7229570126336867161">Se necesita EVDO</translation>
 <translation id="7230787553283372882">Personaliza el tamaño del texto</translation>
 <translation id="7232750842195536390">No se pudo cambiar el nombre</translation>
 <translation id="7234010996000898150">Cancelando el restablecimiento de Linux</translation>
@@ -5725,7 +5712,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7255002516883565667">En este momento, tienes una tarjeta que puede usarse solo en este dispositivo</translation>
 <translation id="7255935316994522020">Aplicar</translation>
 <translation id="7256069762010468647">El sitio está usando la cámara</translation>
-<translation id="7256405249507348194">Error desconocido: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Abrir en una pestaña</translation>
 <translation id="7257173066616499747">Redes Wi-Fi</translation>
 <translation id="725758059478686223">Servicio de impresión</translation>
@@ -5757,7 +5743,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7290242001003353852">Este servicio de acceso, alojado por <ph name="SAML_DOMAIN" />, está accediendo a tu cámara.</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Play y las apps asociadas se rigen por sus propias políticas de uso y recopilación de datos.</translation>
 <translation id="729583233778673644">Permite la encriptación AES y RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
-<translation id="7297443947353982503">Nombre de usuario o contraseña incorrectos o error de autenticación EAP</translation>
 <translation id="729761647156315797">Seleccionar tu idioma y teclado</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
 <translation id="7299337219131431707">Habilitar navegación como invitado</translation>
@@ -6110,6 +6095,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7674542105240814168">Se denegó el acceso a la ubicación</translation>
 <translation id="7676119992609591770">Se encontró <ph name="NUM" /> pestaña para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para habilitar el dictado en cualquier campo de texto.</translation>
+<translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras administradas.</translation>
 <translation id="7680416688940118410">Calibración de la pantalla táctil</translation>
 <translation id="7681095912841365527">El sitio puede usar la conexión Bluetooth</translation>
 <translation id="7681597159868843240">Por lo general, los sitios utilizan los sensores de movimiento del dispositivo en funciones, como el seguimiento de la actividad física o la realidad virtual.</translation>
@@ -6358,7 +6344,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7924358170328001543">Se produjo un error al reenviar el puerto</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
-<translation id="7925247922861151263">Falló la verificación de AAA</translation>
 <translation id="7925285046818567682">Esperando <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">No era yo.</translation>
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
@@ -6407,7 +6392,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7972714317346275248">PKCS N. º 1, SHA-384 con encriptación RSA</translation>
 <translation id="7973776233567882054">¿Cuál de las siguientes respuestas describe mejor la red?</translation>
 <translation id="797394244396603170">Selecciona el dispositivo con el que quieres compartir archivos.</translation>
-<translation id="7973962044839454485">Falló la autenticación de PPP debido a un nombre de usuario o una contraseña incorrectos.</translation>
 <translation id="7974566588408714340">Volver a intentarlo con <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Color predeterminado</translation>
 <translation id="7974936243149753750">Desajuste de dimensiones</translation>
@@ -6718,7 +6702,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8299319456683969623">Actualmente, no tienes conexión.</translation>
 <translation id="8300011035382349091">Edita el favorito para esta pestaña</translation>
 <translation id="8300374739238450534">Azul noche</translation>
-<translation id="8300849813060516376">OTASP falló</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Dirección}other{# direcciones}}</translation>
 <translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Comunícate con el administrador para solicitar permiso de acceso o bien accede con una Cuenta de Google supervisada por Family Link.</translation>
 <translation id="8308016398665340540">Compartes esta red con otros usuarios de este dispositivo</translation>
@@ -6771,7 +6754,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8370294614544004647">Suspender cuando se cierra la laptop</translation>
 <translation id="8371695176452482769">Hablar ahora</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar el sitio}other{Silenciar los sitios}}</translation>
-<translation id="8372369524088641025">Clave de WEP no válida</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
 <translation id="8376137163494131156">Infórmanos lo que sucede con Google Cast</translation>
 <translation id="8376384591331888629">Habilitar también cookies de terceros en este sitio</translation>
@@ -6870,7 +6852,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8492685019009920170">Toca el sensor de huellas dactilares con el dedo. Tus datos se almacenan de forma segura y no salen de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Permitir que los sitios abran ventanas emergentes y usen redireccionamientos</translation>
 <translation id="8492960370534528742">Comentarios acerca de Google Cast</translation>
-<translation id="8492972329130824181">La red doméstica no está disponible. Debes habilitar el roaming de datos móviles para tener conexión.</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
 <translation id="8496717697661868878">Ejecutar este complemento</translation>
 <translation id="8497219075884839166">Utilidades de Windows</translation>
@@ -7044,7 +7025,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8681614230122836773">Chrome encontró software dañino en tu computadora</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista para usarse</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
-<translation id="8688591111840995413">Contraseña incorrecta</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8690129572193755009">Permitir que los sitios soliciten permiso para procesar protocolos</translation>
 <translation id="8695139659682234808">Agrega los Controles parentales cuando finalices la configuración</translation>
@@ -7397,7 +7377,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="904451693890288097">Ingresa la clave de acceso de "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envía a Google la dirección web de la página a la que intentas acceder</translation>
-<translation id="9046895021617826162">No se pudo conectar</translation>
 <translation id="9048745018038487540">Seleccionar todas las fuentes</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9052208328806230490">Registraste tus impresoras con <ph name="CLOUD_PRINT_NAME" /> utilizando la cuenta <ph name="EMAIL" /></translation>
@@ -7590,6 +7569,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="965211523698323809">Usa tu <ph name="DEVICE_TYPE" /> para enviar o recibir mensajes de texto. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">No permitir que ningún sitio acceda a dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
+<translation id="96774243435178359">Impresoras administradas</translation>
 <translation id="968000525894980488">Activa los Servicios de Google Play.</translation>
 <translation id="968037381421390582">&amp;Pegar y buscar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Caché de aplicación</translation>

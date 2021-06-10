@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Последният час</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1952172573699511566">Когато е възможно, текстът на уебсайтовете ще се показва на предпочитания от вас език.</translation>
-<translation id="1952728750904661634">Влизане с управляван профил</translation>
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">За да защити поверителността ви, Chrome няма да попълни автоматично това поле.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортиране на паролите...</translation>
-<translation id="7947953824732555851">Приемам и влизам</translation>
 <translation id="794799177247607889">Спиране на регистрирането</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="7961015016161918242">Никога</translation>

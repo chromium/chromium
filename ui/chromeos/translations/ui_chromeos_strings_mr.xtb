@@ -7,6 +7,7 @@
 <translation id="1060368002126861100"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये हलवा.</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1119069657431255176">Bzip2 संकीर्ण tar संग्रहण</translation>
+<translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1120073797882051782">हँगल Romaja</translation>
 <translation id="112387589102719461">ड्वोझॅक प्रोग्रामर कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="1134697384939541955">विस्‍तारित कीबोर्डसह इंग्रजी (यूएस)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome डिव्हाइस</translation>
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1576937952766665062">बंगाली लिप्यंतरण</translation>
+<translation id="158849752021629804">होम नेटवर्क आवश्यक</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="162175252992296058">यूएस आंतरराष्ट्रीय कीबोर्डसह पोर्तुगीज</translation>
 <translation id="1641780993263690097">चीनी पिनयिन</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फाइल ऑफलाइन उपलब्ध करत आहे</translation>
 <translation id="164969095109328410">Chrome डिव्हाइस</translation>
+<translation id="1661867754829461514">पिन गहाळ आहे </translation>
 <translation id="1665611772925418501">फाइल सुधारली जाऊ शकली नाही.</translation>
 <translation id="1673103856845176271">फाइलमध्ये सुरक्षिततेच्या कारणांमुळे प्रवेश करता येऊ शकला नाही.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">हिब्रू लिप्यंतरण</translation>
 <translation id="1747761757048858544">डच (नेदरलँड)</translation>
 <translation id="174937106936716857">एकूण फाईल संख्या</translation>
+<translation id="1773212559869067373">ऑथेंटिकेशन प्रमाणपत्र स्थानिक पातळीवर नाकारले</translation>
 <translation id="1775381402323441512">व्हिडिओ माहिती</translation>
 <translation id="180035236176489073">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
 <translation id="1807938677607439181">सर्व फाइल</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
 <translation id="2037845485764049925">रशियन</translation>
+<translation id="2044023416777079300">मोडेमची नोंदणी केलेली नाही</translation>
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="2070909990982335904">डॉटने सुरू होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2541377937973966830">या फोल्डरमधील आशय रीड-ओन्ली आहेत. काही अ‍ॅक्टिव्हिटींना सपोर्ट नाही.</translation>
 <translation id="2542049655219295786">Google सारणी</translation>
+<translation id="2544853746127077729">ऑथेंटिकेशन प्रमाणपत्र नेटवर्कद्वारे नाकारले</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> मध्ये जोडा</translation>
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> व्हिडिओ</translation>
+<translation id="2617342710774726426">सिम कार्ड लॉक केले आहे</translation>
 <translation id="2620090360073999360">Google ड्राइव्ह यावेळी पोहोचू शकत नाही.</translation>
 <translation id="2638942478653899953">Google ड्राइव्ह पर्यंत पोहोचणे शक्य नाही. कृपया <ph name="BEGIN_LINK" />लॉग आउट करा<ph name="END_LINK" /> आणि परत लॉग इन करा.</translation>
 <translation id="2649120831653069427">रेनबोफिश</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" उघडता आले नाही</translation>
 <translation id="3280431534455935878">तयारी करीत आहे</translation>
 <translation id="3280987981688031357">व्हिनाइल रेकॉर्ड</translation>
+<translation id="3295357220137379386">डिव्हाइस व्यग्र आहे</translation>
 <translation id="3296763833017966289">जॉर्जियन</translation>
 <translation id="3307875152560779385">युक्रेनियन</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> झिप करत आहे...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">अरेबिक आधारित कीबोर्डसह सोरानी कुर्दिश</translation>
 <translation id="4363958938297989186">फोनेटिक कीबोर्डसह रशियन</translation>
 <translation id="4364327530094270451">खरबूज</translation>
+<translation id="4387004326333427325">ऑथेंटिकेशन प्रमाणपत्र रिमोट पद्धतीने नाकारले</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
 <translation id="4418686080762064601">तुमच्या फाइलसाठी शॉर्टकट तयार करणे</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
+<translation id="4442424173763614572">DNS लुकअप अयश्सवी</translation>
 <translation id="4470564870223067757">हँगल 2 संच</translation>
 <translation id="4477002475007461989">रोमानियन</translation>
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
+<translation id="4508265954913339219">सक्रियन अयशस्वी</translation>
 <translation id="4509667233588080747">वर्कमॅन आंतरराष्ट्रीय कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4527800702232535228">हे फोल्डर Parallels Desktop सह शेअर केलेले आहे</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop शेअरिंग व्यवस्थापित करा</translation>
 <translation id="5038625366300922036">अधिक पहा...</translation>
 <translation id="5044852990838351217">आर्मेनियन</translation>
+<translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="5059127710849015030">नेपाळी लिप्यंतरण</translation>
 <translation id="5068919226082848014">पिझ्झा</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> फाइल हटवल्या जातील</translation>
@@ -457,6 +469,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
 <translation id="5851063901794976166">येथे पाहण्यासाठी काहीही नाही...</translation>
+<translation id="5864471791310927901">DHCP लुकअप अयशस्वी</translation>
 <translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
 <translation id="5913638992615760742">कॉपी ऑपरेशन करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6248400709929739064">उपशीर्षके सुरू करा</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6287852322318138013">ही फाईल उघडण्यासाठी ॲप निवडा</translation>
+<translation id="6312403991423642364">अज्ञात नेटवर्क एरर</translation>
 <translation id="6321303798550928047">हात हलवणे</translation>
 <translation id="6339145975392024142">युएस इंटरनॅशनल (PC)</translation>
 <translation id="6346310558342052870">ॲक्सेस प्रतिबंधित केला</translation>
@@ -521,6 +535,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6673674183150363784">Bépo कीबोर्डसह फ्रेंच (फ्रान्स)</translation>
 <translation id="6710022688720561421">रोबोट</translation>
 <translation id="6710213216561001401">मागील</translation>
+<translation id="6732801395666424405">लोड न झालेली प्रमाणपत्रे</translation>
 <translation id="6751256176799620176">1 फोल्डर निवडले</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6795884519221689054">पांडा</translation>
@@ -547,6 +562,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />आढळले</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
+<translation id="6943836128787782965">HTTP अयशस्वी झाले</translation>
 <translation id="6949408524333579394">सर्बियन लिप्यंतरण</translation>
 <translation id="696203921837389374">मोबाइल डेटावर सिंक सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
@@ -570,15 +586,20 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइव्ह शोधा&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड फोनेटिक</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">नेटवर्क कॉंफिगर करण्यात अयशस्वी</translation>
+<translation id="7170041865419449892">परिक्षेत्राबाहेर</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">या फॉरमॅटमध्ये फाइल सेव्ह करा</translation>
+<translation id="7229570126336867161">EVDO आवश्यक आहे</translation>
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
 <translation id="7248671827512403053">ॲप्लिकेशन</translation>
+<translation id="7256405249507348194">अपरिचित एरर: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवा</translation>
 <translation id="7283041136720745563">तुमचा Google ड्राइव्ह कोटा पुरेसा मोठा नाही.</translation>
 <translation id="7294063083760278948">तेलुगु लिप्यंतरण</translation>
 <translation id="7295662345261934369">इतरांशी शेअर करा</translation>
+<translation id="7297443947353982503">वापरकर्ता नाव/पासवर्ड चुकीचा किंवा EAP-ऑथेंटिकेशन अयशस्वी</translation>
 <translation id="7309413087278791451">जर्मन (बेल्जियम)</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7343393116438664539">व्हिएतनामी टेलेक्स</translation>
@@ -649,12 +670,14 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7881969471599061635">उपशीर्षके अक्षम करा</translation>
 <translation id="78946041517601018">शेअर केलेली ड्राइव्ह</translation>
 <translation id="7908793776359722643">पार्टिशन फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
+<translation id="7925247922861151263">AAA तपास अयशस्वी</translation>
 <translation id="7925686952655276919">समक्रमणासाठी मोबाइल डेटा वापरु नका</translation>
 <translation id="7928710562641958568">डिव्हाइस काढून टाका</translation>
 <translation id="7943385054491506837">यूएस कोलमॅक</translation>
 <translation id="7953739707111622108">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम ओळखीचे नाही.</translation>
 <translation id="7969525169268594403">स्लोव्हेनियन</translation>
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
+<translation id="7973962044839454485">अयोग्य वापरकर्तानावामुळे किंवा पासवर्डमुळे PPP ऑथेंटिकेशन अयशस्वी झाले</translation>
 <translation id="7980421588063892270">कोलमॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="79907182588096956">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
@@ -684,12 +707,14 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297012244086013755">हानगुल 3 संच (Shift नाही)</translation>
 <translation id="8299269255470343364">जपानी</translation>
+<translation id="8300849813060516376">OTASP बिघडले</translation>
 <translation id="8312871300878166382">फोल्डरमध्ये पेस्ट करा</translation>
 <translation id="8329978297633540474">साधा मजकूर</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
 <translation id="8335837413233998004">बेलारुशियन</translation>
 <translation id="8336153091935557858">काल <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">समान नावाची एखादी फाइल किंवा डिरेक्टरी आधीपासूनच अस्तित्वात आहे.</translation>
+<translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
 <translation id="8395901698320285466">परिमाण</translation>
 <translation id="8437209419043462667">यूएस</translation>
@@ -702,6 +727,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8477649328507734757">फिरवणे</translation>
 <translation id="8484284835977497781">तुमच्या अलीकडील फोटोमधून निवडा.</translation>
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
+<translation id="8492972329130824181">होम नेटवर्क उपलब्ध नाही. कनेक्ट करण्यासाठी मोबाइल डेटा रोमिंग सुरू करणे आवश्यक आहे.</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
 <translation id="853494022971700746">फ्रेंच (फ्रान्स)</translation>
@@ -717,6 +743,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8600173386174225982">फाइल सूची थंबनेल व्ह्यूमध्ये बदलली गेली आहे.</translation>
 <translation id="8601932370724196034">Crostini इमेज फाइल</translation>
 <translation id="8609695766746872526">आइसलँडिक</translation>
+<translation id="8688591111840995413">चुकीचा पासवर्ड</translation>
 <translation id="8698464937041809063">Google ड्रॉइंग</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8713112442029511308">माल्टीज</translation>
@@ -742,6 +769,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9034924485347205037">Linux फाइल</translation>
 <translation id="9035012421917565900">हे आयटम '<ph name="DESTINATION_NAME" />' मध्ये परत हलवणे शक्य नाही, म्हणून ही क्रिया पहिल्यासारखी केली जाणार नाही.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
+<translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
 <translation id="908378762078012445">फोनेटिक AATSEEL कीबोर्डसह रशियन</translation>
 <translation id="9099674669267916096">पेज गणना</translation>
 <translation id="9110990317705400362">आम्ही तुमचे ब्राउझिंग सुरक्षित करण्यासाठी सातत्याने मार्ग शोधत आहोत. मागे, तुमच्या ब्राउझरमध्ये एक्स्टेंशन जोडण्यासाठी कोणतीही वेबसाइट तुम्हाला सूचित करू शकत होती. Google Chrome च्या नवीनतम आवृत्तीमध्ये, एक्स्टेंशन पेजद्वारे ते जोडून हे एक्स्टेंशन तुम्ही इंस्टॉल करू इच्छित आहात हे तुम्ही Chrome ला स्पष्टपणे सांगणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

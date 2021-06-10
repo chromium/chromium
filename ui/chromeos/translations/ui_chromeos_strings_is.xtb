@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1119069657431255176">Bzip2-þjöppuð tar-safnskrá</translation>
+<translation id="1119447706177454957">Innri villa</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Enska (bandarísk) með Dvorak-forritunarlyklaborði</translation>
 <translation id="1134697384939541955">Enska (bandarísk) með stækkuðu lyklaborði</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome tæki</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1576937952766665062">Bengalska umritun</translation>
+<translation id="158849752021629804">Heimanet nauðsynlegt</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="162175252992296058">Portúgalska með bandarísku alþjóðlegu lyklaborði</translation>
 <translation id="1641780993263690097">Kínverska Pinyin</translation>
 <translation id="1646019627374511909">Gerir <ph name="NUMBER_OF_ITEMS" /> skrár aðgengilegar án nettengingar</translation>
 <translation id="164969095109328410">Chrome tæki</translation>
+<translation id="1661867754829461514">PIN-númer vantar</translation>
 <translation id="1665611772925418501">Ekki er hægt að breyta skránni.</translation>
 <translation id="1673103856845176271">Af öryggisástæðum var ekki hægt að opna skrána.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebreska umritun</translation>
 <translation id="1747761757048858544">Hollenska (Holland)</translation>
 <translation id="174937106936716857">Heildarfjöldi skráa</translation>
+<translation id="1773212559869067373">Auðkenningarvottorði var hafnað staðbundið</translation>
 <translation id="1775381402323441512">Upplýsingar um myndskeið</translation>
 <translation id="180035236176489073">Þú verður að vera á netinu til að geta opnað þessar skrár.</translation>
 <translation id="1807938677607439181">Allar skrár</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigriníska</translation>
 <translation id="2028997212275086731">RAR-skráasafn</translation>
 <translation id="2037845485764049925">Rússneska</translation>
+<translation id="2044023416777079300">Óskráð mótald</translation>
 <translation id="2046702855113914483">Ramen-núðlur</translation>
 <translation id="2070909990982335904">Heiti sem hefjast á punkti eru frátekin fyrir kerfið. Veldu annað heiti.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> atriðum eytt</translation>
 <translation id="2541377937973966830">Innihald þessarar möppu er skrifvarið. Sumar aðgerðir eru ekki studdar.</translation>
 <translation id="2542049655219295786">Google tafla</translation>
+<translation id="2544853746127077729">Auðkenningarvottorði hafnað af neti</translation>
 <translation id="2547921442987553570">Bæta við <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Bandarískt (alþjóðlegt)</translation>
 <translation id="2562685439590298522">Skjöl</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamíl hljóðritun</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> myndskeið</translation>
+<translation id="2617342710774726426">SIM-kortið er læst</translation>
 <translation id="2620090360073999360">Ekki næst í Google Drive á þessari stundu.</translation>
 <translation id="2638942478653899953">Ekki náðist í Google Drive. <ph name="BEGIN_LINK" />Skráðu þig út<ph name="END_LINK" /> og svo aftur inn.</translation>
 <translation id="2649120831653069427">Regnbogafiskur</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Ekki tókst að opna „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Verið að undirbúa</translation>
 <translation id="3280987981688031357">Vínylplata</translation>
+<translation id="3295357220137379386">Tækið er í notkun</translation>
 <translation id="3296763833017966289">Georgískt</translation>
 <translation id="3307875152560779385">Úkraínska</translation>
 <translation id="3326821416087822643">Þjappar <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Sorani-kúrdíska með lyklaborði á arabískum grunni</translation>
 <translation id="4363958938297989186">Rússneska með hljóðritunarlyklaborði</translation>
 <translation id="4364327530094270451">Melóna</translation>
+<translation id="4387004326333427325">Sannvottunarvottorði hafnað fjartengt</translation>
 <translation id="4394214039309501350">Ytri tengill</translation>
 <translation id="4418686080762064601">Búðu til flýtileið fyrir skrárnar þínar</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
+<translation id="4442424173763614572">DNS-uppfletting mistókst</translation>
 <translation id="4470564870223067757">Hangul 2 sett</translation>
 <translation id="4477002475007461989">Rúmenska</translation>
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
+<translation id="4508265954913339219">Virkjun mistókst</translation>
 <translation id="4509667233588080747">Enska (bandarísk) með alþjóðlegu Workman-lyklaborði</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4527800702232535228">Þessari möppu er deilt með Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Stjórna deilingu Parallels Desktop</translation>
 <translation id="5038625366300922036">Sjá meira...</translation>
 <translation id="5044852990838351217">Armenska</translation>
+<translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="5059127710849015030">Nepalska umritun</translation>
 <translation id="5068919226082848014">Pítsa</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> af skrám verður eytt</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">Fjarlægja allar færslur úr vali.</translation>
 <translation id="5838825566232597749">Bandarískt alþjóðlegt Workman</translation>
 <translation id="5851063901794976166">Ekkert að sjá hér...</translation>
+<translation id="5864471791310927901">DHCP-uppfletting mistókst</translation>
 <translation id="5911887972742538906">Villa kom upp við uppsetningu Linux-forritsins.</translation>
 <translation id="5912396950572065471">Snið</translation>
 <translation id="5913638992615760742">Afritunaraðgerðin mistókst vegna óvæntrar villu: <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">Birta skjátexta</translation>
 <translation id="6269630227984243955">Malajíska</translation>
 <translation id="6287852322318138013">Veldu forrit til að opna þessa skrá</translation>
+<translation id="6312403991423642364">Óþekkt netvilla</translation>
 <translation id="6321303798550928047">Veifar</translation>
 <translation id="6339145975392024142">Bandarískt alþjóðlegt tölvulyklaborð</translation>
 <translation id="6346310558342052870">Takmarkaður aðgangur</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">Franska (Frakkland) með Bépo-lyklaborði</translation>
 <translation id="6710022688720561421">Vélmenni</translation>
 <translation id="6710213216561001401">Til baka</translation>
+<translation id="6732801395666424405">Vottorð ekki hlaðin</translation>
 <translation id="6751256176799620176">Ein mappa valin</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     Fann <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Öfugur</translation>
+<translation id="6943836128787782965">HTTP GET-skipun mistókst</translation>
 <translation id="6949408524333579394">Serbneska umritun</translation>
 <translation id="696203921837389374">Virkja samstillingu með farsímagögnum</translation>
 <translation id="6965382102122355670">Í lagi</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;leita í Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada hljóðrituð</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Ekki tókst að stilla netið</translation>
+<translation id="7170041865419449892">Utan þjónustusvæðis</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Vista skrá sem</translation>
+<translation id="7229570126336867161">EVDO krafist</translation>
 <translation id="7238097264433196391">Heiti drifs</translation>
 <translation id="7248671827512403053">Forrit</translation>
+<translation id="7256405249507348194">Óþekkt villa: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Þjónusta í boði</translation>
 <translation id="7283041136720745563">Þú hefur ekki nægan Google Drive kvóta.</translation>
 <translation id="7294063083760278948">Telugu umritun</translation>
 <translation id="7295662345261934369">Deila með öðrum</translation>
+<translation id="7297443947353982503">Rangt notandanafn/aðgangsorð eða EAP-sannvottun mistókst</translation>
 <translation id="7309413087278791451">Þýska (Belgía)</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7343393116438664539">Víetnamska Telex</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">Fela skjátexta</translation>
 <translation id="78946041517601018">Samnýtt drif</translation>
 <translation id="7908793776359722643">Þegar sneið er forsniðin eyðast öll gögn af henni. Ekki er hægt að afturkalla þessa aðgerð.</translation>
+<translation id="7925247922861151263">AAA-prófun mistókst</translation>
 <translation id="7925686952655276919">Ekki nota farsímagögn fyrir samstillingu</translation>
 <translation id="7928710562641958568">Losa tæki</translation>
 <translation id="7943385054491506837">Bandarískt Colemak</translation>
 <translation id="7953739707111622108">Ekki er hægt að opna þetta tæki því að skráakerfi þess þekkist ekki.</translation>
 <translation id="7969525169268594403">Slóvenskt</translation>
 <translation id="7972920761225148017">Franska (Sviss)</translation>
+<translation id="7973962044839454485">PPP-auðkenning mistókst vegna þess að notandanafn eða aðgangsorð var rangt</translation>
 <translation id="7980421588063892270">Enska (bandarísk) með Colemak-lyklaborði</translation>
 <translation id="79907182588096956">Þessi skrá er hönnuð fyrir tölvu sem notar Windows-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="8008366997883261463">Frasier</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">Uppruni</translation>
 <translation id="8297012244086013755">Hangul 3 sett (ekki Shift)</translation>
 <translation id="8299269255470343364">Japanskt</translation>
+<translation id="8300849813060516376">OTASP mistókst</translation>
 <translation id="8312871300878166382">Líma inn í möppu</translation>
 <translation id="8329978297633540474">Ósniðinn texti</translation>
 <translation id="8335587457941836791">Losa úr hillu</translation>
 <translation id="8335837413233998004">Hvítrússneska</translation>
 <translation id="8336153091935557858">Í gær <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Skrá eða mappa með sama heiti er þegar til.</translation>
+<translation id="8372369524088641025">Rangur WEP-lykill</translation>
 <translation id="8372852072747894550">Gríska</translation>
 <translation id="8395901698320285466">Stærð</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">Snúningur</translation>
 <translation id="8484284835977497781">Veldu úr nýlegum myndum.</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
+<translation id="8492972329130824181">Netkerfi heimilisins er ekki í boði. Kveikja verður á reiki farsímagagna til að tengjast.</translation>
 <translation id="8521441079177373948">Breskt</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
 <translation id="853494022971700746">Franska (Frakkland)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
 <translation id="8609695766746872526">Íslenska</translation>
+<translation id="8688591111840995413">Rangt aðgangsorð</translation>
 <translation id="8698464937041809063">Google teikning</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8713112442029511308">Maltneska</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">Linux-skrár</translation>
 <translation id="9035012421917565900">Ekki er hægt að færa atriðin aftur í „<ph name="DESTINATION_NAME" />“, þannig að þú verður ófær um að afturkalla þessa aðgerð.</translation>
 <translation id="9038620279323455325">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar til staðar. Veldu annað heiti.</translation>
+<translation id="9046895021617826162">Tenging mistókst</translation>
 <translation id="908378762078012445">Rússneska með AATSEEL-hljóðritunarlyklaborði</translation>
 <translation id="9099674669267916096">Síðufjöldi</translation>
 <translation id="9110990317705400362">Við erum sífellt að leita leiða við að gera vefnotkun öruggari fyrir þig. Áður var það þannig að hvaða vefsvæði sem var gat birt kvaðningu um að þú bættir viðbót við vafrann. Í nýjustu útgáfum Google Chrome þarf notandinn að taka sérstaklega fram að Chrome eigi að setja upp viðbætur með því að bæta þeim við í gegnum síðuna Viðbætur. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>

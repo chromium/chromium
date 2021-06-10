@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1952172573699511566">ستعرض المواقع الإلكترونية النص بلغتك المفضّلة إن أمكن.</translation>
-<translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
 <translation id="1973912524893600642">الاحتفاظ بالبيانات</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">‏لحماية خصوصيتك، لن يجري Chrome الملء التلقائي لهذا الحقل.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">جارٍ تصدير كلمات المرور...</translation>
-<translation id="7947953824732555851">قبول وتسجيل الدخول</translation>
 <translation id="794799177247607889">إيقاف التسجيل</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق.}two{كلمتا مرورٍ ({COUNT}) محتمَل تعرّضهما للاختراق.}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق.}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
 <translation id="7961015016161918242">مطلقًا</translation>

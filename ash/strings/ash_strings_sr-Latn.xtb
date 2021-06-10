@@ -61,6 +61,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1341651618736211726">Prekoračenje</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
+<translation id="1383597849754832576">Preuzimanje fajlova govora nije uspelo. Probajte kasnije.</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
@@ -130,8 +131,8 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
 <translation id="1989113344093894667">Snimanje sadržaja nije uspelo</translation>
+<translation id="1990046457226896323">Preuzeti su fajlovi govora</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za: <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Isključi</translation>
 <translation id="1998100899771863792">Aktuelna radna površina</translation>
 <translation id="2016340657076538683">Unesite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic.</translation>
@@ -437,6 +438,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4451374464530248585">Tasterska prečica Alt + strelica nadole je promenjena. Da biste koristili taster Page Down, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nadole.</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje ekrana</translation>
+<translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4477350412780666475">Sledeća pesma</translation>
 <translation id="4477892968187500306">Ovaj uređaj može da sadrži aplikacije koje Google nije verifikovao.</translation>
@@ -680,7 +682,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="649452524636452238">PIN pametne kartice</translation>
 <translation id="6501401484702599040">Ekran se prebacuje na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Izaberite prozor za snimanje</translation>
-<translation id="652139407789908527">Tokom ovog ažuriranja ekran će biti prazan duže nego obično (i do minut). Ne pritiskajte dugme za napajanje dok je ažuriranje u toku.</translation>
+<translation id="652139407789908527">Tokom ovog ažuriranja ekran će biti prazan duže nego obično (i do minut). Ne pritiskajte dugme za uključivanje dok je ažuriranje u toku.</translation>
 <translation id="6528179044667508675">Ne uznemiravaj</translation>
 <translation id="65320610082834431">Emodžiji</translation>
 <translation id="6537270692134705506">Snimi ekran</translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1952172573699511566">가능한 경우 웹사이트에서 텍스트를 선호하는 언어로 표시합니다.</translation>
-<translation id="1952728750904661634">관리 계정으로 로그인</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">Chrome에서는 개인정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">비밀번호 내보내기...</translation>
-<translation id="7947953824732555851">수락 및 로그인</translation>
 <translation id="794799177247607889">로깅 중지</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
@@ -811,6 +809,7 @@
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9152539721251340337">QR 코드 만들기</translation>
 <translation id="9157836665414082580">대화상자 숨기기</translation>
+<translation id="9183059292653643328">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="9188680907066685419">관리 계정에서 로그아웃</translation>
 <translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>

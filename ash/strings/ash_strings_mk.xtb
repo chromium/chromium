@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
+<translation id="1383597849754832576">Не може да се преземат датотеките за говор. Обидете се повторно подоцна.</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1391102559483454063">Вклучено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Внесување текст</translation>
 <translation id="1989113344093894667">Не може да се снимаат содржините</translation>
+<translation id="1990046457226896323">Датотеките за говор се преземени</translation>
 <translation id="1993072747612765854">Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Исклучи</translation>
 <translation id="1998100899771863792">Моментална работна површина</translation>
 <translation id="2016340657076538683">Напишете порака</translation>
 <translation id="2018630726571919839">Кажи ми шега</translation>
@@ -438,6 +439,7 @@
 <translation id="4451374464530248585">Кратенката од тастатура Alt + Стрелка надолу се промени. За да го користите копчето Page Down, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надолу.</translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
+<translation id="4471354919263203780">Се преземаат датотеки за препознавање говор… <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4477350412780666475">Следна песна</translation>
 <translation id="4477892968187500306">Уредов може да содржи апликации што не се потврдени од Google.</translation>

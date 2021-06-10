@@ -165,9 +165,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6129621093834146363">Chromium a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="6134968993075716475">La navigation sécurisée étant désactivée, Chromium vous recommande de l'activer.</translation>
 <translation id="6145820983052037069">Vous pouvez passer d'un profil Chromium à un autre ici</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chromium OS ! Si vous poursuivez l'opération :
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chromium OS ! Si vous poursuivez :
           <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Les fichiers, les données ainsi que votre système d'exploitation actuel seront supprimés.
+          <ph name="LIST_ITEM" />Les fichiers, les données et votre système d'exploitation actuel seront effacés.
           <ph name="LIST_ITEM" />Chromium OS sera installé.
           <ph name="LIST_ITEM" />Votre appareil s'éteindra une fois l'installation terminée.
           <ph name="END_LIST" />
@@ -206,7 +206,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6734291798041940871">Chromium est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="673636774878526923">Pour retrouver vos réglages Chromium sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>
 <translation id="6774082503108938489">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chromium. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">L'installation de Chrome OS aura pour effet d'écraser toutes les données de votre appareil.</translation>
+<translation id="6827182711503025204">L'installation de Chrome OS va écraser toutes les données de votre appareil.</translation>
 <translation id="6847869444787758381">Chromium vous indique si vos mots de passe ont été piratés</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
@@ -240,10 +240,10 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7585853947355360626">Si un paramètre ne s'affiche pas sur cette page, accédez aux <ph name="LINK_BEGIN" />paramètres Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
 <translation id="7617377681829253106">Chromium s'est amélioré</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chromium OS aura pour effet d'écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, assurez-vous de disposer d'une sauvegarde à jour de vos données. L'installation de Chromium OS va écraser toutes les données de votre disque dur.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google n'est pas responsable de la perte de données et ne garantit pas que Chromium OS fonctionnera sur les modèles non certifiés. Consultez [à déterminer] pour en savoir plus sur les modèles certifiés.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />En savoir plus sur l'installation de Chromium OS et l'effacement des données : [URL à déterminer]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Lorsque vous êtes prêt à continuer, cliquez sur "Installer Chromium OS". Nous vous guiderons lors de l'installation (deux étapes simples). Vous pourrez confirmer chaque modification apportée à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
+          <ph name="BEGIN_PARAGRAPH4" />Quand vous serez prêt, cliquez sur "Installer Chromium OS". Nous vous guiderons lors de l'installation en quelques étapes simples. Vous pourrez confirmer les changements avant qu'ils soient appliqués à votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="7729447699958282447">Impossible de synchroniser vos données dans Chromium, car la synchronisation n'est pas disponible pour votre domaine.</translation>

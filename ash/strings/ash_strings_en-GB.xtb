@@ -61,6 +61,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
+<translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1407069428457324124">Dark theme</translation>
@@ -130,8 +131,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="1972950159383891558">Hi, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Text input</translation>
 <translation id="1989113344093894667">Can't capture content</translation>
+<translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
-<translation id="1995660704900986789">Power off</translation>
 <translation id="1998100899771863792">Current desk</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
@@ -437,6 +438,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4451374464530248585">The Alt + down arrow keyboard shortcut has changed. To use the page down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + down arrow.</translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
+<translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>

@@ -61,6 +61,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1341651618736211726">Luzapena</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1351937230027495976">Tolestu menua</translation>
+<translation id="1383597849754832576">Ezin dira deskargatu ahotsa testu bihurtzeko fitxategiak. Saiatu berriro geroago.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1391102559483454063">Aktibatuta</translation>
 <translation id="1407069428457324124">Gai iluna</translation>
@@ -130,8 +131,8 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1972950159383891558">Kaixo, <ph name="USERNAME" />:</translation>
 <translation id="1978498689038657292">Testu-idazketa</translation>
 <translation id="1989113344093894667">Ezin da kapturatu edukia</translation>
+<translation id="1990046457226896323">Deskargatu dira ahotsa testu bihurtzeko fitxategiak</translation>
 <translation id="1993072747612765854">Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz</translation>
-<translation id="1995660704900986789">Itzali</translation>
 <translation id="1998100899771863792">Oraingo lan-eremua</translation>
 <translation id="2016340657076538683">Idatzi mezu bat</translation>
 <translation id="2018630726571919839">Kontatu txiste bat</translation>
@@ -438,6 +439,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4451374464530248585">Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Orrian behera egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + behera egiteko gezi-tekla.</translation>
 <translation id="445864333228800152">Arratsalde on:</translation>
 <translation id="4458688154122353284">Utzi pantaila grabatzeari</translation>
+<translation id="4471354919263203780">Ahots-hautematearen fitxategiak deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4477350412780666475">Hurrengo pista</translation>
 <translation id="4477892968187500306">Baliteke Google-k egiaztatu ez dituen aplikazioak egotea gailuan.</translation>

@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
+<translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
 <translation id="1407069428457324124">ダークテーマ</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558"><ph name="USERNAME" /> さん、こんにちは</translation>
 <translation id="1978498689038657292">テキストを入力</translation>
 <translation id="1989113344093894667">コンテンツをキャプチャできません</translation>
+<translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください</translation>
-<translation id="1995660704900986789">電源を切る</translation>
 <translation id="1998100899771863792">現在のデスク</translation>
 <translation id="2016340657076538683">メッセージを入力</translation>
 <translation id="2018630726571919839">面白いこと言って</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">キーボード ショートカット「Alt+下矢印」が変更されました。PageDown キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+下矢印キーを押してください。</translation>
 <translation id="445864333228800152">こんばんは</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
+<translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">始める</translation>
 <translation id="4477350412780666475">次の曲</translation>
 <translation id="4477892968187500306">このデバイスには Google が確認していないアプリがインストールされている可能性があります。</translation>

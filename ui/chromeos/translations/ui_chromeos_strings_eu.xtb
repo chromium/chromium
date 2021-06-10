@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik eraman itzazu Windows-eko fitxategien karpetara.</translation>
 <translation id="1062407476771304334">Ordeztu</translation>
 <translation id="1119069657431255176">Bzip2 bidez konprimatutako .tar artxiboa</translation>
+<translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1120073797882051782">Hangul romaja</translation>
 <translation id="112387589102719461">Ingelesa (AEB), Programmer Dvorak teklatuarekin</translation>
 <translation id="1134697384939541955">Ingelesa (AEB), teklatu hedatuarekin</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome darabilten gailuak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="1576937952766665062">Bengaleraren transliterazioa</translation>
+<translation id="158849752021629804">Sare lokala behar da</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
 <translation id="1641780993263690097">Txinatarra (pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="164969095109328410">Chrome-ko gailua</translation>
+<translation id="1661867754829461514">PIN kodea falta da</translation>
 <translation id="1665611772925418501">Ezin izan da fitxategia aldatu.</translation>
 <translation id="1673103856845176271">Ezin izan da atzitu fitxategia segurtasun-arrazoiengatik.</translation>
 <translation id="169515659049020177">Maius</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebreeraren transliterazioa</translation>
 <translation id="1747761757048858544">Nederlandarra (Herbehereak)</translation>
 <translation id="174937106936716857">Fitxategi kopurua guztira</translation>
+<translation id="1773212559869067373">Autentifikazio-ziurtagiria lokalki baztertu da</translation>
 <translation id="1775381402323441512">Bideoari buruzko informazioa</translation>
 <translation id="180035236176489073">Konektatuta egon behar zara fitxategiak atzitzeko.</translation>
 <translation id="1807938677607439181">Fitxategi guztiak</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2028997212275086731">RAR fitxategia</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
+<translation id="2044023416777079300">Modema ez dago erregistratuta</translation>
 <translation id="2046702855113914483">Ramena</translation>
 <translation id="2070909990982335904">Puntu batekin hasten diren izenak sistemarako erreserbatuta daude. Aukeratu beste izen bat.</translation>
 <translation id="2079545284768500474">Desegin</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">Ezabatu dira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="2541377937973966830">Karpeta honetako edukia irakurtzeko soilik da. Jarduera batzuk ez dira onartzen.</translation>
 <translation id="2542049655219295786">Google taula</translation>
+<translation id="2544853746127077729">Sareak autentifikazio-ziurtagiria baztertu du</translation>
 <translation id="2547921442987553570">Gehitu <ph name="EXTENSION_NAME" /> luzapenean</translation>
 <translation id="255937426064304553">AEBko nazioarteko teklatu-diseinua</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamildar fonetikoa</translation>
 <translation id="2579959351793446050">Odiarra</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> bideoa</translation>
+<translation id="2617342710774726426">Blokeatuta dago SIM txartela</translation>
 <translation id="2620090360073999360">Une honetan, ezin da konektatu Google Drive zerbitzuarekin.</translation>
 <translation id="2638942478653899953">Ezin izan da Google Drive-rekin konektatu. <ph name="BEGIN_LINK" />Amaitu saioa<ph name="END_LINK" /> eta hasi saioa berriro.</translation>
 <translation id="2649120831653069427">Arrain koloretsua</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Ezin izan da ireki "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Prestatzen</translation>
 <translation id="3280987981688031357">Binilozko diskoa</translation>
+<translation id="3295357220137379386">Gailua okupatuta dago</translation>
 <translation id="3296763833017966289">Georgiarra</translation>
 <translation id="3307875152560779385">Ukrainarra</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> konprimatzen…</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Soraniarra, arabieran oinarritutako teklatuarekin</translation>
 <translation id="4363958938297989186">Errusiarra, teklatu fonetikoarekin</translation>
 <translation id="4364327530094270451">Meloia</translation>
+<translation id="4387004326333427325">Autentifikazio-ziurtagiria urrunetik baztertu da</translation>
 <translation id="4394214039309501350">Kanpoko esteka</translation>
 <translation id="4418686080762064601">Sortu lasterbide bat fitxategietarako</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
+<translation id="4442424173763614572">DNS bilaketak huts egin du</translation>
 <translation id="4470564870223067757">2. hangul-karaktere sorta</translation>
 <translation id="4477002475007461989">Errumaniarra</translation>
 <translation id="4477219268485577442">Bulgariar fonetikoa</translation>
+<translation id="4508265954913339219">Ezin izan da aktibatu</translation>
 <translation id="4509667233588080747">Ingelesa (AEB), nazioarteko Workman teklatuarekin</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4527800702232535228">Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Kudeatu Parallels Desktop aplikazioarekin partekatu nahi duzun edukia</translation>
 <translation id="5038625366300922036">Ikusi gehiago…</translation>
 <translation id="5044852990838351217">Armeniarra</translation>
+<translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="5059127710849015030">Nepaleraren transliterazioa</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Fitxategiei dagozkien <ph name="TOTAL_FILE_SIZE" /> ezabatuko dira</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">Kendu dira sarrera guztiak hautapenetik.</translation>
 <translation id="5838825566232597749">Nazioarteko US Workman</translation>
 <translation id="5851063901794976166">Hau hutsik dago.</translation>
+<translation id="5864471791310927901">DHCP bilaketak huts egin du</translation>
 <translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>
 <translation id="5913638992615760742">Ezin izan da kopiatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">Gaitu azpitituluak</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
+<translation id="6312403991423642364">Sareko errore ezezaguna</translation>
 <translation id="6321303798550928047">Agurtzen</translation>
 <translation id="6339145975392024142">AEBko nazioarteko teklatua (PCrako)</translation>
 <translation id="6346310558342052870">Sarbide murriztua</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">Frantsesa (Frantzia), Bépo teklatuarekin</translation>
 <translation id="6710022688720561421">Robota</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
+<translation id="6732801395666424405">Ez dira ziurtagiriak kargatu</translation>
 <translation id="6751256176799620176">Karpeta bat hautatu da</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> aurkitu dira</translation>
 <translation id="6935521024859866267">Buruz gora</translation>
+<translation id="6943836128787782965">Ezin izan da HTTP protokoloa eskuratu</translation>
 <translation id="6949408524333579394">Serbieraren transliterazioa</translation>
 <translation id="696203921837389374">Gaitu datu-konexio bidezko sinkronizazioa</translation>
 <translation id="6965382102122355670">Ados</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;bilatu Drive-n&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadar fonetikoa</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Ezin izan da konfiguratu sarea</translation>
+<translation id="7170041865419449892">Barrutitik kanpo</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gorde fitxategia honela</translation>
+<translation id="7229570126336867161">EvDO behar da</translation>
 <translation id="7238097264433196391">Unitatearen izena</translation>
 <translation id="7248671827512403053">Aplikazioa</translation>
+<translation id="7256405249507348194">Errore ezezaguna: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Zerbitzu erabilgarriak</translation>
 <translation id="7283041136720745563">Google Drive kuota txikiegia da.</translation>
 <translation id="7294063083760278948">Teluguaren transliterazioa</translation>
 <translation id="7295662345261934369">Partekatu jendearekin</translation>
+<translation id="7297443947353982503">Erabiltzailea edo pasahitza ez da zuzena edo EAP autentifikazioak huts egin du</translation>
 <translation id="7309413087278791451">Alemana (Belgika)</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7343393116438664539">Vietnamdarra (telex)</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">Desgaitu azpitituluak</translation>
 <translation id="78946041517601018">Unitate partekatuak</translation>
 <translation id="7908793776359722643">Partizio bat formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza.</translation>
+<translation id="7925247922861151263">Ezin izan da AAA egiaztapena egin</translation>
 <translation id="7925686952655276919">Ez erabili datu-konexioa sinkronizatzeko</translation>
 <translation id="7928710562641958568">Kanporatu gailua</translation>
 <translation id="7943385054491506837">Colemak estatubatuarra</translation>
 <translation id="7953739707111622108">Ezin da ireki gailua bere fitxategi-sistema ezezaguna delako.</translation>
 <translation id="7969525169268594403">Esloveniarra</translation>
 <translation id="7972920761225148017">Frantsesa (Suitza)</translation>
+<translation id="7973962044839454485">Ezin izan da PPP bidez autentifikatu erabiltzaile-izena edo pasahitza okerra zelako</translation>
 <translation id="7980421588063892270">Ingelesa (AEB), Colemak teklatuarekin</translation>
 <translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier arrazako zakurra</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8297012244086013755">3. hangul-karaktere sorta (balio bikoitzeko teklarik gabe)</translation>
 <translation id="8299269255470343364">Japoniarra</translation>
+<translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
 <translation id="8312871300878166382">Itsatsi karpetan</translation>
 <translation id="8329978297633540474">Testu arrunta</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>
 <translation id="8335837413233998004">Bielorrusiarra</translation>
 <translation id="8336153091935557858">Atzo (<ph name="YESTERDAY_DAYTIME" />)</translation>
 <translation id="8342318071240498787">Badago lehendik ere izen hori duen fitxategi edo direktorio bat.</translation>
+<translation id="8372369524088641025">WEP gako okerra</translation>
 <translation id="8372852072747894550">Greziarra</translation>
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8437209419043462667">US</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">Zirkuluak</translation>
 <translation id="8484284835977497781">Aukeratu azkenaldiko argazki bat.</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
+<translation id="8492972329130824181">Ez dago erabilgarri etxeko sarea. Datu-ibiltaritzak gaituta egon behar du konektatu ahal izateko.</translation>
 <translation id="8521441079177373948">Erresuma Batukoa</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="853494022971700746">Frantsesa (Frantzia)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
+<translation id="8688591111840995413">Pasahitz okerra</translation>
 <translation id="8698464937041809063">Google-ko marrazkia</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8713112442029511308">Maltarra</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">Linux fitxategiak</translation>
 <translation id="9035012421917565900">Ezin dira eraman berriro elementuak "<ph name="DESTINATION_NAME" />" unitatera; beraz, ezin izango duzu desegin ekintza.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
+<translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>
 <translation id="9110990317705400362">Arakatzea geroz eta seguruagoa izan dadin saiatzen gara etengabe. Lehen, edozein webgunek eskain ziezazukeen arakatzailean gehitzeko luzapen bat. Google Chrome-ren azken bertsioetan, ordea, luzapen horiek Luzapenak orrian gehituta instalatu nahi dituzula berariaz esan behar diozu Chrome-ri. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

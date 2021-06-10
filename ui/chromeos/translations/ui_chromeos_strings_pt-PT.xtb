@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Para abrir ficheiros com a app <ph name="APP_NAME" />, mova-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1119069657431255176">Arquivo tar comprimido Bzip2</translation>
+<translation id="1119447706177454957">Erro interno</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inglês (EUA) com teclado Dvorak de programador</translation>
 <translation id="1134697384939541955">Inglês (EUA) com teclado alargado</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">dispositivos Chrome</translation>
 <translation id="1572585716423026576">Definir como imagem de fundo</translation>
 <translation id="1576937952766665062">Transliteração de bengali</translation>
+<translation id="158849752021629804">Requer rede doméstica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="162175252992296058">Português com teclado americano internacional</translation>
 <translation id="1641780993263690097">Chinês pinyin</translation>
 <translation id="1646019627374511909">A disponibilizar <ph name="NUMBER_OF_ITEMS" /> ficheiros offline…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
+<translation id="1661867754829461514">Falta o PIN</translation>
 <translation id="1665611772925418501">Não foi possível modificar o ficheiro.</translation>
 <translation id="1673103856845176271">Não foi possível aceder ao ficheiro por razões de segurança.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Transliteração em hebraico</translation>
 <translation id="1747761757048858544">Neerlandês (Países Baixos)</translation>
 <translation id="174937106936716857">Contagem total de ficheiros</translation>
+<translation id="1773212559869067373">Certificado de autenticação rejeitado localmente</translation>
 <translation id="1775381402323441512">Informações do vídeo</translation>
 <translation id="180035236176489073">Tem de estar online para aceder a estes ficheiros.</translation>
 <translation id="1807938677607439181">Todos os ficheiros</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrínia</translation>
 <translation id="2028997212275086731">Arquivo RAR</translation>
 <translation id="2037845485764049925">Russo</translation>
+<translation id="2044023416777079300">Modem não registado</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Os nomes que começam por ponto estão reservados para o sistema. Escolha outro nome.</translation>
 <translation id="2079545284768500474">Anular</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> itens eliminados</translation>
 <translation id="2541377937973966830">O conteúdo desta pasta é só de leitura. Algumas atividades não são suportadas.</translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
+<translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="2547921442987553570">Adicionar a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">EUA internacional</translation>
 <translation id="2562685439590298522">Google Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Fonética de tâmil</translation>
 <translation id="2579959351793446050">Oriá</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2620090360073999360">Não é possível aceder ao Google Drive neste momento.</translation>
 <translation id="2638942478653899953">Não foi possível aceder ao Google Drive. <ph name="BEGIN_LINK" />Termine a sessão<ph name="END_LINK" /> e inicie a sessão novamente.</translation>
 <translation id="2649120831653069427">Peixe arco-íris</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">A preparar</translation>
 <translation id="3280987981688031357">Disco de vinil</translation>
+<translation id="3295357220137379386">O dispositivo está ocupado</translation>
 <translation id="3296763833017966289">Georgiana</translation>
 <translation id="3307875152560779385">Ucraniano</translation>
 <translation id="3326821416087822643">A criar zip de <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Curdo sorani com teclado baseado no árabe</translation>
 <translation id="4363958938297989186">Russo com teclado fonético</translation>
 <translation id="4364327530094270451">Melão</translation>
+<translation id="4387004326333427325">Certificado de autenticação rejeitado remotamente</translation>
 <translation id="4394214039309501350">Link externo</translation>
 <translation id="4418686080762064601">Crie um atalho para os seus ficheiros</translation>
 <translation id="4425149324548788773">O meu disco</translation>
+<translation id="4442424173763614572">A procura de DNS falhou</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Romeno</translation>
 <translation id="4477219268485577442">Fonético búlgaro</translation>
+<translation id="4508265954913339219">A activação falhou</translation>
 <translation id="4509667233588080747">Inglês (EUA) com teclado Workman internacional</translation>
 <translation id="4522570452068850558">Detalhes</translation>
 <translation id="4527800702232535228">Esta pasta é partilhada com o Parallels Desktop.</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Gerir a partilha do Parallels Desktop</translation>
 <translation id="5038625366300922036">Veja mais…</translation>
 <translation id="5044852990838351217">Arménio</translation>
+<translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="5059127710849015030">Transliteração de nepalês</translation>
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de ficheiros serão eliminados</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Removeu todas as entradas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
 <translation id="5851063901794976166">Não há nada aqui...</translation>
+<translation id="5864471791310927901">A procura DHCP falhou</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Ativar legendas</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6287852322318138013">Selecionar uma aplicação para abrir este ficheiro</translation>
+<translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6321303798550928047">Acenar</translation>
 <translation id="6339145975392024142">Americano internacional (PC)</translation>
 <translation id="6346310558342052870">Acesso restrito</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Francês (França) com teclado Bépo</translation>
 <translation id="6710022688720561421">Robô</translation>
 <translation id="6710213216561001401">Anterior</translation>
+<translation id="6732801395666424405">Certificados não carregados</translation>
 <translation id="6751256176799620176">1 pasta selecionada</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> encontrada(s)</translation>
 <translation id="6935521024859866267">Ao Contrário</translation>
+<translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
 <translation id="696203921837389374">Ativar a sincronização através de dados móveis</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonética canarim</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Não foi possível configurar a rede</translation>
+<translation id="7170041865419449892">Fora de alcance</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Guardar ficheiro como</translation>
+<translation id="7229570126336867161">Requer EVDO</translation>
 <translation id="7238097264433196391">Nome da unidade</translation>
 <translation id="7248671827512403053">Aplicação</translation>
+<translation id="7256405249507348194">Erro não reconhecido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serviços disponíveis</translation>
 <translation id="7283041136720745563">A sua quota do Google Drive não é suficientemente grande.</translation>
 <translation id="7294063083760278948">Transliteração de telugu</translation>
 <translation id="7295662345261934369">Partilhar com outros</translation>
+<translation id="7297443947353982503">Nome de utilizador ou palavra-passe incorreto ou falha na autenticação EAP</translation>
 <translation id="7309413087278791451">Alemão (Bélgica)</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7343393116438664539">Telex vietnamita</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Desativar legendas</translation>
 <translation id="78946041517601018">Unidades partilhadas</translation>
 <translation id="7908793776359722643">A formatação de uma partição elimina todos os dados armazenados na mesma. Não é possível anular esta ação.</translation>
+<translation id="7925247922861151263">A verificação AAA falhou</translation>
 <translation id="7925686952655276919">Não utilizar dados móveis para sincronização</translation>
 <translation id="7928710562641958568">Ejetar aparelho</translation>
 <translation id="7943385054491506837">EUA Colemak</translation>
 <translation id="7953739707111622108">Não é possível abrir este aparelho porque o sistema de ficheiros não foi reconhecido.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francês (Suíça)</translation>
+<translation id="7973962044839454485">Falha na autenticação PPP devido a um nome de utilizador ou palavra-passe incorretos</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
 <translation id="79907182588096956">Este ficheiro foi concebido para computadores com software Windows. Não é compatível com o seu dispositivo, pois este tem o Chrome OS instalado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8297012244086013755">Hangul 3 Set (sem Shift)</translation>
 <translation id="8299269255470343364">Japonês</translation>
+<translation id="8300849813060516376">O OTASP falhou</translation>
 <translation id="8312871300878166382">Colar numa pasta</translation>
 <translation id="8329978297633540474">Texto simples</translation>
 <translation id="8335587457941836791">Soltar da prateleira</translation>
 <translation id="8335837413233998004">Bielorrusso</translation>
 <translation id="8336153091935557858">Ontem <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Já existe um ficheiro ou diretório com o mesmo nome.</translation>
+<translation id="8372369524088641025">Chave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
 <translation id="8395901698320285466">Dimensões</translation>
 <translation id="8437209419043462667">EUA</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Círculo</translation>
 <translation id="8484284835977497781">Escolha a partir das suas fotos recentes.</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
+<translation id="8492972329130824181">A rede doméstica não está disponível. O roaming de dados móveis tem de estar ativado para estabelecer a ligação.</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="8525306231823319788">Ecrã inteiro</translation>
 <translation id="853494022971700746">Francês (França)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">A lista de ficheiros foi alterada para a vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
+<translation id="8688591111840995413">Palavra-passe incorreta</translation>
 <translation id="8698464937041809063">Desenho do Google</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8713112442029511308">Maltês</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Ficheiros Linux</translation>
 <translation id="9035012421917565900">Não é possível mover os itens novamente para "<ph name="DESTINATION_NAME" />", pelo que não pode anular esta ação.</translation>
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
+<translation id="9046895021617826162">A ligação falhou</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>
 <translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que pretende instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

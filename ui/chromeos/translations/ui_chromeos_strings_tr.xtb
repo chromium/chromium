@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne taşıyın.</translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1119069657431255176">Bzip2 sıkıştırılmış tar arşivi</translation>
+<translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Programmer Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="1134697384939541955">Genişletilmiş klavye ile İngilizce (ABD)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome cihazlar</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1576937952766665062">Bengalce Harf çevirisi</translation>
+<translation id="158849752021629804">Ev ağı gerekli</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">ABD Uluslararası klavye ile Portekizce</translation>
 <translation id="1641780993263690097">Çince Pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> dosya çevrimdışı kullanılabilir hale getiriliyor</translation>
 <translation id="164969095109328410">Chrome cihaz</translation>
+<translation id="1661867754829461514">PIN eksik</translation>
 <translation id="1665611772925418501">Dosya değiştirilemedi.</translation>
 <translation id="1673103856845176271">Güvenlik nedenleriyle dosyaya erişilemedi.</translation>
 <translation id="169515659049020177">ÜstKrktr</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">İbranice Harf Çevirisi</translation>
 <translation id="1747761757048858544">Felemenkçe (Hollanda)</translation>
 <translation id="174937106936716857">Toplam dosya sayısı</translation>
+<translation id="1773212559869067373">Kimlik doğrulama sertifikası yerel olarak reddedildi</translation>
 <translation id="1775381402323441512">Video bilgileri</translation>
 <translation id="180035236176489073">Bu dosyalara erişebilmek için çevrimiçi olmalısınız.</translation>
 <translation id="1807938677607439181">Tüm dosyalar</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinya dili</translation>
 <translation id="2028997212275086731">RAR arşivi</translation>
 <translation id="2037845485764049925">Rusça</translation>
+<translation id="2044023416777079300">Modem kayıtlı değil</translation>
 <translation id="2046702855113914483">Japon eriştesi</translation>
 <translation id="2070909990982335904">Nokta ile başlayan adlar sistem için ayrılmıştır. Lütfen başka bir ad seçin.</translation>
 <translation id="2079545284768500474">Geri al</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> öğe silindi</translation>
 <translation id="2541377937973966830">Bu klasörün içindekiler salt okunurdur. Bazı işlemler desteklenmez.</translation>
 <translation id="2542049655219295786">Google tablosu</translation>
+<translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> uzantısına ekle</translation>
 <translation id="255937426064304553">ABD uluslararası</translation>
 <translation id="2562685439590298522">Google Dokümanlar</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
+<translation id="2617342710774726426">SIM kart kilitli</translation>
 <translation id="2620090360073999360">Google Drive'a şu anda erişilemiyor.</translation>
 <translation id="2638942478653899953">Google Drive'a erişilemedi. Lütfen <ph name="BEGIN_LINK" />çıkıp<ph name="END_LINK" /> tekrar giriş yapın.</translation>
 <translation id="2649120831653069427">Gökkuşağı Balığı</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" dosyası açılamadı</translation>
 <translation id="3280431534455935878">Hazırlanıyor</translation>
 <translation id="3280987981688031357">Vinil plak</translation>
+<translation id="3295357220137379386">Cihaz meşgul</translation>
 <translation id="3296763833017966289">Gürcüce</translation>
 <translation id="3307875152560779385">Ukraynaca</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> sıkıştırılıyor...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Arapça tabanlı klavye ile Sorani Kürtçesi</translation>
 <translation id="4363958938297989186">Fonetik klavye ile Rusça</translation>
 <translation id="4364327530094270451">Kavun</translation>
+<translation id="4387004326333427325">Kimlik doğrulama sertifikası uzaktan reddedildi</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
 <translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
+<translation id="4442424173763614572">DNS arama başarısız oldu</translation>
 <translation id="4470564870223067757">Hangul 2 Grubu</translation>
 <translation id="4477002475007461989">Romence</translation>
 <translation id="4477219268485577442">Bulgarca fonetik</translation>
+<translation id="4508265954913339219">Etkinleştirme başarısız oldu</translation>
 <translation id="4509667233588080747">Workman Uluslararası klavye ile İngilizce (ABD)</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4527800702232535228">Bu klasör Parallels Desktop ile paylaşılıyor</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop paylaşımını yönet</translation>
 <translation id="5038625366300922036">Daha fazlasını görüntüle...</translation>
 <translation id="5044852990838351217">Ermenice</translation>
+<translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="5059127710849015030">Nepali Harf Çevirisi</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> dosya silinecek</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Tüm girişler seçimden kaldırıldı.</translation>
 <translation id="5838825566232597749">ABD Workman uluslararası</translation>
 <translation id="5851063901794976166">Burada görülecek bir şey yok...</translation>
+<translation id="5864471791310927901">DHCP araması başarısız oldu</translation>
 <translation id="5911887972742538906">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu.</translation>
 <translation id="5912396950572065471">Biçim</translation>
 <translation id="5913638992615760742">Kopyalama işlemi başarısız oldu, beklenmeyen hata: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Altyazıları etkinleştir</translation>
 <translation id="6269630227984243955">Malayca</translation>
 <translation id="6287852322318138013">Bu dosyayı açmak için bir uygulama seçin</translation>
+<translation id="6312403991423642364">Bilinmeyen ağ hatası</translation>
 <translation id="6321303798550928047">El sallayan kız</translation>
 <translation id="6339145975392024142">ABD uluslararası (PC)</translation>
 <translation id="6346310558342052870">Erişim kısıtlı</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">Fransızca (Fransa) Bépo klavye</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Önceki</translation>
+<translation id="6732801395666424405">Sertifikalar yüklenmedi</translation>
 <translation id="6751256176799620176">1 klasör seçildi</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> bulundu</translation>
 <translation id="6935521024859866267">Baş Aşağı</translation>
+<translation id="6943836128787782965">HTTP get işlevi başarısız oldu</translation>
 <translation id="6949408524333579394">Sırpça Harf Çevirisi</translation>
 <translation id="696203921837389374">Mobil veriler üzerinden senkronizasyonu etkinleştir</translation>
 <translation id="6965382102122355670">Tamam</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;Drive'da ara&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Fonetik</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Ağ yapılandırılamadı</translation>
+<translation id="7170041865419449892">Aralık dışında</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Dosyayı farklı kaydet</translation>
+<translation id="7229570126336867161">EVDO gerekli</translation>
 <translation id="7238097264433196391">Sürücü adı</translation>
 <translation id="7248671827512403053">Uygulama</translation>
+<translation id="7256405249507348194">Tanınmayan hata: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Kullanılabilir hizmetler</translation>
 <translation id="7283041136720745563">Google Drive kotanız yeterince büyük değil.</translation>
 <translation id="7294063083760278948">Telugu Harf Çevirisi</translation>
 <translation id="7295662345261934369">Başkalarıyla paylaş</translation>
+<translation id="7297443947353982503">Kullanıcı adı/şifre yanlış veya EAP yetkilendirmesi başarısız oldu</translation>
 <translation id="7309413087278791451">Almanca (Belçika)</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7343393116438664539">Vietnamca Teleks</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Altyazıları devre dışı bırak</translation>
 <translation id="78946041517601018">Ortak drive'lar</translation>
 <translation id="7908793776359722643">Bir bölümün biçimlendirilmesi o bölümde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
+<translation id="7925247922861151263">AAA kontrolü başarısız oldu</translation>
 <translation id="7925686952655276919">Senkronizasyon için mobil veri kullanma</translation>
 <translation id="7928710562641958568">Cihazı çıkar</translation>
 <translation id="7943385054491506837">ABD Colemak</translation>
 <translation id="7953739707111622108">Bu cihaz, dosya sistemi tanınmadığından açılamıyor.</translation>
 <translation id="7969525169268594403">Slovence</translation>
 <translation id="7972920761225148017">Fransızca (İsviçre)</translation>
+<translation id="7973962044839454485">Yanlış kullanıcı adı veya şifreden dolayı PPP kimlik doğrulaması başarısız oldu</translation>
 <translation id="7980421588063892270">Colemak klavye ile İngilizce (ABD)</translation>
 <translation id="79907182588096956">Bu dosya Windows yazılımı kullanan PC'ler için tasarlanmıştır. Chrome OS çalıştıran cihazınızla uyumlu değildir. Chrome OS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">Jack Russell Teriyeri</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8297012244086013755">Hangul 3 Grubu (Üst Karakter Yok)</translation>
 <translation id="8299269255470343364">Japonca</translation>
+<translation id="8300849813060516376">OTASP başarısız oldu</translation>
 <translation id="8312871300878166382">Klasörünün içine yapıştır</translation>
 <translation id="8329978297633540474">Düz metin</translation>
 <translation id="8335587457941836791">Raftaki sabitlemeyi kaldır</translation>
 <translation id="8335837413233998004">Belarusça</translation>
 <translation id="8336153091935557858">Dün <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Aynı adda bir dosya veya dizin zaten var.</translation>
+<translation id="8372369524088641025">Hatalı WEP anahtarı</translation>
 <translation id="8372852072747894550">Yunanca</translation>
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8437209419043462667">ABD</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Dönme</translation>
 <translation id="8484284835977497781">Son fotoğraflarınızdan seçin.</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
+<translation id="8492972329130824181">Ev ağı kullanılamıyor. Bağlanmak için mobil veri dolaşımı etkinleştirilmelidir.</translation>
 <translation id="8521441079177373948">İngiltere</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="853494022971700746">Fransızca (Fransa)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
+<translation id="8688591111840995413">Yanlış şifre</translation>
 <translation id="8698464937041809063">Google çizimler</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8713112442029511308">Maltaca</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9035012421917565900">Öğeler "<ph name="DESTINATION_NAME" />" hedefine geri taşınamaz. Bu nedenle bu işlemi geri alamazsınız.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
+<translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>
 <translation id="9110990317705400362">Sürekli olarak, web'e daha güvenli göz atabilmenizi sağlamanın yollarını aramaktayız. Önceden, herhangi bir web sitesi, tarayıcınıza uzantı eklemeniz için istekte bulunabiliyordu. Google Chrome'un son sürümlerinde bu uzantıları yüklemek istediğinizi Chrome'a açıkça söylemelisiniz. Bunu yapmak için uzantıları Uzantılar sayfası üzerinden eklemeniz gerekiyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>

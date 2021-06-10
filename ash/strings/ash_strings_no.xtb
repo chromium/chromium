@@ -61,6 +61,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
+<translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv igjen senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
@@ -130,8 +131,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1972950159383891558">Hei, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstfelt</translation>
 <translation id="1989113344093894667">Kan ikke ta bilde av innhold</translation>
+<translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
-<translation id="1995660704900986789">Slå av</translation>
 <translation id="1998100899771863792">Gjeldende skrivebord</translation>
 <translation id="2016340657076538683">Skriv inn en melding</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
@@ -437,6 +438,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4451374464530248585">Hurtigtasten Alt + nedoverpil er endret. For å bruke Page Down-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + nedoverpilen.</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
+<translation id="4471354919263203780">Laster ned filer for talegjenkjenning … <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4477350412780666475">Neste spor</translation>
 <translation id="4477892968187500306">Denne enheten kan ha apper som ikke er verifisert av Google.</translation>

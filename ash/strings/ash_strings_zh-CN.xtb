@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
+<translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1407069428457324124">深色主题</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好！</translation>
 <translation id="1978498689038657292">文字输入</translation>
 <translation id="1989113344093894667">无法截取/录制内容</translation>
+<translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
-<translation id="1995660704900986789">关机</translation>
 <translation id="1998100899771863792">当前桌面</translation>
 <translation id="2016340657076538683">请输入消息</translation>
 <translation id="2018630726571919839">给我讲个笑话</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
+<translation id="4471354919263203780">正在下载语音识别文件... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4477350412780666475">下一曲</translation>
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>

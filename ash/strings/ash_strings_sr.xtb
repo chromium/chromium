@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Прекорачење</translation>
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1351937230027495976">Скупи мени</translation>
+<translation id="1383597849754832576">Преузимање фајлова говора није успело. Пробајте касније.</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1391102559483454063">Укључено</translation>
 <translation id="1407069428457324124">Тамна тема</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Унос текста</translation>
 <translation id="1989113344093894667">Снимање садржаја није успело</translation>
+<translation id="1990046457226896323">Преузети су фајлови говора</translation>
 <translation id="1993072747612765854">Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Искључи</translation>
 <translation id="1998100899771863792">Актуелна радна површина</translation>
 <translation id="2016340657076538683">Унесите поруку</translation>
 <translation id="2018630726571919839">Испричај ми виц.</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Тастерска пречица Alt + стрелица надоле је промењена. Да бисте користили тастер Page Down, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надоле.</translation>
 <translation id="445864333228800152">Добро вече,</translation>
 <translation id="4458688154122353284">Зауставите снимање екрана</translation>
+<translation id="4471354919263203780">Преузимају се датотеке за препознавање говора... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4477350412780666475">Следећа песма</translation>
 <translation id="4477892968187500306">Овај уређај може да садржи апликације које Google није верификовао.</translation>
@@ -680,7 +682,7 @@
 <translation id="649452524636452238">PIN паметне картице</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Изаберите прозор за снимање</translation>
-<translation id="652139407789908527">Током овог ажурирања екран ће бити празан дуже него обично (и до минут). Не притискајте дугме за напајање док је ажурирање у току.</translation>
+<translation id="652139407789908527">Током овог ажурирања екран ће бити празан дуже него обично (и до минут). Не притискајте дугме за укључивање док је ажурирање у току.</translation>
 <translation id="6528179044667508675">Не узнемиравај</translation>
 <translation id="65320610082834431">Емоџији</translation>
 <translation id="6537270692134705506">Сними екран</translation>

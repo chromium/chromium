@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາຍ້າຍພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1119069657431255176">ບ່ອນເກັບມ້ຽນຢາງອັດແໜ້ນ Bzip2</translation>
+<translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1120073797882051782">ຮາງກຸລ ໂຣມາຈາ</translation>
 <translation id="112387589102719461">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak ສຳລັບຜູ້ສ້າງໂປຣແກຣມ</translation>
 <translation id="1134697384939541955">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມແບບຂະຫຍາຍ</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">ອຸປະກອນ Chrome</translation>
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1576937952766665062">ການແປທັບສັບພາສາບັງກລາ</translation>
+<translation id="158849752021629804">ຕ້ອງມີເຄືອຂ່າຍພາຍໃນ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="162175252992296058">ພາສາປໍຕຸຍກິສທີ່ໃຊ້ແປ້ນພິມສະຫະລັດແບບສາກົນ</translation>
 <translation id="1641780993263690097">ພາສາຈີນພິນອິນ</translation>
 <translation id="1646019627374511909">ກຳລັງເຮັດໃຫ້ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ເປັນໄຟລ໌ອອບລາຍ</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
+<translation id="1661867754829461514">PIN ຂາດຫາຍໄປ</translation>
 <translation id="1665611772925418501">ບໍ່​ສາ​ມາດ​ດັດແປງໄຟລ​໌​ນີ້ໄດ້​.</translation>
 <translation id="1673103856845176271">ບໍ່ສາມາດເຂົ້າຫາໄຟລ໌ໄດ້ ເພື່ອເຫດຜົນດ້ານຄວາມປອດໄພ</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ການແປທັບສັບພາສາຮິບຣູ</translation>
 <translation id="1747761757048858544">ພາສາດັດຈ (ເນເທີແລນ)</translation>
 <translation id="174937106936716857">ຈຳນວນໄຟລ໌ທັງໝົດ</translation>
+<translation id="1773212559869067373">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງກັບທີ່ແລ້ວ</translation>
 <translation id="1775381402323441512">ຂໍ້ມູນວິດີໂອ</translation>
 <translation id="180035236176489073">ທ່ານ​ຈະ​ຕ້ອງ​ອອນ​ລາຍ​ນ​໌​ເພື່ອເຂົ້າຫາໄຟລ​໌​ເຫຼົ່ານີ້​.</translation>
 <translation id="1807938677607439181">ທຸກໄຟລ​໌​</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">ພາສາທິກຣິນຢາ</translation>
 <translation id="2028997212275086731">ເຄື່ອງເກັບມ້ຽນ RAR</translation>
 <translation id="2037845485764049925">ພາສາຣັດເຊຍ</translation>
+<translation id="2044023416777079300">ບໍ່ໄດ້ລົງທະບຽນໂມເດັມ</translation>
 <translation id="2046702855113914483">ຣາເມັງ</translation>
 <translation id="2070909990982335904">ຊື່ເລີ່ມຕົ້ນດ້ວຍຈໍ້າຖືກສະຫງວນໄວ້ສໍາລັບລະບົບ. ກະລຸນາເລືອກຊື່ອື່ນ.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547">ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​​ແລ້ວ</translation>
 <translation id="2541377937973966830">ເນື້ອຫາຂອງໂຟນເດີນີ້ເປັນແບບອ່ານເທົ່ານັ້ນ. ບໍ່ຮອງຮັບບາງກິດຈະກຳ.</translation>
 <translation id="2542049655219295786">ຕາ​ຕະ​ລາງ​ Google</translation>
+<translation id="2544853746127077729">ໃບ​ຢັ້ງ​ຢືນ​ການ​ຮັບຮອງຖືກ​ເຄືອ​ຂ່າຍ​ປະ​ຕິ​ເສດ</translation>
 <translation id="2547921442987553570">ເພີ່ມໃສ່ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
 <translation id="2562685439590298522">ເອກະສານ</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
 <translation id="2579959351793446050">ພາສາໂອເດຍ</translation>
 <translation id="2614589611416690597">ວິດີໂອ <ph name="VIDEO_TYPE" /></translation>
+<translation id="2617342710774726426">ແຜ່ນ SIM ລັອກແລ້ວ</translation>
 <translation id="2620090360073999360">ບໍ່ສາມາດເຂົ້າເຖິງ Google Drive ໄດ້ໃນເວລານີ້.</translation>
 <translation id="2638942478653899953">ບໍ່ສາມາດເຂົ້າຫາ Google Drive ໄດ້. ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ<ph name="END_LINK" /> ແລະລົງຊື່ກັບເຂົ້າຫາອີກ.</translation>
 <translation id="2649120831653069427">ປາສາຍຮຸ້ງ</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">ບໍ່ສາມາດເປີດ "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">ກໍາລັງກະ​ກຽມ</translation>
 <translation id="3280987981688031357">ແຜ່ນສຽງໄວນິວ</translation>
+<translation id="3295357220137379386">ອຸປະກອນບໍ່ຫວ່າງ</translation>
 <translation id="3296763833017966289">ພາສາຈໍເຈຍ</translation>
 <translation id="3307875152560779385">ພາສາຢູເຄຣນຽນ</translation>
 <translation id="3326821416087822643">ກໍາລັງຊິບ <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">ພາສາເຄີດໂຊຣານີທີ່ໃຊ້ແປ້ນພິມແບບອາຣັບ</translation>
 <translation id="4363958938297989186">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມຕາມການອອກສຽງ</translation>
 <translation id="4364327530094270451">ໝາກໂມ</translation>
+<translation id="4387004326333427325">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງທາງໄກແລ້ວ</translation>
 <translation id="4394214039309501350">ລິ້ງພາຍນອກ</translation>
 <translation id="4418686080762064601">ສ້າງທາງລັດສຳລັບໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4442424173763614572">ການຊອກເບິ່ງ DNS ບໍ່ສໍາເລັດ</translation>
 <translation id="4470564870223067757">ຮາງກຸລ 2 ຊຸດ</translation>
 <translation id="4477002475007461989">ໂຣມານຽນ</translation>
 <translation id="4477219268485577442">ການອອກສຽງພາສາບຸນ​ກາ​ຣີ</translation>
+<translation id="4508265954913339219">ການເປີດໃຊ້ງານບໍ່ສໍາເລັດ</translation>
 <translation id="4509667233588080747">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Workman ສາກົນ</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4527800702232535228">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">ຈັດການການແບ່ງປັນ Parallels Desktop</translation>
 <translation id="5038625366300922036">ເບິ່ງ​ເພີ່ມ​ເຕີມ...</translation>
 <translation id="5044852990838351217">ພາສາອາເມນຽນ</translation>
+<translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
 <translation id="5059127710849015030">ການແປທັບສັບພາສາເນປານ</translation>
 <translation id="5068919226082848014">ພິດຊ່າ</translation>
 <translation id="5081517858322016911">ລະບົບຈະລຶບໄຟລ໌ <ph name="TOTAL_FILE_SIZE" /></translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">ລຶບລາຍການທັງໝົດອອກຈາກການເລືອກແລ້ວ.</translation>
 <translation id="5838825566232597749">US Workman ສາກົນ</translation>
 <translation id="5851063901794976166">ບໍ່​ມີ​ຫຍັງ​ທີ່​ຈະ​ເບິ່ງ​ຢູ່ທີ່​ນີ້...</translation>
+<translation id="5864471791310927901">ຊອກຫາ DHCP ບໍ່ສໍາເລັດ</translation>
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>
 <translation id="5913638992615760742">ດຳເນີນການສຳເນົາບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">ເປີດໃຊ້ຄຳແປບັນຍາຍພາບ</translation>
 <translation id="6269630227984243955">ມາເລ</translation>
 <translation id="6287852322318138013">ເລືອກແອັບທີ່ຈະເປີດຢູ່ໃນໄຟລ໌ນີ້</translation>
+<translation id="6312403991423642364">ຄວາມຜິດພາດ​ຂອງເຄືອຂ່າຍທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="6321303798550928047">ໂບກມື</translation>
 <translation id="6339145975392024142">ສະຫະລັດສາກົນ (ຄອມພິວເຕີ)</translation>
 <translation id="6346310558342052870">ຈຳກັດການເຂົ້າເຖິງໄວ້ແລ້ວ</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">ພາສາຝຣັ່ງ (ຝຣັ່ງ) ທີ່ໃຊ້ແປ້ນພິມ Bépo</translation>
 <translation id="6710022688720561421">ຫຸ່ນຍົນ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
+<translation id="6732801395666424405">ໃບ​ຢັ້ງ​ຢືນບໍ່ຖືກໂຫຼດ​</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     ພົບ <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">ປີ້ນດ້ານ</translation>
+<translation id="6943836128787782965">HTTP ລົ້ມເຫຼວ</translation>
 <translation id="6949408524333579394">ການແປທັບສັບພາສາເຊີບຽນ</translation>
 <translation id="696203921837389374">ເປີດ​ໃຊ້​ງານ​ການ​ຊິງ​ຄ໌​ເທິງ​ເຄືອ​ຂ່າຍ​ມື​ຖື</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ຊອກຫາ Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ການອອກສຽງພາສາຄັນນາດາ</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">ປັບຕັ້ງເຄືອ​ຂ່າຍບໍ່ສໍາເລັດ</translation>
+<translation id="7170041865419449892">ຢູ່ນອກຂອບເຂດ</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ບັນທຶກໄຟລ໌ເປັນ</translation>
+<translation id="7229570126336867161">ຕ້ອງການ EVDO</translation>
 <translation id="7238097264433196391">ຊື່ໄດຣຟ໌</translation>
 <translation id="7248671827512403053">ແອັບພລິເຄຊັນ</translation>
+<translation id="7256405249507348194">ຄວາມ​ຜິດ​ພາດ​ທີ່ບໍ່​ຮັບຮູ້​ໄດ້: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ການ​ບໍ​ລິ​ການ​ທີ່​ມີ​ຢູ່</translation>
 <translation id="7283041136720745563">ໂຄຕາ Google Drive ຂອງທ່ານບໍ່ໃຫຍ່ພຽງພໍ.</translation>
 <translation id="7294063083760278948">ການແປທັບສັບພາສາເຕລູກູ</translation>
 <translation id="7295662345261934369">ແບ່ງປັນກັບຄົນອື່ນ</translation>
+<translation id="7297443947353982503">ຊື່ຜູ້ໃຊ້/ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ ຫຼືການອະນຸຍາດ EAP ລົ້ມເຫຼວ</translation>
 <translation id="7309413087278791451">ເຢຍລະມັນ (ເບວຢຽມ)</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
 <translation id="7343393116438664539">ພາສາຫວຽດເທເລັກ</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">ປິດໃຊ້ຄຳແປບັນຍາຍພາບ</translation>
 <translation id="78946041517601018">drive ທີ່ແບ່ງປັນ</translation>
 <translation id="7908793776359722643">ການຟໍແມັດຫ້ອງຂໍ້ມູນຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
+<translation id="7925247922861151263">ກວດເບິ່ງ AAA ບໍ່ສໍາເລັດ</translation>
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>
 <translation id="7943385054491506837">Colemak ສະຫະລັດ</translation>
 <translation id="7953739707111622108">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຖືກຮັບຮູ້.</translation>
 <translation id="7969525169268594403">ພາສາສະໂລວາເນຍ</translation>
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
+<translation id="7973962044839454485">ການຮັບຮອງ PPP ບໍ່ສໍາເລັດ ເນື່ອງຈາກຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
 <translation id="79907182588096956">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8008366997883261463">ໝາ</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8297012244086013755">ຮາງກຸລ 3 ຊຸດ (​ບໍ່​ໃຊ້ປຸ່ມ  shift)</translation>
 <translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>
+<translation id="8300849813060516376">OTASP ລົ້ມເຫຼວ</translation>
 <translation id="8312871300878166382">ແປະໃສ່ໃນໂຟລເດີ</translation>
 <translation id="8329978297633540474">ຂໍ້ຄວາມທໍາມະດາ</translation>
 <translation id="8335587457941836791">ຖອນປັກໝຸດຈາກຖ້ານ</translation>
 <translation id="8335837413233998004">ພາສາເບລາຣຸສຊຽນ</translation>
 <translation id="8336153091935557858">ມື້​ວານ​ນີ້ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ມີໄຟລ໌ ຫຼືໄດເຣັກຕໍຣີທີ່ມີຊື່ດຽວກັນຢູ່ແລ້ວ.</translation>
+<translation id="8372369524088641025">ປຸ່ມ WEP ບໍ່ດີ</translation>
 <translation id="8372852072747894550">ພາສາກຣີກ</translation>
 <translation id="8395901698320285466">ຂະໜາດພາບ</translation>
 <translation id="8437209419043462667">ສະ​ຫະ​ລັດ</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">ໝຸນ</translation>
 <translation id="8484284835977497781">ເລືອກຈາກຮູບຫຼ້າສຸດຂອງທ່ານ.</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
+<translation id="8492972329130824181">ເຄືອຂ່າຍເຮືອນບໍ່ພ້ອມນຳໃຊ້. ຕ້ອງເປີດການນຳໃຊ້ການໂຣມມິງອິນເຕີເນັດມືຖືເພື່ອເຊື່ອມຕໍ່.</translation>
 <translation id="8521441079177373948">ສະຫະ​ລາຊະ​ອານາຈັກ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="853494022971700746">ພາສາຝຣັ່ງ (ຝຣັ່ງ)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
+<translation id="8688591111840995413">ລະ​ຫັດ​ຜ່ານ​ທີ່​ບໍ່​ດີ</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8713112442029511308">ພາສາມັລທີສ</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>
 <translation id="9035012421917565900">ບໍ່ສາມາດຍ້າຍລາຍການນີ້ກັບຄືນຫາ '<ph name="DESTINATION_NAME" />' ໄດ້, ສະນັ້ນ ທ່ານຈະບໍ່ສາມາດລົບລ້າງການກະທຳນີ້ໄດ້.</translation>
 <translation id="9038620279323455325">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ໄຟລ໌ອື່ນ.</translation>
+<translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>
 <translation id="9110990317705400362">ພວກເຮົາກໍາລັງຊອກຫາວິທີເຮັດໃຫ້ການທ່ອງເວັບຂອງທ່ານມີຄວາມປອດໄພກ່ວາ​ເກົ່າຢ່າງຕໍ່ເນື່ອງ. ກ່ອນນັ້ນ, ເວັບໄຊທ໌ໃດໜຶ່ງສາມາດເຕືອນໃຫ້ທ່ານເພີມສ່ວນຂະຫຍາຍເຂົ້າໃສ່ບຣາວເຊີຂອງທ່ານ. ຢູ່ໃນ Google Chrome ລຸ້ນຫຼ້າສຸດ, ທ່ານບອກ Chrome ຢ່າງຈະແຈ້ງວ່າ ທ່ານຕ້ອງການຕິດຕັ້ງສ່ວນຂະຫຍາຍນີ້ໂດຍການເພີ່ມພວກມັນຜ່ານໜ້າສ່ວນຂະຫຍາຍ. <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

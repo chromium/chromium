@@ -61,6 +61,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1341651618736211726">Ületäide</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
+<translation id="1383597849754832576">Kõnefaile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1391102559483454063">Sees</translation>
 <translation id="1407069428457324124">Tume teema</translation>
@@ -130,8 +131,8 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1972950159383891558">Tere, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Tekstisisestus</translation>
 <translation id="1989113344093894667">Ei saa sisu jäädvustada</translation>
+<translation id="1990046457226896323">Kõnefailid laaditi alla</translation>
 <translation id="1993072747612765854">Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta</translation>
-<translation id="1995660704900986789">Lülita välja</translation>
 <translation id="1998100899771863792">Praegune töölaud</translation>
 <translation id="2016340657076538683">Sisestage sõnum</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
@@ -438,6 +439,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4451374464530248585">Klaviatuuri otseteed Alt + allanool on muudetud. Lehe võrra alla klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + allanoolt.</translation>
 <translation id="445864333228800152">Tere õhtust!</translation>
 <translation id="4458688154122353284">Peata ekraani salvestamine</translation>
+<translation id="4471354919263203780">Kõnetuvastuse failide allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4477350412780666475">Järgmine lugu</translation>
 <translation id="4477892968187500306">See seade võib sisaldada rakendusi, mida Google pole kinnitanud.</translation>

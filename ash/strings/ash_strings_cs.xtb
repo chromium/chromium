@@ -61,6 +61,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1341651618736211726">Přetečení</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Sbalit nabídku</translation>
+<translation id="1383597849754832576">Stažení řečových souborů se nezdařilo. Zkuste to znovu později.</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1391102559483454063">Zapnuto</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
@@ -130,8 +131,8 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1972950159383891558">Dobrý den, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Zadávání textu</translation>
 <translation id="1989113344093894667">Obsah se nepodařilo zaznamenat</translation>
+<translation id="1990046457226896323">Stažené řečové soubory</translation>
 <translation id="1993072747612765854">Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Vypnout</translation>
 <translation id="1998100899771863792">Aktuální plocha</translation>
 <translation id="2016340657076538683">Zadejte zprávu</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
@@ -437,6 +438,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4451374464530248585">Klávesová zkratka Alt + šipka dolů se změnila. Pokud chcete použít klávesu Page Down, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku dolů.</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
+<translation id="4471354919263203780">Stahování souborů k rozpoznávání řeči… <ph name="PERCENT" /> %</translation>
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4477350412780666475">Další skladba</translation>
 <translation id="4477892968187500306">Toto zařízení může obsahovat aplikace, které nebyly ověřeny Googlem.</translation>

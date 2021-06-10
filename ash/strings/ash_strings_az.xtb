@@ -61,6 +61,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1341651618736211726">Kənara çıxma</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1351937230027495976">Menyunu yığcamlaşdırın</translation>
+<translation id="1383597849754832576">Nitq fayllarını endirmək olmur. Sonra yenidən cəhd edin.</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1391102559483454063">Aktiv</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
@@ -130,8 +131,8 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1972950159383891558">Salam, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Mətn daxiletməsi</translation>
 <translation id="1989113344093894667">Məzmunu çəkmək olmur</translation>
+<translation id="1990046457226896323">Nitq faylları endirilib</translation>
 <translation id="1993072747612765854">Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin</translation>
-<translation id="1995660704900986789">Söndürün</translation>
 <translation id="1998100899771863792">Cari masa</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Gülməli əhvalat danış</translation>
@@ -437,6 +438,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4451374464530248585">Alt + Aşağı Ox klaviatura qısayolu dəyişib. Səhifənin Aşağısına Keç düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Aşağı Ox düyməsini basın.</translation>
 <translation id="445864333228800152">Axşamınız xeyir,</translation>
 <translation id="4458688154122353284">Ekran çəkilişini dayandırın</translation>
+<translation id="4471354919263203780">Nitq tanıma faylları endirilir... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4477892968187500306">Bu cihaz Google tərəfindən doğrulanmamış tətbiqlər ehtiva edə bilər.</translation>
@@ -754,7 +756,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7067196344162293536">Avtodönüş</translation>
 <translation id="7068360136237591149">Faylları açın</translation>
 <translation id="7076293881109082629">Hesaba giriş</translation>
-<translation id="7088960765736518739">Keçid düyməsi</translation>
+<translation id="7088960765736518739">Açarlı idarəetmə</translation>
 <translation id="7098389117866926363">USB-C cihazı (arxadakı sol port)</translation>
 <translation id="7118268675952955085">skrinşot</translation>
 <translation id="7131634465328662194">Avtomatik hesabdan çıxacaqsınız.</translation>

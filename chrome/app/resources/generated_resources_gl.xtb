@@ -545,7 +545,6 @@
 <translation id="1587275751631642843">Consola de &amp;JavaScript</translation>
 <translation id="1587907146729660231">Toca co dedo o botón de acender</translation>
 <translation id="1588438908519853928">Normal</translation>
-<translation id="158849752021629804">É necesaria unha rede doméstica</translation>
 <translation id="1588870296199743671">Abrir ligazón con...</translation>
 <translation id="1588919647604819635">Tarxeta de información ao facer clic co botón dereito</translation>
 <translation id="1589055389569595240">Mostrar ortografía e gramática</translation>
@@ -628,7 +627,6 @@
 <translation id="1660204651932907780">Permite que os sitios reproduzan son (recomendado)</translation>
 <translation id="1660763353352708040">Produciuse un problema co adaptador de corrente</translation>
 <translation id="1661156625580498328">Forza a encriptación AES (recomendado).</translation>
-<translation id="1661867754829461514">Non se atopa o PIN</translation>
 <translation id="16620462294541761">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública de entidade</translation>
 <translation id="166439687370499867">Non se permite cambiar a configuración da rede compartida</translation>
@@ -734,7 +732,6 @@
 <translation id="1768212860412467516">Envía comentarios sobre este experimento: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Produciuse un problema ao contactar co servidor de inicio de sesión. Comproba a conexión de rede, verifica o dominio e, despois, volve tentalo.</translation>
 <translation id="1769104665586091481">Abrir a ligazón nunha &amp;ventá nova</translation>
-<translation id="1773212559869067373">Certificado de autenticación rexeitado localmente</translation>
 <translation id="177336675152937177">Datos da aplicación aloxada</translation>
 <translation id="1775706469381199282">Non permitir que os sitios utilicen JavaScript</translation>
 <translation id="1776712937009046120">Engadir usuario</translation>
@@ -987,7 +984,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2040460856718599782">Produciuse un erro ao tentar autenticarte. Volve comprobar as túas credenciais de inicio de sesión e téntao de novo.</translation>
 <translation id="2042279886444479655">Perfís activos</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
-<translation id="2044023416777079300">O módem non está rexistrado</translation>
 <translation id="204497730941176055">Nome do modelo do certificado de Microsoft</translation>
 <translation id="2045117674524495717">Axuda de atallos de teclado</translation>
 <translation id="2045969484888636535">Continuar bloqueando as cookies</translation>
@@ -1472,7 +1468,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2541706104884128042">Novo límite de hora de durmir</translation>
 <translation id="2542050502251273923">Establece o nivel de depuración do xestor de conexións de rede e outros servizos utilizando ff_debug.</translation>
 <translation id="2544352060595557290">Esta pestana</translation>
-<translation id="2544853746127077729">A rede rexeitou o certificado de autenticación</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
 <translation id="2548347166720081527">Concedeuse o permiso: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restablecer memoria caché do perfil da eSIM</translation>
@@ -2148,7 +2143,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="32939749466444286">O contedor de Linux non se iniciou. Téntao de novo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3294686910656423119">Estatísticas de uso e informes de fallos</translation>
-<translation id="3295357220137379386">O dispositivo está ocupado</translation>
 <translation id="329838636886466101">Reparar</translation>
 <translation id="3298789223962368867">Introduciuse un URL non válido.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
@@ -3144,7 +3138,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4384652540891215547">Activa a extensión</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385905942116811558">Na procura de dispositivos Bluetooth e USB</translation>
-<translation id="4387004326333427325">Certificado de autenticación rexeitado de forma remota</translation>
 <translation id="4387890294700445764">Contrasinais vulnerados</translation>
 <translation id="4389091756366370506">Usuario <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores máis</translation>
@@ -3199,7 +3192,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4441147046941420429">Para continuar, quita a chave de seguranza do teu dispositivo, volve inserila e toca o botón de activación</translation>
 <translation id="444134486829715816">Expandir...</translation>
 <translation id="4441928470323187829">Fixada polo teu administrador</translation>
-<translation id="4442424173763614572">Erro ao buscar o DNS</translation>
 <translation id="4443536555189480885">A&amp;xuda</translation>
 <translation id="4444304522807523469">Acceso aos escáneres de documentos conectados a través de USB ou que se atopan na rede local</translation>
 <translation id="4444512841222467874">Se non se libera espazo, é posible que se eliminen automaticamente usuarios e datos.</translation>
@@ -3255,7 +3247,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4504940961672722399">Fai clic nesta icona ou preme <ph name="EXTENSION_SHORTCUT" /> para utilizar esta extensión.</translation>
 <translation id="450552327874992444">A palabra xa está no dicionario</translation>
 <translation id="4507128560633489176">Datos borrados.</translation>
-<translation id="4508265954913339219">No se puido efectuar a activación</translation>
 <translation id="4508765956121923607">Ver código f&amp;onte</translation>
 <translation id="4510195992002502722">Produciuse un erro ao enviar o comentario. Tentándoo de novo…</translation>
 <translation id="4510479820467554003">Lista de contas parentais</translation>
@@ -4468,7 +4459,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5862319196656206789">Configurar dispositivos conectados</translation>
 <translation id="5863445608433396414">Activar funcións de depuración</translation>
 <translation id="5864195618110239517">Usar conexión de pago por consumo</translation>
-<translation id="5864471791310927901">Produciuse un erro na busca de DHCP</translation>
 <translation id="5864754048328252126">Acción de inactividade durante a carga</translation>
 <translation id="5865508026715185451">A aplicación <ph name="APP_NAME" /> porase en pausa en breve</translation>
 <translation id="586567932979200359">Estás executando <ph name="PRODUCT_NAME" /> desde a imaxe de disco. Se o instalas no ordenador, poderás executalo sen a imaxe de disco e aseguraraste de mantelo actualizado.</translation>
@@ -4878,7 +4868,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6309510305002439352">Desactivouse o micrófono</translation>
 <translation id="6310141306111263820">Non se puido instalar o perfil de eSIM. Para obter axuda, ponte en contacto co teu operador.</translation>
 <translation id="6311220991371174222">Non se pode iniciar Chrome porque se produciu un erro ao abrir o perfil. Proba a reiniciar Chrome.</translation>
-<translation id="6312403991423642364">Erro de rede descoñecido</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A comprobación de seguranza executouse hai 1 día}other{A comprobación de seguranza executouse hai {NUM_DAYS} días}}</translation>
 <translation id="6312638141433622592">Ofrece a opción de mostrar os artigos no modo de lector sempre que sexa posible</translation>
 <translation id="6313641880021325787">SAÍR DA RV</translation>
@@ -5251,7 +5240,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="67269783048918309">Enviar datos de uso e de diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> contrólaa o propietario. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="6732087373923685049">cámara</translation>
-<translation id="6732801395666424405">Non se poden cargar os certificados</translation>
 <translation id="6735304988756581115">Mostrar cookies e datos doutros sitios...</translation>
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5445,7 +5433,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> co teu certificado.</translation>
 <translation id="6943060957016121200">Activar Conexión compartida instantánea</translation>
 <translation id="6943176775188458830">Cancelar impresión</translation>
-<translation id="6943836128787782965">Erro ao obter HTTP</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Bloqueouse a redirección nesta páxina.</translation>
 <translation id="6949434160682548041">Contrasinal (opcional)</translation>
@@ -5641,12 +5628,10 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7154130902455071009">Cambiar a páxina de inicio a: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente da cámara ou do ficheiro</translation>
 <translation id="7163202347044721291">Verificando código de activación…</translation>
-<translation id="7165320105431587207">Non se puido configurar a rede</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pode ler ficheiros de imaxes, vídeo e son nas localizacións marcadas.</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño mínimo do tipo de letra</translation>
-<translation id="7170041865419449892">Fóra de alcance</translation>
 <translation id="7170236477717446850">Imaxe do perfil</translation>
 <translation id="7171000599584840888">Engadir perfil…</translation>
 <translation id="7171259390164035663">Non inscribirse</translation>
@@ -5701,7 +5686,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7225179976675429563">Non se atopa o tipo de rede</translation>
 <translation id="7228479291753472782">Manipula a configuración que determina se os sitios web poden utilizar funcións como a xeolocalización, o micrófono, a cámara etc.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
-<translation id="7229570126336867161">EVDO obrigatorio</translation>
 <translation id="7230787553283372882">Personaliza o tamaño do texto</translation>
 <translation id="7232750842195536390">Produciuse un erro ao cambiar o nome</translation>
 <translation id="7234010996000898150">Cancelando a restauración de Linux</translation>
@@ -5729,7 +5713,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7255002516883565667">Neste momento, tes unha tarxeta que só se pode utilizar neste dispositivo</translation>
 <translation id="7255935316994522020">Aplicar</translation>
 <translation id="7256069762010468647">O sitio está usando a túa cámara</translation>
-<translation id="7256405249507348194">Erro non recoñecido: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Abrir nunha pestana</translation>
 <translation id="7257173066616499747">Redes wifi</translation>
 <translation id="725758059478686223">Servizo de impresión</translation>
@@ -5761,7 +5744,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7290242001003353852">Este servizo de inicio de sesión, que está aloxado por <ph name="SAML_DOMAIN" />, está accedendo á túa cámara.</translation>
 <translation id="7295614427631867477">Ten en conta que Android, Play e as aplicacións asociadas réxense polas súas propias políticas de recompilación e uso de datos.</translation>
 <translation id="729583233778673644">Permite os encriptados AES e RC4. Esta opción aumenta o risco, porque as cifraxes de RC4 non son seguras.</translation>
-<translation id="7297443947353982503">Nome de usuario ou contrasinal incorrectos ou erro de autenticación EAP</translation>
 <translation id="729761647156315797">Escolle un idioma e un teclado</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
 <translation id="7299337219131431707">Activar a navegación como invitado</translation>
@@ -6362,7 +6344,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7924358170328001543">Produciuse un erro co encamiñamento do porto</translation>
 <translation id="7925108652071887026">Autocompletar datos</translation>
 <translation id="792514962475806987">Nivel de zoom da lupa ancorada:</translation>
-<translation id="7925247922861151263">Erro de comprobación de AAA</translation>
 <translation id="7925285046818567682">Esperando por <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Non era eu.</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>
@@ -6411,7 +6392,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="7973776233567882054">Cal das seguintes opcións describe mellor a túa rede?</translation>
 <translation id="797394244396603170">Selecciona o dispositivo co que queiras compartir ficheiros</translation>
-<translation id="7973962044839454485">Non se puido efectuar a autenticación de PPP debido a un nome de usuario ou un contrasinal incorrecto</translation>
 <translation id="7974566588408714340">Tentar de novo usando <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Cor predeterminada</translation>
 <translation id="7974936243149753750">Sobrevarrido</translation>
@@ -6721,7 +6701,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8299319456683969623">Actualmente estás sen conexión.</translation>
 <translation id="8300011035382349091">Editar o marcador desta pestana</translation>
 <translation id="8300374739238450534">Azul noite</translation>
-<translation id="8300849813060516376">Erro de OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Enderezo}other{# enderezos}}</translation>
 <translation id="8304383784961451596">Non tes autorización para usar este dispositivo. Se queres obter permiso para iniciar sesión, ponte en contacto co administrador. Tamén podes iniciar sesión cunha conta de Google supervisada por Family Link.</translation>
 <translation id="8308016398665340540">Estás compartindo esta rede con outros usuarios deste dispositivo</translation>
@@ -6774,7 +6753,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8370294614544004647">Entrar en suspensión ao pechar o ordenador portátil</translation>
 <translation id="8371695176452482769">Fala agora</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
-<translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
 <translation id="8376137163494131156">Indícanos que pasa con Google Cast.</translation>
 <translation id="8376384591331888629">Incluír as cookies de terceiros deste sitio</translation>
@@ -6873,7 +6851,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8492685019009920170">Toca o sensor de impresión dixital co dedo. Os teus datos almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="8492822722330266509">Os sitios poden mostrar ventás emerxentes e usar redireccións</translation>
 <translation id="8492960370534528742">Comentarios sobre Google Cast</translation>
-<translation id="8492972329130824181">A rede doméstica non está dispoñible. Para conectarte, debes ter activada a itinerancia de datos móbiles.</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
 <translation id="8496717697661868878">Executar este plugin</translation>
 <translation id="8497219075884839166">Utilidades de Windows</translation>
@@ -7047,7 +7024,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8681614230122836773">Chrome atopou software daniño no teu ordenador</translation>
 <translation id="8682730193597992579">A impresora <ph name="PRINTER_NAME" /> está conectada e lista</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
-<translation id="8688591111840995413">Contrasinal incorrecto</translation>
 <translation id="8688672835843460752">Dispoñible</translation>
 <translation id="8690129572193755009">Os sitios poden pediche permiso para xestionar protocolos</translation>
 <translation id="8695139659682234808">Engadir controis parentais despois da configuración</translation>
@@ -7400,7 +7376,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="904451693890288097">Introduce a clave de acceso para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envía a Google o enderezo web da páxina á que tentas acceder</translation>
-<translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9048745018038487540">Seleccionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="9052208328806230490">Rexistraches as túas impresoras con <ph name="CLOUD_PRINT_NAME" /> utilizando a conta <ph name="EMAIL" /></translation>

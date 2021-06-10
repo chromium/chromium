@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">To open files with <ph name="APP_NAME" />, first move them to the Windows files folder.</translation>
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1119069657431255176">Bzip2 compressed tar archive</translation>
+<translation id="1119447706177454957">Internal error</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) with Programmer Dvorak keyboard</translation>
 <translation id="1134697384939541955">English (US) with Extended keyboard</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome devices</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1576937952766665062">Bangla transliteration</translation>
+<translation id="158849752021629804">Need home network</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Portuguese with US International keyboard</translation>
 <translation id="1641780993263690097">Chinese Pinyin</translation>
 <translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
 <translation id="164969095109328410">Chrome device</translation>
+<translation id="1661867754829461514">PIN missing</translation>
 <translation id="1665611772925418501">The file could not be modified.</translation>
 <translation id="1673103856845176271">The file could not be accessed for security reasons.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Hebrew transliteration</translation>
 <translation id="1747761757048858544">Dutch (Netherlands)</translation>
 <translation id="174937106936716857">Total file count</translation>
+<translation id="1773212559869067373">Authentication certificate rejected locally</translation>
 <translation id="1775381402323441512">Video info</translation>
 <translation id="180035236176489073">You must be online to access these files.</translation>
 <translation id="1807938677607439181">All files</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR archive</translation>
 <translation id="2037845485764049925">Russian</translation>
+<translation id="2044023416777079300">Modem not registered</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Names starting with dot are reserved for the system. Please choose another name.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
 <translation id="2541377937973966830">The contents of this folder are read-only. Some activities are not supported.</translation>
 <translation id="2542049655219295786">Google table</translation>
+<translation id="2544853746127077729">Authentication certificate rejected by network</translation>
 <translation id="2547921442987553570">Add to <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Tamil phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
+<translation id="2617342710774726426">SIM card is locked</translation>
 <translation id="2620090360073999360">Google Drive cannot be reached at this time.</translation>
 <translation id="2638942478653899953">Google Drive could not be reached. Please <ph name="BEGIN_LINK" />log out<ph name="END_LINK" /> and log back in.</translation>
 <translation id="2649120831653069427">Rainbowfish</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Could not open '<ph name="PATH" />'</translation>
 <translation id="3280431534455935878">Preparing</translation>
 <translation id="3280987981688031357">Vinyl record</translation>
+<translation id="3295357220137379386">Device is busy</translation>
 <translation id="3296763833017966289">Georgian</translation>
 <translation id="3307875152560779385">Ukrainian</translation>
 <translation id="3326821416087822643">Zipping <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Sorani Kurdish with Arabic-based keyboard</translation>
 <translation id="4363958938297989186">Russian with phonetic keyboard</translation>
 <translation id="4364327530094270451">Melon</translation>
+<translation id="4387004326333427325">Authentication certificate rejected remotely</translation>
 <translation id="4394214039309501350">External link</translation>
 <translation id="4418686080762064601">Create a shortcut for your files</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4442424173763614572">DNS lookup failed</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Romanian</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
+<translation id="4508265954913339219">Activation failed</translation>
 <translation id="4509667233588080747">English (US) with Workman International keyboard</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">This folder is shared with Parallels Desktop</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Manage Parallels Desktop sharing</translation>
 <translation id="5038625366300922036">See more...</translation>
 <translation id="5044852990838351217">Armenian</translation>
+<translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5059127710849015030">Nepali transliteration</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> of files will be deleted</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5851063901794976166">Nothing to see here...</translation>
+<translation id="5864471791310927901">DHCP look-up failed</translation>
 <translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Enable subtitles</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
+<translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6321303798550928047">Waving</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6346310558342052870">Access restricted</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">French (France) with Bépo keyboard</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Previous</translation>
+<translation id="6732801395666424405">Certificates not loaded</translation>
 <translation id="6751256176799620176">1 folder selected</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> found</translation>
 <translation id="6935521024859866267">Upside Down</translation>
+<translation id="6943836128787782965">HTTP get failed</translation>
 <translation id="6949408524333579394">Serbian transliteration</translation>
 <translation id="696203921837389374">Enable syncing over mobile data</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetic)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Failed to configure network</translation>
+<translation id="7170041865419449892">Out of range</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Save file as</translation>
+<translation id="7229570126336867161">Need EVDO</translation>
 <translation id="7238097264433196391">Drive name</translation>
 <translation id="7248671827512403053">Application</translation>
+<translation id="7256405249507348194">Unrecognised error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Available services</translation>
 <translation id="7283041136720745563">Your Google Drive quota isn't large enough.</translation>
 <translation id="7294063083760278948">Telugu transliteration</translation>
 <translation id="7295662345261934369">Share with others</translation>
+<translation id="7297443947353982503">Username/password incorrect or EAP-auth failed</translation>
 <translation id="7309413087278791451">German (Belgium)</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Disable subtitles</translation>
 <translation id="78946041517601018">Shared drives</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
+<translation id="7925247922861151263">AAA check failed</translation>
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">This device cannot be opened because its file system was not recognised.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
+<translation id="7973962044839454485">PPP authentication failed due to an incorrect username or password</translation>
 <translation id="7980421588063892270">English (US) with Colemak keyboard</translation>
 <translation id="79907182588096956">This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>
+<translation id="8300849813060516376">OTASP failed</translation>
 <translation id="8312871300878166382">Paste into folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">Unpin from shelf</translation>
 <translation id="8335837413233998004">Belarusian</translation>
 <translation id="8336153091935557858">Yesterday <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">A file or a directory with the same name already exists.</translation>
+<translation id="8372369524088641025">Bad WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">US</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8484284835977497781">Choose from your recent photos.</translation>
 <translation id="8487700953926739672">Available offline</translation>
+<translation id="8492972329130824181">Home network is not available. Mobile data roaming must be enabled to connect.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="853494022971700746">French (France)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
+<translation id="8688591111840995413">Bad password</translation>
 <translation id="8698464937041809063">Google drawing</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8713112442029511308">Maltese</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9035012421917565900">The items cannot be moved back into '<ph name="DESTINATION_NAME" />', so you won't be able to undo this action.</translation>
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
+<translation id="9046895021617826162">Connection failed</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9099674669267916096">Page count</translation>
 <translation id="9110990317705400362">We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

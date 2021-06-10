@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">ओव्हरफ्लो</translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1351937230027495976">मेनू कोलॅप्स करा</translation>
+<translation id="1383597849754832576">स्पीच फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">सुरू</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">हाय, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">मजकूर इनपुट</translation>
 <translation id="1989113344093894667">आशय कॅप्चर करू शकत नाही</translation>
+<translation id="1990046457226896323">स्पीच फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या</translation>
-<translation id="1995660704900986789">बंद करा</translation>
 <translation id="1998100899771863792">सध्याचा डेस्क</translation>
 <translation id="2016340657076538683">मेसेज टाइप करा</translation>
 <translation id="2018630726571919839">मला एक विनोद सांगा</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज डाउन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + डाउन अ‍ॅरो वापरा.</translation>
 <translation id="445864333228800152">शुभ संध्याकाळ,</translation>
 <translation id="4458688154122353284">स्क्रीन रेकॉर्डिंग थांबवा</translation>
+<translation id="4471354919263203780">स्पीच रेकग्निशन फाइल डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4477350412780666475">पुढील ट्रॅक</translation>
 <translation id="4477892968187500306">या डिव्हाइसवर कदाचित Google ने पडताळणी न केलेल्या ॲप्सचा समावेश असू शकतो.</translation>

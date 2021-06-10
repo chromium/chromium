@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Failide avamiseks rakendusega <ph name="APP_NAME" /> teisaldage need esmalt Windowsi failide kausta.</translation>
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1119069657431255176">Bzip2 tihendatud TAR-arhiiv</translation>
+<translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1120073797882051782">Hanguli romaja</translation>
 <translation id="112387589102719461">inglise (USA), programmeerijate Dvoraki klaviatuuriga</translation>
 <translation id="1134697384939541955">inglise (USA), laiendatud klaviatuuriga</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome'i seadmed</translation>
 <translation id="1572585716423026576">Taustapildiks määramine</translation>
 <translation id="1576937952766665062">bengali, transliteratsioon</translation>
+<translation id="158849752021629804">Vajalik koduvõrk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="162175252992296058">portugali USA, rahvusvahelise klaviatuuriga</translation>
 <translation id="1641780993263690097">hiina, pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> faili võrguühenduseta kättesaadavaks tegemine</translation>
 <translation id="164969095109328410">Chrome'i seade</translation>
+<translation id="1661867754829461514">PIN-kood puudub</translation>
 <translation id="1665611772925418501">Faili ei saa muuta.</translation>
 <translation id="1673103856845176271">Turvalisuse tagamiseks on juurdepääs failile keelatud.</translation>
 <translation id="169515659049020177">Tõstuklahv</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">heebrea, transliteratsioon</translation>
 <translation id="1747761757048858544">hollandi (Holland)</translation>
 <translation id="174937106936716857">Faile kokku</translation>
+<translation id="1773212559869067373">Autentimissertifikaat lükati kohalikult tagasi</translation>
 <translation id="1775381402323441512">Video teave</translation>
 <translation id="180035236176489073">Failide juurde pääsemiseks on vaja võrguühendust.</translation>
 <translation id="1807938677607439181">Kõik failid</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">RAR-arhiiv</translation>
 <translation id="2037845485764049925">vene</translation>
+<translation id="2044023416777079300">Modem pole registreeritud</translation>
 <translation id="2046702855113914483">Rāmen</translation>
 <translation id="2070909990982335904">Punktiga algavad nimed on reserveeritud süsteemile. Valige teine nimi.</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> üksust kustutati</translation>
 <translation id="2541377937973966830">Selle kausta sisu on kirjutuskaitstud. Mõnda toimingut ei toetata.</translation>
 <translation id="2542049655219295786">Google'i tabel</translation>
+<translation id="2544853746127077729">Võrk lükkas autentimissertifikaadi tagasi</translation>
 <translation id="2547921442987553570">Lisa laiendusse <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA rahvusvaheline</translation>
 <translation id="2562685439590298522">Dokumendid</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">tamili, foneetiline</translation>
 <translation id="2579959351793446050">odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
+<translation id="2617342710774726426">SIM-kaart on lukustatud</translation>
 <translation id="2620090360073999360">Google Drive'iga ei saa praegu ühendust.</translation>
 <translation id="2638942478653899953">Google Drive'iga ei saadud ühendust. <ph name="BEGIN_LINK" />Logige välja<ph name="END_LINK" /> ja tagasi sisse.</translation>
 <translation id="2649120831653069427">Vikerkaarekala</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">Faili „<ph name="PATH" />” ei õnnestunud avada</translation>
 <translation id="3280431534455935878">Ettevalmistamine</translation>
 <translation id="3280987981688031357">Vinüülplaat</translation>
+<translation id="3295357220137379386">Seade on hõivatud</translation>
 <translation id="3296763833017966289">gruusia keel</translation>
 <translation id="3307875152560779385">ukraina</translation>
 <translation id="3326821416087822643">Faili <ph name="FILE_NAME" /> pakkimine ...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">sorani kurdi, araabia keele põhise klaviatuuriga</translation>
 <translation id="4363958938297989186">vene, foneetilise klaviatuuriga</translation>
 <translation id="4364327530094270451">Melon</translation>
+<translation id="4387004326333427325">Autentimissertifikaat lükati kaugühenduse kaudu tagasi</translation>
 <translation id="4394214039309501350">Väline link</translation>
 <translation id="4418686080762064601">Looge oma failide jaoks otsetee</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
+<translation id="4442424173763614572">DNS-i otsing nurjus</translation>
 <translation id="4470564870223067757">Hanguli 2. seade</translation>
 <translation id="4477002475007461989">rumeenia</translation>
 <translation id="4477219268485577442">Bulgaaria foneetiline</translation>
+<translation id="4508265954913339219">Aktiveerimine nurjus</translation>
 <translation id="4509667233588080747">inglise (USA), Workmani rahvusvaheline klaviatuuriga</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4527800702232535228">Seda kausta jagatakse Parallels Desktopiga</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Üksusega Parallels Desktop jagamise haldamine</translation>
 <translation id="5038625366300922036">Vaadake rohkem ...</translation>
 <translation id="5044852990838351217">armeenia</translation>
+<translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="5059127710849015030">nepali (transliteratsioon)</translation>
 <translation id="5068919226082848014">Pitsa</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> jagu faile kustutatakse</translation>
@@ -457,6 +469,7 @@
 <translation id="5838451609423551646">Valikust eemaldati kõik kirjed.</translation>
 <translation id="5838825566232597749">USA Workmani rahvusvaheline klaviatuur</translation>
 <translation id="5851063901794976166">Siin ei ole midagi vaadata ...</translation>
+<translation id="5864471791310927901">DHCP otsing nurjus</translation>
 <translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
 <translation id="5913638992615760742">Kopeerimine ebaõnnestus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
@@ -492,6 +505,7 @@
 <translation id="6248400709929739064">Luba subtiitrid</translation>
 <translation id="6269630227984243955">malai</translation>
 <translation id="6287852322318138013">Valige faili avamiseks rakendus</translation>
+<translation id="6312403991423642364">Tundmatu võrguviga</translation>
 <translation id="6321303798550928047">Lehvitav</translation>
 <translation id="6339145975392024142">USA rahvusvaheline (PC)</translation>
 <translation id="6346310558342052870">Juurdepääs on piiratud</translation>
@@ -521,6 +535,7 @@
 <translation id="6673674183150363784">prantsuse (Prantsusmaa), BÉPO-klaviatuuriga</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Eelmine</translation>
+<translation id="6732801395666424405">Sertifikaate ei laaditud</translation>
 <translation id="6751256176799620176">Valitud on üks kaust</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +562,7 @@
     <ph name="LINE_BREAK1" />
     Leiti <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Tagurpidi</translation>
+<translation id="6943836128787782965">HTTP hankimine nurjus</translation>
 <translation id="6949408524333579394">serbia, transliteratsioon</translation>
 <translation id="696203921837389374">Luba sünkroonimine mobiilse andmeside kaudu</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -570,15 +586,20 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;otsi Drive'ist&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, foneetiline</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Võrgu seadistamine ebaõnnestus</translation>
+<translation id="7170041865419449892">Vahemikust väljas</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salvesta fail nimega</translation>
+<translation id="7229570126336867161">Vajalik EVDO</translation>
 <translation id="7238097264433196391">Ketta nimi</translation>
 <translation id="7248671827512403053">Rakendus</translation>
+<translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
 <translation id="7283041136720745563">Teie Google Drive'i kvoot pole piisavalt suur.</translation>
 <translation id="7294063083760278948">telugu, transliteratsioon</translation>
 <translation id="7295662345261934369">Teistega jagamine</translation>
+<translation id="7297443947353982503">Kasutajanimi/parool on vale või EAP-autentimine ebaõnnestus</translation>
 <translation id="7309413087278791451">saksa (Belgia)</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7343393116438664539">vietnami, Telex</translation>
@@ -649,12 +670,14 @@
 <translation id="7881969471599061635">Keela subtiitrid</translation>
 <translation id="78946041517601018">Jagatud kettad</translation>
 <translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
+<translation id="7925247922861151263">AAA kontrollimine nurjus</translation>
 <translation id="7925686952655276919">Ära kasuta sünkroonimiseks mobiilset andmesidet</translation>
 <translation id="7928710562641958568">Seadme väljutamine</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
 <translation id="7953739707111622108">Seadet ei saa avada, sest selle failisüsteemi ei tuntud ära.</translation>
 <translation id="7969525169268594403">sloveeni keel</translation>
 <translation id="7972920761225148017">prantsuse (Šveits)</translation>
+<translation id="7973962044839454485">PPP autentimine ebaõnnestus vale kasutajanime või parooli tõttu</translation>
 <translation id="7980421588063892270">inglise (USA), Colemaki klaviatuuriga</translation>
 <translation id="79907182588096956">See fail on mõeldud Windowsi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="8008366997883261463">Jack Russelli terjer</translation>
@@ -684,12 +707,14 @@
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8297012244086013755">Hanguli 3. seade (tõstuklahv puudub)</translation>
 <translation id="8299269255470343364">jaapani keel</translation>
+<translation id="8300849813060516376">OTASP nurjus</translation>
 <translation id="8312871300878166382">Kleebi kausta</translation>
 <translation id="8329978297633540474">Lihttekst</translation>
 <translation id="8335587457941836791">Riiulilt vabastamine</translation>
 <translation id="8335837413233998004">valgevene</translation>
 <translation id="8336153091935557858">Eile kell <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Sama nimega fail või kataloog on juba olemas.</translation>
+<translation id="8372369524088641025">Halb WEP-võti</translation>
 <translation id="8372852072747894550">kreeka</translation>
 <translation id="8395901698320285466">Dimensioonid</translation>
 <translation id="8437209419043462667">USA</translation>
@@ -702,6 +727,7 @@
 <translation id="8477649328507734757">Pöörlev</translation>
 <translation id="8484284835977497781">Valige oma hiljutiste fotode hulgast.</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
+<translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>
@@ -717,6 +743,7 @@
 <translation id="8600173386174225982">Faililoendi jaoks aktiveeriti pisipildikuva.</translation>
 <translation id="8601932370724196034">Crostini pildifail</translation>
 <translation id="8609695766746872526">islandi</translation>
+<translation id="8688591111840995413">Sobimatu parool</translation>
 <translation id="8698464937041809063">Google joonistus</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8713112442029511308">malta</translation>
@@ -742,6 +769,7 @@
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9035012421917565900">Üksusi ei saa sihtkohta „<ph name="DESTINATION_NAME" />” tagasi teisaldada, seega ei saa te seda toimingut tagasi võtta.</translation>
 <translation id="9038620279323455325">Fail nimega „<ph name="FILE_NAME" />” on juba olemas? Valige muu nimi.</translation>
+<translation id="9046895021617826162">Ühendamine nurjus</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>
 <translation id="9110990317705400362">Otsime alati võimalusi, kuidas muuta sirvimine veelgi turvalisemaks. Varem võis iga veebisait paluda teil lisada brauserisse laiendusi. Google Chrome'i uusimas versioonis peate Chrome'ile selgelt ütlema, et soovite neid laiendusi installida, lisades need lehe Laiendused kaudu. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

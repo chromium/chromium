@@ -61,6 +61,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1341651618736211726">Taşma</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
+<translation id="1383597849754832576">Canlı Altyazı dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1391102559483454063">Açık</translation>
 <translation id="1407069428457324124">Koyu tema</translation>
@@ -130,8 +131,8 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1972950159383891558">Merhaba <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Metin girişi</translation>
 <translation id="1989113344093894667">İçeriğin ekran görüntüsü alınamıyor</translation>
+<translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1993072747612765854">En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin</translation>
-<translation id="1995660704900986789">Kapat</translation>
 <translation id="1998100899771863792">Geçerli masaüstü</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Bana bir fıkra anlat</translation>
@@ -437,6 +438,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4451374464530248585">Alt + Aşağı Ok klavye kısayolu değişti. Page Down tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Aşağı Ok tuşlarına basın.</translation>
 <translation id="445864333228800152">İyi akşamlar,</translation>
 <translation id="4458688154122353284">Ekran kaydını durdur</translation>
+<translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4477350412780666475">Sonraki Parça</translation>
 <translation id="4477892968187500306">Bu cihaz Google tarafından doğrulanmamış uygulamalar içerebilir.</translation>

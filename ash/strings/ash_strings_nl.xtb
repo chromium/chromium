@@ -61,6 +61,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
+<translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donker thema</translation>
@@ -130,8 +131,8 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinvoer</translation>
 <translation id="1989113344093894667">Kan geen content opnemen</translation>
+<translation id="1990046457226896323">Spraakbestanden gedownload</translation>
 <translation id="1993072747612765854">Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Uitzetten</translation>
 <translation id="1998100899771863792">Huidig bureau</translation>
 <translation id="2016340657076538683">Typ een bericht</translation>
 <translation id="2018630726571919839">Vertel me een grap</translation>
@@ -437,6 +438,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
+<translation id="4471354919263203780">Bestanden voor spraakherkenning downloaden... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4477892968187500306">Dit apparaat bevat mogelijk apps die niet zijn geverifieerd door Google.</translation>

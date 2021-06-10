@@ -7,6 +7,7 @@
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာရွှေ့ပါ။</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1119069657431255176">Bzip2 စနစ်ဖြင့် ချုံ့ထားသော tar ဖိုင်မှတ်တမ်း</translation>
+<translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1120073797882051782">ဟံဂူလ် Romaja</translation>
 <translation id="112387589102719461">ပရိုဂရမ်မာ Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="1134697384939541955">နောက်ဆက်တွဲကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome စက်ပစ္စည်းများ</translation>
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1576937952766665062">ဘင်္ဂါလီ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="158849752021629804">ပင်မ ကွန်ရက် လိုအပ်</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="162175252992296058">ယူအက်စ်နိုင်ငံတကာ ကီးဘုတ်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="1641780993263690097">တရုတ် ပင်ယင်</translation>
 <translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
+<translation id="1661867754829461514">ပင်နံပါတ်ကုဒ် လိုသေးသည်</translation>
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="1673103856845176271">လုံခြုံရေးအချက်လက်များကြောင့် ဤဖိုင်အား အသုံးပြု၍ မရပါ။</translation>
 <translation id="169515659049020177">Shift ကီး</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">ဟီဘရူး အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1747761757048858544">ဒတ်ချ် (နယ်သာလန်)</translation>
 <translation id="174937106936716857">စုစုပေါင်းဖိုင်အရေအတွက်</translation>
+<translation id="1773212559869067373">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အတွင်းမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="1775381402323441512">ဗီဒီယိုအချက်အလက်</translation>
 <translation id="180035236176489073">ဤဖိုင်များကို အသုံးပြုရန် သင် online ဖြစ်ရန် လိုသည်။</translation>
 <translation id="1807938677607439181">ဖိုင်များ အားလုံး</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">တီဂရင်းညာ</translation>
 <translation id="2028997212275086731">RAR စနစ်ဖြင့် ချုံ့ထားသော ဖိုင်မှတ်တမ်း</translation>
 <translation id="2037845485764049925">ရုရှား</translation>
+<translation id="2044023416777079300">မိုဒမ်ကို မှတ်ပုံတင်မထားပါ</translation>
 <translation id="2046702855113914483">ခေါက်ဆွဲ</translation>
 <translation id="2070909990982335904">အစက်ဖြင့်စသော အမည်များသည် စနစ်တွက် ဖြစ်သည်။ ကျေးဇူးပြု၍ အခြားအမည်ရွေးပါ။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ခုဖျက်ပြီးပြီ</translation>
 <translation id="2541377937973966830">ဤဖိုင်တွဲအတွင်းရှိ အကြောင်းအရာများက ဖတ်ရန်သီးသန့် ဖြစ်သည်။ လုပ်ဆောင်ချက်အချို့ကို မပံ့ပိုးပါ။</translation>
 <translation id="2542049655219295786">Google ဇယား</translation>
+<translation id="2544853746127077729">ကွန်ရက်မှ စစ်မှန်ကြောင်းသက်သေပြချက်လက်မှတ်ကို ငြင်းပယ်ခဲ့သည်</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> သို့ထည့်ပါ</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">စာရွက်များ</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">တမီးလ် အသံထွက်</translation>
 <translation id="2579959351793446050">အိုဒီယာ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ဗီဒီယို</translation>
+<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2620090360073999360">ဒီတစ်ချီမှာ Google ဒရိုက်ဗ် လက်လှမ်း မမှီပါ။</translation>
 <translation id="2638942478653899953">Google Drive အားမချိတ်ဆက် နိုင်ပါ။ ကျေးဇူးပြု၍ <ph name="BEGIN_LINK" />ထွက်<ph name="END_LINK" /> ကာ ပြန်ဝင်ပါ။</translation>
 <translation id="2649120831653069427">သက်တန့်ငါး</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" ကို ဖွင့်၍မရပါ</translation>
 <translation id="3280431534455935878">ပြင်ဆင်နေ</translation>
 <translation id="3280987981688031357">ဓာတ်ပြား</translation>
+<translation id="3295357220137379386">စက် အလုပ်များနေသည်</translation>
 <translation id="3296763833017966289">ဂျော်ဂျီယား</translation>
 <translation id="3307875152560779385">ယူကရိန်း</translation>
 <translation id="3326821416087822643">ဇီပ်လုပ်နေ <ph name="FILE_NAME" />...</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">အာရဗီအခြေခံ ကီးဘုတ်ဖြင့် ဆိုရာနီကဒ်</translation>
 <translation id="4363958938297989186">အသံထွက်ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="4364327530094270451">ဖရဲသီး</translation>
+<translation id="4387004326333427325">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အဝေးမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4442424173763614572">DNS ကြည့်ရှုမှု မအောင်မြင်ခဲ့</translation>
 <translation id="4470564870223067757">ဟံဂူလ် ၂ စုံ</translation>
 <translation id="4477002475007461989">ရိုမေနီယား</translation>
 <translation id="4477219268485577442">ဘာလ်ဂေရီယမ် အသံထွက်</translation>
+<translation id="4508265954913339219">ဖွင့်သုံးမှု မအောင်မြင်</translation>
 <translation id="4509667233588080747">Workman နိုင်ငံတကာကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4527800702232535228">ဤဖိုင်တွဲကို Parallels Desktop အား မျှဝေထားသည်</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="5038625366300922036">ပိုကြည့်ရန်...</translation>
 <translation id="5044852990838351217">အာမေးနီးယား</translation>
+<translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5059127710849015030">နီပေါ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="5068919226082848014">ပီဇာ</translation>
 <translation id="5081517858322016911">ဖိုင် <ph name="TOTAL_FILE_SIZE" /> ကို ဖျက်လိုက်ပါမည်</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">ထည့်သွင်းမှုအားလုံးကို ရွေးချယ်မှုမှ ဖယ်ရှားထားသည်။</translation>
 <translation id="5838825566232597749">US Workman နိုင်ငံတကာ</translation>
 <translation id="5851063901794976166">ဤတွင် ကြည့်စရာ မရှိပါ...</translation>
+<translation id="5864471791310927901">DHCP ရှာဖွေမှု မအောင်မြင်ခဲ့</translation>
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">စာတန်းထိုးခြင်းကို ဖွင့်ပါ</translation>
 <translation id="6269630227984243955">မလေး</translation>
 <translation id="6287852322318138013">ဒီဖိုင်ကို ဖွင့်ရန် အက်ပ် တစ်ခုကို ရွေးပါ</translation>
+<translation id="6312403991423642364">ကွန်ရက်အမှားအကြောင်း မသိပါ</translation>
 <translation id="6321303798550928047">လက်ဝှေ့ယမ်းနေသည်</translation>
 <translation id="6339145975392024142">ယူအက်စ် နိုင်ငံတကာ (PC)</translation>
 <translation id="6346310558342052870">အသုံးပြုခွင့်ကို ကန့်သတ်ထားသည်</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">Bépo ကီးဘုတ်ဖြင့် ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="6710022688720561421">စက်ရုပ်</translation>
 <translation id="6710213216561001401">အရင်</translation>
+<translation id="6732801395666424405">လက်မှတ်ကို တင်မပေးခဲ့</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> တွေ့ပါသည်</translation>
 <translation id="6935521024859866267">ဇောက်ထိုး မိုးမျှော်</translation>
+<translation id="6943836128787782965">HTTP မှာ မအောင်မြင်ခဲ့</translation>
 <translation id="6949408524333579394">ဆားဘီးယား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="696203921837389374">မိုဘိုင်း ဒေတာ ပေါ်မှာ စင့်က်လုပ်မှုကို ဖွင့်ပေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ကန်နာဒါ အသံထွက်</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">ကွန်ရက်ပြုပြင်ရန် မအောင်မြင်ပါ</translation>
+<translation id="7170041865419449892">ဘောင်အပြင်မှာ ရှိနေ</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ဖိုင်ကို အဖြစ် သိမ်းရန်</translation>
+<translation id="7229570126336867161">EVDO လိုအပ်</translation>
 <translation id="7238097264433196391">ဒရိုက်ဗ်အမည်</translation>
 <translation id="7248671827512403053">အပလီကေးရှင်း</translation>
+<translation id="7256405249507348194">သိမှတ်မရသည့် အမှား: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ရရှိနိုင်သော ဝန်ဆောင်မှုများ</translation>
 <translation id="7283041136720745563">သင့် Google Drive ခွဲတမ်းမှာ မလုံလောက်ပါ။</translation>
 <translation id="7294063083760278948">တယ်လူဂူ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="7295662345261934369">အခြားသူများနှင့် မျှဝေရန်</translation>
+<translation id="7297443947353982503">အသုံးပြုသူအမည်/ လျှို့ဝှက်စာလုံး မမှန်ကန်ပါ သို့မဟုတ် EAP-auth မအောင်မြင်ပါ</translation>
 <translation id="7309413087278791451">ဂျာမန် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7343393116438664539">ဗီယက်နမ် Telex</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">စာတန်းထိုးခြင်းကို ပိတ်ပါ</translation>
 <translation id="78946041517601018">မျှဝေထားသော ဒရိုက်ဗ်များ</translation>
 <translation id="7908793776359722643">အကန့်ခွဲတစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်တွင်သိမ်းထားသော ဒေတာအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
+<translation id="7925247922861151263">AAA စစ်ဆေးခြင်း မအောင်မြင်ပါ</translation>
 <translation id="7925686952655276919">စင့်ခ်လုပ်ရန် အတွက် မိုဘိုင်းဒေတာကို မသုံးပါနှင့်</translation>
 <translation id="7928710562641958568">ကိရိယာကို ထုတ်ပစ်ရန်</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မသိသောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="7969525169268594403">ဆလိုဗင်နီးယား</translation>
 <translation id="7972920761225148017">ပြင်သစ် (ဆွစ်ဇာလန်)</translation>
+<translation id="7973962044839454485">PPP အထောက်အထား စိစစ်မှုမှာ မမှန်သည့် အသုံးပြုသူအမည် သို့မဟုတ် စကားဝှက်ကြောင့် မအောင်မြင်ခဲ့</translation>
 <translation id="7980421588063892270">Colemak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="79907182588096956">ဤဖိုင်ကို Windows ဆော့ဖ်ဝဲသုံးသည့် PC အတွက် ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ ၎င်းကို Chrome OS သုံးသော သင့်စက်ပစ္စည်းတွင် ဖွင့်၍မရပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာပါ<ph name="END_LINK_HELP" />။</translation>
 <translation id="8008366997883261463">ဂျက် ရစဲလ် တယ်ရီယာ</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">အရင်းအမြစ်</translation>
 <translation id="8297012244086013755">ဟံဂူလ် ၃ စုံ(Shift မသုံး)</translation>
 <translation id="8299269255470343364">ဂျပန်</translation>
+<translation id="8300849813060516376">OTASP မအောင်မြင်ပါ</translation>
 <translation id="8312871300878166382">ဖိုင်တွဲထဲသို့ ကူးထည့်ရန်</translation>
 <translation id="8329978297633540474">ရိုးရိုး စာသား</translation>
 <translation id="8335587457941836791">စင် ပေါ်မှ ထုတ်ပစ်ရန်</translation>
 <translation id="8335837413233998004">ဘီလာရုစ်</translation>
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">တူညီသည့် အမည်ဖြင့် ဖိုင်တစ်ဖိုင် သို့မဟုတ် လမ်းကြောင်းတစ်ခု ရှိပြီးဖြစ်သည်။</translation>
+<translation id="8372369524088641025">WEP သော့ မကောင်းပါ</translation>
 <translation id="8372852072747894550">ဂရိ</translation>
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">လှည့်ခြင်း</translation>
 <translation id="8484284835977497781">သင်၏ လတ်တလောဓာတ်ပုံများမှ ရွေးပါ။</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
+<translation id="8492972329130824181">အိမ်ကွန်ရက်ကို မရနိုင်ပါ။ ချိတ်ဆက်ရန် ကွန်ရက်ပြင်ပဒေတာ အသုံးပြုခြင်းကို ဖွင့်ထားရမည်။</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="853494022971700746">ပြင်သစ် (ပြင်သစ်)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
+<translation id="8688591111840995413">စကားဝှက် မကောင်းပါ</translation>
 <translation id="8698464937041809063">Google ရေးဆွဲခြင်း</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8713112442029511308">မော်လတာ</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9035012421917565900">၎င်းတို့ကို '<ph name="DESTINATION_NAME" />' သို့ ပြန်ရွှေ့၍မရသည့်အတွက် ဤလုပ်ဆောင်ချက်ကို တစ်ဆင့်နောက်ပြန်၍ ရမည်မဟုတ်ပါ။</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" အမည်ဖြင့်ဖိုင် ရှိပြီးဖြစ်သည်။ အခြားအမည်ရွေးပါ။</translation>
+<translation id="9046895021617826162">ကွန်ရက်ချိတ်ဆက်မှု မအောင်မြင်ပါ</translation>
 <translation id="908378762078012445">အသံထွက် AATSEEL ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="9099674669267916096">စာမျက်နှာအရေအတွက်</translation>
 <translation id="9110990317705400362">သင်၏ ဘရောင်ဇာ သုံးမှု ပိုလုံခြုုံလာရေး နည်းလမ်းများကို ကျွန်ုပ်တို့ တချိန်လုံး ရှာကြံနေကြပါသည်။ အရင်တုန်းက၊ ဘယ် ဝက်ဘ်ဆိုက်မဆို သင်၏ ဘရောက်ဇာ ထဲသို့ တိုးချဲ့မှု တစ်ခုခိုကို ထည့်ပေးရန် တိုက်တွန်းခဲ့ပါမည်။ Google Chrome ၏ နောက်ဆုံး ဗားရှင်း ထဲမှာ၊ သင်သည် တိုးချဲ့မှု စာမျက်နှာ ထဲကို ထည့်ပေးခြင်း မှတစ်ဆင့် ထိုတိုးချဲ့မှုများကို ထည့်သွင်းလိုကြောင်း သင်သည် အတိအလင်း ပြောရန် လိုပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>

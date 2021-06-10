@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Senaste timmen</translation>
 <translation id="1941314575388338491">Tryck snabbt två gånger om du vill kopiera informationen.</translation>
 <translation id="1952172573699511566">När det är möjligt visas text på webbplatser på önskat språk.</translation>
-<translation id="1952728750904661634">Logga in med ett hanterat konto</translation>
 <translation id="1965935827552890526">Gör klart det du höll på med i det andra öppna Chrome-fönstret.</translation>
 <translation id="1973912524893600642">Behåll data</translation>
 <translation id="1974060860693918893">Avancerat</translation>
@@ -695,7 +694,6 @@ Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i C
 <translation id="7887198238286927132">Av sekretesskäl fylls det här fältet inte i automatiskt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportera lösenord …</translation>
-<translation id="7947953824732555851">Godkänn och logga in</translation>
 <translation id="794799177247607889">Stoppa loggning</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7961015016161918242">Aldrig</translation>

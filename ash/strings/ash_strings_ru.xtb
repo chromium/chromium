@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
+<translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Здравствуйте, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Ввод текста</translation>
 <translation id="1989113344093894667">Не удается сделать снимок контента</translation>
+<translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1993072747612765854">Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
-<translation id="1995660704900986789">Выключить</translation>
 <translation id="1998100899771863792">Текущий рабочий стол</translation>
 <translation id="2016340657076538683">Введите сообщение</translation>
 <translation id="2018630726571919839">Расскажи анекдот</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
+<translation id="4471354919263203780">Скачивание файлов распознавания речи: <ph name="PERCENT" /> %…</translation>
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
 <translation id="4477892968187500306">На устройстве могут быть приложения, не проверенные Google.</translation>

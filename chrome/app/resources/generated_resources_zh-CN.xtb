@@ -543,7 +543,6 @@
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1587907146729660231">用手指轻触电源按钮</translation>
 <translation id="1588438908519853928">正常</translation>
-<translation id="158849752021629804">需要家庭网络</translation>
 <translation id="1588870296199743671">链接打开方式...</translation>
 <translation id="1588919647604819635">右键点击卡片</translation>
 <translation id="1589055389569595240">显示拼写和语法</translation>
@@ -626,7 +625,6 @@
 <translation id="1660204651932907780">允许网站播放声音（推荐）</translation>
 <translation id="1660763353352708040">电源适配器问题</translation>
 <translation id="1661156625580498328">强制执行 AES 加密（推荐）。</translation>
-<translation id="1661867754829461514">缺少 PIN</translation>
 <translation id="16620462294541761">抱歉，无法验证您的密码，请重试。</translation>
 <translation id="166278006618318542">证书持有者公共密钥算法</translation>
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
@@ -732,7 +730,6 @@
 <translation id="1768212860412467516">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈。</translation>
 <translation id="1768278914020124551">糟糕！联系登录服务器时出现了问题。请检查您的网络连接和域名，然后重试。</translation>
 <translation id="1769104665586091481">在新窗口中打开链接(&amp;W)</translation>
-<translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="177336675152937177">托管应用数据</translation>
 <translation id="1775706469381199282">不允许网站使用 JavaScript</translation>
 <translation id="1776712937009046120">添加用户</translation>
@@ -985,7 +982,6 @@
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2044014337866019681">请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
-<translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
 <translation id="2045117674524495717">键盘快捷键助手</translation>
 <translation id="2045969484888636535">继续拦截 Cookie</translation>
@@ -1470,7 +1466,6 @@
 <translation id="2541706104884128042">已设定新的就寝时间</translation>
 <translation id="2542050502251273923">使用 ff_debug 设定网络连接管理器和其他服务的调试级别。</translation>
 <translation id="2544352060595557290">此标签页</translation>
-<translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
@@ -2144,7 +2139,6 @@
 <translation id="32939749466444286">无法启动 Linux 容器。请重试。</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
-<translation id="3295357220137379386">设备正忙</translation>
 <translation id="329838636886466101">修复</translation>
 <translation id="3298789223962368867">输入的网址无效。</translation>
 <translation id="32991397311664836">设备：</translation>
@@ -3139,7 +3133,6 @@
 <translation id="4384652540891215547">激活该扩展程序</translation>
 <translation id="438503109373656455">小马</translation>
 <translation id="4385905942116811558">正在搜索蓝牙设备和 USB 设备</translation>
-<translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4387890294700445764">已泄露的密码</translation>
 <translation id="4389091756366370506">用户 <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 个开关键</translation>
@@ -3194,7 +3187,6 @@
 <translation id="4441147046941420429">要继续，请从您的设备上拔出安全密钥，然后重新插入并轻触它</translation>
 <translation id="444134486829715816">展开...</translation>
 <translation id="4441928470323187829">已被您的管理员固定</translation>
-<translation id="4442424173763614572">DNS 查找失败</translation>
 <translation id="4443536555189480885">帮助(&amp;H)</translation>
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
 <translation id="4444512841222467874">如果没有可用空间，系统可能会自动移除用户和数据。</translation>
@@ -3250,7 +3242,6 @@
 <translation id="4504940961672722399">点击该图标或按 <ph name="EXTENSION_SHORTCUT" />，即可使用此扩展程序。</translation>
 <translation id="450552327874992444">已经添加了这个字词</translation>
 <translation id="4507128560633489176">已清除数据。</translation>
-<translation id="4508265954913339219">激活失败</translation>
 <translation id="4508765956121923607">显示源代码(&amp;O)</translation>
 <translation id="4510195992002502722">未能发送反馈。正在重试…</translation>
 <translation id="4510479820467554003">家长帐号列表</translation>
@@ -4462,7 +4453,6 @@
 <translation id="5862319196656206789">设置已连接的设备</translation>
 <translation id="5863445608433396414">启用调试功能</translation>
 <translation id="5864195618110239517">使用按流量计费的网络连接</translation>
-<translation id="5864471791310927901">DHCP 查找失败</translation>
 <translation id="5864754048328252126">充电时的闲置操作</translation>
 <translation id="5865508026715185451">“<ph name="APP_NAME" />”即将暂停</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
@@ -4872,7 +4862,6 @@
 <translation id="6309510305002439352">麦克风已关闭</translation>
 <translation id="6310141306111263820">无法安装 eSIM 卡配置文件。如需帮助，请与您的运营商联系。</translation>
 <translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
-<translation id="6312403991423642364">未知网络错误</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前运行过安全检查}other{{NUM_DAYS} 天前运行过安全检查}}</translation>
 <translation id="6312638141433622592">询问是否使用阅读器模式（若支持）显示文章</translation>
 <translation id="6313641880021325787">退出虚拟实境</translation>
@@ -5245,7 +5234,6 @@
 <translation id="67269783048918309">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">摄像头</translation>
-<translation id="6732801395666424405">未加载证书</translation>
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5439,7 +5427,6 @@
 <translation id="6941937518557314510">请登录“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
 <translation id="6943060957016121200">启用“即时网络共享”</translation>
 <translation id="6943176775188458830">取消打印</translation>
-<translation id="6943836128787782965">HTTP 获取请求失败</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="694592694773692225">已在此网页上阻止重定向。</translation>
 <translation id="6949434160682548041">密码（选填）</translation>
@@ -5635,12 +5622,10 @@
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7163202347044721291">正在验证激活码…</translation>
-<translation id="7165320105431587207">无法配置网络</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取权限。</translation>
 <translation id="7167486101654761064">总是打开此类文件(&amp;A)</translation>
 <translation id="716810439572026343">正在下载 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字号</translation>
-<translation id="7170041865419449892">超出范围</translation>
 <translation id="7170236477717446850">个人资料照片</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
 <translation id="7171259390164035663">不注册</translation>
@@ -5695,7 +5680,6 @@
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7228479291753472782">管理用于指定网站可否使用地理位置信息、麦克风、摄像头等功能的设置</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
-<translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7230787553283372882">自定义文字大小</translation>
 <translation id="7232750842195536390">重命名失败</translation>
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
@@ -5723,7 +5707,6 @@
 <translation id="7255002516883565667">此刻，您有 1 张卡只能在这部设备上使用</translation>
 <translation id="7255935316994522020">应用</translation>
 <translation id="7256069762010468647">该网站正在使用您的摄像头</translation>
-<translation id="7256405249507348194">无法识别的错误：<ph name="DESC" /></translation>
 <translation id="7256710573727326513">在标签页中打开</translation>
 <translation id="7257173066616499747">Wi-Fi 网络</translation>
 <translation id="725758059478686223">打印服务</translation>
@@ -5755,7 +5738,6 @@
 <translation id="7290242001003353852">这项由 <ph name="SAML_DOMAIN" /> 托管的登录服务正在使用您的摄像头。</translation>
 <translation id="7295614427631867477">请注意，Android、Play 及相关应用受各自的数据收集和使用政策的约束。</translation>
 <translation id="729583233778673644">允许使用 AES 和 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
-<translation id="7297443947353982503">用户名/密码错误或 EAP 身份验证失败</translation>
 <translation id="729761647156315797">选择语言和键盘</translation>
 <translation id="7297726121602187087">深绿色</translation>
 <translation id="7299337219131431707">启用访客浏览</translation>
@@ -6355,7 +6337,6 @@
 <translation id="7924358170328001543">转发端口时出错</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
-<translation id="7925247922861151263">AAA 检查失败</translation>
 <translation id="7925285046818567682">正在等待 <ph name="HOST_NAME" /> 的响应...</translation>
 <translation id="7926423016278357561">不是我本人。</translation>
 <translation id="7926975587469166629">卡的昵称</translation>
@@ -6404,7 +6385,6 @@
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
 <translation id="7973776233567882054">以下哪一项最能准确地描述您的网络？</translation>
 <translation id="797394244396603170">请选择您要与哪部设备分享文件</translation>
-<translation id="7973962044839454485">用户名或密码不正确，导致 PPP 身份验证失败</translation>
 <translation id="7974566588408714340">使用“<ph name="EXTENSIONNAME" />”重试</translation>
 <translation id="7974713334845253259">默认颜色</translation>
 <translation id="7974936243149753750">过扫描</translation>
@@ -6714,7 +6694,6 @@
 <translation id="8299319456683969623">您目前处于离线状态。</translation>
 <translation id="8300011035382349091">为此标签页修改书签</translation>
 <translation id="8300374739238450534">深夜蓝</translation>
-<translation id="8300849813060516376">OTASP 失败</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 个地址}}</translation>
 <translation id="8304383784961451596">您无权使用此设备。请与管理员联系以获取登录权限，或者使用受 Family Link 监管的 Google 帐号登录。</translation>
 <translation id="8308016398665340540">您正在与此设备的其他用户共享该网络</translation>
@@ -6767,7 +6746,6 @@
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8371695176452482769">请开始说话</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
-<translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
@@ -6866,7 +6844,6 @@
 <translation id="8492685019009920170">用手指轻触指纹传感器。您的数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
 <translation id="8492960370534528742">Google Cast 反馈</translation>
-<translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
 <translation id="8493236660459102203">麦克风：</translation>
 <translation id="8496717697661868878">运行此插件</translation>
 <translation id="8497219075884839166">Windows 实用程序</translation>
@@ -7040,7 +7017,6 @@
 <translation id="8681614230122836773">Chrome 在您的计算机上发现了有害软件</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已连接且已准备就绪</translation>
 <translation id="8683081248374354009">重置群组</translation>
-<translation id="8688591111840995413">密码错误</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="8690129572193755009">网站可以请求处理协议</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
@@ -7393,7 +7369,6 @@
 <translation id="904451693890288097">请输入“<ph name="DEVICE_NAME" />”的配对密钥：</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">将您尝试访问的网页的网址发送至 Google</translation>
-<translation id="9046895021617826162">连接失败</translation>
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9052208328806230490">您已使用帐号 <ph name="EMAIL" /> 将您的打印机注册为<ph name="CLOUD_PRINT_NAME" /></translation>

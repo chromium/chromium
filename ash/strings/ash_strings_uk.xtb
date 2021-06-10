@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">Додаткове меню</translation>
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
+<translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1989113344093894667">Не вдається записати контент</translation>
+<translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Вимкнути</translation>
 <translation id="1998100899771863792">Поточний робочий стіл</translation>
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">Комбінацію клавіш Alt + стрілка вниз змінено. Щоб скористатися клавішею Page Down, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вниз.</translation>
 <translation id="445864333228800152">Доброго вечора!</translation>
 <translation id="4458688154122353284">Зупинити запис екрана</translation>
+<translation id="4471354919263203780">Завантажуються файли для розпізнавання мовлення… <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4477350412780666475">Наступна композиція</translation>
 <translation id="4477892968187500306">На цьому пристрої можуть бути додатки, які не були перевірені Google.</translation>

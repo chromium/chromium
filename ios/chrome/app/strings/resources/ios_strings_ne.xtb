@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">बितेको घन्टा</translation>
 <translation id="1941314575388338491">प्रतिलिपि बनाउन डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1952172573699511566">सम्भव भए सम्म वेबसाइटहरूले तपाईंको रुचाइएको भाषामा पाठ देखाउनेछ।</translation>
-<translation id="1952728750904661634">व्यवस्थापन गरिएको खातामार्फत साइन इन</translation>
 <translation id="1965935827552890526">तपाईंले Chrome मा खुला रहेको अर्को विन्डोमा गरिरहनुभएको कार्य पूरा गर्नुहोस्।</translation>
 <translation id="1973912524893600642">डेटा राख्नुहोस्</translation>
 <translation id="1974060860693918893">उन्नत</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्ड स्वतः भर्ने छैन।</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939128259257418052">पासवर्ड निर्यात गर्नु…</translation>
-<translation id="7947953824732555851">स्वीकार र साइन इन गर्नुहोस्</translation>
 <translation id="794799177247607889">लग गर्न छाड्नुहोस्</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{कुनै पनि पासवर्ड अरूले देखेका छैनन्}=1{अरूले देखेको {COUNT} पासवर्ड फेला पर्‍यो}other{अरूले देखेका {COUNT} पासवर्डहरू फेला परे}}</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
@@ -810,6 +808,7 @@
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
 <translation id="9152539721251340337">QR कोड सिर्जना गर्नुहोस्</translation>
 <translation id="9157836665414082580">संवादहरू रोक्नुहोस्</translation>
+<translation id="9183059292653643328">तपाईंको सङ्गठनले यो ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="9188680907066685419">व्यवस्थापन गरिएको खाताबाट साइन आउट गर्ने</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिनअघि</translation>
 <translation id="9203116392574189331">ह्यान्डअफ</translation>

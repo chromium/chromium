@@ -7,6 +7,7 @@
 <translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына жылжытыңыз.</translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1119069657431255176">Қысылған Bzip2 TAR мұрағаты</translation>
+<translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1120073797882051782">Ханғыл (Romaja)</translation>
 <translation id="112387589102719461">Ағылшын (АҚШ), бағдарламашы Дворак пернетақтасымен</translation>
 <translation id="1134697384939541955">Ағылшын (АҚШ), кеңейтілген пернетақтамен</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">Chrome құрылғылары</translation>
 <translation id="1572585716423026576">Тұсқағаз етіп орнату</translation>
 <translation id="1576937952766665062">Бенгал (транслитерация)</translation>
+<translation id="158849752021629804">Үй желісі қажет</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португал (АҚШ), халықаралық пернетақтасымен</translation>
 <translation id="1641780993263690097">Қытай (пиньинь)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл офлайн режимде қолжетімді етілуде</translation>
 <translation id="164969095109328410">Chrome құрылғысы</translation>
+<translation id="1661867754829461514">PIN жоқ</translation>
 <translation id="1665611772925418501">Файлды өзгерту мүмкін болмады.</translation>
 <translation id="1673103856845176271">Қауіпсіздік себептеріне байланысты файлға кіру мүмкін емес.</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">Иврит (транслитерация)</translation>
 <translation id="1747761757048858544">Нидерланд (Нидерланд)</translation>
 <translation id="174937106936716857">Барлық файлдар саны</translation>
+<translation id="1773212559869067373">Аутентификация сертификаты жергілікті негізде қабылданбады</translation>
 <translation id="1775381402323441512">Бейне ақпараты</translation>
 <translation id="180035236176489073">Бұл файлдарға кіру үшін желіде болуыңыз керек.</translation>
 <translation id="1807938677607439181">Барлық файлдар</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">RAR мұрағаты</translation>
 <translation id="2037845485764049925">Орыс</translation>
+<translation id="2044023416777079300">Модем тіркелмеген.</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2070909990982335904">Нүктемен басталатын аттар жүйелік файлдар үшін сақталған. Басқа атты таңдаңыз.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> элемент жойылды.</translation>
 <translation id="2541377937973966830">Бұл қалтадағы мазмұнды тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
 <translation id="2542049655219295786">Google кестесі</translation>
+<translation id="2544853746127077729">Желі аутентификация сертификатын қабылдамады</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> кеңейтіміне қосу</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
 <translation id="2579959351793446050">Одия</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> бейнесі</translation>
+<translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2620090360073999360">Google Drive жүйесіне қазір кіру мүмкін емес.</translation>
 <translation id="2638942478653899953">Google Drive мазмұнына қол жеткізу мүмкін емес. <ph name="BEGIN_LINK" />Жүйеден шығып<ph name="END_LINK" />, қайта кіріңіз.</translation>
 <translation id="2649120831653069427">Түрлі түсті балық</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" ашылмады</translation>
 <translation id="3280431534455935878">Дайындау</translation>
 <translation id="3280987981688031357">Винил пластинка</translation>
+<translation id="3295357220137379386">Құрылғы бос емес.</translation>
 <translation id="3296763833017966289">грузин</translation>
 <translation id="3307875152560779385">Украин</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> қысылуда…</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">Сорани күрд (араб тілі негізіндегі пернетақтамен)</translation>
 <translation id="4363958938297989186">Орыс (фонетикалық пернетақтамен)</translation>
 <translation id="4364327530094270451">Қауын</translation>
+<translation id="4387004326333427325">Аутентификация сертификаты қашықтағы негізде қабылданбады</translation>
 <translation id="4394214039309501350">Сыртқы сілтеме</translation>
 <translation id="4418686080762064601">Файлдардың таңбашасын жасау</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
+<translation id="4442424173763614572">DNS іздеу сәтсіз аяқталды</translation>
 <translation id="4470564870223067757">2-ханғыл жинағы</translation>
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4477219268485577442">Болгар (фонетикалық)</translation>
+<translation id="4508265954913339219">Белсендіру сәтсіз аяқталды</translation>
 <translation id="4509667233588080747">Ағылшын (АҚШ), Workman халықаралық пернетақтасымен</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
 <translation id="4527800702232535228">Бұл қалта Parallels Desktop-пен бөлісіледі.</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">Parallels Desktop арқылы бөлісуді басқару</translation>
 <translation id="5038625366300922036">Толығырақ…</translation>
 <translation id="5044852990838351217">Армян</translation>
+<translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="5059127710849015030">Непал (транслитерация)</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл жойылады.</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">Таңдалғандардан барлық жазба өшірілді.</translation>
 <translation id="5838825566232597749">АҚШ (Workman, халықаралық)</translation>
 <translation id="5851063901794976166">Мұнда қарайтын ештеңе жоқ…</translation>
+<translation id="5864471791310927901">DHCP іздеу сәтсіз аяқталды</translation>
 <translation id="5911887972742538906">Linux қолданбасын орнату кезінде қате кетті.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Көшіру операциясы сәтсіз аяқталды, күтпеген қате болды: <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">Субтитрлерді қосу</translation>
 <translation id="6269630227984243955">Малай</translation>
 <translation id="6287852322318138013">Бұл файлды ашатын қолданбаны таңдаңыз</translation>
+<translation id="6312403991423642364">Белгісіз желі қатесі</translation>
 <translation id="6321303798550928047">Қол бұлғау</translation>
 <translation id="6339145975392024142">АҚШ халықаралық (ДК)</translation>
 <translation id="6346310558342052870">Пайдалануға тыйым салынған</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">Француз (Франция, Bépo пернетақтасымен)</translation>
 <translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
+<translation id="6732801395666424405">Сертификаттар жүктелмеді</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> файл табылды</translation>
 <translation id="6935521024859866267">Төменгі жағын жоғары қаратып</translation>
+<translation id="6943836128787782965">HTTP сәтсіз аяқталды</translation>
 <translation id="6949408524333579394">Серб (транслитерация)</translation>
 <translation id="696203921837389374">Мобильді деректер арқылы синхрондау</translation>
 <translation id="6965382102122355670">Жарайды</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетикалық)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Желіні реттеу мүмкін емес</translation>
+<translation id="7170041865419449892">Ауқымнан тыс</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлды басқаша сақтау</translation>
+<translation id="7229570126336867161">EVDO технологиясы қажет</translation>
 <translation id="7238097264433196391">Диск атауы</translation>
 <translation id="7248671827512403053">Қолданба</translation>
+<translation id="7256405249507348194">Танылмаған қате: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Қолжетімді қызметтер</translation>
 <translation id="7283041136720745563">Google Drive дискінде орын жеткіліксіз.</translation>
 <translation id="7294063083760278948">Телугу (транслитерация)</translation>
 <translation id="7295662345261934369">Басқалармен бөлісу</translation>
+<translation id="7297443947353982503">Пайдаланушы аты/құпия сөз дұрыс емес немесе EAP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7309413087278791451">Неміс (Бельгия)</translation>
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="7343393116438664539">Вьетнам (телекс)</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">Субтитрлерді өшіру</translation>
 <translation id="78946041517601018">Ортақ дискілер</translation>
 <translation id="7908793776359722643">Бөлімді форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекетті кері қайтару мүмкін емес.</translation>
+<translation id="7925247922861151263">AAA тексеру сәтсіз аяқталды</translation>
 <translation id="7925686952655276919">Синхрондау үшін ұялы деректерді пайдаланбау</translation>
 <translation id="7928710562641958568">Құрылғыны шығару</translation>
 <translation id="7943385054491506837">АҚШ Колемак</translation>
 <translation id="7953739707111622108">Бұл құрылғыны ашу мүмкін емес, себебі оның файл жүйесі анықталмаған.</translation>
 <translation id="7969525169268594403">словен</translation>
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
+<translation id="7973962044839454485">Пайдаланушы аты немесе құпия сөз дұрыс болмағандықтан, PPP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
 <translation id="79907182588096956">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8008366997883261463">Ит</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8297012244086013755">Ханғыл 3-жинағы (Shift пернесінсіз)</translation>
 <translation id="8299269255470343364">жапон</translation>
+<translation id="8300849813060516376">OTASP сәтсіз аяқталды</translation>
 <translation id="8312871300878166382">Қалта ішіне қою</translation>
 <translation id="8329978297633540474">Қарапайым мәтін</translation>
 <translation id="8335587457941836791">Сөреден босату</translation>
 <translation id="8335837413233998004">Белорус</translation>
 <translation id="8336153091935557858">Кеше <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Бұндай атауы бар файл немесе каталог бұрыннан бар.</translation>
+<translation id="8372369524088641025">WEP кілті дұрыс емес</translation>
 <translation id="8372852072747894550">Грек</translation>
 <translation id="8395901698320285466">Өлшемдер</translation>
 <translation id="8437209419043462667">АҚШ</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">Шеңбер</translation>
 <translation id="8484284835977497781">Соңғы фотосуреттеріңізден таңдаңыз.</translation>
 <translation id="8487700953926739672">Желіден тыс істейді</translation>
+<translation id="8492972329130824181">Үй желісі қолжетімді емес. Байланысу үшін мобильдік интернет роумингін қосу қажет.</translation>
 <translation id="8521441079177373948">Ұлыбритания</translation>
 <translation id="8525306231823319788">Толық экран</translation>
 <translation id="853494022971700746">Француз (Франция)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
 <translation id="8609695766746872526">Исланд</translation>
+<translation id="8688591111840995413">Құпия сөз дұрыс емес</translation>
 <translation id="8698464937041809063">Google суреті</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8713112442029511308">Мальта</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Файлдар "<ph name="DESTINATION_NAME" />" қалтасына қайта көшірілмейді, сондықтан бұл қадамды кері қайтару мүмкін емес.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Басқа атау таңдаңыз.</translation>
+<translation id="9046895021617826162">Қосылмады</translation>
 <translation id="908378762078012445">Орыс (фонетикалық AATSEEL пернетақтасымен)</translation>
 <translation id="9099674669267916096">Бет саны</translation>
 <translation id="9110990317705400362">Біз интернет шолуды барынша қауіпсіз ету жолдарын іздеуден жалықпаймыз. Бұрын кез келген сайт браузеріңізге кеңейтім қосу ұсынысын жасай алатын болса, Google Chrome соңғы нұсқасында енді кеңейтімдерді "Кеңейтімдер" бетіне кіріп қана орната аласыз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>

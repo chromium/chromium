@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Posledná hodina</translation>
 <translation id="1941314575388338491">Dvojitým klepnutím skopírujete.</translation>
 <translation id="1952172573699511566">Ak to bude možné, weby budú zobrazovať text vo vašom preferovanom jazyku.</translation>
-<translation id="1952728750904661634">Prihlásenie pomocou spravovaného účtu</translation>
 <translation id="1965935827552890526">V ďalšom otvorenom okne Chromu dokončite, čo ste robili</translation>
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
@@ -695,7 +694,6 @@ Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, takže vaše údaje C
 <translation id="7887198238286927132">Chrome automaticky nedoplní toho pole, čím ochráni vaše súkromie.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportovať heslá...</translation>
-<translation id="7947953824732555851">Prijať a prihl. sa</translation>
 <translation id="794799177247607889">Zastaviť zapisovanie do denníka</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Žiadne prelomené heslá}=1{{COUNT} prelomené heslo}few{{COUNT} prelomené heslá}many{{COUNT} Compromised passwords}other{{COUNT} prelomených hesiel}}</translation>
 <translation id="7961015016161918242">Nikdy</translation>

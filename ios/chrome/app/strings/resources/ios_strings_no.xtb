@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Den siste timen</translation>
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
 <translation id="1952172573699511566">Nettsteder viser tekst på språket du foretrekker, der dette er mulig.</translation>
-<translation id="1952728750904661634">Logg på med administrert konto</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1973912524893600642">Behold dataene</translation>
 <translation id="1974060860693918893">Avanserte</translation>
@@ -695,7 +694,6 @@ Fordi kontoen din administreres av <ph name="HOSTED_DOMAIN" />, slettes Chrome-d
 <translation id="7887198238286927132">For å beskytte personvernet ditt fyller ikke Chrome automatisk ut dette feltet.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportér passord</translation>
-<translation id="7947953824732555851">Godta og logg på</translation>
 <translation id="794799177247607889">Stopp loggføringen</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="7961015016161918242">Aldri</translation>

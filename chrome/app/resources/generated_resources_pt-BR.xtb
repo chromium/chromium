@@ -550,7 +550,6 @@
 <translation id="1587275751631642843">&amp;Console JavaScript</translation>
 <translation id="1587907146729660231">Toque no botão liga/desliga com o dedo</translation>
 <translation id="1588438908519853928">Normal</translation>
-<translation id="158849752021629804">Rede doméstica ausente</translation>
 <translation id="1588870296199743671">Abrir link com...</translation>
 <translation id="1588919647604819635">Card de clique com o botão direito do mouse</translation>
 <translation id="1589055389569595240">Mostrar ortografia e gramática</translation>
@@ -633,7 +632,6 @@
 <translation id="1660204651932907780">Permitir o áudio dos sites (recomendado)</translation>
 <translation id="1660763353352708040">Problema com o adaptador de energia</translation>
 <translation id="1661156625580498328">Aplicar a codificação AES (recomendado).</translation>
-<translation id="1661867754829461514">PIN ausente</translation>
 <translation id="16620462294541761">Não foi possível confirmar sua senha. Tente novamente.</translation>
 <translation id="166278006618318542">Algoritmo da chave pública do requerente</translation>
 <translation id="166439687370499867">A alteração das configurações de rede compartilhada não é permitida</translation>
@@ -747,7 +745,6 @@
 <translation id="1768212860412467516">Envie feedback sobre o experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Ops! Ocorreu um problema ao entrar em contato com o servidor de logon. Verifique a conexão com a Internet e o nome de domínio, depois tente novamente.</translation>
 <translation id="1769104665586091481">Abrir link em uma nova &amp;janela</translation>
-<translation id="1773212559869067373">Certificado de autenticação rejeitado localmente</translation>
 <translation id="177336675152937177">Dados do aplicativo hospedado</translation>
 <translation id="1775706469381199282">Não permitir que os sites usem JavaScript</translation>
 <translation id="1776712937009046120">Adicionar usuário</translation>
@@ -1001,7 +998,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2040460856718599782">Epa! Ocorreu um erro na tentativa de autenticação. Verifique suas credenciais de login e tente novamente.</translation>
 <translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Você precisa verificar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
-<translation id="2044023416777079300">Modem não registrado</translation>
 <translation id="204497730941176055">Nome do modelo de certificado da Microsoft</translation>
 <translation id="2045117674524495717">Assistente de atalhos do teclado</translation>
 <translation id="2045969484888636535">Continuar bloqueando cookies</translation>
@@ -1489,7 +1485,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2541706104884128042">Nova hora de dormir definida</translation>
 <translation id="2542050502251273923">Configura o nível de depuração do gerenciador de conexão de rede e outros serviços usando ff_debug.</translation>
 <translation id="2544352060595557290">Esta guia</translation>
-<translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> permitida</translation>
 <translation id="2548545707296594436">Redefinir o cache do perfil do eSIM</translation>
@@ -2166,7 +2161,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="32939749466444286">O contêiner Linux não foi iniciado. Tente novamente.</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3294686910656423119">Estatísticas de uso e relatórios de erros</translation>
-<translation id="3295357220137379386">O dispositivo está ocupado</translation>
 <translation id="329838636886466101">Reparo</translation>
 <translation id="3298789223962368867">URL inválido digitado.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
@@ -3163,7 +3157,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4384652540891215547">Ativar a extensão</translation>
 <translation id="438503109373656455">Silver</translation>
 <translation id="4385905942116811558">Procurando dispositivos Bluetooth e USB</translation>
-<translation id="4387004326333427325">Certificado de autenticação rejeitado remotamente</translation>
 <translation id="4387890294700445764">Senhas comprometidas</translation>
 <translation id="4389091756366370506">Usuário <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores</translation>
@@ -3218,7 +3211,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4441147046941420429">Para continuar, remova sua chave de segurança do dispositivo, reinsira-a e toque nela</translation>
 <translation id="444134486829715816">Expandir...</translation>
 <translation id="4441928470323187829">Fixada pelo administrador</translation>
-<translation id="4442424173763614572">A busca de DNS falhou</translation>
 <translation id="4443536555189480885">&amp;Ajuda</translation>
 <translation id="4444304522807523469">Acessar scanners de documentos acoplados via USB ou na rede local</translation>
 <translation id="4444512841222467874">Se não for disponibilizado mais espaço, é possível que usuários e dados sejam removidos automaticamente.</translation>
@@ -3275,7 +3267,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4504940961672722399">Para usar esta extensão, clique neste ícone ou pressione <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Palavra já adicionada</translation>
 <translation id="4507128560633489176">Dados limpos.</translation>
-<translation id="4508265954913339219">Falha na ativação</translation>
 <translation id="4508765956121923607">Exibir &amp;código fonte</translation>
 <translation id="4510195992002502722">Falha ao enviar o feedback. Tentando novamente…</translation>
 <translation id="4510479820467554003">Lista das contas de pai/mãe</translation>
@@ -4489,7 +4480,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5862319196656206789">Configurar dispositivos conectados</translation>
 <translation id="5863445608433396414">Ativar recursos de depuração</translation>
 <translation id="5864195618110239517">Usar conexão limitada</translation>
-<translation id="5864471791310927901">Falha ao procurar DHCP</translation>
 <translation id="5864754048328252126">Ação de inatividade ao carregar</translation>
 <translation id="5865508026715185451">O app <ph name="APP_NAME" /> será pausado em breve</translation>
 <translation id="586567932979200359">Você está executando o <ph name="PRODUCT_NAME" /> a partir de uma imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e garante que ele se manterá atualizado.</translation>
@@ -4899,7 +4889,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6309510305002439352">Microfone desativado</translation>
 <translation id="6310141306111263820">Não foi possível instalar o perfil do eSIM. Para receber ajuda, entre em contato com a operadora.</translation>
 <translation id="6311220991371174222">Não foi possível iniciar o Chrome porque algo deu errado ao abrir seu perfil. Tente reiniciar o Chrome.</translation>
-<translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A confirmação de segurança foi executada há 1 dia}one{A confirmação de segurança foi executada há {NUM_DAYS} dia}other{A confirmação de segurança foi executada há {NUM_DAYS} dias}}</translation>
 <translation id="6312638141433622592">Oferecer a opção de mostrar artigos no modo leitor, quando compatível</translation>
 <translation id="6313641880021325787">SAIR DE RV</translation>
@@ -5272,7 +5261,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="67269783048918309">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732087373923685049">câmera</translation>
-<translation id="6732801395666424405">Certificados não carregados</translation>
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5466,7 +5454,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6941937518557314510">Faça login no <ph name="TOKEN_NAME" /> para autenticar seu certificado no <ph name="HOST_NAME" />.</translation>
 <translation id="6943060957016121200">Ativar tethering instantâneo</translation>
 <translation id="6943176775188458830">Cancelar impressão</translation>
-<translation id="6943836128787782965">HTTP falhou</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">Redirecionamento bloqueado nesta página.</translation>
 <translation id="6949434160682548041">Senha (opcional)</translation>
@@ -5662,12 +5649,10 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7154130902455071009">Alterar sua página inicial para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente na câmera ou em arquivo</translation>
 <translation id="7163202347044721291">Verificando código de ativação…</translation>
-<translation id="7165320105431587207">Falha ao configurar rede</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pode ler imagens, vídeos e arquivos de som nos locais marcados.</translation>
 <translation id="7167486101654761064">&amp;Sempre abrir arquivos deste tipo</translation>
 <translation id="716810439572026343">Fazendo o download de <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamanho mínimo da fonte</translation>
-<translation id="7170041865419449892">Fora de alcance</translation>
 <translation id="7170236477717446850">Foto do perfil</translation>
 <translation id="7171000599584840888">Adicionar perfil…</translation>
 <translation id="7171259390164035663">Não se inscrever</translation>
@@ -5722,7 +5707,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7225179976675429563">Tipo de rede ausente</translation>
 <translation id="7228479291753472782">Manipular configurações que determinam se websites podem usar recursos, como geolocalização, microfone, câmera, etc.</translation>
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
-<translation id="7229570126336867161">EVDO ausente</translation>
 <translation id="7230787553283372882">Personalizar o tamanho do texto</translation>
 <translation id="7232750842195536390">Falha na renomeação</translation>
 <translation id="7234010996000898150">Cancelando restauração do Linux</translation>
@@ -5750,7 +5734,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7255002516883565667">No momento, você tem um cartão que só pode ser usado neste dispositivo</translation>
 <translation id="7255935316994522020">Aplicar</translation>
 <translation id="7256069762010468647">O site está usando sua câmera</translation>
-<translation id="7256405249507348194">Erro não reconhecido: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Abrir em uma guia</translation>
 <translation id="7257173066616499747">Redes Wi-Fi</translation>
 <translation id="725758059478686223">Serviço de impressão</translation>
@@ -5782,7 +5765,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7290242001003353852">Este serviço de login, hospedado por <ph name="SAML_DOMAIN" />, está acessando sua câmara.</translation>
 <translation id="7295614427631867477">O Android, o Google Play e os apps associados são regidos pelas próprias políticas de uso e de coleta de dados.</translation>
 <translation id="729583233778673644">Permitir a codificação AES e RC4. O uso dessa opção é mais arriscado, porque as criptografias RC4 não são seguras.</translation>
-<translation id="7297443947353982503">Nome de usuário/senha incorretos ou falha de autenticação EAP</translation>
 <translation id="729761647156315797">Escolher idioma e teclado</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7299337219131431707">Ativar a navegação como visitante</translation>
@@ -6384,7 +6366,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7924358170328001543">Erro ao encaminhar a porta</translation>
 <translation id="7925108652071887026">Dados do preenchimento automático</translation>
 <translation id="792514962475806987">Nível de zoom da lupa em área fixa:</translation>
-<translation id="7925247922861151263">Falha ao verificar AAA</translation>
 <translation id="7925285046818567682">Aguardando <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Não fui eu.</translation>
 <translation id="7926975587469166629">Apelido do cartão</translation>
@@ -6433,7 +6414,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
 <translation id="7973776233567882054">Qual das seguintes alternativas melhor descreve sua rede?</translation>
 <translation id="797394244396603170">Selecione o dispositivo com que você quer compartilhar arquivos</translation>
-<translation id="7973962044839454485">Falha da autenticação PPC devido a senha ou nome de usuário incorreto</translation>
 <translation id="7974566588408714340">Tentar novamente usando <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Cor padrão</translation>
 <translation id="7974936243149753750">Overscan</translation>
@@ -6744,7 +6724,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8299319456683969623">No momento, você está off-line.</translation>
 <translation id="8300011035382349091">Editar favorito para esta guia</translation>
 <translation id="8300374739238450534">Azul noturno</translation>
-<translation id="8300849813060516376">Falha no OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Endereço}one{# endereço}other{# endereços}}</translation>
 <translation id="8304383784961451596">Você não tem autorização para usar este dispositivo. Entre em contato com o administrador para falar sobre permissões de login ou faça login com uma Conta do Google supervisionada pelo Family Link.</translation>
 <translation id="8308016398665340540">Você está compartilhando a rede com outros usuários do dispositivo</translation>
@@ -6797,7 +6776,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8370294614544004647">Suspender quando o laptop for fechado</translation>
 <translation id="8371695176452482769">Fale agora</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Desativar som do site}one{Desativar som do site}other{Desativar som dos sites}}</translation>
-<translation id="8372369524088641025">Chave WEP incorreta</translation>
 <translation id="8373652277231415614">Diretórios compartilhados do Crostini</translation>
 <translation id="8376137163494131156">Conte o que está acontecendo com o Google Cast</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>
@@ -6896,7 +6874,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8492685019009920170">Toque no sensor de impressão digital com o dedo. Seus dados são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Os sites podem exibir pop-ups e usar redirecionamentos</translation>
 <translation id="8492960370534528742">Feedback do Google Cast</translation>
-<translation id="8492972329130824181">A rede doméstica não está disponível. Ative o roaming de dados móveis para se conectar.</translation>
 <translation id="8493236660459102203">Microfone:</translation>
 <translation id="8496717697661868878">Executar este plug-in</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
@@ -7070,7 +7047,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8681614230122836773">O Chrome encontrou um software nocivo no seu computador</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está conectada e pronta</translation>
 <translation id="8683081248374354009">Redefinir grupo</translation>
-<translation id="8688591111840995413">Senha incorreta</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="8690129572193755009">Os sites podem pedir para gerenciar protocolos</translation>
 <translation id="8695139659682234808">Adicionar o controle dos pais depois da configuração</translation>
@@ -7424,7 +7400,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="904451693890288097">Insira a chave de acesso para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Falha na conexão à rede: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envia ao Google o endereço da Web da página que você está tentando acessar</translation>
-<translation id="9046895021617826162">Falha na conexão</translation>
 <translation id="9048745018038487540">Selecionar todas as fontes</translation>
 <translation id="9050666287014529139">Senha</translation>
 <translation id="9052208328806230490">Você registrou suas impressoras com <ph name="CLOUD_PRINT_NAME" /> utilizando a conta <ph name="EMAIL" /></translation>

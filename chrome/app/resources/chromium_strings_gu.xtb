@@ -76,11 +76,13 @@
 <translation id="3350761136195634146">આ એકાઉન્ટ સાથેની Chromium પ્રોફાઇલ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="3406848076815591792">વર્તમાન Chromium પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="3430503420100763906">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
+<translation id="3433271666494956603">Chromium OSને ઇન્સ્ટૉલ કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="347328004046849135">જ્યારે તમે ચેડાં કરવામાં આવેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chromium તમને સૂચિત કરશે</translation>
 <translation id="3474745554856756813">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromium માં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> વડે એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકાય છે</translation>
 <translation id="3509308970982693815">કૃપા કરીને બધી Chromium વિંડોઝ બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="3575459661164320785">તમારા કમ્પ્યુટરમાં નુકસાનકારક સૉફ્ટવેર છે. Chromium તે કાઢી શકે છે, તમારું સેટિંગ પાછું મેળવી શકે છે અને એક્સ્ટેંશન બંધ કરી શકે છે જેથી તમારું બ્રાઉઝર ફરી સામાન્ય રીતે કામ કરી શકે.</translation>
+<translation id="3610776674893128619">હાર્ડ ડ્રાઇવનો ડેટા કાઢી નાખો અને Chromium OSને ઇન્સ્ટૉલ કરો</translation>
 <translation id="3639635944603682591">આ વ્યક્તિનો બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે. આ ડેટા પાછો મેળવવા માટે, Chromiumમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે.}=1{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}one{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}other{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" />માંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromiumમાં સાઇન ઇન કરો.</translation>
@@ -164,6 +166,15 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> જોખમી છે, તેથી Chromium એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="6134968993075716475">Safe Browsingની સુવિધા બંધ છે. Chromium તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="6145820983052037069">તમે અહીં એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />અમે Chromium OS ઇન્સ્ટૉલ કરવા માટે તૈયાર છીએ! તમે આગળ વધશો પછી:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ફાઇલો, ડેટા અને તમારી હાલની ઑપરેટિંગ સિસ્ટમ કાઢી નાખવામાં આવશે.
+          <ph name="LIST_ITEM" />Chromium OS ઇન્સ્ટૉલ કરવામાં આવશે.
+          <ph name="LIST_ITEM" />ઇન્સ્ટૉલેશન પૂર્ણ થઈ ગયા પછી, તમારું ડિવાઇસ શટ ડાઉન થઈ જશે.
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />છેલ્લું રિમાઇન્ડર: ઇન્સ્ટૉલેશન કરવાથી, તમારી હાર્ડ ડ્રાઇવનો બધો ડેટા કાઢી નાખવામાં આવશે. કૃપા કરીને ખાતરી કરો કે તમે તમારા જરૂરી ડેટાનો બૅકઅપ લઈ લીધો છે.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />એકવાર ઇન્સ્ટૉલેશન શરૂ થયા પછી, તેને રદ કરી શકાશે નહીં.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromiumમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
@@ -181,6 +192,7 @@
 <translation id="6434250628340475518">Chromium OS સિસ્ટમ</translation>
 <translation id="6455857529632101747">Chromium પ્રોફાઇલમાં આપનું સ્વાગત છે</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 સેકન્ડમાં ફરી શરૂ થશે}one{Chromium # સેકન્ડમાં ફરી શરૂ થશે}other{Chromium # સેકન્ડમાં ફરી શરૂ થશે}}</translation>
+<translation id="646620589868199210">Chromium OS ઇન્સ્ટૉલ કરવા માટે તૈયાર છે</translation>
 <translation id="6475912303565314141">જ્યારે તમે Chromium શરૂ કરો ત્યારે કયું પૃષ્ઠ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="6510925080656968729">Chromium ને અનઇન્સ્ટૉલ કરો</translation>
 <translation id="6542839706527980775">દરેક પ્રોફાઇલ બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજી ઘણી બાબતો જેવી તેની પોતાની Chromium માહિતી ધરાવે છે</translation>
@@ -195,6 +207,7 @@
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="673636774878526923">Chromium પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="6774082503108938489">તમારા માતાપિતાએ Chromium માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
+<translation id="6827182711503025204">Chromium OSને ઇન્સ્ટૉલ કરવાથી, બધો ડેટા તમારા ડિવાઇસ પર ઓવરરાઇટ થઈ જશે.</translation>
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>
@@ -229,6 +242,10 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
       Chromium OS સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
 <translation id="761356813943268536">Chromium તમારા કેમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="7617377681829253106">Chromium હવે પહેલાંથી બહેતર બન્યું છે</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />અમે શરૂ કરીએ તે પહેલાં, કૃપા કરીને ખાતરી કરો કે તમારી પાસે તમારા ડેટાનો અપ ટૂ ડેટ બૅકઅપ ઉપલબ્ધ છે. Chromium OSને ઇન્સ્ટૉલ કરવાથી, બધો ડેટા તમારી હાર્ડ ડ્રાઇવ પર ઓવરરાઇટ થઈ જશે.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />કોઈપણ પ્રકારના ડેટાના નુકસાન બદલ Google જવાબદાર નથી તેમજ તે ગૅરંટી પણ આપતું નથી કે Chromium OS એવા કોઈ મૉડલ પર કામ કરશે કે જે અપ્રમાણિત છે. પ્રમાણિત મૉડલ વિશે વધુ જાણવા માટે, કૃપા કરીને [TBD]ની મુલાકાત લો.<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chromium OSને ઇન્સ્ટૉલ કરવાની અને ડેટાને કાઢી નાખવાની રીત વિશે વધુ જાણો: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />જો તમે આગળ વધવા માટે તૈયાર હો, તો “Chromium OSને ઇન્સ્ટૉલ કરો” પર ક્લિક કરો અને અમે તમને ફક્ત થોડા સરળ પગલાંમાં ઇન્સ્ટૉલેશન સંબંધિત માર્ગદર્શન આપીશું. અમે તમારા કમ્પ્યુટર પર કોઈ ફેરફાર કરીએ તે પહેલાં, કન્ફર્મ કરવા માટે તમારી પાસે બીજી એક તક રહેશે.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium તમારું ડિફૉલ્ટ બ્રાઉઝર નથી</translation>
 <translation id="7689606757190482937">તમારા બધા ડિવાઇસ પર Chromiumને સિંક કરો અને મનગમતું બનાવો</translation>
 <translation id="7729447699958282447">Chromium તમારા ડેટાને સમન્વયિત કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સમન્વયન ઉપલબ્ધ નથી.</translation>

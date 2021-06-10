@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">1 時間以内</translation>
 <translation id="1941314575388338491">ダブルタップしてコピー。</translation>
 <translation id="1952172573699511566">可能な場合、設定した言語でウェブサイトのテキストを表示します。</translation>
-<translation id="1952728750904661634">管理対象アカウントでログインする</translation>
 <translation id="1965935827552890526">開いている別の Chrome ウィンドウでの作業を終了してください。</translation>
 <translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
@@ -695,7 +694,6 @@
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>
-<translation id="7947953824732555851">同意してログイン</translation>
 <translation id="794799177247607889">ログ記録を停止</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="7961015016161918242">使用しない</translation>

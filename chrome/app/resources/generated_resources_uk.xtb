@@ -552,7 +552,6 @@
 <translation id="1587275751631642843">Консоль &amp;JavaScript</translation>
 <translation id="1587907146729660231">Торкніться кнопки живлення пальцем</translation>
 <translation id="1588438908519853928">Звичайний</translation>
-<translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1588870296199743671">Відкрити посилання за допомогою...</translation>
 <translation id="1588919647604819635">Натисніть картку правою кнопкою миші</translation>
 <translation id="1589055389569595240">Показати опцію "Правопис і граматика"</translation>
@@ -635,7 +634,6 @@
 <translation id="1660204651932907780">Дозволити сайтам відтворювати звук (рекомендується)</translation>
 <translation id="1660763353352708040">Проблема з адаптером живлення</translation>
 <translation id="1661156625580498328">Застосувати шифрування AES (рекомендовано).</translation>
-<translation id="1661867754829461514">Відсутній PIN-код</translation>
 <translation id="16620462294541761">На жаль, не вдалося підтвердити ваш пароль. Повторіть спробу.</translation>
 <translation id="166278006618318542">Алгоритм відкритого ключа суб'єкта</translation>
 <translation id="166439687370499867">Заборонено змінювати налаштування спільної мережі</translation>
@@ -749,7 +747,6 @@
 <translation id="1768212860412467516">Надішліть відгук про експеримент "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="1768278914020124551">На жаль, не вдалося зв’язатися із сервером для входу. Перевірте з’єднання з Інтернетом і доменне ім’я та повторіть спробу.</translation>
 <translation id="1769104665586091481">Відкрити посилання в новому &amp;вікні</translation>
-<translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="177336675152937177">Дані розміщених додатків</translation>
 <translation id="1775706469381199282">Заборонити сайтам використовувати JavaScript</translation>
 <translation id="1776712937009046120">Додати користувача</translation>
@@ -1003,7 +1000,6 @@
 <translation id="2040460856718599782">На жаль, під час спроби автентифікації сталася помилка. Ретельно перевірте свої облікові дані для входу та повторіть спробу.</translation>
 <translation id="2042279886444479655">Активні профілі</translation>
 <translation id="2044014337866019681">Переконайтеся, що підтверджуєте обліковий запис <ph name="ACCOUNT" />, щоб розблокувати цей сеанс.</translation>
-<translation id="2044023416777079300">Модем не зареєстровано</translation>
 <translation id="204497730941176055">Ім'я шаблону сертифіката Microsoft</translation>
 <translation id="2045117674524495717">Довідник із комбінацій клавіш</translation>
 <translation id="2045969484888636535">Продовжити блокування файлів cookie</translation>
@@ -1491,7 +1487,6 @@
 <translation id="2541706104884128042">Налаштовано новий час сну</translation>
 <translation id="2542050502251273923">Налаштовує рівень налагодження менеджера й інших сервісів з'єднання з мережею за допомогою ff_debug.</translation>
 <translation id="2544352060595557290">Цю вкладку</translation>
-<translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
 <translation id="2548347166720081527">Дозволено: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Скинути кеш профілю eSIM-карти</translation>
@@ -1680,7 +1675,7 @@
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Керувати спеціальними можливостями</translation>
 <translation id="275662540872599901">екран вимкнено</translation>
-<translation id="2757161511365746634">Переглянути принтер</translation>
+<translation id="2757161511365746634">Переглянути відомості принтера</translation>
 <translation id="2757338480560142065">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Заборонено використовувати камеру</translation>
 <translation id="2764786626780673772">Дані про VPN</translation>
@@ -2168,7 +2163,6 @@
 <translation id="32939749466444286">Не вдалося запустити контейнер Linux. Повторіть спробу.</translation>
 <translation id="3294437725009624529">Гість</translation>
 <translation id="3294686910656423119">Статистика використання та звіти про аварійне завершення роботи</translation>
-<translation id="3295357220137379386">Пристрій зайнятий</translation>
 <translation id="329838636886466101">Полагодити</translation>
 <translation id="3298789223962368867">Введено недійсну URL-адресу.</translation>
 <translation id="32991397311664836">Пристрої:</translation>
@@ -3164,7 +3158,6 @@
 <translation id="4384652540891215547">Активувати розширення</translation>
 <translation id="438503109373656455">Жокей</translation>
 <translation id="4385905942116811558">Пошук пристроїв із Bluetooth і USB</translation>
-<translation id="4387004326333427325">Сертифікат автентифікації відхилений дистанційно</translation>
 <translation id="4387890294700445764">Зламані паролі</translation>
 <translation id="4389091756366370506">Користувач <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
@@ -3219,7 +3212,6 @@
 <translation id="4441147046941420429">Щоб продовжити, вийміть і знову вставте ключ безпеки, а потім торкніться його</translation>
 <translation id="444134486829715816">Розгорнути...</translation>
 <translation id="4441928470323187829">Закріплено адміністратором</translation>
-<translation id="4442424173763614572">Помилка пошуку DNS</translation>
 <translation id="4443536555189480885">&amp;Довідка</translation>
 <translation id="4444304522807523469">Отримувати доступ до сканерів документів, під’єднаних через USB або локальну мережу</translation>
 <translation id="4444512841222467874">Якщо не звільнити місце, користувачів і дані може бути автоматично вилучено.</translation>
@@ -3276,7 +3268,6 @@
 <translation id="4504940961672722399">Запустіть розширення, натиснувши цей значок або комбінацію клавіш <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Слово вже додано</translation>
 <translation id="4507128560633489176">Дані видалено.</translation>
-<translation id="4508265954913339219">Помилка активації</translation>
 <translation id="4508765956121923607">Переглянути д&amp;жерело</translation>
 <translation id="4510195992002502722">Не вдалося надіслати відгук. Повторна спроба…</translation>
 <translation id="4510479820467554003">Список батьківських облікових записів</translation>
@@ -4489,7 +4480,6 @@
 <translation id="5862319196656206789">Налаштувати підключені пристрої</translation>
 <translation id="5863445608433396414">Увімкнути функції налагодження</translation>
 <translation id="5864195618110239517">Використовувати підключення з тарифікацією трафіку</translation>
-<translation id="5864471791310927901">Помилка пошуку DHCP</translation>
 <translation id="5864754048328252126">Що робити, коли пристрій неактивний і заряджається</translation>
 <translation id="5865508026715185451">Додаток <ph name="APP_NAME" /> невдовзі буде призупинено</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працює, використовуючи своє зображення диска. Встановлення веб-переглядача на комп'ютер дозволить працювати без використання зображення диска та гарантуватиме його постійне оновлення.</translation>
@@ -4899,7 +4889,6 @@
 <translation id="6309510305002439352">Мікрофон вимкнено</translation>
 <translation id="6310141306111263820">Не вдалося встановити профіль eSIM-карти. Щоб отримати допомогу, зверніться до оператора.</translation>
 <translation id="6311220991371174222">Не вдається запустити Chrome, оскільки сталася помилка під час відкривання профілю. Спробуйте перезапустити Chrome.</translation>
-<translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Перевірку безпеки виконано 1 день тому}one{Перевірку безпеки виконано {NUM_DAYS} день тому}few{Перевірку безпеки виконано {NUM_DAYS} дні тому}many{Перевірку безпеки виконано {NUM_DAYS} днів тому}other{Перевірку безпеки виконано {NUM_DAYS} дня тому}}</translation>
 <translation id="6312638141433622592">Пропонувати статті в режимі читання, якщо ця функція підтримується</translation>
 <translation id="6313641880021325787">Вийти з VR-режиму</translation>
@@ -5272,7 +5261,6 @@
 <translation id="67269783048918309">Надсилати дані про використання й діагностику. Цей пристрій наразі автоматично надсилає в Google дані про діагностику та використання пристрою і додатків. Ця інформація не використовуватиметься для встановлення особи вашої дитини, а допоможе покращити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Це <ph name="BEGIN_LINK1" />налаштування<ph name="END_LINK1" /> застосовує власник. Якщо ввімкнено додаткову Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини. <ph name="BEGIN_LINK2" />Докладніше<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Під'єднано, акумулятор заряджено на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
-<translation id="6732801395666424405">Сертифікати не завантажено</translation>
 <translation id="6735304988756581115">Показати файли cookie та інші дані із сайтів...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5466,7 +5454,6 @@
 <translation id="6941937518557314510">Увійдіть у <ph name="TOKEN_NAME" />, щоб пройти автентифікацію на <ph name="HOST_NAME" />, використовуючи свій сертифікат.</translation>
 <translation id="6943060957016121200">Увімкнути миттєву точку доступу</translation>
 <translation id="6943176775188458830">Скасувати друк</translation>
-<translation id="6943836128787782965">Помилка HTTP</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="694592694773692225">Переспрямування заблоковано на цій сторінці.</translation>
 <translation id="6949434160682548041">Пароль (необов’язково)</translation>
@@ -5662,12 +5649,10 @@
 <translation id="7154130902455071009">Зробити <ph name="START_PAGE" /> домашньою сторінкою</translation>
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7163202347044721291">Перевірка коду активації…</translation>
-<translation id="7165320105431587207">Помилка налаштування мережі</translation>
 <translation id="716640248772308851">Розширення "<ph name="EXTENSION" />" має доступ до читання зображень, відео та звукових файлів у вибраних розташуваннях.</translation>
 <translation id="7167486101654761064">&amp;Завжди відкривати файли цього типу</translation>
 <translation id="716810439572026343">Завантаження файлу "<ph name="FILE_NAME" />"</translation>
 <translation id="7168109975831002660">Мінімальний розмір шрифту</translation>
-<translation id="7170041865419449892">За межами досяжності</translation>
 <translation id="7170236477717446850">Зображення профілю</translation>
 <translation id="7171000599584840888">Додати профіль…</translation>
 <translation id="7171259390164035663">Пропустити реєстрацію</translation>
@@ -5722,7 +5707,6 @@
 <translation id="7225179976675429563">Відсутній тип мережі</translation>
 <translation id="7228479291753472782">Керувати налаштуваннями, які вказують, чи можуть веб-сайти використовувати такі функції, як геолокація, мікрофон, камера тощо.</translation>
 <translation id="7228523857728654909">Блокування екрана та вхід</translation>
-<translation id="7229570126336867161">Потрібна мережа EVDO</translation>
 <translation id="7230787553283372882">Налаштувати розмір тексту</translation>
 <translation id="7232750842195536390">Не вдалося перейменувати</translation>
 <translation id="7234010996000898150">Скасовується відновлення Linux</translation>
@@ -5750,7 +5734,6 @@
 <translation id="7255002516883565667">Зараз у вас є одна картка, яку можна використовувати лише на цьому пристрої</translation>
 <translation id="7255935316994522020">Застосувати</translation>
 <translation id="7256069762010468647">Сайт використовує камеру</translation>
-<translation id="7256405249507348194">Нерозпізнана помилка: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Відкрити у вкладці</translation>
 <translation id="7257173066616499747">Мережі Wi-Fi</translation>
 <translation id="725758059478686223">Служба друку</translation>
@@ -5782,7 +5765,6 @@
 <translation id="7290242001003353852">Ця служба входу в обліковий запис, зареєстрована в домені <ph name="SAML_DOMAIN" />, намагається отримати доступ до вашої камери.</translation>
 <translation id="7295614427631867477">Зауважте, що Android, Play і пов’язані додатки керуються власними правилами щодо збору й використання даних.</translation>
 <translation id="729583233778673644">Дозволяє шифрування AES і RC4. Використання цієї опції підвищує ризик, оскільки шифри RC4 ненадійні.</translation>
-<translation id="7297443947353982503">Неправильне ім’я користувача чи пароль або помилка автентифікації за протоколом EAP</translation>
 <translation id="729761647156315797">Виберіть мову та клавіатуру</translation>
 <translation id="7297726121602187087">Темно-зелений</translation>
 <translation id="7299337219131431707">Увімкнути гостьовий режим</translation>
@@ -6384,7 +6366,6 @@
 <translation id="7924358170328001543">Не вдалося переадресувати порт</translation>
 <translation id="7925108652071887026">Дані автозаповнення</translation>
 <translation id="792514962475806987">Рівень масштабування закріпленої лупи:</translation>
-<translation id="7925247922861151263">Помилка перевірки AAA</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Це не я.</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>
@@ -6433,7 +6414,6 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7973776233567882054">Що з переліченого нижче найточніше описує Вашу мережу?</translation>
 <translation id="797394244396603170">Виберіть пристрій, якому хочете надіслати файли</translation>
-<translation id="7973962044839454485">Помилка автентифікації PPP через неправильне ім’я користувача або пароль</translation>
 <translation id="7974566588408714340">Повторити спробу, використовуючи розширення <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974713334845253259">Колір за умовчанням</translation>
 <translation id="7974936243149753750">Облямівка екрана</translation>
@@ -6744,7 +6724,6 @@
 <translation id="8299319456683969623">Зараз ви не в мережі.</translation>
 <translation id="8300011035382349091">Змінити закладку для цієї вкладки</translation>
 <translation id="8300374739238450534">Темно-синій</translation>
-<translation id="8300849813060516376">Помилка OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Адреса}one{# адреса}few{# адреси}many{# адрес}other{# адреси}}</translation>
 <translation id="8304383784961451596">У вас немає дозволу користуватися цим пристроєм. Попросіть адміністратора надати вам дозвіл на вхід або увійдіть в обліковий запис Google, яким керують через Family Link.</translation>
 <translation id="8308016398665340540">До цієї мережі мають доступ інші користувачі пристрою</translation>
@@ -6797,7 +6776,6 @@
 <translation id="8370294614544004647">Переходити в режим сну, коли ноутбук закритий</translation>
 <translation id="8371695176452482769">Диктуйте</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Вимкнути звук на сайті}one{Вимкнути звук на сайтах}few{Вимкнути звук на сайтах}many{Вимкнути звук на сайтах}other{Вимкнути звук на сайтах}}</translation>
-<translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8373652277231415614">Спільні каталоги Crostini</translation>
 <translation id="8376137163494131156">Надішліть відгук про Google Cast.</translation>
 <translation id="8376384591331888629">Зокрема файли cookie третіх сторін на цьому сайті</translation>
@@ -6896,7 +6874,6 @@
 <translation id="8492685019009920170">Торкніться пальцем сканера відбитків. <ph name="DEVICE_TYPE" /> надійно зберігає ваші дані й нікуди не надсилає їх.</translation>
 <translation id="8492822722330266509">Сайти можуть показувати спливаючі вікна та використовувати переспрямування</translation>
 <translation id="8492960370534528742">Відгук про Google Cast</translation>
-<translation id="8492972329130824181">Домашня мережа недоступна. Щоб підключитися, потрібно ввімкнути роумінг мобільних даних.</translation>
 <translation id="8493236660459102203">Мікрофон:</translation>
 <translation id="8496717697661868878">Запустити цей плагін</translation>
 <translation id="8497219075884839166">Службові програми Windows</translation>
@@ -7070,7 +7047,6 @@
 <translation id="8681614230122836773">Веб-переглядач Chrome виявив шкідливе програмне забезпечення на вашому комп'ютері</translation>
 <translation id="8682730193597992579">Принтер <ph name="PRINTER_NAME" /> підключений і готовий</translation>
 <translation id="8683081248374354009">Скинути групу</translation>
-<translation id="8688591111840995413">Неправильний пароль</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="8690129572193755009">Сайти можуть запитувати дозвіл обробляти протоколи</translation>
 <translation id="8695139659682234808">Увімкніть батьківський контроль, завершивши налаштування</translation>
@@ -7426,7 +7402,6 @@
 <translation id="904451693890288097">Введіть ключ для пристрою "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Помилка під’єднання до мережі: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Надсилає в Google веб-адресу сторінки, яку ви намагаєтеся відкрити</translation>
-<translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9048745018038487540">Вибрати всі шрифти</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="9052208328806230490">Ви зареєстрували свої принтери в <ph name="CLOUD_PRINT_NAME" />, використавши обліковий запис <ph name="EMAIL" /></translation>

@@ -101,7 +101,6 @@
 <translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
 <translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
-<translation id="1952728750904661634">Conectează-te cu un cont gestionat</translation>
 <translation id="1965935827552890526">Termină ce făceai în cealaltă fereastră Chrome deschisă.</translation>
 <translation id="1973912524893600642">Păstrează datele</translation>
 <translation id="1974060860693918893">Avansate</translation>
@@ -695,7 +694,6 @@ Deoarece contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, datele Chrom
 <translation id="7887198238286927132">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat acest câmp.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportă parolele...</translation>
-<translation id="7947953824732555851">Accept și conectare</translation>
 <translation id="794799177247607889">Oprește înregistrarea în jurnal</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
 <translation id="7961015016161918242">Niciodată</translation>

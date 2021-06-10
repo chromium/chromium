@@ -61,6 +61,7 @@
 <translation id="1341651618736211726">ትርፍ ፍሰት</translation>
 <translation id="1346748346194534595">ቀኝ</translation>
 <translation id="1351937230027495976">ምናሌ ሰብስብ</translation>
+<translation id="1383597849754832576">የንግግር ፋይሎችን ማውረድ አልተቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1391102559483454063">አብራ</translation>
 <translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
@@ -130,8 +131,8 @@
 <translation id="1972950159383891558">ሠላም <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ጽሑፍ ግቤት</translation>
 <translation id="1989113344093894667">ይዘትን መቅረጽ አልተቻለም</translation>
+<translation id="1990046457226896323">የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="1993072747612765854">ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይረዱ</translation>
-<translation id="1995660704900986789">ኃይል አጥፋ</translation>
 <translation id="1998100899771863792">የአሁኑ ዴስክ</translation>
 <translation id="2016340657076538683">መልዕክት ይተይቡ</translation>
 <translation id="2018630726571919839">ቀልድ ንገረኝ</translation>
@@ -437,6 +438,7 @@
 <translation id="4451374464530248585">የAlt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የታች ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፉን + የታች ቀስት ይጫኑ።</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
 <translation id="4458688154122353284">የማያ ገጽ ቀረጻን አቁም</translation>
+<translation id="4471354919263203780">የንግግር ማወቂያ ፋይሎችን በማውረድ ላይ... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4477350412780666475">ቀጣይ ትራክ</translation>
 <translation id="4477892968187500306">ይህ መሣሪያ በGoogle ያልተረጋገጡ መተግበሪያዎችን ሊይዝ ይችላል።</translation>

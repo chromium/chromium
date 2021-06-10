@@ -7,6 +7,7 @@
 <translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1119069657431255176">‏Bzip2 کمپریسڈ tar آرکائیو</translation>
+<translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1120073797882051782">ہنگول روماجا</translation>
 <translation id="112387589102719461">پروگرامر ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="1134697384939541955">توسیع کردہ کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
@@ -52,12 +53,14 @@
 <translation id="1561842594491319104">‏Chrome آلات</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="1576937952766665062">بنگالی نقل حرفی</translation>
+<translation id="158849752021629804">مقامی نیٹ ورک درکار ہے</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="162175252992296058">امریکی بین الاقوامی کی بورڈ کے ساتھ پرتگالی</translation>
 <translation id="1641780993263690097">‏چینی Pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> فائلز کو آف لائن دستیاب بنایا جا رہا ہے</translation>
 <translation id="164969095109328410">‏Chrome آلہ</translation>
+<translation id="1661867754829461514">‏PIN غائب ہے</translation>
 <translation id="1665611772925418501">فائل میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="1673103856845176271">سیکیورٹی اسباب کی بنا پر فائل تک رسائی حاصل نہیں کی جا سکی۔</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -69,6 +72,7 @@
 <translation id="1742316578210444689">عبرانی نقل حرفی</translation>
 <translation id="1747761757048858544">ڈچ (نیدرلینڈز)</translation>
 <translation id="174937106936716857">فائلوں کی کُل تعداد</translation>
+<translation id="1773212559869067373">توثیق کا سرٹیفکیٹ مقامی طور پر مسترد کر دیا گیا</translation>
 <translation id="1775381402323441512">ویڈیو کی معلومات</translation>
 <translation id="180035236176489073">ان فائلوں تک رسائی کیلئے آپ کا آن لائن ہونا ضروری ہے۔</translation>
 <translation id="1807938677607439181">سبھی فائلیں</translation>
@@ -97,6 +101,7 @@
 <translation id="2025955442973426285">تگرینی</translation>
 <translation id="2028997212275086731">‏RAR آرکائیو</translation>
 <translation id="2037845485764049925">روسی</translation>
+<translation id="2044023416777079300">موڈیم رجسٹرڈ نہیں ہے</translation>
 <translation id="2046702855113914483">رامین</translation>
 <translation id="2070909990982335904">ڈاٹ سے شروع ہونے والے نام سسٹم کیلئے محفوظ ہیں۔ براہ کرم کوئی دوسرا نام منتخب کریں۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -136,6 +141,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو گئے</translation>
 <translation id="2541377937973966830">اس فولڈر کے مواد صرف پڑھنے کے لیے ہیں۔ کچھ سرگرمیاں تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="2542049655219295786">‏Google ٹیبل</translation>
+<translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> میں شامل کریں</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2562685439590298522">Docs</translation>
@@ -143,6 +149,7 @@
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ویڈیو</translation>
+<translation id="2617342710774726426">‏SIM کارڈ مقفل ہے</translation>
 <translation id="2620090360073999360">‏اس وقت Google Drive تک رسائی نہیں ہو سکتی ہے۔</translation>
 <translation id="2638942478653899953">‏Google Drive تک رسائی حاصل نہیں ہو سکی۔ براہ کرم <ph name="BEGIN_LINK" />لاگ آؤٹ کریں<ph name="END_LINK" /> اور دوبارہ لاگ ان کریں۔</translation>
 <translation id="2649120831653069427">رینبو فش</translation>
@@ -205,6 +212,7 @@
 <translation id="3272909651715601089">"<ph name="PATH" />" کو نہیں کھول سکے</translation>
 <translation id="3280431534455935878">تیار ہو رہی ہے</translation>
 <translation id="3280987981688031357">وائنل ریکارڈ</translation>
+<translation id="3295357220137379386">آلہ مصروف ہے</translation>
 <translation id="3296763833017966289">جارجی</translation>
 <translation id="3307875152560779385">يُوکرينی</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> کو زپ کیا جا رہا ہے…</translation>
@@ -295,12 +303,15 @@
 <translation id="4348495354623233847">عربی پر مبنی کی بورڈ کے ساتھ سورانی کردش</translation>
 <translation id="4363958938297989186">فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="4364327530094270451">خربوزہ</translation>
+<translation id="4387004326333427325">توثیق کا سرٹیفکیٹ دور سے مسترد کر دیا گیا</translation>
 <translation id="4394214039309501350">خارجی لنک</translation>
 <translation id="4418686080762064601">اپنی فائلوں کے ليے ایک شارٹ کٹ تخلیق کریں</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
+<translation id="4442424173763614572">‏DNS کی تلاش ناکام ہو گئی</translation>
 <translation id="4470564870223067757">‏Hangul 2 سیٹ</translation>
 <translation id="4477002475007461989">رومانیائی</translation>
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
+<translation id="4508265954913339219">فعالیت ناکام ہو گئی</translation>
 <translation id="4509667233588080747">‏Workman بین الاقوامی کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4527800702232535228">‏یہ فولڈر Parallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
@@ -366,6 +377,7 @@
 <translation id="5036159836254554629">‏Parallels ڈیسک ٹاپ کے اشتراک کا نظم کریں</translation>
 <translation id="5038625366300922036">مزید دیکھیں…</translation>
 <translation id="5044852990838351217">ارمینی</translation>
+<translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="5059127710849015030">نیپالی نقل حرفی</translation>
 <translation id="5068919226082848014">پزّا</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> فائلیں حذف کر دی جائیں گی</translation>
@@ -456,6 +468,7 @@
 <translation id="5838451609423551646">انتخاب سے تمام اندراجات ہٹا دئے گئے۔</translation>
 <translation id="5838825566232597749">‏US Workman بین الاقوامی</translation>
 <translation id="5851063901794976166">یہاں دیکھنے کیلئے کچھ بھی نہیں ہے…</translation>
+<translation id="5864471791310927901">‏DHCP کی تلاش ناکام ہو گئی</translation>
 <translation id="5911887972742538906">‏آپ کی Linux ایپلیکیشن انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔</translation>
 <translation id="5912396950572065471">فارمیٹ</translation>
 <translation id="5913638992615760742">کاپی کرنے کی کارروائی ناکام ہو گئی، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
@@ -491,6 +504,7 @@
 <translation id="6248400709929739064">سب ٹائٹلز کو فعال کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
+<translation id="6312403991423642364">نیٹ ورک کی نامعلوم خرابی</translation>
 <translation id="6321303798550928047">ہاتھ ہلانا</translation>
 <translation id="6339145975392024142">‏امریکی بین الاقوامی (PC)</translation>
 <translation id="6346310558342052870">رسائی روک دی گئی</translation>
@@ -520,6 +534,7 @@
 <translation id="6673674183150363784">‏Bépo کی بورڈ کے ساتھ فراسنیسی (فرانس)</translation>
 <translation id="6710022688720561421">روبوٹ</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
+<translation id="6732801395666424405">سرٹیفکیٹس لوڈ نہیں ہوئے</translation>
 <translation id="6751256176799620176">1 فولڈر منتخب کیا گیا</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6795884519221689054">پانڈا</translation>
@@ -546,6 +561,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> ملیں</translation>
 <translation id="6935521024859866267">اوپری کی جانب سے نیچے</translation>
+<translation id="6943836128787782965">‏HTTP ناکام ہوگیا</translation>
 <translation id="6949408524333579394">سربیائی نقل حرفی</translation>
 <translation id="696203921837389374">موبائل ڈیٹا پر مطابقت پذیری کو فعال کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
@@ -569,15 +585,20 @@
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt; Drive تلاش کریں&lt;/em&gt;</translation>
 <translation id="7135561821015524160">کنّڑ فونیٹک</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">نیٹ ورک کنفیگر کرنے میں ناکام ہوگیا</translation>
+<translation id="7170041865419449892">رینج سے باہر</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">فائل محفوظ کریں بطور</translation>
+<translation id="7229570126336867161">‏EVDO درکار ہے</translation>
 <translation id="7238097264433196391">ڈرائیو کا نام</translation>
 <translation id="7248671827512403053">اطلاق</translation>
+<translation id="7256405249507348194">غیر شناخت شدہ خرابی: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">دستیاب سروسز</translation>
 <translation id="7283041136720745563">‏آپ کا Google Drive کوٹہ خاطر خواہ حد تک بڑا نہیں ہے۔</translation>
 <translation id="7294063083760278948">تیلگو نقل حرفی</translation>
 <translation id="7295662345261934369">دوسروں کے ساتھ اشتراک کریں</translation>
+<translation id="7297443947353982503">‏صارف نام/پاس ورڈ غلط ہے یا EAP توثیق ناکام ہو گئی</translation>
 <translation id="7309413087278791451">جرمن (بیلجیئم)</translation>
 <translation id="7339898014177206373">نئی ونڈو</translation>
 <translation id="7343393116438664539">‏ویتنامی Telex</translation>
@@ -648,12 +669,14 @@
 <translation id="7881969471599061635">سب ٹائٹلز کو غیر فعال کریں</translation>
 <translation id="78946041517601018">مشترکہ ڈرائیوز</translation>
 <translation id="7908793776359722643">پارٹیشن کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا مٹا دیا جائے گا۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
+<translation id="7925247922861151263">‏AAA چیک ناکام ہوگیا</translation>
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
 <translation id="7943385054491506837">‏US کولمیک</translation>
 <translation id="7953739707111622108">اس آلہ کو نہیں کھولا جا سکتا ہے کیونکہ اس کے فائل سسٹم کی شناخت نہیں ہوئی۔</translation>
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
+<translation id="7973962044839454485">‏ایک غلط صارف نام یا پاس ورڈ کی وجہ سے PPP کی توثیق ناکام ہو گئی</translation>
 <translation id="7980421588063892270">کول مارک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="79907182588096956">‏یہ فائل Windows سافٹ ویئر استعمال کرنے والے PC کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ موافق نہیں ہے جو Chrome OS چلاتا ہے۔ Chrome OS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
@@ -683,12 +706,14 @@
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8297012244086013755">‏Hangul 3 سیٹ (کوئی شفٹ نہیں)</translation>
 <translation id="8299269255470343364">جاپانی</translation>
+<translation id="8300849813060516376">‏OTASP ناکام ہوگیا</translation>
 <translation id="8312871300878166382">فولڈر میں پیسٹ کریں</translation>
 <translation id="8329978297633540474">سادہ متن</translation>
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
 <translation id="8335837413233998004">بيلاروسی</translation>
 <translation id="8336153091935557858">گزشتہ کل <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">اسی نام کی ایک فائل یا ڈائریکٹری پہلے سے موجود ہے۔</translation>
+<translation id="8372369524088641025">‏غلط WEP کلید</translation>
 <translation id="8372852072747894550">يونانی</translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
 <translation id="8437209419043462667">US</translation>
@@ -701,6 +726,7 @@
 <translation id="8477649328507734757">گردش</translation>
 <translation id="8484284835977497781">اپنی حالیہ تصاویر سے منتخب کریں۔</translation>
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
+<translation id="8492972329130824181">ہوم نیٹ ورک دستیاب نہیں ہے۔ منسلک ہونے کیلئے موبائل ڈیٹا رومنگ کو فعال کرنا ہوگا۔</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="853494022971700746">فرانسیسی (فرانس)</translation>
@@ -716,6 +742,7 @@
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
 <translation id="8609695766746872526">آئس لینڈک</translation>
+<translation id="8688591111840995413">غلط پاس ورڈ</translation>
 <translation id="8698464937041809063">‏Google ڈرائنگ</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8713112442029511308">مالٹیز</translation>
@@ -741,6 +768,7 @@
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9035012421917565900">آئٹمز '<ph name="DESTINATION_NAME" />' میں واپس منتقل نہیں کیے جا سکتے، اسلئے آپ اس کارروائي کو کالعدم نہیں کر سکیں گے۔</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
+<translation id="9046895021617826162">منسلک کرنا ناکام ہوگیا</translation>
 <translation id="908378762078012445">‏فونیٹک AATSEEL کی بورڈ کے ساتھ روسی</translation>
 <translation id="9099674669267916096">صفحات کی تعداد</translation>
 <translation id="9110990317705400362">‏ہم آپ کی براؤزنگ کو محفوظ تر بنانے کے طریقے مستقل تلاش کر رہے ہیں۔ ازیں قبل، کوئی بھی ویب سائٹ آپ کو اپنے براؤزر میں ایک ایکسٹینشن شامل کرنے کا اشارہ دے سکتی تھی۔ Google Chrome کے تازہ ترین ورژن میں، ایکسٹینشنز صفحہ کے ذریعہ ایکسٹینشنز کو شامل کر کے آپ کو واضح طور پر Chrome کو بتا دینا چاہیے کہ آپ انہیں شامل کرنا چاہتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>

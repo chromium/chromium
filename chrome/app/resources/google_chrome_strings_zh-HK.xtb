@@ -39,7 +39,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">請確保您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chrome，然後再傳送一次。</translation>
 <translation id="1807517590912578995">要建立另一個 Chrome 設定檔嗎？</translation>
-<translation id="1810203443153428607">安裝 Chrome OS 將會覆寫裝置上的所有資料。</translation>
+<translation id="1810203443153428607">安裝 Chrome 作業系統將會覆寫裝置上所有資料。</translation>
 <translation id="1812689907177901597">關閉此功能後，您無需登入 Chrome，即可登入 Gmail 等 Google 網站</translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
@@ -60,12 +60,12 @@
 <translation id="2348335408836342058">Chrome 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="234869673307233423">Chrome 無法檢查密碼，請稍後再試。</translation>
 <translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">清除硬碟資料並安裝 Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS 安裝程序已就緒！一旦繼續執行：
+<translation id="2409866122341731384">清除硬碟資料並安裝 Chrome 作業系統</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />我們已準備好安裝 Chrome 作業系統！一旦繼續執行：
           <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />系統會清除你的檔案、資料和目前的作業系統。
-          <ph name="LIST_ITEM" />Chrome OS 將進行安裝。
-          <ph name="LIST_ITEM" />你的裝置會在安裝完成後關機。
+          <ph name="LIST_ITEM" />系統會清除您的檔案、資料和目前的作業系統。
+          <ph name="LIST_ITEM" />系統將會安裝 Chrome 作業系統。
+          <ph name="LIST_ITEM" />您的裝置會在安裝完成後關機。
           <ph name="END_LIST" />
           <ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />最後請注意，安裝程序會清除整個硬碟的資料。請確認重要資料皆已完成備份。<ph name="END_PARAGRAPH2" />
@@ -185,10 +185,10 @@
 
 Google Chrome 無法復原您的設定。</translation>
 <translation id="5434383153637353914">您可在此頁面管理已登入的 Google 帳戶。這樣就能在 Chrome 瀏覽器和 Play 商店應用程式，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />開始之前，請務必準備好最新的備份資料。安裝 Chrome OS 將會覆寫硬碟上的所有資料。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google 對於任何資料遺失概不負責，也不保證 Chrome OS 能夠在未經認證的機型上正常運作。如要進一步瞭解獲得認證的機型，請前往[TBD]。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />進一步瞭解如何安裝 Chrome OS 及清除資料：[TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />如果準備好繼續作業，請按一下 [安裝 Chrome OS]，系統接著會引導你執行幾個簡單步驟以完成安裝作業。請放心，系統會先讓你再次確認，才對你的電腦做出變更。<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />開始之前，請務必準備好最新的備份資料。安裝 Chrome 作業系統將會覆寫硬碟上所有資料。<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google 對任何資料遺失概不負責，亦不保證 Chrome 作業系統能夠在未經認證的型號上正常運作。如要進一步瞭解獲認證的型號，請前往[TBD]。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />進一步瞭解如何安裝 Chrome 作業系統及清除資料：[TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />如果準備好繼續，請按一下 [安裝 Chrome 作業系統]，然後系統會引導您執行幾個簡單步驟以完成安裝。系統會先向您再次確認，才對您的電腦作出變更。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">安裝 Chrome 作業系統</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -223,7 +223,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome 作業系統</translation>
-<translation id="664235759707825982">現在可以安裝 Chrome OS 了</translation>
+<translation id="664235759707825982">現在可以安裝 Chrome 作業系統了</translation>
 <translation id="6676384891291319759">連線到互聯網</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
@@ -243,7 +243,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7155997830309522122">如密碼已變更，請編輯 Chrome 中已儲存的密碼，確保兩者相符。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7242029209006116544">您已登入受管理的帳戶，並將管理控制權授予您的 Google Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。如要另行保留現有的 Chrome 數據，您可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">正在安裝 Chrome OS</translation>
+<translation id="7275165473619697274">正在安裝 Chrome 作業系統</translation>
 <translation id="7295052994004373688">使用此語言顯示 Google Chrome 使用者介面</translation>
 <translation id="7296210096911315575">重要的使用和安全資訊</translation>
 <translation id="7303916856901595720">要將帳戶移至新的 Chrome 設定檔嗎？</translation>
