@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.messages;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.cc.input.BrowserControlsState;
@@ -46,6 +47,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private ActivityTabProvider mActivityTabProvider;
     @Nullable
     private ModalDialogManager mModalDialogManager;
+    private final CallbackController mCallbackController = new CallbackController();
 
     // TODO(crbug.com/1192907): Remove logic that suspends message queue on entering fullscreen
     // mode.
@@ -126,11 +128,13 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mFullscreenManager.addObserver(mFullScreenObserver);
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
-        layoutStateProviderOneShotSupplier.onAvailable(this::setLayoutStateProvider);
+        layoutStateProviderOneShotSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setLayoutStateProvider));
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
     }
 
     public void destroy() {
+        mCallbackController.destroy();
         mFullscreenManager.removeObserver(mFullScreenObserver);
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         setLayoutStateProvider(null);
