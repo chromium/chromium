@@ -593,6 +593,9 @@ void AppListClientImpl::MaybeRecordViewShown() {
         "TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
         /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
         kTimeMetricsBucketCount);
+
+    base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers",
+                                  AppListUsageStateByNewUsers::kUsed);
   }
 }
 
@@ -658,7 +661,4 @@ void AppListClientImpl::MaybeRecordLauncherAction(
         /*sample=*/launcher_action_duration, kTimeMetricsMin, kTimeMetricsMax,
         kTimeMetricsBucketCount);
   }
-
-  base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers",
-                                AppListUsageStateByNewUsers::kUsed);
 }
