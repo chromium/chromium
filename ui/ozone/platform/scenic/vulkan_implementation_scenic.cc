@@ -156,8 +156,7 @@ VulkanImplementationScenic::ExportVkFenceToGpuFence(VkDevice vk_device,
 VkSemaphore VulkanImplementationScenic::CreateExternalSemaphore(
     VkDevice vk_device) {
   return gpu::CreateExternalVkSemaphore(
-      vk_device,
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA);
+      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
 }
 
 VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
@@ -167,7 +166,7 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
     return VK_NULL_HANDLE;
 
   if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA) {
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
     return VK_NULL_HANDLE;
   }
 
@@ -179,10 +178,10 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
 
   zx::event event = handle.TakeHandle();
   VkImportSemaphoreZirconHandleInfoFUCHSIA import = {
-      VK_STRUCTURE_TYPE_TEMP_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
+      VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
   import.semaphore = semaphore;
   import.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
   import.zirconHandle = event.get();
 
   result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
@@ -202,10 +201,9 @@ gpu::SemaphoreHandle VulkanImplementationScenic::GetSemaphoreHandle(
     VkSemaphore vk_semaphore) {
   // Create VkSemaphoreGetFdInfoKHR structure.
   VkSemaphoreGetZirconHandleInfoFUCHSIA info = {
-      VK_STRUCTURE_TYPE_TEMP_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
+      VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
   info.semaphore = vk_semaphore;
-  info.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
+  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
 
   zx_handle_t handle;
   VkResult result =
@@ -216,13 +214,13 @@ gpu::SemaphoreHandle VulkanImplementationScenic::GetSemaphoreHandle(
   }
 
   return gpu::SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
       zx::event(handle));
 }
 
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationScenic::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA;
+  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
 }
 
 bool VulkanImplementationScenic::CanImportGpuMemoryBuffer(

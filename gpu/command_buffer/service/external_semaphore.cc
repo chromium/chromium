@@ -59,7 +59,7 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
   return gl_semaphore;
 #elif defined(OS_FUCHSIA)
   if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA) {
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
     DLOG(ERROR) << "Importing semaphore handle of unexpected type:"
                 << handle.vk_handle_type();
     return 0;

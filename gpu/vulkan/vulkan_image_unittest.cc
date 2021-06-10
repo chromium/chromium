@@ -118,7 +118,7 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
     }
 #elif defined(OS_FUCHSIA)
     EXPECT_TRUE(image->handle_types() &
-                VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA);
+                VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA);
     zx::vmo handle = image->GetMemoryZirconHandle();
     EXPECT_TRUE(handle);
 #endif
