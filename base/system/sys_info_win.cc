@@ -198,8 +198,13 @@ std::string ReadHardwareInfoFromRegistry(const wchar_t* reg_value_name) {
 // static
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   HardwareInfo info = {ReadHardwareInfoFromRegistry(L"SystemManufacturer"),
-                       ReadHardwareInfoFromRegistry(L"SystemProductName")};
+                       SysInfo::HardwareModelName()};
   return info;
+}
+
+// static
+std::string SysInfo::HardwareModelName() {
+  return ReadHardwareInfoFromRegistry(L"SystemProductName");
 }
 
 }  // namespace base

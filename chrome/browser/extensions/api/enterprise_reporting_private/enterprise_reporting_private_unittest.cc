@@ -309,6 +309,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   EXPECT_EQ("macOS", info.os_name);
 #elif defined(OS_WIN)
   EXPECT_EQ("windows", info.os_name);
+  EXPECT_FALSE(info.device_model.empty());
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar(base::nix::kXdgCurrentDesktopEnvVar, "XFCE");
