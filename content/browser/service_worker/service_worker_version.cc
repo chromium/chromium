@@ -894,8 +894,7 @@ void ServiceWorkerVersion::RemoveControlleeFromBackForwardCacheMap(
   bfcached_controllee_map_.erase(client_uuid);
 }
 
-void ServiceWorkerVersion::OnControlleeDestroyed(
-    const std::string& client_uuid) {
+void ServiceWorkerVersion::Uncontrol(const std::string& client_uuid) {
   if (!IsBackForwardCacheEnabled()) {
     RemoveControllee(client_uuid);
   } else {

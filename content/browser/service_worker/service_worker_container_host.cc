@@ -138,7 +138,7 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
   }
 
   if (IsContainerForClient() && controller_)
-    controller_->OnControlleeDestroyed(client_uuid());
+    controller_->Uncontrol(client_uuid());
 
   // Remove |this| as an observer of ServiceWorkerRegistrations.
   // TODO(falken): Use ScopedObserver instead of this explicit call.
@@ -1244,7 +1244,7 @@ void ServiceWorkerContainerHost::UpdateController(
     }
   }
   if (previous_version)
-    previous_version->RemoveControllee(client_uuid());
+    previous_version->Uncontrol(client_uuid());
 
   // SetController message should be sent only for clients.
   DCHECK(IsContainerForClient());

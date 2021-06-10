@@ -394,9 +394,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void RestoreControlleeFromBackForwardCacheMap(const std::string& client_uuid);
   // Called when a back-forward cached controllee is evicted or destroyed.
   void RemoveControlleeFromBackForwardCacheMap(const std::string& client_uuid);
-  // Called when a controllee is destroyed. Remove controllee from whichever
-  // map it belongs to, or do nothing when it is already removed.
-  void OnControlleeDestroyed(const std::string& client_uuid);
+  // Called when this version should no longer be the controller of this client.
+  // Called when the controllee is destroyed or it changes controller. Removes
+  // controllee from whichever map it belongs to, or do nothing when it is
+  // already removed. This function is different from RemoveController(), which
+  // can only be called if the controllee is not in the back-forward cache map.
+  void Uncontrol(const std::string& client_uuid);
 
   // Returns true if this version has a controllee.
   // Note regarding BackForwardCache:
