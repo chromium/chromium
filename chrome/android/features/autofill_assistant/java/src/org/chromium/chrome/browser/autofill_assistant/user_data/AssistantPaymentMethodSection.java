@@ -50,10 +50,8 @@ public class AssistantPaymentMethodSection
             return;
         }
 
-        PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
         for (PaymentInstrumentModel item : getItems()) {
-            String guid = item.mOption.getCard().getBillingAddressId();
-            PersonalDataManager.AutofillProfile profile = personalDataManager.getProfile(guid);
+            AutofillProfile profile = item.mOption.getBillingProfile();
             if (profile != null) {
                 addAutocompleteInformationToEditor(new AutofillAddress(mContext, profile));
             }
