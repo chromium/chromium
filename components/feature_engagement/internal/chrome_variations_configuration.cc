@@ -338,10 +338,18 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   uint32_t parse_errors = 0;
 
   for (const auto& it : params) {
-    const std::string& key = it.first;
+    std::string param_name = it.first;
+    std::string param_value = params[param_name];
+    std::string key = param_name;
+    // The param name might have a prefix containing the feature name with
+    // a trailing underscore, e.g. IPH_FooFeature_session_rate. Strip out
+    // the feature prefix for further comparison.
+    if (base::StartsWith(key, feature->name, base::CompareCase::SENSITIVE))
+      key = param_name.substr(strlen(feature->name) + 1);
+
     if (key == kEventConfigUsedKey) {
       EventConfig event_config;
-      if (!ParseEventConfig(params[key], &event_config)) {
+      if (!ParseEventConfig(param_value, &event_config)) {
         ++parse_errors;
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_USED_EVENT_PARSE);
@@ -350,7 +358,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
       config.used = event_config;
     } else if (key == kEventConfigTriggerKey) {
       EventConfig event_config;
-      if (!ParseEventConfig(params[key], &event_config)) {
+      if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_PARSE);
         ++parse_errors;
@@ -359,7 +367,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
       config.trigger = event_config;
     } else if (key == kSessionRateKey) {
       Comparator comparator;
-      if (!ParseComparator(params[key], &comparator)) {
+      if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_PARSE);
         ++parse_errors;
@@ -368,7 +376,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
       config.session_rate = comparator;
     } else if (key == kSessionRateImpactKey) {
       SessionRateImpact impact;
-      if (!ParseSessionRateImpact(params[key], &impact, feature,
+      if (!ParseSessionRateImpact(param_value, &impact, feature,
                                   all_features)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_IMPACT_PARSE);
@@ -378,7 +386,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
       config.session_rate_impact = impact;
     } else if (key == kTrackingOnlyKey) {
       bool tracking_only;
-      if (!ParseTrackingOnly(params[key], &tracking_only)) {
+      if (!ParseTrackingOnly(param_value, &tracking_only)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRACKING_ONLY_PARSE);
         ++parse_errors;
@@ -387,7 +395,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
       config.tracking_only = tracking_only;
     } else if (key == kAvailabilityKey) {
       Comparator comparator;
-      if (!ParseComparator(params[key], &comparator)) {
+      if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_AVAILABILITY_PARSE);
         ++parse_errors;
@@ -397,7 +405,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
     } else if (base::StartsWith(key, kEventConfigKeyPrefix,
                                 base::CompareCase::INSENSITIVE_ASCII)) {
       EventConfig event_config;
-      if (!ParseEventConfig(params[key], &event_config)) {
+      if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_OTHER_EVENT_PARSE);
         ++parse_errors;
@@ -408,10 +416,10 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
                                 base::CompareCase::INSENSITIVE_ASCII)) {
       // Intentionally ignoring parameter using registered ignored prefix.
       DVLOG(2) << "Ignoring unknown key when parsing config for feature "
-               << feature->name << ": " << key;
+               << feature->name << ": " << param_name;
     } else {
       DVLOG(1) << "Unknown key found when parsing config for feature "
-               << feature->name << ": " << key;
+               << feature->name << ": " << param_name;
       stats::RecordConfigParsingEvent(
           stats::ConfigParsingEvent::FAILURE_UNKNOWN_KEY);
     }

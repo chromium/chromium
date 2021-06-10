@@ -179,6 +179,93 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleFeature) {
   EXPECT_EQ(expected_foo, foo);
 }
 
+TEST_F(ChromeVariationsConfigurationTest, ParsePrefixedParamNames) {
+  std::map<std::string, std::string> foo_params;
+  // Prefixed param names.
+  foo_params["test_foo_session_rate"] = "!=6";
+  foo_params["test_foo_availability"] = ">=1";
+  foo_params["test_foo_event_used"] =
+      "name:page_download_started;comparator:any;window:0;storage:360";
+  foo_params["test_foo_event_trigger"] =
+      "name:opened_chrome_home;comparator:any;window:0;storage:360";
+  foo_params["test_foo_event_1"] =
+      "name:user_has_seen_dino;comparator:>=1;window:120;storage:180";
+  foo_params["event_2"] =
+      "name:user_opened_app_menu;comparator:<=0;window:120;storage:180";
+  foo_params["event_3"] =
+      "name:user_opened_downloads_home;comparator:any;window:0;storage:360";
+
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  base::HistogramTester histogram_tester;
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_TRUE(foo.valid);
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+  histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used =
+      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger =
+      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
+  expected_foo.event_configs.insert(EventConfig(
+      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
+  expected_foo.event_configs.insert(EventConfig(
+      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+  expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
+  expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
+  EXPECT_EQ(expected_foo, foo);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       MultipleFeaturesWithPrefixedAndUnprefixedParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["test_foo_session_rate"] = "!=6";
+  foo_params["test_foo_availability"] = ">=1";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["test_bar_session_rate"] = "!=7";
+  bar_params["test_bar_availability"] = ">=2";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  std::map<std::string, std::string> qux_params;
+  qux_params["session_rate"] = "!=3";
+  qux_params["availability"] = ">=5";
+  SetFeatureParams(kChromeTestFeatureQux, qux_params);
+
+  std::vector<const base::Feature*> features = {
+      &kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  FeatureConfig bar = configuration_.GetFeatureConfig(kChromeTestFeatureBar);
+  FeatureConfig qux = configuration_.GetFeatureConfig(kChromeTestFeatureQux);
+
+  FeatureConfig expected_foo;
+  expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
+  expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
+  EXPECT_EQ(expected_foo, foo);
+
+  FeatureConfig expected_bar;
+  expected_bar.session_rate = Comparator(NOT_EQUAL, 7);
+  expected_bar.availability = Comparator(GREATER_THAN_OR_EQUAL, 2);
+  EXPECT_EQ(expected_bar, bar);
+
+  FeatureConfig expected_qux;
+  expected_qux.session_rate = Comparator(NOT_EQUAL, 3);
+  expected_qux.availability = Comparator(GREATER_THAN_OR_EQUAL, 5);
+  EXPECT_EQ(expected_qux, qux);
+}
+
 TEST_F(ChromeVariationsConfigurationTest, MissingUsedIsInvalid) {
   std::map<std::string, std::string> foo_params;
   foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
