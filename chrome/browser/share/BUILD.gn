@@ -15,6 +15,8 @@ source_set("share") {
     "qr_code_generation_request.h",
     "share_history.cc",
     "share_history.h",
+    "share_ranking.cc",
+    "share_ranking.h",
   ]
   deps = [
     ":jni_headers",

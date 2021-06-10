@@ -94,6 +94,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "MerchantTrustSignalEventDatabase";
     case ProtoDbType::SHARE_HISTORY_DATABASE:
       return "ShareHistoryDatabase";
+    case ProtoDbType::SHARE_RANKING_DATABASE:
+      return "ShareRankingDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
