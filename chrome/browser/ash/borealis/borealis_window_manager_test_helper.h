@@ -17,8 +17,6 @@ class ScopedTestWindow {
                    borealis::BorealisWindowManager* manager);
   ~ScopedTestWindow();
 
-  aura::Window* window() { return window_.get(); }
-
  private:
   std::unique_ptr<aura::Window> window_;
   borealis::BorealisWindowManager* manager_;
