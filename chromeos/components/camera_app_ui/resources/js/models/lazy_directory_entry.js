@@ -98,6 +98,16 @@ class LazyDirectoryEntry {
   /**
    * @override
    */
+  async isExist(name) {
+    if (this.directory_ === null) {
+      return false;
+    }
+    return this.directory_.isExist(name);
+  }
+
+  /**
+   * @override
+   */
   async createFile(name) {
     const dir = await this.getRealDirectory_();
     return dir.createFile(name);

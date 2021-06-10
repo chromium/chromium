@@ -159,6 +159,14 @@ export class DirectoryAccessEntry {
   async getFile(name) {}
 
   /**
+   * Checks if file or directory with the target name exists.
+   * @param {string} name
+   * @return {!Promise<boolean>}
+   * @abstract
+   */
+  async isExist(name) {}
+
+  /**
    * Create the file given by its |name|. If there is already a file with same
    * name, it will try to use a name with index as suffix.
    * e.g. IMG.png => IMG (1).png
@@ -244,12 +252,9 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
   }
 
   /**
-   * Checks if file or directory with the target name exists.
-   * @param {string} name
-   * @return {!Promise<boolean>}
-   * @private
+   * @override
    */
-  async isExist_(name) {
+  async isExist(name) {
     try {
       await this.getFile(name);
       return true;
@@ -271,7 +276,7 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
   async createFile(name) {
     return createFileJobs.push(async () => {
       let uniqueName = name;
-      for (let i = 0; await this.isExist_(uniqueName);) {
+      for (let i = 0; await this.isExist(uniqueName);) {
         uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
       }
       const handle =

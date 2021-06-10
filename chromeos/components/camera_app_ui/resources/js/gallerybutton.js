@@ -181,8 +181,7 @@ export class GalleryButton {
 
     // Checks existence of cached cover photo.
     if (this.cover_ !== null) {
-      const file = await dir.getFile(this.cover_.name);
-      if (file !== null) {
+      if (await dir.isExist(this.cover_.name)) {
         return;
       }
     }
