@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.sync.FakeProfileSyncService;
+import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -69,7 +69,7 @@ public class PassphraseActivityTest {
             InstrumentationRegistry.getInstrumentation().callActivityOnSaveInstanceState(
                     activity, bundle);
             // Fake sync's backend finishing its initialization.
-            FakeProfileSyncService syncService = (FakeProfileSyncService) SyncService.get();
+            FakeSyncServiceImpl syncService = (FakeSyncServiceImpl) SyncService.get();
             syncService.setEngineInitialized(true);
         });
         // Nothing crashed; success!
@@ -97,7 +97,7 @@ public class PassphraseActivityTest {
     private void overrideSyncService() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // PSS has to be constructed on the UI thread.
-            SyncService.overrideForTests(new FakeProfileSyncService());
+            SyncService.overrideForTests(new FakeSyncServiceImpl());
         });
     }
 }

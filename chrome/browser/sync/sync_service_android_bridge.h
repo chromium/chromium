@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_ANDROID_H_
-#define CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_ANDROID_H_
+#ifndef CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#define CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_
 
 #include <memory>
 
@@ -14,45 +14,42 @@
 namespace syncer {
 class SyncServiceImpl;
 class SyncSetupInProgressHandle;
-}
+}  // namespace syncer
 
-// Android wrapper of the SyncServiceImpl which provides access from the Java
-// layer. Note that on Android, there's only a single profile, and therefore
-// a single instance of this wrapper. The name of the Java class is
-// ProfileSyncService.
-// This class should only be accessed from the UI thread.
-class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
+// Forwards calls from SyncServiceImpl.java to the native SyncServiceImpl and
+// back. Instead of directly implementing JNI free functions, this class is used
+// so it can manage the lifetime of objects like SyncSetupInProgressHandle.
+// Note that on Android, there's only a single profile, a single native
+// SyncServiceImpl, and therefore a single instance of this class.
+// Must only be accessed from the UI thread.
+class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
   // |sync_service| must not be null.
-  ProfileSyncServiceAndroid(JNIEnv* env,
-                            syncer::SyncServiceImpl* sync_service,
-                            jobject java_profile_sync_service);
-  ~ProfileSyncServiceAndroid() override;
+  SyncServiceAndroidBridge(JNIEnv* env,
+                           syncer::SyncServiceImpl* sync_service,
+                           jobject java_profile_sync_service);
+  ~SyncServiceAndroidBridge() override;
 
-  ProfileSyncServiceAndroid(const ProfileSyncServiceAndroid&) = delete;
-  ProfileSyncServiceAndroid& operator=(const ProfileSyncServiceAndroid&) =
-      delete;
+  SyncServiceAndroidBridge(const SyncServiceAndroidBridge&) = delete;
+  SyncServiceAndroidBridge& operator=(const SyncServiceAndroidBridge&) = delete;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Please keep all methods below in the same order as ProfileSyncService.java.
+  // Please keep all methods below in the same order as the @NativeMethods in
+  // SyncServiceImpl.java.
   jboolean IsSyncRequested(JNIEnv* env);
-  void SetSyncRequested(JNIEnv* env,
-                        jboolean requested);
+  void SetSyncRequested(JNIEnv* env, jboolean requested);
   jboolean CanSyncFeatureStart(JNIEnv* env);
   jboolean IsSyncAllowedByPlatform(JNIEnv* env);
-  void SetSyncAllowedByPlatform(JNIEnv* env,
-                                jboolean allowed);
+  void SetSyncAllowedByPlatform(JNIEnv* env, jboolean allowed);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);
   jboolean IsTransportStateActive(JNIEnv* env);
-  void SetSetupInProgress(JNIEnv* env,
-                          jboolean in_progress);
+  void SetSetupInProgress(JNIEnv* env, jboolean in_progress);
   jboolean IsFirstSetupComplete(JNIEnv* env);
-  void SetFirstSetupComplete(JNIEnv* env,
-                             jint source);
+  void SetFirstSetupComplete(JNIEnv* env, jint source);
   base::android::ScopedJavaLocalRef<jintArray> GetActiveDataTypes(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jintArray> GetChosenDataTypes(JNIEnv* env);
   void SetChosenDataTypes(
@@ -88,9 +85,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   void MarkPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   jboolean HasKeepEverythingSynced(JNIEnv* env);
-  void RecordKeyRetrievalTrigger(
-      JNIEnv* env,
-      jint trigger);
+  void RecordKeyRetrievalTrigger(JNIEnv* env, jint trigger);
   jboolean ShouldOfferTrustedVaultOptIn(JNIEnv* env);
   void TriggerRefresh(JNIEnv* env);
   // Returns a timestamp for when a sync was last executed. The return value is
@@ -102,11 +97,11 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   // A reference to the sync service for this profile.
   syncer::SyncServiceImpl* const native_sync_service_;
 
-  // Java-side ProfileSyncService object.
+  // Java-side SyncServiceImpl object.
   const JavaObjectWeakGlobalRef java_sync_service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 };
 
-#endif  // CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_ANDROID_H_
+#endif  // CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_

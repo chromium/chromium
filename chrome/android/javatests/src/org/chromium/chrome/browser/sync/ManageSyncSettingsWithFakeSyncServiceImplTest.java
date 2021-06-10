@@ -28,17 +28,16 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Test for ManageSyncSettings with FakeProfileSyncService.
+ * Test for ManageSyncSettings with FakeSyncServiceImpl.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
-
+public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule() {
         @Override
-        protected FakeProfileSyncService createProfileSyncService() {
-            return new FakeProfileSyncService();
+        protected FakeSyncServiceImpl createSyncServiceImpl() {
+            return new FakeSyncServiceImpl();
         }
     };
     @Rule
@@ -55,13 +54,13 @@ public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
     @Feature({"Sync"})
     @DisabledTest(message = "https://crbug.com/986243")
     public void testPassphraseDialogDismissed() {
-        final FakeProfileSyncService fakeProfileSyncService =
-                (FakeProfileSyncService) mSyncTestRule.getSyncService();
+        final FakeSyncServiceImpl fakeSyncServiceImpl =
+                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
         // Trigger PassphraseDialogFragment to be shown when taping on Encryption.
-        fakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(true);
+        fakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
 
         final ManageSyncSettings fragment = startManageSyncPreferences();
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
@@ -74,7 +73,7 @@ public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
         // Simulate OnPassphraseAccepted from external event by setting PassphraseRequired to false
         // and triggering syncStateChanged().
         // PassphraseDialogFragment should be dismissed.
-        fakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(false);
+        fakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             fragment.getFragmentManager().executePendingTransactions();
             Assert.assertNull("PassphraseDialogFragment should be dismissed.",

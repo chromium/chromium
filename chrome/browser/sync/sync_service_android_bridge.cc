@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/profile_sync_service_android.h"
+#include "chrome/browser/sync/sync_service_android_bridge.h"
 
 #include <string>
 #include <vector>
@@ -17,7 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/ProfileSyncService_jni.h"
+#include "chrome/android/chrome_jni_headers/SyncServiceImpl_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -57,7 +57,7 @@ void NativeGetAllNodesCallback(
     json_string = std::string();
   }
 
-  Java_ProfileSyncService_onGetAllNodesResult(
+  Java_SyncServiceImpl_onGetAllNodesResult(
       env, callback, ConvertUTF8ToJavaString(env, json_string));
 }
 
@@ -73,7 +73,7 @@ ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
 
 }  // namespace
 
-ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(
+SyncServiceAndroidBridge::SyncServiceAndroidBridge(
     JNIEnv* env,
     syncer::SyncServiceImpl* native_sync_service,
     jobject java_sync_service)
@@ -84,72 +84,70 @@ ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(
   native_sync_service_->AddObserver(this);
 }
 
-ProfileSyncServiceAndroid::~ProfileSyncServiceAndroid() {
+SyncServiceAndroidBridge::~SyncServiceAndroidBridge() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->RemoveObserver(this);
 }
 
-void ProfileSyncServiceAndroid::OnStateChanged(syncer::SyncService* sync) {
+void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
   // Notify the java world that our sync state has changed.
   JNIEnv* env = AttachCurrentThread();
-  Java_ProfileSyncService_syncStateChanged(env, java_sync_service_.get(env));
+  Java_SyncServiceImpl_syncStateChanged(env, java_sync_service_.get(env));
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncRequested(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsSyncRequested();
 }
 
-void ProfileSyncServiceAndroid::SetSyncRequested(JNIEnv* env,
-                                                 jboolean requested) {
+void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env,
+                                                jboolean requested) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->GetUserSettings()->SetSyncRequested(requested);
 }
 
-jboolean ProfileSyncServiceAndroid::CanSyncFeatureStart(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->CanSyncFeatureStart();
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncAllowedByPlatform(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsSyncAllowedByPlatform(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return !native_sync_service_->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
 }
 
-void ProfileSyncServiceAndroid::SetSyncAllowedByPlatform(
-    JNIEnv* env,
-    jboolean allowed) {
+void SyncServiceAndroidBridge::SetSyncAllowedByPlatform(JNIEnv* env,
+                                                        jboolean allowed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->SetSyncAllowedByPlatform(allowed);
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncFeatureActive(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsSyncFeatureActive(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->IsSyncFeatureActive();
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncDisabledByEnterprisePolicy(
+jboolean SyncServiceAndroidBridge::IsSyncDisabledByEnterprisePolicy(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
-jboolean ProfileSyncServiceAndroid::IsEngineInitialized(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsEngineInitialized(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->IsEngineInitialized();
 }
 
-jboolean ProfileSyncServiceAndroid::IsTransportStateActive(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsTransportStateActive(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetTransportState() ==
          syncer::SyncService::TransportState::ACTIVE;
 }
 
-void ProfileSyncServiceAndroid::SetSetupInProgress(
-    JNIEnv* env,
-    jboolean in_progress) {
+void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
+                                                  jboolean in_progress) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!in_progress) {
     sync_blocker_.reset();
@@ -161,27 +159,25 @@ void ProfileSyncServiceAndroid::SetSetupInProgress(
   }
 }
 
-jboolean ProfileSyncServiceAndroid::IsFirstSetupComplete(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsFirstSetupComplete(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsFirstSetupComplete();
 }
 
-void ProfileSyncServiceAndroid::SetFirstSetupComplete(
-    JNIEnv* env,
-    jint source) {
+void SyncServiceAndroidBridge::SetFirstSetupComplete(JNIEnv* env, jint source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->GetUserSettings()->SetFirstSetupComplete(
       static_cast<syncer::SyncFirstSetupCompleteSource>(source));
 }
 
-ScopedJavaLocalRef<jintArray> ProfileSyncServiceAndroid::GetActiveDataTypes(
+ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetActiveDataTypes(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ModelTypeSetToJavaIntArray(env,
                                     native_sync_service_->GetActiveDataTypes());
 }
 
-ScopedJavaLocalRef<jintArray> ProfileSyncServiceAndroid::GetChosenDataTypes(
+ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetChosenDataTypes(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(crbug/950874): introduce UserSelectableType in java code, then remove
@@ -194,7 +190,7 @@ ScopedJavaLocalRef<jintArray> ProfileSyncServiceAndroid::GetChosenDataTypes(
   return ModelTypeSetToJavaIntArray(env, model_types);
 }
 
-void ProfileSyncServiceAndroid::SetChosenDataTypes(
+void SyncServiceAndroidBridge::SetChosenDataTypes(
     JNIEnv* env,
     jboolean sync_everything,
     const JavaParamRef<jintArray>& model_type_array) {
@@ -218,55 +214,55 @@ void ProfileSyncServiceAndroid::SetChosenDataTypes(
                                                             selected_types);
 }
 
-jboolean ProfileSyncServiceAndroid::IsCustomPassphraseAllowed(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 
-jboolean ProfileSyncServiceAndroid::IsEncryptEverythingEnabled(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsEncryptEverythingEnabled(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
-jboolean ProfileSyncServiceAndroid::IsPassphraseRequiredForPreferredDataTypes(
+jboolean SyncServiceAndroidBridge::IsPassphraseRequiredForPreferredDataTypes(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()
       ->IsPassphraseRequiredForPreferredDataTypes();
 }
 
-jboolean ProfileSyncServiceAndroid::IsTrustedVaultKeyRequired(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsTrustedVaultKeyRequired(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsTrustedVaultKeyRequired();
 }
 
 jboolean
-ProfileSyncServiceAndroid::IsTrustedVaultKeyRequiredForPreferredDataTypes(
+SyncServiceAndroidBridge::IsTrustedVaultKeyRequiredForPreferredDataTypes(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
 
-jboolean ProfileSyncServiceAndroid::IsTrustedVaultRecoverabilityDegraded(
+jboolean SyncServiceAndroidBridge::IsTrustedVaultRecoverabilityDegraded(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()
       ->IsTrustedVaultRecoverabilityDegraded();
 }
 
-jboolean ProfileSyncServiceAndroid::IsUsingExplicitPassphrase(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsUsingExplicitPassphrase(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
-jint ProfileSyncServiceAndroid::GetPassphraseType(JNIEnv* env) {
+jint SyncServiceAndroidBridge::GetPassphraseType(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return static_cast<unsigned>(
       native_sync_service_->GetUserSettings()->GetPassphraseType());
 }
 
-void ProfileSyncServiceAndroid::SetEncryptionPassphrase(
+void SyncServiceAndroidBridge::SetEncryptionPassphrase(
     JNIEnv* env,
     const JavaParamRef<jstring>& passphrase) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -274,7 +270,7 @@ void ProfileSyncServiceAndroid::SetEncryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
 
-jboolean ProfileSyncServiceAndroid::SetDecryptionPassphrase(
+jboolean SyncServiceAndroidBridge::SetDecryptionPassphrase(
     JNIEnv* env,
     const JavaParamRef<jstring>& passphrase) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -282,14 +278,14 @@ jboolean ProfileSyncServiceAndroid::SetDecryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
 
-jlong ProfileSyncServiceAndroid::GetExplicitPassphraseTime(JNIEnv* env) {
+jlong SyncServiceAndroidBridge::GetExplicitPassphraseTime(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()
       ->GetExplicitPassphraseTime()
       .ToJavaTime();
 }
 
-void ProfileSyncServiceAndroid::GetAllNodes(
+void SyncServiceAndroidBridge::GetAllNodes(
     JNIEnv* env,
     const JavaParamRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -299,34 +295,34 @@ void ProfileSyncServiceAndroid::GetAllNodes(
       base::BindOnce(&NativeGetAllNodesCallback, env, java_callback));
 }
 
-jint ProfileSyncServiceAndroid::GetAuthError(JNIEnv* env) {
+jint SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetAuthError().state();
 }
 
-jboolean ProfileSyncServiceAndroid::HasUnrecoverableError(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::HasUnrecoverableError(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->HasUnrecoverableError();
 }
 
-jboolean ProfileSyncServiceAndroid::RequiresClientUpgrade(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::RequiresClientUpgrade(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->RequiresClientUpgrade();
 }
 
-void ProfileSyncServiceAndroid::SetDecoupledFromAndroidMasterSync(JNIEnv* env) {
+void SyncServiceAndroidBridge::SetDecoupledFromAndroidMasterSync(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->SetDecoupledFromAndroidMasterSync();
 }
 
-jboolean ProfileSyncServiceAndroid::GetDecoupledFromAndroidMasterSync(
+jboolean SyncServiceAndroidBridge::GetDecoupledFromAndroidMasterSync(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetDecoupledFromAndroidMasterSync();
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-ProfileSyncServiceAndroid::GetAuthenticatedAccountInfo(JNIEnv* env) {
+SyncServiceAndroidBridge::GetAuthenticatedAccountInfo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CoreAccountInfo account_info =
       native_sync_service_->GetAuthenticatedAccountInfo();
@@ -335,52 +331,51 @@ ProfileSyncServiceAndroid::GetAuthenticatedAccountInfo(JNIEnv* env) {
              : ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
-jboolean ProfileSyncServiceAndroid::IsAuthenticatedAccountPrimary(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsAuthenticatedAccountPrimary(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->IsAuthenticatedAccountPrimary();
 }
 
 jboolean
-ProfileSyncServiceAndroid::IsPassphrasePromptMutedForCurrentProductVersion(
+SyncServiceAndroidBridge::IsPassphrasePromptMutedForCurrentProductVersion(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()
       ->IsPassphrasePromptMutedForCurrentProductVersion();
 }
 
-void ProfileSyncServiceAndroid::
+void SyncServiceAndroidBridge::
     MarkPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->GetUserSettings()
       ->MarkPassphrasePromptMutedForCurrentProductVersion();
 }
 
-jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::HasKeepEverythingSynced(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
-void ProfileSyncServiceAndroid::RecordKeyRetrievalTrigger(
-    JNIEnv* env,
-    jint trigger) {
+void SyncServiceAndroidBridge::RecordKeyRetrievalTrigger(JNIEnv* env,
+                                                         jint trigger) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   syncer::RecordKeyRetrievalTrigger(
       static_cast<syncer::KeyRetrievalTriggerForUMA>(trigger));
 }
 
-jboolean ProfileSyncServiceAndroid::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return syncer::ShouldOfferTrustedVaultOptIn(native_sync_service_);
 }
 
-void ProfileSyncServiceAndroid::TriggerRefresh(JNIEnv* env) {
+void SyncServiceAndroidBridge::TriggerRefresh(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Only allowed to trigger refresh/schedule nudges for protocol types, things
   // like PROXY_TABS are not allowed.
   native_sync_service_->TriggerRefresh(syncer::ProtocolTypes());
 }
 
-jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForDebugging(JNIEnv* env) {
+jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time last_sync_time =
       native_sync_service_->GetLastSyncedTimeForDebugging();
@@ -388,12 +383,12 @@ jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForDebugging(JNIEnv* env) {
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
 }
 
-jlong ProfileSyncServiceAndroid::GetNativeSyncServiceImplForTest(JNIEnv* env) {
+jlong SyncServiceAndroidBridge::GetNativeSyncServiceImplForTest(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(native_sync_service_);
 }
 
-static jlong JNI_ProfileSyncService_Init(
+static jlong JNI_SyncServiceImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_sync_service) {
   DCHECK(g_browser_process && g_browser_process->profile_manager());
@@ -407,5 +402,5 @@ static jlong JNI_ProfileSyncService_Init(
 
   // Owned by the caller.
   return reinterpret_cast<intptr_t>(
-      new ProfileSyncServiceAndroid(env, sync_service, java_sync_service));
+      new SyncServiceAndroidBridge(env, sync_service, java_sync_service));
 }

@@ -45,7 +45,7 @@ public abstract class SyncService {
     public static SyncService get() {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
-            sSyncService = ProfileSyncService.create();
+            sSyncService = SyncServiceImpl.create();
             sInitialized = true;
         }
         return sSyncService;

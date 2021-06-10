@@ -328,11 +328,11 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                         new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
                 // Load native since the FakeServer needs it and possibly SyncService as well
-                // (depends on what fake is provided by |createProfileSyncService()|).
+                // (depends on what fake is provided by |createSyncServiceImpl()|).
                 NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    ProfileSyncService syncService = createProfileSyncService();
+                    SyncServiceImpl syncService = createSyncServiceImpl();
                     if (syncService != null) {
                         SyncService.overrideForTests(syncService);
                     }
@@ -411,9 +411,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Returns an instance of ProfileSyncService that can be overridden by subclasses.
+     * Returns an instance of SyncServiceImpl that can be overridden by subclasses.
      */
-    protected ProfileSyncService createProfileSyncService() {
+    protected SyncServiceImpl createSyncServiceImpl() {
         return null;
     }
 

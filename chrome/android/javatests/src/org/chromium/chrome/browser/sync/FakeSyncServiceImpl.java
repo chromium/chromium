@@ -15,7 +15,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  *
  * Only what has been needed for tests so far has been faked.
  */
-public class FakeProfileSyncService extends ProfileSyncService {
+public class FakeSyncServiceImpl extends SyncServiceImpl {
     private boolean mEngineInitialized;
     private boolean mPassphraseRequiredForPreferredDataTypes;
     private boolean mTrustedVaultKeyRequired;
@@ -27,7 +27,7 @@ public class FakeProfileSyncService extends ProfileSyncService {
     @GoogleServiceAuthError.State
     private int mAuthError;
 
-    public FakeProfileSyncService() {
+    public FakeSyncServiceImpl() {
         super();
     }
 
