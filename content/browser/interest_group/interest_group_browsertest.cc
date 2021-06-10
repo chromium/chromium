@@ -1716,6 +1716,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
                      .spec())));
 }
 
+// Make sure that qutting with a live auction doesn't crash.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, QuitWithRunningAuction) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL hanging_url = https_server_->GetURL("a.test", "/hung");
+
+  std::string ads =
+      "[{renderUrl : 'https://example.com/render',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      blink::mojom::InterestGroup::New(
+          /* expiry */ base::Time(),
+          /* owner= */ url::Origin::Create(hanging_url.GetOrigin()),
+          /* name = */ "cars",
+          /* bidding_url = */
+          hanging_url,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
+          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
+          /* ads = */ absl::nullopt),
+      ads, "['key1']"));
+
+  ExecuteScriptAsync(
+      shell(), JsReplace(R"(
+navigator.runAdAuction({
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1]
+});
+)",
+                         hanging_url.GetOrigin().spec(), hanging_url.spec()));
+
+  WaitForURL(https_server_->GetURL("/hung"));
+}
+
 // This test exercises the interest group and ad auction services directly,
 // rather than via Blink, to ensure that those services running in the browser
 // implement important security checks (Blink may also perform its own

@@ -132,7 +132,16 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
     : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
 
-AdAuctionServiceImpl::~AdAuctionServiceImpl() = default;
+AdAuctionServiceImpl::~AdAuctionServiceImpl() {
+  while (!auctions_.empty()) {
+    // Need to fail all auctions rather than just deleting them, to ensure Mojo
+    // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
+    // not be destroyed before the Mojo pipe is, and the parent
+    // DocumentServiceBase class owns the pipe, so it may still be open at this
+    // point.
+    (*auctions_.begin())->FailAuction();
+  }
+}
 
 // static
 void AdAuctionServiceImpl::CreateMojoService(

@@ -76,6 +76,15 @@ class CONTENT_EXPORT AuctionRunner {
   explicit AuctionRunner(const AuctionRunner&) = delete;
   AuctionRunner& operator=(const AuctionRunner&) = delete;
 
+  // Fails the auction, invoking `callback_` and preventis any future calls into
+  // `this` by closing mojo pipes and disposing of weak pointers. The owner must
+  // be able to safely delete `this` when the callback is invoked. May only be
+  // invoked if the auction has not yet completed.
+  //
+  // Public so that the owner can fail the auction on teardown, to invoke any
+  // pending Mojo callbacks.
+  void FailAuction();
+
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
@@ -218,12 +227,12 @@ class CONTENT_EXPORT AuctionRunner {
   void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
+  // Appends `error` to `errors_` before calling FailAuction().
+  void FailAuctionWithError(std::string error);
+
   // These complete the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
   // owner must be able to safely delete `this` when the callback is invoked.
-  void FailAuction();
-  // Appends `error` to `errors_` before calling FailAuciton().
-  void FailAuctionWithError(std::string error);
   void ReportSuccess();
 
   // Closes all open pipes, to avoid receiving any Mojo callbacks after

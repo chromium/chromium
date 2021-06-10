@@ -106,6 +106,14 @@ AuctionRunner::AuctionRunner(
 
 AuctionRunner::~AuctionRunner() = default;
 
+void AuctionRunner::FailAuction() {
+  DCHECK(callback_);
+  ClosePipes();
+
+  std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt,
+                           errors_);
+}
+
 void AuctionRunner::ReadInterestGroups(
     std::vector<url::Origin> filtered_buyers) {
   num_pending_buyers_ = filtered_buyers.size();
@@ -474,14 +482,6 @@ void AuctionRunner::OnReportBidWinComplete(
   bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   ReportSuccess();
-}
-
-void AuctionRunner::FailAuction() {
-  DCHECK(callback_);
-  ClosePipes();
-
-  std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt,
-                           errors_);
 }
 
 void AuctionRunner::FailAuctionWithError(std::string error) {
