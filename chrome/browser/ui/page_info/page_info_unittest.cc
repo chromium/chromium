@@ -67,7 +67,6 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -78,6 +77,7 @@ using content::SSLStatus;
 using testing::_;
 using testing::AnyNumber;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
 
@@ -189,7 +189,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ResetMockUI() {
-    mock_ui_ = std::make_unique<MockPageInfoUI>();
+    mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
     // Use this rather than gmock's ON_CALL.WillByDefault(Invoke(... because
     // gmock doesn't handle move-only types well.
     mock_ui_->set_permission_info_callback_ = base::BindRepeating(
@@ -250,7 +250,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
           std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
               incognito_web_contents_.get()));
 
-      incognito_mock_ui_ = std::make_unique<MockPageInfoUI>();
+      incognito_mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
       incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
           &PageInfoTest::SetPermissionInfo, base::Unretained(this));
 
@@ -275,7 +275,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<content::WebContents> incognito_web_contents_;
   std::unique_ptr<PageInfo> incognito_page_info_;
-  std::unique_ptr<MockPageInfoUI> incognito_mock_ui_;
+  std::unique_ptr<NiceMock<MockPageInfoUI>> incognito_mock_ui_;
 
 #if !defined(OS_ANDROID)
   ChromeLayoutProvider layout_provider_;
