@@ -220,7 +220,17 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       &CorsURLLoaderFactory::DeleteIfNeeded, base::Unretained(this)));
 }
 
-CorsURLLoaderFactory::~CorsURLLoaderFactory() = default;
+CorsURLLoaderFactory::~CorsURLLoaderFactory() {
+  // Delete loaders one at a time, since deleting one loader can cause another
+  // loader waiting on it to fail synchronously, which could result in the other
+  // loader calling DestroyURLLoader().
+  while (!loaders_.empty()) {
+    // No need to call context_->LoaderDestroyed(), since this method is only
+    // called from the NetworkContext's destructor, or when there are no
+    // remaining URLLoaders.
+    loaders_.erase(loaders_.begin());
+  }
+}
 
 void CorsURLLoaderFactory::OnLoaderCreated(
     std::unique_ptr<mojom::URLLoader> loader) {
