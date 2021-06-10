@@ -520,3 +520,4 @@ Code links and resources:
 ## Other documentation
 
 - [Service Worker Security FAQ](/docs/security/service-worker-security-faq.md)
+- [ES Modules in Service Workers](/content/browser/service_worker/es_modules.md)
