@@ -228,8 +228,7 @@ guestMessagePipe.registerHandler(
 
 guestMessagePipe.registerHandler(Message.CLOSE_BACKGROUND_PAGE, async () => {
   // TODO(b/186180962): Add background page and test that it closes when done.
-  if (!(await isLauncherSearchEnabled)
-      || window.location.pathname !== '/background') {
+  if (window.location.pathname !== '/background') {
     return;
   }
   window.close();

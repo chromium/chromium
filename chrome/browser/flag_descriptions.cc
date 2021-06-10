@@ -4485,6 +4485,12 @@ const char kFrameThrottleFps30[] = "30 fps";
 const char kFullRestoreName[] = "Full restore";
 const char kFullRestoreDescription[] = "Chrome OS full restore";
 
+const char kHelpAppBackgroundPageName[] = "Help App Background Page";
+const char kHelpAppBackgroundPageDescription[] =
+    "Enables the Background page in the help app. The background page is used "
+    "to initialize the Help App Launcher search index and show the Discover "
+    "tab notification.";
+
 const char kHelpAppDiscoverTabName[] = "Help App Discover Tab";
 const char kHelpAppDiscoverTabDescription[] =
     "Enables the Discover tab in the help app. Even if the feature is enabled, "

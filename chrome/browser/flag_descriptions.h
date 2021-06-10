@@ -2596,6 +2596,9 @@ extern const char kFrameThrottleFps30[];
 extern const char kFullRestoreName[];
 extern const char kFullRestoreDescription[];
 
+extern const char kHelpAppBackgroundPageName[];
+extern const char kHelpAppBackgroundPageDescription[];
+
 extern const char kHelpAppDiscoverTabName[];
 extern const char kHelpAppDiscoverTabDescription[];
 
