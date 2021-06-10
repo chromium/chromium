@@ -1314,7 +1314,6 @@ scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const FloatSize&,
     const AlphaDisposition alpha_disposition) {
-  DCHECK_NE(alpha_disposition, kDontChangeAlpha);
 
   return GetSourceImageForCanvasInternal(status, alpha_disposition);
 }

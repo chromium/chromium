@@ -153,6 +153,7 @@ scoped_refptr<Image> GetImageFromExternalImage(
           "or webgl2 conext");
       return nullptr;
     }
+    source = canvas;
   }
 
   // Neutered external image.
