@@ -355,11 +355,10 @@ void DatabaseImpl::OpenCursor(
       key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE;
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
-  transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::OpenCursorOperation,
-      connection_->database()->AsWeakPtr(), std::move(params),
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      storage_key_.origin(), dispatcher_host_->AsWeakPtr()));
+  transaction->ScheduleTask(
+      BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
+                        connection_->database()->AsWeakPtr(), std::move(params),
+                        storage_key_, dispatcher_host_->AsWeakPtr()));
 }
 
 void DatabaseImpl::Count(

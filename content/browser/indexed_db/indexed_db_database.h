@@ -35,6 +35,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace blink {
@@ -44,10 +45,6 @@ struct IndexedDBDatabaseMetadata;
 struct IndexedDBIndexMetadata;
 struct IndexedDBObjectStoreMetadata;
 }  // namespace blink
-
-namespace url {
-class Origin;
-}
 
 namespace content {
 class IndexedDBClassFactory;
@@ -61,8 +58,8 @@ struct IndexedDBValue;
 
 class CONTENT_EXPORT IndexedDBDatabase {
  public:
-  // Identifier is pair of (origin, database name).
-  using Identifier = std::pair<url::Origin, std::u16string>;
+  // Identifier is pair of (storage_key, database name).
+  using Identifier = std::pair<blink::StorageKey, std::u16string>;
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
   using ErrorCallback =
@@ -78,7 +75,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   int64_t id() const { return metadata_.id; }
   const std::u16string& name() const { return metadata_.name; }
-  const url::Origin& origin() const { return identifier_.first; }
+  const blink::StorageKey& storage_key() const { return identifier_.first; }
   const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
 
   ScopesLockManager* transaction_lock_manager() { return lock_manager_; }
@@ -272,7 +269,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   };
   leveldb::Status OpenCursorOperation(
       std::unique_ptr<OpenCursorOperationParams> params,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       IndexedDBTransaction* transaction);
 
