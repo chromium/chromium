@@ -1618,7 +1618,6 @@ TEST_F(ServiceWorkerRegistryTest,
 
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
 
   scoped_refptr<ServiceWorkerRegistration> registration;
 
@@ -1645,7 +1644,7 @@ TEST_F(ServiceWorkerRegistryTest,
   {
     base::RunLoop loop;
     registry()->CreateNewVersion(
-        registration, kScriptUrl, blink::mojom::ScriptType::kClassic, kKey,
+        registration, kScriptUrl, blink::mojom::ScriptType::kClassic,
         base::BindLambdaForTesting(
             [&](scoped_refptr<ServiceWorkerVersion> new_version) {
               EXPECT_EQ(new_version->script_url(), kScriptUrl);

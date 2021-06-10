@@ -37,7 +37,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
@@ -396,7 +395,6 @@ scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewVersion(
       std::move(registration), script_url, script_type,
-      blink::StorageKey(url::Origin::Create(script_url)),
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerVersion> new_version) {
             version = std::move(new_version);

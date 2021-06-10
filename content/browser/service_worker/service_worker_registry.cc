@@ -173,13 +173,10 @@ void ServiceWorkerRegistry::CreateNewRegistration(
                      std::move(callback)));
 }
 
-// TODO(http://crbug.com/1199077): This function doesn't need to take in a
-// StorageKey, it can get it from ServiceWorkerRegistration. Clean up.
 void ServiceWorkerRegistry::CreateNewVersion(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const GURL& script_url,
     blink::mojom::ScriptType script_type,
-    const blink::StorageKey& key,
     NewVersionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(registration);
@@ -187,7 +184,7 @@ void ServiceWorkerRegistry::CreateNewVersion(
       &storage::mojom::ServiceWorkerStorageControl::GetNewVersionId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewVersionId,
                      weak_factory_.GetWeakPtr(), registration, script_url,
-                     script_type, key, std::move(callback)));
+                     script_type, std::move(callback)));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForClientUrl(
@@ -1066,11 +1063,8 @@ void ServiceWorkerRegistry::DidGetRegistrationsForStorageKey(
   }
 
   // Add unstored registrations that are being installed.
-  // TODO(crbug/1199077): Use full `key` once ServiceWorkerRegistration
-  // implements StorageKey.
   for (const auto& registration : installing_registrations_) {
-    if (url::Origin::Create(registration.second->scope()) !=
-        key_filter.origin())
+    if (registration.second->key() != key_filter)
       continue;
     if (registration_ids.insert(registration.first).second)
       registrations.push_back(registration.second);
@@ -1387,7 +1381,6 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const GURL& script_url,
     blink::mojom::ScriptType script_type,
-    const blink::StorageKey& key,
     NewVersionCallback callback,
     int64_t version_id,
     mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
@@ -1397,8 +1390,6 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
     std::move(callback).Run(nullptr);
     return;
   }
-  // TODO(crbug/1199077): Once ServiceWorkerVersion supports StorageKey use
-  // `key` with it.
   auto version = base::MakeRefCounted<ServiceWorkerVersion>(
       registration.get(), script_url, script_type, version_id,
       std::move(version_reference), context_->AsWeakPtr());

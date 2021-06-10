@@ -378,7 +378,6 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
   context_->registry()->NotifyInstallingRegistration(registration());
   context_->registry()->CreateNewVersion(
       registration(), script_url_, worker_script_type_,
-      blink::StorageKey(url::Origin::Create(script_url_)),
       base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
                      weak_factory_.GetWeakPtr()));
 }
@@ -568,7 +567,6 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     }
     context_->registry()->CreateNewVersion(
         registration(), script_url_, worker_script_type_,
-        blink::StorageKey(url::Origin::Create(script_url_)),
         std::move(next_task));
     return;
   }

@@ -113,7 +113,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void CreateNewVersion(scoped_refptr<ServiceWorkerRegistration> registration,
                         const GURL& script_url,
                         blink::mojom::ScriptType script_type,
-                        const blink::StorageKey& key,
                         NewVersionCallback callback);
 
   // Finds registration for `client_url`, `scope`, or `registration_id` with the
@@ -379,13 +378,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       blink::mojom::ServiceWorkerRegistrationOptions options,
       NewRegistrationCallback callback,
       int64_t registration_id);
-  // TODO(http://crbug.com/1199077): Update function when ServiceWorkerVersion
-  // supports StorageKey
+
   void DidGetNewVersionId(
       scoped_refptr<ServiceWorkerRegistration> registration,
       const GURL& script_url,
       blink::mojom::ScriptType script_type,
-      const blink::StorageKey& key,
       NewVersionCallback callback,
       int64_t version_id,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
