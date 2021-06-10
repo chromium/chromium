@@ -163,6 +163,9 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   // Internal actions are actions that do not test the entire user-action-flow,
   // but give partial coverage (as close to complete as possible) of said code
   // paths.
+  //
+  // State change actions are declared (and implemented) above state check
+  // actions.
   void AddPolicyAppInternal(const std::string& action_param,
                             base::Value default_launch_container,
                             const bool create_shortcut);
@@ -185,21 +188,21 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
                              DisplayMode display_mode);
   void UserSigninInternal();
 
-  // Assert Actions
-  void AssertAppLocallyInstalledInternal();
-  void AssertAppNotLocallyInstalledInternal();
-  void AssertAppNotInList(const std::string& action_param);
-  void AssertInstallable();
-  void AssertInstallIconShown();
-  void AssertInstallIconNotShown();
-  void AssertLaunchIconShown();
-  void AssertLaunchIconNotShown();
-  void AssertManifestDisplayModeInternal(DisplayMode display_mode);
-  void AssertTabCreated();
-  void AssertUserDisplayModeInternal(DisplayMode display_mode);
-  void AssertWindowClosed();
-  void AssertWindowCreated();
-  void AssertWindowDisplayMode(blink::mojom::DisplayMode display_mode);
+  // State Check Actions
+  void CheckAppLocallyInstalledInternal();
+  void CheckAppNotLocallyInstalledInternal();
+  void CheckAppNotInList(const std::string& action_param);
+  void CheckInstallable();
+  void CheckInstallIconShown();
+  void CheckInstallIconNotShown();
+  void CheckLaunchIconShown();
+  void CheckLaunchIconNotShown();
+  void CheckManifestDisplayModeInternal(DisplayMode display_mode);
+  void CheckTabCreated();
+  void CheckUserDisplayModeInternal(DisplayMode display_mode);
+  void CheckWindowClosed();
+  void CheckWindowCreated();
+  void CheckWindowDisplayMode(blink::mojom::DisplayMode display_mode);
 
   // Helpers
   std::string BuildLogForTest(const std::vector<std::string>& testing_actions,
