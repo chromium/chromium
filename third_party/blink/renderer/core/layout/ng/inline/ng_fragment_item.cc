@@ -906,6 +906,21 @@ PhysicalRect NGFragmentItem::LocalRect(StringView text,
   return {};
 }
 
+PhysicalRect NGFragmentItem::ComputeTextBoundsRectForHitTest(
+    const PhysicalOffset& inline_root_offset,
+    bool is_occlusion_test) const {
+  DCHECK(IsText());
+  const PhysicalOffset offset =
+      inline_root_offset + OffsetInContainerFragment();
+  const PhysicalRect border_rect(offset, Size());
+  if (UNLIKELY(is_occlusion_test)) {
+    PhysicalRect ink_overflow = SelfInkOverflow();
+    ink_overflow.Move(border_rect.offset);
+    return ink_overflow;
+  }
+  return PhysicalRect(PixelSnappedIntRect(border_rect));
+}
+
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     const PhysicalOffset& point,
     const NGInlineCursor& cursor) const {

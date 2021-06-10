@@ -401,6 +401,12 @@ class CORE_EXPORT NGFragmentItem {
   // Note: <span> doesn't have text direction.
   TextDirection ResolvedDirection() const;
 
+  // Returns |PhysicalRect| to intersect with hit test location for |this|
+  // text item. See |NGBoxFragmentPainter::HitTestTextItem()|.
+  PhysicalRect ComputeTextBoundsRectForHitTest(
+      const PhysicalOffset& inline_root_offset,
+      bool is_occlusion_test) const;
+
   // Converts the given point, relative to the fragment itself, into a position
   // in DOM tree.
   PositionWithAffinity PositionForPointInText(

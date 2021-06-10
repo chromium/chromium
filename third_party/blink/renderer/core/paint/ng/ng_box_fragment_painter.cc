@@ -1900,15 +1900,9 @@ bool NGBoxFragmentPainter::HitTestTextItem(
     return false;
 
   // TODO(layout-dev): Clip to line-top/bottom.
-  const PhysicalOffset offset =
-      hit_test.inline_root_offset + text_item.OffsetInContainerFragment();
-  PhysicalRect border_rect(offset, text_item.Size());
-  PhysicalRect rect(PixelSnappedIntRect(border_rect));
-  if (UNLIKELY(
-          hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
-    rect = text_item.SelfInkOverflow();
-    rect.Move(border_rect.offset);
-  }
+  const PhysicalRect rect = text_item.ComputeTextBoundsRectForHitTest(
+      hit_test.inline_root_offset,
+      hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
   if (!hit_test.location.Intersects(rect))
     return false;
 
