@@ -27,15 +27,15 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * JNI wrapper for the native ProfileSyncService.
+ * JNI wrapper for the native SyncServiceImpl.
  *
  * This class mostly makes calls to native and contains a minimum of business logic. It is only
- * usable from the UI thread as the native ProfileSyncService requires its access to be on the
+ * usable from the UI thread as the native SyncServiceImpl requires its access to be on the
  * UI thread. See components/sync/driver/sync_service_impl.h for more details.
- * TODO(crbug.com/1201272): Rename mNativeProfileSyncServiceAndroida and ProfileSyncService in docs.
  */
 public class SyncServiceImpl extends SyncService {
-    private final long mNativeProfileSyncServiceAndroid;
+    // Can be null, i.e. 0, if no native sync service exists, e.g. when sync is disabled via CLI.
+    private final long mSyncServiceAndroidBridge;
 
     private int mSetupInProgressCounter;
 
@@ -62,39 +62,39 @@ public class SyncServiceImpl extends SyncService {
     public static @Nullable SyncServiceImpl create() {
         ThreadUtils.assertOnUiThread();
         SyncServiceImpl syncService = new SyncServiceImpl();
-        return syncService.mNativeProfileSyncServiceAndroid == 0 ? null : syncService;
+        return syncService.mSyncServiceAndroidBridge == 0 ? null : syncService;
     }
 
     protected SyncServiceImpl() {
-        // This may cause us to create ProfileSyncService even if sync has not
-        // been set up, but ProfileSyncService won't actually start until
+        // This may cause us to create SyncServiceImpl even if sync has not
+        // been set up, but SyncServiceImpl won't actually start until
         // credentials are available.
-        mNativeProfileSyncServiceAndroid = SyncServiceImplJni.get().init(this);
+        mSyncServiceAndroidBridge = SyncServiceImplJni.get().init(this);
     }
 
     @Override
     public boolean isEngineInitialized() {
-        return SyncServiceImplJni.get().isEngineInitialized(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isEngineInitialized(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTransportStateActive() {
-        return SyncServiceImplJni.get().isTransportStateActive(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isTransportStateActive(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean canSyncFeatureStart() {
-        return SyncServiceImplJni.get().canSyncFeatureStart(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().canSyncFeatureStart(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isSyncFeatureActive() {
-        return SyncServiceImplJni.get().isSyncFeatureActive(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isSyncFeatureActive(mSyncServiceAndroidBridge);
     }
 
     @Override
     public @GoogleServiceAuthError.State int getAuthError() {
-        int authErrorCode = SyncServiceImplJni.get().getAuthError(mNativeProfileSyncServiceAndroid);
+        int authErrorCode = SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
         if (authErrorCode < 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {
             throw new IllegalArgumentException("No state for code: " + authErrorCode);
         }
@@ -103,126 +103,112 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isSyncDisabledByEnterprisePolicy() {
-        return SyncServiceImplJni.get().isSyncDisabledByEnterprisePolicy(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isSyncDisabledByEnterprisePolicy(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean hasUnrecoverableError() {
-        return SyncServiceImplJni.get().hasUnrecoverableError(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().hasUnrecoverableError(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean requiresClientUpgrade() {
-        return SyncServiceImplJni.get().requiresClientUpgrade(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().requiresClientUpgrade(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setDecoupledFromAndroidMasterSync() {
-        SyncServiceImplJni.get().setDecoupledFromAndroidMasterSync(
-                mNativeProfileSyncServiceAndroid);
+        SyncServiceImplJni.get().setDecoupledFromAndroidMasterSync(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean getDecoupledFromAndroidMasterSync() {
         return SyncServiceImplJni.get().getDecoupledFromAndroidMasterSync(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public @Nullable CoreAccountInfo getAuthenticatedAccountInfo() {
-        return SyncServiceImplJni.get().getAuthenticatedAccountInfo(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().getAuthenticatedAccountInfo(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isAuthenticatedAccountPrimary() {
-        return SyncServiceImplJni.get().isAuthenticatedAccountPrimary(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isAuthenticatedAccountPrimary(mSyncServiceAndroidBridge);
     }
 
     @Override
     public Set<Integer> getActiveDataTypes() {
         int[] activeDataTypes =
-                SyncServiceImplJni.get().getActiveDataTypes(mNativeProfileSyncServiceAndroid);
+                SyncServiceImplJni.get().getActiveDataTypes(mSyncServiceAndroidBridge);
         return modelTypeArrayToSet(activeDataTypes);
     }
 
     @Override
     public Set<Integer> getChosenDataTypes() {
         int[] modelTypeArray =
-                SyncServiceImplJni.get().getChosenDataTypes(mNativeProfileSyncServiceAndroid);
+                SyncServiceImplJni.get().getChosenDataTypes(mSyncServiceAndroidBridge);
         return modelTypeArrayToSet(modelTypeArray);
     }
 
     @Override
     public boolean hasKeepEverythingSynced() {
-        return SyncServiceImplJni.get().hasKeepEverythingSynced(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().hasKeepEverythingSynced(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        SyncServiceImplJni.get().setChosenDataTypes(mNativeProfileSyncServiceAndroid,
-                syncEverything,
+        SyncServiceImplJni.get().setChosenDataTypes(mSyncServiceAndroidBridge, syncEverything,
                 syncEverything ? ALL_SELECTABLE_TYPES : modelTypeSetToArray(enabledTypes));
     }
 
     @Override
     public void setFirstSetupComplete(int syncFirstSetupCompleteSource) {
         SyncServiceImplJni.get().setFirstSetupComplete(
-                mNativeProfileSyncServiceAndroid, syncFirstSetupCompleteSource);
+                mSyncServiceAndroidBridge, syncFirstSetupCompleteSource);
     }
 
     @Override
     public boolean isFirstSetupComplete() {
-        return SyncServiceImplJni.get().isFirstSetupComplete(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isFirstSetupComplete(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setSyncRequested(boolean requested) {
-        SyncServiceImplJni.get().setSyncRequested(mNativeProfileSyncServiceAndroid, requested);
+        SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge, requested);
     }
 
     @Override
     public boolean isSyncRequested() {
-        return SyncServiceImplJni.get().isSyncRequested(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Instances of this class keep sync paused until {@link #close} is called. Use
-     * {@link SyncService#getSetupInProgressHandle} to create. Please note that
-     * {@link #close} should be called on every instance of this class.
-     */
-    private class SyncSetupInProgressHandleImpl implements SyncSetupInProgressHandle {
-        private boolean mClosed;
-
-        public SyncSetupInProgressHandleImpl() {
-            ThreadUtils.assertOnUiThread();
-            if (++mSetupInProgressCounter == 1) {
-                setSetupInProgress(true);
-            }
-        }
-
-        @Override
-        public void close() {
-            ThreadUtils.assertOnUiThread();
-            if (mClosed) return;
-            mClosed = true;
-
-            assert mSetupInProgressCounter > 0;
-            if (--mSetupInProgressCounter == 0) {
-                setSetupInProgress(false);
-            }
-        }
+        return SyncServiceImplJni.get().isSyncRequested(mSyncServiceAndroidBridge);
     }
 
     @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
-        return new SyncSetupInProgressHandleImpl();
+        ThreadUtils.assertOnUiThread();
+        if (++mSetupInProgressCounter == 1) {
+            setSetupInProgress(true);
+        }
+
+        return new SyncSetupInProgressHandle() {
+            private boolean mClosed;
+
+            @Override
+            public void close() {
+                ThreadUtils.assertOnUiThread();
+                if (mClosed) return;
+                mClosed = true;
+
+                assert mSetupInProgressCounter > 0;
+                if (--mSetupInProgressCounter == 0) {
+                    setSetupInProgress(false);
+                }
+            }
+        };
     }
 
     private void setSetupInProgress(boolean inProgress) {
-        SyncServiceImplJni.get().setSetupInProgress(mNativeProfileSyncServiceAndroid, inProgress);
+        SyncServiceImplJni.get().setSetupInProgress(mSyncServiceAndroidBridge, inProgress);
     }
 
     @Override
@@ -250,20 +236,18 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isSyncAllowedByPlatform() {
-        return SyncServiceImplJni.get().isSyncAllowedByPlatform(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isSyncAllowedByPlatform(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setSyncAllowedByPlatform(boolean allowed) {
-        SyncServiceImplJni.get().setSyncAllowedByPlatform(
-                mNativeProfileSyncServiceAndroid, allowed);
+        SyncServiceImplJni.get().setSyncAllowedByPlatform(mSyncServiceAndroidBridge, allowed);
     }
 
     @Override
     public @PassphraseType int getPassphraseType() {
         assert isEngineInitialized();
-        int passphraseType =
-                SyncServiceImplJni.get().getPassphraseType(mNativeProfileSyncServiceAndroid);
+        int passphraseType = SyncServiceImplJni.get().getPassphraseType(mSyncServiceAndroidBridge);
         if (passphraseType < 0 || passphraseType > PassphraseType.MAX_VALUE) {
             throw new IllegalArgumentException();
         }
@@ -273,93 +257,90 @@ public class SyncServiceImpl extends SyncService {
     @Override
     public @Nullable Date getExplicitPassphraseTime() {
         assert isEngineInitialized();
-        long timeInMilliseconds = SyncServiceImplJni.get().getExplicitPassphraseTime(
-                mNativeProfileSyncServiceAndroid);
+        long timeInMilliseconds =
+                SyncServiceImplJni.get().getExplicitPassphraseTime(mSyncServiceAndroidBridge);
         return timeInMilliseconds != 0 ? new Date(timeInMilliseconds) : null;
     }
 
     @Override
     public boolean isUsingExplicitPassphrase() {
         assert isEngineInitialized();
-        return SyncServiceImplJni.get().isUsingExplicitPassphrase(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isUsingExplicitPassphrase(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isPassphraseRequiredForPreferredDataTypes() {
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isPassphraseRequiredForPreferredDataTypes(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTrustedVaultKeyRequired() {
         assert isEngineInitialized();
-        return SyncServiceImplJni.get().isTrustedVaultKeyRequired(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isTrustedVaultKeyRequired(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTrustedVaultKeyRequiredForPreferredDataTypes() {
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isTrustedVaultKeyRequiredForPreferredDataTypes(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTrustedVaultRecoverabilityDegraded() {
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isTrustedVaultRecoverabilityDegraded(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isCustomPassphraseAllowed() {
         assert isEngineInitialized();
-        return SyncServiceImplJni.get().isCustomPassphraseAllowed(mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isCustomPassphraseAllowed(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isEncryptEverythingEnabled() {
         assert isEngineInitialized();
-        return SyncServiceImplJni.get().isEncryptEverythingEnabled(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().isEncryptEverythingEnabled(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setEncryptionPassphrase(String passphrase) {
         assert isEngineInitialized();
-        SyncServiceImplJni.get().setEncryptionPassphrase(
-                mNativeProfileSyncServiceAndroid, passphrase);
+        SyncServiceImplJni.get().setEncryptionPassphrase(mSyncServiceAndroidBridge, passphrase);
     }
 
     @Override
     public boolean setDecryptionPassphrase(String passphrase) {
         assert isEngineInitialized();
         return SyncServiceImplJni.get().setDecryptionPassphrase(
-                mNativeProfileSyncServiceAndroid, passphrase);
+                mSyncServiceAndroidBridge, passphrase);
     }
 
     @Override
     public boolean isPassphrasePromptMutedForCurrentProductVersion() {
         return SyncServiceImplJni.get().isPassphrasePromptMutedForCurrentProductVersion(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public void markPassphrasePromptMutedForCurrentProductVersion() {
         SyncServiceImplJni.get().markPassphrasePromptMutedForCurrentProductVersion(
-                mNativeProfileSyncServiceAndroid);
+                mSyncServiceAndroidBridge);
     }
 
     @Override
     public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
         SyncServiceImplJni.get().recordKeyRetrievalTrigger(
-                mNativeProfileSyncServiceAndroid, keyRetrievalTrigger);
+                mSyncServiceAndroidBridge, keyRetrievalTrigger);
     }
 
     @Override
     public boolean shouldOfferTrustedVaultOptIn() {
-        return SyncServiceImplJni.get().shouldOfferTrustedVaultOptIn(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().shouldOfferTrustedVaultOptIn(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -372,14 +353,13 @@ public class SyncServiceImpl extends SyncService {
     @VisibleForTesting
     @Override
     public long getLastSyncedTimeForDebugging() {
-        return SyncServiceImplJni.get().getLastSyncedTimeForDebugging(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().getLastSyncedTimeForDebugging(mSyncServiceAndroidBridge);
     }
 
     @VisibleForTesting
     @Override
     public void triggerRefresh() {
-        SyncServiceImplJni.get().triggerRefresh(mNativeProfileSyncServiceAndroid);
+        SyncServiceImplJni.get().triggerRefresh(mSyncServiceAndroidBridge);
     }
 
     /**
@@ -397,7 +377,7 @@ public class SyncServiceImpl extends SyncService {
     @VisibleForTesting
     @Override
     public void getAllNodes(Callback<JSONArray> callback) {
-        SyncServiceImplJni.get().getAllNodes(mNativeProfileSyncServiceAndroid, callback);
+        SyncServiceImplJni.get().getAllNodes(mSyncServiceAndroidBridge, callback);
     }
 
     private static Set<Integer> modelTypeArrayToSet(int[] modelTypeArray) {
@@ -420,8 +400,7 @@ public class SyncServiceImpl extends SyncService {
     @VisibleForTesting
     @Override
     public long getNativeSyncServiceImplForTest() {
-        return SyncServiceImplJni.get().getNativeSyncServiceImplForTest(
-                mNativeProfileSyncServiceAndroid);
+        return SyncServiceImplJni.get().getNativeSyncServiceImplForTest(mSyncServiceAndroidBridge);
     }
 
     @NativeMethods
