@@ -170,6 +170,7 @@ void CandidateView::SetEntry(const ui::CandidateWindow::Entry& entry) {
   shortcut_label_->SetText(label);
   candidate_label_->SetText(entry.value);
   annotation_label_->SetText(entry.annotation);
+  SetAccessibleName(entry.value);
 }
 
 void CandidateView::SetInfolistIcon(bool enable) {
@@ -290,7 +291,6 @@ void CandidateView::SetPositionData(int index, int total) {
 }
 
 void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(candidate_label_->GetText());
   node_data->role = ax::mojom::Role::kImeCandidate;
   // PosInSet needs to be incremented since |candidate_index_| is 0-based.
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,

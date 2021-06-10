@@ -9,12 +9,14 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -168,6 +170,27 @@ TEST_F(CandidateViewTest, ClickAndMove) {
   EXPECT_FALSE(clicked);
   event_generator()->ReleaseLeftButton();
   EXPECT_TRUE(clicked);
+}
+
+TEST_F(CandidateViewTest, SetEntryChangesAccessibleName) {
+  CandidateView* view = GetCandidateAt(1);
+
+  ui::CandidateWindow::Entry entry;
+  entry.value = u"Candidate";
+  view->SetEntry(entry);
+  EXPECT_EQ(u"Candidate", view->GetAccessibleName());
+}
+
+TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  CandidateView* view = GetCandidateAt(1);
+
+  // Changing the text affects the accessible name, so it should notify.
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+  ui::CandidateWindow::Entry entry;
+  entry.value = u"Candidate";
+  view->SetEntry(entry);
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
 }
 
 }  // namespace ime
