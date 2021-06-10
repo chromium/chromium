@@ -4,6 +4,9 @@
 
 #include "chrome/updater/updater.h"
 
+#include <algorithm>
+#include <iterator>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -69,8 +72,6 @@ void InitLogging(UpdaterScope updater_scope,
                        true,    // enable_thread_id
                        true,    // enable_timestamp
                        false);  // enable_tickcount
-  VLOG(1) << "Version " << kUpdaterVersion << ", log file "
-          << settings.log_file_path;
 }
 
 void InitializeCrashReporting(UpdaterScope updater_scope) {
@@ -85,10 +86,17 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
   StartCrashReporter(updater_scope, kUpdaterVersion);
 }
 
-}  // namespace
+int HandleUpdaterCommands(UpdaterScope updater_scope,
+                          const base::CommandLine* command_line) {
+  // Used for unit test purposes. There is no need to run with a crash handler.
+  if (command_line->HasSwitch(kTestSwitch))
+    return 0;
 
-int HandleUpdaterCommands(const base::CommandLine* command_line) {
-  DCHECK(!command_line->HasSwitch(kCrashHandlerSwitch));
+  // Start the crash handler as early as possible.
+  if (command_line->HasSwitch(kCrashHandlerSwitch))
+    return CrashReporterMain();
+
+  InitializeCrashReporting(updater_scope);
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   if (command_line->HasSwitch(kCrashMeSwitch)) {
@@ -121,8 +129,9 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 
   if (command_line->HasSwitch(kUninstallSwitch) ||
       command_line->HasSwitch(kUninstallSelfSwitch) ||
-      command_line->HasSwitch(kUninstallIfUnusedSwitch))
+      command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     return MakeAppUninstall()->Run();
+  }
 
   if (command_line->HasSwitch(kWakeSwitch)) {
     return MakeAppWake()->Run();
@@ -132,6 +141,32 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
   return -1;
 }
 
+// Returns the string literal corresponding to an updater command, which
+// is present on the updater process command line. Returns an empty string
+// if the command is not found.
+const char* GetUpdaterCommand(const base::CommandLine* command_line) {
+  // Contains the literals which are associated with specific updater commands.
+  const char* commands[] = {
+      kComServiceSwitch,
+      kCrashHandlerSwitch,
+      kInstallSwitch,
+      kServerSwitch,
+      kTagSwitch,
+      kTestSwitch,
+      kUninstallIfUnusedSwitch,
+      kUninstallSelfSwitch,
+      kUninstallSwitch,
+      kUpdateSwitch,
+      kWakeSwitch,
+  };
+  const char** it = std::find_if(
+      std::begin(commands), std::end(commands),
+      [command_line](auto cmd) { return command_line->HasSwitch(cmd); });
+  return it != std::end(commands) ? *it : "";
+}
+
+}  // namespace
+
 int UpdaterMain(int argc, const char* const* argv) {
   base::PlatformThread::SetName("UpdaterMain");
   base::AtExitManager exit_manager;
@@ -140,20 +175,14 @@ int UpdaterMain(int argc, const char* const* argv) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(kTestSwitch))
-    return 0;
-
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope, *command_line);
 
-  VLOG(1) << "Command line: " << command_line->GetCommandLineString();
-
-  if (command_line->HasSwitch(kCrashHandlerSwitch))
-    return CrashReporterMain();
-  InitializeCrashReporting(updater_scope);
-
-  const int retval = HandleUpdaterCommands(command_line);
-  DVLOG(1) << __func__ << " returned " << retval << ".";
+  VLOG(1) << "Version " << kUpdaterVersion
+          << ", command line: " << command_line->GetCommandLineString();
+  const int retval = HandleUpdaterCommands(updater_scope, command_line);
+  DVLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
+           << " returned " << retval << ".";
   return retval;
 }
 
