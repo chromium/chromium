@@ -361,6 +361,9 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
         callback->AsUserdata());
   }
 
+  // WebGPU guarantees that promises are resolved in finite time so we need to
+  // ensure commands are flushed.
+  EnsureFlush();
   return promise;
 }
 
