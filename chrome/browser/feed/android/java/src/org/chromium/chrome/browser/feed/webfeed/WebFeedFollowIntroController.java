@@ -121,7 +121,7 @@ public class WebFeedFollowIntroController {
             }
 
             @Override
-            public void onContentViewScrollOffsetChanged(int verticalScrollDelta) {
+            public void onContentViewScrollingEnded(int verticalScrollDelta) {
                 if (verticalScrollDelta > 0) {
                     maybeShowFollowIntro();
                 }

@@ -277,7 +277,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     private void performScrollUpAfterDelay(long delay) {
         mClock.advanceCurrentTimeMillis(delay);
-        mEmptyTabObserver.onContentViewScrollOffsetChanged(/*verticalScrollDelta=*/10);
+        mEmptyTabObserver.onContentViewScrollingEnded(/*verticalScrollDelta=*/10);
     }
 
     /**

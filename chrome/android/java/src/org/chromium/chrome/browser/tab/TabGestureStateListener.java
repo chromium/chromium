@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -43,7 +42,7 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     @Override
     public void initWebContents(WebContents webContents) {
         GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
-        mGestureListener = new GestureStateListenerWithScroll() {
+        mGestureListener = new GestureStateListener() {
             private int mLastScrollOffsetY;
 
             @Override
@@ -65,13 +64,9 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
             @Override
             public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
                 onScrollingStateChanged();
-            }
-
-            @Override
-            public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
                 RewindableIterator<TabObserver> observers = ((TabImpl) mTab).getTabObservers();
                 while (observers.hasNext()) {
-                    observers.next().onContentViewScrollOffsetChanged(
+                    observers.next().onContentViewScrollingEnded(
                             mLastScrollOffsetY - scrollOffsetY);
                 }
             }

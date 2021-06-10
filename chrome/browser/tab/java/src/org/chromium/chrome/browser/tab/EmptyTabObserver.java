@@ -140,5 +140,5 @@ public class EmptyTabObserver implements TabObserver {
     public void onContentViewScrollingStateChanged(boolean scrolling) {}
 
     @Override
-    public void onContentViewScrollOffsetChanged(int verticalScrollDelta) {}
+    public void onContentViewScrollingEnded(int verticalScrollDelta) {}
 }
