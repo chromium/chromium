@@ -248,7 +248,9 @@ void ProcessMirrorHeader(
   //    expires, they will receive a "Mirror" re-authentication request for all
   //    Google web properties. Another case when this can be triggered is
   //    https://crbug.com/1012649.
-  // 3. Displaying the Account Manager for managing accounts.
+  // 3. Displaying an account addition window: when user clicks "Add another
+  //    account" in One Google Bar.
+  // 4. Displaying the Account Manager for managing accounts.
 
   // 1. Going incognito.
   if (service_type == GAIA_SERVICE_TYPE_INCOGNITO) {
@@ -314,17 +316,27 @@ void ProcessMirrorHeader(
     return;
   }
 
-  // 3. Displaying the Account Manager for managing accounts.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+  DCHECK(init_params->use_new_account_manager);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // 3. Displaying an account addition window.
+  if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
+                                   AccountAdditionSource::kContentArea);
+    return;
+  }
+
+  // 4. Displaying the Account Manager for managing accounts.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
     return;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  DCHECK(init_params->use_new_account_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ::GetAccountManagerFacade(profile->GetPath().value())
       ->ShowManageAccountsSettings();
