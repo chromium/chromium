@@ -108,8 +108,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override;
 
-  void FormControlElementClicked(const blink::WebFormControlElement& element,
-                                 bool was_focused);
+  void FormControlElementClicked(const blink::WebFormControlElement& element);
 
   base::WeakPtr<AutofillAgent> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -353,9 +352,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool query_password_suggestion_ = false;
 
   bool focused_node_was_last_clicked_ = false;
-  bool was_focused_before_now_ = false;
   FieldRendererId last_clicked_form_control_element_for_testing_;
-  bool last_clicked_form_control_element_was_focused_for_testing_ = false;
 
   FormTracker form_tracker_;
 

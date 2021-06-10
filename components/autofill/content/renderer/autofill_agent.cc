@@ -211,7 +211,6 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
 }
 
 void AutofillAgent::FocusedElementChanged(const WebElement& element) {
-  was_focused_before_now_ = false;
   HidePopup();
 
   if (element.IsNull()) {
@@ -956,11 +955,9 @@ void AutofillAgent::SelectWasUpdated(
 }
 
 void AutofillAgent::FormControlElementClicked(
-    const WebFormControlElement& element,
-    bool was_focused) {
+    const WebFormControlElement& element) {
   last_clicked_form_control_element_for_testing_ =
       FieldRendererId(element.UniqueRendererFormControlId());
-  last_clicked_form_control_element_was_focused_for_testing_ = was_focused;
   was_last_action_fill_ = false;
 
   const WebInputElement* input_element = ToWebInputElement(&element);
@@ -972,8 +969,12 @@ void AutofillAgent::FormControlElementClicked(
 
   ShowSuggestionsOptions options;
   options.autofill_on_empty_values = true;
-  // Show full suggestions when clicking on an already-focused form field.
-  options.show_full_suggestion_list = element.IsAutofilled() || was_focused;
+  // Even if the user has not edited an input element, it may still contain a
+  // value: A default value filled by the website. In that case, we don't want
+  // to elide suggestions that don't have a common prefix with the default
+  // value.
+  options.show_full_suggestion_list =
+      element.IsAutofilled() || !element.UserHasEditedTheField();
 
   ShowSuggestions(element, options);
 
@@ -991,11 +992,9 @@ void AutofillAgent::HandleFocusChangeComplete() {
       !focused_element.IsNull() && focused_element.IsFormControlElement() &&
       (form_util::IsTextInput(blink::ToWebInputElement(&focused_element)) ||
        focused_element.HasHTMLTagName("textarea"))) {
-    FormControlElementClicked(focused_element.ToConst<WebFormControlElement>(),
-                              was_focused_before_now_);
+    FormControlElementClicked(focused_element.ToConst<WebFormControlElement>());
   }
 
-  was_focused_before_now_ = true;
   focused_node_was_last_clicked_ = false;
 
   SendPotentiallySubmittedFormToBrowser();

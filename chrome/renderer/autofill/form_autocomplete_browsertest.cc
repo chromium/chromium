@@ -233,8 +233,8 @@ void SimulateFillForm(const FormData& form_data,
   ASSERT_FALSE(fname_element.IsNull());
   // This call is necessary to setup the autofill agent appropriate for the
   // user selection; simulates the menu actually popping up.
-  autofill_agent->FormControlElementClicked(fname_element.To<WebInputElement>(),
-                                            false);
+  autofill_agent->FormControlElementClicked(
+      fname_element.To<WebInputElement>());
 
   autofill_agent->FillForm(0, form_data);
 }
@@ -296,8 +296,8 @@ void SimulateFillFormWithNonFillableFields(
 
   // This call is necessary to setup the autofill agent appropriate for the
   // user selection; simulates the menu actually popping up.
-  autofill_agent->FormControlElementClicked(fname_element.To<WebInputElement>(),
-                                            false);
+  autofill_agent->FormControlElementClicked(
+      fname_element.To<WebInputElement>());
 
   autofill_agent->FillForm(0, data);
 }
@@ -872,8 +872,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
     ASSERT_TRUE(input_element);
     FieldRendererId field_id(input_element->UniqueRendererFormControlId());
     // Select this element in |autofill_agent_|.
-    autofill_agent_->FormControlElementClicked(element.To<WebInputElement>(),
-                                               false);
+    autofill_agent_->FormControlElementClicked(element.To<WebInputElement>());
 
     autofill_agent_->AcceptDataListSuggestion(field_id, kSuggestion);
     EXPECT_EQ(c.expected, input_element->Value().Utf8()) << "Case id: " << c.id;
