@@ -1224,7 +1224,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/libprotobuf-mutator.git' + '@' +  Var('libprotobuf-mutator'),
 
   'src/third_party/libsrtp':
-    Var('chromium_git') + '/chromium/deps/libsrtp.git' + '@' + '7990ca64c616b150a9cb4714601c4a3b0c84fe91',
+    Var('chromium_git') + '/chromium/deps/libsrtp.git' + '@' + '5b7c744eb8310250ccc534f3f86a2015b3887a0a',
 
   # Android Explicit Synchronization.
   'src/third_party/libsync/src': {
@@ -1304,7 +1304,7 @@ deps = {
 
   'src/third_party/nasm': {
       'url': Var('chromium_git') + '/chromium/deps/nasm.git' + '@' +
-      '19f3fad68da99277b2882939d3b2fa4c4b8d51d9'
+      'e9be5fd6d723a435ca2da162f9e0ffcb688747c1'
   },
 
   'src/third_party/neon_2_sse/src':
