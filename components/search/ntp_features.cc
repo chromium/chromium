@@ -95,6 +95,10 @@ const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
 const base::Feature kNtpDriveModule{"NtpDriveModule",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, modules will be able to be reordered via dragging and dropping
+const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpShoppingTasksModuleDataParam[] =

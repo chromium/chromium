@@ -45939,6 +45939,7 @@ from previous Chrome versions.
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
+  <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>
   <int value="-1333946113" label="ContentIndexingDownloadHome:disabled"/>
   <int value="-1332267458" label="RemoveNavigationHistory:enabled"/>
@@ -49415,6 +49416,7 @@ from previous Chrome versions.
   <int value="1659082220" label="EnableManualSaving:disabled"/>
   <int value="1659372520" label="WebXrRenderPath:disabled"/>
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
+  <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>

@@ -4623,6 +4623,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
                                     kNtpChromeCartModuleVariations,
                                     "DesktopNtpModules")},
+
+    {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
+     flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)
