@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
@@ -494,7 +495,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     base::RunLoop swap_run_loop;
     base::RunLoop presentation_run_loop;
 
-    // Register callbacks for presentation time.
+    // Register callbacks for swap and presentation times.
     base::TimeTicks swap_time;
     MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
         base::BindOnce(
@@ -520,9 +521,9 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     // Present and wait for it to complete.
     viz::FrameTimingDetails timing_details;
     if (!swap_to_presentation.is_zero()) {
-      timing_details.presentation_feedback = gfx::PresentationFeedback(
-          /*presentation_time=*/swap_time + swap_to_presentation,
-          base::TimeDelta::FromMilliseconds(16), 0);
+      timing_details.presentation_feedback =
+          gfx::PresentationFeedback(swap_time + swap_to_presentation,
+                                    base::TimeDelta::FromMilliseconds(16), 0);
     }
     auto* last_frame_sink = GetWebFrameWidget().LastCreatedFrameSink();
     last_frame_sink->NotifyDidPresentCompositorFrame(1, timing_details);
@@ -571,6 +572,89 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
       histograms.GetAllSamples(
           "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
       testing::IsEmpty());
+}
+
+// Verifies that the presentation callback is called after the first successful
+// presentation (skips failed presentations in between).
+TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
+  base::HistogramTester histograms;
+
+  constexpr base::TimeDelta swap_to_failed =
+      base::TimeDelta::FromMicroseconds(2);
+  constexpr base::TimeDelta failed_to_successful =
+      base::TimeDelta::FromMicroseconds(3);
+
+  base::RunLoop swap_run_loop;
+  base::RunLoop presentation_run_loop;
+
+  base::TimeTicks failed_presentation_time;
+  base::TimeTicks successful_presentation_time;
+
+  // Register callbacks for swap and presentation times.
+  MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
+      base::BindLambdaForTesting(
+          [&](blink::WebSwapResult result, base::TimeTicks timestamp) {
+            DCHECK(!timestamp.is_null());
+
+            // Now that the swap time is known, we can determine what timestamps
+            // should we use for the failed and the subsequent successful
+            // presentations.
+            DCHECK(failed_presentation_time.is_null());
+            failed_presentation_time = timestamp + swap_to_failed;
+            DCHECK(successful_presentation_time.is_null());
+            successful_presentation_time =
+                failed_presentation_time + failed_to_successful;
+
+            swap_run_loop.Quit();
+          }),
+      base::BindLambdaForTesting(
+          [&](blink::WebSwapResult result, base::TimeTicks timestamp) {
+            DCHECK(!timestamp.is_null());
+            DCHECK(!failed_presentation_time.is_null());
+            DCHECK(!successful_presentation_time.is_null());
+
+            // Verify that this callback is run in response to the successful
+            // presentation, not the failed one before that.
+            EXPECT_NE(timestamp, failed_presentation_time);
+            EXPECT_EQ(timestamp, successful_presentation_time);
+
+            presentation_run_loop.Quit();
+          }));
+
+  // Composite and wait for the swap to complete.
+  Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
+  swap_run_loop.Run();
+
+  // Respond with a failed presentation feedback.
+  DCHECK(!failed_presentation_time.is_null());
+  viz::FrameTimingDetails failed_timing_details;
+  failed_timing_details.presentation_feedback = gfx::PresentationFeedback(
+      failed_presentation_time, base::TimeDelta::FromMilliseconds(16),
+      gfx::PresentationFeedback::kFailure);
+  GetWebFrameWidget().LastCreatedFrameSink()->NotifyDidPresentCompositorFrame(
+      1, failed_timing_details);
+
+  // Respond with a successful presentation feedback.
+  DCHECK(!successful_presentation_time.is_null());
+  viz::FrameTimingDetails successful_timing_details;
+  successful_timing_details.presentation_feedback = gfx::PresentationFeedback(
+      successful_presentation_time, base::TimeDelta::FromMilliseconds(16), 0);
+  GetWebFrameWidget().LastCreatedFrameSink()->NotifyDidPresentCompositorFrame(
+      2, successful_timing_details);
+
+  // Wait for the presentation callback to be called. It should be called with
+  // the timestamp of the successful presentation.
+  presentation_run_loop.Run();
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
+              testing::ElementsAre(base::Bucket(true, 1)));
+  const auto expected_sample = static_cast<base::HistogramBase::Sample>(
+      (swap_to_failed + failed_to_successful).InMilliseconds());
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
+      testing::ElementsAre(base::Bucket(expected_sample, 1)));
 }
 
 // Tests that the value of VisualProperties::is_pinch_gesture_active is

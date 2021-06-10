@@ -120,6 +120,8 @@ class PLATFORM_EXPORT LayerTreeView
   void DidScheduleBeginMainFrame() override;
   void DidRunBeginMainFrame() override;
 
+  // Registers a callback that will be run on the first successful presentation
+  // for `frame_token` or a following frame.
   void AddPresentationCallback(
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);

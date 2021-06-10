@@ -856,7 +856,8 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
 
   bool should_swap = !disable_swap_until_resize_ && should_draw && size_matches;
   if (should_swap) {
-    PresentationGroupTiming presentation_group_timing;
+    PresentationGroupTiming& presentation_group_timing =
+        pending_presentation_group_timings_.emplace_back();
     presentation_group_timing.OnDraw(draw_timer->Begin());
 
     for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
@@ -869,8 +870,6 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
         }
       }
     }
-    pending_presentation_group_timings_.emplace_back(
-        std::move(presentation_group_timing));
 
     TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
                                  "Graphics.Pipeline.DrawAndSwap",

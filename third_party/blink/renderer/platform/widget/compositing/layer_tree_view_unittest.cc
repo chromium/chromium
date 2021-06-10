@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -363,6 +364,53 @@ TEST(LayerTreeViewTest, VisibilityTest) {
     layer_tree_view.set_run_loop(nullptr);
     EXPECT_EQ(2, layer_tree_view.num_requests_sent());
   }
+}
+
+// Tests that presentation callbacks are only called on successful
+// presentations.
+TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
+  base::test::TaskEnvironment task_environment;
+
+  cc::TestTaskGraphRunner test_task_graph_runner;
+  blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler;
+  StubLayerTreeViewDelegate layer_tree_view_delegate;
+  LayerTreeView layer_tree_view(&layer_tree_view_delegate,
+                                &fake_thread_scheduler);
+
+  layer_tree_view.Initialize(
+      cc::LayerTreeSettings(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*compositor_thread=*/nullptr, &test_task_graph_runner,
+      /*main_thread_pipeline=*/nullptr,
+      /*compositor_thread_pipeline=*/nullptr);
+
+  // Register a callback for frame 1.
+  base::TimeTicks callback_timestamp;
+  layer_tree_view.AddPresentationCallback(
+      1, base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+        callback_timestamp = timestamp;
+      }));
+
+  // Respond with a failed presentation feedback for frame 1 and verify that the
+  // callback is not called
+  base::TimeTicks fail_timestamp =
+      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(2);
+  gfx::PresentationFeedback fail_feedback(fail_timestamp, base::TimeDelta(),
+                                          gfx::PresentationFeedback::kFailure);
+  layer_tree_view.DidPresentCompositorFrame(1, fail_feedback);
+  EXPECT_TRUE(callback_timestamp.is_null());
+
+  // Respond with a successful presentation feedback for frame 2 and verify that
+  // the callback for frame 1 is now called with presentation timestamp for
+  // frame 2.
+  base::TimeTicks success_timestamp =
+      fail_timestamp + base::TimeDelta::FromMicroseconds(3);
+  gfx::PresentationFeedback success_feedback(success_timestamp,
+                                             base::TimeDelta(), 0);
+  layer_tree_view.DidPresentCompositorFrame(2, success_feedback);
+  EXPECT_FALSE(callback_timestamp.is_null());
+  EXPECT_NE(callback_timestamp, fail_timestamp);
+  EXPECT_EQ(callback_timestamp, success_timestamp);
 }
 
 }  // namespace

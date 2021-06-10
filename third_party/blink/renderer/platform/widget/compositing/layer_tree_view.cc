@@ -309,6 +309,9 @@ void LayerTreeView::DidPresentCompositorFrame(
   DCHECK(layer_tree_host_->GetTaskRunnerProvider()
              ->MainThreadTaskRunner()
              ->RunsTasksInCurrentSequence());
+  // Only run callbacks on successful presentations.
+  if (feedback.failed())
+    return;
   while (!presentation_callbacks_.empty()) {
     const auto& front = presentation_callbacks_.begin();
     if (viz::FrameTokenGT(front->first, frame_token))
@@ -406,7 +409,7 @@ void LayerTreeView::AddPresentationCallback(
   }
   std::vector<base::OnceCallback<void(base::TimeTicks)>> callbacks;
   callbacks.push_back(std::move(callback));
-  presentation_callbacks_.push_back({frame_token, std::move(callbacks)});
+  presentation_callbacks_.emplace_back(frame_token, std::move(callbacks));
   DCHECK_LE(presentation_callbacks_.size(), 25u);
 }
 
