@@ -32,7 +32,7 @@ per-file welcome_strings.grdp=file://chrome/browser/ui/webui/welcome/OWNERS
 
 per-file printing_strings.grdp=file://printing/OWNERS
 
-per-file profiles_strings.grdp=file://chrome/browser/profiles/OWNERS
+per-file profiles_strings.grdp=file://chrome/app/profiles_strings_grdp/OWNERS
 
 per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 
