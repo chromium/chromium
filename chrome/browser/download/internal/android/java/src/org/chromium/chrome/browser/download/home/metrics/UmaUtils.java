@@ -12,6 +12,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.RenameResult;
@@ -190,6 +191,7 @@ public class UmaUtils {
 
         RecordHistogram.recordLinearCountHistogram(
                 "Android.DownloadManager.Share.Count", items.size(), 1, 20, 20);
+        ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
     }
 
     /**
