@@ -56,6 +56,10 @@ class ComServerApp : public AppServer {
     return update_service_internal_;
   }
 
+  // Handles COM factory unregistration then triggers program shutdown. This
+  // function runs on a COM RPC thread when the WRL module is destroyed.
+  void Stop();
+
  private:
   ~ComServerApp() override;
 
@@ -85,10 +89,6 @@ class ComServerApp : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
-
-  // Handles object unregistration then triggers program shutdown. This
-  // function runs on a COM RPC thread when the WRL module is destroyed.
-  void Stop();
 
   // Identifier of registered class objects used for unregistration.
   std::vector<DWORD> cookies_;

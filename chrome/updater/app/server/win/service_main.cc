@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
@@ -71,71 +72,13 @@ int ServiceMain::Start() {
   return (this->*run_routine_)();
 }
 
-ServiceMain::ServiceMain()
-    : exit_signal_(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {
+ServiceMain::ServiceMain() {
   service_status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   service_status_.dwCurrentState = SERVICE_STOPPED;
   service_status_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 }
 
 ServiceMain::~ServiceMain() = default;
-
-void ServiceMain::CreateWRLModule() {
-  Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      this, &ServiceMain::SignalExit);
-}
-
-// When _ServiceMain gets called, it initializes COM, and then calls Run().
-// Run() initializes security, then calls RegisterClassObject().
-HRESULT ServiceMain::RegisterClassObject() {
-  auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
-
-  Microsoft::WRL::ComPtr<IUnknown> factory;
-  unsigned int flags = Microsoft::WRL::ModuleType::OutOfProc;
-
-  HRESULT hr = Microsoft::WRL::Details::CreateClassFactory<
-      Microsoft::WRL::SimpleClassFactory<UpdaterInternalImpl>>(
-      &flags, nullptr, __uuidof(IClassFactory), &factory);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Factory creation failed; hr: " << hr;
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IClassFactory> class_factory;
-  hr = factory.As(&class_factory);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "IClassFactory object creation failed; hr: " << hr;
-    return hr;
-  }
-
-  // The pointer in this array is unowned. Do not release it.
-  IClassFactory* class_factories[] = {class_factory.Get()};
-  static_assert(
-      std::extent<decltype(cookies_)>() == base::size(class_factories),
-      "Arrays cookies_ and class_factories must be the same size.");
-
-  IID class_ids[] = {__uuidof(UpdaterInternalClass)};
-  DCHECK_EQ(base::size(cookies_), base::size(class_ids));
-  static_assert(std::extent<decltype(cookies_)>() == base::size(class_ids),
-                "Arrays cookies_ and class_ids must be the same size.");
-
-  hr = module.RegisterCOMObject(nullptr, class_ids, class_factories, cookies_,
-                                base::size(cookies_));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "RegisterCOMObject failed; hr: " << hr;
-    return hr;
-  }
-
-  return hr;
-}
-
-void ServiceMain::UnregisterClassObject() {
-  auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
-  const HRESULT hr =
-      module.UnregisterCOMObject(nullptr, cookies_, base::size(cookies_));
-  LOG_IF(ERROR, FAILED(hr)) << "UnregisterCOMObject failed; hr: " << hr;
-}
 
 int ServiceMain::RunAsService() {
   static constexpr SERVICE_TABLE_ENTRY dispatch_table[] = {
@@ -159,22 +102,10 @@ void ServiceMain::ServiceMainImpl() {
   }
   SetServiceStatus(SERVICE_RUNNING);
 
-  service_status_.dwWin32ExitCode = ERROR_SUCCESS;
-  service_status_.dwCheckPoint = 0;
-  service_status_.dwWaitHint = 0;
-
-  // Initialize COM for the current thread.
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
-  if (!com_initializer.Succeeded()) {
-    LOG(ERROR) << "Failed to initialize COM";
-    SetServiceStatus(SERVICE_STOPPED);
-    return;
-  }
-
   // When the Run function returns, the service has stopped.
+  // `hr` can be either a HRESULT or a Windows error code.
   const HRESULT hr = Run();
-  if (FAILED(hr)) {
+  if (hr != S_OK) {
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
   }
@@ -192,7 +123,7 @@ void ServiceMain::ServiceControlHandler(DWORD control) {
   switch (control) {
     case SERVICE_CONTROL_STOP:
       self->SetServiceStatus(SERVICE_STOP_PENDING);
-      self->SignalExit();
+      AppServerSingletonInstance()->Stop();
       break;
 
     default:
@@ -206,23 +137,27 @@ void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
 }
 
 void ServiceMain::SetServiceStatus(DWORD state) {
-  service_status_.dwCurrentState = state;
+  ::InterlockedExchange(&service_status_.dwCurrentState, state);
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 
 HRESULT ServiceMain::Run() {
+  base::SingleThreadTaskExecutor service_task_executor(
+      base::MessagePumpType::UI);
+
+  // Initialize COM for the current thread.
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  if (!com_initializer.Succeeded()) {
+    LOG(ERROR) << "Failed to initialize COM";
+    return CO_E_INITIALIZATIONFAILED;
+  }
+
   HRESULT hr = InitializeComSecurity();
   if (FAILED(hr))
     return hr;
 
-  CreateWRLModule();
-  hr = RegisterClassObject();
-  if (SUCCEEDED(hr)) {
-    WaitForExitSignal();
-    UnregisterClassObject();
-  }
-
-  return hr;
+  return AppServerSingletonInstance()->Run();
 }
 
 // static
@@ -244,14 +179,6 @@ HRESULT ServiceMain::InitializeComSecurity() {
       const_cast<SECURITY_DESCRIPTOR*>(sd.GetPSECURITY_DESCRIPTOR()), -1,
       nullptr, nullptr, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IDENTIFY,
       nullptr, EOAC_DYNAMIC_CLOAKING | EOAC_NO_CUSTOM_MARSHAL, nullptr);
-}
-
-void ServiceMain::WaitForExitSignal() {
-  exit_signal_.Wait();
-}
-
-void ServiceMain::SignalExit() {
-  exit_signal_.Signal();
 }
 
 }  // namespace updater

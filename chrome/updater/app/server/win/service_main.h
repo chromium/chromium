@@ -41,16 +41,6 @@ class ServiceMain {
   ServiceMain();
   ~ServiceMain();
 
-  // Creates an out-of-proc WRL Module.
-  void CreateWRLModule();
-
-  // Registers the Service COM class factory object so other applications can
-  // connect to it. Returns the registration status.
-  HRESULT RegisterClassObject();
-
-  // Unregisters the Service COM class factory object.
-  void UnregisterClassObject();
-
   // This function handshakes with the service control manager and starts
   // the service.
   int RunAsService();
@@ -79,25 +69,11 @@ class ServiceMain {
   // within the server.
   static HRESULT InitializeComSecurity();
 
-  // Waits until the last object is released or until the service is asked to
-  // exit.
-  void WaitForExitSignal();
-
-  // Called when the last object is released or if the service is asked to exit.
-  void SignalExit();
-
   // The action routine to be executed.
   int (ServiceMain::*run_routine_)() = &ServiceMain::RunAsService;
 
   SERVICE_STATUS_HANDLE service_status_handle_ = nullptr;
   SERVICE_STATUS service_status_ = {};
-
-  // Identifier of registered class objects used for unregistration.
-  DWORD cookies_[1] = {};
-
-  // This event is signaled when the last COM instance is released, or if the
-  // service control manager asks the service to exit.
-  base::WaitableEvent exit_signal_;
 
   friend class base::NoDestructor<ServiceMain>;
 };

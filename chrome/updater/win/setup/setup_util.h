@@ -72,6 +72,7 @@ void AddInstallServerWorkItems(HKEY root,
 
 // Adds work items to `list` to install the COM service.
 void AddComServiceWorkItems(const base::FilePath& com_service_path,
+                            bool internal_service,
                             WorkItemList* list);
 
 // Parses the run time dependency file which contains all dependencies of

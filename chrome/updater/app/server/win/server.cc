@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -25,6 +26,7 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
@@ -38,6 +40,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+namespace {
+
+bool IsCOMService() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kComServiceSwitch);
+}
+
+}  // namespace
 
 // Returns a leaky singleton of the App instance.
 scoped_refptr<ComServerApp> AppServerSingletonInstance() {
@@ -48,6 +57,18 @@ ComServerApp::ComServerApp()
     : com_initializer_(base::win::ScopedCOMInitializer::kMTA) {}
 
 ComServerApp::~ComServerApp() = default;
+
+void ComServerApp::Stop() {
+  VLOG(2) << __func__ << ": COM server is shutting down.";
+  UnregisterClassObjects();
+  main_task_runner_->PostTask(FROM_HERE, base::BindOnce([]() {
+                                scoped_refptr<ComServerApp> this_server =
+                                    AppServerSingletonInstance();
+                                this_server->update_service_ = nullptr;
+                                this_server->update_service_internal_ = nullptr;
+                                this_server->Shutdown(0);
+                              }));
+}
 
 void ComServerApp::InitializeThreadPool() {
   base::ThreadPoolInstance::Create(kThreadPoolName);
@@ -171,18 +192,6 @@ void ComServerApp::CreateWRLModule() {
       this, &ComServerApp::Stop);
 }
 
-void ComServerApp::Stop() {
-  VLOG(2) << __func__ << ": COM server is shutting down.";
-  UnregisterClassObjects();
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        scoped_refptr<ComServerApp> this_server = AppServerSingletonInstance();
-        this_server->update_service_ = nullptr;
-        this_server->update_service_internal_ = nullptr;
-        this_server->Shutdown(0);
-      }));
-}
-
 void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service) {
   update_service_ = update_service;
   Start(base::BindOnce(&ComServerApp::RegisterClassObjects,
@@ -210,8 +219,7 @@ void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
 }
 
 void ComServerApp::UninstallSelf() {
-  // TODO(crbug.com/1096654): Add support for UpdaterScope::kSystem.
-  UninstallCandidate(UpdaterScope::kUser);
+  UninstallCandidate(updater_scope());
 }
 
 bool ComServerApp::SwapRPCInterfaces() {
@@ -221,23 +229,23 @@ bool ComServerApp::SwapRPCInterfaces() {
       GetVersionedDirectory(updater_scope());
   if (!versioned_directory)
     return false;
-  for (const CLSID& clsid : GetActiveServers()) {
-    // TODO(crbug.com/1096654): Use HKLM for system.
-    AddInstallServerWorkItems(
-        HKEY_CURRENT_USER, clsid,
-        versioned_directory->Append(FILE_PATH_LITERAL("updater.exe")), false,
-        list.get());
+
+  const base::FilePath updater_path =
+      versioned_directory->Append(FILE_PATH_LITERAL("updater.exe"));
+
+  if (IsCOMService()) {
+    AddComServiceWorkItems(updater_path, false, list.get());
+    return list->Do();
   }
 
-  // TODO(crbug.com/1096654): Add support for UpdaterScope::kSystem: A call to
-  // AddComServiceWorkItems is needed.
+  HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
+                                                         : HKEY_CURRENT_USER;
+  for (const CLSID& clsid : GetActiveServers()) {
+    AddInstallServerWorkItems(root, clsid, updater_path, false, list.get());
+  }
 
   for (const GUID& iid : GetActiveInterfaces()) {
-    // TODO(crbug.com/1096654): Use HKLM for system.
-    AddInstallComInterfaceWorkItems(
-        HKEY_CURRENT_USER,
-        versioned_directory->Append(FILE_PATH_LITERAL("updater.exe")), iid,
-        list.get());
+    AddInstallComInterfaceWorkItems(root, updater_path, iid, list.get());
   }
 
   return list->Do();

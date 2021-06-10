@@ -185,6 +185,7 @@ void AddInstallServerWorkItems(HKEY root,
 
 // Adds work items to register the COM Service with Windows.
 void AddComServiceWorkItems(const base::FilePath& com_service_path,
+                            bool internal_service,
                             WorkItemList* list) {
   DCHECK(::IsUserAnAdmin());
 
@@ -197,13 +198,24 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
   com_service_command.AppendSwitch(kComServiceSwitch);
+  com_service_command.AppendSwitchASCII(
+      kServerServiceSwitch, internal_service
+                                ? kServerUpdateServiceInternalSwitchValue
+                                : kServerUpdateServiceSwitchValue);
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         "*/chrome/updater/*=2");
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       kWindowsServiceName, kWindowsServiceName, com_service_command,
-      base::ASCIIToWide(UPDATER_KEY), GetSideBySideServers(),
-      GetSideBySideInterfaces()));
+      base::ASCIIToWide(UPDATER_KEY),
+      internal_service ? GetSideBySideServers() : GetActiveServers(), {}));
+
+  const std::vector<GUID> com_interfaces_to_install =
+      internal_service ? GetSideBySideInterfaces() : GetActiveInterfaces();
+  for (const auto& iid : com_interfaces_to_install) {
+    AddInstallComInterfaceWorkItems(HKEY_LOCAL_MACHINE, com_service_path, iid,
+                                    list);
+  }
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {

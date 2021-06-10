@@ -180,7 +180,7 @@ int Setup(UpdaterScope scope) {
                             install_list.get());
       break;
     case UpdaterScope::kSystem:
-      AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe),
+      AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe), true,
                              install_list.get());
       break;
   }
