@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -28,14 +29,22 @@ import java.util.Set;
  */
 @JNINamespace("continuous_search")
 public class SearchResultExtractorProducer extends SearchResultProducer {
-    private static final String MINIUM_URL_COUNT_PARAM = "minimum_url_count";
-    private static final int DEFAULT_MINIUM_URL_COUNT = 5;
+    private static final String MINIMUM_URL_COUNT_PARAM = "minimum_url_count";
+    private static final int DEFAULT_MINIMUM_URL_COUNT = 5;
+
+    private static final String USE_PROVIDER_ICON_PARAM = "use_provider_icon";
+    private static final boolean USE_PROVIDER_ICON_DEFAULT_VALUE = true;
+
+    @VisibleForTesting
+    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_24dp;
 
     private long mNativeSearchResultExtractorProducer;
     private @State int mState;
 
     @VisibleForTesting
     int mMinimumUrlCount;
+    @VisibleForTesting
+    boolean mUseProviderIcon;
 
     @IntDef({State.READY, State.CAPTURING, State.CANCELLED})
     @Retention(RetentionPolicy.SOURCE)
@@ -50,8 +59,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         mNativeSearchResultExtractorProducer = SearchResultExtractorProducerJni.get().create(this);
         mState = State.READY;
         mMinimumUrlCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.CONTINUOUS_SEARCH, MINIUM_URL_COUNT_PARAM,
-                DEFAULT_MINIUM_URL_COUNT);
+                ChromeFeatureList.CONTINUOUS_SEARCH, MINIMUM_URL_COUNT_PARAM,
+                DEFAULT_MINIMUM_URL_COUNT);
+        mUseProviderIcon = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTINUOUS_SEARCH, USE_PROVIDER_ICON_PARAM,
+                USE_PROVIDER_ICON_DEFAULT_VALUE);
     }
 
     @CalledByNative
@@ -112,8 +124,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
 
         assert !GURL.isEmptyOrInvalid(url);
         assert query != null && !query.isEmpty();
+        ContinuousNavigationMetadata.Provider provider = new ContinuousNavigationMetadata.Provider(
+                resultCategory, getProviderName(resultCategory),
+                mUseProviderIcon ? PROVIDER_ICON_RESOURCE : 0);
         ContinuousNavigationMetadata metadata =
-                new ContinuousNavigationMetadata(url, query, resultCategory, groups);
+                new ContinuousNavigationMetadata(url, query, provider, groups);
         mListener.onResult(metadata);
     }
 
@@ -160,6 +175,20 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
 
         SearchResultExtractorProducerJni.get().destroy(mNativeSearchResultExtractorProducer);
         mNativeSearchResultExtractorProducer = 0;
+    }
+
+    private String getProviderName(int resultCategory) {
+        if (mUseProviderIcon) return null;
+
+        // (TODO:crbug/1199339) Replace hardcoded string with translated resources.
+        switch (resultCategory) {
+            case PageCategory.ORGANIC_SRP:
+            case PageCategory.NEWS_SRP:
+                return "Google Search";
+            default:
+                assert false : "Invalid result category: " + resultCategory;
+                return null;
+        }
     }
 
     @NativeMethods

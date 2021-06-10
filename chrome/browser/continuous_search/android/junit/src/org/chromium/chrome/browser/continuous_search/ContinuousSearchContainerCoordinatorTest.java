@@ -169,7 +169,7 @@ public class ContinuousSearchContainerCoordinatorTest {
         results1.add(new PageItem(resultUrl, "Red 1"));
         groups.add(new PageGroup("Red Group", false, results1));
         ContinuousNavigationMetadata metadata =
-                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, TEST_RESULT_TYPE, groups);
+                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, getProvider(), groups);
 
         mTabSupplier.set(mTabMock);
         mUserData.updateData(metadata, mSrpUrl);
@@ -218,7 +218,7 @@ public class ContinuousSearchContainerCoordinatorTest {
         results1.add(new PageItem(resultUrl, "Red 1"));
         groups.add(new PageGroup("Red Group", false, results1));
         ContinuousNavigationMetadata metadata =
-                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, TEST_RESULT_TYPE, groups);
+                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, getProvider(), groups);
 
         mUserData.updateData(metadata, mSrpUrl);
         mUserData.updateCurrentUrl(resultUrl);
@@ -243,7 +243,7 @@ public class ContinuousSearchContainerCoordinatorTest {
         results1.add(new PageItem(resultUrl, "Red 1"));
         groups.add(new PageGroup("Red Group", false, results1));
         ContinuousNavigationMetadata metadata =
-                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, TEST_RESULT_TYPE, groups);
+                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, getProvider(), groups);
 
         mTabSupplier.set(mTabMock);
         mUserData.updateData(metadata, mSrpUrl);
@@ -265,5 +265,9 @@ public class ContinuousSearchContainerCoordinatorTest {
         Assert.assertNotNull(bitmap);
         Assert.assertThat(1, lessThan(bitmap.getHeight()));
         Assert.assertThat(1, lessThan(bitmap.getWidth()));
+    }
+
+    private ContinuousNavigationMetadata.Provider getProvider() {
+        return new ContinuousNavigationMetadata.Provider(TEST_RESULT_TYPE, null, 0);
     }
 }

@@ -119,7 +119,7 @@ public class ContinuousFeedNavigationHelperTest {
         Assert.assertEquals(new GURL("https://www.red.com"), mUrlCaptor.getValue());
 
         ContinuousNavigationMetadata metadata = mMetadataCaptor.getValue();
-        Assert.assertEquals(PageCategory.DISCOVER, metadata.getCategory());
+        Assert.assertEquals(PageCategory.DISCOVER, metadata.getProvider().getCategory());
         Assert.assertEquals(1, metadata.getGroups().size());
         PageGroup pageGroup = metadata.getGroups().get(0);
         Assert.assertEquals(3, pageGroup.getPageItems().size());

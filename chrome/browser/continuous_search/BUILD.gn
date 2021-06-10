@@ -76,8 +76,8 @@ android_resources("java_resources") {
     "android/java/res/layout/continuous_search_container.xml",
     "android/java/res/layout/continuous_search_layout.xml",
     "android/java/res/layout/continuous_search_list_ad.xml",
-    "android/java/res/layout/continuous_search_list_group_label.xml",
     "android/java/res/layout/continuous_search_list_item.xml",
+    "android/java/res/layout/continuous_search_list_provider.xml",
   ]
 
   deps = [ "//chrome/android:chrome_app_java_resources" ]

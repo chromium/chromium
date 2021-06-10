@@ -16,7 +16,9 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -44,7 +46,7 @@ public class ContinuousSearchListMediatorTest {
     @Before
     public void setUp() {
         mModelList = new MVCListAdapter.ModelList();
-        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ROOT_VIEW_KEYS);
+        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         mLayoutVisibilityTrue = new CallbackHelper();
         mLayoutVisibilityFalse = new CallbackHelper();
         mMediator = new ContinuousSearchListMediator(mModelList, mRootViewModel,
@@ -105,7 +107,7 @@ public class ContinuousSearchListMediatorTest {
         PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
                 new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
-                        "query", 1, Arrays.asList(pageGroup));
+                        "query", getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
         mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
         Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
@@ -128,8 +130,9 @@ public class ContinuousSearchListMediatorTest {
                 mLayoutVisibilityFalse.getCallCount());
 
         // 0 results available. UI should be hidden.
-        continuousNavigationMetadata = new ContinuousNavigationMetadata(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), "query", 1, Arrays.asList());
+        continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
+                        "query", getProvider(null), Arrays.asList());
         mMediator.onUpdate(continuousNavigationMetadata);
         mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
         Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 2,
@@ -165,7 +168,7 @@ public class ContinuousSearchListMediatorTest {
                 new PageGroup("results", false, Arrays.asList(pageItem1, pageItem2, pageItem3));
         ContinuousNavigationMetadata continuousNavigationMetadata =
                 new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
-                        "query", 1, Arrays.asList(pageGroup));
+                        "query", getProvider("Test"), Arrays.asList(pageGroup));
 
         // Prepare mock behavior.
         Mockito.when(navigationController.getLastCommittedEntryIndex())
@@ -178,7 +181,7 @@ public class ContinuousSearchListMediatorTest {
         // Click on provider label and verify there's a request for going to the start navigation
         // index.
         Mockito.verify(navigationController, Mockito.never()).goToNavigationIndex(Mockito.anyInt());
-        mModelList.get(0).model.get(ContinuousSearchListProperties.CLICK_LISTENER).onClick(null);
+        mModelList.get(0).model.get(ProviderProperties.CLICK_LISTENER).onClick(null);
         Mockito.verify(navigationController, Mockito.times(1))
                 .goToNavigationIndex(startNavigationIndex);
     }
@@ -207,8 +210,8 @@ public class ContinuousSearchListMediatorTest {
                 new PageGroup("group3", false, Arrays.asList(pageItem31, pageItem32, pageItem33));
 
         ContinuousNavigationMetadata continuousNavigationMetadata =
-                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query", 1,
-                        Arrays.asList(pageGroup1, pageGroup2, pageGroup3));
+                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
+                        getProvider("Test"), Arrays.asList(pageGroup1, pageGroup2, pageGroup3));
         mMediator.onUpdate(continuousNavigationMetadata);
 
         // We should have 1 provider label item on top of page items. So in total we should
@@ -216,12 +219,12 @@ public class ContinuousSearchListMediatorTest {
         Assert.assertEquals("ModelList length is incorrect.", 7, mModelList.size());
 
         // Assert the list item for provider label is correctly populated.
-        Assert.assertEquals("List item type should be GROUP_LABEL.", ListItemType.GROUP_LABEL,
+        Assert.assertEquals("List item type should be PROVIDER.", ListItemType.PROVIDER,
                 mModelList.get(0).type);
         Assert.assertTrue("Provider label item doesn't match its category string.",
                 mModelList.get(0)
-                        .model.get(ContinuousSearchListProperties.LABEL)
-                        .contains(continuousNavigationMetadata.getProviderName()));
+                        .model.get(ProviderProperties.LABEL)
+                        .contains(continuousNavigationMetadata.getProvider().getName()));
 
         // Assert the list items for search results are correctly populated.
         assertListItemEqualsSearchResult(mModelList.get(1), pageItem11, true);
@@ -231,7 +234,7 @@ public class ContinuousSearchListMediatorTest {
         assertListItemEqualsSearchResult(mModelList.get(5), pageItem32, false);
         assertListItemEqualsSearchResult(mModelList.get(6), pageItem33, false);
 
-        mModelList.get(1).model.get(ContinuousSearchListProperties.CLICK_LISTENER).onClick(null);
+        mModelList.get(1).model.get(ListItemProperties.CLICK_LISTENER).onClick(null);
         ArgumentCaptor<LoadUrlParams> params = ArgumentCaptor.forClass(LoadUrlParams.class);
         Mockito.verify(tab, Mockito.times(1)).loadUrl(params.capture());
         Assert.assertEquals(url11.getSpec(), params.getValue().getUrl());
@@ -246,8 +249,8 @@ public class ContinuousSearchListMediatorTest {
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
-                new ContinuousNavigationMetadata(
-                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
+                        getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
         Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
 
@@ -263,8 +266,8 @@ public class ContinuousSearchListMediatorTest {
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
-                new ContinuousNavigationMetadata(
-                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
+                        getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
         Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
 
@@ -280,8 +283,8 @@ public class ContinuousSearchListMediatorTest {
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
-                new ContinuousNavigationMetadata(
-                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
+                        getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
         Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
 
@@ -303,8 +306,12 @@ public class ContinuousSearchListMediatorTest {
         Assert.assertEquals("List item type doesn't match SearchResult.",
                 isAdGroup ? ListItemType.AD : ListItemType.SEARCH_RESULT, listItem.type);
         Assert.assertEquals("List item title doesn't match SearchResult.", pageItem.getTitle(),
-                listItem.model.get(ContinuousSearchListProperties.LABEL));
+                listItem.model.get(ListItemProperties.LABEL));
         Assert.assertEquals("List item URL doesn't match SearchResult.", pageItem.getUrl(),
-                listItem.model.get(ContinuousSearchListProperties.URL));
+                listItem.model.get(ListItemProperties.URL));
+    }
+
+    private ContinuousNavigationMetadata.Provider getProvider(String name) {
+        return new ContinuousNavigationMetadata.Provider(1, name, 0);
     }
 }

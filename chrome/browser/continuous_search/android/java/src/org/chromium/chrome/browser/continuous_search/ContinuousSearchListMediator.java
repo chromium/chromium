@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import android.content.res.Resources;
-import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -107,7 +109,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     public void onUpdate(ContinuousNavigationMetadata metadata) {
         mModelList.clear();
 
-        mPageCategory = metadata.getCategory();
+        ContinuousNavigationMetadata.Provider provider = metadata.getProvider();
+        mPageCategory = provider.getCategory();
         // We need to know the current navigation index because we want to come back here when the
         // provider label is clicked.
         if (mCurrentTab != null && mCurrentTab.getWebContents() != null
@@ -118,20 +121,16 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         } else {
             mStartNavigationIndex = -1;
         }
-        String providerName = metadata.getProviderName();
-        if (!TextUtils.isEmpty(providerName)) {
-            String providerLabel = mResources.getString(R.string.csn_provider_label, providerName);
-            mModelList.add(new ListItem(
-                    ListItemType.GROUP_LABEL, generateListItem(providerLabel, null, 0, true)));
-        }
+
+        mModelList.add(new ListItem(ListItemType.PROVIDER,
+                generateProvider(provider.getName(), provider.getIconRes())));
 
         int resultCount = 0;
         for (PageGroup group : metadata.getGroups()) {
             int itemType = group.isAdGroup() ? ListItemType.AD : ListItemType.SEARCH_RESULT;
             for (PageItem result : group.getPageItems()) {
                 mModelList.add(new ListItem(itemType,
-                        generateListItem(
-                                result.getTitle(), result.getUrl(), resultCount++, false)));
+                        generateListItem(result.getTitle(), result.getUrl(), resultCount++)));
             }
         }
     }
@@ -140,13 +139,40 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     public void onUrlChanged(GURL currentUrl, boolean onSrp) {
         mOnSrp = onSrp;
         for (ListItem listItem : mModelList) {
-            if (listItem.type == ListItemType.GROUP_LABEL) continue;
+            if (listItem.type == ListItemType.PROVIDER) continue;
 
             boolean isSelected = currentUrl != null
-                    && currentUrl.equals(listItem.model.get(ContinuousSearchListProperties.URL));
-            listItem.model.set(ContinuousSearchListProperties.IS_SELECTED, isSelected);
+                    && currentUrl.equals(listItem.model.get(ListItemProperties.URL));
+            listItem.model.set(ListItemProperties.IS_SELECTED, isSelected);
         }
         setVisibility(mModelList.size() > 0 && !mOnSrp);
+    }
+
+    /**
+     * Generates the {@link PropertyModel} for the provider.
+     * @param label     Provider label text. Can be null.
+     * @param iconRes   Provider icon resource. Pass 0 here if there is no icon.
+     * @return the configured {@link PropertyModel}.
+     */
+    private PropertyModel generateProvider(String label, @DrawableRes int iconRes) {
+        int backgroundColor =
+                getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
+        boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ProviderProperties.ALL_KEYS)
+                        .with(ProviderProperties.CLICK_LISTENER,
+                                (view)
+                                        -> handleItemClick(/*url=*/null, /*resultPosition=*/0,
+                                                /*isProviderLabel=*/true))
+                        .with(ProviderProperties.TEXT_STYLE,
+                                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
+                                              : R.style.TextAppearance_TextMedium_Primary_Light);
+        if (label != null) {
+            builder = builder.with(ProviderProperties.LABEL,
+                    mResources.getString(R.string.csn_provider_label, label));
+        }
+        if (iconRes != 0) builder = builder.with(ProviderProperties.ICON_RESOURCE, iconRes);
+        return builder.build();
     }
 
     /**
@@ -154,28 +180,26 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
      * @param text            Displayed as the primary text.
      * @param url             Displayed as teh secondary text.
      * @param resultPosition  Denotes the position of this result in the list.
-     * @param isProviderLabel Whether this is the item that shows the provider information.
      * @return {@link PropertyModel} representing this item.
      */
-    private PropertyModel generateListItem(
-            String text, GURL url, int resultPosition, boolean isProviderLabel) {
+    private PropertyModel generateListItem(String text, GURL url, int resultPosition) {
         int backgroundColor =
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
         boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
-        return new PropertyModel.Builder(ContinuousSearchListProperties.ITEM_KEYS)
-                .with(ContinuousSearchListProperties.LABEL, text)
-                .with(ContinuousSearchListProperties.URL, url)
-                .with(ContinuousSearchListProperties.IS_SELECTED, false)
-                .with(ContinuousSearchListProperties.BORDER_COLOR,
+        return new PropertyModel.Builder(ListItemProperties.ALL_KEYS)
+                .with(ListItemProperties.LABEL, text)
+                .with(ListItemProperties.URL, url)
+                .with(ListItemProperties.IS_SELECTED, false)
+                .with(ListItemProperties.BORDER_COLOR,
                         useDarkColors ? getColor(R.color.default_icon_color_dark)
                                       : getColor(R.color.default_icon_color_light))
-                .with(ContinuousSearchListProperties.CLICK_LISTENER,
-                        (view) -> handleItemClick(url, resultPosition, isProviderLabel))
-                .with(ContinuousSearchListProperties.BACKGROUND_COLOR, backgroundColor)
-                .with(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
+                .with(ListItemProperties.CLICK_LISTENER,
+                        (view) -> handleItemClick(url, resultPosition, /*isProviderLabel=*/false))
+                .with(ListItemProperties.BACKGROUND_COLOR, backgroundColor)
+                .with(ListItemProperties.TITLE_TEXT_STYLE,
                         useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
                                       : R.style.TextAppearance_TextMedium_Primary_Light)
-                .with(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE,
+                .with(ListItemProperties.DESCRIPTION_TEXT_STYLE,
                         useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
                                       : R.style.TextAppearance_TextMedium_Secondary_Light)
                 .build();
@@ -234,16 +258,22 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         int itemBgColor = getBackgroundColorForParentBackgroundColor(color);
         boolean useDarkColors = shouldUseDarkElementColors(itemBgColor);
         for (ListItem listItem : mModelList) {
-            listItem.model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, itemBgColor);
-            listItem.model.set(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
-                    useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                  : R.style.TextAppearance_TextMedium_Primary_Light);
-            listItem.model.set(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE,
-                    useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
-                                  : R.style.TextAppearance_TextMedium_Secondary_Light);
-            listItem.model.set(ContinuousSearchListProperties.BORDER_COLOR,
-                    useDarkColors ? getColor(R.color.default_icon_color_dark)
-                                  : getColor(R.color.default_icon_color_light));
+            if (listItem.type == ListItemType.PROVIDER) {
+                listItem.model.set(ProviderProperties.TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
+                                      : R.style.TextAppearance_TextMedium_Primary_Light);
+            } else {
+                listItem.model.set(ListItemProperties.BACKGROUND_COLOR, itemBgColor);
+                listItem.model.set(ListItemProperties.TITLE_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
+                                      : R.style.TextAppearance_TextMedium_Primary_Light);
+                listItem.model.set(ListItemProperties.DESCRIPTION_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
+                                      : R.style.TextAppearance_TextMedium_Secondary_Light);
+                listItem.model.set(ListItemProperties.BORDER_COLOR,
+                        useDarkColors ? getColor(R.color.default_icon_color_dark)
+                                      : getColor(R.color.default_icon_color_light));
+            }
         }
     }
 

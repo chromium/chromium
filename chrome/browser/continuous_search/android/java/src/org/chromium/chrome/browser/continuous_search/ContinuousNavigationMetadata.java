@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -14,16 +16,62 @@ import java.util.Objects;
  * include SRP and Discover/Feeds.
  */
 public class ContinuousNavigationMetadata {
+    /**
+     * A class holding information about the provider of a metadata.
+     */
+    public static class Provider {
+        private final @PageCategory int mCategory;
+        private final String mName;
+        private final @DrawableRes int mIconRes;
+
+        public Provider(@PageCategory int category, String name, @DrawableRes int iconRes) {
+            mCategory = category;
+            mName = name;
+            mIconRes = iconRes;
+        }
+
+        int getCategory() {
+            return mCategory;
+        }
+
+        String getName() {
+            return mName;
+        }
+
+        @DrawableRes
+        int getIconRes() {
+            return mIconRes;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Provider)) {
+                return false;
+            }
+            Provider provider = (Provider) o;
+            return mCategory == provider.mCategory && mIconRes == provider.mIconRes
+                    && Objects.equals(mName, provider.mName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mCategory, mName, mIconRes);
+        }
+    }
+
     private final GURL mRootUrl;
     private final String mQuery;
-    private final @PageCategory int mCategory;
+    private final Provider mProvider;
     private final List<PageGroup> mGroups;
 
     ContinuousNavigationMetadata(
-            GURL url, String query, @PageCategory int category, List<PageGroup> groups) {
+            GURL url, String query, Provider provider, List<PageGroup> groups) {
         mRootUrl = url;
         mQuery = query;
-        mCategory = category;
+        mProvider = provider;
         mGroups = groups;
     }
 
@@ -35,25 +83,12 @@ public class ContinuousNavigationMetadata {
         return mQuery;
     }
 
-    int getCategory() {
-        return mCategory;
+    Provider getProvider() {
+        return mProvider;
     }
 
     List<PageGroup> getGroups() {
         return mGroups;
-    }
-
-    String getProviderName() {
-        // (TODO:crbug/1199339) Replace hardcoded string with translated resources.
-        switch (mCategory) {
-            case PageCategory.ORGANIC_SRP:
-                return "Google Search";
-            case PageCategory.NEWS_SRP:
-                return "Google News";
-            case PageCategory.DISCOVER:
-                return "Discover Feed";
-        }
-        return null;
     }
 
     @Override
@@ -65,11 +100,11 @@ public class ContinuousNavigationMetadata {
         ContinuousNavigationMetadata other = (ContinuousNavigationMetadata) o;
 
         return mRootUrl.equals(other.getRootUrl()) && mQuery.equals(other.getQuery())
-                && mCategory == other.getCategory() && mGroups.equals(other.getGroups());
+                && mProvider.equals(other.getProvider()) && mGroups.equals(other.getGroups());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mRootUrl, mQuery, mCategory, mGroups);
+        return Objects.hash(mRootUrl, mQuery, mProvider, mGroups);
     }
 }

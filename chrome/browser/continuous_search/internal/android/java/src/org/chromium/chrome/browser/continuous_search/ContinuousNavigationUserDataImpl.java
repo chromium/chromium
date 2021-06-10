@@ -132,7 +132,8 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
 
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         return query != null && query.equals(mData.getQuery())
-                && SearchUrlHelper.getSrpPageCategoryFromUrl(url) == mData.getCategory();
+                && SearchUrlHelper.getSrpPageCategoryFromUrl(url)
+                == mData.getProvider().getCategory();
     }
 
     private boolean equalsValidUrl(GURL validUrl, GURL url) {

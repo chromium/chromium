@@ -88,8 +88,9 @@ public class ContinuousSearchTabHelperTest {
             mSearchUrl = url;
             mQuery = query;
             new Handler().postDelayed(() -> {
-                mListener.onResult(new ContinuousNavigationMetadata(
-                        mSearchUrl, mQuery, 0, new ArrayList<PageGroup>()));
+                mListener.onResult(new ContinuousNavigationMetadata(mSearchUrl, mQuery,
+                        new ContinuousNavigationMetadata.Provider(0, null, 0),
+                        new ArrayList<PageGroup>()));
             }, 300);
         }
 

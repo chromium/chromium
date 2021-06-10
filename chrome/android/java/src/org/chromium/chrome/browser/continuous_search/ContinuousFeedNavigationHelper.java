@@ -55,7 +55,10 @@ public class ContinuousFeedNavigationHelper
         // TODO(crbug.com/1200802): Add i18n
         pageGroups.add(new PageGroup("Discover", false, pageItems));
         mContinuousNavMetadata = new ContinuousNavigationMetadata(
-                /*url=*/null, /*query=*/null, PageCategory.DISCOVER, pageGroups);
+                /*url=*/null, /*query=*/null,
+                new ContinuousNavigationMetadata.Provider(
+                        PageCategory.DISCOVER, "Discover Feeds", /*iconRes=*/0),
+                pageGroups);
     }
 
     @Override

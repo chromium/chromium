@@ -7,7 +7,7 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/continuous_search_list_item_text"
+        android:id="@+id/continuous_search_provider_label"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:maxLines="2"

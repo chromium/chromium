@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,17 +24,34 @@ import org.chromium.url.GURL;
 class ContinuousSearchListViewBinder {
     private static final int BORDER_WIDTH = 5;
 
+    static void bindProvider(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (ProviderProperties.LABEL == propertyKey) {
+            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
+            textView.setText(model.get(ProviderProperties.LABEL));
+        } else if (ProviderProperties.ICON_RESOURCE == propertyKey) {
+            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
+            // Add the icon at the start of the provider label
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    model.get(ProviderProperties.ICON_RESOURCE), 0, 0, 0);
+        } else if (ProviderProperties.CLICK_LISTENER == propertyKey) {
+            view.setOnClickListener(model.get(ProviderProperties.CLICK_LISTENER));
+        } else if (ProviderProperties.TEXT_STYLE == propertyKey) {
+            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
+            ApiCompatibilityUtils.setTextAppearance(
+                    textView, model.get(ProviderProperties.TEXT_STYLE));
+        }
+    }
+
     /**
      * Binds properties related to an individual item within the RecyclerView.
      */
     static void bindListItem(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (ContinuousSearchListProperties.LABEL == propertyKey) {
+        if (ListItemProperties.LABEL == propertyKey) {
             TextView textView = view.findViewById(R.id.continuous_search_list_item_text);
-            textView.setText(model.get(ContinuousSearchListProperties.LABEL));
-        } else if (ContinuousSearchListProperties.URL == propertyKey) {
-            GURL url = model.get(ContinuousSearchListProperties.URL);
+            textView.setText(model.get(ListItemProperties.LABEL));
+        } else if (ListItemProperties.URL == propertyKey) {
+            GURL url = model.get(ListItemProperties.URL);
             TextView textView = view.findViewById(R.id.continuous_search_list_item_description);
-            if (textView == null) return;
 
             String safeUrl = "";
             if (url != null) {
@@ -45,32 +64,33 @@ class ContinuousSearchListViewBinder {
             }
             textView.setTextDirection(View.TEXT_DIRECTION_LTR);
             textView.setText(safeUrl);
-        } else if (ContinuousSearchListProperties.IS_SELECTED == propertyKey) {
+        } else if (ListItemProperties.IS_SELECTED == propertyKey) {
             setBorder(model, view);
-        } else if (ContinuousSearchListProperties.BORDER_COLOR == propertyKey) {
+        } else if (ListItemProperties.BORDER_COLOR == propertyKey) {
             setBorder(model, view);
-        } else if (ContinuousSearchListProperties.CLICK_LISTENER == propertyKey) {
-            view.setOnClickListener(model.get(ContinuousSearchListProperties.CLICK_LISTENER));
-        } else if (ContinuousSearchListProperties.BACKGROUND_COLOR == propertyKey) {
-            if (view.getBackground() != null) {
-                GradientDrawable drawable = (GradientDrawable) view.getBackground();
-                drawable.mutate();
-                drawable.setColor(model.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
-            }
-        } else if (ContinuousSearchListProperties.TITLE_TEXT_STYLE == propertyKey) {
+        } else if (ListItemProperties.CLICK_LISTENER == propertyKey) {
+            view.setOnClickListener(model.get(ListItemProperties.CLICK_LISTENER));
+        } else if (ListItemProperties.BACKGROUND_COLOR == propertyKey) {
+            GradientDrawable drawable = (GradientDrawable) view.getBackground();
+            drawable.mutate();
+            drawable.setColor(model.get(ListItemProperties.BACKGROUND_COLOR));
+        } else if (ListItemProperties.TITLE_TEXT_STYLE == propertyKey) {
             TextView textTitle = view.findViewById(R.id.continuous_search_list_item_text);
-            if (textTitle != null) {
-                ApiCompatibilityUtils.setTextAppearance(
-                        textTitle, model.get(ContinuousSearchListProperties.TITLE_TEXT_STYLE));
-            }
-        } else if (ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE == propertyKey) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    textTitle, model.get(ListItemProperties.TITLE_TEXT_STYLE));
+        } else if (ListItemProperties.DESCRIPTION_TEXT_STYLE == propertyKey) {
             TextView textDescription =
                     view.findViewById(R.id.continuous_search_list_item_description);
-            if (textDescription != null) {
-                ApiCompatibilityUtils.setTextAppearance(textDescription,
-                        model.get(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE));
-            }
+            ApiCompatibilityUtils.setTextAppearance(
+                    textDescription, model.get(ListItemProperties.DESCRIPTION_TEXT_STYLE));
         }
+    }
+
+    private static void setBorder(PropertyModel model, View view) {
+        GradientDrawable drawable = (GradientDrawable) view.getBackground();
+        drawable.mutate();
+        drawable.setStroke(model.get(ListItemProperties.IS_SELECTED) ? BORDER_WIDTH : 0,
+                model.get(ListItemProperties.BORDER_COLOR));
     }
 
     /**
@@ -88,14 +108,5 @@ class ContinuousSearchListViewBinder {
             buttonDismiss.setOnClickListener(
                     model.get(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK));
         }
-    }
-
-    private static void setBorder(PropertyModel model, View view) {
-        if (view.getBackground() == null) return;
-
-        GradientDrawable drawable = (GradientDrawable) view.getBackground();
-        drawable.mutate();
-        drawable.setStroke(model.get(ContinuousSearchListProperties.IS_SELECTED) ? BORDER_WIDTH : 0,
-                model.get(ContinuousSearchListProperties.BORDER_COLOR));
     }
 }

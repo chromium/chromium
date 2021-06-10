@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -19,6 +18,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,6 +37,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -55,7 +57,6 @@ public class ContinuousSearchListViewBinderTest {
     private UrlFormatter.Natives mUrlFormatterJniMock;
 
     private Activity mActivity;
-    private PropertyModel mModel;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -65,7 +66,6 @@ public class ContinuousSearchListViewBinderTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mModel = new PropertyModel(ContinuousSearchListProperties.ITEM_KEYS);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
     }
 
@@ -75,13 +75,14 @@ public class ContinuousSearchListViewBinderTest {
         TextView textView = mock(TextView.class);
         GradientDrawable drawable = mock(GradientDrawable.class);
         InOrder inOrder = inOrder(view, textView, drawable);
+        PropertyModel model = new PropertyModel(ListItemProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
-                mModel, view, ContinuousSearchListViewBinder::bindListItem);
+                model, view, ContinuousSearchListViewBinder::bindListItem);
 
         doReturn(textView).when(view).findViewById(anyInt());
 
         final String label = "Label";
-        mModel.set(ContinuousSearchListProperties.LABEL, label);
+        model.set(ListItemProperties.LABEL, label);
         inOrder.verify(textView).setText(eq(label));
 
         GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -89,36 +90,39 @@ public class ContinuousSearchListViewBinderTest {
         doReturn(safeUrl)
                 .when(mUrlFormatterJniMock)
                 .formatUrlForSecurityDisplay(eq(url), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS));
-        mModel.set(ContinuousSearchListProperties.URL, url);
+        model.set(ListItemProperties.URL, url);
         inOrder.verify(textView).setText(eq(safeUrl));
 
         int color = 0xAABBCC;
-        mModel.set(ContinuousSearchListProperties.IS_SELECTED, false);
-        inOrder.verify(view).getBackground();
-        mModel.set(ContinuousSearchListProperties.BORDER_COLOR, color);
-        inOrder.verify(view).getBackground();
         when(view.getBackground()).thenReturn(drawable);
-        mModel.set(ContinuousSearchListProperties.IS_SELECTED, true);
-        inOrder.verify(view, times(2)).getBackground();
+        model.set(ListItemProperties.BORDER_COLOR, color);
+        inOrder.verify(view).getBackground();
+        inOrder.verify(drawable).mutate();
+        model.set(ListItemProperties.IS_SELECTED, false);
+        inOrder.verify(view).getBackground();
+        inOrder.verify(drawable).mutate();
+        inOrder.verify(drawable).setStroke(eq(0), eq(color));
+        model.set(ListItemProperties.IS_SELECTED, true);
+        inOrder.verify(view).getBackground();
         inOrder.verify(drawable).mutate();
         inOrder.verify(drawable).setStroke(gt(0), eq(color));
 
         View.OnClickListener listener = (v) -> {};
-        mModel.set(ContinuousSearchListProperties.CLICK_LISTENER, listener);
+        model.set(ListItemProperties.CLICK_LISTENER, listener);
         inOrder.verify(view).setOnClickListener(eq(listener));
 
         color = 0xCCBBAA;
-        mModel.set(ContinuousSearchListProperties.BACKGROUND_COLOR, color);
-        inOrder.verify(view, times(2)).getBackground();
+        model.set(ListItemProperties.BACKGROUND_COLOR, color);
+        inOrder.verify(view).getBackground();
         inOrder.verify(drawable).mutate();
         inOrder.verify(drawable).setColor(color);
 
         int id = 90;
-        mModel.set(ContinuousSearchListProperties.TITLE_TEXT_STYLE, id);
+        model.set(ListItemProperties.TITLE_TEXT_STYLE, id);
         inOrder.verify(textView).setTextAppearance(any(), eq(id));
 
         id = 67;
-        mModel.set(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE, id);
+        model.set(ListItemProperties.DESCRIPTION_TEXT_STYLE, id);
         inOrder.verify(textView).setTextAppearance(any(), eq(id));
     }
 
@@ -133,8 +137,9 @@ public class ContinuousSearchListViewBinderTest {
                 R.layout.continuous_search_list_item, null);
         TextView textView =
                 (TextView) layout.findViewById(R.id.continuous_search_list_item_description);
+        PropertyModel model = new PropertyModel(ListItemProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
-                mModel, view, ContinuousSearchListViewBinder::bindListItem);
+                model, view, ContinuousSearchListViewBinder::bindListItem);
         doReturn(textView).when(view).findViewById(R.id.continuous_search_list_item_description);
 
         GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -143,7 +148,7 @@ public class ContinuousSearchListViewBinderTest {
         doReturn(longUrl)
                 .when(mUrlFormatterJniMock)
                 .formatUrlForSecurityDisplay(eq(url), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS));
-        mModel.set(ContinuousSearchListProperties.URL, url);
+        model.set(ListItemProperties.URL, url);
         Assert.assertEquals(longUrl, textView.getText());
         Assert.assertEquals(TextUtils.TruncateAt.START, textView.getEllipsize());
         // Testing that ellipsization actually occurs in a Robolectric test isn't feasible as;
@@ -152,5 +157,56 @@ public class ContinuousSearchListViewBinderTest {
         //   so it isn't possible to simulate easily.
         // At this point we should trust the Android Framework to do the right thing as the
         // text and configuration is correct.
+    }
+
+    @Test
+    public void testBindProvider() {
+        View view = mock(View.class);
+        TextView textView = mock(TextView.class);
+        InOrder inOrder = inOrder(view, textView);
+        PropertyModel model = new PropertyModel(ProviderProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                model, view, ContinuousSearchListViewBinder::bindProvider);
+
+        doReturn(textView).when(view).findViewById(anyInt());
+
+        int iconRes = 11;
+        model.set(ProviderProperties.ICON_RESOURCE, iconRes);
+        inOrder.verify(textView).setCompoundDrawablesRelativeWithIntrinsicBounds(
+                eq(iconRes), eq(0), eq(0), eq(0));
+
+        final String label = "Label";
+        model.set(ProviderProperties.LABEL, label);
+        inOrder.verify(textView).setText(eq(label));
+
+        int id = 123;
+        model.set(ProviderProperties.TEXT_STYLE, id);
+        inOrder.verify(textView).setTextAppearance(any(), eq(id));
+
+        View.OnClickListener listener = (v) -> {};
+        model.set(ProviderProperties.CLICK_LISTENER, listener);
+        inOrder.verify(view).setOnClickListener(eq(listener));
+    }
+
+    @Test
+    public void testBindRootView() {
+        View view = mock(View.class);
+        ImageView imageView = mock(ImageView.class);
+        InOrder inOrder = inOrder(view, imageView);
+        PropertyModel model = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                model, view, ContinuousSearchListViewBinder::bindRootView);
+        doReturn(imageView).when(view).findViewById(anyInt());
+
+        int color = 0xAABBCC;
+        model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, color);
+        inOrder.verify(view).setBackgroundColor(eq(color));
+
+        model.set(ContinuousSearchListProperties.FOREGROUND_COLOR, color);
+        inOrder.verify(imageView).setColorFilter(eq(color));
+
+        View.OnClickListener listener = (v) -> {};
+        model.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK, listener);
+        inOrder.verify(imageView).setOnClickListener(eq(listener));
     }
 }

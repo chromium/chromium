@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchListPropert
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -37,18 +36,22 @@ public class ContinuousSearchListCoordinator {
     public ContinuousSearchListCoordinator(ObservableSupplier<Tab> tabSupplier,
             Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
             Resources resources) {
-        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ROOT_VIEW_KEYS);
+        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
 
-        final PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
-                ContinuousSearchListViewBinder::bindListItem;
-        mRecyclerViewAdapter.registerType(ListItemType.GROUP_LABEL,
-                (parent) -> inflateListItemView(parent, ListItemType.GROUP_LABEL), viewBinder);
+        mRecyclerViewAdapter.registerType(ListItemType.PROVIDER,
+                (parent)
+                        -> inflateListItemView(parent, ListItemType.PROVIDER),
+                ContinuousSearchListViewBinder::bindProvider);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
-                (parent) -> inflateListItemView(parent, ListItemType.SEARCH_RESULT), viewBinder);
+                (parent)
+                        -> inflateListItemView(parent, ListItemType.SEARCH_RESULT),
+                ContinuousSearchListViewBinder::bindListItem);
         mRecyclerViewAdapter.registerType(ListItemType.AD,
-                (parent) -> inflateListItemView(parent, ListItemType.AD), viewBinder);
+                (parent)
+                        -> inflateListItemView(parent, ListItemType.AD),
+                ContinuousSearchListViewBinder::bindListItem);
 
         mListMediator = new ContinuousSearchListMediator(
                 listItems, mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
@@ -57,7 +60,7 @@ public class ContinuousSearchListCoordinator {
     }
 
     private View inflateListItemView(ViewGroup parentView, @ListItemType int listItemType) {
-        int layoutId = R.layout.continuous_search_list_group_label;
+        int layoutId = R.layout.continuous_search_list_provider;
         switch (listItemType) {
             case ListItemType.SEARCH_RESULT:
                 layoutId = R.layout.continuous_search_list_item;

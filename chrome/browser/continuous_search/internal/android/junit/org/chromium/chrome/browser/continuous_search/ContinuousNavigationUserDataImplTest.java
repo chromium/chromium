@@ -216,8 +216,9 @@ public class ContinuousNavigationUserDataImplTest {
         results2.add(new PageItem(url4, "Bar.com 3"));
         groups.add(new PageGroup("Bar", true, results2));
 
-        ContinuousNavigationMetadata metadata =
-                new ContinuousNavigationMetadata(mSrpUrl, TEST_QUERY, TEST_RESULT_TYPE, groups);
+        ContinuousNavigationMetadata metadata = new ContinuousNavigationMetadata(mSrpUrl,
+                TEST_QUERY, new ContinuousNavigationMetadata.Provider(TEST_RESULT_TYPE, null, 0),
+                groups);
         mUserData.updateData(metadata, mSrpUrl);
         return metadata;
     }
