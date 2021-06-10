@@ -42,6 +42,15 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     }
 
     @Override
+    @Nullable
+    public Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+        // 'open in group' has been disabled in crrev.com/c/2885469. We should never reach this
+        // method.
+        assert false; // NOTREACHED.
+        return null;
+    }
+
+    @Override
     public void navigateToHelpPage() {
         openUrl(WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));

@@ -40,9 +40,14 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
      *
      * @param windowOpenDisposition How to open (new window, current tab, etc).
      * @param url The url to navigate to.
+     * @param inGroup Whether the navigation is in a group.
      */
-    public void navigateToSuggestionUrl(int windowOpenDisposition, String url) {
+    public void navigateToSuggestionUrl(int windowOpenDisposition, String url, boolean inGroup) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
-        openUrl(windowOpenDisposition, loadUrlParams);
+        if (inGroup) {
+            openUrlInGroup(windowOpenDisposition, loadUrlParams);
+        } else {
+            openUrl(windowOpenDisposition, loadUrlParams);
+        }
     }
 }

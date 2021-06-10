@@ -213,7 +213,9 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
          * @param url The url to navigate to.
          */
         @Override
-        public void navigateToSuggestionUrl(int windowOpenDisposition, String url) {
+        public void navigateToSuggestionUrl(
+                int windowOpenDisposition, String url, boolean inGroup) {
+            assert !inGroup;
             switch (windowOpenDisposition) {
                 case WindowOpenDisposition.CURRENT_TAB:
                 case WindowOpenDisposition.NEW_BACKGROUND_TAB:

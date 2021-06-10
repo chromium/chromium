@@ -58,6 +58,8 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         void openMostVisitedItem(int windowDisposition, Tile tile);
 
+        void openMostVisitedItemInGroup(int windowDisposition, Tile tile);
+
         /**
          * Gets the list of most visited sites.
          * @param observer The observer to be notified with the list of sites.
@@ -548,6 +550,14 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (tile == null) return;
 
             mTileGroupDelegate.openMostVisitedItem(windowDisposition, tile);
+        }
+
+        @Override
+        public void openItemInGroup(int windowDisposition) {
+            Tile tile = findTile(mSuggestion);
+            if (tile == null) return;
+
+            mTileGroupDelegate.openMostVisitedItemInGroup(windowDisposition, tile);
         }
 
         @Override
