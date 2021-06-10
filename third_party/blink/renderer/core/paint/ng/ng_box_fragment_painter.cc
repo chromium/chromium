@@ -1816,8 +1816,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   if (hit_test_self &&
       IsVisibleToHitTest(box_fragment_, hit_test.result->GetHitTestRequest())) {
     PhysicalRect bounds_rect(physical_offset, size);
-    if (UNLIKELY(hit_test.result->GetHitTestRequest().GetType() &
-                 HitTestRequest::kHitTestVisualOverflow)) {
+    if (UNLIKELY(
+            hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
       // We'll include overflow from children here (in addition to self-overflow
       // caused by filters), because we want to record a match if we hit the
       // overflow of a child below the stop node. This matches legacy behavior
@@ -1904,8 +1904,8 @@ bool NGBoxFragmentPainter::HitTestTextItem(
       hit_test.inline_root_offset + text_item.OffsetInContainerFragment();
   PhysicalRect border_rect(offset, text_item.Size());
   PhysicalRect rect(PixelSnappedIntRect(border_rect));
-  if (UNLIKELY(hit_test.result->GetHitTestRequest().GetType() &
-               HitTestRequest::kHitTestVisualOverflow)) {
+  if (UNLIKELY(
+          hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
     rect = text_item.SelfInkOverflow();
     rect.Move(border_rect.offset);
   }
@@ -2047,8 +2047,8 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     const PhysicalOffset child_offset =
         hit_test.inline_root_offset + item.OffsetInContainerFragment();
     PhysicalRect bounds_rect(child_offset, item.Size());
-    if (UNLIKELY(hit_test.result->GetHitTestRequest().GetType() &
-                 HitTestRequest::kHitTestVisualOverflow)) {
+    if (UNLIKELY(
+            hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
       bounds_rect = item.SelfInkOverflow();
       bounds_rect.Move(child_offset);
     }

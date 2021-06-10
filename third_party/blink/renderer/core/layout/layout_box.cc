@@ -2394,8 +2394,7 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
     return true;
 
   PhysicalRect overflow_box;
-  if (result.GetHitTestRequest().GetType() &
-      HitTestRequest::kHitTestVisualOverflow) {
+  if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
     overflow_box = PhysicalVisualOverflowRectIncludingFilters();
   } else {
     overflow_box = PhysicalBorderBoxRect();
@@ -2470,8 +2469,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
   if (should_hit_test_self &&
       VisibleToHitTestRequest(result.GetHitTestRequest())) {
     PhysicalRect bounds_rect;
-    if (result.GetHitTestRequest().GetType() &
-        HitTestRequest::kHitTestVisualOverflow) {
+    if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
       bounds_rect = PhysicalVisualOverflowRectIncludingFilters();
     } else {
       bounds_rect = PhysicalBorderBoxRect();

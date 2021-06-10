@@ -78,6 +78,11 @@ class HitTestRequest {
   bool IsChildFrameHitTest() const {
     return request_type_ & kChildFrameHitTest;
   }
+  // Returns true if this request is used for occlusion.
+  // See |LayoutObject::HitTestForOcclusion()|
+  bool IsHitTestVisualOverflow() const {
+    return request_type_ & kHitTestVisualOverflow;
+  }
   bool IgnorePointerEventsNone() const {
     return request_type_ & kIgnorePointerEventsNone;
   }
