@@ -6445,6 +6445,8 @@ crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
+# Failure related to COEP reporting.
+crbug.com/1218372 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-navigation.tentative.https.html [ Skip ]
 
 # Sheriff 2021-04-12
 crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
