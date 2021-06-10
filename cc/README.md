@@ -33,11 +33,10 @@ which batches up a set of DrawQuads and RenderPasses into a
 CompositorFrame which is sent via a CompositorFrameSink.
 
 CompositorFrames from individual compositors are sent to the
-SurfaceManager (currently in the browser process).  The
-SurfaceAggregator combines all CompositorFrames together and asks
-the Display to finally draw the frame via Renderer, which is either
-a viz::GLRenderer or a SoftwareRenderer, which finally draws the entire
-composited browser contents into a backbuffer or a bitmap, respectively.
+SurfaceManager (which is in the GPU process). The SurfaceAggregator combines all
+CompositorFrames together when asked to by the Display. These are given to the
+viz::DirectRenderer, which finally draws the entire composited browser contents.
+See //components/viz for more details on the display compositor.
 
 Design documents for the graphics stack can be found at
 [chromium-graphics](https://www.chromium.org/developers/design-documents/chromium-graphics).
@@ -76,7 +75,8 @@ that is responsible for a composited animation. Some additional information in
 ### DirectRenderer
 An abstraction that provides an API for the Display to draw a fully-aggregated
 CompositorFrame to a physical output. Subclasses of it provide implementations
-for various backends, currently GL or Software.
+for various backends, currently GL, Skia, or Software. See [viz::DirectRenderer](https://codesearch.chromium.org/chromium/src/components/viz/service/display/direct_renderer.h)
+for details.
 
 ### Layer
 A conceptual piece of content that can appear on screen and has some known
@@ -102,7 +102,7 @@ and [Blink Property Trees](https://docs.google.com/presentation/u/1/d/1ak7YVrJIT
 
 ### Display
 A controller class that takes CompositorFrames for each surface and draws them
-to a physical output.
+to a physical output. See [viz::Display](https://codesearch.chromium.org/chromium/src/components/viz/service/display/display.h)  for details.
 
 ### Draw
 Filling pixels in a physical output (technically could be to an offscreen
