@@ -1,0 +1,70 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <string>
+
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace payments {
+namespace {
+
+class PaymentRequestSecurityPolicyBrowsertest
+    : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  void ExpectPaymentRequestCSPViolationRecorded(bool expected) {
+    // Navigate away in order to flush use counters.
+    NavigateTo("b.com", "/payment_request_csp_violation.html");
+    histogram_tester_.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kPaymentRequestCSPViolation,
+        expected ? 1 : 0);
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
+};
+
+// Ensure that the PaymentRequestCSPViolation use counter is recorded.
+IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPViolation) {
+  NavigateTo("a.com", "/payment_request_csp_violation.html");
+
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("buildPaymentRequest($1)",
+                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+
+  ExpectPaymentRequestCSPViolationRecorded(true);
+}
+
+// Ensure that there is no CSP violation with `connect-src *`.
+IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPAllowAll) {
+  NavigateTo("a.com", "/payment_request_csp_allow_all.html");
+
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("buildPaymentRequest($1)",
+                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+
+  ExpectPaymentRequestCSPViolationRecorded(false);
+}
+
+// Ensure that there is no CSP violation with `connect-src https://bobpay.com:*`
+IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest,
+                       CSPAllowSpecific) {
+  NavigateTo("a.com", "/payment_request_csp_allow_specific.html");
+
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("buildPaymentRequest($1)",
+                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+
+  ExpectPaymentRequestCSPViolationRecorded(false);
+}
+
+}  // namespace
+}  // namespace payments
