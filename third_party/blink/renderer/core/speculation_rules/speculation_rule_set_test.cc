@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -187,9 +189,19 @@ TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
 }
 
 TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
-  auto* rule_set =
-      SpeculationRuleSet::ParseInline("[invalid]", KURL("https://example.com"));
+  String parse_error;
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      "[invalid]", KURL("https://example.com"), &parse_error);
   EXPECT_FALSE(rule_set);
+  EXPECT_TRUE(parse_error.Contains("Syntax error"));
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsNonObject) {
+  String parse_error;
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      "42", KURL("https://example.com"), &parse_error);
+  EXPECT_FALSE(rule_set);
+  EXPECT_TRUE(parse_error.Contains("must be an object"));
 }
 
 TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
@@ -448,6 +460,42 @@ TEST_F(SpeculationRuleSetTest, UseCounter) {
                                       speculation_script);
   EXPECT_TRUE(
       page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
+}
+
+class ConsoleCapturingChromeClient : public EmptyChromeClient {
+ public:
+  void AddMessageToConsole(LocalFrame*,
+                           mojom::ConsoleMessageSource,
+                           mojom::ConsoleMessageLevel,
+                           const String& message,
+                           unsigned line_number,
+                           const String& source_id,
+                           const String& stack_trace) override {
+    messages_.push_back(message);
+  }
+
+  const Vector<String>& ConsoleMessages() const { return messages_; }
+
+ private:
+  Vector<String> messages_;
+};
+
+// Tests that parse errors are logged to the console.
+TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setText("[invalid]");
+  document.head()->appendChild(script);
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(),
+      [](const String& message) { return message.Contains("Syntax error"); }));
 }
 
 }  // namespace

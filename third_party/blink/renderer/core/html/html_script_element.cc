@@ -292,6 +292,10 @@ V8HTMLOrSVGScriptElement* HTMLScriptElement::AsV8HTMLOrSVGScriptElement() {
   return MakeGarbageCollected<V8HTMLOrSVGScriptElement>(this);
 }
 
+DOMNodeId HTMLScriptElement::GetDOMNodeId() {
+  return DOMNodeIds::IdForNode(this);
+}
+
 void HTMLScriptElement::DispatchLoadEvent() {
   DispatchEvent(*Event::Create(event_type_names::kLoad));
 }

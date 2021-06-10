@@ -199,6 +199,10 @@ V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {
   return MakeGarbageCollected<V8HTMLOrSVGScriptElement>(this);
 }
 
+DOMNodeId SVGScriptElement::GetDOMNodeId() {
+  return DOMNodeIds::IdForNode(this);
+}
+
 void SVGScriptElement::Trace(Visitor* visitor) const {
   visitor->Trace(loader_);
   SVGElement::Trace(visitor);

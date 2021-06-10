@@ -53,6 +53,7 @@ class SVGScriptElement final : public SVGElement,
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() override;
+  DOMNodeId GetDOMNodeId() override;
 
   void Trace(Visitor*) const override;
 

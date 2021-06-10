@@ -86,16 +86,24 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
 
 // static
 SpeculationRuleSet* SpeculationRuleSet::ParseInline(const String& source_text,
-                                                    const KURL& base_url) {
+                                                    const KURL& base_url,
+                                                    String* out_error) {
   // https://jeremyroman.github.io/alternate-loading-modes/#parse-speculation-rules
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.
-  auto parsed = JSONObject::From(ParseJSON(source_text));
+  JSONParseError parse_error;
+  auto parsed = JSONObject::From(ParseJSON(source_text, &parse_error));
 
   // If parsed is not a map, then return null.
-  if (!parsed)
+  if (!parsed) {
+    if (out_error) {
+      *out_error = parse_error.type != JSONParseErrorType::kNoError
+                       ? parse_error.message
+                       : "Parsed JSON must be an object.";
+    }
     return nullptr;
+  }
 
   // Let result be an empty speculation rule set.
   SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>();

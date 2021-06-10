@@ -711,9 +711,19 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         // If the script’s result is not null, append it to the element’s node
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
-        if (auto* rule_set =
-                SpeculationRuleSet::ParseInline(source_text, base_url)) {
+        String parse_error;
+        if (auto* rule_set = SpeculationRuleSet::ParseInline(
+                source_text, base_url, &parse_error)) {
           DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
+        }
+        if (!parse_error.IsNull()) {
+          auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+              mojom::ConsoleMessageSource::kOther,
+              mojom::ConsoleMessageLevel::kWarning,
+              "While parsing speculation rules: " + parse_error);
+          console_message->SetNodes(element_document.GetFrame(),
+                                    {element_->GetDOMNodeId()});
+          element_document.AddConsoleMessage(console_message);
         }
         return false;
       }
