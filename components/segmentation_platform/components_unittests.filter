@@ -6,6 +6,4 @@ SegmentationPlatformServiceImplTest.*
 SegmentInfoDatabaseTest.*
 SegmentSelectorTest.*
 SignalFilterProcessorTest.*
-SignalKeyInternalTest.*
-SignalKeyTest.*
 UserActionSignalHandlerTest.*
