@@ -991,7 +991,9 @@ INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                                            "clearObjectStore"));
 #endif  // !defined(OS_WIN)
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteCompactsBackingStore) {
+// TODO: http://crbug.com/510520, flaky on all platforms
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
+                       DISABLED_DeleteCompactsBackingStore) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "delete_compact.html");
   const url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
   SimpleTest(GURL(kTestUrl.spec() + "#fill"));
