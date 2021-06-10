@@ -1022,7 +1022,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.CommitDeviation2" units="microseconds"
-    expires_after="2021-08-09">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -1046,7 +1046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS2" units="fps"
-    expires_after="2021-07-18">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -1101,7 +1101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.RenderQuality2" units="%"
-    expires_after="2021-07-18">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
