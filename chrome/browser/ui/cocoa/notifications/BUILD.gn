@@ -46,8 +46,7 @@ mac_app_bundle("alert_notification_xpc_service") {
       # Framework.framework/Versions/A/XPCServices/ \
       # AlertNotificationService.xpc/Contents/MacOS/
       # so set rpath up to the base.
-      "-rpath",
-      "@loader_path/../../../../../../../../../../",
+      "-Wl,-rpath,@loader_path/../../../../../../../../../../",
     ]
   }
 }

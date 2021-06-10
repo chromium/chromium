@@ -109,10 +109,7 @@ if (is_android) {
     if (is_mac && !is_component_build) {
       # Executable targets that depend on the shared libraries below need to have
       # the rpath setup in non-component build configurations.
-      ldflags = [
-        "-rpath",
-        "@executable_path/",
-      ]
+      ldflags = [ "-Wl,-rpath,@executable_path/" ]
     }
   }
 

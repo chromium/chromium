@@ -232,17 +232,14 @@ if (is_mac || is_android) {
         # or
         # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Helpers/
         # so set rpath up to the base.
-        "-rpath",
-        "@loader_path/../../../../../../..",
+        "-Wl,-rpath,@loader_path/../../../../../../..",
 
         # The handler can also be executed in an unbundled framework at
         # Chromium Framework.framework/Versions/A/Helpers/
-        "-rpath",
-        "@loader_path/../../../..",
+        "-Wl,-rpath,@loader_path/../../../..",
 
         # The handler can be executed from headless_browsertests in Helpers/
-        "-rpath",
-        "@loader_path/..",
+        "-Wl,-rpath,@loader_path/..",
       ]
     }
   }

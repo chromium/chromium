@@ -72,10 +72,7 @@ executable("app_mode_loader") {
     # Loaders are installed to ~/Applications. In a component build, include
     # the absolute path to the out dir in their library search path so that
     # their components are found at launch.
-    ldflags = [
-      "-rpath",
-      rebase_path(root_out_dir),
-    ]
+    ldflags = [ "-Wl,-rpath," +  rebase_path(root_out_dir) ]
   }
 
   deps = [

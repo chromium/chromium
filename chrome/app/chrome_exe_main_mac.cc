@@ -42,6 +42,7 @@ typedef int (*ChromeMainPtr)(int, char**);
   va_start(valist, format);
   char message[4096];
   if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
+    fputs(message, stderr);
     abort_report_np("%s", message);
   }
   va_end(valist);

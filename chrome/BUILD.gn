@@ -482,8 +482,7 @@ if (is_win) {
       # is time-consuming, see https://crbug.com/1197495.
       deps += [ ":chrome_framework+link" ]
       ldflags = [
-        "-rpath",
-        "@executable_path/../Frameworks",
+        "-Wl,-rpath,@executable_path/../Frameworks",
       ]
 
       # The Framework is packaged inside the .app bundle. But when using the
@@ -709,12 +708,10 @@ if (is_win) {
         ldflags += [
           # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/MacOS
           # so set rpath up to the base.
-          "-rpath",
-          "@loader_path/../../../../../../../../../..",
+          "-Wl,-rpath,@loader_path/../../../../../../../../../..",
 
           # ... and up to Contents/Frameworks.
-          "-rpath",
-          "@executable_path/../../../../../../..",
+          "-Wl,-rpath,@executable_path/../../../../../../..",
         ]
       }
 
@@ -1171,8 +1168,7 @@ if (is_win) {
       # with install_name_tool.
       ldflags += [
         "-Wl,-install_name,@rpath/$chrome_framework_name.framework/$chrome_framework_name",
-        "-rpath",
-        "@loader_path/../../../../../..",
+        "-Wl,-rpath,@loader_path/../../../../../..",
         "-Wl,-reexport_library,libchrome_dll.dylib",
       ]
 

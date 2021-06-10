@@ -478,10 +478,7 @@ if (is_android) {
     data_deps = [ ":content_shell_app" ]
 
     if (is_component_build) {
-      ldflags = [
-        "-rpath",
-        "@executable_path/../Frameworks",
-      ]
+      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
     }
   }
 } else {
@@ -675,10 +672,7 @@ if (is_mac) {
       # root output directory. The framework is at
       # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Content Shell Framework
       # so use loader_path to go back to the root output directory.
-      ldflags += [
-        "-rpath",
-        "@loader_path/../../../../../..",
-      ]
+      ldflags += [ "-Wl,-rpath,@loader_path/../../../../../.." ]
     }
 
     info_plist_target = ":content_shell_framework_plist"
@@ -724,12 +718,10 @@ if (is_mac) {
           #     Content Shell Framework.framework/Versions/C/Helpers/
           #     Content Shell Helper.app/Contents/MacOS/
           # so set rpath up to the base.
-          "-rpath",
-          "@executable_path/../../../../../../../../../..",
+          "-Wl,-rpath,@executable_path/../../../../../../../../../..",
 
           # ... and up to Contents/Frameworks.
-          "-rpath",
-          "@executable_path/../../../../../../..",
+          "-Wl,-rpath,@executable_path/../../../../../../..",
         ]
 
         # In a component build, the framework is directly linked to the

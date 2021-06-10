@@ -331,8 +331,7 @@ executable("$chromedriver_output") {
 
   if (is_mac && is_component_ffmpeg) {
     ldflags = [
-      "-rpath",
-      "@executable_path/.",
+      "-Wl,-rpath,@executable_path/.",
     ]
   }
 }
