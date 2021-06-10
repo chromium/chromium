@@ -31,6 +31,11 @@ void Release(int* release_call_count) {
   (*release_call_count)++;
 }
 
+void ExplicitRelease(int* release_call_count,
+                     gfx::GpuFenceHandle release_fence) {
+  (*release_call_count)++;
+}
+
 void VerifySyncTokensInCompositorFrame(viz::CompositorFrame* frame) {
   std::vector<GLbyte*> sync_tokens;
   for (auto& resource : frame->resource_list)
@@ -63,8 +68,11 @@ TEST_F(BufferTest, ReleaseCallback) {
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Release buffer.
@@ -76,6 +84,9 @@ TEST_F(BufferTest, ReleaseCallback) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 0);
+
+  // The resource should have been released even if the whole buffer hasn't.
+  ASSERT_EQ(release_resource_count, 1);
 
   buffer->OnDetach();
 
@@ -95,7 +106,8 @@ TEST_F(BufferTest, IsLost) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
 
   scoped_refptr<viz::RasterContextProvider> context_provider =
@@ -120,7 +132,8 @@ TEST_F(BufferTest, IsLost) {
   // buffer.
   viz::TransferableResource new_resource;
   rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &new_resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &new_resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
   buffer->OnDetach();
 
@@ -147,7 +160,8 @@ TEST_F(BufferTest, OnLostResources) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
 
   viz::RasterContextProvider* context_provider =
@@ -179,8 +193,11 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -205,10 +222,12 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   buffer->OnDetach();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
 
   surface_tree_host.reset();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
 }
 
 TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
@@ -231,8 +250,11 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -266,6 +288,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
 
   // Release() should not have been called as resource is used by last frame.
   ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
 
   // Submit frame without resource. This should cause buffer to be released.
   {
@@ -286,6 +309,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   base::RunLoop().RunUntilIdle();
   // Release() should have been called exactly once.
   ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
 }
 
 }  // namespace

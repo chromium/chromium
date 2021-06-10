@@ -1098,7 +1098,8 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     if (state_.buffer.buffer()->ProduceTransferableResource(
             resource_manager, std::move(state_.acquire_fence),
             state_.basic_state.only_visible_on_secure_output,
-            &current_resource_)) {
+            &current_resource_,
+            /*per_commit_explicit_release_callback=*/base::DoNothing())) {
       current_resource_has_alpha_ =
           FormatHasAlpha(state_.buffer.buffer()->GetFormat());
       // Planar buffers are sampled as RGB. Technically, the driver is supposed

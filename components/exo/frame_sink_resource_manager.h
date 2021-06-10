@@ -16,22 +16,23 @@ namespace exo {
 // for implementing a frame sink.
 class FrameSinkResourceManager {
  public:
+  using ReleaseCallback = base::OnceCallback<void(viz::ReturnedResource)>;
+
   FrameSinkResourceManager();
   ~FrameSinkResourceManager();
 
   bool HasReleaseCallbackForResource(viz::ResourceId id);
-  void SetResourceReleaseCallback(viz::ResourceId id,
-                                  viz::ReleaseCallback callback);
+  void SetResourceReleaseCallback(viz::ResourceId id, ReleaseCallback callback);
   viz::ResourceId AllocateResourceId();
 
   bool HasNoCallbacks() const;
-  void ReclaimResource(const viz::ReturnedResource& resource);
+  void ReclaimResource(viz::ReturnedResource resource);
   void ClearAllCallbacks();
 
  private:
   // A collection of callbacks used to release resources.
   using ResourceReleaseCallbackMap =
-      base::flat_map<viz::ResourceId, viz::ReleaseCallback>;
+      base::flat_map<viz::ResourceId, ReleaseCallback>;
   ResourceReleaseCallbackMap release_callbacks_;
 
   // The id generator for the buffer.
