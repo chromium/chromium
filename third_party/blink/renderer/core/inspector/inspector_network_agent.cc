@@ -2015,12 +2015,6 @@ Response InspectorNetworkAgent::setBypassServiceWorker(bool bypass) {
   return Response::Success();
 }
 
-Response InspectorNetworkAgent::setDataSizeLimitsForTest(int max_total,
-                                                         int max_resource) {
-  resources_data_->SetResourcesDataSizeLimits(max_total, max_resource);
-  return Response::Success();
-}
-
 Response InspectorNetworkAgent::getCertificate(
     const String& origin,
     std::unique_ptr<protocol::Array<String>>* certificate) {

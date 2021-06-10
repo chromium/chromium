@@ -1,0 +1,6 @@
+Tests cached resource content is discarded when cached is disabled if content size is too big for the network agent's storage
+Requesting response body with cache enabled
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=400&type=image&random=1, response body: body size: 400
+Requesting response body with cache disabled
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=400&type=image&random=1, response body: No data found for resource with given identifier
+

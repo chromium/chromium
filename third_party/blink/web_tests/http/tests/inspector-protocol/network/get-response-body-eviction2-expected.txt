@@ -1,0 +1,6 @@
+Tests test response bodies are evicted in accordance with configured max retention sizes.
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=200, response body: Request content was evicted from inspector cache
+#1: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=100, response body: body size: 100
+#2: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=201, response body: Request content was evicted from inspector cache
+#3: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=100, response body: body size: 100
+

@@ -241,8 +241,6 @@ class CORE_EXPORT InspectorNetworkAgent final
       Maybe<String> connection_type) override;
   protocol::Response setCacheDisabled(bool) override;
   protocol::Response setBypassServiceWorker(bool) override;
-  protocol::Response setDataSizeLimitsForTest(int max_total_size,
-                                              int max_resource_size) override;
   protocol::Response getCertificate(
       const String& origin,
       std::unique_ptr<protocol::Array<String>>* certificate) override;
