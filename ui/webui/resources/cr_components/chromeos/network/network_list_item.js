@@ -184,6 +184,18 @@ Polymer({
       computed: 'computeIsESimPendingProfile_(item, item.customItemType)',
     },
 
+    /**
+     * Whether the network item is a cellular one and is of an esim
+     * installing profile.
+     * @private
+     */
+    isESimInstallingProfile_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsESimInstallingProfile_(item, item.customItemType)',
+    },
+
     /**@private {boolean} */
     isCellularUnlockDialogOpen_: {
       type: Boolean,
@@ -520,7 +532,7 @@ Polymer({
           return this.i18n(
               'networkListItemLabelESimPendingProfile', index, total,
               this.getItemName_());
-        } else if (this.isESimInstallingProfile_()) {
+        } else if (this.isESimInstallingProfile_) {
           if (this.subtitle_) {
             return this.i18n(
                 'networkListItemLabelESimPendingProfileWithProviderNameInstalling',
@@ -769,7 +781,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isESimInstallingProfile_() {
+  computeIsESimInstallingProfile_() {
     return !!this.item && this.item.hasOwnProperty('customItemType') &&
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE;

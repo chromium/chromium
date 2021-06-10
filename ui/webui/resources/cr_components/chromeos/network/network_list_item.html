@@ -51,12 +51,14 @@
         opacity: var(--network-list-item-disabled-opacity);
       }
 
-      :host(:not([is-e-sim-pending-profile_])) #divIcon {
+      :host(:not([is-e-sim-pending-profile_])
+          :not([is-e-sim-installing-profile_])) #divIcon {
         height: 24px;
         width: 24px;
       }
 
-      :host([is-e-sim-pending-profile_]) #divIcon {
+      :host([is-e-sim-pending-profile_]) #divIcon,
+      :host([is-e-sim-installing-profile_]) #divIcon {
         height: 20px;
         padding-inline-end: 20px;
         width: 20px;
@@ -215,7 +217,7 @@
             [[i18n('networkListItemDownload')]]
           </cr-button>
         </template>
-        <template is="dom-if" if="[[isESimInstallingProfile_(item, item.customItemType)]]" restamp>
+        <template is="dom-if" if="[[isESimInstallingProfile_]]" restamp>
           <paper-spinner-lite id="installingESimSpinner" active>
           </paper-spinner-lite>
           [[i18n('networkListItemAddingProfile')]]
