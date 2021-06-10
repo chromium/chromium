@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -22,7 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,62 +29,76 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests {@link WebFeedMainMenuItem}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@SmallTest
 public final class WebFeedMainMenuItemTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
+    private Activity mActivity;
     @Mock
     private FeedLauncher mFeedLauncher;
-
-    private static final Bitmap ICON = Bitmap.createBitmap(48, 84, Bitmap.Config.ALPHA_8);
-    private static final GURL TEST_URL = new GURL("http://www.example.com");
-
-    private Activity mActivity;
+    @Mock
+    private Bitmap mBitmap;
+    @Mock
     private AppMenuHandler mAppMenuHandler;
+    @Mock
     private ModalDialogManager mDialogManager;
+    @Mock
     private SnackbarManager mSnackBarManager;
-    private WebFeedMainMenuItem mWebFeedMainMenuItem;
+    @Mock
     private Tab mTab;
     @Mock
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock
+    public UrlFormatter.Natives mUrlFormatterJniMock;
+
+    private WebFeedMainMenuItem mWebFeedMainMenuItem;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
-        mTab = spy(mActivityTestRule.getActivity().getActivityTab());
-        mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
-        mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
-        mSnackBarManager = mActivityTestRule.getActivity().getSnackbarManager();
+
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        doAnswer(invocation -> { return invocation.<GURL>getArgument(0).getHost(); })
+                .when(mUrlFormatterJniMock)
+                .formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any());
+
+        doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
+
+        mActivity = Robolectric.setupActivity(Activity.class);
+        // Required for resolving an attribute used in AppMenuItemText.
+        mActivity.setTheme(R.style.Theme_BrowserUI);
+
         setGetWebFeedMetadataForPageRepsonse(null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -95,19 +108,17 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_hasFavicon_displaysFavicon() {
-        initializeWebFeedMainMenuItem(ICON);
+        initializeWebFeedMainMenuItem(mBitmap);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         Bitmap actualIcon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        assertEquals("Icon should be favicon.", ICON, actualIcon);
+        assertEquals("Icon should be favicon.", mBitmap, actualIcon);
         assertEquals("Icon should be visible.", View.VISIBLE, imageView.getVisibility());
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_noFavicon_hasMonogram() {
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
@@ -119,7 +130,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
@@ -131,7 +141,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_displaysCorrectTitle() {
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
@@ -143,7 +152,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_noMetadata_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(null);
@@ -154,7 +162,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(
@@ -166,7 +173,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_unknownFollowStatus_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(
@@ -178,7 +184,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_followed_displaysFollowingChip() {
         setGetWebFeedMetadataForPageRepsonse(
@@ -198,7 +203,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_unfollowInProgress_displaysLoadingFollowingChip() {
         setGetWebFeedMetadataForPageRepsonse(
@@ -218,7 +222,6 @@ public final class WebFeedMainMenuItemTest {
     }
 
     @Test
-    @MediumTest
     @UiThreadTest
     public void initialize_followInProgress_displaysLoadingFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(

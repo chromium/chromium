@@ -99,7 +99,6 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
   ]
 
   deps = [
@@ -143,7 +142,10 @@ android_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
+  ]
 
   deps = [
     ":java",
@@ -155,17 +157,22 @@ android_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:junit_test_support",
+    "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/feed/core/v2:feedv2_core_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
