@@ -10,6 +10,7 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+import("//third_party/angle/gni/angle.gni")
 import("//ui/gl/features.gni")
 
 declare_args() {
@@ -275,6 +276,9 @@ component("gl") {
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
   }
   if (use_glx) {
     sources += [
@@ -345,6 +349,9 @@ component("gl") {
       "//third_party/angle:libGLESv2",
       "//third_party/swiftshader",
     ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
   }
   if (is_mac) {
     sources += [

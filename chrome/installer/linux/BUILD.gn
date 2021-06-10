@@ -13,6 +13,7 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//components/nacl/features.gni")
+import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/gl/features.gni")
 
@@ -65,6 +66,9 @@ if (use_egl) {
     "$root_out_dir/libEGL.so",
     "$root_out_dir/libGLESv2.so",
   ]
+  if (angle_shared_libvulkan && !is_chromeos) {
+    packaging_files_shlibs += [ "$root_out_dir/libvulkan.so.1" ]
+  }
 }
 
 if (enable_swiftshader) {
@@ -339,6 +343,9 @@ group("installer_deps") {
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      public_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
   }
   if (enable_swiftshader) {
     public_deps += [
