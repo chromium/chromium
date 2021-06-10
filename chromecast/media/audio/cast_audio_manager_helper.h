@@ -36,6 +36,9 @@ class CastAudioManagerHelper {
     virtual std::string GetSessionId(const std::string& group_id) = 0;
     // Get whether the session is audio-only for the provided session ID.
     virtual bool IsAudioOnlySession(const std::string& session_id) = 0;
+    // Get whether the session is launched in a group for the provided session
+    // ID.
+    virtual bool IsGroup(const std::string& session_id) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -58,6 +61,8 @@ class CastAudioManagerHelper {
   CmaBackendFactory* GetCmaBackendFactory();
   std::string GetSessionId(const std::string& audio_group_id);
   bool IsAudioOnlySession(const std::string& session_id);
+  bool IsGroup(const std::string& session_id);
+
   chromecast::mojom::ServiceConnector* GetConnector();
 
  private:

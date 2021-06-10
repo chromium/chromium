@@ -63,6 +63,19 @@ void CastSessionIdMap::SetAppProperties(std::string session_id,
                            std::move(group_observer));
 }
 
+void CastSessionIdMap::SetGroupInfo(std::string session_id, bool is_group) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    // Unretained is safe here, because the singleton CastSessionIdMap never
+    // gets destroyed.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CastSessionIdMap::SetGroupInfo, base::Unretained(this),
+                       std::move(session_id), is_group));
+    return;
+  }
+  group_info_mapping_.emplace(session_id, is_group);
+}
+
 CastSessionIdMap::CastSessionIdMap(base::SequencedTaskRunner* task_runner)
     : task_runner_(task_runner) {
   DCHECK(task_runner_);
@@ -115,6 +128,14 @@ bool CastSessionIdMap::IsAudioOnlySession(const std::string& session_id) {
   return false;
 }
 
+bool CastSessionIdMap::IsGroup(const std::string& session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = group_info_mapping_.find(session_id);
+  if (it != group_info_mapping_.end())
+    return it->second;
+  return false;
+}
+
 void CastSessionIdMap::OnGroupDestroyed(base::UnguessableToken group_id) {
   // Unretained is safe here, because the singleton CastSessionIdMap never gets
   // destroyed.
@@ -133,6 +154,10 @@ void CastSessionIdMap::RemoveGroupId(base::UnguessableToken group_id) {
     auto it_app = application_capability_mapping_.find(it->second.first);
     if (it_app != application_capability_mapping_.end()) {
       application_capability_mapping_.erase(it_app);
+    }
+    auto it_group = group_info_mapping_.find(it->second.first);
+    if (it_group != group_info_mapping_.end()) {
+      group_info_mapping_.erase(it_group);
     }
     mapping_.erase(it);
   }

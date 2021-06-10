@@ -46,6 +46,10 @@ bool CastAudioManagerHelper::IsAudioOnlySession(const std::string& session_id) {
   return delegate_->IsAudioOnlySession(session_id);
 }
 
+bool CastAudioManagerHelper::IsGroup(const std::string& session_id) {
+  return delegate_->IsGroup(session_id);
+}
+
 chromecast::mojom::ServiceConnector* CastAudioManagerHelper::GetConnector() {
   if (!connector_) {
     DCHECK(pending_connector_);

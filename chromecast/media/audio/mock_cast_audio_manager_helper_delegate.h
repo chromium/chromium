@@ -19,6 +19,7 @@ class MockCastAudioManagerHelperDelegate
 
   MOCK_METHOD1(GetSessionId, std::string(const std::string&));
   MOCK_METHOD1(IsAudioOnlySession, bool(const std::string&));
+  MOCK_METHOD1(IsGroup, bool(const std::string&));
 };
 
 inline MockCastAudioManagerHelperDelegate::
