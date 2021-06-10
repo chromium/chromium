@@ -360,8 +360,6 @@ void SaveCardBubbleControllerImpl::OnSyncPromoAccepted(
 
 void SaveCardBubbleControllerImpl::OnSaveButton(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
-  save_card_bubble_view_ = nullptr;
-
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE: {
       DCHECK(!upload_save_card_prompt_callback_.is_null());
