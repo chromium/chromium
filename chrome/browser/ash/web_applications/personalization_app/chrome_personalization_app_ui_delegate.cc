@@ -25,7 +25,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -99,7 +101,10 @@ struct TypeConverter<chromeos::personalization_app::mojom::LocalImagePtr,
 
 ChromePersonalizationAppUiDelegate::ChromePersonalizationAppUiDelegate(
     content::WebUI* web_ui)
-    : profile_(Profile::FromWebUI(web_ui)) {}
+    : profile_(Profile::FromWebUI(web_ui)) {
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<SanitizedImageSource>(profile_));
+}
 
 ChromePersonalizationAppUiDelegate::~ChromePersonalizationAppUiDelegate() =
     default;
