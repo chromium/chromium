@@ -318,6 +318,9 @@ void ImageReaderGLOwner::UpdateTexImage() {
     return;
   }
 
+  UMA_HISTOGRAM_BOOLEAN("Media.AImageReaderGLOwner.HasFence",
+                        scoped_acquire_fence_fd.is_valid());
+
   // Make the newly acquired image as current image.
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
 }
