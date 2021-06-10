@@ -77,6 +77,8 @@ if (is_win || is_mac) {
       "external_constants.h",
       "external_constants_builder.cc",
       "external_constants_builder.h",
+      "external_constants_default.cc",
+      "external_constants_default.h",
       "external_constants_override.cc",
       "external_constants_override.h",
       "installer.cc",

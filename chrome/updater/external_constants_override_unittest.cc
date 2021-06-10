@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +21,7 @@ class ExternalConstantsOverriderTest : public ::testing::Test {};
 TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
   ExternalConstantsOverrider overrider(
       base::flat_map<std::string, base::Value>{},
-      CreateDefaultExternalConstantsForTesting());
+      CreateDefaultExternalConstants());
 
   EXPECT_TRUE(overrider.UseCUP());
 
@@ -42,8 +43,8 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides[kDevOverrideKeyUrl] = base::Value(std::move(url_list));
   overrides[kDevOverrideKeyInitialDelay] = base::Value(137.1);
   overrides[kDevOverrideKeyServerKeepAliveSeconds] = base::Value(1);
-  ExternalConstantsOverrider overrider(
-      std::move(overrides), CreateDefaultExternalConstantsForTesting());
+  ExternalConstantsOverrider overrider(std::move(overrides),
+                                       CreateDefaultExternalConstants());
 
   EXPECT_FALSE(overrider.UseCUP());
 
@@ -61,8 +62,8 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
   base::Value::DictStorage overrides;
   overrides[kDevOverrideKeyUrl] = base::Value("https://www.example.com");
-  ExternalConstantsOverrider overrider(
-      std::move(overrides), CreateDefaultExternalConstantsForTesting());
+  ExternalConstantsOverrider overrider(std::move(overrides),
+                                       CreateDefaultExternalConstants());
 
   std::vector<GURL> urls = overrider.UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
