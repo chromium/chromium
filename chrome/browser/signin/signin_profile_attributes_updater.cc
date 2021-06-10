@@ -16,32 +16,24 @@
 
 SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
     signin::IdentityManager* identity_manager,
-    SigninErrorController* signin_error_controller,
     ProfileAttributesStorage* profile_attributes_storage,
     const base::FilePath& profile_path,
     PrefService* prefs)
     : identity_manager_(identity_manager),
-      signin_error_controller_(signin_error_controller),
       profile_attributes_storage_(profile_attributes_storage),
       profile_path_(profile_path),
       prefs_(prefs) {
   DCHECK(identity_manager_);
-  DCHECK(signin_error_controller_);
   DCHECK(profile_attributes_storage_);
   identity_manager_observation_.Observe(identity_manager_);
-  signin_error_controller_observation_.Observe(signin_error_controller);
 
   UpdateProfileAttributes();
-  // TODO(crbug.com/908457): Call OnErrorChanged() here, to catch any change
-  // that happened since the construction of SigninErrorController. Profile
-  // metrics depend on this bug and must be fixed first.
 }
 
 SigninProfileAttributesUpdater::~SigninProfileAttributesUpdater() = default;
 
 void SigninProfileAttributesUpdater::Shutdown() {
   identity_manager_observation_.Reset();
-  signin_error_controller_observation_.Reset();
 }
 
 void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
@@ -72,16 +64,6 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
         account_info.gaia, base::UTF8ToUTF16(account_info.email),
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
-}
-
-void SigninProfileAttributesUpdater::OnErrorChanged() {
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
-  if (!entry) {
-    return;
-  }
-
-  entry->SetIsAuthError(signin_error_controller_->HasError());
 }
 
 void SigninProfileAttributesUpdater::OnPrimaryAccountChanged(

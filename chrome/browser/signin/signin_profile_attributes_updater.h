@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ProfileAttributesStorage;
@@ -19,12 +18,10 @@ class ProfileAttributesStorage;
 // fields of ProfileAttributes.
 class SigninProfileAttributesUpdater
     : public KeyedService,
-      public SigninErrorController::Observer,
       public signin::IdentityManager::Observer {
  public:
   SigninProfileAttributesUpdater(
       signin::IdentityManager* identity_manager,
-      SigninErrorController* signin_error_controller,
       ProfileAttributesStorage* profile_attributes_storage,
       const base::FilePath& profile_path,
       PrefService* prefs);
@@ -38,24 +35,17 @@ class SigninProfileAttributesUpdater
   // Updates the profile attributes on signin and signout events.
   void UpdateProfileAttributes();
 
-  // SigninErrorController::Observer:
-  void OnErrorChanged() override;
-
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
   signin::IdentityManager* identity_manager_;
-  SigninErrorController* signin_error_controller_;
   ProfileAttributesStorage* profile_attributes_storage_;
   const base::FilePath profile_path_;
   PrefService* prefs_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  base::ScopedObservation<SigninErrorController,
-                          SigninErrorController::Observer>
-      signin_error_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdater);
 };

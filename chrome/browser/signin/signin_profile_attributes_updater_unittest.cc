@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -25,9 +24,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kEmail[] = "example@email.com";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void CheckProfilePrefsReset(PrefService* pref_service,
                             bool expected_using_default_name) {
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
@@ -58,17 +57,14 @@ void SetProfilePrefs(PrefService* pref_service) {
 class SigninProfileAttributesUpdaterTest : public testing::Test {
  public:
   SigninProfileAttributesUpdaterTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        signin_error_controller_(
-            SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
-            identity_test_env_.identity_manager()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   // Recreates |signin_profile_attributes_updater_|. Useful for tests that want
   // to set up the updater with specific preconditions.
   void RecreateSigninProfileAttributesUpdater() {
     signin_profile_attributes_updater_ =
         std::make_unique<SigninProfileAttributesUpdater>(
-            identity_test_env_.identity_manager(), &signin_error_controller_,
+            identity_test_env_.identity_manager(),
             profile_manager_.profile_attributes_storage(), profile_->GetPath(),
             profile_->GetPrefs());
   }
@@ -89,7 +85,6 @@ class SigninProfileAttributesUpdaterTest : public testing::Test {
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
   signin::IdentityTestEnvironment identity_test_env_;
-  SigninErrorController signin_error_controller_;
   std::unique_ptr<SigninProfileAttributesUpdater>
       signin_profile_attributes_updater_;
 };
@@ -118,39 +113,6 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
   EXPECT_FALSE(entry->IsSigninRequired());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Tests that the browser state info is updated on auth error change.
-TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
-  ProfileAttributesEntry* entry =
-      profile_manager_.profile_attributes_storage()
-          ->GetProfileAttributesWithPath(profile_->GetPath());
-  ASSERT_NE(entry, nullptr);
-
-  CoreAccountId account_id =
-      identity_test_env_
-          .MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSync)
-          .account_id;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS only observes signin state at initial creation of the updater, so
-  // recreate the updater after having set the primary account.
-  RecreateSigninProfileAttributesUpdater();
-#endif
-
-  EXPECT_TRUE(entry->IsAuthenticated());
-  EXPECT_FALSE(entry->IsAuthError());
-
-  // Set auth error.
-  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  EXPECT_TRUE(entry->IsAuthError());
-
-  // Remove auth error.
-  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_id, GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_FALSE(entry->IsAuthError());
-}
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {

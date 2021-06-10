@@ -454,7 +454,6 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   VerifyAndResetCallExpectations();
 
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsUsingDefaultAvatar);
-  TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsAuthError);
 }
 
 TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {

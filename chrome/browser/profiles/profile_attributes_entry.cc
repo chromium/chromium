@@ -51,8 +51,6 @@ const char kGAIAGivenNameKey[] = "gaia_given_name";
 const char kGAIANameKey[] = "gaia_name";
 const char kShortcutNameKey[] = "shortcut_name";
 const char kActiveTimeKey[] = "active_time";
-// TODO(https://crbug.com/1211292): this pref is obsolete. Remove it.
-const char kIsAuthErrorKey[] = "is_auth_error";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
@@ -79,6 +77,7 @@ const char kPasswordTokenKey[] = "gaia_password_token";
 
 // Deprecated 6/2021.
 const char kSigninRequiredKey[] = "signin_required";
+const char kIsAuthErrorKey[] = "is_auth_error";
 
 constexpr int kIntegerNotSet = -1;
 
@@ -412,10 +411,6 @@ bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
       profile_index());
 }
 
-bool ProfileAttributesEntry::IsAuthError() const {
-  return GetBool(kIsAuthErrorKey);
-}
-
 bool ProfileAttributesEntry::IsSignedInWithCredentialProvider() const {
   return GetBool(prefs::kSignedInWithCredentialProvider);
 }
@@ -583,10 +578,6 @@ void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
 void ProfileAttributesEntry::SetIsUsingDefaultAvatar(bool value) {
   profile_info_cache_->SetProfileIsUsingDefaultAvatarAtIndex(
       profile_index(), value);
-}
-
-void ProfileAttributesEntry::SetIsAuthError(bool value) {
-  SetBool(kIsAuthErrorKey, value);
 }
 
 void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
@@ -938,6 +929,7 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
 
   // Added 6/2021.
   ClearValue(kSigninRequiredKey);
+  ClearValue(kIsAuthErrorKey);
 }
 
 void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {
