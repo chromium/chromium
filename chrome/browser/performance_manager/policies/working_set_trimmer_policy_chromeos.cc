@@ -14,6 +14,7 @@
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
+#include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -319,16 +320,18 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
     base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(yusukes): Use WorkingSetTrimmerPolicyArcVm as a delegate for
-  // production.
-  auto* arcvm_delegate = g_arcvm_delegate_for_testing;
+  // TODO(crbug.com/1189677): Let the policy own WorkingSetTrimmerPolicyArcVm
+  // instance once performance_manager code is migrated to UI thread.
+  auto* arcvm_delegate = g_arcvm_delegate_for_testing
+                             ? g_arcvm_delegate_for_testing
+                             : WorkingSetTrimmerPolicyArcVm::Get();
 
   const bool force_reclaim =
       params.trim_arcvm_on_critical_pressure &&
       (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   const bool need_reclaim =
-      force_reclaim || (arcvm_delegate && arcvm_delegate->IsEligibleForReclaim(
-                                              params.arcvm_inactivity_time));
+      force_reclaim ||
+      arcvm_delegate->IsEligibleForReclaim(params.arcvm_inactivity_time);
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses,
