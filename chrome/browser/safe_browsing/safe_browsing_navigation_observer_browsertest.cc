@@ -249,6 +249,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    observer_manager_.reset();
     // Cancel unfinished download if any.
     CancelDownloads();
   }
