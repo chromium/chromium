@@ -21,6 +21,8 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
+using testing::NiceMock;
+
 namespace {
 
 const char kExampleURL[] = "http://example.com";
@@ -114,7 +116,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   run_loop.Run();
 #endif
 
-  content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
+  NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
 
   // Verify that we CANCEL for PDF mime type.
@@ -188,7 +190,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, ProceedIfPDFViewerIsEnabled) {
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
-  content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
+  NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
 
   SetAlwaysOpenPdfExternallyForTests(true);
