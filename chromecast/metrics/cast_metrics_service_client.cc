@@ -294,6 +294,7 @@ void CastMetricsServiceClient::SetForceClientId(const std::string& client_id) {
   DCHECK(!client_info_loaded_)
       << "Force client ID must be set before client info is loaded.";
   force_client_id_ = client_id;
+  SetMetricsClientId(force_client_id_);
 }
 
 void CastMetricsServiceClient::InitializeMetricsService() {
