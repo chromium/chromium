@@ -251,7 +251,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
       }
       case TabStripModelChange::kRemoved: {
         for (const auto& contents : change.GetRemove()->contents) {
-          if (contents.will_be_deleted)
+          if (contents.remove_reason ==
+              TabStripModelChange::RemoveReason::kDeleted)
             PushCloseState(contents.contents, contents.index);
           PushDetachState(contents.contents, contents.index,
                           selection.old_contents == contents.contents);

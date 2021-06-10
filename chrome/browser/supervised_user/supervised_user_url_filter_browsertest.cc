@@ -176,7 +176,9 @@ class TabClosingObserver : public TabStripModelObserver {
 
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
-      if (contents_ == contents.contents && contents.will_be_deleted) {
+      if (contents_ == contents.contents &&
+          contents.remove_reason ==
+              TabStripModelChange::RemoveReason::kDeleted) {
         if (run_loop_.running())
           run_loop_.Quit();
         contents_ = nullptr;

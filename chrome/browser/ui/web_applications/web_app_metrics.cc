@@ -203,9 +203,10 @@ void WebAppMetrics::OnTabStripModelChanged(
   }
 
   if (change.type() == TabStripModelChange::kRemoved) {
-    for (const TabStripModelChange::ContentsWithIndexAndWillBeDeleted&
-             contents : change.GetRemove()->contents) {
-      if (contents.will_be_deleted) {
+    for (const TabStripModelChange::RemovedTab& contents :
+         change.GetRemove()->contents) {
+      if (contents.remove_reason ==
+          TabStripModelChange::RemoveReason::kDeleted) {
         auto* tab_helper =
             WebAppTabHelperBase::FromWebContents(contents.contents);
         if (tab_helper && !tab_helper->GetAppId().empty())

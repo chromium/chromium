@@ -38,6 +38,21 @@ class TabStripModelChange {
  public:
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
+  // Used to specify what will happen with the WebContents after it is removed.
+  enum class RemoveReason {
+    // WebContents will be deleted.
+    kDeleted,
+
+    // WebContents will be stored in ClosedTabCache. After some amount of time,
+    // the WebContents will either be deleted, or inserted back into another
+    // TabStripModel.
+    kCached,
+
+    // WebContents got detached from a TabStrip and inserted into another
+    // TabStrip.
+    kInsertedIntoOtherTabStrip
+  };
+
   // Base class for all changes.
   // TODO(dfried): would love to change this whole thing into a std::variant,
   // but C++17 features are not yet approved for use in chromium.
@@ -47,16 +62,12 @@ class TabStripModelChange {
     virtual void WriteIntoTrace(perfetto::TracedValue context) const = 0;
   };
 
-  struct ContentsWithIndexAndWillBeDeleted {
+  struct RemovedTab {
+    void WriteIntoTrace(perfetto::TracedValue context) const;
+
     content::WebContents* contents;
     int index;
-
-    // The specified WebContents are being closed (and eventually destroyed).
-    // TODO(https://crbug.com/1149549): Make will_be_deleted into enum to
-    // consider the case for ClosedTabCache feature separtely.
-    bool will_be_deleted;
-
-    void WriteIntoTrace(perfetto::TracedValue context) const;
+    RemoveReason remove_reason;
   };
 
   struct ContentsWithIndex {
@@ -110,7 +121,7 @@ class TabStripModelChange {
     Remove& operator=(Remove&& other);
 
     // Contains the list of web contents removed with their indexes at
-    // the time of removal along with flag |will_be_deleted| that indicates if
+    // the time of removal along with flag |remove_reason| that indicates if
     // the web contents will be deleted or not after removing. For example, if
     // we removed elements:
     //
@@ -133,7 +144,7 @@ class TabStripModelChange {
     // them in the order the web contents appear in |contents|. Observers should
     // not do index-based queries based on their own internally-stored indices
     // until after processing all of |contents|.
-    std::vector<ContentsWithIndexAndWillBeDeleted> contents;
+    std::vector<RemovedTab> contents;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
   };

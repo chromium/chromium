@@ -50,7 +50,8 @@ void ActiveTabTracker::OnTabStripModelChanged(
     // Ignore if the tab isn't being closed (this would happen if it were
     // dragged to a different tab strip).
       for (const auto& contents : remove->contents) {
-        if (contents.will_be_deleted &&
+        if (contents.remove_reason ==
+                TabStripModelChange::RemoveReason::kDeleted &&
             contents.index == prev_active_tab_index) {
           active_tab_closed_callback_.Run(
               model, clock_->NowTicks() - active_tab_changed_times_[model]);

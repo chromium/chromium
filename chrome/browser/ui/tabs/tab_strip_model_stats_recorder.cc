@@ -146,7 +146,7 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& contents : change.GetRemove()->contents) {
-      if (contents.will_be_deleted)
+      if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
         OnTabClosing(contents.contents);
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {

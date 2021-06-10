@@ -72,12 +72,12 @@ TabStripModelChange::TabStripModelChange(Type type,
                                          std::unique_ptr<Delta> delta)
     : type_(type), delta_(std::move(delta)) {}
 
-void TabStripModelChange::ContentsWithIndexAndWillBeDeleted::WriteIntoTrace(
+void TabStripModelChange::RemovedTab::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("contents", contents);
   dict.Add("index", index);
-  dict.Add("will_be_deleted", will_be_deleted);
+  dict.Add("remove_reason", remove_reason);
 }
 
 void TabStripModelChange::ContentsWithIndex::WriteIntoTrace(
