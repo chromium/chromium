@@ -590,11 +590,6 @@ console-format.js:21 Uint16Array(3) [1, 2, 3]
     0: 1
     1: 2
     2: 3
-    buffer: (...)
-    byteLength: (...)
-    byteOffset: (...)
-    length: (...)
-    Symbol(Symbol.toStringTag): (...)
     [[Prototype]]: TypedArray
 console-format.js:22 [Uint16Array(3)]
     0: Uint16Array(3) [1, 2, 3]
@@ -605,11 +600,6 @@ Uint16Array(3) [1, 2, 3]
     0: 1
     1: 2
     2: 3
-    buffer: (...)
-    byteLength: (...)
-    byteOffset: (...)
-    length: (...)
-    Symbol(Symbol.toStringTag): (...)
     [[Prototype]]: TypedArray
 console-format.js:21 #text
 console-format.js:22 [text]
@@ -627,11 +617,6 @@ globals[36]
 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 console-format.js:21 Uint8Array [3]
     0: 3
-    buffer: (...)
-    byteLength: (...)
-    byteOffset: (...)
-    length: (...)
-    Symbol(Symbol.toStringTag): (...)
     [[Prototype]]: TypedArray
 console-format.js:22 [Uint8Array(1)]
     0: Uint8Array [3]
@@ -640,11 +625,6 @@ console-format.js:22 [Uint8Array(1)]
 globals[37]
 Uint8Array [3]
     0: 3
-    buffer: (...)
-    byteLength: (...)
-    byteOffset: (...)
-    length: (...)
-    Symbol(Symbol.toStringTag): (...)
     [[Prototype]]: TypedArray
 console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99]

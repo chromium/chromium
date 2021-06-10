@@ -1,10 +1,12 @@
 Tests that calling getter on prototype will call it on the object.
 
 console-call-getter-on-proto.js:27 B {value: 239}
-    foo: 239
     value: 239
     [[Prototype]]: A
         constructor: ƒ ()
-        foo: 239
         [[Prototype]]: Object
+            constructor: ƒ ()
+            foo: 239
+            get foo: ƒ foo()
+            [[Prototype]]: Object
 

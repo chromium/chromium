@@ -6274,15 +6274,6 @@ crbug.com/1179772 [ Win7 ] http/tests/devtools/console/console-preserve-log-x-pr
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Failure ]
 crbug.com/1179905 [ Linux ] fast/multicol/nested-very-tall-inside-short-crash.html [ Pass Failure ]
 
-# Temporarily disabled to land https://crrev.com/c/2947243
-crbug.com/1076820 http/tests/devtools/console/console-call-getter-on-proto.js [ Pass Timeout ]
-crbug.com/1076820 http/tests/devtools/console/console-dir-es6.js [ Pass Failure ]
-crbug.com/1076820 http/tests/devtools/console/console-dir.js [ Pass Failure ]
-crbug.com/1076820 http/tests/devtools/console/console-format-es6.js [ Pass Failure ]
-crbug.com/1076820 http/tests/devtools/console/console-format.js [ Pass Failure ]
-crbug.com/1076820 http/tests/devtools/console/console-functions.js [ Pass Failure ]
-crbug.com/1076820 http/tests/devtools/sources/debugger/properties-special.js [ Pass Failure ]
-
 # Sheriff 2021-02-19
 crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure Crash ]
 crbug.com/1180227 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure ]

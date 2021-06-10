@@ -44,10 +44,14 @@
   }
 
   function step4() {
-    ConsoleTestRunner.expandGettersInConsoleMessages(step5);
+    ConsoleTestRunner.expandConsoleMessages(step5, expandTreeElementFilter);
   }
 
-  async function step5() {
+  function step5() {
+    ConsoleTestRunner.expandGettersInConsoleMessages(step6);
+  }
+
+  async function step6() {
     await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }

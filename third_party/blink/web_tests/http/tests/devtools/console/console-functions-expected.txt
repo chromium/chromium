@@ -12,8 +12,6 @@ console-functions.js:28 ƒ simple()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 async ƒ asyncSimple() {}
 console-functions.js:28 async ƒ asyncSimple()
-    arguments: (...)
-    caller: (...)
     length: 0
     name: "asyncSimple"
     [[FunctionLocation]]: console-functions.js:14
@@ -21,8 +19,6 @@ console-functions.js:28 async ƒ asyncSimple()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ* genSimple() {}
 console-functions.js:28 ƒ* genSimple()
-    arguments: (...)
-    caller: (...)
     length: 0
     name: "genSimple"
     prototype: Generator {}
@@ -82,8 +78,6 @@ console-functions.js:28 ƒ anonymous({})
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ *    whitespace   (  x  )    {   }
 console-functions.js:28 ƒ *    whitespace(  x  )
-    arguments: (...)
-    caller: (...)
     length: 1
     name: "whitespace"
     prototype: Generator {}
@@ -93,8 +87,6 @@ console-functions.js:28 ƒ *    whitespace(  x  )
     [[Scopes]]: Scopes[1]
 console-functions.js:27 async ƒ whitespace2   (  x  ,  y  ,  z  )    {   }
 console-functions.js:28 async ƒ whitespace2(  x  ,  y  ,  z  )
-    arguments: (...)
-    caller: (...)
     length: 3
     name: "whitespace2"
     [[FunctionLocation]]: console-functions.js:22
