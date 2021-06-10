@@ -227,9 +227,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
   client->SetOnlineWallpaper(
       user->GetAccountId(), absl::make_optional(image_asset_id),
-      GURL(it->second.image_url.spec() +
-           WallpaperControllerClientImpl::GetBackdropWallpaperSuffix()),
-      it->second.collection_id,
+      GURL(it->second.image_url.spec()), it->second.collection_id,
       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, std::move(callback));
 }

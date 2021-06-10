@@ -296,6 +296,10 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetDailyRefreshCollectionId(
       const std::string& collection_id) = 0;
 
+  // Returns a suffix to be appended to the base url of Backdrop (online)
+  // wallpapers.
+  static std::string GetBackdropWallpaperSuffix();
+
  protected:
   static WallpaperController* g_instance_;
 };

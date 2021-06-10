@@ -573,18 +573,6 @@ bool SetSyncedWallpaperInfo(const AccountId& account_id,
                           prefs::kSyncableWallpaperInfo);
 }
 
-// Returns a suffix to be appended to the base url of Backdrop wallpapers.
-std::string GetBackdropWallpaperSuffix() {
-  // FIFE url is used for Backdrop wallpapers and the desired image size should
-  // be specified. Currently we are using two times the display size. This is
-  // determined by trial and error and is subject to change.
-  // See crbug/815310 for original discussion.
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
-  return "=w" + std::to_string(
-                    2 * std::max(display_size.width(), display_size.height()));
-}
-
 }  // namespace
 
 const char WallpaperControllerImpl::kSmallWallpaperSubDir[] = "small";

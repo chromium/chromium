@@ -41,10 +41,6 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
 
   static WallpaperControllerClientImpl* Get();
 
-  // Returns a suffix to be appended to the base url of Backdrop (online)
-  // wallpapers.
-  static std::string GetBackdropWallpaperSuffix();
-
   // Returns files identifier for the |account_id|.
   std::string GetFilesId(const AccountId& account_id) const;
 

@@ -256,18 +256,6 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
-// static
-std::string WallpaperControllerClientImpl::GetBackdropWallpaperSuffix() {
-  // TODO(b/186807814) handle different display resolutions better.
-  // FIFE url is used for Backdrop wallpapers and the desired image size should
-  // be specified. Currently we are using two times the display size. This is
-  // determined by trial and error and is subject to change.
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
-  return "=w" + base::NumberToString(
-                    2 * std::max(display_size.width(), display_size.height()));
-}
-
 std::string WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id) const {
   DCHECK(CanGetFilesId());

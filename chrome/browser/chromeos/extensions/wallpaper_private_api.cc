@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/wallpaper_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -214,8 +215,9 @@ ExtensionFunction::ResponseAction WallpaperPrivateGetStringsFunction::Run() {
   dict->SetBoolean("isOEMDefaultWallpaper", IsOEMDefaultWallpaper());
   dict->SetString("canceledWallpaper",
                   wallpaper_api_util::kCancelWallpaperMessage);
-  dict->SetString("highResolutionSuffix",
-                  WallpaperControllerClientImpl::GetBackdropWallpaperSuffix());
+  dict->SetString(
+      "highResolutionSuffix",
+      ash::WallpaperController::Get()->GetBackdropWallpaperSuffix());
 
   auto info =
       WallpaperControllerClientImpl::Get()->GetActiveUserWallpaperInfo();
