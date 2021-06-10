@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity;
@@ -190,8 +190,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
     private Intent createSettingsIntent() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         return settingsLauncher.createSettingsActivityIntent(ContextUtils.getApplicationContext(),
-                SyncAndServicesSettings.class.getName(),
-                SyncAndServicesSettings.createArguments(false));
+                ManageSyncSettings.class.getName(), ManageSyncSettings.createArguments(false));
     }
 
     /**
