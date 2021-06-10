@@ -14,7 +14,10 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [ "confirmation_page.js" ]
+polymer_element_files = [
+  "confirmation_page.js",
+  "os_feedback_shared_css.js",
+]
 
 generate_grd("build_grd") {
   input_files = [
