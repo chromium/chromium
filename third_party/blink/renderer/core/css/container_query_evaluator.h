@@ -18,7 +18,9 @@ class ContainerQuery;
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
-  ContainerQueryEvaluator(PhysicalSize, PhysicalAxes contained_axes);
+  // Creates an evaluator with no containment, hence all queries evaluated
+  // against it will fail.
+  ContainerQueryEvaluator() = default;
 
   bool Eval(const ContainerQuery&) const;
 

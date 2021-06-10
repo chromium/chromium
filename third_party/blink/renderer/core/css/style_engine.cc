@@ -2021,6 +2021,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
+  DCHECK(style.IsContainerForContainerQueries());
   WritingMode writing_mode = style.GetWritingMode();
   PhysicalSize physical_size = AdjustForAbsoluteZoom::AdjustPhysicalSize(
       ToPhysicalSize(logical_size, writing_mode), style);
@@ -2029,19 +2030,13 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   StyleRecalcChange::Propagate propagate =
       StyleRecalcChange::kRecalcContainerQueryDependent;
 
-  if (auto* evaluator = container.GetContainerQueryEvaluator()) {
-    auto change = evaluator->ContainerChanged(physical_size, physical_axes);
-    if (change == ContainerQueryEvaluator::Change::kNone)
-      return;
-    if (change == ContainerQueryEvaluator::Change::kNamed)
-      propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
-  } else {
-    container.SetContainerQueryEvaluator(
-        MakeGarbageCollected<ContainerQueryEvaluator>(physical_size,
-                                                      physical_axes));
-    if (!style.ContainerName().IsNull())
-      propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
-  }
+  auto* evaluator = container.GetContainerQueryEvaluator();
+  DCHECK(evaluator);
+  auto change = evaluator->ContainerChanged(physical_size, physical_axes);
+  if (change == ContainerQueryEvaluator::Change::kNone)
+    return;
+  if (change == ContainerQueryEvaluator::Change::kNamed)
+    propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
 
   NthIndexCache nth_index_cache(GetDocument());
   style_recalc_root_.Update(nullptr, &container);

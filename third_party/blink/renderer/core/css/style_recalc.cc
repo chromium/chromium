@@ -74,8 +74,8 @@ StyleRecalcChange::ContainerQueryDependentFlagForChildren(
       // recalculating container queries. If the queries for this container also
       // changes, we will enter another container query recalc for this subtree
       // from layout.
-      LayoutObject* layout_object = element.GetLayoutObject();
-      if (layout_object && layout_object->IsContainerForContainerQueries())
+      const ComputedStyle* old_style = element.GetComputedStyle();
+      if (old_style && old_style->IsContainerForContainerQueries())
         return kNoContainerRecalc;
       return kRecalcContainer;
     }

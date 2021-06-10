@@ -18,15 +18,13 @@ bool IsSufficientlyContained(PhysicalAxes contained_axes,
 
 }  // namespace
 
-ContainerQueryEvaluator::ContainerQueryEvaluator(PhysicalSize size,
-                                                 PhysicalAxes contained_axes) {
-  SetData(size, contained_axes);
-}
-
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
+  if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
+    return false;
   if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
     return false;
+  DCHECK(media_query_evaluator_);
   return media_query_evaluator_->Eval(*container_query.media_queries_);
 }
 

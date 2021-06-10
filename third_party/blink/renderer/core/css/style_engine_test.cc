@@ -3469,31 +3469,37 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
         height: 100px;
       }
       @container (min-width: 200px) {
-        .affected { background-color: green; }
+        .toggle { background-color: green; }
       }
     </style>
     <div id="container" class="container">
+
+      <!-- None of the following should be affected by a change in the
+           size of #container. -->
       <div class="container" style="display:contents">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </div>
       <span class="container">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </span>
       <rt class="container">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </rt>
       <div class="container" style="display:table">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </div>
       <div class="container" style="display:table-cell">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </div>
       <div class="container" style="display:table-row">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </div>
       <div class="container" style="display:table-row-group">
-        <span class="affected"></span>
+        <span class="toggle"></span>
       </div>
+
+      <!-- This should be affected, however. -->
+      <div class="toggle">Affected</div>
     </div>
   )HTML");
 
@@ -3506,10 +3512,12 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
 
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
       *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
-  // span.affected is updated because containment does not apply to the display
-  // types on the element styled with containment. All marked as affected are
-  // recalculated.
-  EXPECT_EQ(7u, GetStyleEngine().StyleForElementCount() - start_count);
+
+  // Even though none of the inner containers are eligible for containment,
+  // they are still containers for the purposes of evaluating container
+  // queries. Hence, they should not be affected when the outer container
+  // changes its size.
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {

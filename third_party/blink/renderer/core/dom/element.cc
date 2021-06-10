@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -2767,10 +2768,8 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   if (HasRareData()) {
     ElementRareData* data = GetElementRareData();
-    if (!performing_reattach) {
+    if (!performing_reattach)
       data->ClearPseudoElements();
-      data->SetContainerQueryEvaluator(nullptr);
-    }
 
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
       if (performing_reattach) {
@@ -2926,8 +2925,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
 
-  if (LayoutObject* layout_object = GetLayoutObject()) {
-    if (layout_object->IsContainerForContainerQueries())
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    if (style->IsContainerForContainerQueries())
       child_recalc_context.container = this;
   }
 
@@ -2993,6 +2992,26 @@ scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
   INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                 independent_inherited_styles_propagated, 1);
   return new_style;
+}
+
+static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
+    Element& element,
+    const ComputedStyle* old_style,
+    const ComputedStyle& new_style) {
+  if (!new_style.IsContainerForContainerQueries())
+    return nullptr;
+  // If we're switching to display:contents, any existing results cached on
+  // ContainerQueryEvaluator are no longer valid, since any style recalc
+  // based on that information would *not* be corrected by a subsequent
+  // interleaved style recalc, since the element has no layout object.
+  if (old_style && !element.LayoutObjectIsNeeded(new_style) &&
+      element.LayoutObjectIsNeeded(*old_style)) {
+    return MakeGarbageCollected<ContainerQueryEvaluator>();
+  }
+  // Othewise, the existing ContainerQueryEvaluator can be used, if any.
+  if (auto* evaluator = element.GetContainerQueryEvaluator())
+    return evaluator;
+  return MakeGarbageCollected<ContainerQueryEvaluator>();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(
@@ -3063,6 +3082,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
             rare_data->GetElementAnimations()) {
       element_animations->CssAnimations().Cancel();
     }
+    rare_data->SetContainerQueryEvaluator(nullptr);
     rare_data->ClearPseudoElements();
   }
 
@@ -3118,6 +3138,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
       if (UpdateForceLegacyLayout(*new_style, old_style.get()))
         child_change = child_change.ForceReattachLayoutTree();
     }
+    auto* evaluator =
+        ComputeContainerQueryEvaluator(*this, old_style.get(), *new_style);
+    if (evaluator != GetContainerQueryEvaluator())
+      SetContainerQueryEvaluator(evaluator);
   }
 
   if (child_change.ReattachLayoutTree()) {
@@ -4939,7 +4963,10 @@ const ComputedStyle* Element::EnsureComputedStyle(
   while (!ancestors.IsEmpty()) {
     Element* ancestor = ancestors.back();
     ancestors.pop_back();
-    ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
+    const ComputedStyle* style =
+        ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
+    if (style->IsContainerForContainerQueries())
+      style_recalc_context.container = ancestor;
   }
 
   return EnsureOwnComputedStyle(style_recalc_context, pseudo_element_specifier,

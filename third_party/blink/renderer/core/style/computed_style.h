@@ -2082,6 +2082,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
   CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
+  bool IsContainerForContainerQueries() const {
+    return ContainsStyle() && ContainsLayout() &&
+           (ContainsInlineSize() || ContainsBlockSize());
+  }
+
   // Display utility functions.
   bool IsDisplayReplacedType() const {
     return IsDisplayReplacedType(Display());

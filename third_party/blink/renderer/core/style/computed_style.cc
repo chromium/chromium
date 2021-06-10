@@ -210,6 +210,25 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
   return true;
 }
 
+static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
+                                        const ComputedStyle& new_style) {
+  if (!old_style.IsContainerForContainerQueries() &&
+      !new_style.IsContainerForContainerQueries()) {
+    return false;
+  }
+  if ((old_style.ContainerName() != new_style.ContainerName()) ||
+      (old_style.ContainerType() != new_style.ContainerType())) {
+    return true;
+  }
+  if (new_style.Display() != old_style.Display()) {
+    if (new_style.Display() == EDisplay::kNone ||
+        new_style.Display() == EDisplay::kContents) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
                                             const ComputedStyle* old_style,
                                             const ComputedStyle* new_style) {
@@ -304,10 +323,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
       old_style.BlockifiesChildren() != new_style.BlockifiesChildren())
     return Difference::kDescendantAffecting;
   // TODO(crbug.com/1213888): Only recalc affected descendants.
-  if ((old_style.ContainerName() != new_style.ContainerName()) ||
-      (old_style.ContainerType() != new_style.ContainerType())) {
+  if (DiffAffectsContainerQueries(old_style, new_style))
     return Difference::kDescendantAffecting;
-  }
   if (!old_style.NonIndependentInheritedEqual(new_style))
     return Difference::kInherited;
   if (old_style.JustifyItems() != new_style.JustifyItems())
