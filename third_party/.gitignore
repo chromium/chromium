@@ -249,6 +249,7 @@
 /vulkan-deps
 /vulkan_memory_allocator
 /wayland/src
+/wayland-protocols/gtk
 /wayland-protocols/kde
 /wayland-protocols/src
 /webdriver/pylib
