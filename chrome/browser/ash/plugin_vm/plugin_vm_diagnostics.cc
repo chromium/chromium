@@ -242,7 +242,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   std::string GetMissingDefaultVmExplanation(const ImageListType& images) {
     std::string string_template = l10n_util::GetPluralStringFUTF8(
         IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_EXPLANATION, images.size());
-    std::vector<std::string> subs{IDS_PLUGIN_VM_APP_NAME};
+    std::vector<std::string> subs{
+        l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME)};
 
     if (images.size() > 0) {
       // In this case, we have a second placeholder VM_NAME_LIST. The substitute
