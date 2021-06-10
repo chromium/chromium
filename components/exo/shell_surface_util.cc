@@ -13,6 +13,7 @@
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -358,6 +359,14 @@ bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
   }
 
   return false;
+}
+
+void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window,
+                                              bool value) {
+  if (Surface::AsSurface(window))
+    window->SetProperty(aura::client::kSkipImeProcessing, value);
+  for (aura::Window* child : window->children())
+    SetSkipImeProcessingToDescendentSurfaces(child, value);
 }
 
 }  // namespace exo

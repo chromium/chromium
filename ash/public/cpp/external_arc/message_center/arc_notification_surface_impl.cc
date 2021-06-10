@@ -94,8 +94,8 @@ ArcNotificationSurfaceImpl::ArcNotificationSurfaceImpl(
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kArcPreImeKeyEventSupport)) {
-    surface_->root_surface()->window()->SetProperty(
-        aura::client::kSkipImeProcessing, true);
+    surface_->host_window()->SetProperty(aura::client::kSkipImeProcessing,
+                                         true);
   }
 
   native_view_->Show();

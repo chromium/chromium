@@ -8,6 +8,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -70,6 +71,15 @@ void NotificationSurface::OnSurfaceDestroying(Surface* surface) {
 
 void NotificationSurface::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
+}
+
+void NotificationSurface::OnWindowPropertyChanged(aura::Window* window,
+                                                  const void* key,
+                                                  intptr_t old_value) {
+  if (key == aura::client::kSkipImeProcessing) {
+    SetSkipImeProcessingToDescendentSurfaces(
+        window, window->GetProperty(aura::client::kSkipImeProcessing));
+  }
 }
 
 void NotificationSurface::OnWindowAddedToRootWindow(aura::Window* window) {

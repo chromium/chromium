@@ -96,6 +96,12 @@ bool IsImeSupportedSurface(Surface* surface) {
         // Do nothing.
         break;
     }
+    // For notifications, billing surfaces, etc. AppType::ARC_APP is not set
+    // despite them being from ARC. Ideally AppType should be added to them, but
+    // there is a risk that breaks other features e.g. full restore.
+    // TODO(tetsui): find a way to remove this.
+    if (window->GetProperty(aura::client::kSkipImeProcessing))
+      return true;
   }
   return false;
 }

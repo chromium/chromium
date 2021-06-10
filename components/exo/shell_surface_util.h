@@ -104,6 +104,9 @@ bool HasPermissionToActivate(aura::Window* window);
 // Returns true if event is/will be consumed by IME.
 bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event);
 
+// Set aura::client::kSkipImeProcessing to all Surface descendants.
+void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window, bool value);
+
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_SHELL_SURFACE_UTIL_H_
