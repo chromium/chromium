@@ -151,10 +151,10 @@ constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
-constexpr char kLoginScreenBehaviorHTML[] = "components/login_screen_behavior.html";
-constexpr char kLoginScreenBehaviorJS[] = "components/login_screen_behavior.js";
-constexpr char kMultiStepBehaviorHTML[] = "components/multi_step_behavior.html";
-constexpr char kMultiStepBehaviorJS[] = "components/multi_step_behavior.js";
+constexpr char kLoginScreenBehaviorHTML[] = "components/behaviors/login_screen_behavior.html";
+constexpr char kLoginScreenBehaviorJS[] = "components/behaviors/login_screen_behavior.js";
+constexpr char kMultiStepBehaviorHTML[] = "components/behaviors/multi_step_behavior.html";
+constexpr char kMultiStepBehaviorJS[] = "components/behaviors/multi_step_behavior.js";
 constexpr char kOobeIconsHTML[] = "components/oobe_icons.html";
 
 // Components
@@ -163,19 +163,19 @@ constexpr char kOobeSharedVarsCssHTML[] =
 constexpr char kOobeCustomVarsCssHTML[] =
     "components/oobe_custom_vars_css.html";
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
-constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior/oobe_i18n_behavior.html";
-constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior/oobe_i18n_behavior.js";
-constexpr char kI18nSetupHTML[] = "components/oobe_i18n_behavior/i18n_setup.html";
+constexpr char kI18nBehaviorHTML[] = "components/behaviors/oobe_i18n_behavior.html";
+constexpr char kI18nBehaviorJS[] = "components/behaviors/oobe_i18n_behavior.js";
+constexpr char kI18nSetupHTML[] = "components/behaviors/i18n_setup.html";
 constexpr char kDialogHostBehaviorHTML[] =
-    "components/oobe_dialog_host_behavior/oobe_dialog_host_behavior.html";
+    "components/behaviors/oobe_dialog_host_behavior.html";
 constexpr char kDialogHostBehaviorJS[] =
-    "components/oobe_dialog_host_behavior/oobe_dialog_host_behavior.js";
-constexpr char kFocusBehaviorHTML[] = "components/oobe_focus_behavior/oobe_focus_behavior.html";
-constexpr char kFocusBehaviorJS[] = "components/oobe_focus_behavior/oobe_focus_behavior.js";
+    "components/behaviors/oobe_dialog_host_behavior.js";
+constexpr char kFocusBehaviorHTML[] = "components/behaviors/oobe_focus_behavior.html";
+constexpr char kFocusBehaviorJS[] = "components/behaviors/oobe_focus_behavior.js";
 constexpr char kScrollableBehaviorHTML[] =
-    "components/oobe_scrollable_behavior/oobe_scrollable_behavior.html";
+    "components/behaviors/oobe_scrollable_behavior.html";
 constexpr char kScrollableBehaviorJS[] =
-    "components/oobe_scrollable_behavior/oobe_scrollable_behavior.js";
+    "components/behaviors/oobe_scrollable_behavior.js";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
