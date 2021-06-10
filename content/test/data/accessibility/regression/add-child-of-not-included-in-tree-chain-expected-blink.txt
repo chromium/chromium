@@ -1,5 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
-++++++heading ignored invisible htmlTag='h2'
-++++++group htmlTag='div' name='Done'
