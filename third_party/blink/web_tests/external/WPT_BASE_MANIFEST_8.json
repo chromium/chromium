@@ -17,6 +17,13 @@
        {}
       ]
      ],
+     "included-descendant-dom-removal.html": [
+      "fd978fb45e5a844f2b61cd4c10fba219410a9682",
+      [
+       null,
+       {}
+      ]
+     ],
      "table-ignored-child.html": [
       "99f385f6eaf3ebdbc5b8c4517c9a7ec7fce50117",
       [
@@ -1251,6 +1258,13 @@
      "the-details-element": {
       "empty-crash.html": [
        "d409eff4a88c88011e7a8ffc48d1dc7e71462d7a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "two-summaries-removal-crash.html": [
+       "164d3f16aa65deb97826607e2f57c33dcaa0f9b0",
        [
         null,
         {}
@@ -99506,6 +99520,19 @@
       ]
      ],
      "order": {
+      "order-abs-children-painting-order.html": [
+       "248f380e5aebb651069116cb32722389a511d962",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "order-with-column-reverse.html": [
        "5083d6843649bbbb2bf9d417ae4022042c87e0aa",
        [
@@ -100063,6 +100090,19 @@
        [
         [
          "/css/css-flexbox/reference/stretching-orthogonal-flows-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-no-natural-size-grandchild.html": [
+      "6f99654014e68b989695ac7f9fee46e51b62eeaf",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -224305,10 +224345,6 @@
        "2f7e669c72fc263d4b39d7a198d8abafbf54b463",
        []
       ],
-      "position-absolute-012-expected.txt": [
-       "5e1ccdbc8f04119d90c0d7241918bbcd32c5d750",
-       []
-      ],
       "position-absolute-containing-block-001-ref.html": [
        "5f8bcaf539f7004b226ab625d4357e4c831d6ac7",
        []
@@ -238812,6 +238848,10 @@
       "4305d918f2abc780975dc08a236d8c41d7f20b14",
       []
      ],
+     "at-property-expected.txt": [
+      "ccc796b11dc6dceda78475b0f3ae764d13b2e481",
+      []
+     ],
      "registered-property-computation-expected.txt": [
       "3823a752b99f506d11c50aee36474c6c51c849cd",
       []
@@ -247435,7 +247475,7 @@
       []
      ],
      "accent-color-checkbox-checked-001-notref.html": [
-      "06c9d8cfeddf2cb939e74e85f34edd10514f560a",
+      "9f9d73177a9044b4562d0fceebe09152fd6ca7ed",
       []
      ],
      "accent-color-computed-expected.txt": [
@@ -253792,7 +253832,7 @@
          []
         ],
         "descriptor-pad-ref.html": [
-         "8d47b10f7e53230553ff0298fc973e12bf60c062",
+         "444368a61a115fcef6d02f5407a85b9b9ffde8c1",
          []
         ],
         "descriptor-prefix-invalid-ref.html": [
@@ -254356,7 +254396,7 @@
      []
     ],
     "requirements.txt": [
-     "281c9229ef878e458076ac4ecaa344e8f67337e4",
+     "aa1484a7bb23a9e4b13d95960d9bf0cc62c23653",
      []
     ],
     "reviewing-tests": {
@@ -254821,16 +254861,6 @@
      "6fd5b12664da091fd9ee773b821ad72ee704ee8f",
      []
     ],
-    "abort": {
-     "event.any-expected.txt": [
-      "459b664f27cf185810af3af7068202c757289422",
-      []
-     ],
-     "event.any.worker-expected.txt": [
-      "459b664f27cf185810af3af7068202c757289422",
-      []
-     ]
-    },
     "collections": {
      "HTMLCollection-as-prototype-expected.txt": [
       "f36f3bf1426c59572dc577805db9d9a3503ffd29",
@@ -254907,20 +254937,8 @@
      "4c0f1de272a71260bffdf9500383d81fafba50e2",
      []
     ],
-    "idlharness.any.serviceworker-expected.txt": [
-     "7b59d468a41d3f50a543c93946d3f23dd9628e89",
-     []
-    ],
-    "idlharness.any.sharedworker-expected.txt": [
-     "7b59d468a41d3f50a543c93946d3f23dd9628e89",
-     []
-    ],
-    "idlharness.any.worker-expected.txt": [
-     "7b59d468a41d3f50a543c93946d3f23dd9628e89",
-     []
-    ],
     "idlharness.window_exclude=Node-expected.txt": [
-     "853c679aacd292e52449c5634db5e9d2ab23fd5a",
+     "3f7ccb158a902688fc06196d26b45e0e42c1eb3e",
      []
     ],
     "lists": {
@@ -263117,26 +263135,6 @@
        "6eb509856dbc9ed505dc3a9d5ffdf7d6359eb324",
        []
       ],
-      "document-access": {
-       "resources": {
-        "child.html": [
-         "614b6a087ddb690eb6183287e90ba43a3967f3bc",
-         []
-        ],
-        "cross_origin_intermediate_child.sub.html": [
-         "9386a2f4233eac53674a6ea328a9e0747d26a1ad",
-         []
-        ],
-        "cross_origin_intermediate_child_remote.sub.html": [
-         "93f6da93612a530da6a00201f66caf35d53beea3",
-         []
-        ],
-        "cross_origin_intermediate_grandchild.html": [
-         "d91a23443a1d9d530151d757429a683d7f8f138e",
-         []
-        ]
-       }
-      },
       "document-domain-removed-iframe-expected.txt": [
        "5ae578d930f8a9e29d4f6396299d09efe167e728",
        []
@@ -265059,10 +265057,6 @@
       ],
       "reporting-empty-frame.html": [
        "b1579add2e033e9dfc6c8bb18f9e523b246326ac",
-       []
-      ],
-      "reporting-empty-frame.html.headers": [
-       "b7c8b304178b4f4aa213703d6870e84267acba6c",
        []
       ],
       "reporting-worker.js": [
@@ -272350,6 +272344,10 @@
        ],
        "selectmenu-option-arbitrary-content-not-displayed-ref.tentative.html": [
         "d12943105f8c47d32f47eec0aa773a9a98046bfa",
+        []
+       ],
+       "selectmenu-popup.tentative-expected.txt": [
+        "dcd209872a8dfd7d3bb817b1648b050ed0e92452",
         []
        ],
        "support": {
@@ -286030,10 +286028,6 @@
       "c6d12e4eb7e735632515bb1894d874417eb39a35",
       []
      ],
-     "no-dynamic-import-in-module.any.serviceworker-module-expected.txt": [
-      "1d26dbaf42a18e2382c46aca7cbe9cbac403f275",
-      []
-     ],
      "ready.https-expected.txt": [
       "d29a2b4e58b5319d7034e7be26cc0f2e4821e9fe",
       []
@@ -290347,7 +290341,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "7ca6ca905a9c6a0c48baecd5fa3b044e3ac31dc8",
+      "be78ec211fc6ff39112515f33b2bdb2b571e7736",
       []
      ]
     }
@@ -291714,7 +291708,11 @@
      []
     ],
     "README.md": [
-     "eedddd59989e277f7484d2e3d4ee08a94e363188",
+     "093c92751fefb92e98737d3b6b810d8233e1820c",
+     []
+    ],
+    "av1.mp4": [
+     "8d2a7acdb860d76bbf9bf217de26d351c0db4f7e",
      []
     ],
     "four-colors-flip.avif": [
@@ -291795,6 +291793,10 @@
     ],
     "utils.js": [
      "2e7d8b3501cd7d471bfafab20d2788bb0705d723",
+     []
+    ],
+    "vp8.webm": [
+     "14d970e30106ed9c6faa75d948788aa311ddfc7d",
      []
     ],
     "vp9.mp4": [
@@ -293626,19 +293628,19 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "83ef9542425e6ab9f0b6e09dfafe658c160e153d",
+     "0fd0f45cbba173fcea3d1fe6933a575fde6da8c0",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "83ef9542425e6ab9f0b6e09dfafe658c160e153d",
+     "0fd0f45cbba173fcea3d1fe6933a575fde6da8c0",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "83ef9542425e6ab9f0b6e09dfafe658c160e153d",
+     "0fd0f45cbba173fcea3d1fe6933a575fde6da8c0",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "83ef9542425e6ab9f0b6e09dfafe658c160e153d",
+     "0fd0f45cbba173fcea3d1fe6933a575fde6da8c0",
      []
     ],
     "quic": {
@@ -337723,7 +337725,7 @@
       ]
      ],
      "at-property.html": [
-      "e9945056aad87be835c2471bbe7ec78c425aa4f0",
+      "d996091dc203eab079fff2d2b980d064300af39b",
       [
        null,
        {}
@@ -341370,7 +341372,7 @@
        ]
       ],
       "table-height-redistribution.html": [
-       "9c587e31b4f638abbc3733cf9ab1acfe28c77b7c",
+       "c0f48e4f201a8321cccb9fe2cbae97991e9d70dd",
        [
         null,
         {}
@@ -341412,7 +341414,7 @@
        ]
       ],
       "tbody-height-redistribution.html": [
-       "61b304ff0a2efb86f4c2fa4718b8efbc0397cae2",
+       "bfd47fa651b7c147adbd819d36188aa60e186653",
        [
         null,
         {}
@@ -354212,8 +354214,19 @@
    },
    "dom": {
     "abort": {
+     "AbortSignal.any.js": [
+      "1d7d7678eb1a6e27adabbe0e31afe574a31bb0ea",
+      [
+       "dom/abort/AbortSignal.any.html",
+       {}
+      ],
+      [
+       "dom/abort/AbortSignal.any.worker.html",
+       {}
+      ]
+     ],
      "event.any.js": [
-      "2589ba1ce45091c6e1b8ad030c6eeb3a4fed714b",
+      "a67e6f400fcf1dfa347390e1a76e25b573afbb9a",
       [
        "dom/abort/event.any.html",
        {}
@@ -387206,29 +387219,6 @@
         }
        ]
       ],
-      "document-access": {
-       "cross_origin_intermediate_access.sub.tentative.html": [
-        "3812246da896609deef71f8975dfa6af7ee41a1b",
-        [
-         null,
-         {}
-        ]
-       ],
-       "cross_origin_intermediate_access_remote.sub.tentative.html": [
-        "22370e7541fa5e71724bc4191ad1a32c499d7362",
-        [
-         null,
-         {}
-        ]
-       ],
-       "document_access_parent_access.tentative.html": [
-        "07b27a5c4aeb41376db692e96c47156e67e0bead",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "document-domain-nested-navigate.window.js": [
        "f51eed5ca941f591536c70187e4201c464f02ab3",
        [
@@ -406594,6 +406584,24 @@
         }
        ]
       ],
+      "reporting-navigation.tentative.https.html": [
+       "1742d80da27012e6672685cc4879f03e505c31d3",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
+      "reporting-subresource-corp.tentative.https.html": [
+       "8e1631cb79ba71ee8091e505be067be96a279779",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
       "script.tentative.https.html": [
        "cac1d46d49dbcf654a9e6d77c57521b67be16091",
        [
@@ -406750,7 +406758,7 @@
       ]
      ],
      "reporting-subresource-corp.https.html": [
-      "ad8a8e99eb99e6ec92c8d40dfad0324365fbe6ac",
+      "9bcf37b0cdfe32f9676ca4260a477875a69414b8",
       [
        null,
        {
@@ -406759,7 +406767,7 @@
       ]
      ],
      "reporting-to-endpoint.https.html": [
-      "066943a47254d2ca8d6cac222c4fa72544a46bce",
+      "ad1f18cbb3b65b681a674a99d54cb2e20df626ad",
       [
        null,
        {
@@ -417425,7 +417433,7 @@
         ]
        ],
        "selectmenu-popup.tentative.html": [
-        "79db3864586f7aa35a4374a6d251f7179eef603d",
+        "7b085cdf34a69e72e7a81a58bdc3cdc3a9a906d0",
         [
          null,
          {
@@ -458214,7 +458222,7 @@
       ]
      ],
      "no-dynamic-import-in-module.any.js": [
-      "84b17629ccddc984003f266d6a0d1bee09d29c5a",
+      "f7c2ef37b8b938df9b8ccae12511dfbe58d8e694",
       [
        "service-workers/service-worker/no-dynamic-import-in-module.any.serviceworker-module.html",
        {
@@ -472379,7 +472387,7 @@
    },
    "urlpattern": {
     "urlpattern.https.any.js": [
-     "ec8ff1c9a05cc2a50cb4d3df16bf77125eb5d7dd",
+     "1fa535a846fc568518e63a0c0f427eeb1c8c3762",
      [
       "urlpattern/urlpattern.https.any.html",
       {
@@ -480502,7 +480510,7 @@
      ]
     ],
     "video-decoder.any.js": [
-     "8d80cb18ed48e62560cb3a64b30fa508caac80da",
+     "565134271d6dd4b1f7b60a31e1562837e2836072",
      [
       "webcodecs/video-decoder.any.html",
       {
@@ -480683,7 +480691,38 @@
      ]
     ],
     "videoDecoder-codec-specific.any.js": [
-     "0be7cbd5dc1c7663de36fe6466a521ccb975773a",
+     "e0820f1b8afa65415907d47962e30378a9d4d03a",
+     [
+      "webcodecs/videoDecoder-codec-specific.any.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
      [
       "webcodecs/videoDecoder-codec-specific.any.html?h264_annexb",
       {
@@ -480691,6 +480730,14 @@
         [
          "global",
          "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
         ],
         [
          "variant",
@@ -480717,6 +480764,45 @@
         ],
         [
          "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.any.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
          "?vp9"
         ],
         [
@@ -480737,6 +480823,45 @@
         [
          "global",
          "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.any.worker.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
         ],
         [
          "variant",
@@ -480763,6 +480888,14 @@
         ],
         [
          "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
          "?vp9"
         ],
         [
@@ -480786,6 +480919,45 @@
         ],
         [
          "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.any.worker.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
          "?vp9"
         ],
         [
@@ -480806,6 +480978,14 @@
         [
          "global",
          "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
         ],
         [
          "variant",
@@ -495491,7 +495671,7 @@
      ]
     ],
     "idlharness.any.js": [
-     "1a22753926745107f1edc522d4a8040a048de509",
+     "56bc1ba0a948929765762603df99a073b7727fad",
      [
       "webtransport/idlharness.any.html",
       {
