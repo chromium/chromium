@@ -118,8 +118,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   enum class UnloadSupportStrategy {
     kAlways,
     kOptInHeaderRequired,
-    // TODO(crbug.com/1201653): Consider removing `kNo` to simplify code a bit.
-    kNo,
   };
 
   // Returns whether MediaSessionImpl::OnServiceCreated is allowed for the

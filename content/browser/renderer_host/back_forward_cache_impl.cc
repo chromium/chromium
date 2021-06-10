@@ -150,7 +150,6 @@ constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
         {BackForwardCacheImpl::UnloadSupportStrategy::kAlways, "always"},
         {BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired,
          "opt_in_header_required"},
-        {BackForwardCacheImpl::UnloadSupportStrategy::kNo, "no"},
 };
 
 BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
@@ -713,15 +712,6 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
             DCHECK(!result->CanStore());
             break;
         }
-      }
-      break;
-    case BackForwardCacheImpl::UnloadSupportStrategy::kNo:
-      if (has_unload_handler) {
-        result->No(rfh->GetParent()
-                       ? BackForwardCacheMetrics::NotRestoredReason::
-                             kUnloadHandlerExistsInSubFrame
-                       : BackForwardCacheMetrics::NotRestoredReason::
-                             kUnloadHandlerExistsInMainFrame);
       }
       break;
   }
