@@ -32,6 +32,10 @@ namespace views {
 class BubbleDialogDelegateView;
 }
 
+namespace base {
+class Token;
+}
+
 // The ContentSettingImageView displays an icon and optional text label for
 // various content settings affordances in the location bar (i.e. plugin
 // blocking, geolocation).
@@ -88,6 +92,13 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   ContentSettingImageModel::ImageType GetTypeForTesting() const;
 
+  void reset_animation_for_testing() {
+    IconLabelBubbleView::ResetSlideAnimation(true);
+  }
+  absl::optional<base::Token> get_critical_promo_id_for_testing() {
+    return current_iph_id_for_testing_;
+  }
+
  private:
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -104,6 +115,11 @@ class ContentSettingImageView : public IconLabelBubbleView,
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
   bool can_animate_ = true;
+
+  // Has a value that is not is_zero() if a promo is showing, or has an
+  // is_zero() value if the promo was considered but it was decided not to show
+  // it.
+  absl::optional<base::Token> current_iph_id_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

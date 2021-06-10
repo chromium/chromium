@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/token.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
@@ -101,6 +102,7 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
+    current_iph_id_for_testing_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -247,7 +249,12 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
 
     auto* promo_controller = FeaturePromoControllerViews::GetForView(this);
     DCHECK(promo_controller);
-    promo_controller->ShowCriticalPromo(bubble_params);
+    current_iph_id_for_testing_ =
+        promo_controller->ShowCriticalPromo(bubble_params);
+    content_setting_image_model_->SetPromoWasShown(web_contents);
+  } else {
+    // Set a token that is is_zero() to make it not empty for testing.
+    current_iph_id_for_testing_.emplace(0, 0);
   }
 }
 

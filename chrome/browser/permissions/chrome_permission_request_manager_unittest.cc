@@ -550,8 +550,6 @@ TEST_F(ChromePermissionRequestManagerTest,
   NavigateAndCommit(notification8);
   permissions::MockPermissionRequest notification8_request(
       u"request8", permissions::RequestType::kNotifications, notification8);
-  // For the rest of the quiet permission prompts, do not show promo.
-  EXPECT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile()));
   manager_->AddRequest(web_contents()->GetMainFrame(), &notification8_request);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());

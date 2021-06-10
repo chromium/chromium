@@ -107,6 +107,11 @@ void FeaturePromoControllerViews::CloseBubbleForCriticalPromo(
   bubble_owner_->CloseBubble(*bubble_id_);
 }
 
+bool FeaturePromoControllerViews::CriticalPromoIsShowing(
+    const base::Token& critical_promo_id) const {
+  return bubble_id_ && (current_critical_promo_ == critical_promo_id);
+}
+
 bool FeaturePromoControllerViews::MaybeShowPromo(
     const base::Feature& iph_feature,
     BubbleCloseCallback close_callback) {
@@ -329,7 +334,7 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   DCHECK_NE(current_iph_feature_ != nullptr,
             current_critical_promo_.has_value());
 
-  bubble_id_ = absl::nullopt;
+  bubble_id_.reset();
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
@@ -341,6 +346,6 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
     tracker_->Dismissed(*current_iph_feature_);
     current_iph_feature_ = nullptr;
   } else {
-    current_critical_promo_ = absl::nullopt;
+    current_critical_promo_.reset();
   }
 }
