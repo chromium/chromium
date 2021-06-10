@@ -105,8 +105,6 @@ class StandaloneTrustedVaultBackend
   sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
       const std::string& gaia_id);
 
-  void SetRecoverabilityDegradedForTesting();
-
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
 
   void SetClockForTesting(base::Clock* clock);
@@ -205,7 +203,6 @@ class StandaloneTrustedVaultBackend
   // be overridden in tests.
   base::Clock* clock_;
 
-  bool is_recoverability_degraded_for_testing_ = false;
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 };
 
