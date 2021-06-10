@@ -35,7 +35,6 @@ namespace blink {
 class Document;
 class KURL;
 class StyleImage;
-class ComputedStyle;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
@@ -70,8 +69,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   bool HasFailedOrCanceledSubresources() const;
 
   bool Equals(const CSSImageValue&) const;
-
-  bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 
   CSSImageValue* ValueWithURLMadeAbsolute() const {
     return MakeGarbageCollected<CSSImageValue>(

@@ -764,6 +764,25 @@ bool CSSGradientValue::KnownToBeOpaque(const Document& document,
   return true;
 }
 
+CSSGradientValue* CSSGradientValue::ComputedCSSValue(
+    const ComputedStyle& style,
+    bool allow_visited_style) const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->ComputedCSSValue(
+          style, allow_visited_style);
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->ComputedCSSValue(
+          style, allow_visited_style);
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->ComputedCSSValue(
+          style, allow_visited_style);
+    default:
+      NOTREACHED();
+  }
+  return nullptr;
+}
+
 Vector<Color> CSSGradientValue::GetStopColors(
     const Document& document,
     const ComputedStyle& style) const {
@@ -1043,7 +1062,7 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
 
 CSSLinearGradientValue* CSSLinearGradientValue::ComputedCSSValue(
     const ComputedStyle& style,
-    bool allow_visited_style) {
+    bool allow_visited_style) const {
   CSSLinearGradientValue* result = MakeGarbageCollected<CSSLinearGradientValue>(
       first_x_, first_y_, second_x_, second_y_, angle_,
       repeating_ ? kRepeating : kNonRepeating, GradientType());
@@ -1439,7 +1458,7 @@ bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
 
 CSSRadialGradientValue* CSSRadialGradientValue::ComputedCSSValue(
     const ComputedStyle& style,
-    bool allow_visited_style) {
+    bool allow_visited_style) const {
   CSSRadialGradientValue* result = MakeGarbageCollected<CSSRadialGradientValue>(
       first_x_, first_y_, first_radius_, second_x_, second_y_, second_radius_,
       shape_, sizing_behavior_, end_horizontal_size_, end_vertical_size_,
@@ -1521,7 +1540,7 @@ bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
 
 CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
     const ComputedStyle& style,
-    bool allow_visited_style) {
+    bool allow_visited_style) const {
   auto* result = MakeGarbageCollected<CSSConicGradientValue>(
       x_, y_, from_angle_, repeating_ ? kRepeating : kNonRepeating);
   result->AddComputedStops(style, allow_visited_style, stops_);

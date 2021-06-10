@@ -94,16 +94,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
                                 const ComputedStyle&,
                                 const FloatSize& target_size);
 
-  bool IsFixedSize() const;
-  FloatSize FixedSize(const Document&, const FloatSize& default_object_size);
-
-  bool IsPending() const;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&);
-
-  CSSImageGeneratorValue* ComputedCSSValue(const ComputedStyle&,
-                                           bool allow_visited_style);
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;

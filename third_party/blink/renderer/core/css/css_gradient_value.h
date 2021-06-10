@@ -109,13 +109,9 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   CSSGradientType GradientType() const { return gradient_type_; }
 
-  bool IsFixedSize() const { return false; }
-  FloatSize FixedSize(const Document&) const { return FloatSize(); }
-
-  bool IsPending() const { return false; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&) {}
+  CSSGradientValue* ComputedCSSValue(const ComputedStyle&,
+                                     bool allow_visited_style) const;
 
   Vector<Color> GetStopColors(const Document&, const ComputedStyle&) const;
 
@@ -181,7 +177,7 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   bool Equals(const CSSLinearGradientValue&) const;
 
   CSSLinearGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                           bool allow_visited_style);
+                                           bool allow_visited_style) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -279,7 +275,7 @@ class CSSRadialGradientValue final : public CSSGradientValue {
   bool Equals(const CSSRadialGradientValue&) const;
 
   CSSRadialGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                           bool allow_visited_style);
+                                           bool allow_visited_style) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -325,7 +321,7 @@ class CSSConicGradientValue final : public CSSGradientValue {
   bool Equals(const CSSConicGradientValue&) const;
 
   CSSConicGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                          bool allow_visited_style);
+                                          bool allow_visited_style) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

@@ -158,12 +158,6 @@ String CSSImageValue::CustomCSSText() const {
   return SerializeURI(relative_url_);
 }
 
-bool CSSImageValue::KnownToBeOpaque(const Document& document,
-                                    const ComputedStyle& style) const {
-  return cached_image_ ? cached_image_->KnownToBeOpaque(document, style)
-                       : false;
-}
-
 void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
   CSSValue::TraceAfterDispatch(visitor);
