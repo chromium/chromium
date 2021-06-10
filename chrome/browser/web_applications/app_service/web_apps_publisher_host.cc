@@ -276,6 +276,15 @@ apps::mojom::AppPtr WebAppsPublisherHost::Convert(
   return app;
 }
 
+void WebAppsPublisherHost::PublishWebApps(
+    std::vector<apps::mojom::AppPtr> apps) {
+  if (!remote_publisher_) {
+    return;
+  }
+
+  remote_publisher_->OnApps(std::move(apps));
+}
+
 void WebAppsPublisherHost::PublishWebApp(apps::mojom::AppPtr app) {
   if (!remote_publisher_) {
     return;

@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,8 +37,6 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -349,7 +346,7 @@ void WebAppsChromeOs::SetWindowMode(const std::string& app_id,
 
 void WebAppsChromeOs::OnWebAppInstalled(const AppId& app_id) {
   provider()->registry_controller().SetAppIsDisabled(
-      app_id, IsWebAppInDisabledList(app_id));
+      app_id, publisher_helper().IsWebAppInDisabledList(app_id));
   WebAppsBase::OnWebAppInstalled(app_id);
 }
 
@@ -367,97 +364,6 @@ void WebAppsChromeOs::OnWebAppWillBeUninstalled(const AppId& app_id) {
                          result.microphone);
 
   WebAppsBase::OnWebAppWillBeUninstalled(app_id);
-}
-
-// If is_disabled is set, the app backed by |app_id| is published with readiness
-// kDisabledByPolicy, otherwise it's published with readiness kReady.
-void WebAppsChromeOs::OnWebAppDisabledStateChanged(const AppId& app_id,
-                                                   bool is_disabled) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app || !Accepts(app_id)) {
-    return;
-  }
-  // Sometimes OnWebAppDisabledStateChanged is called but
-  // WebApp::chromos_data().is_disabled isn't updated yet, that's why here we
-  // depend only on |is_disabled|.
-  apps::mojom::Readiness readiness =
-      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                  : apps::mojom::Readiness::kReady;
-  apps::mojom::AppPtr app =
-      publisher_helper().ConvertWebApp(web_app, readiness);
-  app->icon_key = publisher_helper().MakeIconKey(web_app, is_disabled);
-
-  // If the disable mode is hidden, update the visibility of the new disabled
-  // app.
-  if (is_disabled && provider()->policy_manager().IsDisabledAppsModeHidden()) {
-    UpdateAppDisabledMode(app);
-  }
-
-  Publish(std::move(app), subscribers());
-}
-
-void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
-  std::vector<apps::mojom::AppPtr> apps;
-  std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
-  for (const auto& id : app_ids) {
-    // We only update visibility of disabled apps in this method. When enabling
-    // previously disabled app, OnWebAppDisabledStateChanged() method will be
-    // called and this method will update visibility and readiness of the newly
-    // enabled app.
-    if (IsWebAppInDisabledList(id)) {
-      const WebApp* web_app = GetWebApp(id);
-      if (!web_app || !Accepts(id)) {
-        continue;
-      }
-      apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = app_type();
-      app->app_id = web_app->app_id();
-      UpdateAppDisabledMode(app);
-      apps.push_back(std::move(app));
-    }
-  }
-
-  const bool should_notify_initialized = false;
-  if (subscribers().size() == 1) {
-    auto& subscriber = *subscribers().begin();
-    subscriber->OnApps(std::move(apps), app_type(), should_notify_initialized);
-    return;
-  }
-  for (auto& subscriber : subscribers()) {
-    std::vector<apps::mojom::AppPtr> cloned_apps;
-    for (const auto& app : apps)
-      cloned_apps.push_back(app.Clone());
-    subscriber->OnApps(std::move(cloned_apps), app_type(),
-                       should_notify_initialized);
-  }
-}
-
-void WebAppsChromeOs::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
-  if (provider()->policy_manager().IsDisabledAppsModeHidden()) {
-    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-    app->show_in_search = apps::mojom::OptionalBool::kFalse;
-    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
-    return;
-  }
-  app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
-  app->show_in_search = apps::mojom::OptionalBool::kTrue;
-  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-
-  auto system_app_type =
-      provider()->system_web_app_manager().GetSystemAppTypeForAppId(
-          app->app_id);
-  if (system_app_type.has_value()) {
-    app->show_in_launcher =
-        provider()->system_web_app_manager().ShouldShowInLauncher(
-            system_app_type.value())
-            ? apps::mojom::OptionalBool::kTrue
-            : apps::mojom::OptionalBool::kFalse;
-    app->show_in_search =
-        provider()->system_web_app_manager().ShouldShowInSearch(
-            system_app_type.value())
-            ? apps::mojom::OptionalBool::kTrue
-            : apps::mojom::OptionalBool::kFalse;
-  }
 }
 
 void WebAppsChromeOs::OnPackageInstalled(
@@ -639,9 +545,6 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
   apps::mojom::AppPtr app = publisher_helper().ConvertWebApp(
       web_app,
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
-  if (is_disabled) {
-    UpdateAppDisabledMode(app);
-  }
 
   bool paused = publisher_helper().IsPaused(web_app->app_id());
   app->icon_key = publisher_helper().MakeIconKey(web_app);
@@ -702,11 +605,6 @@ apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
     // Show a badge only if a notification is showing.
     return has_notification;
   }
-}
-
-bool WebAppsChromeOs::IsWebAppInDisabledList(const std::string& app_id) const {
-  return base::Contains(provider()->policy_manager().GetDisabledWebAppsIds(),
-                        app_id);
 }
 
 }  // namespace web_app

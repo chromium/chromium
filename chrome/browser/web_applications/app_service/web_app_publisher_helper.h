@@ -45,6 +45,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
     Delegate& operator=(const Delegate&) = delete;
     ~Delegate();
 
+    virtual void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) = 0;
     virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
   };
 
@@ -163,6 +164,13 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                blink::mojom::DisplayMode display_mode,
                                bool in_experimental_tabbed_window);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1194709): Make this method private, move
+  // WebAppsChromeOs::OnWebAppInstalled() logic into this class.
+  // Checks whether the |app_id| is in the disabled list.
+  bool IsWebAppInDisabledList(const std::string& app_id) const;
+#endif
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }
@@ -181,6 +189,11 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                       DisplayMode user_display_mode) override;
   void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
                                                    bool enabled) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnWebAppDisabledStateChanged(const AppId& app_id,
+                                    bool is_disabled) override;
+  void OnWebAppsDisabledModeChanged() override;
+#endif
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -200,6 +213,11 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Updates app visibility.
+  void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
+#endif
 
   Profile* const profile_;
 
