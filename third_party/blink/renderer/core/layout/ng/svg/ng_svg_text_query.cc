@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
 
@@ -88,6 +89,18 @@ const NGFragmentItem* FindFragmentItemForAddressableCharacterIndex(
     character_index += item_length;
   }
   return nullptr;
+}
+
+void GetCanvasRotation(void* context,
+                       unsigned,
+                       Glyph,
+                       FloatSize,
+                       float,
+                       bool,
+                       CanvasRotationInVertical rotation,
+                       const SimpleFontData*) {
+  auto* canvas_rotation = static_cast<CanvasRotationInVertical*>(context);
+  *canvas_rotation = rotation;
 }
 
 }  // namespace
@@ -191,6 +204,31 @@ FloatRect NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
   if (item->IsHiddenForPaint())
     return FloatRect();
   return item->ObjectBoundingBox();
+}
+
+float NGSvgTextQuery::RotationOfCharacter(unsigned index) const {
+  const NGFragmentItem* item =
+      FindFragmentItemForAddressableCharacterIndex(query_root_, index);
+  DCHECK(item);
+  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  if (item->IsHiddenForPaint())
+    return 0.0f;
+  float rotation = item->SvgFragmentData()->angle;
+  if (item->Style().IsHorizontalWritingMode())
+    return rotation;
+  ETextOrientation orientation = item->Style().GetTextOrientation();
+  if (orientation == ETextOrientation::kUpright)
+    return rotation;
+  if (orientation == ETextOrientation::kSideways)
+    return rotation + 90.0f;
+  DCHECK_EQ(orientation, ETextOrientation::kMixed);
+  CanvasRotationInVertical canvas_rotation;
+  // GetCanvasRotation() is usually called only once because a single
+  // NGFragmentItem represents a single glyph in SVG <text>.
+  item->TextShapeResult()->ForEachGlyph(0, GetCanvasRotation, &canvas_rotation);
+  if (IsCanvasRotationInVerticalUpright(canvas_rotation))
+    return rotation;
+  return rotation + 90.0f;
 }
 
 // https://svgwg.org/svg2-draft/text.html#__svg__SVGTextContentElement__getCharNumAtPosition

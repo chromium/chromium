@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS 'text-orientation: mixed' - horizontal-tb
+PASS 'text-orientation: upright' - horizontal-tb
+PASS 'text-orientation: sideways' - horizontal-tb
+PASS Rotation attribute - horizontal-tb
+PASS <textPath> - horizontal-tb
+PASS 'text-orientation: mixed' - vertical-rl
+PASS 'text-orientation: upright' - vertical-rl
+PASS 'text-orientation: sideways' - vertical-rl
+PASS Rotation attribute - vertical-rl
+PASS <textPath> - vertical-rl
+Harness: the test ran to completion.
+

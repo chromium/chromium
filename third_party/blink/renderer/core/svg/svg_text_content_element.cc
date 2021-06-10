@@ -235,7 +235,7 @@ float SVGTextContentElement::getRotationOfChar(
 
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object))
-    return 0.0f;  // TODO(1179585): Implement this.
+    return NGSvgTextQuery(*layout_object).RotationOfCharacter(charnum);
   return SVGTextQuery(layout_object).RotationOfCharacter(charnum);
 }
 
