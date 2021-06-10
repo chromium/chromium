@@ -283,19 +283,6 @@
           'shards': 25,
         },
       },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is
-        # enough capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
-          'hard_timeout': 4500,
-          'shards': 5,
-        },
-      },
       'ToTFuchsia x64': {
         'args': [
           '--platform=fuchsia',
@@ -510,16 +497,9 @@
         },
       },
       'mac11.0-blink-rel-dummy': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is
-        # enough capacity.
         'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
-          'hard_timeout': 4500,
-          'shards': 5,
+          'shards': 12,
+          'hard_timeout': 1800,
         },
       },
       'win10-blink-rel-dummy': {
@@ -632,19 +612,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
-      },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            }
-          ],
-          'hard_timeout': 4500,
-          'shards': 8,
-        },
       },
       'ToTWin(dbg)': {
         'swarming': {
@@ -1120,17 +1087,6 @@
           'shards': 2,
         },
       },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            }
-          ],
-        },
-      },
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
@@ -1209,19 +1165,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter',
         ],
-      },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            }
-          ],
-          'hard_timeout': 4500,
-          'shards': 2,
-        },
       },
       'Marshmallow Tablet Tester': {
         'args': [
@@ -1401,17 +1344,6 @@
         # crbug.com/865455
         'swarming': {
           'shards': 2,
-        },
-      },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
         },
       },
       'fuchsia-code-coverage': {
@@ -1781,18 +1713,6 @@
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
-        },
-      },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
-          'shards': 1,
         },
       },
       'ToTLinuxTSan': {
@@ -2670,18 +2590,6 @@
             '--gtest_filter=-*',
           ],
       },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            }
-          ],
-          'shards': 1,
-        },
-      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -2801,18 +2709,6 @@
           '--jobs=1',
         ],
       },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
-          'shards': 1,
-        },
-      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--jobs=1',
@@ -2876,18 +2772,6 @@
   },
   'telemetry_unittests': {
     'modifications': {
-      # TODO(crbug.com/1206401): Restore to defaults when there is
-      # enough capacity.
-      'Mac11 Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
-          'shards': 1,
-        },
-      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
       },
@@ -2946,17 +2830,6 @@
       'Linux TSan Tests': {
         'swarming': {
           'shards': 2,
-        },
-      },
-      'Mac11 Tests': {
-        # TODO(crbug.com/1206401): Restore to defaults when there is enough
-        # capacity.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-4',
-            },
-          ],
         },
       },
       'ToTLinuxASan': {
