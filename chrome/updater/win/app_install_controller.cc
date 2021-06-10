@@ -483,11 +483,18 @@ void AppInstallControllerImpl::DoInstallApp() {
       base::BindOnce(&AppInstallControllerImpl::InstallComplete, this));
 }
 
-// TODO(crbug.com/1116492) - handle the case when this callback is posted
-// and no other |StateChange| callbacks were received. Since UI is driven by
-// state changes only, then the UI is not going to close in this case.
+// TODO(crbug.com/1218219) - propagate error code in case of errors.
 void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result == UpdateService::Result::kServiceFailed) {
+    UpdateService::UpdateState update_state;
+    update_state.app_id = app_id_;
+    update_state.state = UpdateService::UpdateState::State::kUpdateError;
+    update_state.error_category = UpdateService::ErrorCategory::kService;
+    update_state.error_code = -1;
+    HandleInstallResult(update_state);
+  }
+
   update_service_ = nullptr;
 }
 
