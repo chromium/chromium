@@ -16,6 +16,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/schemeful_site.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -332,7 +333,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.url = link->href;
   request.site_for_cookies = site_for_cookies;
   request.request_initiator = top_frame_origin;
-  request.referrer = navigation_request.url;
+  request.referrer = net::URLRequestJob::ComputeReferrerForPolicy(
+      navigation_request.referrer_policy, navigation_request.url, request.url);
   request.referrer_policy = navigation_request.referrer_policy;
   request.load_flags = net::LOAD_NORMAL;
   request.resource_type =
