@@ -18,7 +18,13 @@ js_library("crt0") {
 js_library("browser_proxy") {
 }
 
+js_library("runtime_loaded_test_util_swa") {
+}
+
 js_library("script_loader") {
+}
+
+js_library("test_util_swa") {
 }
 
 js_library("main") {
@@ -78,7 +84,9 @@ preprocess_if_expr("preprocess") {
     "browser_proxy.js",
     "crt0.js",
     "main.js",
+    "runtime_loaded_test_util_swa.js",
     "script_loader.js",
+    "test_util_swa.js",
   ]
 
   deps = [
@@ -101,9 +109,16 @@ optimize_webui("build") {
   host = "file_manager"
   input = rebase_path(preprocess_folder, root_build_dir)
 
-  js_module_in_files = [ "main.js" ]
+  js_module_in_files = [
+    "main.js",
+    "runtime_loaded_test_util_swa.js",
+  ]
 
-  js_out_files = [ "main.rollup.js" ]
+  js_out_files = [
+    "main.rollup.js",
+    "runtime_loaded_test_util_swa.rollup.js",
+    "shared.rollup.js",
+  ]
 
   excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
 
@@ -154,9 +169,16 @@ generate_grd("build_grd") {
 
   if (optimize_webui) {
     input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-    input_files += [ "main.rollup.js" ]
+    input_files += [
+      "main.rollup.js",
+      "shared.rollup.js",
+      "runtime_loaded_test_util_swa.rollup.js",
+    ]
 
-    resource_path_rewrites = [ "main.rollup.js|main.js" ]
+    resource_path_rewrites = [
+      "main.rollup.js|main.js",
+      "runtime_loaded_test_util_swa.rollup.js|runtime_loaded_test_util_swa.js",
+    ]
   } else {
     manifest_files += [ "$target_gen_dir/manifest_preprocess.json" ]
   }

@@ -7,6 +7,14 @@
  * extension under test at runtime to populate testing functionality.
  */
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {metrics} from '../../common/js/metrics.m.js';
+import {util} from '../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+
+import {test} from './test_util_base.m.js';
+
 /**
  * @typedef {{
  *   attributes:Object<string>,
@@ -49,16 +57,6 @@ let KeyModifiers;
  * }}
  */
 let MetadataStatsType;
-
-if (!assert) {
-  function assert(condition, opt_message) {
-    if (!condition) {
-      const message =
-          'Assertion error' + (opt_message ? ' ' + opt_message : '');
-      throw new Error(message);
-    }
-  }
-}
 
 /**
  * Extract the information of the given element.
@@ -502,6 +500,10 @@ test.util.sync.fakeEvent =
           /** @type {!EventInit} */ (opt_additionalProperties || {}));
       if (opt_additionalProperties) {
         for (const name in opt_additionalProperties) {
+          if (name === 'bubbles') {
+            // bubbles is a read-only which, causes an error when assigning.
+            continue;
+          }
           event[name] = opt_additionalProperties[name];
         }
       }
@@ -1057,7 +1059,8 @@ test.util.async.unmount = async (volumeType, callback) => {
  * Remote call API handler. When loaded, this replaces the declaration in
  * test_util_base.js.
  * @param {*} request
- * @param {function(*):void} sendResponse
+ * @param {function(*): void} sendResponse
+ * @return {boolean|undefined}
  */
 test.util.executeTestMessage = (request, sendResponse) => {
   window.IN_TEST = true;
@@ -1102,7 +1105,7 @@ test.util.executeTestMessage = (request, sendResponse) => {
     sendResponse(test.util.sync[request.func].apply(null, args));
     return false;
   } else {
-    console.error('Invalid function name.');
+    console.error('Invalid function name: ' + request.func);
     return false;
   }
 };
@@ -1235,6 +1238,8 @@ test.util.sync.progressCenterNeverNotifyCompleted = () => {
  * Waits for the background page to initialize.
  * @param {function()} callback Callback function called when background page
  *      has finished initializing.
+ * @suppress {missingProperties}: ready() isn't available for Audio and Video
+ * Player.
  */
 test.util.async.waitForBackgroundReady = callback => {
   window.background.ready(callback);

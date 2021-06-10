@@ -59,6 +59,7 @@ js_type_check("closure_compile_jsmodules") {
     ":mock_progress_center.m",
     ":mount_metrics.m",
     ":progress_center.m",
+    ":runtime_loaded_test_util",
     ":task_queue.m",
     ":test_util_base.m",
     ":trash.m",
@@ -902,44 +903,20 @@ js_library("progress_center.m") {
 }
 
 js_library("runtime_loaded_test_util") {
-  # TODO(tapted): Move this target to //ui/file_manager/base. It is used in the
-  # background page of all |related_apps|, but loaded at runtime by
-  # :test_util_base via extension messaging, so doesn't need to be depended on
-  # except by the closure compilation target. The exception is the "unpacked"
-  # test framework, which copies some testing functions into its test context.
-  visibility += [
-    "//ui/file_manager/file_manager/test/js:test_util",
-    "//ui/file_manager/integration_tests:remote_call",
-  ]
+  visibility += [ "//ui/file_manager/integration_tests:remote_call" ]
 
   deps = [
-    ":app_windows",
-    ":file_operation_util",
-    ":test_util_base",
-    ":volume_manager_factory",
-    "//ui/file_manager/file_manager/common/js:error_counter",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
+    ":app_windows.m",
+    ":file_operation_util.m",
+    ":volume_manager_factory.m",
+    "//ui/file_manager/file_manager/common/js:error_counter.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/webui/resources/js:assert.m",
   ]
-  externs_list = [
-    "$externs_path/webview_tag.js",
-    "//ui/file_manager/file_manager/externs/foreground_window.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-    "//ui/file_manager/file_manager/externs/background/media_import_handler.js",
-    "//ui/file_manager/file_manager/externs/background/task_queue.js",
-    "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/progress_center_panel.js",
-    "//ui/file_manager/file_manager/externs/background/media_scanner.js",
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
-    "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/background_window.js",
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/import_history.js",
-    "//ui/file_manager/file_manager/externs/background/background_base.js",
-    "//ui/file_manager/file_manager/externs/background/file_browser_background_full.js",
-  ]
+  externs_list = [ "$externs_path/webview_tag.js" ]
 }
 
 js_library("volume_info_impl") {
@@ -1000,6 +977,7 @@ js_library("test_util_base.m") {
   visibility += related_apps
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/test_util_base.m.js" ]
   deps = [
+    ":runtime_loaded_test_util",
     "//ui/file_manager/file_manager/common/js:metrics.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
@@ -1009,6 +987,7 @@ js_library("test_util_base.m") {
 }
 
 js_library("test_util.m") {
+  visibility += [ "//ash/content/file_manager/resources:test_util_swa" ]
   sources = [
     "$root_gen_dir/ui/file_manager/file_manager/background/js/test_util.m.js",
   ]
@@ -1291,9 +1270,16 @@ optimize_webui("build") {
   host = "file_manager"
 
   input = preprocess_folder
-  js_module_in_files = [ "main_background.m.js" ]
+  js_module_in_files = [
+    "main_background.m.js",
+    "runtime_loaded_test_util.js",
+  ]
 
-  js_out_files = [ "main_background.m.rollup.js" ]
+  js_out_files = [
+    "main_background.m.rollup.js",
+    "runtime_loaded_test_util.rollup.js",
+    "shared.m.rollup.js",
+  ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",

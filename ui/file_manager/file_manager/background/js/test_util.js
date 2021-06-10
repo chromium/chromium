@@ -10,6 +10,9 @@
 // #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
 // clang-format on
 
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {test};
+
 /**
  * Opens the main Files app's window and waits until it is ready.
  *
@@ -870,5 +873,7 @@ test.util.sync.sendProgressItem =
       background.progressCenter.updateItem(item);
     };
 
-// Register the test utils.
-test.util.registerRemoteTestUtils();
+// Register the test utils, however the SWA uses a different util.
+if (!window.isSWA) {
+  test.util.registerRemoteTestUtils();
+}

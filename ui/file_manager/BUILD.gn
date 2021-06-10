@@ -45,8 +45,10 @@ group("closure_compile") {
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",
     "image_loader:closure_compile",
-    "integration_tests:closure_compile",
-    "integration_tests/file_manager:closure_compile",
+
+    # TODO(lucmult): Re-enable these when integration tests are JS modules.
+    #"integration_tests:closure_compile",
+    #"integration_tests/file_manager:closure_compile",
     "video_player/js:closure_compile",
   ]
 }
@@ -87,6 +89,8 @@ preprocess_if_expr("preprocess_static") {
 
     # Files app:
     "file_manager/background/js/main_background.m.js",
+    "file_manager/background/js/runtime_loaded_test_util.js",
+    "file_manager/background/js/test_util.js",
     "file_manager/foreground/js/deferred_elements.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/js/main.m.js",
@@ -404,6 +408,8 @@ generate_grd("build_grd") {
     "audio_player/js/main.rollup.js",
     "audio_player/js/main_background.rollup.js",
     "audio_player/js/metadata_worker.rollup.js",
+    "audio_player/js/shared.m.rollup.js",
+    "audio_player/js/runtime_loaded_test_util.rollup.js",
 
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
@@ -414,6 +420,7 @@ generate_grd("build_grd") {
     "audio_player/js/main.rollup.js|audio_player/js/main.js",
     "audio_player/js/main_background.rollup.js|audio_player/js/main_background.js",
     "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
+    "audio_player/js/runtime_loaded_test_util.rollup.js|audio_player/js/runtime_loaded_test_util.js",
   ]
 
   if (optimize_webui) {
@@ -438,6 +445,8 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/metadata/image_orientation.m.js",
 
       "file_manager/background/js/main_background.m.rollup.js",
+      "file_manager/background/js/runtime_loaded_test_util.rollup.js",
+      "file_manager/background/js/shared.m.rollup.js",
       "file_manager/foreground/js/deferred_elements.m.rollup.js",
       "file_manager/foreground/js/main.m.rollup.js",
       "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
@@ -446,10 +455,13 @@ generate_grd("build_grd") {
       "image_loader/background.m.rollup.js",
       "video_player/js/main.m.rollup.js",
       "video_player/js/main_background.m.rollup.js",
+      "video_player/js/shared.m.rollup.js",
+      "video_player/js/runtime_loaded_test_util.rollup.js",
     ]
 
     resource_path_rewrites += [
       "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
+      "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
       "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
       "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
       "file_manager/foreground/js/metadata_dispatcher.m.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.m.js",
@@ -457,6 +469,7 @@ generate_grd("build_grd") {
       "image_loader/background.m.rollup.js|image_loader/background.m.js",
       "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
       "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
+      "video_player/js/runtime_loaded_test_util.rollup.js|video_player/js/runtime_loaded_test_util.js",
     ]
 
     deps += [

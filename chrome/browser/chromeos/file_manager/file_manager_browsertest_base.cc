@@ -611,18 +611,6 @@ class TestVolume {
   DISALLOW_COPY_AND_ASSIGN(TestVolume);
 };
 
-const std::string GetSourceFileContent(const std::string& file_name) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath source_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
-  base::FilePath path =
-      source_dir.Append(base::FilePath::FromUTF8Unsafe(file_name));
-  std::string contents;
-  CHECK(base::ReadFileToString(path, &contents))
-      << "failed reading test data file " << file_name;
-  return contents;
-}
-
 base::Lock& GetLockForBlockingDefaultFileTaskRunner() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
@@ -2104,18 +2092,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // chrome.runtime.sendMessage is sent by the test extension. However, since
     // we use callSwaTestMessageListener, rather than c.r.sendMessage to
     // communicate with Files SWA, we need to explicitly load those files.
-    CHECK(content::ExecuteScript(
-        observer.web_contents(),
-        GetSourceFileContent(
-            "ui/file_manager/file_manager/background/js/test_util_swa.js")));
-    CHECK(content::ExecuteScript(
-        observer.web_contents(),
-        GetSourceFileContent("ui/file_manager/file_manager/background/js/"
-                             "runtime_loaded_test_util.js")));
-    CHECK(content::ExecuteScript(
-        observer.web_contents(),
-        GetSourceFileContent(
-            "ui/file_manager/file_manager/background/js/test_util.js")));
+    bool result;
+    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+        observer.web_contents(), "test.swaLoadTestUtils()", &result));
+    ASSERT_TRUE(result);
     files_app_swa_id_ = base::StrCat({baseURL, launchDir});
     files_app_web_contents_ = observer.web_contents();
 

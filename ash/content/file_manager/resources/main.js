@@ -17,6 +17,7 @@ import {ScriptLoader} from './script_loader.js'
 import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.m.js';
 import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.m.js';
 import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.m.js';
+import './test_util_swa.js';
 
 /**
  * Represents file manager application. Starting point for the application
