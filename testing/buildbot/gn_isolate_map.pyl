@@ -1250,7 +1250,6 @@
   },
   "mini_installer_tests": {
     "args": [
-      "--isolated-script-test-output=${ISOLATED_OUTDIR}/results.json",
       "../../chrome/test/mini_installer/run_mini_installer_tests.py",
       "--output-dir=${ISOLATED_OUTDIR}",
     ],
