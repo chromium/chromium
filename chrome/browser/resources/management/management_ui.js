@@ -15,8 +15,8 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementBrowserProxyImpl, ReportingType, ThreatProtectionInfo} from './management_browser_proxy.js';
 // <if expr="chromeos">
@@ -31,91 +31,110 @@ import {DeviceReportingResponse, DeviceReportingType} from './management_browser
  */
 let BrowserReportingData;
 
-Polymer({
-  is: 'management-ui',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ManagementUiElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ManagementUiElement extends ManagementUiElementBase {
+  static get is() {
+    return 'management-ui';
+  }
 
-  behaviors: [
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * List of messages related to browser reporting.
-     * @private {?Array<!BrowserReportingData>}
-     */
-    browserReportingInfo_: Array,
+  static get properties() {
+    return {
+      /**
+       * List of messages related to browser reporting.
+       * @private {?Array<!BrowserReportingData>}
+       */
+      browserReportingInfo_: Array,
 
-    /**
-     * List of messages related to browser reporting.
-     * @private {?Array<!Extension>}
-     */
-    extensions_: Array,
+      /**
+       * List of messages related to browser reporting.
+       * @private {?Array<!Extension>}
+       */
+      extensions_: Array,
 
-    /**
-     * List of messages related to browser reporting.
-     * @private (?Array<!String>)
-     */
-    managedWebsites_: Array,
+      /**
+       * List of messages related to browser reporting.
+       * @private (?Array<!String>)
+       */
+      managedWebsites_: Array,
 
-    // <if expr="chromeos">
-    /**
-     * List of messages related to device reporting.
-     * @private {?Array<!DeviceReportingResponse>}
-     */
-    deviceReportingInfo_: Array,
+      /** @private */
+      managedWebsitesSubtitle_: String,
 
-    /**
-     * Message stating if the Trust Roots are configured.
-     * @private
-     */
-    localTrustRoots_: String,
+      // <if expr="chromeos">
+      /**
+       * List of messages related to device reporting.
+       * @private {?Array<!DeviceReportingResponse>}
+       */
+      deviceReportingInfo_: Array,
 
-    /** @private */
-    customerLogo_: String,
+      /**
+       * Message stating if the Trust Roots are configured.
+       * @private
+       */
+      localTrustRoots_: String,
 
-    /** @private */
-    managementOverview_: String,
+      /** @private */
+      customerLogo_: String,
 
-    /** @private */
-    pluginVmDataCollectionEnabled_: Boolean,
+      /** @private */
+      managementOverview_: String,
 
-    /** @private */
-    eolAdminMessage_: String,
+      /** @private */
+      pluginVmDataCollectionEnabled_: Boolean,
 
-    /** @private */
-    eolMessage_: String,
+      /** @private */
+      eolAdminMessage_: String,
 
-    /** @private */
-    showProxyServerPrivacyDisclosure_: Boolean,
+      /** @private */
+      eolMessage_: String,
 
-    // </if>
+      /** @private */
+      showProxyServerPrivacyDisclosure_: Boolean,
 
-    /** @private */
-    subtitle_: String,
+      // </if>
 
-    // <if expr="not chromeos">
-    /** @private */
-    managementNoticeHtml_: String,
-    // </if>
+      /** @private */
+      subtitle_: String,
 
-    /** @private */
-    managed_: Boolean,
+      // <if expr="not chromeos">
+      /** @private */
+      managementNoticeHtml_: String,
+      // </if>
 
-    /** @private */
-    extensionReportingSubtitle_: String,
+      /** @private */
+      managed_: Boolean,
 
-    /** @private {!ThreatProtectionInfo} */
-    threatProtectionInfo_: Object,
-  },
+      /** @private */
+      extensionReportingSubtitle_: String,
 
-  /** @private {?ManagementBrowserProxy} */
-  browserProxy_: null,
+      /** @private {!ThreatProtectionInfo} */
+      threatProtectionInfo_: Object,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?ManagementBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
     this.browserProxy_ = ManagementBrowserProxyImpl.getInstance();
     this.updateManagedFields_();
@@ -145,13 +164,13 @@ Polymer({
     this.getPluginVmDataCollectionStatus_();
     this.getLocalTrustRootsInfo_();
     // </if>
-  },
+  }
 
   /** @private */
   initBrowserReportingInfo_() {
     this.browserProxy_.initBrowserReportingInfo().then(
         reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
-  },
+  }
 
   /**
    * @param {!Array<!BrowserReportingResponse>} reportingInfo
@@ -179,28 +198,28 @@ Polymer({
         Object.keys(reportingInfoMap)
             .sort((a, b) => reportingTypeOrder[a] - reportingTypeOrder[b])
             .map(reportingType => reportingInfoMap[reportingType]);
-  },
+  }
 
   /** @private */
   getExtensions_() {
     this.browserProxy_.getExtensions().then(extensions => {
       this.extensions_ = extensions;
     });
-  },
+  }
 
   /** @private */
   getManagedWebsites_() {
     this.browserProxy_.getManagedWebsites().then(managedWebsites => {
       this.managedWebsites_ = managedWebsites;
     });
-  },
+  }
 
   /** @private */
   getThreatProtectionInfo_() {
     this.browserProxy_.getThreatProtectionInfo().then(info => {
       this.threatProtectionInfo_ = info;
     });
-  },
+  }
 
   /**
    * @return {boolean} True if there is threat protection info to show.
@@ -209,7 +228,7 @@ Polymer({
   showThreatProtectionInfo_() {
     return !!this.threatProtectionInfo_ &&
         this.threatProtectionInfo_.info.length > 0;
-  },
+  }
 
   // <if expr="chromeos">
   /** @private */
@@ -219,14 +238,14 @@ Polymer({
           loadTimeData.getString('managementTrustRootsConfigured') :
           '';
     });
-  },
+  }
 
   /** @private */
   getDeviceReportingInfo_() {
     this.browserProxy_.getDeviceReportingInfo().then(reportingInfo => {
       this.deviceReportingInfo_ = reportingInfo;
     });
-  },
+  }
 
   /** @private */
   getPluginVmDataCollectionStatus_() {
@@ -234,7 +253,7 @@ Polymer({
         pluginVmDataCollectionEnabled => {
           this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
         });
-  },
+  }
 
   /**
    * @return {boolean} True of there are device reporting info to show.
@@ -242,7 +261,7 @@ Polymer({
    */
   showDeviceReportingInfo_() {
     return !!this.deviceReportingInfo_ && this.deviceReportingInfo_.length > 0;
-  },
+  }
 
   /**
    * @param {string} eolAdminMessage The device return instructions
@@ -252,7 +271,7 @@ Polymer({
    */
   isEmpty_(eolAdminMessage) {
     return !eolAdminMessage || eolAdminMessage.trim().length === 0;
-  },
+  }
 
   /**
    * @param {DeviceReportingType} reportingType
@@ -294,7 +313,7 @@ Polymer({
       default:
         return 'cr:computer';
     }
-  },
+  }
   // </if>
 
   /**
@@ -304,7 +323,7 @@ Polymer({
   showBrowserReportingInfo_() {
     return !!this.browserReportingInfo_ &&
         this.browserReportingInfo_.length > 0;
-  },
+  }
 
   /**
    * @return {boolean} True of there are extension reporting info to show.
@@ -312,7 +331,7 @@ Polymer({
    */
   showExtensionReportingInfo_() {
     return !!this.extensions_ && this.extensions_.length > 0;
-  },
+  }
 
   /**
    * @return {boolean} True of there is managed websites info to show.
@@ -320,7 +339,7 @@ Polymer({
    */
   showManagedWebsitesInfo_() {
     return !!this.managedWebsites_ && this.managedWebsites_.length > 0;
-  },
+  }
 
 
   /**
@@ -343,7 +362,7 @@ Polymer({
       default:
         return 'cr:security';
     }
-  },
+  }
 
   /**
    * Handles the 'search-changed' event fired from the toolbar.
@@ -356,7 +375,7 @@ Polymer({
     const query = e.detail;
     window.location.href =
         `chrome://settings?search=${encodeURIComponent(query)}`;
-  },
+  }
 
   /** @private */
   onTapBack_() {
@@ -365,7 +384,7 @@ Polymer({
     } else {
       window.location.href = 'chrome://settings/help';
     }
-  },
+  }
 
   /** @private */
   updateManagedFields_() {
@@ -392,5 +411,7 @@ Polymer({
       this.managementNoticeHtml_ = data.browserManagementNotice;
       // </if>
     });
-  },
-});
+  }
+}
+
+customElements.define(ManagementUiElement.is, ManagementUiElement);

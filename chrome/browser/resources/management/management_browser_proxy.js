@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{
@@ -180,9 +180,15 @@ export class ManagementBrowserProxyImpl {
   initBrowserReportingInfo() {
     return sendWithPromise('initBrowserReportingInfo');
   }
+
+  /** @return {ManagementBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new ManagementBrowserProxyImpl());
+  }
 }
 
-addSingletonGetter(ManagementBrowserProxyImpl);
+/** @type {?ManagementBrowserProxy} */
+let instance = null;
 
 // Export |ManagementBrowserProxyImpl| on |window| so that it can be accessed by
 // management_ui_browsertest.cc
