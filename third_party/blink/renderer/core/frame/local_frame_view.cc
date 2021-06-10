@@ -786,7 +786,7 @@ void LocalFrameView::PerformLayout() {
       // This map will be used to avoid rebuilding several times the fragment
       // tree spine of a common ancestor.
       HashMap<const LayoutBlock*, unsigned> fragment_tree_spines;
-      for (auto& root : layout_subtree_root_list_.Ordered()) {
+      for (LayoutObject* root : layout_subtree_root_list_.Unordered()) {
         const LayoutBlock* cb = root->ContainingBlock();
         if (cb->PhysicalFragmentCount()) {
           auto add_result = fragment_tree_spines.insert(cb, 0);
