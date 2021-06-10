@@ -1162,17 +1162,23 @@ TEST_F(CompositorFrameReportingControllerTest,
     const base::HistogramBase::Sample latency_ms;
   } expected_latencies[] = {
       {"EventLatency.TouchPressed.TotalLatency",
-       (presentation_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       (presentation_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       (presentation_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
     histogram_tester.ExpectBucketCount(expected_latency.name,
@@ -1242,17 +1248,23 @@ TEST_F(CompositorFrameReportingControllerTest,
     const base::HistogramBase::Sample latency_ms;
   } expected_latencies[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency",
-       (presentation_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatencyToSwapBegin",
-       (swap_begin_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (swap_begin_time - event_times[0]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
-       (presentation_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       (swap_begin_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (swap_begin_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
-       (presentation_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       (swap_begin_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (swap_begin_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
     histogram_tester.ExpectBucketCount(expected_latency.name,
@@ -1311,17 +1323,23 @@ TEST_F(CompositorFrameReportingControllerTest,
     const base::HistogramBase::Sample latency_ms;
   } expected_latencies[] = {
       {"EventLatency.TouchPressed.TotalLatency",
-       (presentation_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       (presentation_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       (presentation_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[0]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[1]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       (presentation_time - event_times[2]).InMicroseconds()},
+       static_cast<base::HistogramBase::Sample>(
+           (presentation_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
     histogram_tester.ExpectBucketCount(expected_latency.name,

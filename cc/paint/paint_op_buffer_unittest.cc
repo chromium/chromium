@@ -1694,7 +1694,7 @@ void PushTranslateOps(PaintOpBuffer* buffer) {
 
 void PushSetNodeIdOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < test_ids.size(); i++)
-    buffer->push<SetNodeIdOp>(test_ids[i]);
+    buffer->push<SetNodeIdOp>(static_cast<int>(test_ids[i]));
   ValidateOps<SetNodeIdOp>(buffer);
 }
 

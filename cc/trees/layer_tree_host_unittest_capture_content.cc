@@ -38,7 +38,9 @@ class FakeCaptureContentLayerClient : public FakeContentLayerClient {
       display_list->StartPaint();
       display_list->push<DrawTextBlobOp>(
           SkTextBlob::MakeFromString(holder.text().data(), SkFont()),
-          holder.rect().x(), holder.rect().y(), holder.node_id(), PaintFlags());
+          static_cast<float>(holder.rect().x()),
+          static_cast<float>(holder.rect().y()), holder.node_id(),
+          PaintFlags());
       display_list->EndPaintOfUnpaired(holder.rect());
     }
     display_list->Finalize();
