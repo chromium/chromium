@@ -14,11 +14,14 @@ extern const char kSharingFCMAppID[];
 // Sender ID for Sharing.
 extern const char kSharingSenderID[];
 
-// Amount of time before FCM registration should happen again.
-extern const base::TimeDelta kRegistrationExpiration;
+// Time until we hide devices based on their last active timestamp.
+extern const base::TimeDelta kSharingDeviceExpiration;
 
-// Time until we treat a WebRTC connection as timed out and force close it.
-extern const base::TimeDelta kSharingWebRtcTimeout;
+// Default time-to-live for sharing messages.
+extern const base::TimeDelta kSharingMessageTTL;
+
+// Default time-to-live for sharing ack messages.
+extern const base::TimeDelta kSharingAckMessageTTL;
 
 // Backoff policy for registration retry.
 extern const net::BackoffEntry::Policy kRetryBackoffPolicy;

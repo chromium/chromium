@@ -7,13 +7,14 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "base/task/thread_pool.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 
 #include "base/callback.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/driver/sync_service.h"
@@ -51,8 +52,7 @@ bool IsStale(const syncer::DeviceInfo& device) {
   }
 
   const base::Time min_updated_time =
-      base::Time::Now() -
-      base::TimeDelta::FromHours(kSharingDeviceExpirationHours.Get());
+      base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
 }
 }  // namespace

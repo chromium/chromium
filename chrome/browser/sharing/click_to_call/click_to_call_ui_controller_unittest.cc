@@ -87,10 +87,9 @@ TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
       kPhoneNumber);
   EXPECT_CALL(
       *service(),
-      SendMessageToDevice(
-          Property(&syncer::DeviceInfo::guid, kReceiverGuid),
-          Eq(base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_message), testing::_));
+      SendMessageToDevice(Property(&syncer::DeviceInfo::guid, kReceiverGuid),
+                          Eq(kSharingMessageTTL), ProtoEquals(sharing_message),
+                          testing::_));
   controller_->OnDeviceChosen(*device_info.get());
 }
 

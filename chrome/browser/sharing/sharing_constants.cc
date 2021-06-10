@@ -8,11 +8,14 @@ const char kSharingFCMAppID[] = "com.google.chrome.sharing.fcm";
 
 const char kSharingSenderID[] = "379932496580";
 
-const constexpr base::TimeDelta kRegistrationExpiration =
-    base::TimeDelta::FromDays(1);
+const constexpr base::TimeDelta kSharingDeviceExpiration =
+    base::TimeDelta::FromDays(2);
 
-const constexpr base::TimeDelta kSharingWebRtcTimeout =
-    base::TimeDelta::FromSeconds(30);
+const constexpr base::TimeDelta kSharingMessageTTL =
+    base::TimeDelta::FromSeconds(16);
+
+const constexpr base::TimeDelta kSharingAckMessageTTL =
+    base::TimeDelta::FromSeconds(8);
 
 const constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying

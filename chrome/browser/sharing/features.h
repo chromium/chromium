@@ -8,12 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-// Feature flag for configuring device expiration.
-extern const base::Feature kSharingDeviceExpiration;
-
-// The number of hours after which a device is considered expired.
-extern const base::FeatureParam<int> kSharingDeviceExpirationHours;
-
 // Feature flag for matching device expiration to pulse interval.
 extern const base::Feature kSharingMatchPulseInterval;
 
@@ -29,20 +23,6 @@ extern const base::FeatureParam<int> kSharingPulseDeltaDesktopHours;
 // last updated timestamp less frequently because it does not do this when
 // backgrounded. Such devices cannot be marked stale aggressively.
 extern const base::FeatureParam<int> kSharingPulseDeltaAndroidHours;
-
-// Feature flag for configuring the sharing message timeout. This sets both the
-// FCM message TTL and the duration of the timer that waits for an ack.
-extern const base::Feature kSharingMessageTTL;
-
-// The duration in seconds for both the FCM message TTL and the timer that waits
-// for an ack.
-extern const base::FeatureParam<int> kSharingMessageTTLSeconds;
-
-// Feature flag for configuring the FCM TTL for sharing ack messages.
-extern const base::Feature kSharingAckMessageTTL;
-
-// The FCM TTL in seconds for sharing ack messages.
-extern const base::FeatureParam<int> kSharingAckMessageTTLSeconds;
 
 // Feature flag for configuring the timeout in the sharing message bridge.
 extern const base::Feature kSharingMessageBridgeTimeout;

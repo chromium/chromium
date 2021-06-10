@@ -218,9 +218,7 @@ void SharingFCMHandler::SendAckMessage(
   }
 
   sharing_fcm_sender_->SendMessageToFcmTarget(
-      *fcm_channel,
-      base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get()),
-      std::move(sharing_message),
+      *fcm_channel, kSharingAckMessageTTL, std::move(sharing_message),
       base::BindOnce(&SharingFCMHandler::OnAckMessageSent,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(original_message_id), original_message_type,

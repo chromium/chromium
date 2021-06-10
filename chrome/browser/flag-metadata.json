@@ -4487,26 +4487,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "remote-copy-image-notification",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "remote-copy-persistent-notification",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "remote-copy-progress-notification",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "remote-copy-receiver",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "report-feed-user-actions",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 90
@@ -4747,11 +4727,6 @@
     "name": "shared-highlighting-v2",
     "owners": ["kmilka"],
     "expiry_milestone": 94
-  },
-  {
-    "name": "sharing-device-expiration",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 86
   },
   {
     "name": "sharing-hub-desktop-app-menu",

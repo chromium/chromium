@@ -1261,9 +1261,6 @@ extern const char kSharingPreferVapidDescription[];
 extern const char kSharingSendViaSyncName[];
 extern const char kSharingSendViaSyncDescription[];
 
-extern const char kSharingDeviceExpirationName[];
-extern const char kSharingDeviceExpirationDescription[];
-
 extern const char kShelfHoverPreviewsName[];
 extern const char kShelfHoverPreviewsDescription[];
 

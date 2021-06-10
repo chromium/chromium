@@ -194,10 +194,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandler) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -234,10 +232,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithMessageIdInPayload) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -268,10 +264,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithResponse) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -301,10 +295,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerSecondaryUser) {
           }));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);

@@ -8,6 +8,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -213,9 +214,7 @@ base::OnceClosure SharingUiController::SendMessageToDevice(
       &SharingUiController::OnResponse, weak_ptr_factory_.GetWeakPtr(),
       last_dialog_id_, std::move(custom_callback));
   return sharing_service_->SendMessageToDevice(
-      device,
-      response_timeout.value_or(
-          base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get())),
+      device, response_timeout.value_or(kSharingMessageTTL),
       std::move(sharing_message), std::move(response_callback));
 }
 

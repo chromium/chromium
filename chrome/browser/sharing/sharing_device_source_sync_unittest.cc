@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -270,9 +271,8 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
   fake_device_info_tracker_.Add(device_info.get());
 
   // Forward time until device expires.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours(kSharingDeviceExpirationHours.Get()) +
-      base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kSharingDeviceExpiration +
+                                  base::TimeDelta::FromMilliseconds(1));
 
   std::vector<std::unique_ptr<syncer::DeviceInfo>> candidates =
       device_source->GetDeviceCandidates(
@@ -321,8 +321,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
   fake_device_info_tracker_.Add(device_info_1.get());
 
   // This device will be displayed with its short name.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromHours(kSharingDeviceExpirationHours.Get()));
+  task_environment_.FastForwardBy(kSharingDeviceExpiration);
   auto device_info_2 = CreateDeviceInfo(
       "model 1", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
       "manufacturer 1", "model 1");
