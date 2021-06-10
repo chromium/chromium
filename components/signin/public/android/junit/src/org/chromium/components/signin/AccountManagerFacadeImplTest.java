@@ -132,7 +132,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testCanonicalAccount() {
         addTestAccount("test@gmail.com");
-        List<Account> accounts = mFacade.getGoogleAccounts().get();
+        List<Account> accounts = mFacade.getAccounts().getResult();
 
         Assert.assertNotNull(AccountUtils.findAccountByName(accounts, "test@gmail.com"));
         Assert.assertNotNull(AccountUtils.findAccountByName(accounts, "Test@gmail.com"));
@@ -145,7 +145,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testNonCanonicalAccount() {
         addTestAccount("test.me@gmail.com");
-        List<Account> accounts = mFacade.getGoogleAccounts().get();
+        List<Account> accounts = mFacade.getAccounts().getResult();
 
         Assert.assertNotNull(AccountUtils.findAccountByName(accounts, "test.me@gmail.com"));
         Assert.assertNotNull(AccountUtils.findAccountByName(accounts, "testme@gmail.com"));
@@ -155,39 +155,39 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testGetAccounts() {
-        Assert.assertEquals(List.of(), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(), mFacade.getAccounts().getResult());
 
         Account account = addTestAccount("test@gmail.com");
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         Account account2 = addTestAccount("test2@gmail.com");
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account2), mFacade.getAccounts().getResult());
 
         Account account3 = addTestAccount("test3@gmail.com");
         Assert.assertEquals(
-                List.of(account, account2, account3), mFacade.getGoogleAccounts().get());
+                List.of(account, account2, account3), mFacade.getAccounts().getResult());
 
         removeTestAccount(account2);
-        Assert.assertEquals(List.of(account, account3), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account3), mFacade.getAccounts().getResult());
     }
 
     @Test
     public void testGetAccountsWithAccountPattern() {
         setAccountRestrictionPatterns("*@example.com");
         Account account = addTestAccount("test@example.com");
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         addTestAccount("test@gmail.com"); // Doesn't match the pattern.
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         Account account2 = addTestAccount("test2@example.com");
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account2), mFacade.getAccounts().getResult());
 
         addTestAccount("test2@gmail.com"); // Doesn't match the pattern.
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account2), mFacade.getAccounts().getResult());
 
         removeTestAccount(account);
-        Assert.assertEquals(List.of(account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account2), mFacade.getAccounts().getResult());
     }
 
     @Test
@@ -195,40 +195,40 @@ public class AccountManagerFacadeImplTest {
         setAccountRestrictionPatterns("test1@example.com", "test2@gmail.com");
         addTestAccount("test@gmail.com"); // Doesn't match the pattern.
         addTestAccount("test@example.com"); // Doesn't match the pattern.
-        Assert.assertEquals(List.of(), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(), mFacade.getAccounts().getResult());
 
         Account account = addTestAccount("test1@example.com");
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         addTestAccount("test2@example.com"); // Doesn't match the pattern.
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         Account account2 = addTestAccount("test2@gmail.com");
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account2), mFacade.getAccounts().getResult());
     }
 
     @Test
     public void testGetAccountsWithAccountPatternsChange() {
-        Assert.assertEquals(List.of(), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(), mFacade.getAccounts().getResult());
 
         Account account = addTestAccount("test@gmail.com");
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         Account account2 = addTestAccount("test2@example.com");
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account, account2), mFacade.getAccounts().getResult());
 
         Account account3 = addTestAccount("test3@gmail.com");
         Assert.assertEquals(
-                List.of(account, account2, account3), mFacade.getGoogleAccounts().get());
+                List.of(account, account2, account3), mFacade.getAccounts().getResult());
 
         setAccountRestrictionPatterns("test@gmail.com");
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
 
         setAccountRestrictionPatterns("*@example.com", "test3@gmail.com");
-        Assert.assertEquals(List.of(account2, account3), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account2, account3), mFacade.getAccounts().getResult());
 
         removeTestAccount(account3);
-        Assert.assertEquals(List.of(account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account2), mFacade.getAccounts().getResult());
     }
 
     @Test
@@ -236,19 +236,19 @@ public class AccountManagerFacadeImplTest {
         final Account account1 = addTestAccount("test1@gmail.com");
         final Account account2 = addTestAccount("testexample2@example.com");
         setAccountRestrictionPatterns("*@example.com");
-        Assert.assertEquals(List.of(account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account2), mFacade.getAccounts().getResult());
 
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), new Bundle());
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
 
-        Assert.assertEquals(List.of(account1, account2), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account1, account2), mFacade.getAccounts().getResult());
     }
 
     @Test
     public void testGetAccountsMultipleMatchingPatterns() {
         setAccountRestrictionPatterns("*@gmail.com", "test@gmail.com");
         Account account = addTestAccount("test@gmail.com"); // Matches both patterns
-        Assert.assertEquals(List.of(account), mFacade.getGoogleAccounts().get());
+        Assert.assertEquals(List.of(account), mFacade.getAccounts().getResult());
     }
 
     @Test

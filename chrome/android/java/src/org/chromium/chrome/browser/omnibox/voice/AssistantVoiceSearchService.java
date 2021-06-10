@@ -20,8 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.google.common.base.Optional;
-
+import org.chromium.base.Promise;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -418,9 +417,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     @VisibleForTesting
     boolean doesViolateMultiAccountCheck() {
         // In case of the accounts cannot be fetched -- we can't be sure so default to true.
-        Optional<List<Account>> accounts = mAccountManagerFacade.getGoogleAccounts();
-        return !mExternalAuthUtils.canUseGooglePlayServices() || !accounts.isPresent()
-                || accounts.get().size() > 1;
+        final Promise<List<Account>> promise = mAccountManagerFacade.getAccounts();
+        return !mExternalAuthUtils.canUseGooglePlayServices() || !promise.isFulfilled()
+                || promise.getResult().size() > 1;
     }
 
     // TemplateUrlService.TemplateUrlServiceObserver implementation

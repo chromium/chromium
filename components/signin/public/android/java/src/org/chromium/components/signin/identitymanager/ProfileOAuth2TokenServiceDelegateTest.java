@@ -9,13 +9,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 
 import androidx.test.filters.SmallTest;
-
-import com.google.common.base.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -37,6 +35,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /** Tests for {@link ProfileOAuth2TokenServiceDelegate}. */
@@ -137,22 +136,26 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com")); });
     }
 
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name)); });
     }
 
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        when(mAccountManagerFacade.getGoogleAccounts()).thenReturn(Optional.absent());
-        Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            doReturn(new Promise<List<Account>>()).when(mAccountManagerFacade).getAccounts();
+            Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        });
     }
 
     @Test

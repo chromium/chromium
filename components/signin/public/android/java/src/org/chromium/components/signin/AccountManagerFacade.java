@@ -17,6 +17,7 @@ import androidx.annotation.WorkerThread;
 import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 
 import java.util.List;
 
@@ -49,24 +50,29 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Retrieves all Google accounts on the device from the cache.
-     * Returns an empty array if an error occurs while getting account list.
-     * If the cache is not yet populated, the optional will be empty.
+     * Retrieves all the accounts on the device.
+     * The {@link Promise} will be fulfilled once the accounts cache will be populated.
+     * If an error occurs while getting account list, the returned {@link Promise} will wrap an
+     * empty array.
+     *
+     * Since a different {@link Promise} will be returned every time the accounts get updated,
+     * this makes it a bad candidate for end users to cache the {@link Promise} locally unless
+     * the end users are awaiting the current list of accounts only.
      */
-    @AnyThread
-    Optional<List<Account>> getGoogleAccounts();
+    @MainThread
+    Promise<List<Account>> getAccounts();
 
     /**
      * Retrieves all Google accounts on the device.
      * Returns an empty array if an error occurs while getting account list.
-     * This method is blocking, use {@link #getGoogleAccounts()} instead.
+     * This method is blocking, use {@link #getAccounts()} instead.
      */
     @AnyThread
     @Deprecated
     List<Account> tryGetGoogleAccounts();
 
     /**
-     * Asynchronous version of {@link #getGoogleAccounts()}.
+     * Asynchronous version of {@link #getAccounts()}.
      */
     @MainThread
     void tryGetGoogleAccounts(final Callback<List<Account>> callback);

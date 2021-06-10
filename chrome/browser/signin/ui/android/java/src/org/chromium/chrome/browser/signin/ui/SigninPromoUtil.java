@@ -70,20 +70,21 @@ public final class SigninPromoUtil {
 
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        Optional<List<Account>> accounts = accountManagerFacade.getGoogleAccounts();
-        if (!accounts.isPresent() || accounts.get().isEmpty()) {
+        final List<Account> accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(accountManagerFacade.getAccounts());
+        if (accounts.isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
         }
 
         Optional<Boolean> canDefaultAccountOfferExtendedSyncPromos =
-                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get().get(0));
+                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
                 && canDefaultAccountOfferExtendedSyncPromos.or(/* defaultValue= */ false)) {
             return false;
         }
 
-        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts.get());
+        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
         final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
         if (previousAccountNames != null && previousAccountNames.containsAll(currentAccountNames)) {
             // Don't show if no new accounts have been added after the last time promo was shown.

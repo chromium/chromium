@@ -219,7 +219,7 @@ public class AccountTrackerServiceTest {
         final AtomicInteger invocationCount = new AtomicInteger(0);
         doAnswer(AdditionalAnswers.answerVoid((VoidAnswer1<Callback<List<Account>>>) argument0 -> {
             if (invocationCount.incrementAndGet() < expectedNumberOfInvocations) {
-                argument0.onResult(mFakeAccountManagerFacade.getGoogleAccounts().get());
+                argument0.onResult(mFakeAccountManagerFacade.getAccounts().getResult());
             }
         }))
                 .when(mFakeAccountManagerFacade)

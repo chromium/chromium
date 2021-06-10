@@ -136,7 +136,7 @@ public abstract class SignInPromo {
 
     private void updateVisibility() {
         final boolean isAccountsCachePopulated =
-                AccountManagerFacadeProvider.getInstance().getGoogleAccounts().isPresent();
+                AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled();
         boolean canShowPersonalizedSigninPromo =
                 mCanSignIn && mCanShowPersonalizedSuggestions && isAccountsCachePopulated;
         boolean canShowPersonalizedSyncPromo = isUserSignedInButNotSyncing()

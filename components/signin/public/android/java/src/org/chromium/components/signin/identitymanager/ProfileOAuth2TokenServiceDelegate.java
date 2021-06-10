@@ -10,8 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.base.Optional;
-
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -153,9 +152,9 @@ final class ProfileOAuth2TokenServiceDelegate {
     @VisibleForTesting
     @CalledByNative
     boolean hasOAuth2RefreshToken(String accountName) {
-        Optional<List<Account>> accounts = mAccountManagerFacade.getGoogleAccounts();
-        return accounts.isPresent()
-                && AccountUtils.findAccountByName(accounts.get(), accountName) != null;
+        Promise<List<Account>> promise = mAccountManagerFacade.getAccounts();
+        return promise.isFulfilled()
+                && AccountUtils.findAccountByName(promise.getResult(), accountName) != null;
     }
 
     @VisibleForTesting

@@ -11,13 +11,12 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-
-import com.google.common.base.Optional;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +33,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.Promise;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
@@ -364,7 +364,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testDoesViolateMultiAccountCheck_cacheNotPopulated() {
-        doReturn(Optional.absent()).when(mFakeAccountManagerFacade).getGoogleAccounts();
+        doReturn(new Promise<List<Account>>()).when(mFakeAccountManagerFacade).getAccounts();
         Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
     }
 }

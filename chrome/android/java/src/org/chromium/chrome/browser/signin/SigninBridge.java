@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -28,12 +29,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * The bridge regroups methods invoked by native code to interact with Android Signin UI.
@@ -80,10 +82,9 @@ final class SigninBridge {
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;
         }
-        if (AccountManagerFacadeProvider.getInstance()
-                        .getGoogleAccounts()
-                        .or(Collections.emptyList())
-                        .isEmpty()) {
+        final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
+                AccountManagerFacadeProvider.getInstance().getAccounts());
+        if (accounts.isEmpty()) {
             // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
             //  in the future. This disabling is only temporary.
             SigninMetricsUtils.logAccountConsistencyPromoAction(

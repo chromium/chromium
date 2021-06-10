@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,12 +29,11 @@ import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-
-import java.util.List;
 
 /**
  * A controller for configuring the sign in promo. It sets up the sign in promo depending on the
@@ -231,9 +228,9 @@ public class SigninPromoController {
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        final Optional<List<Account>> accounts = accountManagerFacade.getGoogleAccounts();
-        if (visibleAccount == null && accounts.isPresent() && !accounts.get().isEmpty()) {
-            visibleAccount = accounts.get().get(0);
+        if (visibleAccount == null) {
+            visibleAccount =
+                    AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
         }
 
         // Set up the sync promo

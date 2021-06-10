@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -19,6 +21,7 @@ import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -75,6 +78,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<Map<String, Boolean>> mCanOfferExtendedSyncPromos =
             new AtomicReference<>(new HashMap<>());
 
+    private @NonNull Promise<List<Account>> mAccountsPromise = new Promise<>();
+
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
      */
@@ -115,8 +120,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     @Override
-    public Optional<List<Account>> getGoogleAccounts() {
-        return Optional.fromNullable(mFilteredAccounts.get());
+    public Promise<List<Account>> getAccounts() {
+        ThreadUtils.assertOnUiThread();
+        return mAccountsPromise;
     }
 
     @Override
@@ -305,6 +311,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
         mAccountRestrictionPatterns.set(patternMatchers);
         mFilteredAccounts.set(getFilteredAccounts());
+        updateAccountsPromise(mFilteredAccounts.get());
         fireOnAccountsChangedNotification();
     }
 
@@ -336,6 +343,15 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         updateCanOfferExtendedSyncPromos(mFilteredAccounts.get());
     }
 
+    @MainThread
+    private void updateAccountsPromise(List<Account> accounts) {
+        if (mAccountsPromise.isFulfilled()) {
+            mAccountsPromise = Promise.fulfilled(accounts);
+        } else {
+            mAccountsPromise.fulfill(accounts);
+        }
+    }
+
     private class InitializeTask extends AsyncTask<Void> {
         @Override
         protected void onPreExecute() {
@@ -356,6 +372,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected void onPostExecute(Void v) {
+            updateAccountsPromise(mFilteredAccounts.get());
             fireOnAccountsChangedNotification();
             decrementUpdateCounter();
         }
@@ -375,6 +392,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         @Override
         protected void onPostExecute(List<Account> allAccounts) {
             setAllAccounts(allAccounts);
+            updateAccountsPromise(mFilteredAccounts.get());
             decrementUpdateCounter();
         }
     }

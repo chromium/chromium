@@ -15,14 +15,15 @@ import androidx.annotation.Nullable;
 import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ProfileDataSource;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,24 +72,24 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public Optional<List<Account>> getGoogleAccounts() {
+    public Promise<List<Account>> getAccounts() {
         List<Account> accounts = new ArrayList<>();
         synchronized (mLock) {
             for (AccountHolder accountHolder : mAccountHolders) {
                 accounts.add(accountHolder.getAccount());
             }
         }
-        return Optional.of(accounts);
+        return Promise.fulfilled(accounts);
     }
 
     @Override
     public List<Account> tryGetGoogleAccounts() {
-        return getGoogleAccounts().or(Collections.emptyList());
+        return AccountUtils.getAccountsIfFulfilledOrEmpty(getAccounts());
     }
 
     @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
-        callback.onResult(tryGetGoogleAccounts());
+        callback.onResult(AccountUtils.getAccountsIfFulfilledOrEmpty(getAccounts()));
     }
 
     @Override

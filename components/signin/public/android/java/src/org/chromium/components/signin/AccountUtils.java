@@ -9,9 +9,11 @@ import android.accounts.Account;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Promise;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -71,6 +73,23 @@ public class AccountUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the cached list of accounts from the given {@link Promise}.
+     * If the cache is not yet populated, return an empty list.
+     */
+    public static List<Account> getAccountsIfFulfilledOrEmpty(Promise<List<Account>> promise) {
+        return promise.isFulfilled() ? promise.getResult() : Collections.emptyList();
+    }
+
+    /**
+     * Gets the cached default accounts from the given {@link Promise}.
+     * If the cache is not yet populated or no accounts exist, return null.
+     */
+    public static @Nullable Account getDefaultAccountIfFulfilled(Promise<List<Account>> promise) {
+        final List<Account> accounts = getAccountsIfFulfilledOrEmpty(promise);
+        return accounts.isEmpty() ? null : accounts.get(0);
     }
 
     /**

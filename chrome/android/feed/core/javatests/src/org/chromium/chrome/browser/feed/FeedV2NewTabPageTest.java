@@ -40,8 +40,6 @@ import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 
-import com.google.common.base.Optional;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -52,6 +50,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -136,14 +135,12 @@ public class FeedV2NewTabPageTest {
     private final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeAccountManagerFacade(null) {
                 @Override
-                public Optional<List<Account>> getGoogleAccounts() {
-                    // Attention. When isCachePopulated() returns false,
-                    // runAfterCacheIsPopulated(...) shouldn't run. If this becomes a problem,
-                    // we can override runAfterCacheIsPopulated(...) as well.
+                public Promise<List<Account>> getAccounts() {
+                    // Attention. When cache is not populated, the Promise shouldn't be fulfilled.
                     if (mIsCachePopulatedInAccountManagerFacade) {
-                        return super.getGoogleAccounts();
+                        return super.getAccounts();
                     }
-                    return Optional.absent();
+                    return new Promise<>();
                 }
             });
 
