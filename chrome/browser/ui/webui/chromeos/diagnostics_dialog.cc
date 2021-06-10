@@ -37,11 +37,6 @@ void DiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
 
   gfx::Size display_size = display.size();
 
-  if (display.rotation() == display::Display::ROTATE_90 ||
-      display.rotation() == display::Display::ROTATE_270) {
-    display_size = gfx::Size(display_size.height(), display_size.width());
-  }
-
   display_size = gfx::Size(display_size.width() * kDiagnosticsDialogScale,
                            display_size.height() * kDiagnosticsDialogScale);
 
