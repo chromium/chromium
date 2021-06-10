@@ -54,6 +54,9 @@ class TestPrintBackend : public PrintBackend {
                        std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
                        std::unique_ptr<PrinterBasicInfo> info);
 
+  // Adds a printer which will cause a Mojom data validation error.
+  void AddInvalidDataPrinter(const std::string& printer_name);
+
   // Adds a printer which will fail with an access-denied permission error for
   // calls specific to a particular `printer_name`.
   void AddAccessDeniedPrinter(const std::string& printer_name);

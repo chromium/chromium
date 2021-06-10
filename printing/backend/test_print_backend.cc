@@ -153,6 +153,14 @@ void TestPrintBackend::AddValidPrinter(
              /*blocked_by_permissions=*/false);
 }
 
+void TestPrintBackend::AddInvalidDataPrinter(const std::string& printer_name) {
+  // The blank fields in default `PrinterBasicInfo` cause Mojom data validation
+  // errors.
+  AddPrinter(printer_name, std::make_unique<PrinterSemanticCapsAndDefaults>(),
+             std::make_unique<PrinterBasicInfo>(),
+             /*blocked_by_permissions=*/false);
+}
+
 void TestPrintBackend::AddAccessDeniedPrinter(const std::string& printer_name) {
   AddPrinter(printer_name, /*caps=*/nullptr, /*info=*/nullptr,
              /*blocked_by_permissions=*/true);

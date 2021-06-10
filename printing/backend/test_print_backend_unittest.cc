@@ -12,6 +12,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "printing/backend/mojom/print_backend.mojom.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -27,6 +29,7 @@ constexpr char kAlternatePrinterName[] = "alternate-test-printer";
 constexpr char kNullDataPrinterName[] = "null-data-test-printer";
 constexpr char kAccessDeniedPrinterName[] = "access-denied-test-printer";
 constexpr char kInvalidPrinterName[] = "invalid-test-printer";
+constexpr char kInvalidDataPrinterName[] = "invalid-data-test-printer";
 
 constexpr int kDefaultPrinterStatus = 0;
 constexpr int kAlternatePrinterStatus = 1;
@@ -75,6 +78,10 @@ class TestPrintBackendTest : public testing::Test {
 
     test_print_backend_->AddValidPrinter(kNullDataPrinterName, /*caps=*/nullptr,
                                          /*info=*/nullptr);
+  }
+
+  void AddInvalidDataPrinter() {
+    test_print_backend_->AddInvalidDataPrinter(kInvalidDataPrinterName);
   }
 
   void AddAccessDeniedPrinter() {
@@ -213,6 +220,23 @@ TEST_F(TestPrintBackendTest, PrinterBasicInfoAccessDenied) {
   EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kAccessDeniedPrinterName,
                                                    &printer_info),
             mojom::ResultCode::kAccessDenied);
+}
+
+// Demonstrate that a printer might be able to present data considered to be
+// invalid, which becomes detectable when it undergoes Mojom message
+// validation.
+TEST_F(TestPrintBackendTest, PrinterBasicInfoInvalidData) {
+  PrinterBasicInfo printer_info;
+
+  AddInvalidDataPrinter();
+
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kInvalidDataPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kSuccess);
+
+  PrinterBasicInfo output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::PrinterBasicInfo>(
+      printer_info, output));
 }
 
 TEST_F(TestPrintBackendTest, GetPrinterSemanticCapsAndDefaults) {
