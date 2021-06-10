@@ -2456,9 +2456,13 @@ void LayoutBlock::CheckPositionedObjectsNeedLayout() {
              positioned_descendant_set->begin();
          it != end; ++it) {
       LayoutBox* curr_box = *it;
-      DCHECK(!curr_box->SelfNeedsLayout());
+      // An OOF positioned object may still need to be laid out in NG once it
+      // reaches its containing block if it is inside a fragmentation context.
+      // In such cases, we wait to perform layout of the OOF at the
+      // fragmentation context root instead.
+      DCHECK(!curr_box->SelfNeedsLayout() || curr_box->IsInsideFlowThread());
       DCHECK(curr_box->ChildLayoutBlockedByDisplayLock() ||
-             !curr_box->NeedsLayout());
+             !curr_box->NeedsLayout() || curr_box->IsInsideFlowThread());
     }
   }
 }

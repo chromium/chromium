@@ -1501,5 +1501,39 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
+
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        .multicol {
+          column-count: 2; column-fill: auto; column-gap: 0px;
+        }
+      </style>
+      <div class="multicol" id="outer">
+        <div class="multicol" id="inner" style="position:relative;">
+          <div id="abs1" style="position:absolute;"></div>
+          <div id="rel" style="position:relative;">
+            <div id="abs2" style="position:absolute;"></div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  Element* outer_multicol = GetDocument().getElementById("outer");
+  auto* multicol = To<LayoutBlockFlow>(outer_multicol->GetLayoutObject());
+  EXPECT_FALSE(multicol->PositionedObjects());
+
+  Element* inner_multicol = GetDocument().getElementById("inner");
+  multicol = To<LayoutBlockFlow>(inner_multicol->GetLayoutObject());
+  auto* abs = GetLayoutBoxByElementId("abs1");
+  EXPECT_TRUE(multicol->PositionedObjects()->Contains(abs));
+  EXPECT_EQ(multicol->PositionedObjects()->size(), 1u);
+
+  Element* rel_element = GetDocument().getElementById("rel");
+  auto* rel = To<LayoutBlockFlow>(rel_element->GetLayoutObject());
+  abs = GetLayoutBoxByElementId("abs2");
+  EXPECT_TRUE(rel->PositionedObjects()->Contains(abs));
+  EXPECT_EQ(rel->PositionedObjects()->size(), 1u);
+}
 }  // namespace
 }  // namespace blink

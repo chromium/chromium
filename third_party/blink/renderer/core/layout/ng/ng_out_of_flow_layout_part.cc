@@ -511,6 +511,8 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
+        if (layout_box != only_layout)
+          candidate.Node().InsertIntoLegacyPositionedObjects();
         if (has_block_fragmentation_) {
           container_builder_->AdjustOffsetsForFragmentainerDescendant(
               candidate);
@@ -518,8 +520,6 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           container_builder_->AddOutOfFlowFragmentainerDescendant(candidate);
           continue;
         }
-        if (layout_box != only_layout)
-          candidate.Node().InsertIntoLegacyPositionedObjects();
         NodeInfo node_info = SetupNodeInfo(candidate);
         NodeToLayout node_to_layout = {node_info,
                                        CalculateOffset(node_info, only_layout)};
@@ -577,6 +577,10 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   NGBoxFragmentBuilder multicol_container_builder =
       CreateContainerBuilderForMulticol(multicol, multicol_constraint_space,
                                         fragment_geometry);
+  // The block size that we set on the multicol builder doesn't matter since
+  // we only care about the size of the fragmentainer children when laying out
+  // the remaining OOFs.
+  multicol_container_builder.SetFragmentsTotalBlockSize(LayoutUnit());
 
   // Accumulate all of the pending OOF positioned nodes that are stored inside
   // |multicol|.
