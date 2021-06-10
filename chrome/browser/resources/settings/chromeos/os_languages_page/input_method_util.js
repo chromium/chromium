@@ -162,11 +162,14 @@ cr.define('settings.input_method_util', function() {
         ]
       }],
       virtualKeyboard: [
-        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
-        {name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL},
-        {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
-        {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS}, {
+          name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+          dependentOptions: [
+            OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
+          ]
+        },
         {name: OptionType.ENABLE_GESTURE_TYPING},
+        {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
         {name: OptionType.EDIT_USER_DICT}
       ],
       basic: [],
