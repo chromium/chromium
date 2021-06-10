@@ -114,6 +114,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/signin/ios/browser:features",
     "//components/signin/public/base",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/views:views_constants",

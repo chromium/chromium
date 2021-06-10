@@ -5,6 +5,7 @@
 #import "base/ios/block_types.h"
 #include "base/ios/ios_util.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -27,10 +28,12 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::PrimarySignInButton;
+using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
+using chrome_test_util::SettingsCollectionView;
 
 // Sign-in interaction tests that work with |kMobileIdentityConsistency|
 // enabled.
@@ -53,6 +56,23 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [ChromeEarlGrey clearBrowsingHistory];
 }
 
+// Tests that a signed-in user can open "Settings" screen from the NTP.
+- (void)testOpenManageSyncSettingsFromNTP {
+  // Sign in to Chrome.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Select the identity disc particle.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_ACCNAME_PARTICLE_DISC))]
+      performAction:grey_tap()];
+
+  // Ensure the Settings menu is displayed.
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
 - (void)testSignInFromSettingsMenu {
@@ -73,6 +93,11 @@ using chrome_test_util::SettingsMenuPrivacyButton;
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsGoogleServicesCellId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #include "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -23,12 +27,14 @@
 #error "This file requires ARC support."
 #endif
 
-using l10n_util::GetNSString;
+using base::test::ios::kWaitForActionTimeout;
+using chrome_test_util::BookmarkHomeDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
+using l10n_util::GetNSString;
 
 namespace {
 // Matcher for Google Services Settings page.
@@ -54,7 +60,7 @@ void DismissSignOut() {
 
 // Integration tests using the Google services settings screen with
 // |kMobileIdentityConsistency| enabled.
-@interface GoogleServicesSettingsMICETestCase : ChromeTestCase
+@interface GoogleServicesSettingsMICETestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation GoogleServicesSettingsMICETestCase
@@ -63,6 +69,19 @@ void DismissSignOut() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(signin::kMobileIdentityConsistency);
   return config;
+}
+
+- (void)setUp {
+  [super setUp];
+
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [ChromeEarlGrey clearBookmarks];
+}
+
+- (void)tearDown {
+  [super tearDown];
+  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tests that disabling the "Allow Chrome sign-in" > "Sign out" option blocks
@@ -121,14 +140,19 @@ void DismissSignOut() {
 // the user from signing in to Chrome through the promo sign-in until it is
 // re-enabled.
 - (void)testToggleAllowChromeSigninWithPromoSigninClearData {
+  // User is signed-in and syncing.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kWaitForActionTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Turn off "Allow Chrome Sign-in" feature with Clear Data option.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-
-  // Turn off "Allow Chrome Sign-in" feature.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
                                    kAllowSigninItemAccessibilityIdentifier,
@@ -144,17 +168,94 @@ void DismissSignOut() {
                                    IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON)]
       performAction:grey_tap()];
 
-  // Verify that the user is signed out and sign-in is disabled.
+  // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
                                           IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGrey verifySignedOut];
 
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  // Verify signed out.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify bookmarks are cleared.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+      performAction:grey_tap()];
 
   // Turn on "Allow Chrome Sign-in" feature.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/NO,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Verify that the user is signed out and sign-in is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that disabling the "Allow Chrome sign-in" > "Keep Data" option blocks
+// the user from signing in to Chrome through the promo sign-in until it is
+// re-enabled.
+- (void)testToggleAllowChromeSigninWithPromoSigninKeepData {
+  // User is signed-in and syncing.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kWaitForActionTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Turn off "Allow Chrome Sign-in" feature with Keep Data option.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON)]
+      performAction:grey_tap()];
+
+  // Verify that sign-in is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify signed out.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify bookmarks are available.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
+  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+      performAction:grey_tap()];
+
+  // Turn on "Allow Chrome Sign-in" feature.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
                                    kAllowSigninItemAccessibilityIdentifier,
