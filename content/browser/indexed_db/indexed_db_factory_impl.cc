@@ -58,8 +58,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-using url::Origin;
-
 namespace content {
 
 namespace {
@@ -103,31 +101,25 @@ std::tuple<base::FilePath /*leveldb_path*/,
            leveldb::Status>
 CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
                           const base::FilePath& path_base,
-                          const url::Origin& origin) {
+                          const blink::StorageKey& storage_key) {
   leveldb::Status status;
   if (filesystem->CreateDirectory(path_base) != base::File::Error::FILE_OK) {
     status =
         leveldb::Status::IOError("Unable to create IndexedDB database path");
     LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
                << "\"";
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
+                     storage_key);
     return {base::FilePath(), base::FilePath(), status};
   }
 
-  base::FilePath leveldb_path = path_base.Append(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexed_db::GetLevelDBFileName(blink::StorageKey(origin)));
-  base::FilePath blob_path = path_base.Append(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexed_db::GetBlobStoreFileName(blink::StorageKey(origin)));
+  base::FilePath leveldb_path =
+      path_base.Append(indexed_db::GetLevelDBFileName(storage_key));
+  base::FilePath blob_path =
+      path_base.Append(indexed_db::GetBlobStoreFileName(storage_key));
   if (indexed_db::IsPathTooLong(filesystem, leveldb_path)) {
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
+                     storage_key);
     status = leveldb::Status::IOError("File path too long");
     return {base::FilePath(), base::FilePath(), status};
   }
@@ -195,7 +187,7 @@ IndexedDBFactoryImpl::~IndexedDBFactoryImpl() {
 
 void IndexedDBFactoryImpl::GetDatabaseInfo(
     scoped_refptr<IndexedDBCallbacks> callbacks,
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::GetDatabaseInfo");
@@ -206,7 +198,7 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(origin_state_handle, s, error, std::ignore, std::ignore) =
-      GetOrOpenOriginFactory(origin, data_directory,
+      GetOrOpenOriginFactory(storage_key, data_directory,
                              /*create_if_missing=*/false);
   if (!origin_state_handle.IsHeld() || !origin_state_handle.origin_state()) {
     if (s.IsNotFound()) {
@@ -215,7 +207,7 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
       callbacks->OnError(error);
     }
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
   IndexedDBOriginState* factory = origin_state_handle.origin_state();
@@ -230,7 +222,7 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
                                    "indexedDB.databases().");
     callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
   callbacks->OnSuccess(std::move(names_and_versions));
@@ -239,22 +231,23 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
 void IndexedDBFactoryImpl::Open(
     const std::u16string& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::Open");
-  IndexedDBDatabase::Identifier unique_identifier(origin, name);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  IndexedDBDatabase::Identifier unique_identifier(storage_key.origin(), name);
   IndexedDBOriginStateHandle origin_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
   std::tie(origin_state_handle, s, error, connection->data_loss_info,
            connection->was_cold_open) =
-      GetOrOpenOriginFactory(origin, data_directory,
+      GetOrOpenOriginFactory(storage_key, data_directory,
                              /*create_if_missing=*/true);
   if (!origin_state_handle.IsHeld() || !origin_state_handle.origin_state()) {
     connection->callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
   IndexedDBOriginState* factory = origin_state_handle.origin_state();
@@ -269,7 +262,7 @@ void IndexedDBFactoryImpl::Open(
       name, factory->backing_store(), this,
       base::BindRepeating(&IndexedDBFactoryImpl::MaybeRunTasksForOrigin,
                           origin_state_destruction_weak_factory_.GetWeakPtr(),
-                          origin),
+                          storage_key),
       std::make_unique<IndexedDBMetadataCoding>(), std::move(unique_identifier),
       factory->lock_manager());
   if (!database.get()) {
@@ -278,7 +271,7 @@ void IndexedDBFactoryImpl::Open(
         u"Internal error creating database backend for indexedDB.open.");
     connection->callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
 
@@ -293,24 +286,25 @@ void IndexedDBFactoryImpl::Open(
 void IndexedDBFactoryImpl::DeleteDatabase(
     const std::u16string& name,
     scoped_refptr<IndexedDBCallbacks> callbacks,
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const base::FilePath& data_directory,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::DeleteDatabase");
-  IndexedDBDatabase::Identifier unique_identifier(origin, name);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  IndexedDBDatabase::Identifier unique_identifier(storage_key.origin(), name);
   IndexedDBOriginStateHandle origin_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(origin_state_handle, s, error, std::ignore, std::ignore) =
-      GetOrOpenOriginFactory(origin, data_directory,
+      GetOrOpenOriginFactory(storage_key, data_directory,
                              /*create_if_missing=*/true);
   if (!origin_state_handle.IsHeld() || !origin_state_handle.origin_state()) {
     callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
   IndexedDBOriginState* factory = origin_state_handle.origin_state();
@@ -321,11 +315,11 @@ void IndexedDBFactoryImpl::DeleteDatabase(
     database->ScheduleDeleteDatabase(
         std::move(origin_state_handle), callbacks,
         base::BindOnce(&IndexedDBFactoryImpl::OnDatabaseDeleted,
-                       weak_factory_.GetWeakPtr(), origin));
+                       weak_factory_.GetWeakPtr(), storage_key));
     if (force_close) {
       leveldb::Status status = database->ForceCloseAndRunTasks();
       if (!status.ok())
-        OnDatabaseError(origin, status, "Error aborting transactions.");
+        OnDatabaseError(storage_key, status, "Error aborting transactions.");
     }
     return;
   }
@@ -343,7 +337,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
                                    "indexedDB.deleteDatabase.");
     callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
 
@@ -358,7 +352,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
       name, factory->backing_store(), this,
       base::BindRepeating(&IndexedDBFactoryImpl::MaybeRunTasksForOrigin,
                           origin_state_destruction_weak_factory_.GetWeakPtr(),
-                          origin),
+                          storage_key),
       std::make_unique<IndexedDBMetadataCoding>(), unique_identifier,
       factory->lock_manager());
   if (!database.get()) {
@@ -367,7 +361,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
                                    u"for indexedDB.deleteDatabase.");
     callbacks->OnError(error);
     if (s.IsCorruption())
-      HandleBackingStoreCorruption(origin, error);
+      HandleBackingStoreCorruption(storage_key, error);
     return;
   }
 
@@ -376,21 +370,21 @@ void IndexedDBFactoryImpl::DeleteDatabase(
   database_ptr->ScheduleDeleteDatabase(
       std::move(origin_state_handle), std::move(callbacks),
       base::BindOnce(&IndexedDBFactoryImpl::OnDatabaseDeleted,
-                     weak_factory_.GetWeakPtr(), origin));
+                     weak_factory_.GetWeakPtr(), storage_key));
   if (force_close) {
     leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
     if (!status.ok())
-      OnDatabaseError(origin, status, "Error aborting transactions.");
+      OnDatabaseError(storage_key, status, "Error aborting transactions.");
   }
 }
 
 void IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase(
     base::OnceCallback<void(leveldb::Status)> callback,
-    const Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase");
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end()) {
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
     return;
   }
@@ -401,11 +395,11 @@ void IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase(
 
 void IndexedDBFactoryImpl::AbortTransactionsForDatabase(
     base::OnceCallback<void(leveldb::Status)> callback,
-    const Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::AbortTransactionsForDatabase");
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end()) {
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
     return;
   }
@@ -414,23 +408,25 @@ void IndexedDBFactoryImpl::AbortTransactionsForDatabase(
   std::move(callback).Run(leveldb::Status::OK());
 }
 
-void IndexedDBFactoryImpl::HandleBackingStoreFailure(const Origin& origin) {
+void IndexedDBFactoryImpl::HandleBackingStoreFailure(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // nullptr after ContextDestroyed() called, and in some unit tests.
   if (!context_)
     return;
   context_->ForceCloseSync(
-      origin,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      storage_key.origin(),
       storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE);
 }
 
 void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Make a copy of origin as this is likely a reference to a member of a
+  // Make a copy of storage_key as this is likely a reference to a member of a
   // backing store which this function will be deleting.
-  Origin saved_origin(origin);
+  blink::StorageKey saved_storage_key(storage_key);
   DCHECK(context_);
   base::FilePath path_base = context_->data_path();
 
@@ -439,18 +435,15 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   std::string sanitized_message = base::UTF16ToUTF8(error.message());
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      path_base.AsUTF8Unsafe(), "...");
-  IndexedDBBackingStore::RecordCorruptionInfo(
-      path_base,
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      blink::StorageKey(saved_origin), sanitized_message);
-  HandleBackingStoreFailure(saved_origin);
+  IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_storage_key,
+                                              sanitized_message);
+  HandleBackingStoreFailure(saved_storage_key);
   // Note: DestroyBackingStore only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
-  const base::FilePath file_path = path_base.Append(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexed_db::GetLevelDBFileName(blink::StorageKey(saved_origin)));
+  const base::FilePath file_path =
+      path_base.Append(indexed_db::GetLevelDBFileName(saved_storage_key));
   leveldb::Status s =
       class_factory_->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
@@ -461,10 +454,10 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
 }
 
 std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForOrigin(
-    const Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end()) {
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end()) {
     return std::vector<IndexedDBDatabase*>();
   }
   IndexedDBOriginState* factory = it->second.get();
@@ -475,11 +468,11 @@ std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForOrigin(
   return out;
 }
 
-void IndexedDBFactoryImpl::ForceClose(const Origin& origin,
+void IndexedDBFactoryImpl::ForceClose(const blink::StorageKey& storage_key,
                                       bool delete_in_memory_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return;
 
   base::WeakPtr<IndexedDBOriginState> weak_ptr;
@@ -491,14 +484,15 @@ void IndexedDBFactoryImpl::ForceClose(const Origin& origin,
     origin_state_handle.origin_state()->ForceClose();
     weak_ptr = origin_state_handle.origin_state()->AsWeakPtr();
   }
-  // Run tasks so the origin state is deleted.
+  // Run tasks so the storage_key state is deleted.
   RunTasksForOrigin(std::move(weak_ptr));
 }
 
-void IndexedDBFactoryImpl::ForceSchemaDowngrade(const Origin& origin) {
+void IndexedDBFactoryImpl::ForceSchemaDowngrade(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return;
 
   IndexedDBBackingStore* backing_store = it->second->backing_store();
@@ -507,10 +501,10 @@ void IndexedDBFactoryImpl::ForceSchemaDowngrade(const Origin& origin) {
 }
 
 V2SchemaCorruptionStatus IndexedDBFactoryImpl::HasV2SchemaCorruption(
-    const Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return V2SchemaCorruptionStatus::kUnknown;
 
   IndexedDBBackingStore* backing_store = it->second->backing_store();
@@ -524,38 +518,42 @@ void IndexedDBFactoryImpl::ContextDestroyed() {
   context_ = nullptr;
   // Invalidate the weak factory that is used by the IndexedDBOriginStates to
   // destruct themselves. This prevents modification of the
-  // |factories_per_origin_| map while it is iterated below, and allows us to
-  // avoid holding a handle to call ForceClose();
+  // |factories_per_storage_key_| map while it is iterated below, and allows us
+  // to avoid holding a handle to call ForceClose();
   origin_state_destruction_weak_factory_.InvalidateWeakPtrs();
-  for (const auto& pair : factories_per_origin_) {
+  for (const auto& pair : factories_per_storage_key_) {
     pair.second->ForceClose();
   }
-  factories_per_origin_.clear();
+  factories_per_storage_key_.clear();
 }
 
-void IndexedDBFactoryImpl::ReportOutstandingBlobs(const Origin& origin,
-                                                  bool blobs_outstanding) {
+void IndexedDBFactoryImpl::ReportOutstandingBlobs(
+    const blink::StorageKey& storage_key,
+    bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_)
     return;
-  auto it = factories_per_origin_.find(origin);
-  DCHECK(it != factories_per_origin_.end());
+  auto it = factories_per_storage_key_.find(storage_key);
+  DCHECK(it != factories_per_storage_key_.end());
 
   it->second->ReportOutstandingBlobs(blobs_outstanding);
 }
 
-void IndexedDBFactoryImpl::BlobFilesCleaned(const url::Origin& origin) {
+void IndexedDBFactoryImpl::BlobFilesCleaned(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // nullptr after ContextDestroyed() called, and in some unit tests.
   if (!context_)
     return;
-  context_->BlobFilesCleaned(origin);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  context_->BlobFilesCleaned(storage_key.origin());
 }
 
-size_t IndexedDBFactoryImpl::GetConnectionCount(const Origin& origin) const {
+size_t IndexedDBFactoryImpl::GetConnectionCount(
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return 0;
   size_t count = 0;
   for (const auto& name_database_pair : it->second->databases()) {
@@ -566,20 +564,22 @@ size_t IndexedDBFactoryImpl::GetConnectionCount(const Origin& origin) const {
 }
 
 void IndexedDBFactoryImpl::NotifyIndexedDBContentChanged(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_)
     return;
-  context_->NotifyIndexedDBContentChanged(origin, database_name,
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  context_->NotifyIndexedDBContentChanged(storage_key.origin(), database_name,
                                           object_store_name);
 }
 
-int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(const Origin& origin) const {
+int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return 0;
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   int64_t level_db_size = 0;
@@ -592,29 +592,30 @@ int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(const Origin& origin) const {
 }
 
 base::Time IndexedDBFactoryImpl::GetLastModified(
-    const url::Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return base::Time();
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   return backing_store->db()->LastModified();
 }
 
-std::vector<url::Origin> IndexedDBFactoryImpl::GetOpenOrigins() const {
+std::vector<blink::StorageKey> IndexedDBFactoryImpl::GetOpenOrigins() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<url::Origin> output;
-  for (const auto& pair : factories_per_origin_) {
+  std::vector<blink::StorageKey> output;
+  output.reserve(factories_per_storage_key_.size());
+  for (const auto& pair : factories_per_storage_key_) {
     output.push_back(pair.first);
   }
   return output;
 }
 
 IndexedDBOriginState* IndexedDBFactoryImpl::GetOriginFactory(
-    const url::Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it != factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it != factories_per_storage_key_.end())
     return it->second.get();
   return nullptr;
 }
@@ -625,7 +626,7 @@ std::tuple<IndexedDBOriginStateHandle,
            IndexedDBDataLossInfo,
            /*is_cold_open=*/bool>
 IndexedDBFactoryImpl::GetOrOpenOriginFactory(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const base::FilePath& data_directory,
     bool create_if_missing) {
   IDB_TRACE("indexed_db::GetOrOpenOriginFactory");
@@ -635,8 +636,8 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
   // where the flowchart should be seen as the 'master' logic template. Please
   // check the git history of both to make sure they are in sync.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it != factories_per_origin_.end()) {
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it != factories_per_storage_key_.end()) {
     return {it->second->CreateHandle(), leveldb::Status::OK(),
             IndexedDBDatabaseError(), IndexedDBDataLossInfo(),
             /*was_cold_open=*/false};
@@ -653,7 +654,7 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
     // The database will be on-disk and not in-memory.
     auto filesystem_proxy = storage::CreateFilesystemProxy();
     std::tie(database_path, blob_path, s) = CreateDatabaseDirectories(
-        filesystem_proxy.get(), data_directory, origin);
+        filesystem_proxy.get(), data_directory, storage_key);
     if (!s.ok())
       return {IndexedDBOriginStateHandle(), s, CreateDefaultError(),
               IndexedDBDataLossInfo(), /*was_cold_open=*/true};
@@ -674,20 +675,20 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
     scopes_options.lock_manager = lock_manager.get();
     scopes_options.metadata_key_prefix = ScopesPrefix::Encode();
     scopes_options.failure_callback = base::BindRepeating(
-        [](const Origin& origin, base::WeakPtr<IndexedDBFactoryImpl> factory,
-           leveldb::Status s) {
+        [](const blink::StorageKey& storage_key,
+           base::WeakPtr<IndexedDBFactoryImpl> factory, leveldb::Status s) {
           if (!factory)
             return;
-          factory->OnDatabaseError(origin, s, nullptr);
+          factory->OnDatabaseError(storage_key, s, nullptr);
         },
-        origin, weak_factory_.GetWeakPtr());
+        storage_key, weak_factory_.GetWeakPtr());
     const bool is_first_attempt = i == 0;
     auto filesystem_proxy = !is_incognito_and_in_memory
                                 ? storage::CreateFilesystemProxy()
                                 : nullptr;
     std::tie(backing_store, s, data_loss_info, disk_full) =
         OpenAndVerifyIndexedDBBackingStore(
-            origin, data_directory, database_path, blob_path,
+            storage_key, data_directory, database_path, blob_path,
             std::move(scopes_options), &scopes_factory,
             std::move(filesystem_proxy), is_first_attempt, create_if_missing);
     if (LIKELY(is_first_attempt))
@@ -702,12 +703,10 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
       std::string sanitized_message = leveldb_env::GetCorruptionMessage(s);
       base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                          data_directory.AsUTF8Unsafe(), "...");
-      LOG(ERROR) << "Got corruption for " << origin.Serialize() << ", "
-                 << sanitized_message;
-      IndexedDBBackingStore::RecordCorruptionInfo(
-          data_directory,
-          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-          blink::StorageKey(origin), sanitized_message);
+      LOG(ERROR) << "Got corruption for " << storage_key.GetDebugString()
+                 << ", " << sanitized_message;
+      IndexedDBBackingStore::RecordCorruptionInfo(data_directory, storage_key,
+                                                  sanitized_message);
     }
   }
 
@@ -723,13 +722,12 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
   }
 
   if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
+                     storage_key);
 
     if (disk_full) {
-      context_->quota_manager_proxy()->NotifyWriteFailed(origin);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
       return {IndexedDBOriginStateHandle(), s,
               IndexedDBDatabaseError(blink::mojom::IDBException::kQuotaError,
                                      u"Encountered full disk while opening "
@@ -748,45 +746,43 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
       LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
 
   if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
+                     storage_key);
 
     return {IndexedDBOriginStateHandle(), s, CreateDefaultError(),
             data_loss_info, /*was_cold_open=*/true};
   }
 
   if (!is_incognito_and_in_memory)
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
+                     storage_key);
 
   auto run_tasks_callback = base::BindRepeating(
       &IndexedDBFactoryImpl::MaybeRunTasksForOrigin,
-      origin_state_destruction_weak_factory_.GetWeakPtr(), origin);
+      origin_state_destruction_weak_factory_.GetWeakPtr(), storage_key);
 
   auto tear_down_callback = base::BindRepeating(
-      [](const Origin& origin, base::WeakPtr<IndexedDBFactoryImpl> factory,
-         leveldb::Status s) {
+      [](const blink::StorageKey& storage_key,
+         base::WeakPtr<IndexedDBFactoryImpl> factory, leveldb::Status s) {
         if (!factory)
           return;
-        factory->OnDatabaseError(origin, s, nullptr);
+        factory->OnDatabaseError(storage_key, s, nullptr);
       },
-      origin, weak_factory_.GetWeakPtr());
+      storage_key, weak_factory_.GetWeakPtr());
 
   auto origin_state = std::make_unique<IndexedDBOriginState>(
-      origin,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      storage_key.origin(),
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), &earliest_sweep_,
       &earliest_compaction_, std::move(lock_manager),
       std::move(run_tasks_callback), std::move(tear_down_callback),
       std::move(backing_store));
 
-  it = factories_per_origin_.emplace(origin, std::move(origin_state)).first;
-
-  context_->FactoryOpened(origin);
+  it = factories_per_storage_key_.emplace(storage_key, std::move(origin_state))
+           .first;
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  context_->FactoryOpened(storage_key.origin());
   return {it->second->CreateHandle(), s, IndexedDBDatabaseError(),
           data_loss_info, /*was_cold_open=*/true};
 }
@@ -794,7 +790,7 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
 std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
     IndexedDBBackingStore::Mode backing_store_mode,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
@@ -805,19 +801,17 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
         report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
-      backing_store_mode, transactional_leveldb_factory,
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      blink::StorageKey(origin), blob_path, std::move(db), blob_storage_context,
-      file_system_access_context, std::move(filesystem_proxy),
-      std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
-      std::move(idb_task_runner));
+      backing_store_mode, transactional_leveldb_factory, storage_key, blob_path,
+      std::move(db), blob_storage_context, file_system_access_context,
+      std::move(filesystem_proxy), std::move(blob_files_cleaned),
+      std::move(report_outstanding_blobs), std::move(idb_task_runner));
 }
 std::tuple<std::unique_ptr<IndexedDBBackingStore>,
            leveldb::Status,
            IndexedDBDataLossInfo,
            bool /* is_disk_full */>
 IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::FilePath data_directory,
     base::FilePath database_path,
     base::FilePath blob_path,
@@ -843,16 +837,14 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
     // Check for previous corruption, and if found then try to delete the
     // database.
     std::string corruption_message = indexed_db::ReadCorruptionInfo(
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        filesystem_proxy.get(), data_directory, blink::StorageKey(origin));
+        filesystem_proxy.get(), data_directory, storage_key);
     if (UNLIKELY(!corruption_message.empty())) {
       LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
                     "database.";
       if (is_first_attempt) {
         ReportOpenStatus(
             indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_PRIOR_CORRUPTION,
-            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-            blink::StorageKey(origin));
+            storage_key);
       }
       data_loss_info.status = blink::mojom::IDBDataLoss::Total;
       data_loss_info.message = base::StrCat(
@@ -921,33 +913,32 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
     ReportOpenStatus(
         indexed_db::
             INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+        storage_key);
     return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
   } else if (UNLIKELY(!are_schemas_known)) {
     LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
                   "failure to open.";
     ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin));
+        storage_key);
     return {nullptr, leveldb::Status::Corruption("Unknown IndexedDB schema"),
             std::move(data_loss_info), /*is_disk_full=*/false};
   }
 
   bool first_open_since_startup =
-      backends_opened_since_startup_.insert(origin).second;
+      backends_opened_since_startup_.insert(storage_key).second;
   IndexedDBBackingStore::Mode backing_store_mode =
       is_incognito_and_in_memory ? IndexedDBBackingStore::Mode::kInMemory
                                  : IndexedDBBackingStore::Mode::kOnDisk;
   std::unique_ptr<IndexedDBBackingStore> backing_store = CreateBackingStore(
       backing_store_mode, &class_factory_->transactional_leveldb_factory(),
-      origin, blob_path, std::move(database), context_->blob_storage_context(),
-      context_->file_system_access_context(), std::move(filesystem_proxy),
+      storage_key, blob_path, std::move(database),
+      context_->blob_storage_context(), context_->file_system_access_context(),
+      std::move(filesystem_proxy),
       base::BindRepeating(&IndexedDBFactoryImpl::BlobFilesCleaned,
-                          weak_factory_.GetWeakPtr(), origin),
+                          weak_factory_.GetWeakPtr(), storage_key),
       base::BindRepeating(&IndexedDBFactoryImpl::ReportOutstandingBlobs,
-                          weak_factory_.GetWeakPtr(), origin),
+                          weak_factory_.GetWeakPtr(), storage_key),
       context_->IDBTaskRunner());
   status = backing_store->Initialize(
       /*clean_active_blob_journal=*/(!is_incognito_and_in_memory &&
@@ -960,11 +951,12 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
           /*is_disk_full=*/false};
 }
 
-void IndexedDBFactoryImpl::RemoveOriginState(const url::Origin& origin) {
-  factories_per_origin_.erase(origin);
+void IndexedDBFactoryImpl::RemoveOriginState(
+    const blink::StorageKey& storage_key) {
+  factories_per_storage_key_.erase(storage_key);
 }
 
-void IndexedDBFactoryImpl::OnDatabaseError(const url::Origin& origin,
+void IndexedDBFactoryImpl::OnDatabaseError(const blink::StorageKey& storage_key,
                                            leveldb::Status status,
                                            const char* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -976,29 +968,33 @@ void IndexedDBFactoryImpl::OnDatabaseError(const url::Origin& origin,
                                      message)
             : IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                      base::ASCIIToUTF16(status.ToString()));
-    HandleBackingStoreCorruption(origin, error);
+    HandleBackingStoreCorruption(storage_key, error);
   } else {
     if (status.IsIOError())
-      context_->quota_manager_proxy()->NotifyWriteFailed(origin);
-    HandleBackingStoreFailure(origin);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
+    HandleBackingStoreFailure(storage_key);
   }
 }
 
-void IndexedDBFactoryImpl::OnDatabaseDeleted(const url::Origin& origin) {
+void IndexedDBFactoryImpl::OnDatabaseDeleted(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (call_on_database_deleted_for_testing_)
-    call_on_database_deleted_for_testing_.Run(origin);
+    call_on_database_deleted_for_testing_.Run(storage_key);
 
   if (!context_)
     return;
-  context_->DatabaseDeleted(origin);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  context_->DatabaseDeleted(storage_key.origin());
 }
 
-void IndexedDBFactoryImpl::MaybeRunTasksForOrigin(const url::Origin& origin) {
+void IndexedDBFactoryImpl::MaybeRunTasksForOrigin(
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return;
 
   IndexedDBOriginState* origin_state = it->second.get();
@@ -1024,33 +1020,38 @@ void IndexedDBFactoryImpl::RunTasksForOrigin(
     case IndexedDBOriginState::RunTasksResult::kDone:
       return;
     case IndexedDBOriginState::RunTasksResult::kError:
-      OnDatabaseError(origin_state->origin(), status, nullptr);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      OnDatabaseError(blink::StorageKey(origin_state->origin()), status,
+                      nullptr);
       return;
     case IndexedDBOriginState::RunTasksResult::kCanBeDestroyed:
-      factories_per_origin_.erase(origin_state->origin());
+      factories_per_storage_key_.erase(
+          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+          blink::StorageKey(origin_state->origin()));
       return;
   }
 }
 
-bool IndexedDBFactoryImpl::IsDatabaseOpen(const Origin& origin,
+bool IndexedDBFactoryImpl::IsDatabaseOpen(const blink::StorageKey& storage_key,
                                           const std::u16string& name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return false;
   return base::Contains(it->second->databases(), name);
 }
 
-bool IndexedDBFactoryImpl::IsBackingStoreOpen(const Origin& origin) const {
+bool IndexedDBFactoryImpl::IsBackingStoreOpen(
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(factories_per_origin_, origin);
+  return base::Contains(factories_per_storage_key_, storage_key);
 }
 
 bool IndexedDBFactoryImpl::IsBackingStorePendingClose(
-    const Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_origin_.find(origin);
-  if (it == factories_per_origin_.end())
+  auto it = factories_per_storage_key_.find(storage_key);
+  if (it == factories_per_storage_key_.end())
     return false;
   return it->second->IsClosing();
 }
@@ -1058,7 +1059,7 @@ bool IndexedDBFactoryImpl::IsBackingStorePendingClose(
 bool IndexedDBFactoryImpl::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  for (const auto& origin_state_pair : factories_per_origin_) {
+  for (const auto& origin_state_pair : factories_per_storage_key_) {
     IndexedDBOriginState* state = origin_state_pair.second.get();
     base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
     for (const auto& db_name_object_pair : state->databases()) {

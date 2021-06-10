@@ -22,8 +22,8 @@
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -39,63 +39,67 @@ class CONTENT_EXPORT IndexedDBFactory {
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
-                               const url::Origin& origin,
+                               const blink::StorageKey& storage_key,
                                const base::FilePath& data_directory) = 0;
   virtual void Open(const std::u16string& name,
                     std::unique_ptr<IndexedDBPendingConnection> connection,
-                    const url::Origin& origin,
+                    const blink::StorageKey& storage_key,
                     const base::FilePath& data_directory) = 0;
 
   virtual void DeleteDatabase(const std::u16string& name,
                               scoped_refptr<IndexedDBCallbacks> callbacks,
-                              const url::Origin& origin,
+                              const blink::StorageKey& storage_key,
                               const base::FilePath& data_directory,
                               bool force_close) = 0;
 
   virtual void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const url::Origin& origin) = 0;
+      const blink::StorageKey& storage_key) = 0;
   virtual void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const url::Origin& origin) = 0;
+      const blink::StorageKey& storage_key) = 0;
 
-  virtual void HandleBackingStoreFailure(const url::Origin& origin) = 0;
+  virtual void HandleBackingStoreFailure(
+      const blink::StorageKey& storage_key) = 0;
   virtual void HandleBackingStoreCorruption(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const IndexedDBDatabaseError& error) = 0;
 
   virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
-      const url::Origin& origin) const = 0;
+      const blink::StorageKey& storage_key) const = 0;
 
   // Close all connections to all databases within the origin. If
   // |delete_in_memory_store| is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
-  virtual void ForceClose(const url::Origin& origin,
+  virtual void ForceClose(const blink::StorageKey& storage_key,
                           bool delete_in_memory_store = false) = 0;
 
-  virtual void ForceSchemaDowngrade(const url::Origin& origin) = 0;
+  virtual void ForceSchemaDowngrade(const blink::StorageKey& storage_key) = 0;
   virtual V2SchemaCorruptionStatus HasV2SchemaCorruption(
-      const url::Origin& origin) = 0;
+      const blink::StorageKey& storage_key) = 0;
 
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   virtual void ContextDestroyed() = 0;
 
   // Called by the IndexedDBActiveBlobRegistry.
-  virtual void ReportOutstandingBlobs(const url::Origin& origin,
+  virtual void ReportOutstandingBlobs(const blink::StorageKey& storage_key,
                                       bool blobs_outstanding) = 0;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
-  virtual void BlobFilesCleaned(const url::Origin& origin) = 0;
+  virtual void BlobFilesCleaned(const blink::StorageKey& storage_key) = 0;
 
-  virtual size_t GetConnectionCount(const url::Origin& origin) const = 0;
+  virtual size_t GetConnectionCount(
+      const blink::StorageKey& storage_key) const = 0;
 
-  virtual int64_t GetInMemoryDBSize(const url::Origin& origin) const = 0;
+  virtual int64_t GetInMemoryDBSize(
+      const blink::StorageKey& storage_key) const = 0;
 
-  virtual base::Time GetLastModified(const url::Origin& origin) const = 0;
+  virtual base::Time GetLastModified(
+      const blink::StorageKey& storage_key) const = 0;
 
   virtual void NotifyIndexedDBContentChanged(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::u16string& database_name,
       const std::u16string& object_store_name) = 0;
 

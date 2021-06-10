@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "url/origin.h"
@@ -1205,7 +1206,8 @@ Status IndexedDBDatabase::PutOperation(
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin()), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
   return s;
 }
@@ -1323,7 +1325,9 @@ Status IndexedDBDatabase::PutAllOperation(
         blink::mojom::IDBTransactionPutAllResult::NewKeys(std::move(keys)));
   }
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin()), metadata_.name,
+      metadata_.object_stores[object_store_id].name);
   return s;
 }
 
@@ -1548,7 +1552,9 @@ Status IndexedDBDatabase::DeleteRangeOperation(
     return s;
   callbacks->OnSuccess();
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin()), metadata_.name,
+      metadata_.object_stores[object_store_id].name);
   return s;
 }
 
@@ -1592,7 +1598,9 @@ Status IndexedDBDatabase::ClearOperation(
   callbacks->OnSuccess();
 
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin()), metadata_.name,
+      metadata_.object_stores[object_store_id].name);
   return s;
 }
 

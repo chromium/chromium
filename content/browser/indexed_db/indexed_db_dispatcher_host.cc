@@ -281,7 +281,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
       std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      std::move(callbacks), origin, indexed_db_path);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      std::move(callbacks), blink::StorageKey(origin), indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::Open(
@@ -314,8 +315,10 @@ void IndexedDBDispatcherHost::Open(
           version, std::move(create_transaction_callback));
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
-  indexed_db_context_->GetIDBFactory()->Open(name, std::move(connection),
-                                             origin, indexed_db_path);
+  indexed_db_context_->GetIDBFactory()->Open(
+      name, std::move(connection),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin), indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
@@ -331,7 +334,9 @@ void IndexedDBDispatcherHost::DeleteDatabase(
       std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(callbacks), origin, indexed_db_path, force_close);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      name, std::move(callbacks), blink::StorageKey(origin), indexed_db_path,
+      force_close);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
@@ -342,7 +347,8 @@ void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallCompactionStatusCallbackOnIDBThread, std::move(mojo_callback));
   indexed_db_context_->GetIDBFactory()->AbortTransactionsAndCompactDatabase(
-      std::move(callback_on_io), origin);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      std::move(callback_on_io), blink::StorageKey(origin));
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
@@ -353,7 +359,8 @@ void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallAbortStatusCallbackOnIDBThread, std::move(mojo_callback));
   indexed_db_context_->GetIDBFactory()->AbortTransactionsForDatabase(
-      std::move(callback_on_io), origin);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      std::move(callback_on_io), blink::StorageKey(origin));
 }
 
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(

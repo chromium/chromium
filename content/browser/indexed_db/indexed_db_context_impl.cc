@@ -278,7 +278,8 @@ void IndexedDBContextImpl::ForceClose(const Origin& origin,
   // Make a copy of origin, as the ref might go away here during the close.
   auto origin_copy = origin;
   indexeddb_factory_->ForceClose(
-      origin_copy,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin_copy),
       reason == storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
   DCHECK_EQ(0UL, GetConnectionCountSync(origin_copy));
   std::move(closure).Run();
@@ -363,7 +364,9 @@ void IndexedDBContextImpl::GetAllOriginsDetails(
       continue;
     }
     std::vector<IndexedDBDatabase*> databases =
-        indexeddb_factory_->GetOpenDatabasesForOrigin(origin);
+        indexeddb_factory_->GetOpenDatabasesForOrigin(
+            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+            blink::StorageKey(origin));
     // TODO(jsbell): Sort by name?
     std::unique_ptr<base::ListValue> database_list(
         std::make_unique<base::ListValue>());
@@ -531,7 +534,8 @@ void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
   }
 
   if (indexeddb_factory_.get()) {
-    indexeddb_factory_->ForceSchemaDowngrade(origin);
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    indexeddb_factory_->ForceSchemaDowngrade(blink::StorageKey(origin));
     std::move(callback).Run(true);
     return;
   }
@@ -555,7 +559,9 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
   if (indexeddb_factory_.get()) {
     std::move(callback).Run(
         static_cast<storage::mojom::V2SchemaCorruptionStatus>(
-            indexeddb_factory_->HasV2SchemaCorruption(origin)));
+            indexeddb_factory_->HasV2SchemaCorruption(
+                // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+                blink::StorageKey(origin))));
     return;
   }
   return std::move(callback).Run(
@@ -570,7 +576,9 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenOriginFactory(origin, data_path(),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
+                                              data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -581,8 +589,8 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
   handle.Release();
-
-  GetIDBFactory()->ForceClose(origin, true);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  GetIDBFactory()->ForceClose(blink::StorageKey(origin), true);
   std::move(callback).Run();
 }
 
@@ -599,7 +607,9 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenOriginFactory(origin, data_path(),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
+                                              data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -630,7 +640,9 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenOriginFactory(origin, data_path(),
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
+                                              data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -647,7 +659,8 @@ void IndexedDBContextImpl::CompactBackingStoreForTesting(
   IndexedDBFactoryImpl* factory = GetIDBFactory();
 
   std::vector<IndexedDBDatabase*> databases =
-      factory->GetOpenDatabasesForOrigin(origin);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      factory->GetOpenDatabasesForOrigin(blink::StorageKey(origin));
 
   if (!databases.empty()) {
     // Compact the first db's backing store since all the db's are in the same
@@ -740,7 +753,8 @@ base::Time IndexedDBContextImpl::GetOriginLastModified(const Origin& origin) {
   if (is_incognito()) {
     if (!indexeddb_factory_)
       return base::Time();
-    return indexeddb_factory_->GetLastModified(origin);
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    return indexeddb_factory_->GetLastModified(blink::StorageKey(origin));
   }
 
   base::FilePath idb_directory = GetLevelDBPath(origin);
@@ -758,8 +772,8 @@ size_t IndexedDBContextImpl::GetConnectionCountSync(const Origin& origin) {
 
   if (!indexeddb_factory_.get())
     return 0;
-
-  return indexeddb_factory_->GetConnectionCount(origin);
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  return indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin));
 }
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
@@ -798,13 +812,15 @@ void IndexedDBContextImpl::ConnectionClosed(const Origin& origin,
   quota_manager_proxy()->NotifyStorageAccessed(
       origin, blink::mojom::StorageType::kTemporary, base::Time::Now());
   if (indexeddb_factory_.get() &&
-      indexeddb_factory_->GetConnectionCount(origin) == 0)
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin)) == 0)
     QueryDiskAndUpdateQuotaUsage(origin);
 }
 
 void IndexedDBContextImpl::TransactionComplete(const Origin& origin) {
   DCHECK(!indexeddb_factory_.get() ||
-         indexeddb_factory_->GetConnectionCount(origin) > 0);
+         // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+         indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin)) > 0);
   QueryDiskAndUpdateQuotaUsage(origin);
 }
 
@@ -860,7 +876,8 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
     if (origins_to_purge_on_shutdown_.find(*origin) ==
         origins_to_purge_on_shutdown_.end())
       continue;
-    factory->ForceClose(*origin, false);
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    factory->ForceClose(blink::StorageKey(*origin), false);
     filesystem_proxy_->DeletePathRecursively(*file_path);
   }
 }
@@ -896,7 +913,8 @@ int64_t IndexedDBContextImpl::ReadUsageFromDisk(const Origin& origin) const {
   if (is_incognito()) {
     if (!indexeddb_factory_)
       return 0;
-    return indexeddb_factory_->GetInMemoryDBSize(origin);
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    return indexeddb_factory_->GetInMemoryDBSize(blink::StorageKey(origin));
   }
 
   int64_t total_size = 0;

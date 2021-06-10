@@ -140,7 +140,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
       TransactionalLevelDBFactory* leveldb_factory,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext*,
@@ -154,11 +154,10 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
-        backing_store_mode, leveldb_factory, blink::StorageKey(origin),
-        blob_path, std::move(db), blob_storage_context_,
-        file_system_access_context_, std::move(filesystem_proxy),
-        std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
-        std::move(idb_task_runner));
+        backing_store_mode, leveldb_factory, storage_key, blob_path,
+        std::move(db), blob_storage_context_, file_system_access_context_,
+        std::move(filesystem_proxy), std::move(blob_files_cleaned),
+        std::move(report_outstanding_blobs), std::move(idb_task_runner));
   }
 
  private:
@@ -329,7 +328,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
   }
 
   void CreateFactoryAndBackingStore() {
-    const Origin origin = Origin::Create(GURL("http://localhost:81"));
+    const blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
     idb_factory_ = std::make_unique<TestIDBFactory>(
         idb_context_.get(), blob_context_.get(),
         file_system_access_context_.get());
@@ -337,7 +337,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
     leveldb::Status s;
     std::tie(origin_state_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
-        idb_factory_->GetOrOpenOriginFactory(origin, idb_context_->data_path(),
+        idb_factory_->GetOrOpenOriginFactory(storage_key,
+                                             idb_context_->data_path(),
                                              /*create_if_missing=*/true);
     if (!origin_state_handle_.IsHeld()) {
       backing_store_ = nullptr;
@@ -375,12 +376,12 @@ class IndexedDBBackingStoreTest : public testing::Test {
       // Loop through all open origins, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
-      auto open_factory_origins = factory->GetOpenOrigins();
+      auto open_factory_storage_keys = factory->GetOpenOrigins();
 
-      for (auto origin : open_factory_origins) {
+      for (const auto& storage_key : open_factory_storage_keys) {
         base::RunLoop loop;
         IndexedDBOriginState* per_origin_factory =
-            factory->GetOriginFactory(origin);
+            factory->GetOriginFactory(storage_key);
 
         auto* leveldb_state =
             per_origin_factory->backing_store()->db()->leveldb_state();
@@ -395,7 +396,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::SequencedTaskRunnerHandle::Get());
 
         idb_context_->ForceCloseSync(
-            origin,
+            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+            storage_key.origin(),
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
         loop.Run();
         // There is a possible race in |leveldb_close_event| where the signaling

@@ -118,10 +118,10 @@ class IndexedDBTest : public testing::Test {
       // Loop through all open origins, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
-      auto open_factory_origins = factory->GetOpenOrigins();
-      for (auto origin : open_factory_origins) {
+      auto open_factory_storage_keys = factory->GetOpenOrigins();
+      for (const auto& storage_key : open_factory_storage_keys) {
         context_->ForceCloseSync(
-            origin,
+            storage_key.origin(),
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
@@ -256,7 +256,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     open_callbacks, open_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback1)),
-                kTestStorageKey.origin(), context()->data_path());
+                kTestStorageKey, context()->data_path());
   EXPECT_TRUE(base::DirectoryExists(test_path));
 
   auto create_transaction_callback2 =
@@ -265,7 +265,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     closed_callbacks, closed_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback2)),
-                kTestStorageKey.origin(), context()->data_path());
+                kTestStorageKey, context()->data_path());
   RunPostedTasks();
   ASSERT_TRUE(closed_callbacks->connection());
   closed_callbacks->connection()->AbortTransactionsAndClose(
@@ -312,7 +312,8 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
 }
 
 TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
-  const Origin kTestOrigin = Origin::Create(GURL("http://test/"));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("http://test/");
 
   auto* factory =
       static_cast<IndexedDBFactoryImpl*>(context()->GetIDBFactory());
@@ -327,23 +328,24 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
-  factory->Open(u"db", std::move(connection), Origin(kTestOrigin),
+  factory->Open(u"db", std::move(connection), kTestStorageKey,
                 context()->data_path());
   RunPostedTasks();
 
   ASSERT_TRUE(callbacks->connection());
 
   // ConnectionOpened() is usually called by the dispatcher.
-  context()->ConnectionOpened(kTestOrigin, callbacks->connection());
+  context()->ConnectionOpened(kTestStorageKey.origin(),
+                              callbacks->connection());
 
-  EXPECT_TRUE(factory->IsBackingStoreOpen(kTestOrigin));
+  EXPECT_TRUE(factory->IsBackingStoreOpen(kTestStorageKey));
 
   // Simulate the write failure.
   leveldb::Status status = leveldb::Status::IOError("Simulated failure");
-  factory->HandleBackingStoreFailure(kTestOrigin);
+  factory->HandleBackingStoreFailure(kTestStorageKey);
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_FALSE(factory->IsBackingStoreOpen(kTestOrigin));
+  EXPECT_FALSE(factory->IsBackingStoreOpen(kTestStorageKey));
 }
 
 TEST(ScopesLockManager, TestRangeDifferences) {

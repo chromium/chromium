@@ -69,8 +69,7 @@ DatabaseImpl::~DatabaseImpl() {
                                         connection_.get());
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        storage_key_.origin(), status, "Error during rollbacks.");
+        storage_key_, status, "Error during rollbacks.");
   }
 }
 
@@ -145,8 +144,7 @@ void DatabaseImpl::Close() {
 
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        storage_key_.origin(), status, "Error during rollbacks.");
+        storage_key_, status, "Error during rollbacks.");
   }
 }
 

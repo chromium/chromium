@@ -15,7 +15,7 @@ MockIndexedDBFactory::~MockIndexedDBFactory() {
 }
 
 std::vector<IndexedDBDatabase*> MockIndexedDBFactory::GetOpenDatabasesForOrigin(
-    const url::Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   return std::vector<IndexedDBDatabase*>();
 }
 
