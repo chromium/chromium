@@ -15,6 +15,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -149,7 +150,6 @@ void AvatarToolbarButton::UpdateText() {
       text = delegate_->GetShortProfileName();
       break;
     }
-    case State::kPasswordsOnlySyncError:
     case State::kSyncError:
       color = AdjustHighlightColorForContrast(
           GetThemeProvider(), gfx::kGoogleRed300, gfx::kGoogleRed600,
@@ -283,21 +283,19 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
     case State::kAnimatedUserIdentity:
       return delegate_->GetShortProfileName();
-    case State::kPasswordsOnlySyncError:
-      // TODO(crbug.com/1191411): Instead of having separate tooltip strings for
-      // kPasswordsOnlySyncError and kSyncError, just reuse the one describing
-      // the error in the menu (ProfileMenuView). This guarantees the tooltip is
-      // accurate. Today the degraded recoverability tooltip is incorrect
-      // because it says "Sync isn't working".
-      return l10n_util::GetStringFUTF16(
-          IDS_AVATAR_BUTTON_SYNC_ERROR_PASSWORDS_TOOLTIP,
-          delegate_->GetProfileName());
+    // kSyncPaused is just a type of sync error with different color, but should
+    // still use sync_ui_util::GetAvatarSyncErrorDescription() as tooltip.
     case State::kSyncError:
-      return l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP,
-                                        delegate_->GetProfileName());
-    case State::kSyncPaused:
-      return l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED_TOOLTIP,
-                                        delegate_->GetProfileName());
+    case State::kSyncPaused: {
+      absl::optional<sync_ui_util::AvatarSyncErrorType> error =
+          delegate_->GetAvatarSyncErrorType();
+      DCHECK(error);
+      return l10n_util::GetStringFUTF16(
+          IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP,
+          delegate_->GetShortProfileName(),
+          sync_ui_util::GetAvatarSyncErrorDescription(
+              *error, delegate_->IsSyncFeatureEnabled()));
+    }
     case State::kNormal:
       return delegate_->GetProfileName();
   }
@@ -320,7 +318,6 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
     case State::kAnimatedUserIdentity:
-    case State::kPasswordsOnlySyncError:
     case State::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
     // be different.

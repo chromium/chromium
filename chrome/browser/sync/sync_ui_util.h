@@ -113,6 +113,13 @@ MessageType GetStatus(Profile* profile);
 // an encrypted data type on transport mode and must first go through a reauth.
 absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 
+// When |error| is present, this returns the string to be shown both as the
+// tooltip of the avatar button, and in the profile menu body (the menu opened
+// by clicking the avatar button).
+std::u16string GetAvatarSyncErrorDescription(
+    sync_ui_util::AvatarSyncErrorType error,
+    bool is_sync_feature_enabled);
+
 // Whether sync is currently blocked from starting because the sync
 // confirmation dialog hasn't been shown. Note that once the dialog is
 // showing (i.e. IsSetupInProgress() is true), this will return false.

@@ -104,35 +104,6 @@ std::u16string GetSyncErrorButtonText(sync_ui_util::AvatarSyncErrorType error) {
   }
 }
 
-std::u16string GetAvatarSyncErrorDescription(
-    sync_ui_util::AvatarSyncErrorType error,
-    bool is_sync_feature_enabled) {
-  switch (error) {
-    case sync_ui_util::AUTH_ERROR:
-      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
-      return l10n_util::GetStringUTF16(
-          is_sync_feature_enabled
-              ? IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE
-              : IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY);
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE);
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE);
-    case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
-    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
-    case sync_ui_util::UNRECOVERABLE_ERROR:
-    case sync_ui_util::UPGRADE_CLIENT_ERROR:
-    case sync_ui_util::PASSPHRASE_ERROR:
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
-  }
-}
-
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   // Create a URL so that the account chooser is shown if the account with
   // |email| is not signed into the web. Include a UTM parameter to signal the
@@ -546,7 +517,8 @@ void ProfileMenuView::BuildSyncInfo() {
       sync_ui_util::GetAvatarSyncErrorType(profile);
   if (error) {
     BuildSyncInfoWithCallToAction(
-        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
+        sync_ui_util::GetAvatarSyncErrorDescription(*error,
+                                                    is_sync_feature_enabled),
         GetSyncErrorButtonText(*error),
         error == sync_ui_util::AUTH_ERROR
             ? ui::NativeTheme::kColorId_SyncInfoContainerPaused

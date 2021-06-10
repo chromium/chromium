@@ -45,6 +45,11 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   AvatarToolbarButton::State GetState() const;
 
+  absl::optional<sync_ui_util::AvatarSyncErrorType> GetAvatarSyncErrorType()
+      const;
+
+  bool IsSyncFeatureEnabled() const;
+
   void ShowHighlightAnimation();
   bool IsHighlightAnimationVisible() const;
 

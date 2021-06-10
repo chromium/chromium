@@ -174,20 +174,28 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
 
   // Show any existing sync errors (sync-the-feature or sync-the-transport).
-  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
-      sync_ui_util::GetAvatarSyncErrorType(profile_);
-  if (!error)
+  // |last_avatar_error_| should be checked here rather than
+  // sync_ui_util::GetAvatarSyncErrorType(), so the result agrees with
+  // AvatarToolbarButtonDelegate::GetAvatarSyncErrorType().
+  if (!last_avatar_error_)
     return AvatarToolbarButton::State::kNormal;
 
-  if (error == sync_ui_util::AUTH_ERROR &&
+  if (last_avatar_error_ == sync_ui_util::AUTH_ERROR &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     return AvatarToolbarButton::State::kSyncPaused;
   }
 
-  if (error == sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR)
-    return AvatarToolbarButton::State::kPasswordsOnlySyncError;
-
   return AvatarToolbarButton::State::kSyncError;
+}
+
+absl::optional<sync_ui_util::AvatarSyncErrorType>
+AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
+  return last_avatar_error_;
+}
+
+bool AvatarToolbarButtonDelegate::IsSyncFeatureEnabled() const {
+  return IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+      signin::ConsentLevel::kSync);
 }
 
 void AvatarToolbarButtonDelegate::ShowHighlightAnimation() {

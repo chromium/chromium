@@ -31,9 +31,6 @@ class AvatarToolbarButton : public ToolbarButton,
     kSyncPaused,
     // An error in sync-the-feature or sync-the-transport.
     kSyncError,
-    // An error in sync-the-feature or sync-the-transport that only affects
-    // passwords.
-    kPasswordsOnlySyncError,
     kNormal
   };
 
