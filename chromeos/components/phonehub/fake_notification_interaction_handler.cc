@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/phonehub/fake_notification_interaction_handler.h"
+#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -14,7 +15,8 @@ FakeNotificationInteractionHandler::~FakeNotificationInteractionHandler() =
     default;
 
 void FakeNotificationInteractionHandler::HandleNotificationClicked(
-    int64_t notification_id) {
+    int64_t notification_id,
+    const Notification::AppMetadata& app_metadata) {
   handled_notification_count_++;
 }
 

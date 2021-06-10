@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/notification_interaction_handler_impl.h"
 #include "base/logging.h"
+#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -14,8 +15,9 @@ NotificationInteractionHandlerImpl::~NotificationInteractionHandlerImpl() =
     default;
 
 void NotificationInteractionHandlerImpl::HandleNotificationClicked(
-    int64_t notification_id) {
-  NotifyNotificationClicked(notification_id);
+    int64_t notification_id,
+    const Notification::AppMetadata& app_metadata) {
+  NotifyNotificationClicked(notification_id, app_metadata);
 }
 
 }  // namespace phonehub

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "chromeos/components/eche_app_ui/feature_status_provider.h"
+#include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_click_handler.h"
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
 
@@ -36,7 +37,9 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
       delete;
 
   // phonehub::NotificationClickHandler
-  void HandleNotificationClick(int64_t notification_id) override;
+  void HandleNotificationClick(
+      int64_t notification_id,
+      const phonehub::Notification::AppMetadata& app_metadata) override;
 
  private:
   // FeatureStatusProvider::Observer:

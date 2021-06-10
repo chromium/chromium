@@ -179,7 +179,9 @@ class PhoneHubNotificationController::NotificationDelegate
       if (button_index.value() == kReplyButtonIndex && reply.has_value())
         controller_->SendInlineReply(phone_hub_id_, reply.value());
     } else {
-      controller_->HandleNotificationBodyClick(phone_hub_id_);
+      controller_->HandleNotificationBodyClick(
+          phone_hub_id_, controller_->manager_->GetNotification(phone_hub_id_)
+                             ->app_metadata());
     }
   }
 
@@ -376,7 +378,8 @@ void PhoneHubNotificationController::DismissNotification(
 }
 
 void PhoneHubNotificationController::HandleNotificationBodyClick(
-    int64_t notification_id) {
+    int64_t notification_id,
+    const chromeos::phonehub::Notification::AppMetadata& app_metadata) {
   CHECK(manager_);
   if (!notification_interaction_handler_)
     return;
@@ -387,7 +390,7 @@ void PhoneHubNotificationController::HandleNotificationBodyClick(
   if (notification->interaction_behavior() ==
       chromeos::phonehub::Notification::InteractionBehavior::kOpenable) {
     notification_interaction_handler_->HandleNotificationClicked(
-        notification_id);
+        notification_id, app_metadata);
   }
 }
 

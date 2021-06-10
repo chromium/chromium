@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
+#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -21,9 +22,10 @@ void NotificationInteractionHandler::RemoveNotificationClickHandler(
 }
 
 void NotificationInteractionHandler::NotifyNotificationClicked(
-    int64_t notification_id) {
+    int64_t notification_id,
+    const Notification::AppMetadata& app_metadata) {
   for (auto& handler : handler_list_)
-    handler.HandleNotificationClick(notification_id);
+    handler.HandleNotificationClick(notification_id, app_metadata);
 }
 
 }  // namespace phonehub

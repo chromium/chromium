@@ -74,7 +74,9 @@ class ASH_EXPORT PhoneHubNotificationController
   // Callbacks for user interactions.
   void OpenSettings();
   void DismissNotification(int64_t notification_id);
-  void HandleNotificationBodyClick(int64_t notification_id);
+  void HandleNotificationBodyClick(
+      int64_t notification_id,
+      const chromeos::phonehub::Notification::AppMetadata& app_metadata);
   void SendInlineReply(int64_t notification_id,
                        const std::u16string& inline_reply_text);
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_click_handler.h"
 
 namespace chromeos {
@@ -19,7 +20,9 @@ class NotificationInteractionHandler {
   virtual ~NotificationInteractionHandler();
 
   // Called by PhoneHubNotificationController to notify the click event.
-  virtual void HandleNotificationClicked(int64_t notification_id) = 0;
+  virtual void HandleNotificationClicked(
+      int64_t notification_id,
+      const Notification::AppMetadata& app_metadata) = 0;
 
   virtual void AddNotificationClickHandler(NotificationClickHandler* handler);
   virtual void RemoveNotificationClickHandler(
@@ -27,7 +30,8 @@ class NotificationInteractionHandler {
 
  protected:
   NotificationInteractionHandler();
-  void NotifyNotificationClicked(int64_t notification_id);
+  void NotifyNotificationClicked(int64_t notification_id,
+                                 const Notification::AppMetadata& app_metadata);
 
  private:
   base::ObserverList<NotificationClickHandler> handler_list_;

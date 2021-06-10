@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_INTERACTION_HANDLER_IMPL_H_
 
 #include <stdint.h>
+#include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
 
 namespace chromeos {
@@ -18,7 +19,9 @@ class NotificationInteractionHandlerImpl
   ~NotificationInteractionHandlerImpl() override;
 
  private:
-  void HandleNotificationClicked(int64_t notification_id) override;
+  void HandleNotificationClicked(
+      int64_t notification_id,
+      const Notification::AppMetadata& app_metadata) override;
 };
 
 }  // namespace phonehub
