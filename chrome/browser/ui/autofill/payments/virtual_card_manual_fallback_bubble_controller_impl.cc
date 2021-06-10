@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -122,6 +124,11 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
+}
+
+void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
+    const std::u16string& text) const {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }
 
 VirtualCardManualFallbackBubbleControllerImpl::

@@ -51,6 +51,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void UpdateClipboard(const std::u16string& text) const override;
 
  protected:
   explicit VirtualCardManualFallbackBubbleControllerImpl(

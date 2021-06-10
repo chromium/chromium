@@ -71,6 +71,9 @@ class VirtualCardManualFallbackBubbleController {
   // Handles the event of bubble closure. |closed_reason| is the detailed reason
   // why the bubble was closed.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+
+  // Updates the system clipboard with the |text|.
+  virtual void UpdateClipboard(const std::u16string& text) const = 0;
 };
 
 }  // namespace autofill

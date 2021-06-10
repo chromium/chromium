@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 
+#include "base/bind.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -28,17 +29,6 @@ std::unique_ptr<views::Label> CreateRowItemLabel(std::u16string text) {
   label->SetMultiLine(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
-}
-
-std::unique_ptr<views::MdTextButton> CreateRowItemButton(std::u16string text) {
-  auto button = std::make_unique<views::MdTextButton>();
-  button->SetText(text);
-  button->SetCornerRadius(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMaximum, button->GetPreferredSize()));
-  button->SetEnabledTextColors(
-      views::style::GetColor(*button.get(), views::style::CONTEXT_BUTTON_MD,
-                             views::style::STYLE_SECONDARY));
-  return button;
 }
 
 }  // namespace
@@ -159,6 +149,22 @@ void VirtualCardManualFallbackBubbleViews::OnWidgetClosing(
             views::Widget::ClosedReason::kCancelButtonClicked);
   closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
       widget->closed_reason());
+}
+
+std::unique_ptr<views::MdTextButton>
+VirtualCardManualFallbackBubbleViews::CreateRowItemButton(
+    const std::u16string& text) {
+  auto button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(
+          [](std::u16string text,
+             VirtualCardManualFallbackBubbleViews* bubble) {
+            bubble->controller_->UpdateClipboard(text);
+          },
+          text, base::Unretained(this)),
+      text, views::style::CONTEXT_BUTTON);
+  button->SetCornerRadius(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, button->GetPreferredSize()));
+  return button;
 }
 
 }  // namespace autofill
