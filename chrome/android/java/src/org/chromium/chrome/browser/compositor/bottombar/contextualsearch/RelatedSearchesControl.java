@@ -179,6 +179,7 @@ public class RelatedSearchesControl {
      */
     void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches) {
         mRelatedSearchesSuggestions = relatedSearches;
+        mChips = null;
         show();
         calculateHeight();
         assert mChipsSelected == 0;
@@ -411,8 +412,8 @@ public class RelatedSearchesControl {
 
         @Override
         public List<Chip> getChips() {
-            mChips = new ArrayList<>();
-            if (hasReleatedSearchesToShow()) {
+            if (mChips == null) mChips = new ArrayList<>();
+            if (mChips.size() == 0 && hasReleatedSearchesToShow()) {
                 for (String suggestion : mRelatedSearchesSuggestions) {
                     final int index = mChips.size();
                     Chip chip = new Chip(index, suggestion, ChipView.INVALID_ICON_ID,
@@ -422,7 +423,6 @@ public class RelatedSearchesControl {
                 }
                 mDidShowAnySuggestions = true;
             }
-
             return mChips;
         }
 
@@ -431,8 +431,7 @@ public class RelatedSearchesControl {
             if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;
             mSelectedChip = tappedChipIndex;
             mChips.get(tappedChipIndex).selected = true;
-            // TODO(donnd): force the check icon to be shown and removed from these chips.
-            // See https://crbug.com/1184308 for details.
+            for (Observer observer : mObservers) observer.onChipsChanged();
         }
 
         @VisibleForTesting

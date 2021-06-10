@@ -59,7 +59,7 @@ public class ChipsViewHolder extends ViewHolder {
             primaryTextView.setText("");
         }
         // Set the icon if it's been provided - if selected we use the "check" icon.
-        if (chip.icon != Chip.INVALID_ICON_ID || chip.selected) {
+        if (chip.icon != Chip.INVALID_ICON_ID) {
             getChipView().setIcon(
                     chip.selected ? R.drawable.ic_check_googblue_24dp : chip.icon, true);
         } else {
