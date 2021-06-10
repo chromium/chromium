@@ -40,7 +40,7 @@ const IDLE_TIMEOUT_MS = 8000;
  * occurred. This is a short timeout used when no click-target is present.
  * @type {number}
  */
-const ERROR_TIMEOUT_SHORT_MS = 3000;
+const ERROR_TIMEOUT_SHORT_MS = 9000;
 
 /**
  * Time in milliseconds to wait before closing the UI after an error has
@@ -48,7 +48,7 @@ const ERROR_TIMEOUT_SHORT_MS = 3000;
  * present.
  * @type {number}
  */
-const ERROR_TIMEOUT_LONG_MS = 8000;
+const ERROR_TIMEOUT_LONG_MS = 24000;
 
 /**
  * The minimum transition time for the volume rings.
