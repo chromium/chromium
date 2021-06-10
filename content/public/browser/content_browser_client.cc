@@ -981,7 +981,7 @@ std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
 
 bool ContentBrowserClient::HandleExternalProtocol(
     const GURL& url,
-    WebContents::OnceGetter web_contents_getter,
+    WebContents::Getter web_contents_getter,
     int child_id,
     int frame_tree_node_id,
     NavigationUIData* navigation_data,

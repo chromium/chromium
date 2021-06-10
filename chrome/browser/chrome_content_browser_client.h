@@ -588,7 +588,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       LoginAuthRequiredCallback auth_required_callback) override;
   bool HandleExternalProtocol(
       const GURL& url,
-      content::WebContents::OnceGetter web_contents_getter,
+      content::WebContents::Getter web_contents_getter,
       int child_id,
       int frame_tree_node_id,
       content::NavigationUIData* navigation_data,

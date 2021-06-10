@@ -105,8 +105,7 @@ class ExternalProtocolHandler {
   // application is launched.
   // Must run on the UI thread.
   static void LaunchUrl(const GURL& url,
-                        int render_process_host_id,
-                        int render_view_routing_id,
+                        content::WebContents::Getter web_contents_getter,
                         ui::PageTransition page_transition,
                         bool has_user_gesture,
                         const absl::optional<url::Origin>& initiating_origin);

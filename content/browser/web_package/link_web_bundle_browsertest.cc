@@ -42,7 +42,7 @@ class TestBrowserClient : public ContentBrowserClient {
   ~TestBrowserClient() override = default;
   bool HandleExternalProtocol(
       const GURL& url,
-      base::OnceCallback<WebContents*()> web_contents_getter,
+      base::RepeatingCallback<WebContents*()> web_contents_getter,
       int child_id,
       int frame_tree_node_id,
       NavigationUIData* navigation_data,

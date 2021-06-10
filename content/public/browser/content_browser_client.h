@@ -1752,7 +1752,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // decisions about whether to allow an external application to launch.
   virtual bool HandleExternalProtocol(
       const GURL& url,
-      base::OnceCallback<WebContents*()> web_contents_getter,
+      base::RepeatingCallback<WebContents*()> web_contents_getter,
       int child_id,
       int frame_tree_node_id,
       NavigationUIData* navigation_data,
