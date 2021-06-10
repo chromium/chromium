@@ -176,7 +176,7 @@ class ManifestHandlerRegistry {
   // Any new manifest handlers added may cause the small_map to overflow
   // to the backup std::unordered_map, which we don't want, as that would
   // defeat the optimization of using small_map.
-  static constexpr size_t kHandlerMax = 78;
+  static constexpr size_t kHandlerMax = 90;
   using FallbackMap = std::unordered_map<std::string, ManifestHandler*>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = std::unordered_map<ManifestHandler*, int>;

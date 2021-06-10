@@ -2590,6 +2590,7 @@ if (!is_android) {
         "../browser/extensions/content_verifier_test_utils.cc",
         "../browser/extensions/content_verifier_test_utils.h",
         "../browser/extensions/corb_and_cors_extension_browsertest.cc",
+        "../browser/extensions/cross_origin_isolation_browsertest.cc",
         "../browser/extensions/cross_origin_xhr_apitest.cc",
         "../browser/extensions/crx_installer_browsertest.cc",
         "../browser/extensions/error_console/error_console_browsertest.cc",

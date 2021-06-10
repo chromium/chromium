@@ -18,6 +18,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/manifest_handlers/extension_action_handler.h"
@@ -60,6 +61,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<BluetoothManifestHandler>());
   registry->RegisterHandler(std::make_unique<ContentCapabilitiesHandler>());
   registry->RegisterHandler(std::make_unique<ContentScriptsHandler>());
+  registry->RegisterHandler(std::make_unique<CrossOriginIsolationHandler>());
   registry->RegisterHandler(std::make_unique<CSPHandler>());
   registry->RegisterHandler(
       std::make_unique<declarative_net_request::DNRManifestHandler>());

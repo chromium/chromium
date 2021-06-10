@@ -72,6 +72,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -368,9 +369,11 @@ bool GetDirectoryForExtensionURL(const GURL& url,
 }
 
 void GetSecurityPolicyForURL(const network::ResourceRequest& request,
-                             const Extension* extension,
+                             const Extension& extension,
                              bool is_web_view_request,
                              std::string* content_security_policy,
+                             const std::string** cross_origin_embedder_policy,
+                             const std::string** cross_origin_opener_policy,
                              bool* send_cors_header,
                              bool* follow_symlinks_anywhere) {
   std::string resource_path = request.url.path();
@@ -378,17 +381,21 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
   // Use default CSP for <webview>.
   if (!is_web_view_request) {
     *content_security_policy =
-        extensions::CSPInfo::GetResourceContentSecurityPolicy(extension,
-                                                              resource_path);
+        CSPInfo::GetResourceContentSecurityPolicy(&extension, resource_path);
   }
 
-  if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          extension, resource_path, request.request_initiator)) {
+  *cross_origin_embedder_policy =
+      CrossOriginIsolationHeader::GetCrossOriginEmbedderPolicy(extension);
+  *cross_origin_opener_policy =
+      CrossOriginIsolationHeader::GetCrossOriginOpenerPolicy(extension);
+
+  if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
+          &extension, resource_path, request.request_initiator)) {
     *send_cors_header = true;
   }
 
   *follow_symlinks_anywhere =
-      (extension->creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) != 0;
+      (extension.creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) != 0;
 }
 
 bool IsBackgroundPageURL(const GURL& url) {
@@ -399,6 +406,8 @@ bool IsBackgroundPageURL(const GURL& url) {
 
 scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
     const std::string& content_security_policy,
+    const std::string* cross_origin_embedder_policy,
+    const std::string* cross_origin_opener_policy,
     bool send_cors_header,
     bool include_allow_service_worker_header) {
   std::string raw_headers;
@@ -407,6 +416,18 @@ scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
     raw_headers.append(1, '\0');
     raw_headers.append("Content-Security-Policy: ");
     raw_headers.append(content_security_policy);
+  }
+
+  if (cross_origin_embedder_policy) {
+    raw_headers.append(1, '\0');
+    raw_headers.append("Cross-Origin-Embedder-Policy: ");
+    raw_headers.append(*cross_origin_embedder_policy);
+  }
+
+  if (cross_origin_opener_policy) {
+    raw_headers.append(1, '\0');
+    raw_headers.append("Cross-Origin-Opener-Policy: ");
+    raw_headers.append(*cross_origin_opener_policy);
   }
 
   if (send_cors_header) {
@@ -630,16 +651,18 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<const Extension> extension,
       base::FilePath directory_path) {
-    // Set up content security policy.
     std::string content_security_policy;
+    const std::string* cross_origin_embedder_policy = nullptr;
+    const std::string* cross_origin_opener_policy = nullptr;
     bool send_cors_header = false;
     bool follow_symlinks_anywhere = false;
     bool include_allow_service_worker_header = false;
 
     if (extension) {
-      GetSecurityPolicyForURL(request, extension.get(), is_web_view_request_,
-                              &content_security_policy, &send_cors_header,
-                              &follow_symlinks_anywhere);
+      GetSecurityPolicyForURL(
+          request, *extension, is_web_view_request_, &content_security_policy,
+          &cross_origin_embedder_policy, &cross_origin_opener_policy,
+          &send_cors_header, &follow_symlinks_anywhere);
       if (BackgroundInfo::IsServiceWorkerBased(extension.get())) {
         include_allow_service_worker_header =
             request.destination ==
@@ -670,9 +693,10 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
       // Leave cache headers out of generated background page jobs.
       auto head = network::mojom::URLResponseHead::New();
-      head->headers = BuildHttpHeaders(content_security_policy,
-                                       false /* send_cors_headers */,
-                                       include_allow_service_worker_header);
+      head->headers = BuildHttpHeaders(
+          content_security_policy, cross_origin_embedder_policy,
+          cross_origin_opener_policy, false /* send_cors_headers */,
+          include_allow_service_worker_header);
       std::string contents;
       GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                      &head->charset, &contents);
@@ -702,6 +726,10 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       return;
     }
 
+    auto headers =
+        BuildHttpHeaders(content_security_policy, cross_origin_embedder_policy,
+                         cross_origin_opener_policy, send_cors_header,
+                         include_allow_service_worker_header);
     // Component extension resources may be part of the embedder's resource
     // files, for example component_extension_resources.pak in Chrome.
     int resource_id = 0;
@@ -711,9 +739,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     if (!bundle_resource_path.empty()) {
       ExtensionsBrowserClient::Get()->LoadResourceFromResourceBundle(
           request, std::move(loader), bundle_resource_path, resource_id,
-          BuildHttpHeaders(content_security_policy, send_cors_header,
-                           include_allow_service_worker_header),
-          std::move(client));
+          std::move(headers), std::move(client));
       return;
     }
 
@@ -778,8 +804,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
             &OnFilePathAndLastModifiedTimeRead, base::Owned(read_file_path),
             base::Owned(last_modified_time), request, std::move(loader),
             std::move(client), std::move(content_verifier), resource,
-            BuildHttpHeaders(content_security_policy, send_cors_header,
-                             include_allow_service_worker_header)));
+            std::move(headers)));
   }
 
   static void OnFilePathAndLastModifiedTimeRead(

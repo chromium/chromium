@@ -60,6 +60,7 @@ extensions_api_schema_files_ = [
 
 extensions_manifest_only_schema_files_ = [
   "content_scripts.idl",
+  "cross_origin_isolation.idl",
   "extensions_manifest_types.json",
   "incognito.json",
   "requirements.json",

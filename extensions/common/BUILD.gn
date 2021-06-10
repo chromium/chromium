@@ -292,6 +292,8 @@ if (enable_extensions) {
       "manifest_handlers/content_capabilities_handler.h",
       "manifest_handlers/content_scripts_handler.cc",
       "manifest_handlers/content_scripts_handler.h",
+      "manifest_handlers/cross_origin_isolation_info.cc",
+      "manifest_handlers/cross_origin_isolation_info.h",
       "manifest_handlers/csp_info.cc",
       "manifest_handlers/csp_info.h",
       "manifest_handlers/default_locale_handler.cc",

@@ -119,6 +119,16 @@
       "extension", "legacy_packaged_app", "login_screen_extension"
     ]
   },
+  "cross_origin_embedder_policy": {
+    // TODO(crbug.com/1199491): Enable on stable.
+    "channel": "trunk",
+    "extension_types": ["extension"]
+  },
+  "cross_origin_opener_policy": {
+    // TODO(crbug.com/1199491): Enable on stable.
+    "channel": "trunk",
+    "extension_types": ["extension"]
+  },
   "current_locale": {
     "channel": "stable",
     "extension_types": "all"
