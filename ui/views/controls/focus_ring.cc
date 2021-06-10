@@ -15,6 +15,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/style/platform_style.h"
@@ -78,6 +80,7 @@ FocusRing::~FocusRing() = default;
 void FocusRing::SetPathGenerator(
     std::unique_ptr<HighlightPathGenerator> generator) {
   path_generator_ = std::move(generator);
+  InvalidateLayout();
   SchedulePaint();
 }
 
@@ -105,6 +108,16 @@ void FocusRing::Layout() {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
   gfx::Rect focus_bounds = parent()->GetLocalBounds();
+
+  // Make sure the focus-ring path fits.
+  // TODO(pbos): Chase down use cases where this path is not in a usable state
+  // by the time layout happens. This may be due to synchronous Layout() calls.
+  const SkPath path = GetPath();
+  if (IsPathUsable(path)) {
+    focus_bounds.Union(
+        gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds())));
+  }
+
   focus_bounds.Inset(gfx::Insets(PlatformStyle::kFocusHaloInset));
   SetBoundsRect(focus_bounds);
 
@@ -147,14 +160,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   paint.setStyle(cc::PaintFlags::kStroke_Style);
   paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
 
-  SkPath path;
-  if (path_generator_)
-    path = path_generator_->GetHighlightPath(parent());
-
-  // If there's no path generator or the generated path is unusable, fall back
-  // to the default.
-  if (!IsPathUsable(path))
-    path = GetHighlightPathInternal(parent());
+  const SkPath path = GetPath();
 
   DCHECK(IsPathUsable(path));
   DCHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
@@ -200,6 +206,19 @@ void FocusRing::OnViewBlurred(View* view) {
 FocusRing::FocusRing() {
   // Don't allow the view to process events.
   SetCanProcessEventsWithinSubtree(false);
+}
+
+SkPath FocusRing::GetPath() const {
+  SkPath path;
+  if (path_generator_) {
+    path = path_generator_->GetHighlightPath(parent());
+    if (IsPathUsable(path))
+      return path;
+  }
+
+  // If there's no path generator or the generated path is unusable, fall back
+  // to the default.
+  return GetHighlightPathInternal(parent());
 }
 
 void FocusRing::RefreshLayer() {
