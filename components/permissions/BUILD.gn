@@ -19,6 +19,8 @@ source_set("permissions") {
   sources = [
     "chooser_controller.cc",
     "chooser_controller.h",
+    "contexts/accessibility_permission_context.cc",
+    "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
     "contexts/bluetooth_chooser_context.h",
     "contexts/clipboard_read_write_permission_context.cc",

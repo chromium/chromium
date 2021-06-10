@@ -132,8 +132,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service.h",
     "accessibility/accessibility_labels_service_factory.cc",
     "accessibility/accessibility_labels_service_factory.h",
-    "accessibility/accessibility_permission_context.cc",
-    "accessibility/accessibility_permission_context.h",
     "accessibility/accessibility_state_utils.cc",
     "accessibility/accessibility_state_utils.h",
     "accessibility/accessibility_ui.cc",
