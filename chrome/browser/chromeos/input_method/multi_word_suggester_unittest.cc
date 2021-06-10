@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/input_method/fake_suggestion_handler.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -311,6 +312,31 @@ TEST(MultiWordSuggesterTest,
 
   EXPECT_EQ(suggester.GetProposeActionType(),
             AssistiveType::kMultiWordPrediction);
+}
+
+TEST(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.TimeToAccept.MultiWord", 0);
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"how", 3, 3);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::TAB);
+
+  EXPECT_TRUE(suggestion_handler.GetAcceptedSuggestion());
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.TimeToAccept.MultiWord", 1);
 }
 
 }  // namespace chromeos

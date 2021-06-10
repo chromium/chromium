@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
@@ -22,6 +23,7 @@ struct LastKnownSuggestionState {
   size_t start_pos;
   std::u16string text;
   ime::TextSuggestionMode suggestion_mode;
+  base::TimeTicks time_shown_to_user;
 };
 
 // Integrates multi word suggestions produced by the system with the assistive

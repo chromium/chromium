@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/multi_word_suggester.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
@@ -44,6 +45,11 @@ std::u16string ExtractFinalWord(const std::u16string& text) {
   size_t offset =
       last_space_index == std::u16string::npos ? 0 : last_space_index + 1;
   return text.substr(offset);
+}
+
+void RecordTimeToAccept(base::TimeDelta delta) {
+  base::UmaHistogramTimes("InputMethod.Assistive.TimeToAccept.MultiWord",
+                          delta);
 }
 
 }  // namespace
@@ -102,7 +108,8 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
     suggestion_state_ =
         LastKnownSuggestionState{.start_pos = start_pos,
                                  .text = suggestion_text,
-                                 .suggestion_mode = suggestion.mode};
+                                 .suggestion_mode = suggestion.mode,
+                                 .time_shown_to_user = base::TimeTicks::Now()};
   }
 }
 
@@ -150,6 +157,11 @@ bool MultiWordSuggester::AcceptSuggestion(size_t index) {
   if (!error.empty()) {
     LOG(ERROR) << "suggest: failed to accept suggestion - " << error;
     return false;
+  }
+
+  if (suggestion_state_) {
+    RecordTimeToAccept(base::TimeTicks::Now() -
+                       suggestion_state_->time_shown_to_user);
   }
 
   ResetSuggestionState();
