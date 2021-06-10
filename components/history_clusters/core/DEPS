@@ -2,6 +2,7 @@ include_rules = [
   "+components/history/core",
   "+components/keyed_service/core",
   "+components/query_parser",
+  "+net",
   "+services/network/public/cpp",
   "+services/network/test",
 ]

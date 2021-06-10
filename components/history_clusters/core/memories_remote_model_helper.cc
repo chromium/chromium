@@ -11,10 +11,12 @@
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/proto/clusters.pb.h"
+#include "net/base/net_errors.h"
 
 namespace history_clusters {
 
@@ -182,6 +184,16 @@ void MemoriesRemoteModelHelper::GetMemories(
             if (!response) {
               if (debug_logger) {
                 debug_logger->Run("MemoriesRemoteModelHelper response nullptr");
+                debug_logger->Run(base::StringPrintf("Net Error Code: %d",
+                                                     url_loader->NetError()));
+                debug_logger->Run("Net Error String: " +
+                                  net::ErrorToString(url_loader->NetError()));
+                if (url_loader->ResponseInfo() &&
+                    url_loader->ResponseInfo()->headers) {
+                  debug_logger->Run(base::StringPrintf(
+                      "HTTP response code: %d",
+                      url_loader->ResponseInfo()->headers->response_code()));
+                }
               }
               return std::vector<history::Cluster>{};
             }
