@@ -20,9 +20,9 @@
 
 namespace content {
 class RenderProcessHost;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Freezes the chrome renderers when the system is about to suspend and thaws
 // them after the system fully resumes.  This class registers itself as a
@@ -101,6 +101,11 @@ class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
   DISALLOW_COPY_AND_ASSIGN(RendererFreezer);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::RendererFreezer;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_RENDERER_FREEZER_H_

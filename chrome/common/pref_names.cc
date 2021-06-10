@@ -2375,11 +2375,11 @@ const char kSchedulerConfiguration[] = "chromeos.scheduler_configuration";
 const char kNetworkThrottlingEnabled[] = "net.throttling_enabled";
 
 // Integer pref used by the metrics::DailyEvent owned by
-// chromeos::PowerMetricsReporter.
+// ash::PowerMetricsReporter.
 const char kPowerMetricsDailySample[] = "power.metrics.daily_sample";
 
 // Integer prefs used to back event counts reported by
-// chromeos::PowerMetricsReporter.
+// ash::PowerMetricsReporter.
 const char kPowerMetricsIdleScreenDimCount[] =
     "power.metrics.idle_screen_dim_count";
 const char kPowerMetricsIdleScreenOffCount[] =

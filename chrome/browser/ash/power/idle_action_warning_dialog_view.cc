@@ -23,12 +23,10 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-
 const int kCountdownUpdateIntervalMs = 1000;  // 1 second.
-
 }  // namespace
 
 IdleActionWarningDialogView::IdleActionWarningDialogView(
@@ -91,4 +89,4 @@ void IdleActionWarningDialogView::UpdateTitle() {
 BEGIN_METADATA(IdleActionWarningDialogView, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

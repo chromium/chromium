@@ -13,7 +13,7 @@
 
 using base::TimeDelta;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The suffix path of fake CPU frequency file for cpu0.
@@ -208,4 +208,4 @@ TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInStateOff) {
   EXPECT_TRUE(freq_samples[2].time_in_state.empty());
 }
 
-}  // namespace chromeos
+}  // namespace ash

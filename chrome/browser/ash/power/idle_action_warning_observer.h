@@ -10,7 +10,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class IdleActionWarningDialogView;
 
@@ -41,6 +41,11 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
   DISALLOW_COPY_AND_ASSIGN(IdleActionWarningObserver);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::IdleActionWarningObserver;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_OBSERVER_H_

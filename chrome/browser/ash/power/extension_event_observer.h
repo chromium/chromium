@@ -29,9 +29,9 @@ class Profile;
 
 namespace extensions {
 class ExtensionHost;
-}
+}  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 
 // This class listens for extension events that should potentially keep the
 // system awake while they are being processed.  Examples include push messages
@@ -132,6 +132,6 @@ class ExtensionEventObserver : public ProfileManagerObserver,
   DISALLOW_COPY_AND_ASSIGN(ExtensionEventObserver);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_EXTENSION_EVENT_OBSERVER_H_

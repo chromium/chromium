@@ -15,9 +15,9 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // Manages all the processes in the freezer cgroup on Chrome OS.
 class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
@@ -41,6 +41,11 @@ class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
   DISALLOW_COPY_AND_ASSIGN(FreezerCgroupProcessManager);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::FreezerCgroupProcessManager;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_

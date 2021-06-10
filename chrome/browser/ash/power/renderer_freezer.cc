@@ -26,7 +26,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-namespace chromeos {
+namespace ash {
 
 RendererFreezer::RendererFreezer(
     std::unique_ptr<RendererFreezer::Delegate> delegate)
@@ -175,4 +175,4 @@ void RendererFreezer::OnRenderProcessCreated(content::RenderProcessHost* rph) {
   delegate_->SetShouldFreezeRenderer(rph->GetProcess().Handle(), true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -42,7 +42,7 @@
 //    |TimeStepExpectedResult|s for each time step match; after a time step is
 //    checked, the procfs of the next time step is set up with |SetUpProcfs|.
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -555,4 +555,4 @@ TEST_F(ProcessDataCollectorTest, ExpAveragingMultistep) {
   RunTest(expected_results, Config::AveragingTechnique::EXPONENTIAL);
 }
 
-}  // namespace chromeos
+}  // namespace ash

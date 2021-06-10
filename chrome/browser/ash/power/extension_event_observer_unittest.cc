@@ -33,7 +33,7 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -357,4 +357,4 @@ TEST_F(ExtensionEventObserverTest, DoesNotDelaySuspendWhenDisabled) {
       FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,13 +8,11 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-
 // The global PowerDataCollector instance.
 PowerDataCollector* g_power_data_collector = NULL;
-
 }  // namespace
 
 const int PowerDataCollector::kSampleTimeLimitSec = 24 * 60 * 60;
@@ -85,4 +83,4 @@ PowerDataCollector::PowerSupplySample::PowerSupplySample()
 PowerDataCollector::SystemResumedSample::SystemResumedSample() {
 }
 
-}  // namespace chromeos
+}  // namespace ash

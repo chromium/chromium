@@ -36,7 +36,7 @@
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Class that delegates used in testing can inherit from to record calls that
@@ -274,7 +274,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
 
  private:
   // Chrome OS needs the CrosSettings test helper.
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererFreezerTestWithExtensions);
 };
@@ -371,4 +371,4 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
   EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());
 }
 
-}  // namespace chromeos
+}  // namespace ash

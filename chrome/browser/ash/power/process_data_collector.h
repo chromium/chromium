@@ -27,7 +27,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A class which starts collecting metrics about processes as soon as it is
 // initialized with |Initialize|. This class depends on the DBusThreadManager
@@ -329,6 +329,11 @@ class ProcessDataCollector {
   DISALLOW_COPY_AND_ASSIGN(ProcessDataCollector);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::ProcessDataCollector;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_PROCESS_DATA_COLLECTOR_H_

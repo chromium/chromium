@@ -14,9 +14,9 @@
 
 namespace power_manager {
 class PowerSupplyProperties;
-}
+}  // namespace power_manager
 
-namespace chromeos {
+namespace ash {
 
 // A class which starts collecting power metrics, like the battery charge, as
 // soon as it is initialized via Initialize().
@@ -117,6 +117,11 @@ void AddSample(base::circular_deque<SampleType>* sample_queue,
   sample_queue->push_back(sample);
 }
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PowerDataCollector;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_POWER_DATA_COLLECTOR_H_

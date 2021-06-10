@@ -41,7 +41,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 ProcessDataCollector* g_process_data_collector = nullptr;
 
@@ -611,4 +611,4 @@ void ProcessDataCollector::SaveSamplesOnUIThread(
       samples_and_summary_info;
 }
 
-}  // namespace chromeos
+}  // namespace ash

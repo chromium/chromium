@@ -854,7 +854,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::MultiProfileUserController::RegisterPrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::NetworkThrottlingObserver::RegisterPrefs(registry);
-  chromeos::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
+  ash::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
   chromeos::platform_keys::KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
       registry);
   ash::power::auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(

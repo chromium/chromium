@@ -10,7 +10,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class PowerDataCollectorTest : public testing::Test {
  public:
@@ -84,4 +84,4 @@ TEST_F(PowerDataCollectorTest, AddSample) {
             sample_deque[0].time.ToInternalValue());
 }
 
-}  // namespace chromeos
+}  // namespace ash

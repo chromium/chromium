@@ -14,7 +14,7 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // DO NOT REORDER - used to report metrics.
@@ -100,4 +100,4 @@ void IdleActionWarningObserver::HideDialogIfPresent() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

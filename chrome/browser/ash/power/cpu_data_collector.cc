@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/power/power_data_collector.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // The sampling of CPU idle or CPU freq data should not take more than this
@@ -525,4 +525,4 @@ CpuDataCollector::StateOccupancySample::StateOccupancySample(
 CpuDataCollector::StateOccupancySample::~StateOccupancySample() {
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 // Shows a modal warning dialog that the idle action is imminent. Since the
 // warning is only really necessary when the idle action is to log out the user,
@@ -41,6 +41,6 @@ class IdleActionWarningDialogView : public views::DialogDelegateView {
   base::RepeatingTimer update_timer_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_DIALOG_VIEW_H_

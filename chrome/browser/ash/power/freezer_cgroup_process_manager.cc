@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char kFreezerPath[] = "/sys/fs/cgroup/freezer/ui/chrome_renderers";
@@ -28,7 +28,6 @@ const char kCgroupProcs[] = "cgroup.procs";
 
 const char kFreezeCommand[] = "FROZEN";
 const char kThawCommand[] = "THAWED";
-
 }  // namespace
 
 class FreezerCgroupProcessManager::FileWorker {
@@ -200,4 +199,4 @@ void FreezerCgroupProcessManager::CheckCanFreezeRenderers(
                                         std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

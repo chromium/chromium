@@ -22,7 +22,13 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/power/auto_screen_brightness/controller.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/power/idle_action_warning_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_manager.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/power/power_metrics_reporter.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/power/renderer_freezer.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -77,15 +83,12 @@ namespace chromeos {
 class BulkPrintersCalculatorFactory;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
-class IdleActionWarningObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class MemoryAblationStudy;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
-class PowerMetricsReporter;
-class RendererFreezer;
 class SessionTerminationManager;
 class SystemTokenCertDBInitializer;
 

@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 // A class to sample CPU idle state occupancy and freq state occupancy.
 // Collects raw data from sysfs and does not convert it to percentage
@@ -142,6 +142,11 @@ class CpuDataCollector {
   DISALLOW_COPY_AND_ASSIGN(CpuDataCollector);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::CpuDataCollector;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_CPU_DATA_COLLECTOR_H_

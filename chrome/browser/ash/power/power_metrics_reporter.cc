@@ -12,7 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Interval for asking metrics::DailyEvent to check whether a day has passed.
@@ -163,4 +163,4 @@ void PowerMetricsReporter::AddToCount(const std::string& pref_name, int num) {
   pref_service_->SetInteger(pref_name, daily_counts_[pref_name]);
 }
 
-}  // namespace chromeos
+}  // namespace ash

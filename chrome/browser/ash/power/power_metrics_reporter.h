@@ -18,7 +18,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // PowerMetricsReporter reports power-management-related metrics.
 // Prefs are used to retain metrics across Chrome restarts and system reboots.
@@ -75,6 +75,11 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
   DISALLOW_COPY_AND_ASSIGN(PowerMetricsReporter);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PowerMetricsReporter;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_POWER_METRICS_REPORTER_H_
