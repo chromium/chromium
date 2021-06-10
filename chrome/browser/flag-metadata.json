@@ -3779,6 +3779,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "ntp-modules-redesigned",
+    "owners": [ "doei", "mahmadi", "tiborg" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 96

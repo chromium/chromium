@@ -44959,6 +44959,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:enabled"/>
   <int value="-2124685253" label="USBGuard:enabled"/>
   <int value="-2123795624" label="ArcSmartTextSelection:enabled"/>
+  <int value="-2123097607" label="NtpModulesRedesigned:disabled"/>
   <int value="-2122206114"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:disabled"/>
   <int value="-2122048316"
@@ -47435,6 +47436,7 @@ from previous Chrome versions.
   <int value="-50628385"
       label="ContentSuggestionsThumbnailDominantColor:enabled"/>
   <int value="-50021298" label="ash-adjustable-large-cursor"/>
+  <int value="-49441721" label="NtpModulesRedesigned:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
   <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-45849989" label="ModeSpecificPowerButton:disabled"/>

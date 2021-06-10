@@ -271,6 +271,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
           "true");
+  source->AddBoolean(
+      "modulesRedesignedEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned));
 
   RealboxHandler::SetupWebUIDataSource(source);
 
