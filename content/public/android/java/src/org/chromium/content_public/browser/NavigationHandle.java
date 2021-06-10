@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
     private final boolean mIsInMainFrame;
+    private final boolean mIsInPrimaryMainFrame;
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
     private Integer mPageTransition;
@@ -33,10 +34,11 @@ public class NavigationHandle {
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, GURL url, boolean isInMainFrame,
-            boolean isSameDocument, boolean isRendererInitiated) {
+            boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mIsInMainFrame = isInMainFrame;
+        mIsInPrimaryMainFrame = isInPrimaryMaimFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
     }
@@ -89,10 +91,25 @@ public class NavigationHandle {
     }
 
     /**
-     * Whether the navigation is taking place in the main frame or in a subframe.
+     * Whether the navigation is taking place in a main frame or in a subframe.
+     * This can also return true for navigations in the root of a non-primary
+     * page, so consider whether you want to call IsInPrimaryMainFrame() instead.
+     * See the documentation below for details. This remains constant over the
+     * navigation lifetime.
      */
     public boolean isInMainFrame() {
         return mIsInMainFrame;
+    }
+
+    /**
+     * Whether the navigation is taking place in the main frame of the primary
+     * frame tree. With MPArch (crbug.com/1164280), a WebContents may have
+     * additional frame trees for prerendering pages in addition to the primary
+     * frame tree (holding the page currently shown to the user). This remains
+     * constant over the navigation lifetime.
+     */
+    public boolean isInPrimaryMainFrame() {
+        return mIsInPrimaryMainFrame;
     }
 
     /**

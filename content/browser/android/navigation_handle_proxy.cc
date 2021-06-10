@@ -27,6 +27,7 @@ NavigationHandleProxy::NavigationHandleProxy(
       env, reinterpret_cast<jlong>(this),
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
       cpp_navigation_handle_->IsInMainFrame(),
+      cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated());
 }

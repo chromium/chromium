@@ -66,7 +66,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
         NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
+                new NavigationHandle(0, new GURL(TEST_URL), true, true, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
 
@@ -80,7 +80,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
         NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
+                new NavigationHandle(0, new GURL(TEST_URL), true, true, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
 

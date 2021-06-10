@@ -100,7 +100,7 @@ public class OptimizationGuideBridgeUnitTest {
     public void testCanApplyOptimization_withoutNativeBridge() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
         NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
+                new NavigationHandle(0, new GURL(TEST_URL), true, true, false, false);
 
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
@@ -118,7 +118,7 @@ public class OptimizationGuideBridgeUnitTest {
     public void testCanApplyOptimization() {
         GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
-        NavigationHandle navHandle = new NavigationHandle(0, gurl, true, false, false);
+        NavigationHandle navHandle = new NavigationHandle(0, gurl, true, true, false, false);
 
         bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
