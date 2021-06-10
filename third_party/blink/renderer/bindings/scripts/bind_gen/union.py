@@ -918,11 +918,20 @@ def make_member_vars_def(cg_context):
         EmptyNode(),
     ])
 
-    entries = [
-        "{} {};".format(member.type_info.member_t, member.var_name)
-        for member in cg_context.union_members if not member.is_null
-    ]
-    member_vars_def.extend(map(TextNode, entries))
+    for member in cg_context.union_members:
+        if member.is_null:
+            continue
+        if member.idl_type.is_enumeration:
+            # Since the IDL enumeration class is not default constructible,
+            # construct the IDL enumeration with 0th enum value.  Note that
+            # this is necessary only for compilation, and the value must never
+            # be used due to the guard by `content_type_`.
+            pattern = "{} {}{{static_cast<{}::Enum>(0)}};"
+        else:
+            pattern = "{} {};"
+        node = FormatNode(pattern, member.type_info.member_t, member.var_name,
+                          member.type_info.value_t)
+        member_vars_def.append(node)
 
     return member_vars_def
 

@@ -189,6 +189,10 @@ class _DictionaryMember(object):
             return self.initializer_expr
         idl_type = self.idl_type.unwrap(typedef=True)
         if idl_type.is_enumeration:
+            # Since the IDL enumeration class is not default constructible,
+            # construct the IDL enumeration with 0th enum value.  Note that
+            # this is necessary only for compilation, and the value must never
+            # be used due to the guard by `api_has` (`presence_expr`).
             return "static_cast<{}::Enum>(0)".format(self.type_info.value_t)
         return None
 
