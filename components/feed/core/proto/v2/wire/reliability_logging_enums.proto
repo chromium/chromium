@@ -25,8 +25,8 @@ enum DiscoverLaunchResult {
   NAVIGATED_TO_ANOTHER_TAB = 10;
   FRAGMENT_STOPPED = 11;
   ABORTED_DUE_TO_INVALID_STATE = 6;
-  NAVIGATED_AWAY = 31;
-  FEED_HIDDEN = 32;
+  NAVIGATED_AWAY_IN_APP = 35;
+  FEED_HIDDEN = 36;
 }
 enum DiscoverCardReadCacheResult {
   CACHE_READ_OK = 1;
