@@ -49,7 +49,7 @@ enum class TrustedVaultRecoverabilityStatus {
   kDegraded
 };
 
-enum class AuthenticationFactorType { kPhysicalDevice };
+enum class AuthenticationFactorType { kPhysicalDevice, kUnspecified };
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

@@ -183,6 +183,7 @@ void StandaloneTrustedVaultBackend::RemoveAllStoredKeys() {
   base::DeleteFile(file_path_);
   data_.Clear();
   AbandonConnectionRequest();
+  ongoing_degraded_recoverability_request_.reset();
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
@@ -192,6 +193,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
   primary_account_ = primary_account;
   AbandonConnectionRequest();
+  ongoing_degraded_recoverability_request_.reset();
   if (!primary_account_.has_value()) {
     DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
@@ -261,15 +263,45 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
   DCHECK(!pending_trusted_recovery_method_.has_value());
 
-  if (primary_account_->gaia == gaia_id) {
-    // TODO(crbug.com/1201659): Implement logic.
-    NOTIMPLEMENTED();
-    last_added_recovery_method_public_key_for_testing_ = public_key;
-    is_recoverability_degraded_for_testing_ = false;
-    delegate_->NotifyRecoverabilityDegradedChanged();
+  if (primary_account_->gaia != gaia_id) {
+    std::move(cb).Run();
+    return;
   }
 
-  std::move(cb).Run();
+  // TODO(crbug.com/1201659): Implement logic properly and add test coverage.
+  // Note for example that |public_key| gets ignored below and a random key is
+  // used instead.
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
+  if (per_user_vault == nullptr) {
+    // This should ideally be a DCHECK instead, but currently it's not
+    // guaranteed.
+    std::move(cb).Run();
+    return;
+  }
+
+  const absl::optional<TrustedVaultKeyAndVersion>
+      last_trusted_vault_key_and_version =
+          GetLastTrustedVaultKeyAndVersion(*per_user_vault);
+
+  last_added_recovery_method_public_key_for_testing_ = public_key;
+
+  if (!connection_) {
+    // Feature disabled.
+    std::move(cb).Run();
+    return;
+  }
+
+  // |this| outlives |connection_| and
+  // |ongoing_degraded_recoverability_request_|, so it's safe to use
+  // base::Unretained() here.
+  ongoing_degraded_recoverability_request_ =
+      connection_->RegisterAuthenticationFactor(
+          *primary_account_, last_trusted_vault_key_and_version,
+          SecureBoxKeyPair::GenerateRandom()->public_key(),
+          AuthenticationFactorType::kUnspecified,
+          base::BindOnce(
+              &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
+              base::Unretained(this), std::move(cb)));
 }
 
 absl::optional<CoreAccountInfo>
@@ -454,6 +486,17 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   }
   // Regardless of the |status| ongoing fetch keys request should be fulfilled.
   FulfillOngoingFetchKeys();
+}
+
+void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
+    base::OnceClosure cb,
+    TrustedVaultRegistrationStatus status) {
+  DCHECK(ongoing_degraded_recoverability_request_);
+  ongoing_degraded_recoverability_request_ = nullptr;
+  is_recoverability_degraded_for_testing_ = false;
+
+  std::move(cb).Run();
+  delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
 void StandaloneTrustedVaultBackend::AbandonConnectionRequest() {

@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -66,6 +67,11 @@ sync_pb::SecurityDomainMember CreateSecurityDomainMember(
     case AuthenticationFactorType::kPhysicalDevice:
       member.set_member_type(
           sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
+      break;
+    case AuthenticationFactorType::kUnspecified:
+      member.set_member_type(
+          sync_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED);
+      break;
   }
   return member;
 }

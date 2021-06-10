@@ -135,6 +135,9 @@ class StandaloneTrustedVaultBackend
                         const std::vector<std::vector<uint8_t>>& vault_keys,
                         int last_vault_key_version);
 
+  void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
+                                    TrustedVaultRegistrationStatus status);
+
   void AbandonConnectionRequest();
 
   void FulfillOngoingFetchKeys();
@@ -192,6 +195,11 @@ class StandaloneTrustedVaultBackend
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+
+  // Same as above, but specifically used for recoverability-related requests.
+  // TODO(crbug.com/1201659): Move elsewhere.
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_degraded_recoverability_request_;
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.

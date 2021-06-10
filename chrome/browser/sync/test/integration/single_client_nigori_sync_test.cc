@@ -572,15 +572,42 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     const GURL& base_url = embedded_test_server()->base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    command_line->AppendSwitchASCII(
+        switches::kTrustedVaultServiceURL,
+        syncer::FakeSecurityDomainsServer::GetServerURL(
+            embedded_test_server()->base_url())
+            .spec());
+
     SyncTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
+
+    security_domains_server_ =
+        std::make_unique<syncer::FakeSecurityDomainsServer>(
+            embedded_test_server()->base_url());
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&syncer::FakeSecurityDomainsServer::HandleRequest,
+                            base::Unretained(security_domains_server_.get())));
+
     embedded_test_server()->StartAcceptingConnections();
   }
 
+  void TearDown() override {
+    // Test server shutdown is required before |security_domains_server_| can be
+    // destroyed.
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    SyncTest::TearDown();
+  }
+
+  syncer::FakeSecurityDomainsServer* GetSecurityDomainsServer() {
+    return security_domains_server_.get();
+  }
+
  private:
+  std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
+
   DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriWithWebApiTest);
 };
 
@@ -1053,8 +1080,6 @@ class SingleClientNigoriWithRecoverySyncTest
 
  private:
   base::test::ScopedFeatureList override_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriWithRecoverySyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
@@ -1164,62 +1189,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
 }
 
-class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {
- public:
-  SingleClientNigoriSyncTestWithSecurityDomainsServer()
-      : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitAndEnableFeature(
-        switches::kSyncSupportTrustedVaultPassphraseRecovery);
-  }
-  SingleClientNigoriSyncTestWithSecurityDomainsServer(
-      const SingleClientNigoriSyncTestWithSecurityDomainsServer& other) =
-      delete;
-  SingleClientNigoriSyncTestWithSecurityDomainsServer& operator=(
-      const SingleClientNigoriSyncTestWithSecurityDomainsServer& other) =
-      delete;
-  ~SingleClientNigoriSyncTestWithSecurityDomainsServer() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    command_line->AppendSwitchASCII(
-        switches::kTrustedVaultServiceURL,
-        syncer::FakeSecurityDomainsServer::GetServerURL(
-            embedded_test_server()->base_url())
-            .spec());
-    SyncTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    security_domains_server_ =
-        std::make_unique<syncer::FakeSecurityDomainsServer>(
-            embedded_test_server()->base_url());
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&syncer::FakeSecurityDomainsServer::HandleRequest,
-                            base::Unretained(security_domains_server_.get())));
-    embedded_test_server()->StartAcceptingConnections();
-    SyncTest::SetUpOnMainThread();
-  }
-
-  void TearDown() override {
-    // Test server shutdown is required before |security_domains_server_| can be
-    // destroyed.
-    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    SyncTest::TearDown();
-  }
-
-  syncer::FakeSecurityDomainsServer* GetSecurityDomainsServer() {
-    return security_domains_server_.get();
-  }
-
- private:
-  std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
-  base::test::ScopedFeatureList override_features_;
-};
-
 // Device registration attempt should be taken upon sign in into primary
 // profile. It should be successful when security domain server allows device
 // registration with constant key.
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldRegisterDeviceWithConstantKey) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/1113599): consider checking member public key (requires
@@ -1237,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
 // If device was successfully registered with constant key, it should silently
 // follow key rotation and transit to trusted vault passphrase without going
 // through key retrieval flow.
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldFollowInitialKeyRotation) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
@@ -1271,16 +1244,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
 
 // ChromeOS doesn't have unconsented primary accounts.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-class SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest
-    : public SingleClientNigoriWithWebApiTest {
+class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
+    : public SingleClientNigoriWithRecoverySyncTest {
  public:
-  SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest() {
-    override_features_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         switches::kSyncSupportTrustedVaultPassphraseRecovery},
-        {});
+  SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest() {
+    override_features_.InitAndEnableFeature(
+        password_manager::features::kEnablePasswordsAccountStorage);
   }
-  ~SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest() override =
+
+  ~SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest() override =
       default;
 
   // SetupClients() must have been already called.
@@ -1296,7 +1268,7 @@ class SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest,
+    SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
     ShouldAcceptEncryptionKeysFromTheWeb) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
@@ -1341,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest,
+    SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
     ShouldReportDegradedTrustedVaultRecoverability) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
