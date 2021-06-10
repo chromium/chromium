@@ -17,12 +17,16 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -294,6 +298,25 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
   EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
 
   ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
+}
+
+class AutoLaunchedKioskPowerWashRequestedTest
+    : public OobeBaseTest,
+      public LocalStateMixin::Delegate {
+ public:
+  AutoLaunchedKioskPowerWashRequestedTest() = default;
+  ~AutoLaunchedKioskPowerWashRequestedTest() override = default;
+
+  void SetUpLocalState() override {
+    g_browser_process->local_state()->SetBoolean(prefs::kFactoryResetRequested,
+                                                 true);
+  }
+
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskPowerWashRequestedTest, DoesNotLaunch) {
+  OobeScreenWaiter(ResetView::kScreenId).Wait();
 }
 
 class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
