@@ -129,7 +129,8 @@ void PresentationRequestNotificationProducer::OnStartPresentationContextCreated(
 
 content::WebContents*
 PresentationRequestNotificationProducer::GetWebContents() {
-  return GetWebContentsFromPresentationRequest(item_->request());
+  return item_ ? GetWebContentsFromPresentationRequest(item_->request())
+               : nullptr;
 }
 
 base::WeakPtr<PresentationRequestNotificationItem>

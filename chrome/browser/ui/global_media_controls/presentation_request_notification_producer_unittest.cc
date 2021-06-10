@@ -217,6 +217,34 @@ TEST_F(PresentationRequestNotificationProducerTest, DeleteItem) {
 
   // Detach |child_frame|.
   content::RenderFrameHostTester::For(child_frame)->Detach();
+}
 
+TEST_F(PresentationRequestNotificationProducerTest,
+       OnPresentationRequestWebContentsNavigated) {
+  MockMediaDialogDelegate delegate;
+
+  // Navigating to another page should delete the notification.
+  SimulateStartPresentationContextCreated();
+  SimulateDialogOpenedAndWait(&delegate);
+  EXPECT_CALL(
+      delegate,
+      HideMediaSession(notification_producer_->GetNotificationItem()->id()));
+  NavigateAndCommit(GURL("https://www.google.com/"));
+  EXPECT_FALSE(notification_producer_->GetNotificationItem());
+  SimulateDialogClosedAndWait(&delegate);
+}
+
+TEST_F(PresentationRequestNotificationProducerTest,
+       OnPresentationRequestWebContentsDestroyed) {
+  MockMediaDialogDelegate delegate;
+
+  // Removing the WebContents should delete the notification.
+  SimulateStartPresentationContextCreated();
+  SimulateDialogOpenedAndWait(&delegate);
+  EXPECT_CALL(
+      delegate,
+      HideMediaSession(notification_producer_->GetNotificationItem()->id()));
+  DeleteContents();
+  EXPECT_FALSE(notification_producer_->GetNotificationItem());
   SimulateDialogClosedAndWait(&delegate);
 }
