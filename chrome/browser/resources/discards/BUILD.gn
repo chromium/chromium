@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -83,53 +83,22 @@ action("generate_graph_tab") {
                                               "graph_doc.js",
                                             ]) +
          rebase_path([ "$target_gen_dir/graph_tab_template.js" ])
-  deps = [ ":graph_tab_module" ]
+  deps = [ ":web_components" ]
 }
 
 # Action with a transparent name.
 group("discards_resources_gen") {
   public_deps = [
     ":generate_graph_tab",
-    ":polymer3_elements",
+    ":web_components",
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":database_tab_module",
-    ":discards_main_module",
-    ":discards_tab_module",
-    ":graph_doc_module",
-    ":graph_tab_module",
+html_to_js("web_components") {
+  js_files = [
+    "database_tab.js",
+    "discards_main.js",
+    "discards_tab.js",
+    "graph_tab_template.js",
   ]
-}
-
-polymer_modulizer("database_tab") {
-  html_file = "database_tab.html"
-  js_file = "database_tab.js"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("discards_main") {
-  html_file = "discards_main.html"
-  js_file = "discards_main.js"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("discards_tab") {
-  html_file = "discards_tab.html"
-  js_file = "discards_tab.js"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("graph_doc") {
-  html_file = "graph_doc_template.html"
-  js_file = "graph_doc.js"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("graph_tab") {
-  html_file = "graph_tab_template.html"
-  js_file = "graph_tab_template.js"
-  html_type = "v3-ready"
 }
