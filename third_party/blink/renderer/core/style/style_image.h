@@ -152,7 +152,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
     return is_image_resource_set_;
   }
   ALWAYS_INLINE bool IsPaintImage() const { return is_paint_image_; }
-  ALWAYS_INLINE bool IsCrossfadeImage() const { return is_crossfade_; }
 
   bool IsLazyloadPossiblyDeferred() const {
     return is_lazyload_possibly_deferred_;
@@ -166,14 +165,12 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
         is_pending_image_(false),
         is_generated_image_(false),
         is_image_resource_set_(false),
-        is_crossfade_(false),
         is_paint_image_(false),
         is_lazyload_possibly_deferred_(false) {}
   bool is_image_resource_ : 1;
   bool is_pending_image_ : 1;
   bool is_generated_image_ : 1;
   bool is_image_resource_set_ : 1;
-  bool is_crossfade_ : 1;
   bool is_paint_image_ : 1;
   bool is_lazyload_possibly_deferred_ : 1;
 

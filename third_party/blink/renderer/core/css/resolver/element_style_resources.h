@@ -26,11 +26,15 @@
 
 #include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
+class CSSImageGeneratorValue;
+class CSSImageSetValue;
+class CSSImageValue;
 class CSSValue;
 class ComputedStyle;
 class Element;
@@ -39,7 +43,9 @@ class SVGResource;
 class StyleImage;
 
 namespace cssvalue {
+
 class CSSURIValue;
+
 }
 
 // Holds information about resources, requested by stylesheets.
@@ -55,6 +61,8 @@ class ElementStyleResources {
   ElementStyleResources& operator=(const ElementStyleResources&) = delete;
 
   StyleImage* GetStyleImage(CSSPropertyID, const CSSValue&);
+  StyleImage* CachedOrPendingFromValue(CSSPropertyID, const CSSImageValue&);
+  StyleImage* SetOrPendingFromValue(CSSPropertyID, const CSSImageSetValue&);
 
   SVGResource* GetSVGResourceFromValue(CSSPropertyID,
                                        const cssvalue::CSSURIValue&);
@@ -62,8 +70,8 @@ class ElementStyleResources {
   void LoadPendingResources(ComputedStyle&);
 
  private:
-  bool IsPending(const CSSValue&) const;
-  StyleImage* CachedStyleImage(const CSSValue&) const;
+  StyleImage* GeneratedOrPendingFromValue(CSSPropertyID,
+                                          const CSSImageGeneratorValue&);
 
   void LoadPendingSVGResources(ComputedStyle&);
   void LoadPendingImages(ComputedStyle&);

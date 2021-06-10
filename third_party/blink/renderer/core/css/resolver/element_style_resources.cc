@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/css/resolver/element_style_resources.h"
 
-#include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -42,7 +41,6 @@
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
-#include "third_party/blink/renderer/core/style/style_crossfade_image.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image_set.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -57,83 +55,6 @@
 
 namespace blink {
 
-namespace {
-
-class StyleImageLoader {
-  STACK_ALLOCATED();
-
- public:
-  StyleImageLoader(Document& document,
-                   ComputedStyle& style,
-                   float device_scale_factor)
-      : document_(document),
-        style_(style),
-        device_scale_factor_(device_scale_factor) {}
-
-  StyleImage* Load(
-      CSSValue&,
-      FetchParameters::ImageRequestBehavior = FetchParameters::kNone,
-      CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
-
- private:
-  StyleImage* CrossfadeArgument(CSSValue&, CrossOriginAttributeValue);
-
-  Document& document_;
-  ComputedStyle& style_;
-  const float device_scale_factor_;
-};
-
-StyleImage* StyleImageLoader::Load(
-    CSSValue& value,
-    FetchParameters::ImageRequestBehavior image_request_behavior,
-    CrossOriginAttributeValue cross_origin) {
-  if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
-    return image_value->CacheImage(document_, image_request_behavior,
-                                   cross_origin);
-  }
-
-  if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
-    style_.AddPaintImage(image);
-    return image;
-  }
-
-  if (auto* crossfade_value = DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
-    return MakeGarbageCollected<StyleCrossfadeImage>(
-        *crossfade_value,
-        CrossfadeArgument(crossfade_value->From(), cross_origin),
-        CrossfadeArgument(crossfade_value->To(), cross_origin));
-  }
-
-  if (auto* image_gradient_value =
-          DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value);
-  }
-
-  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
-    return image_set_value->CacheImage(document_, device_scale_factor_,
-                                       image_request_behavior, cross_origin);
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-StyleImage* StyleImageLoader::CrossfadeArgument(
-    CSSValue& value,
-    CrossOriginAttributeValue cross_origin) {
-  // TODO(crbug.com/614906): For some reason we allow 'none' as an argument to
-  // -webkit-cross-fade() - the unprefixed cross-fade() function does however
-  // not accept 'none'. Map 'none' to a null StyleImage.
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return nullptr;
-  }
-  return Load(value, FetchParameters::kNone, cross_origin);
-}
-
-}  // namespace
-
 ElementStyleResources::ElementStyleResources(Element& element,
                                              float device_scale_factor,
                                              PseudoElement* pseudo_element)
@@ -141,61 +62,49 @@ ElementStyleResources::ElementStyleResources(Element& element,
       device_scale_factor_(device_scale_factor),
       pseudo_element_(pseudo_element) {}
 
-bool ElementStyleResources::IsPending(const CSSValue& value) const {
+StyleImage* ElementStyleResources::GetStyleImage(CSSPropertyID property,
+                                                 const CSSValue& value) {
   if (auto* img_value = DynamicTo<CSSImageValue>(value))
-    return img_value->IsCachePending();
+    return CachedOrPendingFromValue(property, *img_value);
 
-  // paint(...) is always treated as pending because it needs to call
-  // AddPaintImage() on the ComputedStyle.
-  if (IsA<CSSPaintValue>(value))
-    return true;
-
-  // cross-fade(...) is always treated as pending (to avoid adding more complex
-  // recursion).
-  if (IsA<cssvalue::CSSCrossfadeValue>(value))
-    return true;
-
-  // Gradient functions are never pending.
-  if (IsA<cssvalue::CSSGradientValue>(value))
-    return false;
+  if (auto* img_generator_value = DynamicTo<CSSImageGeneratorValue>(value))
+    return GeneratedOrPendingFromValue(property, *img_generator_value);
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
-    return img_set_value->IsCachePending(device_scale_factor_);
+    return SetOrPendingFromValue(property, *img_set_value);
 
-  NOTREACHED();
-  return false;
-}
-
-StyleImage* ElementStyleResources::CachedStyleImage(
-    const CSSValue& value) const {
-  DCHECK(!IsPending(value));
-  if (auto* img_value = DynamicTo<CSSImageValue>(value)) {
-    img_value->RestoreCachedResourceIfNeeded(element_.GetDocument());
-    return img_value->CachedImage();
-  }
-
-  // Gradient functions are never pending (but don't cache StyleImages).
-  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value))
-    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value);
-
-  if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
-    return img_set_value->CachedImage(device_scale_factor_);
-
-  NOTREACHED();
   return nullptr;
 }
 
-StyleImage* ElementStyleResources::GetStyleImage(CSSPropertyID property,
-                                                 const CSSValue& value) {
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return nullptr;
-  }
-  if (IsPending(value)) {
+StyleImage* ElementStyleResources::GeneratedOrPendingFromValue(
+    CSSPropertyID property,
+    const CSSImageGeneratorValue& value) {
+  if (value.IsPending()) {
     pending_image_properties_.insert(property);
     return MakeGarbageCollected<StylePendingImage>(value);
   }
-  return CachedStyleImage(value);
+  return MakeGarbageCollected<StyleGeneratedImage>(value);
+}
+
+StyleImage* ElementStyleResources::SetOrPendingFromValue(
+    CSSPropertyID property,
+    const CSSImageSetValue& value) {
+  if (value.IsCachePending(device_scale_factor_)) {
+    pending_image_properties_.insert(property);
+    return MakeGarbageCollected<StylePendingImage>(value);
+  }
+  return value.CachedImage(device_scale_factor_);
+}
+
+StyleImage* ElementStyleResources::CachedOrPendingFromValue(
+    CSSPropertyID property,
+    const CSSImageValue& value) {
+  if (value.IsCachePending()) {
+    pending_image_properties_.insert(property);
+    return MakeGarbageCollected<StylePendingImage>(value);
+  }
+  value.RestoreCachedResourceIfNeeded(element_.GetDocument());
+  return value.CachedImage();
 }
 
 static bool AllowExternalResources(CSSPropertyID property) {
@@ -284,7 +193,40 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
-  StyleImageLoader loader(element_.GetDocument(), style, device_scale_factor_);
+
+  auto LoadPendingImage =
+      [&](ComputedStyle& style, CSSValue& value,
+          FetchParameters::ImageRequestBehavior image_request_behavior =
+              FetchParameters::kNone,
+          CrossOriginAttributeValue cross_origin =
+              kCrossOriginAttributeNotSet) -> StyleImage* {
+    if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
+      return image_value->CacheImage(element_.GetDocument(),
+                                     image_request_behavior, cross_origin);
+    }
+
+    if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
+      auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
+      style.AddPaintImage(image);
+      return image;
+    }
+
+    if (auto* image_generator_value =
+            DynamicTo<CSSImageGeneratorValue>(value)) {
+      image_generator_value->LoadSubimages(element_.GetDocument());
+      return MakeGarbageCollected<StyleGeneratedImage>(*image_generator_value);
+    }
+
+    if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
+      return image_set_value->CacheImage(element_.GetDocument(),
+                                         device_scale_factor_,
+                                         image_request_behavior, cross_origin);
+    }
+
+    NOTREACHED();
+    return nullptr;
+  };
+
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
       case CSSPropertyID::kBackgroundImage: {
@@ -303,7 +245,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
               }
             }
             StyleImage* new_image =
-                loader.Load(*pending_value, image_request_behavior);
+                LoadPendingImage(style, *pending_value, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
               LazyImageHelper::StartMonitoring(pseudo_element_ ? pseudo_element_
                                                                : &element_);
@@ -321,7 +263,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
                   DynamicTo<ImageContentData>(*content_data)) {
             if (auto* pending_value =
                     PendingCssValue(image_content->GetImage())) {
-              image_content->SetImage(loader.Load(*pending_value));
+              image_content->SetImage(LoadPendingImage(style, *pending_value));
             }
           }
         }
@@ -331,26 +273,26 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
         if (CursorList* cursor_list = style.Cursors()) {
           for (CursorData& cursor : *cursor_list) {
             if (auto* pending_value = PendingCssValue(cursor.GetImage()))
-              cursor.SetImage(loader.Load(*pending_value));
+              cursor.SetImage(LoadPendingImage(style, *pending_value));
           }
         }
         break;
       }
       case CSSPropertyID::kListStyleImage: {
         if (auto* pending_value = PendingCssValue(style.ListStyleImage()))
-          style.SetListStyleImage(loader.Load(*pending_value));
+          style.SetListStyleImage(LoadPendingImage(style, *pending_value));
         break;
       }
       case CSSPropertyID::kBorderImageSource: {
         if (auto* pending_value = PendingCssValue(style.BorderImageSource()))
-          style.SetBorderImageSource(loader.Load(*pending_value));
+          style.SetBorderImageSource(LoadPendingImage(style, *pending_value));
         break;
       }
       case CSSPropertyID::kWebkitBoxReflect: {
         if (StyleReflection* reflection = style.BoxReflect()) {
           const NinePieceImage& mask_image = reflection->Mask();
           if (auto* pending_value = PendingCssValue(mask_image.GetImage())) {
-            StyleImage* loaded_image = loader.Load(*pending_value);
+            StyleImage* loaded_image = LoadPendingImage(style, *pending_value);
             reflection->SetMask(NinePieceImage(
                 loaded_image, mask_image.ImageSlices(), mask_image.Fill(),
                 mask_image.BorderSlices(), mask_image.Outset(),
@@ -361,16 +303,16 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       }
       case CSSPropertyID::kWebkitMaskBoxImageSource: {
         if (auto* pending_value = PendingCssValue(style.MaskBoxImageSource()))
-          style.SetMaskBoxImageSource(loader.Load(*pending_value));
+          style.SetMaskBoxImageSource(LoadPendingImage(style, *pending_value));
         break;
       }
       case CSSPropertyID::kWebkitMaskImage: {
         for (FillLayer* mask_layer = &style.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            mask_layer->SetImage(loader.Load(*pending_value,
-                                             FetchParameters::kNone,
-                                             kCrossOriginAttributeAnonymous));
+            mask_layer->SetImage(
+                LoadPendingImage(style, *pending_value, FetchParameters::kNone,
+                                 kCrossOriginAttributeAnonymous));
           }
         }
         break;
@@ -378,9 +320,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       case CSSPropertyID::kShapeOutside:
         if (ShapeValue* shape_value = style.ShapeOutside()) {
           if (auto* pending_value = PendingCssValue(shape_value->GetImage())) {
-            shape_value->SetImage(loader.Load(*pending_value,
-                                              FetchParameters::kNone,
-                                              kCrossOriginAttributeAnonymous));
+            shape_value->SetImage(
+                LoadPendingImage(style, *pending_value, FetchParameters::kNone,
+                                 kCrossOriginAttributeAnonymous));
           }
         }
         break;
