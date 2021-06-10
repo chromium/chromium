@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
@@ -260,7 +260,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 callback.onResult(new BitmapDrawable(resources, image));
             } else if (UrlUtilities.isInternalScheme(url)) {
                 callback.onResult(
-                        AppCompatResources.getDrawable(mContext, R.drawable.chromelogo16));
+                        TintedDrawable.constructTintedDrawable(mContext, R.drawable.chromelogo16));
             } else {
                 callback.onResult(null);
             }
