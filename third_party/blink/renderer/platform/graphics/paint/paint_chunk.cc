@@ -35,9 +35,10 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          ((!hit_test_data && !other.hit_test_data) ||
           (hit_test_data && other.hit_test_data &&
            *hit_test_data == *other.hit_test_data));
-  // known_to_be_opaque is not checked ]because it's updated when we create the
-  // next chunk or release chunks. We ensure its correctness with unit tests and
-  // under-invalidation checking of display items.
+  // Derived fields like known_to_be_opaque are not checked because they are
+  // updated when we create the next chunk or release chunks. We ensure their
+  // correctness with unit tests and under-invalidation checking of display
+  // items.
 }
 
 size_t PaintChunk::MemoryUsageInBytes() const {
