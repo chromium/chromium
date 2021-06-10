@@ -30,6 +30,8 @@ message Visit {
   // The origin for the visit.
   string origin = 3;
   // The amount of time the page load was in the foreground in seconds.
+  // TODO(tommycli): Kind of a misnomer. We are just using visit_duration,
+  //  which may or may not be in the foreground.
   int64 foreground_time_secs = 4;
   // Relative time of navigation for this page load.
   int64 navigation_time_ms = 5;

@@ -21,10 +21,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
+#include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/memories_remote_model_helper.h"
 #include "components/history_clusters/core/proto/clusters.pb.h"
@@ -85,30 +87,18 @@ class HistoryClustersServiceTest : public testing::Test {
         {});
   }
 
-  void AddVisit(history::URLID url_id,
-                const GURL& url,
-                const std::u16string title,
-                history::VisitID visit_id,
-                base::Time visit_time,
-                int page_end_reason,
-                absl::optional<history::VisitID> referring_visit_id) {
-    history::AnnotatedVisit visit;
-    visit.url_row.set_id(url_id);
-    visit.url_row.set_url(url);
-    visit.url_row.set_title(title);
-    visit.visit_row.visit_id = visit_id;
-    visit.visit_row.visit_time = visit_time;
-    if (referring_visit_id)
-      visit.visit_row.referring_visit = *referring_visit_id;
-    visit.context_annotations.page_end_reason = page_end_reason;
-    AddVisit(visit);
-  }
-
   void AddVisit(const history::AnnotatedVisit& visit) {
-    history_service_->AddPageWithDetails(
-        visit.url_row.url(), visit.url_row.title(), visit.url_row.visit_count(),
-        visit.url_row.typed_count(), visit.visit_row.visit_time,
-        visit.url_row.hidden(), history::VisitSource::SOURCE_BROWSED);
+    history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
+    history::HistoryAddPageArgs add_page_args;
+    add_page_args.context_id = context_id;
+    add_page_args.nav_entry_id = next_navigation_id_;
+    add_page_args.url = visit.url_row.url();
+    add_page_args.title = visit.url_row.title();
+    add_page_args.time = visit.visit_row.visit_time;
+    history_service_->AddPage(add_page_args);
+    history_service_->UpdateWithPageEndTime(
+        context_id, next_navigation_id_, visit.url_row.url(),
+        visit.visit_row.visit_time + visit.visit_row.visit_duration);
 
     auto& incomplete_visit_context_annotations =
         history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
@@ -134,10 +124,30 @@ class HistoryClustersServiceTest : public testing::Test {
   }
 
   void AddHardcodedTestDataToHistoryService() {
-    AddVisit(1, GURL{"https://google.com/"}, u"Google title", 1, visit_1_time_,
-             3, absl::nullopt);
-    AddVisit(2, GURL{"https://github.com/"}, u"Github title", 2, visit_2_time_,
-             5, 1);
+    {
+      history::AnnotatedVisit visit;
+      visit.url_row.set_id(1);
+      visit.url_row.set_url(GURL("https://google.com/"));
+      visit.url_row.set_title(u"Google title");
+      visit.visit_row.visit_id = 1;
+      visit.visit_row.visit_time = visit_1_time_;
+      visit.visit_row.visit_duration = base::TimeDelta::FromMilliseconds(5600);
+      visit.context_annotations.page_end_reason = 3;
+      AddVisit(visit);
+    }
+
+    {
+      history::AnnotatedVisit visit;
+      visit.url_row.set_id(2);
+      visit.url_row.set_url(GURL("https://github.com/"));
+      visit.url_row.set_title(u"Github title");
+      visit.visit_row.visit_id = 2;
+      visit.visit_row.visit_time = visit_2_time_;
+      visit.visit_row.visit_duration = base::TimeDelta::FromSeconds(20);
+      visit.visit_row.referring_visit = 1;
+      visit.context_annotations.page_end_reason = 5;
+      AddVisit(visit);
+    }
   }
 
   // Verifies that that a particular hardcoded request is in a pending request
@@ -164,12 +174,14 @@ class HistoryClustersServiceTest : public testing::Test {
     EXPECT_EQ(visit.visit_id(), 2);
     EXPECT_EQ(visit.navigation_time_ms(),
               visit_2_time_.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    EXPECT_EQ(visit.foreground_time_secs(), 20);
     EXPECT_EQ(visit.url(), "https://github.com/");
     EXPECT_EQ(visit.page_end_reason(), 5);
     visit = request.visits().at(1);
     EXPECT_EQ(visit.visit_id(), 1);
     EXPECT_EQ(visit.navigation_time_ms(),
               visit_1_time_.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    EXPECT_EQ(visit.foreground_time_secs(), 5);
     EXPECT_EQ(visit.url(), "https://google.com/");
     EXPECT_EQ(visit.page_end_reason(), 3);
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
@@ -228,9 +240,30 @@ class HistoryClustersServiceTest : public testing::Test {
 // Useless, but required by the C++14 standard. Please deliver us, C++17.
 constexpr char HistoryClustersServiceTest::kFakeEndpoint[];
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
+TEST_F(HistoryClustersServiceTest, VerifyRemoteEndpointRequest) {
   std::string experiment_name = "someExperiment";
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
+  AddHardcodedTestDataToHistoryService();
+
+  history_clusters_service_->QueryMemories(
+      mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](HistoryClustersService::QueryMemoriesResponse response) {
+            // Ignore the response. We are just testing the request.
+            run_loop_quit_.Run();
+          }),
+      &task_tracker_);
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
+  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
+
+  // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
   AddHardcodedTestDataToHistoryService();
 
   struct TestData {
@@ -314,7 +347,7 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
         &task_tracker_);
 
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-    VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
+    VerifyHardcodedTestDataInUrlLoaderRequest();
     InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
     // Verify the callback is invoked.

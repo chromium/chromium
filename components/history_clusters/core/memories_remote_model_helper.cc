@@ -34,10 +34,14 @@ proto::GetClustersRequest CreateRequestProto(
 
   base::ListValue debug_visits_list;
   for (auto& visit : visits) {
+    // TODO(tommycli): Still need to set `site_engagement_score` and
+    //  `is_from_google_search`.
     proto::Visit* request_visit = request.add_visits();
     request_visit->set_visit_id(visit.visit_row.visit_id);
     request_visit->set_url(visit.url_row.url().spec());
     request_visit->set_origin(visit.url_row.url().GetOrigin().spec());
+    request_visit->set_foreground_time_secs(
+        visit.visit_row.visit_duration.InSeconds());
     request_visit->set_navigation_time_ms(
         visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
     request_visit->set_page_end_reason(
@@ -52,6 +56,9 @@ proto::GetClustersRequest CreateRequestProto(
                                base::NumberToString(request_visit->visit_id()));
       debug_visit.SetStringKey("url", request_visit->url());
       debug_visit.SetStringKey("origin", request_visit->origin());
+      debug_visit.SetStringKey(
+          "foreground_time_secs",
+          base::NumberToString(request_visit->foreground_time_secs()));
       debug_visit.SetStringKey(
           "navigationTimeMs",
           base::NumberToString(request_visit->navigation_time_ms()));
