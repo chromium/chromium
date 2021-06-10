@@ -582,6 +582,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Network.DnsProxy.DnsOverHttpsMode"
+    enum="DnsProxy.DnsOverHttpsMode" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the DOH mode setting
+    whenever it is read from or changed in Chrome and propagated to shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.DnsProxy.DnsOverHttpsQuery.HttpErrors"
+    enum="DnsProxy.HttpError" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records an value
+    corresponding to the HTTP status returned when a DNS-over-HTTPS request
+    returns in error.
+  </summary>
+</histogram>
+
+<histogram name="Network.DnsProxy.NameserverTypes"
+    enum="DnsProxy.NameserverType" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the type of plain
+    text nameservers used whenever they are obtained from shill for a given
+    network.
+  </summary>
+</histogram>
+
+<histogram name="Network.DnsProxy.{Family}Nameservers" units="units"
+    expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the number of
+    nameserver addresses whenever they are obtained from shill for a given
+    network.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
 <histogram name="Network.DnsProxy.{ProcessType}.Event"
     enum="DnsProxy.ProcessEvent" expires_after="2021-12-01">
   <owner>garrick@chromium.org</owner>
@@ -597,6 +644,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="Controller"/>
     <variant name="DefaultProxy"/>
     <variant name="SystemProxy"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.{Type}Query.Errors"
+    enum="DnsProxy.QueryError" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records any errors that occur
+    during DNS queries made by the service. A value will be recorded whenever
+    the request completes in error.
+  </summary>
+  <token key="Type">
+    <variant name="DnsOverHttps"/>
+    <variant name="PlainText"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.{Type}Query.Results"
+    enum="DnsProxy.QueryResult" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the results of the
+    DNS queries made by the service. A value will be recorded whenever the
+    request completes.
+  </summary>
+  <token key="Type">
+    <variant name="DnsOverHttps"/>
+    <variant name="PlainText"/>
   </token>
 </histogram>
 
