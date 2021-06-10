@@ -909,6 +909,7 @@ void GraphicsContext::DrawImageTiled(
     return;
 
   PaintFlags image_flags = ImmutableState()->FillFlags();
+  image_flags.setBlendMode(op);
 
   // Do not classify the image if the element has any CSS filters.
   if (!has_filter_property) {
@@ -916,7 +917,7 @@ void GraphicsContext::DrawImageTiled(
                                                src_rect, dest_rect);
   }
 
-  image->DrawPattern(*this, image_flags, src_rect, scale_src_to_dest, phase, op,
+  image->DrawPattern(*this, image_flags, src_rect, scale_src_to_dest, phase,
                      dest_rect, repeat_spacing, respect_orientation);
   paint_controller_.SetImagePainted();
 }

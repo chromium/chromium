@@ -360,19 +360,14 @@ void PlaceholderImage::DrawPattern(
     const FloatRect& src_rect,
     const FloatSize& scale,
     const FloatPoint& phase,
-    SkBlendMode mode,
     const FloatRect& dest_rect,
     const FloatSize& repeat_spacing,
     RespectImageOrientationEnum respect_orientation) {
   DCHECK(context.Canvas());
-
-  PaintFlags flags(base_flags);
-  flags.setBlendMode(mode);
-
   // Ignore the pattern specifications and just draw a single placeholder image
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
-  Draw(context.Canvas(), flags, dest_rect, src_rect,
+  Draw(context.Canvas(), base_flags, dest_rect, src_rect,
        context.ImageSamplingOptions(), respect_orientation,
        kClampImageToSourceRect, kUnspecifiedDecode);
 }

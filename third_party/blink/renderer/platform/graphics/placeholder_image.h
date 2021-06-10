@@ -76,7 +76,6 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
                    const FloatRect& src_rect,
                    const FloatSize& scale,
                    const FloatPoint& phase,
-                   SkBlendMode,
                    const FloatRect& dest_rect,
                    const FloatSize& repeat_spacing,
                    RespectImageOrientationEnum) override;

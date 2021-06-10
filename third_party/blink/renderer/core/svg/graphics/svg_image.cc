@@ -405,10 +405,10 @@ PaintImage SVGImage::PaintImageForCurrentFrame() {
 
 void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                                        GraphicsContext& context,
+                                       const cc::PaintFlags& base_flags,
                                        const FloatRect& src_rect,
                                        const FloatSize& tile_scale,
                                        const FloatPoint& phase,
-                                       SkBlendMode composite_op,
                                        const FloatRect& dst_rect,
                                        const FloatSize& repeat_spacing) {
   // Tile adjusted for scaling/stretch.
@@ -435,18 +435,19 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                      src_rect);
   }
 
-  PaintFlags flags;
-  flags.setShader(PaintShader::MakePaintRecord(
+  sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
       builder.EndRecording(), spaced_tile, SkTileMode::kRepeat,
-      SkTileMode::kRepeat, &pattern_transform));
+      SkTileMode::kRepeat, &pattern_transform);
+
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
-  if (!flags.HasShader())
-    flags.setColor(SK_ColorTRANSPARENT);
+  PaintFlags flags = base_flags;
+  flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
+  flags.setShader(std::move(tile_shader));
+  // Reset filter quality.
+  flags.setFilterQuality(kNone_SkFilterQuality);
 
-  flags.setBlendMode(composite_op);
-  flags.setColorFilter(sk_ref_sp(context.GetColorFilter()));
   context.DrawRect(dst_rect, flags);
 
   StartAnimation();

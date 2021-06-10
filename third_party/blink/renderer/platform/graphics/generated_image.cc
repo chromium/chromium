@@ -44,7 +44,6 @@ void GeneratedImage::DrawPattern(
     const FloatRect& src_rect,
     const FloatSize& scale,
     const FloatPoint& phase,
-    SkBlendMode composite_op,
     const FloatRect& dest_rect,
     const FloatSize& repeat_spacing,
     RespectImageOrientationEnum respect_orientation) {
@@ -61,7 +60,6 @@ void GeneratedImage::DrawPattern(
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
-  fill_flags.setBlendMode(composite_op);
 
   dest_context.DrawRect(dest_rect, fill_flags);
 }

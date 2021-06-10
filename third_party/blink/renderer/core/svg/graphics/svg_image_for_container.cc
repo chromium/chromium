@@ -48,13 +48,12 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
                                        const FloatRect& src_rect,
                                        const FloatSize& scale,
                                        const FloatPoint& phase,
-                                       SkBlendMode op,
                                        const FloatRect& dst_rect,
                                        const FloatSize& repeat_spacing,
                                        RespectImageOrientationEnum) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
-  image_->DrawPatternForContainer(draw_info, context, src_rect, scale, phase,
-                                  op, dst_rect, repeat_spacing);
+  image_->DrawPatternForContainer(draw_info, context, flags, src_rect, scale,
+                                  phase, dst_rect, repeat_spacing);
 }
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,

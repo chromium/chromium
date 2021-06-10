@@ -174,10 +174,10 @@ class CORE_EXPORT SVGImage final : public Image {
                         const FloatRect& src_rect);
   void DrawPatternForContainer(const DrawInfo&,
                                GraphicsContext&,
+                               const cc::PaintFlags&,
                                const FloatRect& src_rect,
                                const FloatSize& tile_scale,
                                const FloatPoint& phase,
-                               SkBlendMode composite_op,
                                const FloatRect& dst_rect,
                                const FloatSize& repeat_spacing);
   void PopulatePaintRecordForCurrentFrameForContainer(const DrawInfo&,

@@ -223,7 +223,6 @@ void Image::DrawPattern(GraphicsContext& context,
                         const FloatRect& float_src_rect,
                         const FloatSize& scale_src_to_dest,
                         const FloatPoint& phase,
-                        SkBlendMode composite_op,
                         const FloatRect& dest_rect,
                         const FloatSize& repeat_spacing,
                         RespectImageOrientationEnum respect_orientation) {
@@ -292,7 +291,6 @@ void Image::DrawPattern(GraphicsContext& context,
   // Note: we can't simply bail, because of arbitrary blend mode.
   PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
-  flags.setBlendMode(composite_op);
   flags.setShader(std::move(tile_shader));
 
   context.DrawRect(dest_rect, flags);

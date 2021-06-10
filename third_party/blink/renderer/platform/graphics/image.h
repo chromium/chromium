@@ -270,7 +270,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                            const FloatRect&,
                            const FloatSize&,
                            const FloatPoint& phase,
-                           SkBlendMode,
                            const FloatRect&,
                            const FloatSize& repeat_spacing,
                            RespectImageOrientationEnum);
