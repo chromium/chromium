@@ -3256,4 +3256,11 @@ const char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
 const char kExplicitlyAllowedNetworkPorts[] =
     "net.explicitly_allowed_network_ports";
 
+#if !defined(OS_ANDROID)
+// Pref name for whether force-installed web apps are able to query
+// device attributes.
+const char kManagedWebAppsAccessToDeviceAttributesAllowed[] =
+    "policy.managed_web_apps_access_to_device_attributes_allowed";
+#endif
+
 }  // namespace prefs

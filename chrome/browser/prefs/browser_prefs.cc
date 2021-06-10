@@ -228,6 +228,7 @@
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/intranet_redirect_detector.h"
@@ -1091,11 +1092,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   video_tutorials::RegisterPrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
-#else   // defined(OS_ANDROID)
+#else  // defined(OS_ANDROID)
   AppShortcutManager::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   captions::LiveCaptionController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
+  DeviceServiceImpl::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
   enterprise_connectors::RegisterProfilePrefs(registry);

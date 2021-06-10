@@ -4764,6 +4764,16 @@
     ]
   },
 
+  "ManagedWebAppsAccessToDeviceAttributesAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "ManagedWebAppsAccessToDeviceAttributesAllowed": true },
+        "prefs": { "policy.managed_web_apps_access_to_device_attributes_allowed": {} }
+      }
+    ]
+  },
+
   "AllowDinosaurEasterEgg": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

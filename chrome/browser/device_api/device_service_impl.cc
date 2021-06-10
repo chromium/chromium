@@ -71,6 +71,12 @@ void DeviceServiceImpl::Create(
   new DeviceServiceImpl(host, std::move(receiver));
 }
 
+// static
+void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kManagedWebAppsAccessToDeviceAttributesAllowed, true);
+}
+
 void DeviceServiceImpl::OnForceInstallWebAppListChanged() {
   // DeviceServiceImpl is allocated on the heap, thus it is safe to remove it
   // like this.

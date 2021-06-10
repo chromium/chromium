@@ -15061,6 +15061,37 @@
       For detailed information on valid input patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored.''',
     },
     {
+      'name': 'ManagedWebAppsAccessToDeviceAttributesAllowed',
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow force-installed web applications to query for device attributes.',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent force-installed web applications from querying for device attributes.',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 865,
+      'caption': '''Allow force-installed web applications to query for device attributes.''',
+      'tags': [],
+      'desc': '''Setting the policy to allow force-installed web applications to get device attributes (e.g. serial number, hostname) by using Device Attributes web API.
+
+      If this policy is set to true or not configured, the Device Attributes web API will be allowed to force-installed web applications.
+
+      If this policy is set to false, the Device Attributes web API will be disallowed.''',
+    },
+    {
       'name': 'QuicAllowed',
       'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
@@ -27075,6 +27106,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 864,
+  'highest_id_currently_used': 865,
   'highest_atomic_group_id_currently_used': 40
 }

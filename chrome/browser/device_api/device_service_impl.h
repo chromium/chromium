@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/document_service_base.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 
@@ -23,6 +24,9 @@ class DeviceServiceImpl final
   static void Create(
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
+
+  // Register the user prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   DeviceServiceImpl(const DeviceServiceImpl&) = delete;
   DeviceServiceImpl& operator=(const DeviceServiceImpl&) = delete;
