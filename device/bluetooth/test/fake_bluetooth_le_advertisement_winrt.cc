@@ -206,7 +206,7 @@ HRESULT FakeBluetoothLEAdvertisementWinrt::GetSectionsByType(
   std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> data_sections;
   if (type == BluetoothDeviceWinrt::kTxPowerLevelDataSection && tx_power_) {
     data_sections.push_back(Make<FakeBluetoothLEAdvertisementDataSectionWinrt>(
-        std::vector<uint8_t>({*tx_power_})));
+        std::vector<uint8_t>({static_cast<uint8_t>(*tx_power_)})));
   }
 
   // For simplicity we only implement querying 128 Bit UUID Service Data.

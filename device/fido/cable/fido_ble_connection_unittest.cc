@@ -558,10 +558,10 @@ TEST_F(FidoBleConnectionTest, MultipleServiceRevisions) {
                  << "Supported Revisions: " << test_case.supported_revisions
                  << ", Selected Revision: " << test_case.selected_revision);
     SetNextReadServiceRevisionBitfieldResponse(
-        true, {test_case.supported_revisions.to_ulong()});
+        true, {static_cast<uint8_t>(test_case.supported_revisions.to_ulong())});
 
     SetNextWriteServiceRevisionResponse(
-        {test_case.selected_revision.to_ulong()}, true);
+        {static_cast<uint8_t>(test_case.selected_revision.to_ulong())}, true);
 
     FidoBleConnection connection(adapter(), device_address, uuid(),
                                  base::DoNothing());
@@ -593,7 +593,7 @@ TEST_F(FidoBleConnectionTest, UnsupportedServiceRevisions) {
     SCOPED_TRACE(::testing::Message()
                  << "Supported Revisions: " << test_case.supported_revisions);
     SetNextReadServiceRevisionBitfieldResponse(
-        true, {test_case.supported_revisions.to_ulong()});
+        true, {static_cast<uint8_t>(test_case.supported_revisions.to_ulong())});
 
     FidoBleConnection connection(adapter(), device_address, uuid(),
                                  base::DoNothing());

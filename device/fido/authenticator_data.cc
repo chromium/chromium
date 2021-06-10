@@ -122,8 +122,10 @@ AuthenticatorData::AuthenticatorData(
                                  attested_credential_data.has_value(),
                                  extensions.has_value()),
           std::array<uint8_t, kSignCounterLength>{
-              (sign_counter >> 24) & 0xff, (sign_counter >> 16) & 0xff,
-              (sign_counter >> 8) & 0xff, sign_counter & 0xff},
+              static_cast<uint8_t>(sign_counter >> 24),
+              static_cast<uint8_t>(sign_counter >> 16),
+              static_cast<uint8_t>(sign_counter >> 8),
+              static_cast<uint8_t>(sign_counter)},
           std::move(attested_credential_data),
           std::move(extensions)) {}
 

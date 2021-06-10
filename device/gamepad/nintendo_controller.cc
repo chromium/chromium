@@ -1635,11 +1635,13 @@ void NintendoController::RequestEnableUsbTimeout(bool enable) {
 }
 
 void NintendoController::RequestEnableImu(bool enable) {
-  SubCommand(kSubCommandEnableImu, {enable ? 0x01 : 0x00});
+  SubCommand(kSubCommandEnableImu,
+             {static_cast<uint8_t>(enable ? 0x01 : 0x00)});
 }
 
 void NintendoController::RequestEnableVibration(bool enable) {
-  SubCommand(kSubCommandEnableVibration, {enable ? 0x01 : 0x00});
+  SubCommand(kSubCommandEnableVibration,
+             {static_cast<uint8_t>(enable ? 0x01 : 0x00)});
 }
 
 void NintendoController::RequestSetPlayerLights(uint8_t light_pattern) {
@@ -1658,8 +1660,9 @@ void NintendoController::RequestSetHomeLight(
   DCHECK_LE(cycle_count, 0xf);
   if ((cycle_count > 0 && minicycle_count == 1) || minicycle_duration == 0)
     minicycle_count = 0;
-  std::vector<uint8_t> bytes = {(minicycle_count << 4) | minicycle_duration,
-                                (start_intensity << 4) | cycle_count};
+  std::vector<uint8_t> bytes = {
+      static_cast<uint8_t>((minicycle_count << 4) | minicycle_duration),
+      static_cast<uint8_t>((start_intensity << 4) | cycle_count)};
   bytes.insert(bytes.end(), minicycle_data.begin(), minicycle_data.end());
   SubCommand(kSubCommandSetHomeLight, bytes);
 }
@@ -1676,7 +1679,8 @@ void NintendoController::RequestSetHomeLightIntensity(double intensity) {
   // 1x minicycle duration. Because |minicycle_count| and |cycle_count| are
   // both zero, the device will transition to the 1st minicycle and then stay at
   // |led_intensity|.
-  RequestSetHomeLight(0, 1, led_intensity, 0, {led_intensity << 4, 0x00});
+  RequestSetHomeLight(0, 1, led_intensity, 0,
+                      {static_cast<uint8_t>(led_intensity << 4), 0x00});
 }
 
 void NintendoController::RequestSetImuSensitivity(

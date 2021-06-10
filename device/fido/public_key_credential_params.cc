@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
+
 namespace device {
 
 bool PublicKeyCredentialParams::CredentialInfo::operator==(
@@ -34,12 +36,15 @@ PublicKeyCredentialParams::CreateFromCBORValue(const cbor::Value& cbor_value) {
         !credential_type_it->second.is_string() ||
         credential_type_it->second.GetString() != kPublicKey ||
         algorithm_type_it == credential_map.end() ||
-        !algorithm_type_it->second.is_integer()) {
+        !algorithm_type_it->second.is_integer() ||
+        !base::IsValueInRangeForNumericType<int32_t>(
+            algorithm_type_it->second.GetInteger())) {
       return absl::nullopt;
     }
 
     credential_params.push_back(PublicKeyCredentialParams::CredentialInfo{
-        CredentialType::kPublicKey, algorithm_type_it->second.GetInteger()});
+        CredentialType::kPublicKey,
+        static_cast<int32_t>(algorithm_type_it->second.GetInteger())});
   }
 
   return PublicKeyCredentialParams(std::move(credential_params));

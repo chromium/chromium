@@ -140,14 +140,15 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
 }
 
 constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
-  return {value & 0xFF, value >> 8 & 0xFF, value >> 16 & 0xFF,
-          value >> 24 & 0xFF};
+  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
 }
 
 constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
-  return {value & 0xFF,       value >> 8 & 0xFF,  value >> 16 & 0xFF,
-          value >> 24 & 0xFF, value >> 32 & 0xFF, value >> 40 & 0xFF,
-          value >> 48 & 0xFF, value >> 56 & 0xFF};
+  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
+          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
+          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
 }
 
 }  // namespace fido_parsing_utils

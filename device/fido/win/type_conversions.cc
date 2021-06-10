@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/reader.h"
@@ -172,7 +173,7 @@ std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
     }
     result.push_back(WEBAUTHN_CREDENTIAL{
         WEBAUTHN_CREDENTIAL_CURRENT_VERSION,
-        credential.id().size(),
+        base::checked_cast<DWORD>(credential.id().size()),
         const_cast<unsigned char*>(credential.id().data()),
         WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
     });
@@ -188,7 +189,8 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
       continue;
     }
     result.push_back(WEBAUTHN_CREDENTIAL_EX{
-        WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION, credential.id().size(),
+        WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION,
+        base::checked_cast<DWORD>(credential.id().size()),
         const_cast<unsigned char*>(credential.id().data()),
         WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
         ToWinTransportsMask(credential.transports())});

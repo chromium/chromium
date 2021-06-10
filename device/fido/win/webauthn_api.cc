@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -217,7 +218,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   std::vector<uint8_t> user_id = request.user.id;
   WEBAUTHN_USER_ENTITY_INFORMATION user_info{
       WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
-      user_id.size(),
+      base::checked_cast<DWORD>(user_id.size()),
       const_cast<unsigned char*>(user_id.data()),
       base::as_wcstr(user_name),
       base::as_wcstr(user_icon_url),
@@ -236,12 +237,13 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
          WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY, credential_info.algorithm});
   }
   WEBAUTHN_COSE_CREDENTIAL_PARAMETERS cose_credential_parameters{
-      cose_credential_parameter_values.size(),
+      base::checked_cast<DWORD>(cose_credential_parameter_values.size()),
       cose_credential_parameter_values.data()};
 
   std::string client_data_json = request.client_data_json;
   WEBAUTHN_CLIENT_DATA client_data{
-      WEBAUTHN_CLIENT_DATA_CURRENT_VERSION, client_data_json.size(),
+      WEBAUTHN_CLIENT_DATA_CURRENT_VERSION,
+      base::checked_cast<DWORD>(client_data_json.size()),
       const_cast<unsigned char*>(
           reinterpret_cast<const unsigned char*>(client_data_json.data())),
       WEBAUTHN_HASH_ALGORITHM_SHA_256};
@@ -302,15 +304,17 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   std::transform(
       exclude_list_credentials.begin(), exclude_list_credentials.end(),
       std::back_inserter(exclude_list_ptrs), [](auto& cred) { return &cred; });
-  WEBAUTHN_CREDENTIAL_LIST exclude_credential_list{exclude_list_ptrs.size(),
-                                                   exclude_list_ptrs.data()};
+  WEBAUTHN_CREDENTIAL_LIST exclude_credential_list{
+      base::checked_cast<DWORD>(exclude_list_ptrs.size()),
+      exclude_list_ptrs.data()};
 
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
       WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_3,
       kWinWebAuthnTimeoutMilliseconds,
       WEBAUTHN_CREDENTIALS{
           0, nullptr},  // Ignored because pExcludeCredentialList is set.
-      WEBAUTHN_EXTENSIONS{extensions.size(), extensions.data()},
+      WEBAUTHN_EXTENSIONS{base::checked_cast<DWORD>(extensions.size()),
+                          extensions.data()},
       authenticator_attachment,
       request.resident_key_required,
       ToWinUserVerificationRequirement(request.user_verification),
@@ -364,7 +368,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   std::u16string rp_id16 = base::UTF8ToUTF16(request.rp_id);
   std::string client_data_json = request.client_data_json;
   WEBAUTHN_CLIENT_DATA client_data{
-      WEBAUTHN_CLIENT_DATA_CURRENT_VERSION, client_data_json.size(),
+      WEBAUTHN_CLIENT_DATA_CURRENT_VERSION,
+      base::checked_cast<DWORD>(client_data_json.size()),
       const_cast<unsigned char*>(
           reinterpret_cast<const unsigned char*>(client_data_json.data())),
       WEBAUTHN_HASH_ALGORITHM_SHA_256};
@@ -384,8 +389,9 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   std::transform(allow_list_credentials.begin(), allow_list_credentials.end(),
                  std::back_inserter(allow_list_ptrs),
                  [](auto& cred) { return &cred; });
-  WEBAUTHN_CREDENTIAL_LIST allow_credential_list{allow_list_ptrs.size(),
-                                                 allow_list_ptrs.data()};
+  WEBAUTHN_CREDENTIAL_LIST allow_credential_list{
+      base::checked_cast<DWORD>(allow_list_ptrs.size()),
+      allow_list_ptrs.data()};
 
   // Note that entries in |legacy_credentials| hold pointers into
   // request.allow_list.
@@ -421,7 +427,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       // As a workaround, MS tells us to also set the CredentialList
       // parameter with an accurate cCredentials count and some arbitrary
       // pCredentials data.
-      WEBAUTHN_CREDENTIALS{legacy_credentials.size(),
+      WEBAUTHN_CREDENTIALS{base::checked_cast<DWORD>(legacy_credentials.size()),
                            legacy_credentials.data()},
       WEBAUTHN_EXTENSIONS{0, nullptr},
       authenticator_attachment,

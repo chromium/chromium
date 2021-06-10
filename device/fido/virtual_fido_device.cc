@@ -540,10 +540,11 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       break;
   }
   const uint8_t kTransportTypesContents[] = {
-      3,                            // BIT STRING
-      2,                            // two bytes long
-      8 - transport_bit - 1,        // trailing bits unused
-      0b10000000 >> transport_bit,  // transport
+      3,                                            // BIT STRING
+      2,                                            // two bytes long
+      static_cast<uint8_t>(8 - transport_bit - 1),  // trailing bits unused
+      static_cast<uint8_t>(0b10000000 >> transport_bit),
+      // transport
   };
 
   // https://www.w3.org/TR/webauthn/#sctn-packed-attestation-cert-requirements

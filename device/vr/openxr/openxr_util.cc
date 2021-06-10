@@ -43,12 +43,12 @@ XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
   // This pose should always be a simple translation and rotation so this should
   // always be true
   DCHECK(decomposition_result);
-  return {
-      {decomposed_transform.quaternion.x(), decomposed_transform.quaternion.y(),
-       decomposed_transform.quaternion.z(),
-       decomposed_transform.quaternion.w()},
-      {decomposed_transform.translate[0], decomposed_transform.translate[1],
-       decomposed_transform.translate[2]}};
+  return {{static_cast<float>(decomposed_transform.quaternion.x()),
+           static_cast<float>(decomposed_transform.quaternion.y()),
+           static_cast<float>(decomposed_transform.quaternion.z()),
+           static_cast<float>(decomposed_transform.quaternion.w())},
+          {decomposed_transform.translate[0], decomposed_transform.translate[1],
+           decomposed_transform.translate[2]}};
 }
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system) {

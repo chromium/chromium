@@ -4,6 +4,7 @@
 
 #include "device/fido/win/type_conversions.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -93,9 +94,9 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
         ToAuthenticatorMakeCredentialResponse(WEBAUTHN_CREDENTIAL_ATTESTATION{
             WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3,
             test.format,
-            test.authenticator_data.size(),
+            base::checked_cast<DWORD>(test.authenticator_data.size()),
             const_cast<unsigned char*>(test.authenticator_data.data()),
-            test.cbor_attestation_statement.size(),
+            base::checked_cast<DWORD>(test.cbor_attestation_statement.size()),
             const_cast<unsigned char*>(test.cbor_attestation_statement.data()),
             // dwAttestationDecodeType and pvAttestationDecode are ignored.
             WEBAUTHN_ATTESTATION_DECODE_NONE,
