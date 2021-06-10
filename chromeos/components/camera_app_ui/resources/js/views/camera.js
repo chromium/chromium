@@ -737,7 +737,6 @@ export class Camera extends View {
           this.options_.updateValues(stream, this.facingMode_);
           factory.setPreviewStream(stream);
           factory.setFacing(this.facingMode_);
-          await factory.setupExtraStreams(constraints, captureR);
 
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(

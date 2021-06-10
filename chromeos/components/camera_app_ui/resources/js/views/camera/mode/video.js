@@ -5,11 +5,10 @@
 import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {
   assert,
-  assertInstanceof,
   assertString,
 } from '../../../chrome_util.js';
 import {
-  CaptureStream,
+  CaptureStream,  // eslint-disable-line no-unused-vars
   StreamManager,
 } from '../../../device/stream_manager.js';
 import * as dom from '../../../dom.js';
@@ -176,16 +175,39 @@ export class VideoHandler {
 }
 
 /**
+ * @param {!MediaStream} stream
+ * @return {!Resolution}
+ */
+function getResolution(stream) {
+  const {width, height} = stream.getVideoTracks()[0].getSettings();
+  return new Resolution(width, height);
+}
+
+/**
  * Video mode capture controller.
  */
 export class Video extends ModeBase {
   /**
-   * @param {!CaptureStream} stream
+   * @param {!MediaStream} stream Preview stream.
+   * @param {!MediaStreamConstraints} captureConstraints
+   * @param {?Resolution} captureResolution
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
-  constructor(stream, facing, handler) {
-    super(stream.stream, facing, null);
+  constructor(stream, captureConstraints, captureResolution, facing, handler) {
+    super(stream, facing);
+
+    /**
+     * @const {!MediaStreamConstraints}
+     * @private
+     */
+    this.captureConstraints_ = captureConstraints;
+
+    /**
+     * @const {!Resolution}
+     * @private
+     */
+    this.captureResolution_ = captureResolution || getResolution(stream);
 
     /**
      * @const {!VideoHandler}
@@ -194,11 +216,23 @@ export class Video extends ModeBase {
     this.handler_ = handler;
 
     /**
+     * @type {?CaptureStream}
+     * @private
+     */
+    this.captureStream_ = null;
+
+    /**
      * MediaRecorder object to record motion pictures.
      * @type {?MediaRecorder}
      * @private
      */
     this.mediaRecorder_ = null;
+
+    /**
+     * @type {?ImageCapture}
+     * @private
+     */
+    this.imageCapture_ = null;
 
     /**
      * Record-time for the elapsed recording time.
@@ -226,12 +260,6 @@ export class Video extends ModeBase {
      * Whether current recording ever paused/resumed before it ended.
      */
     this.everPaused_ = false;
-
-    /**
-     * @type {!CaptureStream}
-     * @private
-     */
-    this.captureStream_ = stream;
   }
 
   /**
@@ -239,7 +267,9 @@ export class Video extends ModeBase {
    */
   async clear() {
     await this.stopCapture();
-    await this.captureStream_.close();
+    if (this.captureStream_ !== null) {
+      await this.captureStream_.close();
+    }
   }
 
   /**
@@ -248,13 +278,24 @@ export class Video extends ModeBase {
    */
   takeSnapshot() {
     const doSnapshot = async () => {
-      const blob = await this.handler_.getPreviewFrame();
+      const bitmap = await this.imageCapture_.grabFrame();
+      const {canvas, ctx} = util.newDrawingCanvas(this.captureResolution_);
+      ctx.drawImage(bitmap, 0, 0);
+      const blob = await (new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Photo blob error.'));
+          }
+        }, 'image/jpeg');
+      }));
+
       this.handler_.playShutterEffect();
-      const {width, height} = await util.blobToImage(blob);
       const imageName = (new Filenamer()).newImageName();
       await this.handler_.handleResultPhoto(
           {
-            resolution: new Resolution(width, height),
+            resolution: this.captureResolution_,
             blob,
             isVideoSnapshot: true,
           },
@@ -321,7 +362,7 @@ export class Video extends ModeBase {
         {profile: h264.Profile.HIGH, multiplier: 2};
     const {profile, multiplier} = preference;
     const {width, height, frameRate} =
-        this.stream_.getVideoTracks()[0].getSettings();
+        this.captureStream_.stream.getVideoTracks()[0].getSettings();
     const resolution = new Resolution(width, height);
     const bitrate = resolution.area * multiplier;
     const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
@@ -348,6 +389,15 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording sound is canceled');
     }
 
+    if (this.captureStream_ !== null) {
+      this.captureStream_ = await StreamManager.getInstance().openCaptureStream(
+          this.captureConstraints_);
+    }
+    if (this.imageCapture_ === null) {
+      this.imageCapture_ =
+          new ImageCapture(this.captureStream_.stream.getVideoTracks()[0]);
+    }
+
     try {
       const param = this.getEncoderParameters_();
       const mimeType = getVideoMimeType(param);
@@ -359,7 +409,8 @@ export class Video extends ModeBase {
       if (param !== null) {
         option.videoBitsPerSecond = param.bitrate;
       }
-      this.mediaRecorder_ = new MediaRecorder(this.stream_, option);
+      this.mediaRecorder_ =
+          new MediaRecorder(this.captureStream_.stream, option);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
       throw e;
@@ -395,7 +446,8 @@ export class Video extends ModeBase {
       return;
     }
 
-    const settings = this.stream_.getVideoTracks()[0].getSettings();
+    const settings =
+        this.captureStream_.stream.getVideoTracks()[0].getSettings();
     const resolution = new Resolution(settings.width, settings.height);
     state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
     try {
@@ -503,11 +555,10 @@ export class VideoFactory extends ModeFactory {
     this.handler_ = handler;
 
     /**
-     * Stream for video capturing.
-     * @type {?CaptureStream}
+     * @type {!MediaStreamConstraints}
      * @private
      */
-    this.captureStream_ = null;
+    this.captureConstraints_;
   }
 
   /**
@@ -516,35 +567,7 @@ export class VideoFactory extends ModeFactory {
   async prepareDevice(constraints, resolution) {
     this.captureResolution_ = resolution;
     const deviceId = assertString(constraints.video.deviceId.exact);
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator !== null) {
-      await deviceOperator.setCaptureIntent(
-          deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
-
-      let /** number */ minFrameRate = 0;
-      let /** number */ maxFrameRate = 0;
-      if (constraints.video && constraints.video.frameRate) {
-        const frameRate = constraints.video.frameRate;
-        if (frameRate.exact) {
-          minFrameRate = frameRate.exact;
-          maxFrameRate = frameRate.exact;
-        } else if (frameRate.min && frameRate.max) {
-          minFrameRate = frameRate.min;
-          maxFrameRate = frameRate.max;
-        }
-        // TODO(wtlee): To set the fps range to the default value, we should
-        // remove the frameRate from constraints instead of using incomplete
-        // range.
-      }
-      await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
-    }
-  }
-
-  /**
-   * @override
-   */
-  async setupExtraStreams(constraints, resolution) {
-    const captureConstraints = {
+    this.captureConstraints_ = {
       audio: constraints.audio,
       video: {
         deviceId: constraints.video.deviceId,
@@ -552,11 +575,33 @@ export class VideoFactory extends ModeFactory {
       },
     };
     if (resolution !== null) {
-      captureConstraints.video.width = resolution.width;
-      captureConstraints.video.height = resolution.height;
+      this.captureConstraints_.video.width = resolution.width;
+      this.captureConstraints_.video.height = resolution.height;
     }
-    this.captureStream_ =
-        await StreamManager.getInstance().openCaptureStream(captureConstraints);
+
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator === null) {
+      return;
+    }
+    await deviceOperator.setCaptureIntent(
+        deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
+
+    let /** number */ minFrameRate = 0;
+    let /** number */ maxFrameRate = 0;
+    if (constraints.video && constraints.video.frameRate) {
+      const frameRate = constraints.video.frameRate;
+      if (frameRate.exact) {
+        minFrameRate = frameRate.exact;
+        maxFrameRate = frameRate.exact;
+      } else if (frameRate.min && frameRate.max) {
+        minFrameRate = frameRate.min;
+        maxFrameRate = frameRate.max;
+      }
+      // TODO(wtlee): To set the fps range to the default value, we should
+      // remove the frameRate from constraints instead of using incomplete
+      // range.
+    }
+    await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
   }
 
   /**
@@ -564,7 +609,7 @@ export class VideoFactory extends ModeFactory {
    */
   produce_() {
     return new Video(
-        assertInstanceof(this.captureStream_, CaptureStream), this.facing_,
-        this.handler_);
+        this.previewStream_, this.captureConstraints_, this.captureResolution_,
+        this.facing_, this.handler_);
   }
 }
