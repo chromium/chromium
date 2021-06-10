@@ -406,31 +406,34 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 #if DCHECK_IS_ON()
   AllowPostLayoutScope allow_post_layout_scope;
 #endif
+  const LayoutBox* flow_thread = nullptr;
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     children_[i].offset = other.children_[i].offset;
-    scoped_refptr<const NGPhysicalFragment> post_layout =
-        other.children_[i]->PostLayout();
-    // While making the fragment tree consistent, we need to also clone any
-    // fragmentainer fragments, as they don't necessarily have their result
-    // stored on the layout-object tree.
-    if (post_layout->IsFragmentainerBox()) {
-      const auto& box_fragment = To<NGPhysicalBoxFragment>(*post_layout);
-
-      absl::optional<PhysicalRect> recalculated_layout_overflow;
-      if (recalculate_layout_overflow) {
-        recalculated_layout_overflow =
-            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
-                box_fragment);
+    const NGPhysicalFragment* post_layout;
+    const NGPhysicalFragment& other_child_fragment = *other.children_[i];
+    if (UNLIKELY(other_child_fragment.IsColumnBox())) {
+      // To find the PostLayout fragment of a column box, copy from the
+      // FlowThread. Its |PhysicalFragments| should match the children of the
+      // multicol container fragment. |PostLayout| does not work for column
+      // boxes because a fragment can't compute its index, but we know the
+      // index. See |PostLayout| for more details.
+      if (!flow_thread) {
+        DCHECK_EQ(i, 0u);
+        flow_thread =
+            To<LayoutBox>(GetSelfOrContainerLayoutObject()->SlowFirstChild());
+        DCHECK(flow_thread);
+        DCHECK(flow_thread->IsLayoutFlowThread());
+        DCHECK_EQ(flow_thread->PhysicalFragmentCount(), const_num_children_);
       }
-
-      // Call the move constructor to move without |AddRef|.
-      new (&children_[i].fragment) scoped_refptr<const NGPhysicalFragment>(
-          NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-              box_fragment, recalculated_layout_overflow));
+      post_layout = flow_thread->GetPhysicalFragment(i);
     } else {
-      new (&children_[i].fragment)
-          scoped_refptr<const NGPhysicalFragment>(post_layout);
+      DCHECK(!flow_thread);
+      post_layout = other_child_fragment.PostLayout();
     }
+
+    DCHECK(post_layout);
+    new (&children_[i].fragment)
+        scoped_refptr<const NGPhysicalFragment>(post_layout);
   }
 
   ink_overflow_type_ = other.ink_overflow_type_;
@@ -596,34 +599,51 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     return this;
   }
   if (UNLIKELY(IsColumnBox())) {
-    // Column boxes should not be a relayout boundary.
+    // For column boxes, the logic does not work because non-last column box
+    // fragments may have null |BreakToken|, and |SequenceNumber| does not match
+    // the index of |LayoutBox::PhysicalFragments|. For this reason,
+    // |CloneWithPostLayoutFragments| has special logic to handle column boxes.
+#if DCHECK_IS_ON()
+    // We can at least check whether |this| is the latest or not.
+    if (!AllowPostLayoutScope::IsAllowed())
+      DCHECK(OwnerLayoutBox());
+#endif
     return this;
   }
 
   const wtf_size_t fragment_count = box->PhysicalFragmentCount();
   if (UNLIKELY(fragment_count == 0)) {
-    // This should not happen, but DCHECK hits. crbug.com/1107204
 #if DCHECK_IS_ON()
     DCHECK(AllowPostLayoutScope::IsAllowed());
 #endif
     return nullptr;
   }
-  if (fragment_count == 1) {
-    const NGPhysicalBoxFragment* post_layout = box->GetPhysicalFragment(0);
-    DCHECK(post_layout);
-    if (UNLIKELY(post_layout != this)) {
-      // This can happen at the relayout boundary crbug.com/829028
-      // but DCHECKing |IsRelayoutBoundary()| hits. crbug.com/1107204
-#if DCHECK_IS_ON()
-      DCHECK(AllowPostLayoutScope::IsAllowed());
-#endif
-      return post_layout;
-    }
-  }
-  // TODO(crbug.com/829028): Block fragmentation not supported yet.
 
-  DCHECK(box->PhysicalFragments().Contains(*this));
-  return this;
+  const NGPhysicalBoxFragment* post_layout = nullptr;
+  if (fragment_count == 1) {
+    post_layout = box->GetPhysicalFragment(0);
+    DCHECK(post_layout);
+  } else if (const auto* break_token = To<NGBlockBreakToken>(BreakToken())) {
+    const unsigned index = break_token->SequenceNumber();
+    if (index < fragment_count) {
+      post_layout = box->GetPhysicalFragment(index);
+      DCHECK(post_layout);
+      DCHECK(
+          !post_layout->BreakToken() ||
+          To<NGBlockBreakToken>(post_layout->BreakToken())->SequenceNumber() ==
+              index);
+    }
+  } else {
+    post_layout = &box->PhysicalFragments().back();
+  }
+
+  if (post_layout == this)
+    return this;
+
+#if DCHECK_IS_ON()
+  DCHECK(AllowPostLayoutScope::IsAllowed());
+#endif
+  return post_layout;
 }
 
 PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {

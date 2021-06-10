@@ -179,8 +179,8 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
 
     for (const auto& child : fragment.PostLayoutChildren()) {
       if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
-        if (box->GetLayoutObject()->IsBox())
-          result.Unite(box->MutableOwnerLayoutBox()->RecalcLayoutOverflow());
+        if (LayoutBox* owner_box = box->MutableOwnerLayoutBox())
+          result.Unite(owner_box->RecalcLayoutOverflow());
       }
     }
   }
