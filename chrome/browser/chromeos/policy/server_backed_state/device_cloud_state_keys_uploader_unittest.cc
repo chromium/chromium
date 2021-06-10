@@ -12,7 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/policy/dm_token_storage.h"
+#include "chrome/browser/chromeos/policy/core/dm_token_storage.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"

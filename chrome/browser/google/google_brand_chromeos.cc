@@ -11,7 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"

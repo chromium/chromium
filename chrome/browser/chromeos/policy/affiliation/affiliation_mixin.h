@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"

@@ -15,7 +15,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

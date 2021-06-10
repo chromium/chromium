@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/quirks/quirks_manager.h"
 #include "content/public/test/browser_test.h"

@@ -87,7 +87,7 @@
 #include "chrome/browser/chromeos/first_run/first_run.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/logging.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/tpm_auto_update_mode_policy_handler.h"

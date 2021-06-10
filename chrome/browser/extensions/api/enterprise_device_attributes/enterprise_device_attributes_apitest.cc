@@ -7,7 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

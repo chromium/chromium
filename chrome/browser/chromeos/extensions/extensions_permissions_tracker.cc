@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"

@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/policy/external_data/device_cloud_external_data_policy_observer.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/device_cloud_policy_store_chromeos.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 
 namespace policy {

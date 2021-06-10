@@ -42,7 +42,7 @@ def main():
                '// FROM chrome_device_policy_pb2.py\n'
                '//\n\n'
                '#include <algorithm>\n\n'
-               '#include "chrome/browser/chromeos/policy/'
+               '#include "chrome/browser/chromeos/policy/core/'
                'device_policy_remover.h"\n\n'
                'namespace policy {\n\n'
                'namespace em = enterprise_management;\n\n'

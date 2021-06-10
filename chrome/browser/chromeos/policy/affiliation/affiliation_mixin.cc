@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

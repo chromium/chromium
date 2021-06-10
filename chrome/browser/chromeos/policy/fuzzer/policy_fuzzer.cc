@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/fuzzer/policy_fuzzer.pb.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #include "chrome/common/chrome_paths.h"

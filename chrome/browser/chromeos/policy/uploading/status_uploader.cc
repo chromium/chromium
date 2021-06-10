@@ -14,7 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"

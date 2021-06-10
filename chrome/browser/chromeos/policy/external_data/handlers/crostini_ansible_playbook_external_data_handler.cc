@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"

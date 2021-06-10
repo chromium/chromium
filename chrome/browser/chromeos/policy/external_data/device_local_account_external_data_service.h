@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/policy/external_data/device_local_account_external_data_manager.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 

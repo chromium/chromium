@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/policy/dm_token_storage.h"
+#include "chrome/browser/chromeos/policy/core/dm_token_storage.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"

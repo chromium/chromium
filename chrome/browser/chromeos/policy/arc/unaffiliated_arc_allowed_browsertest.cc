@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"

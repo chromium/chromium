@@ -10,7 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/features/feature_channel.h"

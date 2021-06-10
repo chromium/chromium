@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "extensions/browser/management_policy.h"
 
 // TODO(crbug.com/1033508): Refactor this class, because the behavior of

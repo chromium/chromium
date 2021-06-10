@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/user_cloud_policy_manager_chromeos.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"

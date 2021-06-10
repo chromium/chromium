@@ -40,7 +40,7 @@
 #include "device_management_backend.pb.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/user_cloud_policy_manager_chromeos.h"
 #endif
 
 namespace enterprise_connectors {

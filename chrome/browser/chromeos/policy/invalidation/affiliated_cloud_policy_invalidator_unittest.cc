@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"

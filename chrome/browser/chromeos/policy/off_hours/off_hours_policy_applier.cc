@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_policy_applier.h"
 
-#include "chrome/browser/chromeos/policy/device_policy_remover.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_remover.h"
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
 
 namespace em = enterprise_management;

@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/handlers/system_proxy_handler.h"
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"

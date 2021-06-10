@@ -61,9 +61,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account_policy_service.h"
 #include "components/arc/arc_util.h"
 #include "extensions/common/constants.h"
 #else

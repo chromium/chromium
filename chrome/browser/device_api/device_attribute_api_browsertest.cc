@@ -5,7 +5,7 @@
 #include "chrome/browser/device_api/device_attribute_api.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "content/public/test/browser_test.h"
 

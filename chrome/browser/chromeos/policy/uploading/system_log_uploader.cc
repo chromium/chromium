@@ -24,7 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/policy_pref_names.h"
+#include "chrome/browser/chromeos/policy/core/policy_pref_names.h"
 #include "chrome/browser/chromeos/policy/uploading/upload_job_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"

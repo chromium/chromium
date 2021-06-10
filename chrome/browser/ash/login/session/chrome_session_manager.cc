@@ -36,7 +36,7 @@
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/chromeos/tether/tether_service.h"

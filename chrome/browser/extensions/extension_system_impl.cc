@@ -71,7 +71,7 @@
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_policy_provider.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"
 #endif

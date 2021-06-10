@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

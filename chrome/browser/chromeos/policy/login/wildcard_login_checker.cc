@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/policy_oauth2_token_fetcher.h"
+#include "chrome/browser/chromeos/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

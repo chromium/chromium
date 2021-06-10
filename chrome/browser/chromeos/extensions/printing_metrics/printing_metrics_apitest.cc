@@ -4,7 +4,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"

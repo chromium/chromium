@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
+#include "chrome/browser/chromeos/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/chromeos/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"

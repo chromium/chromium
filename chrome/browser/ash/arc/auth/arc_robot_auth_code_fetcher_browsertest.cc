@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/policy/core/common/cloud/device_management_service.h"

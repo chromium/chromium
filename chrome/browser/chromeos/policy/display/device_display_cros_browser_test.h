@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DEVICE_DISPLAY_CROS_BROWSER_TEST_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DEVICE_DISPLAY_CROS_BROWSER_TEST_H_
 
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 
