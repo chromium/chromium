@@ -98,6 +98,8 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
 
   for (size_t i = 0; i < pairs2.size(); ++i) {
     const auto& iter = map1.find(pairs2[i].first);
+    if (pairs2[i].second == empty_value && iter == map1.end())
+      continue;
     if (iter == map1.end())
       callback(pairs2[i].first, empty_value, pairs2[i].second);
     else if (iter->second != pairs2[i].second)
@@ -1673,6 +1675,7 @@ void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
   auto string_callback = [this, node](ax::mojom::StringAttribute attr,
                                       const std::string& old_string,
                                       const std::string& new_string) {
+    DCHECK_NE(old_string, new_string);
     for (AXTreeObserver& observer : observers_) {
       observer.OnStringAttributeChanged(this, node, attr, old_string,
                                         new_string);
@@ -1685,6 +1688,7 @@ void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
   auto bool_callback = [this, node](ax::mojom::BoolAttribute attr,
                                     const bool& old_bool,
                                     const bool& new_bool) {
+    DCHECK_NE(old_bool, new_bool);
     for (AXTreeObserver& observer : observers_)
       observer.OnBoolAttributeChanged(this, node, attr, new_bool);
   };
@@ -1694,6 +1698,7 @@ void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
   auto float_callback = [this, node](ax::mojom::FloatAttribute attr,
                                      const float& old_float,
                                      const float& new_float) {
+    DCHECK_NE(old_float, new_float);
     for (AXTreeObserver& observer : observers_)
       observer.OnFloatAttributeChanged(this, node, attr, old_float, new_float);
   };
@@ -1702,6 +1707,7 @@ void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
 
   auto int_callback = [this, node](ax::mojom::IntAttribute attr,
                                    const int& old_int, const int& new_int) {
+    DCHECK_NE(old_int, new_int);
     for (AXTreeObserver& observer : observers_)
       observer.OnIntAttributeChanged(this, node, attr, old_int, new_int);
   };

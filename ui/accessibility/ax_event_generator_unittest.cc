@@ -1100,7 +1100,11 @@ TEST(AXEventGeneratorTest, TextAttributeChanged) {
   AXEventGenerator event_generator(&tree);
   ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
+  // 0 is the default int attribute value, so does not generate an event.
+  // (id=2).
   update.nodes[1].AddIntAttribute(ax::mojom::IntAttribute::kColor, 0);
+  // 0 is the default int attribute value, so does not generate an event.
+  // (id=3).
   update.nodes[2].AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor, 0);
   update.nodes[3].AddIntAttribute(
       ax::mojom::IntAttribute::kTextDirection,
@@ -1145,8 +1149,6 @@ TEST(AXEventGeneratorTest, TextAttributeChanged) {
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
-          HasEventAtNode(AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED, 2),
-          HasEventAtNode(AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED, 3),
           HasEventAtNode(AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED, 4),
           HasEventAtNode(AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED, 5),
           HasEventAtNode(AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED, 6),
@@ -2391,9 +2393,9 @@ TEST(AXEventGeneratorTest, AriaBusyChanged) {
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
-  AXTree tree(initial_state);
   initial_state.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy,
                                           true);
+  AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
   ASSERT_THAT(event_generator, IsEmpty());

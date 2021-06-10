@@ -1,4 +1,3 @@
 AXFocusedUIElementChanged on AXStaticText AXValue="Apple"
 AXSelectedChildrenChanged on AXComboBox
 AXSelectedChildrenChanged on AXList
-AXValueChanged on AXList

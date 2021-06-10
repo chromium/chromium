@@ -1036,12 +1036,12 @@ enum TextPosition {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.accessibility
 enum TextStyle {
+  kNone,
   kBold,
   kItalic,
   kUnderline,
   kLineThrough,
-  kOverline,
-  kNone
+  kOverline
 };
 
 enum TextDecorationStyle {
