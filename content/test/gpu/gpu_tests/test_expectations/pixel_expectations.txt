@@ -360,7 +360,8 @@ crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Flaky hang.
-crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
+crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]

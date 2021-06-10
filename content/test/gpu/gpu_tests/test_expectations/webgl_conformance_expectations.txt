@@ -272,6 +272,11 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex
 [ fuchsia fuchsia-board-astro ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
+crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
+crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 
 # GPU or renderer process crashes / Timed out tests
 crbug.com/1175419 [ fuchsia ] conformance/extensions/khr-parallel-shader-compile.html [ Skip ]
