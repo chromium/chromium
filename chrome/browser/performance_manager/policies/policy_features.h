@@ -33,6 +33,9 @@ extern const base::Feature kTrimOnMemoryPressure;
 // trim under memory pressure.
 extern const base::Feature kTrimArcOnMemoryPressure;
 
+// If enabled we will try to trim ARCVM's crosvm under memory pressure.
+extern const base::Feature kTrimArcVmOnMemoryPressure;
+
 // The trim on freeze feature will trim the working set of a process when all
 // frames are frozen.
 extern const base::Feature kTrimOnFreeze;
@@ -78,6 +81,17 @@ extern const base::FeatureParam<int> kArcMaxProcessesPerTrim;
 // process must have been inactive before it's eligible for reclaim.
 extern const base::FeatureParam<int> kArcProcessInactivityTimeSec;
 
+// The minimum amount of time an ARCVM must have been inactive before it's
+// eligible for reclaim.
+extern const base::FeatureParam<base::TimeDelta> kArcVmInactivityTimeMs;
+
+// Specifies the frequency at which ARCVM's crosvm process can be trimmed.
+extern const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs;
+
+// If true then we will trim ARCVM's crosvm on critical memory pressure
+// regardless of the user's interactions with ARCVM.
+extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
+
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
   TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams& other);
@@ -97,6 +111,11 @@ struct TrimOnMemoryPressureParams {
   bool trim_arc_aggressive = false;
   int arc_max_number_processes_per_trim = -1;
   base::TimeDelta arc_process_inactivity_time;
+
+  // These are used when kTrimArcVmOnMemoryPressure is enabled.
+  base::TimeDelta arcvm_inactivity_time;
+  base::TimeDelta arcvm_trim_backoff_time;
+  bool trim_arcvm_on_critical_pressure = false;
 };
 
 #if BUILDFLAG(USE_TCMALLOC)

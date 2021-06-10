@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_WORKING_SET_TRIMMER_POLICY_CHROMEOS_H_
 
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
@@ -29,6 +32,20 @@ class WorkingSetTrimmerPolicyChromeOSTest;
 // pressure.
 class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
  public:
+  // A delegate interface for checking ARCVM status. This interface allows us 1)
+  // to test WorkingSetTrimmerPolicyChromeOS more easily, and 2) to have all the
+  // complicated logic that is very ARCVM specific in a separate class.
+  class ArcVmDelegate {
+   public:
+    virtual ~ArcVmDelegate() = default;
+
+    // Returns true when ARCVM has been idle for more than
+    // |arcvm_inactivity_time| and therefore is safe to reclaim its memory.
+    // The function is called only on the UI thread.
+    virtual bool IsEligibleForReclaim(
+        const base::TimeDelta& arcvm_inactivity_time) = 0;
+  };
+
   ~WorkingSetTrimmerPolicyChromeOS() override;
   WorkingSetTrimmerPolicyChromeOS();
 
@@ -54,6 +71,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   bool trim_arc_on_memory_pressure() const {
     return trim_arc_on_memory_pressure_;
   }
+  void set_arcvm_delegate_for_testing(ArcVmDelegate* delegate);
 
   virtual void TrimReceivedArcProcesses(
       int allowed_to_trim,
@@ -73,6 +91,9 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   void set_trim_arc_on_memory_pressure(bool enabled) {
     trim_arc_on_memory_pressure_ = enabled;
   }
+  void set_trim_arcvm_on_memory_pressure(bool enabled) {
+    trim_arcvm_on_memory_pressure_ = enabled;
+  }
 
   void TrimNodesOnGraph();
 
@@ -83,6 +104,17 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
       const arc::ArcProcess& arc_process);
   virtual bool TrimArcProcess(base::ProcessId pid);
 
+  // TrimArcVmProcesses will ask the delegate if it is safe to reclaim memory
+  // from ARCVM, and do that when it is. These are virtual for testing.
+  virtual void TrimArcVmProcesses(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+  static void TrimArcVmProcessesOnUIThread(
+      base::MemoryPressureListener::MemoryPressureLevel level,
+      features::TrimOnMemoryPressureParams params,
+      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr);
+  virtual void OnTrimArcVmProcesses(bool need_reclaim);
+  static void DoTrimArcVmOnUIThread();
+
   features::TrimOnMemoryPressureParams params_;
 
   // Keeps track of the last time we walked the graph looking for processes
@@ -92,6 +124,9 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   // We keep track of the last time we fetched the ARC process list.
   base::TimeTicks last_arc_process_fetch_;
 
+  // We also keep track of the last time we reclaimed memory from ARCVM.
+  base::TimeTicks last_arcvm_trim_;
+
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
@@ -100,6 +135,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   bool trim_on_freeze_ = false;
   bool trim_on_memory_pressure_ = false;
   bool trim_arc_on_memory_pressure_ = false;
+  bool trim_arcvm_on_memory_pressure_ = false;
 
   // This map contains the last trim time of arc processes.
   std::map<base::ProcessId, base::TimeTicks> arc_processes_last_trim_;
