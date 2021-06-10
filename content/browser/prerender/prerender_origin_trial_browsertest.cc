@@ -166,11 +166,15 @@ class PrerenderOriginTrialBrowserTest
     test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(),
                                                    GetUrl("/prerender"));
     EXPECT_EQ(enabled_on_prerendered_page,
-              EvalJs(web_contents(), "onprerenderingchange_observed"));
-    EXPECT_EQ(enabled_on_prerendered_page,
               EvalJs(web_contents(), "'prerendering' in document"));
     EXPECT_EQ(enabled_on_prerendered_page,
               EvalJs(web_contents(), "'onprerenderingchange' in document"));
+    if (enabled_on_prerendered_page) {
+      EXPECT_EQ(true, EvalJs(web_contents(),
+                             "onprerenderingchange_observed_promise"));
+    } else {
+      EXPECT_EQ(false, EvalJs(web_contents(), "onprerenderingchange_observed"));
+    }
   }
 
  private:
@@ -190,8 +194,11 @@ class PrerenderOriginTrialBrowserTest
     std::string body = R"(
         <script>
         let onprerenderingchange_observed = false;
-        document.addEventListener('prerenderingchange', () => {
-          onprerenderingchange_observed = true;
+        const onprerenderingchange_observed_promise = new Promise(resolve => {
+          document.addEventListener('prerenderingchange', () => {
+            onprerenderingchange_observed = true;
+            resolve(true);
+          });
         });
         </script>
     )";
