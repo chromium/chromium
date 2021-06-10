@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -65,6 +66,7 @@ struct AccountInfo : public CoreAccountInfo {
   std::string last_downloaded_image_url_with_size;
   gfx::Image account_image;
   bool is_child_account = false;
+  AccountCapabilities capabilities;
 
   // Returns true if all fields in the account info are empty.
   bool IsEmpty() const;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class AccountInfoTest : public testing::Test {};
@@ -93,6 +94,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   other.account_id = CoreAccountId("test_id");
   other.full_name = other.given_name = "test_name";
   other.is_child_account = true;
+  other.capabilities.set_can_offer_extended_chrome_sync_promos(true);
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);
@@ -100,6 +102,8 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   EXPECT_EQ("test_name", info.full_name);
   EXPECT_EQ("test_name", info.given_name);
   EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(AccountCapabilities::Tribool::kTrue,
+            info.capabilities.can_offer_extended_chrome_sync_promos());
 }
 
 // Tests that UpdateWith() sets default values for hosted_domain and
