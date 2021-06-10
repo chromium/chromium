@@ -1753,6 +1753,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-extended-sync-promos-capability",
+    "owners": ["fernandex", "msarda"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
     "expiry_milestone": 100
@@ -2942,6 +2947,11 @@
   {
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "force-disable-extended-sync-promos",
+    "owners": ["fernandex", "msarda"],
     "expiry_milestone": 100
   },
   {

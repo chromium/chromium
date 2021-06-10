@@ -3244,6 +3244,21 @@
             ]
         }
     ],
+    "EnableExtendedSyncPromosCability": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MinorModeSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableManualPasswordGenerationIOS": [
         {
             "platforms": [

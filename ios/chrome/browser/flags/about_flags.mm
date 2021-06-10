@@ -750,6 +750,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"reading-list-messages", flag_descriptions::kReadingListMessagesName,
      flag_descriptions::kReadingListMessagesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kReadingListMessages)},
+    {"force-disable-extended-sync-promos",
+     flag_descriptions::kForceDisableExtendedSyncPromosName,
+     flag_descriptions::kForceDisableExtendedSyncPromosDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kForceDisableExtendedSyncPromos)},
+    {"enable-extended-sync-promos-capability",
+     flag_descriptions::kEnableExtendedSyncPromosCapabilityName,
+     flag_descriptions::kEnableExtendedSyncPromosCapabilityDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(switches::kMinorModeSupport)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

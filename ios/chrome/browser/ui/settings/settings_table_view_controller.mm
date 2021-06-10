@@ -146,6 +146,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 
 enum SyncState {
   kSyncDisabledByAdministrator,
+  kSyncConsentOff,
   kSyncOff,
   kSyncEnabledWithNoSelectedTypes,
   kSyncEnabledWithError,
@@ -157,25 +158,29 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       SyncServiceFactory::GetForBrowserState(browserState);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
-  // Sync is disabled by administrator policy.
+  SyncSetupService::SyncServiceState errorState =
+      syncSetupService->GetSyncServiceState();
   if (syncService->GetDisableReasons().Has(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    // Sync is disabled by administrator policy.
     return kSyncDisabledByAdministrator;
-    // User has completed Sync setup in sign-in flow.
-  } else if (syncSetupService->IsFirstSetupComplete() &&
-             syncSetupService->IsSyncEnabled()) {
+  } else if (!syncSetupService->IsFirstSetupComplete()) {
+    // User has not completed Sync setup in sign-in flow.
+    return kSyncConsentOff;
+  } else if (!syncSetupService->IsSyncEnabled()) {
+    // Sync engine is off.
+    return kSyncOff;
+  } else if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
+             syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
     // User has deselected all sync data types.
-    if (syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
-      return kSyncEnabledWithNoSelectedTypes;
-    }
-    SyncSetupService::SyncServiceState errorState =
-        syncSetupService->GetSyncServiceState();
-    if (IsTransientSyncError(errorState)) {
-      return kSyncEnabled;
-    }
+    // With pre-MICE, the sync status should be kSyncEnabled to show the same
+    // value than the sync toggle.
+    return kSyncEnabledWithNoSelectedTypes;
+  } else if (!IsTransientSyncError(errorState)) {
+    // Sync error.
     return kSyncEnabledWithError;
   }
-  return kSyncOff;
+  return kSyncEnabled;
 }
 
 }  // namespace
@@ -647,14 +652,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // Returns YES if the Sync service is available and all promos have not been
 // previously closed or seen too many times by a single user account.
 - (BOOL)shouldDisplaySyncPromo {
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(_browserState);
   return base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
          [SigninPromoViewMediator
              shouldDisplaySigninPromoViewWithAccessPoint:
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
                                             browserState:_browserState] &&
-         !syncService->IsSyncFeatureEnabled();
+         !syncSetupService->IsFirstSetupComplete();
 }
 
 #pragma mark - Model Items
@@ -1201,13 +1206,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case SettingsItemTypeGoogleSync: {
       base::RecordAction(base::UserMetricsAction("Settings.Sync"));
       switch (GetSyncStateFromBrowserState(_browserState)) {
-        case kSyncOff: {
+        case kSyncConsentOff: {
           [self showSignInWithIdentity:nil
                            promoAction:signin_metrics::PromoAction::
                                            PROMO_ACTION_NO_SIGNIN_PROMO
                             completion:nil];
           break;
         }
+        case kSyncOff:
         case kSyncEnabled:
         case kSyncEnabledWithError:
         case kSyncEnabledWithNoSelectedTypes: {
@@ -1592,6 +1598,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
       break;
     }
+    case kSyncConsentOff:
     case kSyncOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;

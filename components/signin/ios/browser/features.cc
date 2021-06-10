@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/ios/browser/features.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace signin {
 
@@ -14,6 +15,15 @@ const base::Feature kSimplifySignOutIOS{"SimplifySignOutIOS",
 
 bool ForceStartupSigninPromo() {
   return base::FeatureList::IsEnabled(kForceStartupSigninPromo);
+}
+
+bool ForceDisableExtendedSyncPromos() {
+  return base::FeatureList::IsEnabled(
+      switches::kForceDisableExtendedSyncPromos);
+}
+
+bool ExtendedSyncPromosCapabilityEnabled() {
+  return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
 }
 
 const base::Feature kRestoreGaiaCookiesOnUserAction{

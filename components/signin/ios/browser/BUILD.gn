@@ -43,6 +43,8 @@ source_set("features") {
   ]
 
   public_deps = [ "//base" ]
+
+  deps = [ "//components/signin/public/base" ]
 }
 
 source_set("active_state_manager") {

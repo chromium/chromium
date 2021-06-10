@@ -155,6 +155,11 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableCloseAllTabsConfirmationName[];
 extern const char kEnableCloseAllTabsConfirmationDescription[];
 
+// Title and description for the flag to enable reading the extended sync promo
+// account capability from IdentityKit libraries.
+extern const char kEnableExtendedSyncPromosCapabilityName[];
+extern const char kEnableExtendedSyncPromosCapabilityDescription[];
+
 // Title and description for the flag to enable FRE UI module.
 extern const char kEnableFREUIModuleIOSName[];
 extern const char kEnableFREUIModuleIOSDescription[];
@@ -182,6 +187,10 @@ extern const char kExpandedTabStripDescription[];
 // websites.
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
+
+// Title and description for the flag to disable all extended sync promos.
+extern const char kForceDisableExtendedSyncPromosName[];
+extern const char kForceDisableExtendedSyncPromosDescription[];
 
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];

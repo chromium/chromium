@@ -42,6 +42,10 @@ extern const base::Feature kUseAccountManagerFacade;
 
 // Support for the minor mode.
 extern const base::Feature kMinorModeSupport;
+
+// This feature disables all extended sync promos.
+extern const base::Feature kForceDisableExtendedSyncPromos;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

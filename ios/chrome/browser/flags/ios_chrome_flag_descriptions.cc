@@ -176,6 +176,12 @@ const char kEnableCloseAllTabsConfirmationDescription[] =
     "Enable showing an action sheet that asks for confirmation when 'Close "
     "All' button is tapped on the tab grid to avoid unwanted clearing.";
 
+const char kEnableExtendedSyncPromosCapabilityName[] =
+    "Enables reading the extended sync promo account capability";
+const char kEnableExtendedSyncPromosCapabilityDescription[] =
+    "When enabled, starts reading the account capability to decide whether "
+    "or not Chrome should display an extended sync promo";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Enable the option of using new FRE UI module to show first run screens.";
@@ -206,6 +212,11 @@ const char kFillingAcrossAffiliatedWebsitesName[] =
 const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
+
+const char kForceDisableExtendedSyncPromosName[] =
+    "Disable all extended sync promos";
+const char kForceDisableExtendedSyncPromosDescription[] =
+    "When enabled, will not display any extended sync promos";
 
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =

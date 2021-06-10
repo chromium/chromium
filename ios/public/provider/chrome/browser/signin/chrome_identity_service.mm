@@ -120,9 +120,9 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
   return nil;
 }
 
-absl::optional<bool> ChromeIdentityService::CanOfferExtendedSyncPromos(
+bool ChromeIdentityService::CanOfferExtendedSyncPromos(
     ChromeIdentity* identity) {
-  return absl::nullopt;
+  return false;
 }
 
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(

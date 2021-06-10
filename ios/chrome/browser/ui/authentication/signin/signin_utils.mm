@@ -116,11 +116,16 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (identities.count == 0)
     return false;
 
-  // Don't show the SSO promo if the default primary account is cannot display
+  // The SSO promo should not be disabled if it is force disabled.
+  if (signin::ForceDisableExtendedSyncPromos())
+    return false;
+
+  // Don't show the SSO promo if the default primary account cannot display
   // extended sync promos.
-  absl::optional<bool> canOfferExtendedSyncPromos =
+  bool canOfferExtendedSyncPromos =
       identity_service->CanOfferExtendedSyncPromos(identities[0]);
-  if (!canOfferExtendedSyncPromos.value_or(true))
+  if (signin::ExtendedSyncPromosCapabilityEnabled() &&
+      !canOfferExtendedSyncPromos)
     return false;
 
   // The sign-in promo should be shown twice, even if no account has been added.

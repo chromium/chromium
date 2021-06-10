@@ -222,9 +222,9 @@ class ChromeIdentityService {
   // Returns the cached value of the account capability that determines whether
   // Chrome should offer extended sync promos to |identity|.
   // This value will have a refresh period of 24 hours, meaning that at
-  // retrieval it may be stale or unpopulated, in the case of a fresh install.
-  virtual absl::optional<bool> CanOfferExtendedSyncPromos(
-      ChromeIdentity* identity);
+  // retrieval it may be stale. If the value is not populated, as in a fresh
+  // install, this method returns false.
+  virtual bool CanOfferExtendedSyncPromos(ChromeIdentity* identity);
 
   // Returns the MDM device status associated with |user_info|.
   virtual MDMDeviceStatus GetMDMDeviceStatus(NSDictionary* user_info);

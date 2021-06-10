@@ -42,4 +42,8 @@ const base::Feature kUseAccountManagerFacade{"kUseAccountManagerFacade",
 
 const base::Feature kMinorModeSupport{"MinorModeSupport",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kForceDisableExtendedSyncPromos{
+    "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

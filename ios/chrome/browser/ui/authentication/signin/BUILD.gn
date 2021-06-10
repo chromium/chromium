@@ -69,7 +69,9 @@ source_set("unit_tests") {
   deps = [
     ":signin_impl",
     "//base",
+    "//base/test:test_support",
     "//components/pref_registry",
+    "//components/signin/ios/browser:features",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/browser_state:test_support",
