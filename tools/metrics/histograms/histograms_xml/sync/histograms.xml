@@ -1254,7 +1254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     a fixed (configurable) delay due to performance reasons. In some cases, a
     data type may force sync to start before the delay finishes, causing the
     recorded time to be smaller. This histogram records the time spent after the
-    ProfileSyncService *creation* but before the SyncEngine initialization.
+    SyncServiceImpl *creation* but before the SyncEngine initialization.
   </summary>
 </histogram>
 
