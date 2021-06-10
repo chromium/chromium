@@ -1904,6 +1904,12 @@
     "expiry_milestone": 83
   },
   {
+    "name": "enable-input-event-logging",
+    "owners": [ "hcutts", "chromeos-tango@google.com" ],
+    // Used to attach input device debugging information to feedback reports.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 98

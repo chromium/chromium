@@ -7064,6 +7064,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenuUI)},
+
+    {"enable-input-event-logging",
+     flag_descriptions::kEnableInputEventLoggingName,
+     flag_descriptions::kEnableInputEventLoggingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableInputEventLogging)},
 #endif
 
     {"muting-compromised-credentials",

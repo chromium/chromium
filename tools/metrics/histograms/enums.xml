@@ -47679,6 +47679,7 @@ from previous Chrome versions.
   <int value="160838658" label="SmartDimModelV3:enabled"/>
   <int value="161409456" label="AutofillUseMobileLabelDisambiguation:disabled"/>
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
+  <int value="168025622" label="EnableInputEventLogging:enabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
@@ -48406,6 +48407,7 @@ from previous Chrome versions.
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
+  <int value="778000757" label="EnableInputEventLogging:disabled"/>
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>

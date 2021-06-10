@@ -42,6 +42,9 @@ const base::FeatureParam<double> kHeuristicHoldThresholdSeconds{
 const base::FeatureParam<int> kHeuristicStrokeCount{
     &kEnableHeuristicPalmDetectionFilter, "heuristic_palm_stroke_count", 0};
 
+const base::Feature kEnableInputEventLogging{"EnableInputEventLogging",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 constexpr char kOzoneNNPalmSwitchName[] = "ozone-nnpalm-properties";
 
 constexpr char kOzoneNNPalmTouchCompatibleProperty[] = "touch-compatible";

@@ -4245,6 +4245,14 @@ const char kEnableHeuristicStylusPalmRejectionDescription[] =
     "Enable additional heuristic palm rejection logic when interacting with "
     "stylus usage. Not intended for all devices.";
 
+const char kEnableInputEventLoggingName[] = "Enable input event logging";
+const char kEnableInputEventLoggingDescription[] =
+    "Enable detailed logging of input events from touchscreens, touchpads, and "
+    "mice. These events include the locations of all touches as well as "
+    "relative pointer movements, and so may disclose sensitive data. They "
+    "will be included in feedback reports and system logs, so DO NOT ENTER "
+    "SENSITIVE INFORMATION with this flag enabled.";
+
 const char kEnableInputInDiagnosticsAppName[] =
     "Enable input device cards in the Diagnostics App";
 const char kEnableInputInDiagnosticsAppDescription[] =
