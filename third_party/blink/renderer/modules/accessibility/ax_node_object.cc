@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -3920,10 +3921,15 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       if (children[i]->IsDetached()) {
-        CHECK(false) << "Cannot add a detached child: "
-                     << "\n* Child: " << children[i]->ToString(true, true)
-                     << "\n* Parent: " << child->ToString(true, true)
-                     << "\n* Grandparent: " << ToString(true, true);
+        // TODO(accessibility) Restore to CHECK().
+#if defined(AX_FAIL_FAST_BUILD)
+        SANITIZER_NOTREACHED()
+            << "Cannot add a detached child: "
+            << "\n* Child: " << children[i]->ToString(true, true)
+            << "\n* Parent: " << child->ToString(true, true)
+            << "\n* Grandparent: " << ToString(true, true);
+#endif
+        continue;
       }
       // If the child was owned, it will be added elsewhere as a direct
       // child of the object owning it.
