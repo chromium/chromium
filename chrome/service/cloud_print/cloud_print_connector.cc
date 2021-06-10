@@ -63,19 +63,6 @@ bool CloudPrintConnector::InitPrintSystem() {
   return true;
 }
 
-void CloudPrintConnector::ScheduleStatsReport() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CloudPrintConnector::ReportStats,
-                     stats_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromHours(1));
-}
-
-void CloudPrintConnector::ReportStats() {
-  PrinterJobHandler::ReportsStats();
-  ScheduleStatsReport();
-}
-
 bool CloudPrintConnector::Start() {
   VLOG(1) << "CP_CONNECTOR: Starting connector"
           << ", proxy id: " << settings_.proxy_id();
@@ -84,8 +71,6 @@ bool CloudPrintConnector::Start() {
 
   if (!InitPrintSystem())
     return false;
-
-  ScheduleStatsReport();
 
   // Start watching for updates from the print system.
   print_server_watcher_ = print_system_->CreatePrintServerWatcher();
@@ -348,12 +333,10 @@ void CloudPrintConnector::StartGetRequest(const GURL& url,
                                           ResponseHandler handler) {
   next_response_handler_ = handler;
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_UPDATE_JOB, url, this,
-                            max_retries);
+  request_->StartGetRequest(url, this, max_retries);
 }
 
 void CloudPrintConnector::StartPostRequest(
-    CloudPrintURLFetcher::RequestType type,
     const GURL& url,
     int max_retries,
     const std::string& mime_type,
@@ -361,8 +344,7 @@ void CloudPrintConnector::StartPostRequest(
     ResponseHandler handler) {
   next_response_handler_ = handler;
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartPostRequest(type, url, this, max_retries, mime_type,
-                             post_data);
+  request_->StartPostRequest(url, this, max_retries, mime_type, post_data);
 }
 
 void CloudPrintConnector::ReportUserMessage(const std::string& message_id,
@@ -379,9 +361,7 @@ void CloudPrintConnector::ReportUserMessage(const std::string& message_id,
   mime_type += mime_boundary;
   user_message_request_ =
       CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  user_message_request_->StartPostRequest(
-      CloudPrintURLFetcher::REQUEST_USER_MESSAGE, url, this, 1, mime_type,
-      post_data);
+  user_message_request_->StartPostRequest(url, this, 1, mime_type, post_data);
 }
 
 bool CloudPrintConnector::RemovePrinterFromList(
@@ -662,8 +642,7 @@ void CloudPrintConnector::OnReceivePrinterCaps(
   mime_type += mime_boundary;
 
   GURL post_url = GetUrlForPrinterRegistration(settings_.server_url());
-  StartPostRequest(CloudPrintURLFetcher::REQUEST_REGISTER, post_url,
-                   kCloudPrintAPIMaxRetryCount, mime_type, post_data,
+  StartPostRequest(post_url, kCloudPrintAPIMaxRetryCount, mime_type, post_data,
                    &CloudPrintConnector::HandleRegisterPrinterResponse);
 }
 

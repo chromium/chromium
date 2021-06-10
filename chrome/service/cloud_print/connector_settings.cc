@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
 #include "chrome/common/pref_names.h"
@@ -83,13 +82,6 @@ void ConnectorSettings::InitFrom(ServiceProcessPrefs* prefs) {
         }
       }
     }
-  }
-  if (connect_new_printers_) {
-    UMA_HISTOGRAM_COUNTS_10000("CloudPrint.PrinterBlacklistSize",
-                               printers_.size());
-  } else {
-    UMA_HISTOGRAM_COUNTS_10000("CloudPrint.PrinterWhitelistSize",
-                               printers_.size());
   }
 }
 

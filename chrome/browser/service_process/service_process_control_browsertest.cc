@@ -47,13 +47,6 @@ class ServiceProcessControlBrowserTest
   ServiceProcessControlBrowserTest() {}
   ~ServiceProcessControlBrowserTest() override {}
 
-  void HistogramsCallback(base::RepeatingClosure on_done) {
-    MockHistogramsCallback();
-    on_done.Run();
-  }
-
-  MOCK_METHOD0(MockHistogramsCallback, void());
-
  protected:
   void LaunchServiceProcessControl(base::RepeatingClosure on_launched) {
 #if defined(OS_MAC)
@@ -416,45 +409,6 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, MAYBE_CheckPid) {
   EXPECT_NE(static_cast<base::ProcessId>(0), service_pid);
   // Disconnect from service process.
   Disconnect();
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, HistogramsNoService) {
-  ASSERT_FALSE(ServiceProcessControl::GetInstance()->IsConnected());
-  EXPECT_CALL(*this, MockHistogramsCallback()).Times(0);
-  EXPECT_FALSE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                     base::Unretained(this), base::DoNothing()),
-      base::TimeDelta()));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, HistogramsTimeout) {
-  LaunchServiceProcessControlAndWait();
-  ASSERT_TRUE(ServiceProcessControl::GetInstance()->IsConnected());
-  // Callback should not be called during GetHistograms call.
-  EXPECT_CALL(*this, MockHistogramsCallback()).Times(0);
-  base::RunLoop run_loop;
-  EXPECT_TRUE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                     base::Unretained(this), run_loop.QuitClosure()),
-      base::TimeDelta::FromMilliseconds(100)));
-  EXPECT_CALL(*this, MockHistogramsCallback()).Times(1);
-  EXPECT_TRUE(ServiceProcessControl::GetInstance()->Shutdown());
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, Histograms) {
-  LaunchServiceProcessControlAndWait();
-  ASSERT_TRUE(ServiceProcessControl::GetInstance()->IsConnected());
-  // Callback should not be called during GetHistograms call.
-  EXPECT_CALL(*this, MockHistogramsCallback()).Times(0);
-  // Wait for real callback by providing large timeout value.
-  base::RunLoop run_loop;
-  EXPECT_TRUE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                     base::Unretained(this), run_loop.QuitClosure()),
-      base::TimeDelta::FromHours(1)));
-  EXPECT_CALL(*this, MockHistogramsCallback()).Times(1);
-  run_loop.Run();
 }
 
 #if defined(OS_WIN)

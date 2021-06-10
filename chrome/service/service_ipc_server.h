@@ -22,7 +22,6 @@
 
 namespace base {
 
-class HistogramDeltaSerialization;
 class WaitableEvent;
 
 }  // namespace base
@@ -74,7 +73,6 @@ class ServiceIPCServer : public service_manager::mojom::InterfaceProvider,
 
   // chrome::mojom::ServiceProcess:
   void Hello(HelloCallback callback) override;
-  void GetHistograms(GetHistogramsCallback callback) override;
   void UpdateAvailable() override;
   void ShutDown() override;
 
@@ -91,10 +89,6 @@ class ServiceIPCServer : public service_manager::mojom::InterfaceProvider,
 
   // Indicates whether an IPC client is currently connected to the channel.
   bool ipc_client_connected_ = false;
-
-  // Calculates histograms deltas.
-  std::unique_ptr<base::HistogramDeltaSerialization>
-      histogram_delta_serializer_;
 
   mojo::Receiver<service_manager::mojom::InterfaceProvider> receiver_{this};
   mojo::ReceiverSet<chrome::mojom::ServiceProcess> service_process_receivers_;

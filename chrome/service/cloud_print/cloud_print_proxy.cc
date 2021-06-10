@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -226,8 +225,6 @@ void CloudPrintProxy::OnPrintSystemUnavailable() {
 void CloudPrintProxy::OnUnregisterPrinters(
     const std::string& auth_token,
     const std::list<std::string>& printer_ids) {
-  UMA_HISTOGRAM_COUNTS_10000("CloudPrint.UnregisterPrinters",
-                             printer_ids.size());
   ShutdownBackend();
   ConnectorSettings settings;
   settings.InitFrom(service_prefs_);

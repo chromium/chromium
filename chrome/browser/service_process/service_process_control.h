@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/cancelable_callback.h"
 #include "base/containers/id_map.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -50,26 +49,6 @@ class IsolatedConnection;
 // This class is accessed on the UI thread through some UI actions.
 class ServiceProcessControl : public UpgradeObserver {
  public:
-  enum ServiceProcessEvent {
-    SERVICE_EVENT_INITIALIZE,
-    SERVICE_EVENT_ENABLED_ON_LAUNCH,
-    SERVICE_EVENT_ENABLE,
-    SERVICE_EVENT_DISABLE,
-    SERVICE_EVENT_DISABLE_BY_POLICY,
-    SERVICE_EVENT_LAUNCH,
-    SERVICE_EVENT_LAUNCHED,
-    SERVICE_EVENT_LAUNCH_FAILED,
-    SERVICE_EVENT_CHANNEL_CONNECTED,
-    SERVICE_EVENT_CHANNEL_ERROR,
-    SERVICE_EVENT_INFO_REQUEST,
-    SERVICE_EVENT_INFO_REPLY,
-    SERVICE_EVENT_HISTOGRAMS_REQUEST,
-    SERVICE_EVENT_HISTOGRAMS_REPLY,
-    SERVICE_PRINTERS_REQUEST,
-    SERVICE_PRINTERS_REPLY,
-    SERVICE_EVENT_MAX,
-  };
-
   // Returns the singleton instance of this class.
   static ServiceProcessControl* GetInstance();
 
@@ -103,14 +82,6 @@ class ServiceProcessControl : public UpgradeObserver {
   // Return true if the message was sent.
   // Virtual for testing.
   virtual bool Shutdown();
-
-  // Send request for histograms collected in service process.
-  // Returns true if request was sent, and callback will be called in case of
-  // success or timeout. The method resets any previous callback.
-  // Returns false if service is not running or other failure, callback will not
-  // be called in this case.
-  bool GetHistograms(base::OnceClosure cloud_print_status_callback,
-                     const base::TimeDelta& timeout);
 
   service_manager::InterfaceProvider& remote_interfaces() {
     return remote_interfaces_;
@@ -168,11 +139,6 @@ class ServiceProcessControl : public UpgradeObserver {
   void OnChannelConnected();
   void OnChannelError();
 
-  void OnHistograms(const std::vector<std::string>& pickled_histograms);
-
-  // Runs callback provided in |GetHistograms()|.
-  void RunHistogramsCallback();
-
   // Helper method to invoke all the callbacks based on success or failure.
   void RunConnectDoneTasks();
 
@@ -205,13 +171,6 @@ class ServiceProcessControl : public UpgradeObserver {
   TaskList connect_success_tasks_;
   // Callbacks that get invoked when there was a connection failure.
   TaskList connect_failure_tasks_;
-
-  // Callback that gets invoked when a message with histograms is received from
-  // the service process.
-  base::OnceClosure histograms_callback_;
-
-  // Callback that gets invoked if service didn't reply in time.
-  base::CancelableOnceClosure histograms_timeout_callback_;
 
   // If true changes to UpgradeObserver are applied, if false they are ignored.
   bool apply_changes_from_upgrade_observer_;

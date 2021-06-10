@@ -13,12 +13,12 @@
 #include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
@@ -37,9 +37,6 @@
 namespace cloud_print {
 
 namespace {
-
-base::subtle::Atomic32 g_total_jobs_started = 0;
-base::subtle::Atomic32 g_total_jobs_done = 0;
 
 enum PrinterJobHandlerEvent {
   JOB_HANDLER_CHECK_FOR_JOBS,
@@ -119,8 +116,6 @@ void PrinterJobHandler::CheckForJobs(const std::string& reason) {
           << ", printer id: " << printer_info_cloud_.printer_id
           << ", reason: " << reason
           << ", task in progress: " << task_in_progress_;
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_CHECK_FOR_JOBS, JOB_HANDLER_MAX);
   job_fetch_reason_ = reason;
   job_check_pending_ = true;
   if (!task_in_progress_) {
@@ -210,11 +205,6 @@ std::string PrinterJobHandler::GetAuthHeaderValue() {
 
 // JobStatusUpdater::Delegate implementation
 bool PrinterJobHandler::OnJobCompleted(JobStatusUpdater* updater) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_JOB_COMPLETED, JOB_HANDLER_MAX);
-  UMA_HISTOGRAM_LONG_TIMES("CloudPrint.PrintingTime",
-                           base::Time::Now() - updater->start_time());
-  base::subtle::NoBarrier_AtomicIncrement(&g_total_jobs_done, 1);
   job_queue_handler_.JobDone(job_details_.job_id_);
 
   for (auto it = job_status_updater_list_.begin();
@@ -270,16 +260,6 @@ void PrinterJobHandler::OnJobSpoolFailed() {
       base::BindOnce(&PrinterJobHandler::JobFailed, this, JOB_FAILED));
 }
 
-// static
-void PrinterJobHandler::ReportsStats() {
-  base::subtle::Atomic32 started =
-      base::subtle::NoBarrier_AtomicExchange(&g_total_jobs_started, 0);
-  base::subtle::Atomic32 done =
-      base::subtle::NoBarrier_AtomicExchange(&g_total_jobs_done, 0);
-  UMA_HISTOGRAM_COUNTS_100("CloudPrint.JobsStartedPerInterval", started);
-  UMA_HISTOGRAM_COUNTS_100("CloudPrint.JobsDonePerInterval", done);
-}
-
 PrinterJobHandler::~PrinterJobHandler() {
   if (printer_watcher_.get())
     printer_watcher_->StopWatching();
@@ -314,10 +294,6 @@ PrinterJobHandler::HandleJobMetadataResponse(const net::URLFetcher* source,
     if (!jobs.empty()) {
       if (jobs[0].time_remaining_.is_zero()) {
         job_details_ = jobs[0];
-        job_start_time_ = base::Time::Now();
-        base::subtle::NoBarrier_AtomicIncrement(&g_total_jobs_started, 1);
-        UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                                  JOB_HANDLER_JOB_STARTED, JOB_HANDLER_MAX);
         SetNextDataHandler(&PrinterJobHandler::HandlePrintTicketResponse);
         request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
         GURL request_url;
@@ -327,8 +303,7 @@ PrinterJobHandler::HandleJobMetadataResponse(const net::URLFetcher* source,
         } else {
           request_url = GURL(job_details_.print_ticket_url_);
         }
-        request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_TICKET,
-                                  request_url, this, kJobDataMaxRetryCount);
+        request_->StartGetRequest(request_url, this, kJobDataMaxRetryCount);
         return CloudPrintURLFetcher::STOP_PROCESSING;
       }
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -356,18 +331,14 @@ PrinterJobHandler::HandlePrintTicketResponse(const net::URLFetcher* source,
   source->GetResponseHeaders()->GetMimeType(&mime_type);
   if (print_system_->ValidatePrintTicket(printer_info_.printer_name, data,
                                          mime_type)) {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                              JOB_HANDLER_VALID_TICKET, JOB_HANDLER_MAX);
     job_details_.print_ticket_ = data;
     job_details_.print_ticket_mime_type_ = mime_type;
     SetNextDataHandler(&PrinterJobHandler::HandlePrintDataResponse);
     request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
     request_->StartGetRequestWithAcceptHeader(
-        CloudPrintURLFetcher::REQUEST_DATA, GURL(job_details_.print_data_url_),
-        this, kJobDataMaxRetryCount, print_system_->GetSupportedMimeTypes());
+        GURL(job_details_.print_data_url_), this, kJobDataMaxRetryCount,
+        print_system_->GetSupportedMimeTypes());
   } else {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                              JOB_HANDLER_INVALID_TICKET, JOB_HANDLER_MAX);
     // The print ticket was not valid. We are done here.
     ValidatePrintTicketFailed();
   }
@@ -381,8 +352,6 @@ PrinterJobHandler::HandlePrintDataResponse(const net::URLFetcher* source,
   VLOG(1) << "CP_CONNECTOR: Handling print data response"
           << ", printer id: " << printer_info_cloud_.printer_id;
   if (base::CreateTemporaryFile(&job_details_.print_data_file_path_)) {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent", JOB_HANDLER_DATA,
-                              JOB_HANDLER_MAX);
     bool ret = base::WriteFile(job_details_.print_data_file_path_, data);
     source->GetResponseHeaders()->GetMimeType(
         &job_details_.print_data_mime_type_);
@@ -391,8 +360,6 @@ PrinterJobHandler::HandlePrintDataResponse(const net::URLFetcher* source,
       return CloudPrintURLFetcher::STOP_PROCESSING;
     }
   }
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_INVALID_DATA, JOB_HANDLER_MAX);
 
   // If we are here, then there was an error in saving the print data, bail out
   // here.
@@ -434,8 +401,6 @@ void PrinterJobHandler::Start() {
   VLOG(1) << "CP_CONNECTOR: Starting printer job handler"
           << ", printer id: " << printer_info_cloud_.printer_id
           << ", task in progress: " << task_in_progress_;
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_START, JOB_HANDLER_MAX);
   if (task_in_progress_) {
     // Multiple Starts can get posted because of multiple notifications
     // We want to ignore the other ones that happen when a task is in progress.
@@ -449,11 +414,7 @@ void PrinterJobHandler::Start() {
   if (!HavePendingTasks())
     return;
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_PENDING_TASK, JOB_HANDLER_MAX);
   if (!task_in_progress_ && printer_update_pending_) {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                              JOB_HANDLER_PRINTER_UPDATE, JOB_HANDLER_MAX);
     printer_update_pending_ = false;
     task_in_progress_ = UpdatePrinterInfo();
     VLOG(1) << "CP_CONNECTOR: Changed task in progress"
@@ -461,8 +422,6 @@ void PrinterJobHandler::Start() {
             << ", task in progress: " << task_in_progress_;
   }
   if (!task_in_progress_ && job_check_pending_) {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                              JOB_HANDLER_JOB_CHECK, JOB_HANDLER_MAX);
     task_in_progress_ = true;
     VLOG(1) << "CP_CONNECTOR: Changed task in progress"
                ", printer id: "
@@ -473,14 +432,12 @@ void PrinterJobHandler::Start() {
     SetNextJSONHandler(&PrinterJobHandler::HandleJobMetadataResponse);
     request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
     request_->StartGetRequest(
-        CloudPrintURLFetcher::REQUEST_JOB_FETCH,
         GetUrlForJobFetch(cloud_print_server_url_,
                           printer_info_cloud_.printer_id, job_fetch_reason_),
         this, kCloudPrintAPIMaxRetryCount);
-    last_job_fetch_time_ = base::TimeTicks::Now();
     VLOG(1) << "CP_CONNECTOR: Last job fetch time"
             << ", printer name: " << printer_info_.printer_name
-            << ", timestamp: " << last_job_fetch_time_.since_origin();
+            << ", timestamp: " << base::TimeTicks::Now().since_origin();
     job_fetch_reason_.clear();
   }
 }
@@ -502,8 +459,6 @@ void PrinterJobHandler::Stop() {
 void PrinterJobHandler::StartPrinting() {
   VLOG(1) << "CP_CONNECTOR: Starting printing"
           << ", printer id: " << printer_info_cloud_.printer_id;
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_SET_START_PRINTING, JOB_HANDLER_MAX);
   // We are done with the request object for now.
   request_.reset();
   if (shutting_down_)
@@ -547,12 +502,8 @@ void PrinterJobHandler::UpdateJobStatus(PrintJobStatus status,
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobStatus", error, JOB_MAX);
-
   if (error == JOB_SUCCESS) {
     DCHECK_EQ(status, PRINT_JOB_STATUS_IN_PROGRESS);
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                              JOB_HANDLER_SET_IN_PROGRESS, JOB_HANDLER_MAX);
     SetNextJSONHandler(
         &PrinterJobHandler::HandleInProgressStatusUpdateResponse);
   } else {
@@ -561,7 +512,6 @@ void PrinterJobHandler::UpdateJobStatus(PrintJobStatus status,
   }
   request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
   request_->StartGetRequest(
-      CloudPrintURLFetcher::REQUEST_UPDATE_JOB,
       GetUrlForJobStatusUpdate(cloud_print_server_url_, job_details_.job_id_,
                                status, error),
       this, kCloudPrintAPIMaxRetryCount);
@@ -598,10 +548,6 @@ void PrinterJobHandler::JobSpooled(PlatformJobId local_job_id) {
   VLOG(1) << "CP_CONNECTOR: Job spooled"
           << ", printer id: " << printer_info_cloud_.printer_id
           << ", job id: " << local_job_id;
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent", JOB_HANDLER_SPOOLED,
-                            JOB_HANDLER_MAX);
-  UMA_HISTOGRAM_LONG_TIMES("CloudPrint.SpoolingTime",
-                           base::Time::Now() - spooling_start_time_);
   if (shutting_down_)
     return;
 
@@ -748,7 +694,6 @@ void PrinterJobHandler::OnReceivePrinterCaps(
     SetNextJSONHandler(&PrinterJobHandler::HandlePrinterUpdateResponse);
     request_ = CloudPrintURLFetcher::Create(kPartialTrafficAnnotation);
     request_->StartPostRequest(
-        CloudPrintURLFetcher::REQUEST_UPDATE_PRINTER,
         GetUrlForPrinterUpdate(cloud_print_server_url_,
                                printer_info_cloud_.printer_id),
         this, kCloudPrintAPIMaxRetryCount, mime_type, post_data);
@@ -765,8 +710,6 @@ void PrinterJobHandler::DoPrint(const JobDetails& job_details,
                                 const std::string& printer_name) {
   DCHECK(CurrentlyOnPrintThread());
   job_spooler_ = print_system_->CreateJobSpooler();
-  UMA_HISTOGRAM_LONG_TIMES("CloudPrint.PrepareTime",
-                           base::Time::Now() - job_start_time_);
   DCHECK(job_spooler_.get());
 
   std::u16string document_name =
@@ -777,9 +720,6 @@ void PrinterJobHandler::DoPrint(const JobDetails& job_details,
   document_name = printing::FormatDocumentTitleWithOwner(
       base::UTF8ToUTF16(job_details.job_owner_), document_name);
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.JobHandlerEvent",
-                            JOB_HANDLER_START_SPOOLING, JOB_HANDLER_MAX);
-  spooling_start_time_ = base::Time::Now();
   if (!job_spooler_->Spool(job_details.print_ticket_,
                            job_details.print_ticket_mime_type_,
                            job_details.print_data_file_path_,

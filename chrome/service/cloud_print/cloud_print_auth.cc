@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,26 +20,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace cloud_print {
-
-namespace {
-
-enum CloudPrintAuthEvent {
-  AUTH_EVENT_ROBO_CREATE,
-  AUTH_EVENT_ROBO_SUCCEEDED,
-  AUTH_EVENT_ROBO_FAILED,
-  AUTH_EVENT_ROBO_JSON_ERROR,
-  AUTH_EVENT_ROBO_AUTH_ERROR,
-  AUTH_EVENT_AUTH_WITH_TOKEN,
-  AUTH_EVENT_AUTH_WITH_CODE,
-  AUTH_EVENT_TOKEN_RESPONSE,
-  AUTH_EVENT_REFRESH_REQUEST,
-  AUTH_EVENT_REFRESH_RESPONSE,
-  AUTH_EVENT_AUTH_ERROR,
-  AUTH_EVENT_NET_ERROR,
-  AUTH_EVENT_MAX
-};
-
-}  // namespace
 
 CloudPrintAuth::CloudPrintAuth(
     Client* client,
@@ -60,9 +39,6 @@ void CloudPrintAuth::AuthenticateWithToken(
     const std::string& cloud_print_token) {
   VLOG(1) << "CP_AUTH: Authenticating with token";
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_ROBO_CREATE,
-                            AUTH_EVENT_MAX);
-
   client_login_token_ = cloud_print_token;
 
   // We need to get the credentials of the robot here.
@@ -70,8 +46,7 @@ void CloudPrintAuth::AuthenticateWithToken(
                                                oauth_client_info_.client_id,
                                                proxy_id_);
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_AUTH_CODE,
-                            get_authcode_url, this,
+  request_->StartGetRequest(get_authcode_url, this,
                             kCloudPrintAuthMaxRetryCount);
 }
 
@@ -79,9 +54,6 @@ void CloudPrintAuth::AuthenticateWithRobotToken(
     const std::string& robot_oauth_refresh_token,
     const std::string& robot_email) {
   VLOG(1) << "CP_AUTH: Authenticating with robot token";
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_AUTH_WITH_TOKEN,
-                            AUTH_EVENT_MAX);
 
   robot_email_ = robot_email;
   refresh_token_ = robot_oauth_refresh_token;
@@ -92,9 +64,6 @@ void CloudPrintAuth::AuthenticateWithRobotAuthCode(
     const std::string& robot_oauth_auth_code,
     const std::string& robot_email) {
   VLOG(1) << "CP_AUTH: Authenticating with robot auth code";
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_AUTH_WITH_CODE,
-                            AUTH_EVENT_MAX);
 
   robot_email_ = robot_email;
   // Now that we have an auth code we need to get the refresh and access tokens.
@@ -107,8 +76,6 @@ void CloudPrintAuth::AuthenticateWithRobotAuthCode(
 }
 
 void CloudPrintAuth::RefreshAccessToken() {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_REFRESH_REQUEST,
-                            AUTH_EVENT_MAX);
   oauth_client_ =
       std::make_unique<gaia::GaiaOAuthClient>(client_->GetURLLoaderFactory());
   std::vector<std::string> empty_scope_list;  // (Use scope from refresh token.)
@@ -122,8 +89,6 @@ void CloudPrintAuth::RefreshAccessToken() {
 void CloudPrintAuth::OnGetTokensResponse(const std::string& refresh_token,
                                          const std::string& access_token,
                                          int expires_in_seconds) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_TOKEN_RESPONSE,
-                            AUTH_EVENT_MAX);
   refresh_token_ = refresh_token;
   // After saving the refresh token, this is just like having just refreshed
   // the access token. Just call OnRefreshTokenResponse.
@@ -132,8 +97,6 @@ void CloudPrintAuth::OnGetTokensResponse(const std::string& refresh_token,
 
 void CloudPrintAuth::OnRefreshTokenResponse(const std::string& access_token,
                                             int expires_in_seconds) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_REFRESH_RESPONSE,
-                            AUTH_EVENT_MAX);
   client_->OnAuthenticationComplete(access_token, refresh_token_,
                                     robot_email_, user_email_);
 
@@ -148,15 +111,11 @@ void CloudPrintAuth::OnRefreshTokenResponse(const std::string& access_token,
 }
 
 void CloudPrintAuth::OnOAuthError() {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_AUTH_ERROR,
-                            AUTH_EVENT_MAX);
   // Notify client about authentication error.
   client_->OnInvalidCredentials();
 }
 
 void CloudPrintAuth::OnNetworkError(int response_code) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_NET_ERROR,
-                            AUTH_EVENT_MAX);
   // Since we specify infinite retries on network errors, this should never
   // be called.
   NOTREACHED() <<
@@ -173,9 +132,6 @@ CloudPrintURLFetcher::ResponseAction CloudPrintAuth::HandleJSONData(
 
   if (!succeeded) {
     VLOG(1) << "CP_AUTH: Creating robot account failed";
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent",
-                              AUTH_EVENT_ROBO_FAILED,
-                              AUTH_EVENT_MAX);
     client_->OnInvalidCredentials();
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
@@ -183,16 +139,9 @@ CloudPrintURLFetcher::ResponseAction CloudPrintAuth::HandleJSONData(
   const std::string* auth_code = json_data.FindStringKey(kOAuthCodeValue);
   if (!auth_code) {
     VLOG(1) << "CP_AUTH: Creating robot account returned invalid json response";
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent",
-                              AUTH_EVENT_ROBO_JSON_ERROR,
-                              AUTH_EVENT_MAX);
     client_->OnInvalidCredentials();
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent",
-                              AUTH_EVENT_ROBO_SUCCEEDED,
-                              AUTH_EVENT_MAX);
 
   const std::string* robot_email = json_data.FindStringKey(kXMPPJidValue);
   if (robot_email)
@@ -208,10 +157,6 @@ CloudPrintURLFetcher::ResponseAction CloudPrintAuth::HandleJSONData(
 
 CloudPrintURLFetcher::ResponseAction CloudPrintAuth::OnRequestAuthError() {
   VLOG(1) << "CP_AUTH: Creating robot account authentication error";
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent",
-                            AUTH_EVENT_ROBO_AUTH_ERROR,
-                            AUTH_EVENT_MAX);
 
   // Notify client about authentication error.
   client_->OnInvalidCredentials();

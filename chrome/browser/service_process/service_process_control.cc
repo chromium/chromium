@@ -12,9 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_delta_serialization.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/single_thread_task_runner.h"
@@ -186,9 +183,6 @@ void ServiceProcessControl::Launch(base::OnceClosure success_task,
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents", SERVICE_EVENT_LAUNCH,
-                            SERVICE_EVENT_MAX);
-
   std::unique_ptr<base::CommandLine> cmd_line(
       CreateServiceProcessCommandLine());
   // And then start the process asynchronously.
@@ -209,14 +203,10 @@ void ServiceProcessControl::OnProcessLaunched() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (launcher_->launched()) {
     saved_pid_ = launcher_->saved_pid();
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                              SERVICE_EVENT_LAUNCHED, SERVICE_EVENT_MAX);
     // After we have successfully created the service process we try to connect
     // to it. The launch task is transfered to a connect task.
     ConnectInternal();
   } else {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                              SERVICE_EVENT_LAUNCH_FAILED, SERVICE_EVENT_MAX);
     // If we don't have process handle that means launching the service process
     // has failed.
     RunConnectDoneTasks();
@@ -234,9 +224,6 @@ void ServiceProcessControl::OnUpgradeRecommended() {
 void ServiceProcessControl::OnChannelConnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_CHANNEL_CONNECTED, SERVICE_EVENT_MAX);
-
   UpgradeDetector::GetInstance()->AddObserver(this);
 
   // We just established a channel with the service process. Notify it if an
@@ -252,60 +239,8 @@ void ServiceProcessControl::OnChannelConnected() {
 void ServiceProcessControl::OnChannelError() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_CHANNEL_ERROR, SERVICE_EVENT_MAX);
-
   Disconnect();
   RunConnectDoneTasks();
-}
-
-void ServiceProcessControl::OnHistograms(
-    const std::vector<std::string>& pickled_histograms) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_HISTOGRAMS_REPLY, SERVICE_EVENT_MAX);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::HistogramDeltaSerialization::DeserializeAndAddSamples(
-      pickled_histograms);
-  RunHistogramsCallback();
-}
-
-void ServiceProcessControl::RunHistogramsCallback() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!histograms_callback_.is_null()) {
-    std::move(histograms_callback_).Run();
-  }
-  histograms_timeout_callback_.Cancel();
-}
-
-bool ServiceProcessControl::GetHistograms(base::OnceClosure histograms_callback,
-                                          const base::TimeDelta& timeout) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!histograms_callback.is_null());
-  histograms_callback_.Reset();
-
-  // If the service process is already running then connect to it.
-  if (!CheckServiceProcessReady())
-    return false;
-  ConnectInternal();
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_HISTOGRAMS_REQUEST,
-                            SERVICE_EVENT_MAX);
-
-  if (!service_process_)
-    return false;
-
-  service_process_->GetHistograms(base::BindOnce(
-      &ServiceProcessControl::OnHistograms, base::Unretained(this)));
-
-  // Run timeout task to make sure |histograms_callback| is called.
-  histograms_timeout_callback_.Reset(base::BindOnce(
-      &ServiceProcessControl::RunHistogramsCallback, base::Unretained(this)));
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, histograms_timeout_callback_.callback(), timeout);
-
-  histograms_callback_ = std::move(histograms_callback);
-  return true;
 }
 
 bool ServiceProcessControl::Shutdown() {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_delta_serialization.h"
 
 ServiceIPCServer::ServiceIPCServer(
     Client* client,
@@ -59,19 +58,6 @@ void ServiceIPCServer::OnChannelError() {
 void ServiceIPCServer::Hello(HelloCallback callback) {
   ipc_client_connected_ = true;
   std::move(callback).Run();
-}
-
-void ServiceIPCServer::GetHistograms(GetHistogramsCallback callback) {
-  if (!histogram_delta_serializer_) {
-    histogram_delta_serializer_ =
-        std::make_unique<base::HistogramDeltaSerialization>("ServiceProcess");
-  }
-  std::vector<std::string> deltas;
-  // "false" to PerpareAndSerializeDeltas() indicates to *not* include
-  // histograms held in persistent storage on the assumption that they will be
-  // visible to the recipient through other means.
-  histogram_delta_serializer_->PrepareAndSerializeDeltas(&deltas, false);
-  std::move(callback).Run(deltas);
 }
 
 void ServiceIPCServer::ShutDown() {

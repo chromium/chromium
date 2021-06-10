@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
@@ -71,12 +70,6 @@ enum ServiceUtilityProcessHostEvent {
   SERVICE_UTILITY_FAILED_TO_START,
   SERVICE_UTILITY_EVENT_MAX,
 };
-
-void ReportUmaEvent(ServiceUtilityProcessHostEvent id) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceUtilityProcessHostEvent",
-                            id,
-                            SERVICE_UTILITY_EVENT_MAX);
-}
 
 // NOTE: changes to this class need to be reviewed by the security team.
 class ServiceSandboxedProcessLauncherDelegate
@@ -238,7 +231,6 @@ ServiceUtilityProcessHost::~ServiceUtilityProcessHost() {
 bool ServiceUtilityProcessHost::StartRenderPDFPagesToMetafile(
     const base::FilePath& pdf_path,
     const printing::PdfRenderSettings& render_settings) {
-  ReportUmaEvent(SERVICE_UTILITY_METAFILE_REQUEST);
   base::File pdf_file(pdf_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_DELETE_ON_CLOSE);
   if (!pdf_file.IsValid())
@@ -271,7 +263,6 @@ bool ServiceUtilityProcessHost::StartRenderPDFPagesToMetafile(
 
 bool ServiceUtilityProcessHost::StartGetPrinterCapsAndDefaults(
     const std::string& printer_name) {
-  ReportUmaEvent(SERVICE_UTILITY_CAPS_REQUEST);
   if (!StartProcess(/*sandbox=*/false))
     return false;
   DCHECK(!waiting_for_reply_);
@@ -281,7 +272,6 @@ bool ServiceUtilityProcessHost::StartGetPrinterCapsAndDefaults(
 
 bool ServiceUtilityProcessHost::StartGetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name) {
-  ReportUmaEvent(SERVICE_UTILITY_SEMANTIC_CAPS_REQUEST);
   if (!StartProcess(/*sandbox=*/false))
     return false;
   DCHECK(!waiting_for_reply_);
@@ -306,12 +296,7 @@ bool ServiceUtilityProcessHost::StartProcess(bool sandbox) {
   cmd_line.AppendSwitch(switches::kLang);
   cmd_line.AppendArg(switches::kPrefetchArgumentOther);
 
-  if (Launch(&cmd_line, sandbox)) {
-    ReportUmaEvent(SERVICE_UTILITY_STARTED);
-    return true;
-  }
-  ReportUmaEvent(SERVICE_UTILITY_FAILED_TO_START);
-  return false;
+  return Launch(&cmd_line, sandbox);
 }
 
 bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
@@ -389,7 +374,6 @@ void ServiceUtilityProcessHost::OnChildDisconnected() {
     // child died.
     client_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&Client::OnChildDied, client_.get()));
-    ReportUmaEvent(SERVICE_UTILITY_DISCONNECTED);
   }
 
   // The child process has died for some reason. This host is no longer needed.
@@ -455,8 +439,6 @@ void ServiceUtilityProcessHost::OnPDFToEmfFinished(bool success) {
     return;
 
   waiting_for_reply_ = false;
-  ReportUmaEvent(success ? SERVICE_UTILITY_METAFILE_SUCCEEDED
-                         : SERVICE_UTILITY_METAFILE_FAILED);
   client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::OnRenderPDFPagesToMetafileDone,
                                 client_.get(), success));
@@ -470,7 +452,6 @@ void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaultsSucceeded(
     const std::string& printer_name,
     const printing::PrinterCapsAndDefaults& caps_and_defaults) {
   DCHECK(waiting_for_reply_);
-  ReportUmaEvent(SERVICE_UTILITY_CAPS_SUCCEEDED);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE,
@@ -484,7 +465,6 @@ void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaultsSucceeded(
     const std::string& printer_name,
     const printing::PrinterSemanticCapsAndDefaults& caps_and_defaults) {
   DCHECK(waiting_for_reply_);
-  ReportUmaEvent(SERVICE_UTILITY_SEMANTIC_CAPS_SUCCEEDED);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE,
@@ -497,7 +477,6 @@ void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaultsSucceeded(
 void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaultsFailed(
     const std::string& printer_name) {
   DCHECK(waiting_for_reply_);
-  ReportUmaEvent(SERVICE_UTILITY_CAPS_FAILED);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE,
@@ -510,7 +489,6 @@ void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaultsFailed(
 void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaultsFailed(
     const std::string& printer_name) {
   DCHECK(waiting_for_reply_);
-  ReportUmaEvent(SERVICE_UTILITY_SEMANTIC_CAPS_FAILED);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::OnGetPrinterSemanticCapsAndDefaults,

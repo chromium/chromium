@@ -127,10 +127,6 @@
 #include <signal.h>
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/service_process/service_process_control.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/metrics/extensions_metrics_provider.h"
 #include "extensions/browser/extension_registry.h"
@@ -456,7 +452,7 @@ ChromeMetricsServiceClient::~ChromeMetricsServiceClient() {
 // static
 std::unique_ptr<ChromeMetricsServiceClient> ChromeMetricsServiceClient::Create(
     metrics::MetricsStateManager* state_manager) {
-  // Perform two-phase initialization so that |client->metrics_service_| only
+  // Perform two-phase initialization so that `client->metrics_service_` only
   // receives pointers to fully constructed objects.
   std::unique_ptr<ChromeMetricsServiceClient> client(
       new ChromeMetricsServiceClient(state_manager));
@@ -890,21 +886,8 @@ void ChromeMetricsServiceClient::OnMemoryDetailCollectionDone() {
       base::TimeDelta::FromMilliseconds(kMaxHistogramGatheringWaitDuration);
 
   DCHECK_EQ(num_async_histogram_fetches_in_progress_, 0);
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  num_async_histogram_fetches_in_progress_ = 3;
-  // Run requests to service and content in parallel.
-  if (!ServiceProcessControl::GetInstance()->GetHistograms(callback, timeout)) {
-    // Assume |num_async_histogram_fetches_in_progress_| is not changed by
-    // |GetHistograms()|.
-    DCHECK_EQ(num_async_histogram_fetches_in_progress_, 3);
-    // Assign |num_async_histogram_fetches_in_progress_| above and decrement it
-    // here to make code work even if |GetHistograms()| fired |callback|.
-    --num_async_histogram_fetches_in_progress_;
-  }
-#else
+  // `callback` is used 2 times below.
   num_async_histogram_fetches_in_progress_ = 2;
-#endif
 
   // Merge histograms from metrics providers into StatisticsRecorder.
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
@@ -913,7 +896,7 @@ void ChromeMetricsServiceClient::OnMemoryDetailCollectionDone() {
       callback);
 
   // Set up the callback task to call after we receive histograms from all
-  // child processes. |timeout| specifies how long to wait before absolutely
+  // child processes. `timeout` specifies how long to wait before absolutely
   // calling us back on the task.
   content::FetchHistogramsAsynchronously(base::ThreadTaskRunnerHandle::Get(),
                                          std::move(callback), timeout);
@@ -1053,7 +1036,7 @@ void ChromeMetricsServiceClient::Observe(
     case chrome::NOTIFICATION_PROFILE_ADDED: {
       bool success =
           RegisterForProfileEvents(content::Source<Profile>(source).ptr());
-      // On failure, set |notification_listeners_active_| to false which will
+      // On failure, set `notification_listeners_active_` to false which will
       // disable UKM reporting via UpdateRunningServices().
       if (!success && notification_listeners_active_) {
         notification_listeners_active_ = false;
