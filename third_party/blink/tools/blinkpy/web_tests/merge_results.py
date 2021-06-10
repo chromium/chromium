@@ -210,7 +210,7 @@ class JSONMerger(Merger):
                 dict_mid.setdefault(key, []).append(dobj[key])
 
         dict_out = dicts[0].__class__({})
-        for k, v in dict_mid.iteritems():
+        for k, v in dict_mid.items():
             assert v
             if len(v) == 1:
                 dict_out[k] = v[0]
