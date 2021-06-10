@@ -380,4 +380,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array) {
+  TestAndCheck(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+               {{"p.AXChildren[0].AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(p.AXChildren[0].AXRole='AXStaticText'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array_OutOfRange) {
+  TestAndCheck(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+               {{"p.AXChildren[9999].AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(p.AXChildren[9999].AXRole=ERROR:FAILED_TO_PARSE
+)~~");
+}
+
 }  // namespace content

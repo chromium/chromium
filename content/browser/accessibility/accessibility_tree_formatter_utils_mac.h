@@ -89,6 +89,16 @@ class CONTENT_EXPORT AttributeInvoker final {
   OptionalNSObject InvokeFor(const id target,
                              const ui::AXPropertyNode& property_node) const;
 
+  // Invokes a property node for a given AXElement.
+  OptionalNSObject InvokeForAXElement(
+      const id target,
+      const ui::AXPropertyNode& property_node) const;
+
+  // Invokes a property node for a given array.
+  OptionalNSObject InvokeForArray(
+      const id target,
+      const ui::AXPropertyNode& property_node) const;
+
   // Returns a parameterized attribute parameter by a property node.
   OptionalNSObject ParamByPropertyNode(const ui::AXPropertyNode&) const;
 

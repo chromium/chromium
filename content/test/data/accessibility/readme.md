@@ -185,6 +185,9 @@ Paramaterized attributes are also supported, for example:
 
 `textarea.AXPreviousWordStartTextMarkerForTextMarker({:3, 3, down})`
 
+You can also use array operator[] to refer to an array element at a given index,
+for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
+
 ### Advanced directives
 
 Normally the system waits for the document to finish loading before running

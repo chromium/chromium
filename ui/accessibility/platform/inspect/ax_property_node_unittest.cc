@@ -170,4 +170,50 @@ cellAt(
 ))~~");
 }
 
+TEST_F(AXPropertyNodeTest, CallChains_Array) {
+  ParseAndCheckTree("children[3]", R"~~(children.
+[](
+  3
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildren[0]", R"~~(textbox.
+AXChildren.
+[](
+  0
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildrenFor(textbox_child)[0]", R"~~(textbox.
+AXChildrenFor(
+  textbox_child
+).
+[](
+  0
+))~~");
+
+  ParseAndCheckTree("get(AXChildren[0])", R"~~(get(
+  AXChildren.
+  [](
+    0
+  )
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildren[0].AXRole", R"~~(textbox.
+AXChildren.
+[](
+  0
+).
+AXRole)~~");
+
+  ParseAndCheckTree(
+      "textarea.AXTextMarkerRangeForUIElement(textarea.AXChildren[0])",
+      R"~~(textarea.
+AXTextMarkerRangeForUIElement(
+  textarea.
+  AXChildren.
+  [](
+    0
+  )
+))~~");
+}
+
 }  // namespace ui

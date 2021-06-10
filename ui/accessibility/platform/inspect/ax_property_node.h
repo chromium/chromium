@@ -105,6 +105,12 @@ class AX_EXPORT AXPropertyNode final {
                  iterator value_end);
 
  private:
+  // Used by Parse to indicate a state the parser currently has.
+  enum ParseState {
+    kArgument,
+    kChain,
+  };
+
   // Builds a property node struct for a string of NAME(ARG1, ..., ARGN) format,
   // where each ARG is a scalar value or a string of the same format.
   static iterator Parse(AXPropertyNode* node, iterator begin, iterator end);

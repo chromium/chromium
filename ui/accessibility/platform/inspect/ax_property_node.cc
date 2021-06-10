@@ -169,13 +169,13 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
                                                AXPropertyNode::iterator end) {
   auto iter = begin;
   auto key_begin = end, key_end = end;
-  bool chained = false;
+  ParseState state = kArgument;
   while (iter != end) {
     // Subnode begins: create a new node, record its name and parse its
     // arguments.
     if (*iter == '(') {
       AXPropertyNode* child_node =
-          node->ConnectTo(chained, key_begin, key_end, begin, iter);
+          node->ConnectTo(state & kChain, key_begin, key_end, begin, iter);
 
       key_begin = key_end = end;
       begin = iter = Parse(child_node, ++iter, end);
@@ -185,8 +185,15 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
     // Subnode begins: a special case for arrays, which have [arg1, ..., argN]
     // form.
     if (*iter == '[') {
+      // If a node ends by an array operator[], then chain them, for example,
+      // AXChildren[0].
+      if (begin != iter) {
+        node->ConnectTo(state & kChain, key_begin, key_end, begin, iter);
+        key_begin = key_end = end;
+        state = kChain;
+      }
       AXPropertyNode* child_node =
-          node->AppendToArguments(key_begin, key_end, "[]");
+          node->ConnectTo(state & kChain, key_begin, key_end, "[]");
       key_begin = key_end = end;
       begin = iter = Parse(child_node, ++iter, end);
       continue;
@@ -205,10 +212,10 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
     // Subnode ends.
     if (*iter == ')' || *iter == ']' || *iter == '}') {
       if (begin != iter) {
-        node->ConnectTo(chained, key_begin, key_end, begin, iter);
+        node->ConnectTo(state & kChain, key_begin, key_end, begin, iter);
         key_begin = key_end = end;
       }
-      chained = false;
+      state = kChain;
       return ++iter;
     }
 
@@ -231,21 +238,21 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
     // Call chains.
     if (*iter == '.') {
       if (begin != iter) {
-        node->ConnectTo(chained, key_begin, key_end, begin, iter);
+        node->ConnectTo(state & kChain, key_begin, key_end, begin, iter);
         key_begin = key_end = end;
       }
       begin = ++iter;
-      chained = true;
+      state = kChain;
       continue;
     }
 
     // Subsequent literal case.
     if (*iter == ',') {
       if (begin != iter) {
-        node->ConnectTo(chained, key_begin, key_end, begin, iter);
+        node->ConnectTo(state & kChain, key_begin, key_end, begin, iter);
         key_begin = key_end = end;
       }
-      chained = false;
+      state = kArgument;
       begin = ++iter;
       continue;
     }
@@ -255,7 +262,7 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
 
   // Single scalar param case.
   if (begin != iter) {
-    node->ConnectTo(chained, begin, iter);
+    node->ConnectTo(state & kChain, begin, iter);
   }
   return iter;
 }

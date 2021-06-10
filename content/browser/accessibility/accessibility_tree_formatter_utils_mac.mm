@@ -111,6 +111,19 @@ OptionalNSObject AttributeInvoker::Invoke(
 OptionalNSObject AttributeInvoker::InvokeFor(
     const id target,
     const AXPropertyNode& property_node) const {
+  if (IsBrowserAccessibilityCocoa(target) || IsAXUIElement(target))
+    return InvokeForAXElement(target, property_node);
+
+  if ([target isKindOfClass:[NSArray class]])
+    return InvokeForArray(target, property_node);
+
+  LOG(ERROR) << "Unexpected target type for " << property_node.ToString();
+  return OptionalNSObject::Error();
+}
+
+OptionalNSObject AttributeInvoker::InvokeForAXElement(
+    const id target,
+    const AXPropertyNode& property_node) const {
   // Attributes.
   for (NSString* attribute : AttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
@@ -133,6 +146,32 @@ OptionalNSObject AttributeInvoker::InvokeFor(
 
   // Unmatched attribute.
   return OptionalNSObject::NotApplicable();
+}
+
+OptionalNSObject AttributeInvoker::InvokeForArray(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  if (!property_node.IsArray() || property_node.arguments.size() != 1) {
+    LOG(ERROR) << "Array operator[] is expected, got: "
+               << property_node.ToString();
+    return OptionalNSObject::Error();
+  }
+
+  absl::optional<int> maybe_index = property_node.arguments[0].AsInt();
+  if (!maybe_index || *maybe_index < 0) {
+    LOG(ERROR) << "Wrong index for array operator[], got: "
+               << property_node.arguments[0].ToString();
+    return OptionalNSObject::Error();
+  }
+
+  if (static_cast<int>([target count]) <= *maybe_index) {
+    LOG(ERROR) << "Out of range array operator[] index, got: "
+               << property_node.arguments[0].ToString()
+               << ", length: " << [target count];
+    return OptionalNSObject::Error();
+  }
+
+  return OptionalNSObject(target[*maybe_index]);
 }
 
 OptionalNSObject AttributeInvoker::GetValue(
@@ -231,7 +270,7 @@ NSNumber* AttributeInvoker::PropertyNodeToInt(
 // NSArray of two NSNumber. Format: [integer, integer].
 NSArray* AttributeInvoker::PropertyNodeToIntArray(
     const AXPropertyNode& arraynode) const {
-  if (arraynode.name_or_value != "[]") {
+  if (!arraynode.IsArray()) {
     INTARRAY_FAIL(arraynode, "not array")
   }
 
