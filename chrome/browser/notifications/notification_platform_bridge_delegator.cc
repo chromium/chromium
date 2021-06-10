@@ -18,12 +18,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ui_base_features.h"
 
-#if BUILDFLAG(ENABLE_MESSAGE_CENTER)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_platform_bridge_message_center.h"
 #endif
 
@@ -88,7 +88,7 @@ NotificationPlatformBridge* GetSystemNotificationPlatformBridge(
 // a nullptr for platforms where the message center is not available.
 std::unique_ptr<NotificationPlatformBridge> CreateMessageCenterBridge(
     Profile* profile) {
-#if BUILDFLAG(ENABLE_MESSAGE_CENTER)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   return std::make_unique<NotificationPlatformBridgeMessageCenter>(profile);
 #else
   return nullptr;

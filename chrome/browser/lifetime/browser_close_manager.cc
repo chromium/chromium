@@ -16,7 +16,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -26,6 +25,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+#include "chrome/browser/notifications/notification_ui_manager.h"
+#endif
 
 namespace {
 
@@ -182,8 +185,10 @@ void BrowserCloseManager::CloseBrowsers() {
     }
   }
 
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   NotificationUIManager* notification_manager =
       g_browser_process->notification_ui_manager();
   if (notification_manager)
     notification_manager->CancelAll();
+#endif
 }

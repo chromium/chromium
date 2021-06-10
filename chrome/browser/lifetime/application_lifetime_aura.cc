@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -17,7 +18,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
-#else
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
@@ -34,7 +37,9 @@ void HandleAppExitingForPlatform() {
     aura::client::GetCaptureClient(ash::Shell::GetPrimaryRootWindow())
         ->SetCapture(nullptr);
   }
-#else
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // This clears existing notifications from the message center and their
   // associated ScopedKeepAlives. Chrome OS doesn't use ScopedKeepAlives for
   // notifications.

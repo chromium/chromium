@@ -39,17 +39,17 @@ declare_args() {
   # and have a system dialog.
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
+  # Enables usage of notifications via Chrome's MessageCenter.
+  # TODO(crbug.com/1217088): Disable this on `is_chromeos_lacros`.
+  enable_chrome_notifications =
+      is_mac || is_win || is_linux || is_chromeos_lacros
+
   # Enables the Click to Call feature on desktop platforms.
   enable_click_to_call = is_mac || is_win || is_linux || is_chromeos
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
-
-  # Enables usage of the system-provided notification center.
-  enable_system_notifications =
-      is_android || is_mac || is_win ||
-      ((is_linux || is_chromeos_lacros) && use_dbus) || is_chromeos
 
   enable_one_click_signin =
       is_win || is_mac || ((is_linux || is_chromeos_lacros) && !is_chromecast)
@@ -61,6 +61,10 @@ declare_args() {
   enable_session_service = !is_android && !is_chromecast
 
   enable_supervised_users = is_chromeos_ash || is_android
+
+  # Enables usage of the system-provided notification center.
+  enable_system_notifications =
+      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
 
   # Indicates if Wayland display server support is enabled.
   enable_wayland_server = is_chromeos_ash

@@ -4743,6 +4743,14 @@ test("unit_tests") {
     sources += [ "views/accessibility_checker_unittest.cc" ]
   }
 
+  if (enable_chrome_notifications) {
+    sources += [
+      "../browser/notifications/notification_system_observer_unittest.cc",
+      "../browser/notifications/notification_ui_manager_unittest.cc",
+      "../browser/notifications/popups_only_ui_controller_unittest.cc",
+    ]
+  }
+
   if (is_win) {
     assert(toolkit_views)
     sources += [
@@ -5308,9 +5316,6 @@ test("unit_tests") {
       # Background tab loading from performance_manager isn't supported on Android.
       "../browser/performance_manager/policies/background_tab_loading_policy_helpers_unittest.cc",
       "../browser/performance_manager/policies/background_tab_loading_policy_unittest.cc",
-
-      # Android does not use the Message Center notification system.
-      "../browser/notifications/notification_ui_manager_unittest.cc",
       "../browser/platform_util_unittest.cc",
       "../browser/policy/policy_path_parser_unittest.cc",
       "../browser/profile_resetter/profile_resetter_unittest.cc",
@@ -5728,7 +5733,6 @@ test("unit_tests") {
 
   if (is_chromeos_ash) {
     sources -= [
-      "../browser/notifications/notification_ui_manager_unittest.cc",
       "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
@@ -6159,7 +6163,6 @@ test("unit_tests") {
       "../browser/extensions/zipfile_installer_unittest.cc",
       "../browser/media/cast_mirroring_service_host_unittest.cc",
       "../browser/metrics/extensions_metrics_provider_unittest.cc",
-      "../browser/notifications/notification_system_observer_unittest.cc",
       "../browser/policy/chrome_extension_policy_migrator_unittest.cc",
       "../browser/renderer_context_menu/context_menu_content_type_unittest.cc",
       "../browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_config_unittest.cc",
@@ -6996,10 +6999,6 @@ test("unit_tests") {
         "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_unittest.cc",
       ]
     }
-    if (is_linux || is_chromeos_lacros || is_win) {
-      sources +=
-          [ "../browser/notifications/popups_only_ui_controller_unittest.cc" ]
-    }
     if (use_aura) {
       sources += [
         "../browser/ui/views/apps/shaped_app_window_targeter_unittest.cc",
@@ -7732,7 +7731,6 @@ if (!is_android) {
         "../browser/notifications/notification_interactive_uitest.cc",
         "../browser/notifications/notification_interactive_uitest_support.cc",
         "../browser/notifications/notification_interactive_uitest_support.h",
-        "../browser/notifications/notification_ui_manager_browsertest.cc",
       ]
     }
 
@@ -7750,6 +7748,10 @@ if (!is_android) {
 
     if (is_chromeos_lacros) {
       sources += [ "../browser/lacros/browser_interactive_uitest.cc" ]
+
+      # These tests require a MessageCenter which isn't available on Lacros.
+      sources -=
+          [ "../browser/notifications/notification_interactive_uitest.cc" ]
     }
 
     if (is_win) {
@@ -7848,15 +7850,15 @@ if (!is_android) {
       }
     }
 
-    if (!enable_system_notifications) {
-      sources += [ "../browser/notifications/notification_ui_manager_interactive_uitest.cc" ]
+    if (enable_chrome_notifications) {
+      sources += [
+        "../browser/notifications/notification_ui_manager_browsertest.cc",
+        "../browser/notifications/notification_ui_manager_interactive_uitest.cc",
+      ]
     }
 
     if (is_android) {
       sources -= [
-        # Android does not use the message center-based Notification system.
-        "../browser/notifications/notification_ui_manager_browsertest.cc",
-
         # TODO(peter): Enable the Notification browser tests.
         "../browser/notifications/notification_interactive_uitest.cc",
         "../browser/notifications/platform_notification_service_interactive_uitest.cc",

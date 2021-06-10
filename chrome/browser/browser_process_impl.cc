@@ -196,13 +196,16 @@
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+#include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -283,7 +286,7 @@ void BrowserProcessImpl::Init() {
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   message_center::MessageCenter::Initialize();
   // Set the system notification source display name ("Google Chrome" or
   // "Chromium").
@@ -394,7 +397,7 @@ void BrowserProcessImpl::StartTearDown() {
 
   system_notification_helper_.reset();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // Need to clear the desktop notification balloons before the IO thread and
   // before the profiles, since if there are any still showing we will access
   // those things during teardown.
@@ -432,7 +435,7 @@ void BrowserProcessImpl::StartTearDown() {
   storage_monitor::StorageMonitor::Destroy();
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (message_center::MessageCenter::Get())
     message_center::MessageCenter::Shutdown();
 #endif
@@ -714,14 +717,12 @@ BrowserProcessImpl::extension_event_router_forwarder() {
 
 NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-// TODO(miguelg) return nullptr for MAC as well once system notifications
-// are enabled by default.
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-  return nullptr;
-#else
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (!created_notification_ui_manager_)
     CreateNotificationUIManager();
   return notification_ui_manager_.get();
+#else
+  return nullptr;
 #endif
 }
 
@@ -1208,9 +1209,7 @@ void BrowserProcessImpl::CreateNotificationPlatformBridge() {
 }
 
 void BrowserProcessImpl::CreateNotificationUIManager() {
-// Android and Chrome OS do not use the NotificationUIManager anymore.
-// All notification traffic is routed through NotificationPlatformBridge.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   DCHECK(!notification_ui_manager_);
   notification_ui_manager_ = NotificationUIManager::Create();
   created_notification_ui_manager_ = !!notification_ui_manager_;

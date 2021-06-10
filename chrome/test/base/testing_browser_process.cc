@@ -19,7 +19,6 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
@@ -71,6 +69,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+#include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
 // static
@@ -188,6 +190,7 @@ ProfileManager* TestingBrowserProcess::profile_manager() {
 
 void TestingBrowserProcess::SetProfileManager(
     std::unique_ptr<ProfileManager> profile_manager) {
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // NotificationUIManager can contain references to elements in the current
   // ProfileManager (for example, the MessageCenterSettingsController maintains
   // a pointer to the ProfileInfoCache). So when we change the ProfileManager
@@ -195,6 +198,7 @@ void TestingBrowserProcess::SetProfileManager(
   // maintain references to it. See SetLocalState() for a description of a
   // similar situation.
   notification_ui_manager_.reset();
+#endif
   profile_manager_ = std::move(profile_manager);
 }
 
@@ -298,7 +302,7 @@ TestingBrowserProcess::extension_event_router_forwarder() {
 }
 
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (!notification_ui_manager_.get())
     notification_ui_manager_ = NotificationUIManager::Create();
   return notification_ui_manager_.get();
@@ -464,10 +468,12 @@ void TestingBrowserProcess::SetSharedURLLoaderFactory(
   shared_url_loader_factory_ = shared_url_loader_factory;
 }
 
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 void TestingBrowserProcess::SetNotificationUIManager(
     std::unique_ptr<NotificationUIManager> notification_ui_manager) {
   notification_ui_manager_.swap(notification_ui_manager);
 }
+#endif
 
 void TestingBrowserProcess::SetSystemNotificationHelper(
     std::unique_ptr<SystemNotificationHelper> system_notification_helper) {
@@ -486,7 +492,9 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
     // any components owned by TestingBrowserProcess that depend on local_state
     // are also freed.
     network_time_tracker_.reset();
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
     notification_ui_manager_.reset();
+#endif
 #if !defined(OS_ANDROID)
     serial_policy_allowed_ports_.reset();
 #endif

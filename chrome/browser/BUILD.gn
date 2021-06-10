@@ -902,7 +902,6 @@ static_library("browser") {
     "notifications/notification_platform_bridge_delegator.h",
     "notifications/notification_trigger_scheduler.cc",
     "notifications/notification_trigger_scheduler.h",
-    "notifications/notification_ui_manager.h",
     "notifications/notifier_state_tracker.cc",
     "notifications/notifier_state_tracker.h",
     "notifications/notifier_state_tracker_factory.cc",
@@ -3792,8 +3791,6 @@ static_library("browser") {
       "metrics/usage_scenario/video_capture_event_provider.h",
       "notifications/muted_notification_handler.cc",
       "notifications/muted_notification_handler.h",
-      "notifications/notification_system_observer.cc",
-      "notifications/notification_system_observer.h",
       "notifications/profile_notification.cc",
       "notifications/profile_notification.h",
       "notifications/screen_capture_notification_blocker.cc",
@@ -5395,14 +5392,6 @@ static_library("browser") {
       "metrics/upgrade_metrics_provider.h",
       "net/disk_cache_dir_policy_handler.cc",
       "net/disk_cache_dir_policy_handler.h",
-      "notifications/fullscreen_notification_blocker.cc",
-      "notifications/fullscreen_notification_blocker.h",
-      "notifications/notification_ui_manager_impl.cc",
-      "notifications/notification_ui_manager_impl.h",
-      "notifications/popups_only_ui_controller.cc",
-      "notifications/popups_only_ui_controller.h",
-      "notifications/screen_lock_notification_blocker.cc",
-      "notifications/screen_lock_notification_blocker.h",
       "platform_util.cc",
       "policy/cbcm_invalidations_initializer.cc",
       "policy/cbcm_invalidations_initializer.h",
@@ -6025,10 +6014,22 @@ static_library("browser") {
     ]
   }
 
-  if (enable_message_center) {
+  if (enable_chrome_notifications) {
+    assert(enable_message_center)
     sources += [
+      "notifications/fullscreen_notification_blocker.cc",
+      "notifications/fullscreen_notification_blocker.h",
       "notifications/notification_platform_bridge_message_center.cc",
       "notifications/notification_platform_bridge_message_center.h",
+      "notifications/notification_system_observer.cc",
+      "notifications/notification_system_observer.h",
+      "notifications/notification_ui_manager.h",
+      "notifications/notification_ui_manager_impl.cc",
+      "notifications/notification_ui_manager_impl.h",
+      "notifications/popups_only_ui_controller.cc",
+      "notifications/popups_only_ui_controller.h",
+      "notifications/screen_lock_notification_blocker.cc",
+      "notifications/screen_lock_notification_blocker.h",
     ]
   }
 
