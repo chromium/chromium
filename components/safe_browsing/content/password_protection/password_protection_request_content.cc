@@ -10,7 +10,6 @@
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -111,7 +110,7 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
 PasswordProtectionRequestContent::~PasswordProtectionRequestContent() = default;
 
 void PasswordProtectionRequestContent::Cancel(bool timed_out) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // If request is canceled because |password_protection_service_| is shutting
   // down, ignore all these deferred navigations.
   if (!timed_out) {
@@ -179,7 +178,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
       main_frame_url(),
       base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
                           AsWeakPtr()));
-  GetTaskRunner(ThreadID::UI)
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
@@ -192,7 +191,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
 void PasswordProtectionRequestContent::OnGetDomFeatures(
     mojom::PhishingDetectorResult result,
     const std::string& verdict) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (dom_features_collection_complete_)
     return;
 
@@ -239,7 +238,7 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
 }
 
 void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (!dom_features_collection_complete_) {
     dom_features_collection_complete_ = true;
     if (IsVisualFeaturesEnabled()) {
@@ -333,7 +332,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
 
 void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
     std::unique_ptr<VisualFeatures> visual_features) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   request_proto_->mutable_visual_features()->Swap(visual_features.get());
 

@@ -26,11 +26,17 @@ source_set("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+
+  # TODO(crbug.com/1216341): Eliminate these sources/deps from being added
+  # here.
   if (is_ios) {
     sources += [ "//components/safe_browsing/ios/browser/safe_browsing_url_checker_impl_ios.cc" ]
   } else {
     sources += [ "//components/safe_browsing/content/browser/safe_browsing_url_checker_impl_content.cc" ]
-    deps += [ "//components/safe_browsing/content/web_ui" ]
+    deps += [
+      "//components/safe_browsing/content/web_ui",
+      "//content/public/browser",
+    ]
   }
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
+#include "content/public/browser/browser_thread.h"
 
 #include <stddef.h>
 
@@ -14,7 +15,6 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/zoom/zoom_controller.h"
@@ -37,7 +37,7 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
     const std::string& hosted_domain) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   LoginReputationClientRequest::TriggerType trigger_type =
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE;
   ReusedPasswordAccountType reused_password_account_type =
@@ -66,7 +66,7 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
     bool password_field_exists) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   LoginReputationClientRequest::TriggerType trigger_type =
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
   ReusedPasswordAccountType reused_password_account_type =
@@ -121,7 +121,7 @@ void PasswordProtectionService::StartRequest(
         matching_reused_credentials,
     LoginReputationClientRequest::TriggerType trigger_type,
     bool password_field_exists) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   scoped_refptr<PasswordProtectionRequest> request(
       new PasswordProtectionRequestContent(
           web_contents, main_frame_url, password_form_action,

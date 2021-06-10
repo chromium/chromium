@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,13 +35,13 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
             std::move(network_context_params_factory)) {}
 
   void Reset() {
-    DCHECK(CurrentlyOnThread(ThreadID::UI));
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     url_loader_factory_.reset();
     network_context_.reset();
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
-    DCHECK(CurrentlyOnThread(ThreadID::UI));
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     if (!network_context_ || !network_context_.is_connected()) {
       network_context_.reset();
       content::GetNetworkService()->CreateNetworkContext(
@@ -74,7 +74,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    DCHECK(CurrentlyOnThread(ThreadID::UI));
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     GetURLLoaderFactory()->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);
@@ -92,7 +92,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   }
 
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
-    DCHECK(CurrentlyOnThread(ThreadID::UI));
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
       url_loader_factory_.reset();
       network::mojom::URLLoaderFactoryParamsPtr params =
@@ -111,7 +111,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   ~SharedURLLoaderFactory() override = default;
 
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
-    DCHECK(CurrentlyOnThread(ThreadID::UI));
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     network::mojom::NetworkContextParamsPtr network_context_params =
         network_context_params_factory_.Run();
 
@@ -143,29 +143,29 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 SafeBrowsingNetworkContext::SafeBrowsingNetworkContext(
     const base::FilePath& user_data_dir,
     NetworkContextParamsFactory network_context_params_factory) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   url_loader_factory_ = base::MakeRefCounted<SharedURLLoaderFactory>(
       user_data_dir, std::move(network_context_params_factory));
 }
 
 SafeBrowsingNetworkContext::~SafeBrowsingNetworkContext() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 SafeBrowsingNetworkContext::GetURLLoaderFactory() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   return url_loader_factory_;
 }
 
 network::mojom::NetworkContext*
 SafeBrowsingNetworkContext::GetNetworkContext() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   return url_loader_factory_->GetNetworkContext();
 }
 
 void SafeBrowsingNetworkContext::FlushForTesting() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   url_loader_factory_->FlushForTesting();
 }
 

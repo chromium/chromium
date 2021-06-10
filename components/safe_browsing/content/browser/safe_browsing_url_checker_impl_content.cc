@@ -7,19 +7,19 @@
 #include "base/bind.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/web_ui/constants.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
 
 void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
     const RTLookupRequest& request,
     const std::string& oauth_token) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   // The following is to log this RTLookupRequest on any open
   // chrome://safe-browsing pages.
-  GetTaskRunner(ThreadID::UI)
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&WebUIInfoSingleton::AddToRTLookupPings,
@@ -31,12 +31,12 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
 
 void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
     const RTLookupResponse& response) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   if (url_web_ui_token_ != -1) {
     // The following is to log this RTLookupResponse on any open
     // chrome://safe-browsing pages.
-    GetTaskRunner(ThreadID::UI)
+    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
         ->PostTask(
             FROM_HERE,
             base::BindOnce(&WebUIInfoSingleton::AddToRTLookupResponses,
