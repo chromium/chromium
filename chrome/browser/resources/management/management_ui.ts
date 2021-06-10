@@ -15,7 +15,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementBrowserProxyImpl, ReportingType, ThreatProtectionInfo} from './management_browser_proxy.js';
@@ -23,113 +23,96 @@ import {BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementB
 import {DeviceReportingResponse, DeviceReportingType} from './management_browser_proxy.js';
 // </if>
 
-/**
- * @typedef {{
- *   messageIds: !Array<string>,
- *   icon: string,
- * }}
- */
-let BrowserReportingData;
+type BrowserReportingData = {
+  messageIds: string[],
+  icon: string,
+};
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const ManagementUiElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class ManagementUiElement extends ManagementUiElementBase {
   static get is() {
     return 'management-ui';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
     return {
       /**
        * List of messages related to browser reporting.
-       * @private {?Array<!BrowserReportingData>}
        */
       browserReportingInfo_: Array,
 
       /**
        * List of messages related to browser reporting.
-       * @private {?Array<!Extension>}
        */
       extensions_: Array,
 
       /**
        * List of messages related to browser reporting.
-       * @private (?Array<!String>)
        */
       managedWebsites_: Array,
 
-      /** @private */
       managedWebsitesSubtitle_: String,
 
       // <if expr="chromeos">
       /**
        * List of messages related to device reporting.
-       * @private {?Array<!DeviceReportingResponse>}
        */
       deviceReportingInfo_: Array,
 
       /**
        * Message stating if the Trust Roots are configured.
-       * @private
        */
       localTrustRoots_: String,
 
-      /** @private */
       customerLogo_: String,
-
-      /** @private */
       managementOverview_: String,
-
-      /** @private */
       pluginVmDataCollectionEnabled_: Boolean,
-
-      /** @private */
       eolAdminMessage_: String,
-
-      /** @private */
       eolMessage_: String,
-
-      /** @private */
       showProxyServerPrivacyDisclosure_: Boolean,
-
       // </if>
 
-      /** @private */
       subtitle_: String,
 
       // <if expr="not chromeos">
-      /** @private */
       managementNoticeHtml_: String,
       // </if>
 
-      /** @private */
       managed_: Boolean,
-
-      /** @private */
       extensionReportingSubtitle_: String,
-
-      /** @private {!ThreatProtectionInfo} */
       threatProtectionInfo_: Object,
     };
   }
 
-  constructor() {
-    super();
+  private browserReportingInfo_: Array<BrowserReportingData>|null;
+  private extensions_: Array<Extension>|null;
+  private managedWebsites_: string[]|null;
+  private managedWebsitesSubtitle_: string;
 
-    /** @private {?ManagementBrowserProxy} */
-    this.browserProxy_ = null;
-  }
+  // <if expr="chromeos">
+  private deviceReportingInfo_: Array<DeviceReportingResponse>|null;
+  private localTrustRoots_: string;
+  private customerLogo_: string;
+  private managementOverview_: string;
+  private pluginVmDataCollectionEnabled_: boolean;
+  private eolAdminMessage_: string;
+  private eolMessage_: string;
+  private showProxyServerPrivacyDisclosure_: boolean;
+  // </if>
+
+  private subtitle_: string;
+
+  // <if expr="not chromeos">
+  private managementNoticeHtml_: string;
+  // </if>
+
+  private managed_: boolean;
+  private extensionReportingSubtitle_: string;
+  private threatProtectionInfo_: ThreatProtectionInfo;
+  private browserProxy_: ManagementBrowserProxy|null = null;
 
   /** @override */
   connectedCallback() {
@@ -143,11 +126,14 @@ class ManagementUiElement extends ManagementUiElementBase {
 
     this.addWebUIListener(
         'browser-reporting-info-updated',
-        reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
+        (reportingInfo: Array<BrowserReportingResponse>) =>
+            this.onBrowserReportingInfoReceived_(reportingInfo));
 
+    // <if expr="chromeos">
     this.addWebUIListener(
         'plugin-vm-data-collection-updated',
-        enabled => this.pluginVmDataCollectionEnabled_ = enabled);
+        (enabled: boolean) => this.pluginVmDataCollectionEnabled_ = enabled);
+    // </if>
 
     this.addWebUIListener('managed_data_changed', () => {
       this.updateManagedFields_();
@@ -155,7 +141,7 @@ class ManagementUiElement extends ManagementUiElementBase {
 
     this.addWebUIListener(
         'threat-protection-info-updated',
-        info => this.threatProtectionInfo_ = info);
+        (info: ThreatProtectionInfo) => this.threatProtectionInfo_ = info);
 
     this.getExtensions_();
     this.getManagedWebsites_();
@@ -166,17 +152,13 @@ class ManagementUiElement extends ManagementUiElementBase {
     // </if>
   }
 
-  /** @private */
-  initBrowserReportingInfo_() {
-    this.browserProxy_.initBrowserReportingInfo().then(
+  private initBrowserReportingInfo_() {
+    this.browserProxy_!.initBrowserReportingInfo().then(
         reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
   }
 
-  /**
-   * @param {!Array<!BrowserReportingResponse>} reportingInfo
-   * @private
-   */
-  onBrowserReportingInfoReceived_(reportingInfo) {
+  private onBrowserReportingInfoReceived_(reportingInfo:
+                                              Array<BrowserReportingResponse>) {
     const reportingInfoMap = reportingInfo.reduce((info, response) => {
       info[response.reportingType] = info[response.reportingType] || {
         icon: this.getIconForReportingType_(response.reportingType),
@@ -184,7 +166,7 @@ class ManagementUiElement extends ManagementUiElementBase {
       };
       info[response.reportingType].messageIds.push(response.messageId);
       return info;
-    }, {});
+    }, {} as {[k: string]: {icon: string, messageIds: string[]}});
 
     const reportingTypeOrder = {
       [ReportingType.SECURITY]: 1,
@@ -192,7 +174,7 @@ class ManagementUiElement extends ManagementUiElementBase {
       [ReportingType.USER]: 3,
       [ReportingType.USER_ACTIVITY]: 4,
       [ReportingType.DEVICE]: 5,
-    };
+    } as {[k: string]: number};
 
     this.browserReportingInfo_ =
         Object.keys(reportingInfoMap)
@@ -200,85 +182,75 @@ class ManagementUiElement extends ManagementUiElementBase {
             .map(reportingType => reportingInfoMap[reportingType]);
   }
 
-  /** @private */
-  getExtensions_() {
-    this.browserProxy_.getExtensions().then(extensions => {
+  private getExtensions_() {
+    this.browserProxy_!.getExtensions().then(extensions => {
       this.extensions_ = extensions;
     });
   }
 
-  /** @private */
-  getManagedWebsites_() {
-    this.browserProxy_.getManagedWebsites().then(managedWebsites => {
+  private getManagedWebsites_() {
+    this.browserProxy_!.getManagedWebsites().then(managedWebsites => {
       this.managedWebsites_ = managedWebsites;
     });
   }
 
-  /** @private */
-  getThreatProtectionInfo_() {
-    this.browserProxy_.getThreatProtectionInfo().then(info => {
+  private getThreatProtectionInfo_() {
+    this.browserProxy_!.getThreatProtectionInfo().then(info => {
       this.threatProtectionInfo_ = info;
     });
   }
 
   /**
-   * @return {boolean} True if there is threat protection info to show.
-   * @private
+   * @return Whether there is threat protection info to show.
    */
-  showThreatProtectionInfo_() {
+  private showThreatProtectionInfo_(): boolean {
     return !!this.threatProtectionInfo_ &&
         this.threatProtectionInfo_.info.length > 0;
   }
 
   // <if expr="chromeos">
-  /** @private */
-  getLocalTrustRootsInfo_() {
-    this.browserProxy_.getLocalTrustRootsInfo().then(trustRootsConfigured => {
+  private getLocalTrustRootsInfo_() {
+    this.browserProxy_!.getLocalTrustRootsInfo().then(trustRootsConfigured => {
       this.localTrustRoots_ = trustRootsConfigured ?
           loadTimeData.getString('managementTrustRootsConfigured') :
           '';
     });
   }
 
-  /** @private */
-  getDeviceReportingInfo_() {
-    this.browserProxy_.getDeviceReportingInfo().then(reportingInfo => {
+  private getDeviceReportingInfo_() {
+    this.browserProxy_!.getDeviceReportingInfo().then(reportingInfo => {
       this.deviceReportingInfo_ = reportingInfo;
     });
   }
 
-  /** @private */
-  getPluginVmDataCollectionStatus_() {
-    this.browserProxy_.getPluginVmDataCollectionStatus().then(
+  private getPluginVmDataCollectionStatus_() {
+    this.browserProxy_!.getPluginVmDataCollectionStatus().then(
         pluginVmDataCollectionEnabled => {
           this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
         });
   }
 
   /**
-   * @return {boolean} True of there are device reporting info to show.
-   * @private
+   * @return Whether there are device reporting info to show.
    */
-  showDeviceReportingInfo_() {
+  private showDeviceReportingInfo_(): boolean {
     return !!this.deviceReportingInfo_ && this.deviceReportingInfo_.length > 0;
   }
 
   /**
-   * @param {string} eolAdminMessage The device return instructions
-   * @return {boolean} Whether there are device return instructions from the
+   * @param eolAdminMessage The device return instructions
+   * @return Whether there are device return instructions from the
    *     admin in case an update is required after reaching end of life.
-   * @private
    */
-  isEmpty_(eolAdminMessage) {
+  private isEmpty_(eolAdminMessage: string): boolean {
     return !eolAdminMessage || eolAdminMessage.trim().length === 0;
   }
 
   /**
-   * @param {DeviceReportingType} reportingType
-   * @return {string} The associated icon.
-   * @private
+   * @return The associated icon.
    */
-  getIconForDeviceReportingType_(reportingType) {
+  private getIconForDeviceReportingType_(reportingType: DeviceReportingType):
+      string {
     switch (reportingType) {
       case DeviceReportingType.SUPERVISED_USER:
         return 'management:supervised-user';
@@ -317,37 +289,32 @@ class ManagementUiElement extends ManagementUiElementBase {
   // </if>
 
   /**
-   * @return {boolean} True of there are browser reporting info to show.
-   * @private
+   * @return Whether there are browser reporting info to show.
    */
-  showBrowserReportingInfo_() {
+  private showBrowserReportingInfo_(): boolean {
     return !!this.browserReportingInfo_ &&
         this.browserReportingInfo_.length > 0;
   }
 
   /**
-   * @return {boolean} True of there are extension reporting info to show.
-   * @private
+   * @return Whether there are extension reporting info to show.
    */
-  showExtensionReportingInfo_() {
+  private showExtensionReportingInfo_(): boolean {
     return !!this.extensions_ && this.extensions_.length > 0;
   }
 
   /**
-   * @return {boolean} True of there is managed websites info to show.
-   * @private
+   * @return Whether there is managed websites info to show.
    */
-  showManagedWebsitesInfo_() {
+  private showManagedWebsitesInfo_(): boolean {
     return !!this.managedWebsites_ && this.managedWebsites_.length > 0;
   }
 
 
   /**
-   * @param {ReportingType} reportingType
-   * @returns {string} The associated icon.
-   * @private
+   * @return The associated icon.
    */
-  getIconForReportingType_(reportingType) {
+  private getIconForReportingType_(reportingType: ReportingType): string {
     switch (reportingType) {
       case ReportingType.SECURITY:
         return 'cr:security';
@@ -368,17 +335,14 @@ class ManagementUiElement extends ManagementUiElementBase {
    * Handles the 'search-changed' event fired from the toolbar.
    * Redirects to the settings page initialized the the current
    * search query.
-   * @param {!CustomEvent<string>} e
-   * @private
    */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     const query = e.detail;
     window.location.href =
         `chrome://settings?search=${encodeURIComponent(query)}`;
   }
 
-  /** @private */
-  onTapBack_() {
+  private onTapBack_() {
     if (history.length > 1) {
       history.back();
     } else {
@@ -386,9 +350,8 @@ class ManagementUiElement extends ManagementUiElementBase {
     }
   }
 
-  /** @private */
-  updateManagedFields_() {
-    this.browserProxy_.getContextualManagedData().then(data => {
+  private updateManagedFields_() {
+    this.browserProxy_!.getContextualManagedData().then(data => {
       this.managed_ = data.managed;
       this.extensionReportingSubtitle_ = data.extensionReportingTitle;
       this.managedWebsitesSubtitle_ = data.managedWebsitesSubtitle;
@@ -411,6 +374,10 @@ class ManagementUiElement extends ManagementUiElementBase {
       this.managementNoticeHtml_ = data.browserManagementNotice;
       // </if>
     });
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

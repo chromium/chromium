@@ -115,7 +115,6 @@ if (enable_js_type_check) {
         "gaia_auth_host:closure_compile",
         "inline_login:closure_compile",
         "internals/user_education:closure_compile",
-        "management:closure_compile",
         "media_router:closure_compile",
         "memories:closure_compile",
         "nearby_internals:closure_compile",
