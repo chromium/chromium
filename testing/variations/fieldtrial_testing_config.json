@@ -5743,6 +5743,32 @@
                         "IPH_MicToolbar",
                         "ToolbarMicIphAndroid"
                     ]
+                },
+                {
+                    "name": "AssistantVoiceSearch_DefaultMic",
+                    "params": {
+                        "colorful_mic": "false",
+                        "experiment_id": "47457879",
+                        "min_agsa_version": "12.20"
+                    },
+                    "enable_features": [
+                        "AssistantIntentExperimentId",
+                        "OmniboxAssistantVoiceSearch",
+                        "VoiceSearchAudioCapturePolicy"
+                    ]
+                },
+                {
+                    "name": "AssistantVoiceSearch_ColorfulMic",
+                    "params": {
+                        "colorful_mic": "true",
+                        "experiment_id": "47457880",
+                        "min_agsa_version": "12.20"
+                    },
+                    "enable_features": [
+                        "AssistantIntentExperimentId",
+                        "OmniboxAssistantVoiceSearch",
+                        "VoiceSearchAudioCapturePolicy"
+                    ]
                 }
             ]
         }
