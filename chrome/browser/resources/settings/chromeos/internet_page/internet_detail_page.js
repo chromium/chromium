@@ -2188,11 +2188,21 @@ Polymer({
       return [];
     }
 
-    return [
-      'cellular.homeProvider.name', 'cellular.homeProvider.country',
-      'cellular.firmwareRevision', 'cellular.hardwareRevision', 'cellular.esn',
-      'cellular.iccid', 'cellular.imei', 'cellular.meid', 'cellular.min'
-    ];
+    const fields = [];
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(this.managedProperties_);
+    if (!this.isUpdatedCellularUiEnabled_ ||
+        isActiveSim(networkState, this.deviceState_)) {
+      // These fields are only known for the SIM in the active slot.
+      fields.push(
+          'cellular.homeProvider.name', 'cellular.homeProvider.country');
+    }
+    fields.push(
+        'cellular.firmwareRevision', 'cellular.hardwareRevision',
+        'cellular.esn', 'cellular.iccid', 'cellular.imei', 'cellular.meid',
+        'cellular.min');
+
+    return fields;
   },
 
   /**
