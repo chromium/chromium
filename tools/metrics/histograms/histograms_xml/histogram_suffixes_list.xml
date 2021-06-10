@@ -15251,6 +15251,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NumberOfNodes" label=""/>
   <suffix name="OmniboxSuggestions"
       label="Only counting memory used by Omnibox suggestions provider."/>
+  <suffix name="ParkableImage.OnDiskSize"
+      label="Size of encoded image data of ParkableImages that are on disk."/>
+  <suffix name="ParkableImage.TotalSize"
+      label="Total size of encoded image data of ParkableImages."/>
+  <suffix name="ParkableImage.UnparkedSize"
+      label="Size of encoded image data of ParkableImages that are not
+             written to disk."/>
   <suffix name="PartitionAlloc.Partitions.FastMalloc.ThreadCache"
       label="Memory used by all thread caches for the FastMalloc partition.
              Recorded in blink processes, unless PartitionAlloc is used as
