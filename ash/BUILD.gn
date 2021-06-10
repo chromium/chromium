@@ -26,7 +26,6 @@ component("ash") {
     ":*",
     "//ash/app_list:*",
     "//chrome/test:browser_tests",
-    "//chrome/test:unit_tests",
     "//components/exo:*",
     "//components/exo/wayland:*",
   ]
@@ -2652,7 +2651,6 @@ static_library("test_support") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test:test_support_unit",
-    "//chrome/test:unit_tests",
     "//components/exo:*",
     "//components/exo/wayland:*",
     "//ash/public/cpp/external_arc:*",
