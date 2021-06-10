@@ -848,6 +848,7 @@
         'BrowserSwitcherExternalSitelistUrl',
         'BrowserSwitcherExternalGreylistUrl',
         'BrowserSwitcherKeepLastChromeTab',
+        'BrowserSwitcherParsingMode',
         'BrowserSwitcherUrlList',
         'BrowserSwitcherUrlGreylist',
         'BrowserSwitcherUseIeSitelist',
@@ -20785,6 +20786,47 @@
       Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't try to launch designated URLs in an alternate browser.''',
     },
     {
+      'id': 866,
+      'name': 'BrowserSwitcherParsingMode',
+      'owners': ['nicolaso@chromium.org', 'pastarmovj@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+      },
+      'items': [
+        {
+          'name': 'Default',
+          'value': 0,
+          'caption': '''Default behavior for LBS.''',
+        },
+        {
+          'name': 'Strict',
+          'value': 1,
+          'caption': '''More compatible with Microsoft IE/Edge enterprise mode sitelists.''',
+        },
+      ],
+      'example_value': 1,
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'default': 0,
+      'supported_on': ['chrome.*:93-'],
+      'caption': '''Sitelist parsing mode''',
+      'tags': [],
+      'desc': '''This policy controls how <ph name="PRODUCT_NAME">Google Chrome</ph> interprets sitelist/greylist policies for the Legacy Browser Support feature. It affects the following policies: <ph name="URL_LIST_POLICY_NAME">BrowserSwitcherUrlList</ph>, <ph name="URL_GREYLIST_POLICY_NAME">BrowserSwitcherUrlGreylist</ph>, <ph name="USE_IE_SITELIST_POLICY_NAME">BrowserSwitcherUseIeSitelist</ph>, <ph name="EXTERNAL_SITELIST_POLICY_NAME">BrowserSwitcherExternalSitelistUrl</ph>, and <ph name="EXTERNAL_GREYLIST_POLICY_NAME">BrowserSwitcherExternalGreylistUrl</ph>.
+
+      If 'Default' (0) or unset, URL matching is less strict. Rules that do not contain "/" look for a substring anywhere in the URL's hostname.
+
+      If 'Strict' (1), URL matching is more strict. Rules that do not contain "/" only match at the end of the hostname. They must also be at a domain name boundary. This is more compatible with <ph name="MS_IE_PRODUCT_NAME">Microsoft® Internet Explorer®</ph> and <ph name="MS_EDGE_PRODUCT_NAME">Microsoft® Edge®</ph>.
+
+      For example, with the rule "example.com":
+
+      "http://example.com/" and "http://subdomain.example.com/" match regardles of parsing mode.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" and "http://example.comabc/" only match in 'Default' mode.''',
+    },
+    {
       'id': 519,
       'name': 'BrowserSwitcherKeepLastChromeTab',
       'owners': ['nicolaso@chromium.org', 'pastarmovj@chromium.org'],
@@ -27106,6 +27148,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 865,
+  'highest_id_currently_used': 866,
   'highest_atomic_group_id_currently_used': 40
 }

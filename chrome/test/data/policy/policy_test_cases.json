@@ -7451,6 +7451,18 @@
     ]
   },
 
+  "BrowserSwitcherParsingMode": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSwitcherParsingMode": 1
+        },
+        "prefs": { "browser_switcher.parsing_mode": {} }
+      }
+    ]
+  },
+
   "BrowserSwitcherKeepLastChromeTab": {
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [

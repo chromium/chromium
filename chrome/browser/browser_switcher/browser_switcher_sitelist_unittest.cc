@@ -38,8 +38,10 @@ std::unique_ptr<base::Value> StringArrayToValue(
 
 }  // namespace
 
-class BrowserSwitcherSitelistTest : public testing::Test {
+class BrowserSwitcherSitelistTest : public testing::TestWithParam<ParsingMode> {
  public:
+  BrowserSwitcherSitelistTest() { parsing_mode_ = GetParam(); }
+
   void Initialize(const std::vector<const char*>& url_list,
                   const std::vector<const char*>& url_greylist,
                   bool enabled = true) {
@@ -50,6 +52,9 @@ class BrowserSwitcherSitelistTest : public testing::Test {
                                   StringArrayToValue(url_list));
     prefs_backend_.SetManagedPref(prefs::kUrlGreylist,
                                   StringArrayToValue(url_greylist));
+    prefs_backend_.SetManagedPref(
+        prefs::kParsingMode,
+        std::make_unique<base::Value>(static_cast<int>(parsing_mode())));
     prefs_ = std::make_unique<TestBrowserSwitcherPrefs>(&prefs_backend_);
     sitelist_ = std::make_unique<BrowserSwitcherSitelistImpl>(prefs_.get());
   }
@@ -61,14 +66,16 @@ class BrowserSwitcherSitelistTest : public testing::Test {
     return &prefs_backend_;
   }
   BrowserSwitcherSitelist* sitelist() { return sitelist_.get(); }
+  ParsingMode parsing_mode() { return parsing_mode_; }
 
  private:
+  ParsingMode parsing_mode_;
   sync_preferences::TestingPrefServiceSyncable prefs_backend_;
   std::unique_ptr<BrowserSwitcherPrefs> prefs_;
   std::unique_ptr<BrowserSwitcherSitelist> sitelist_;
 };
 
-TEST_F(BrowserSwitcherSitelistTest, CanonicalizeRule) {
+TEST_P(BrowserSwitcherSitelistTest, CanonicalizeRule) {
   std::string rule = "Example.Com";
   CanonicalizeRule(&rule);
   EXPECT_EQ("example.com", rule);
@@ -106,7 +113,7 @@ TEST_F(BrowserSwitcherSitelistTest, CanonicalizeRule) {
   EXPECT_EQ("//User@example.com:8080/Test", rule);
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectWildcard) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectWildcard) {
   // A "*" by itself means everything matches.
   Initialize({"*"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
@@ -115,7 +122,7 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectWildcard) {
   EXPECT_TRUE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHost) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHost) {
   // A string without slashes means compare the URL's host (case-insensitive).
   Initialize({"example.com"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
@@ -127,22 +134,23 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHost) {
 
   // For backwards compatibility, this should also match, even if it's not the
   // same host.
-  EXPECT_TRUE(ShouldSwitch(GURL("https://notexample.com/")));
+  EXPECT_EQ(parsing_mode() != ParsingMode::kStrict,
+            ShouldSwitch(GURL("https://notexample.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHostNotLowerCase) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHostNotLowerCase) {
   // Host is not in lowercase form, but we compare ignoring case.
   Initialize({"eXaMpLe.CoM"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectWrongScheme) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectWrongScheme) {
   Initialize({"example.com"}, {});
   // Scheme is not one of 'http', 'https' or 'file'.
   EXPECT_FALSE(ShouldSwitch(GURL("ftp://example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPrefix) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectPrefix) {
   // A string with slashes means check if it's a prefix (case-sensitive).
   Initialize({"http://example.com/foobar"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/foobar")));
@@ -156,27 +164,27 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPrefix) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectInvertedMatch) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectInvertedMatch) {
   // The most specific (i.e., longest string) rule should have priority.
   Initialize({"!subdomain.example.com", "example.com"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://subdomain.example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectGreylist) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectGreylist) {
   // The most specific (i.e., longest string) rule should have priority.
   Initialize({"example.com"}, {"http://example.com/login/"});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/login/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectGreylistWildcard) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectGreylistWildcard) {
   Initialize({"*"}, {"*"});
   // If both are wildcards, prefer the greylist.
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldMatchAnySchema) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldMatchAnySchema) {
   // URLs formatted like these don't include a schema, so should match both HTTP
   // and HTTPS.
   Initialize({"//example.com", "reddit.com/r/funny"}, {});
@@ -194,7 +202,7 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldMatchAnySchema) {
   EXPECT_FALSE(ShouldSwitch(GURL("https://reddit.com/r/pics")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
   Initialize(
       {"//example.com", "//test.com:3000", "lol.com:3000", "trololo.com"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com:2000/something")));
@@ -208,17 +216,21 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
 }
 
 // crbug.com/1209124
-TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHostnamePrefix) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHostnamePrefix) {
   // A hostname rule (no "/") can match at the beginning of the hostname, not
   // just at the end.
   Initialize({"10.", "subdomain"}, {});
-  EXPECT_EQ(Decision(kGo, kSitelist, "10."),
+  EXPECT_EQ(parsing_mode() == ParsingMode::kStrict
+                ? Decision(kStay, kDefault, "")
+                : Decision(kGo, kSitelist, "10."),
             GetDecision(GURL("http://10.0.0.1/")));
-  EXPECT_EQ(Decision(kGo, kSitelist, "subdomain"),
+  EXPECT_EQ(parsing_mode() == ParsingMode::kStrict
+                ? Decision(kStay, kDefault, "")
+                : Decision(kGo, kSitelist, "subdomain"),
             GetDecision(GURL("http://subdomain.example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
   Initialize({}, {});
   prefs_backend()->SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue({"example.com"}));
@@ -230,7 +242,7 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
+TEST_P(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
   Initialize({}, {});
 
   prefs_backend()->Set(prefs::kUrlList, *StringArrayToValue({"example.com"}));
@@ -243,7 +255,7 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
   EXPECT_TRUE(ShouldSwitch(GURL("http://morespecific.example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, SetIeemSitelist) {
+TEST_P(BrowserSwitcherSitelistTest, SetIeemSitelist) {
   Initialize({}, {});
   ParsedXml ieem;
   ieem.rules = {"example.com"};
@@ -253,7 +265,7 @@ TEST_F(BrowserSwitcherSitelistTest, SetIeemSitelist) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, SetExternalSitelist) {
+TEST_P(BrowserSwitcherSitelistTest, SetExternalSitelist) {
   Initialize({}, {});
   ParsedXml external;
   external.rules = {"example.com"};
@@ -263,7 +275,7 @@ TEST_F(BrowserSwitcherSitelistTest, SetExternalSitelist) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, SetExternalGreylist) {
+TEST_P(BrowserSwitcherSitelistTest, SetExternalGreylist) {
   Initialize({"example.com"}, {});
   ParsedXml external;
   external.rules = {"foo.example.com"};
@@ -274,7 +286,7 @@ TEST_F(BrowserSwitcherSitelistTest, SetExternalGreylist) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, All3Sources) {
+TEST_P(BrowserSwitcherSitelistTest, All3Sources) {
   Initialize({"google.com"}, {"mail.google.com"});
   ParsedXml ieem;
   ieem.rules = {"example.com"};
@@ -291,14 +303,14 @@ TEST_F(BrowserSwitcherSitelistTest, All3Sources) {
   EXPECT_TRUE(ShouldSwitch(GURL("http://news.yahoo.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, BrowserSwitcherDisabled) {
+TEST_P(BrowserSwitcherSitelistTest, BrowserSwitcherDisabled) {
   Initialize({"example.com"}, {}, false);
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_EQ(Decision(kStay, kDisabled, ""),
             GetDecision(GURL("http://example.com/")));
 }
 
-TEST_F(BrowserSwitcherSitelistTest, CheckReason) {
+TEST_P(BrowserSwitcherSitelistTest, CheckReason) {
   Initialize({"foo.invalid.com", "!example.com"},
              {"//foo.invalid.com/foobar", "invalid.com"});
   EXPECT_EQ(Decision(kStay, kProtocol, ""),
@@ -314,5 +326,12 @@ TEST_F(BrowserSwitcherSitelistTest, CheckReason) {
   EXPECT_EQ(Decision(kStay, kGreylist, "//foo.invalid.com/foobar"),
             GetDecision(GURL("http://foo.invalid.com/foobar")));
 }
+
+INSTANTIATE_TEST_SUITE_P(ParsingMode,
+                         BrowserSwitcherSitelistTest,
+                         testing::Values(ParsingMode::kDefault,
+                                         ParsingMode::kStrict,
+                                         // 999 should behave like kDefault
+                                         static_cast<ParsingMode>(999)));
 
 }  // namespace browser_switcher

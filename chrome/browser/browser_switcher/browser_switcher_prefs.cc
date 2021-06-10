@@ -69,6 +69,8 @@ BrowserSwitcherPrefs::BrowserSwitcherPrefs(
     {prefs::kAlternativeBrowserParameters,
      base::BindRepeating(
          &BrowserSwitcherPrefs::AlternativeBrowserParametersChanged)},
+    {prefs::kParsingMode,
+     base::BindRepeating(&BrowserSwitcherPrefs::ParsingModeChanged)},
     {prefs::kUrlList,
      base::BindRepeating(&BrowserSwitcherPrefs::UrlListChanged)},
     {prefs::kUrlGreylist,
@@ -96,6 +98,7 @@ BrowserSwitcherPrefs::BrowserSwitcherPrefs(
     prefs::kAlternativeBrowserPath,
     prefs::kAlternativeBrowserParameters,
     prefs::kKeepLastTab,
+    prefs::kParsingMode,
     prefs::kUrlList,
     prefs::kUrlGreylist,
     prefs::kExternalSitelistUrl,
@@ -131,6 +134,7 @@ void BrowserSwitcherPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kAlternativeBrowserPath, "");
   registry->RegisterListPref(prefs::kAlternativeBrowserParameters);
   registry->RegisterBooleanPref(prefs::kKeepLastTab, true);
+  registry->RegisterIntegerPref(prefs::kParsingMode, 0);
   registry->RegisterListPref(prefs::kUrlList);
   registry->RegisterListPref(prefs::kUrlGreylist);
   registry->RegisterStringPref(prefs::kExternalSitelistUrl, "");
@@ -165,6 +169,10 @@ bool BrowserSwitcherPrefs::KeepLastTab() const {
 
 int BrowserSwitcherPrefs::GetDelay() const {
   return prefs_->GetInteger(prefs::kDelay);
+}
+
+ParsingMode BrowserSwitcherPrefs::GetParsingMode() const {
+  return parsing_mode_;
 }
 
 const RuleSet& BrowserSwitcherPrefs::GetRules() const {
@@ -273,6 +281,18 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
   for (const auto& param : params->GetList()) {
     std::string param_string = param.GetString();
     alt_browser_params_.push_back(param_string);
+  }
+}
+
+void BrowserSwitcherPrefs::ParsingModeChanged() {
+  parsing_mode_ =
+      static_cast<ParsingMode>(prefs_->GetInteger(prefs::kParsingMode));
+  if (parsing_mode_ < ParsingMode::kDefault ||
+      parsing_mode_ > ParsingMode::kMaxValue) {
+    LOG(WARNING) << "Unknown BrowserSwitcherParsingMode value "
+                 << static_cast<int>(parsing_mode_)
+                 << ". Falling back to 'Default' parsing mode.";
+    parsing_mode_ = ParsingMode::kDefault;
   }
 }
 
@@ -395,6 +415,9 @@ const char kEnabled[] = "browser_switcher.enabled";
 
 // How long to wait on chrome://browser-switch (milliseconds).
 const char kDelay[] = "browser_switcher.delay";
+
+// Behavior switch for BrowserSwitcherSitelist.
+const char kParsingMode[] = "browser_switcher.parsing_mode";
 
 }  // namespace prefs
 }  // namespace browser_switcher

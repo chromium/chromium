@@ -24824,6 +24824,7 @@ Called by update_document_policy_enum.py.-->
   <int value="863" label="ReportDeviceLoginLogout"/>
   <int value="864" label="RemoteDebuggingAllowed"/>
   <int value="865" label="ManagedWebAppsAccessToDeviceAttributesAllowed"/>
+  <int value="866" label="BrowserSwitcherParsingMode"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
