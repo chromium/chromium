@@ -1148,6 +1148,25 @@ void BrowserAutofillManager::FillProfileForm(
                            /*query_id=*/-1, form, field, profile);
 }
 
+void BrowserAutofillManager::FillVirtualCardInformation(
+    const std::string& guid,
+    int query_id,
+    const FormData& form,
+    const FormFieldData& field) {
+  if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
+      !RefreshDataModels() || !driver()->RendererIsAvailable()) {
+    return;
+  }
+
+  const CreditCard* credit_card = personal_data_->GetCreditCardByGUID(guid);
+  if (credit_card) {
+    CreditCard copy = *credit_card;
+    copy.set_record_type(CreditCard::VIRTUAL_CARD);
+    FillOrPreviewCreditCardForm(AutofillDriver::FORM_DATA_ACTION_FILL, query_id,
+                                form, field, &copy);
+  }
+}
+
 void BrowserAutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.

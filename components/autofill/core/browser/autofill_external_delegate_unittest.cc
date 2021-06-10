@@ -125,6 +125,13 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               OnUserHideSuggestions,
               (const FormData& form, const FormFieldData& field),
               (override));
+  MOCK_METHOD(void,
+              FillVirtualCardInformation,
+              (const std::string& guid,
+               int query_id,
+               const FormData& form,
+               const FormFieldData& field),
+              (override));
 
   bool ShouldShowCardsFromAccountOption(const FormData& form,
                                         const FormFieldData& field) {
@@ -888,6 +895,16 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
   EXPECT_THAT(open_args.suggestions, SuggestionVectorValuesAre(element_values));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
+}
+
+// Test that browser autofill manager will handle the unmasking request for the
+// virtual card after users accept the suggestion to use a virtual card.
+TEST_F(AutofillExternalDelegateUnitTest, VirtualCardOptionItem) {
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillVirtualCardInformation(_, _, _, _));
+  external_delegate_->DidAcceptSuggestion(
+      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string(),
+      0);
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding

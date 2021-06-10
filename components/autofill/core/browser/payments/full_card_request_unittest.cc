@@ -411,6 +411,36 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
+// Verify getting the full PAN, the expiration and the dCVV for a virtual card.
+TEST_F(FullCardRequestTest, GetFullCardPanAndExpirationAndDcvvForVirtualCard) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableMerchantBoundVirtualCards);
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestSucceeded(testing::Ref(*request()),
+                                 CardMatches(CreditCard::VIRTUAL_CARD, "4111"),
+                                 testing::Eq(u"321")));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*ui_delegate(),
+              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
+
+  request()->GetFullCard(
+      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
+      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      ui_delegate()->AsWeakPtr(), GURL("https://www.example.com"));
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = u"123";
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.real_pan = "4111";
+  response.dcvv = "321";
+  response.expiration_month = "12";
+  response.expiration_year = test::NextYear();
+  response.card_type = AutofillClient::VIRTUAL_CARD;
+  request()->OnDidGetRealPan(AutofillClient::SUCCESS, response);
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
 // Only one request at a time should be allowed.
 TEST_F(FullCardRequestTest, OneRequestAtATime) {
   EXPECT_CALL(
@@ -512,9 +542,9 @@ TEST_F(FullCardRequestTest, VcnRetrievalTryAgainFailure) {
 
   CreditCard card;
   card.set_record_type(CreditCard::VIRTUAL_CARD);
-  request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
-                         result_delegate()->AsWeakPtr(),
-                         ui_delegate()->AsWeakPtr());
+  request()->GetFullCard(
+      card, AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      ui_delegate()->AsWeakPtr(), GURL("https://www.example.com"));
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
@@ -538,9 +568,9 @@ TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
 
   CreditCard card;
   card.set_record_type(CreditCard::VIRTUAL_CARD);
-  request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
-                         result_delegate()->AsWeakPtr(),
-                         ui_delegate()->AsWeakPtr());
+  request()->GetFullCard(
+      card, AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      ui_delegate()->AsWeakPtr(), GURL("https://www.example.com"));
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);

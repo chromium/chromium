@@ -299,7 +299,8 @@ void CreditCardAccessManager::FetchCreditCard(
   bool should_log_latency_metrics = is_user_verifiable_.value_or(false);
 #endif
   // Return immediately if local card and log that unmask details were ignored.
-  if (card->record_type() != CreditCard::MASKED_SERVER_CARD) {
+  if (card->record_type() != CreditCard::MASKED_SERVER_CARD &&
+      card->record_type() != CreditCard::VIRTUAL_CARD) {
     accessor->OnCreditCardFetched(/*did_succeed=*/true, card);
 #if !defined(OS_IOS)
     if (should_log_latency_metrics) {

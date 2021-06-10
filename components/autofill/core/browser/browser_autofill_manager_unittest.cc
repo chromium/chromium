@@ -347,18 +347,17 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     autofill_driver_ =
         std::make_unique<testing::NiceMock<MockAutofillDriver>>();
-    payments::TestPaymentsClient* payments_client =
-        new payments::TestPaymentsClient(
-            autofill_driver_->GetURLLoaderFactory(),
-            autofill_client_.GetIdentityManager(), &personal_data_);
-    autofill_client_.set_test_payments_client(
-        std::unique_ptr<payments::TestPaymentsClient>(payments_client));
+    auto payments_client = std::make_unique<payments::TestPaymentsClient>(
+        autofill_driver_->GetURLLoaderFactory(),
+        autofill_client_.GetIdentityManager(), &personal_data_);
+    payments_client_ = payments_client.get();
+    autofill_client_.set_test_payments_client(std::move(payments_client));
     TestCreditCardSaveManager* credit_card_save_manager =
         new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
-                                      payments_client, &personal_data_);
+                                      payments_client_, &personal_data_);
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     TestFormDataImporter* test_form_data_importer = new TestFormDataImporter(
-        &autofill_client_, payments_client,
+        &autofill_client_, payments_client_,
         std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
         &personal_data_, "en-US");
     autofill_client_.set_test_form_data_importer(
@@ -668,6 +667,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestStrikeDatabase* strike_database_;
+  payments::TestPaymentsClient* payments_client_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {
@@ -4216,6 +4216,41 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                     response_data.fields[3]);
   ExpectFilledField("Expiration Year", "ccyear", "", "text",
                     response_data.fields[4]);
+}
+
+TEST_P(BrowserAutofillManagerStructuredProfileTest,
+       FillCreditCardForm_VirtualCard) {
+  personal_data_.ClearCreditCards();
+  CreditCard masked_server_card;
+  test::SetCreditCardInfo(&masked_server_card, "Lorem Ispum",
+                          "5555555555554444",  // Mastercard
+                          "10", test::NextYear().c_str(), "1");
+  masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
+  masked_server_card.set_record_type(
+      CreditCard::RecordType::MASKED_SERVER_CARD);
+  masked_server_card.SetNetworkForMaskedCard(kMasterCard);
+  personal_data_.AddServerCreditCard(masked_server_card);
+  // Set up our form data.
+  FormData form;
+  CreateTestCreditCardFormData(&form, true, false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  browser_autofill_manager_->FillVirtualCardInformation(
+      masked_server_card.guid(), kDefaultPageID, form, form.fields[1]);
+
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.should_store_pan = false;
+  details.cvc = u"123";
+  details.exp_month = u"10";
+  details.exp_year = u"2998";
+  full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+
+  const payments::PaymentsClient::UnmaskRequestDetails* request_details =
+      payments_client_->unmask_request();
+  EXPECT_EQ(request_details->card.number(), u"5555555555554444");
+  EXPECT_EQ(request_details->last_committed_url_origin.value(),
+            GURL("https://example.test/"));
 }
 
 // Test that non-focusable field is ignored while inferring boundaries between

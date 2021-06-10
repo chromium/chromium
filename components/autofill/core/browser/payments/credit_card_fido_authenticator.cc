@@ -417,9 +417,15 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     full_card_request_ = std::make_unique<payments::FullCardRequest>(
         autofill_client_, autofill_client_->GetPaymentsClient(),
         autofill_client_->GetPersonalDataManager(), form_parsed_timestamp_);
+
+    absl::optional<GURL> last_committed_url_origin;
+    if (card_->record_type() == CreditCard::VIRTUAL_CARD)
+      last_committed_url_origin = autofill_client_->GetLastCommittedURL();
+
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UNMASK_FOR_AUTOFILL,
-        weak_ptr_factory_.GetWeakPtr(), std::move(response));
+        weak_ptr_factory_.GetWeakPtr(), std::move(response),
+        last_committed_url_origin);
   } else {
     DCHECK(current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW ||
            current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);

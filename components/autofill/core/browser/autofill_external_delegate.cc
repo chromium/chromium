@@ -285,7 +285,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     NOTREACHED();
 #endif
   } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
-    // TODO(crbug.com/1196021): Add handling logic.
+    // There can be multiple virtual credit cards that all rely on
+    // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
+    // the backend_id identifies the actually chosen credit card.
+    manager_->FillVirtualCardInformation(backend_id, query_id_, query_form_,
+                                         query_field_);
   } else {
     if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(

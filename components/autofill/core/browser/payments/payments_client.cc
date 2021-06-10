@@ -400,6 +400,16 @@ class UnmaskCardRequest : public PaymentsRequest {
           std::move(request_details_.fido_assertion_info.value()));
     }
 
+    if (request_details_.last_committed_url_origin.has_value()) {
+      base::Value virtual_card_request_info(base::Value::Type::DICTIONARY);
+      virtual_card_request_info.SetKey(
+          "merchant_domain",
+          base::Value(
+              request_details_.last_committed_url_origin.value().spec()));
+      request_dict.SetKey("virtual_card_request_info",
+                          std::move(virtual_card_request_info));
+    }
+
     std::string json_request;
     base::JSONWriter::Write(request_dict, &json_request);
     std::string request_content;
@@ -433,28 +443,62 @@ class UnmaskCardRequest : public PaymentsRequest {
   }
 
   void ParseResponse(const base::Value& response) override {
-    const auto* pan = response.FindStringKey("pan");
+    const std::string* pan = response.FindStringKey("pan");
     response_details_.real_pan = pan ? *pan : std::string();
 
-    const auto* dcvv = response.FindStringKey("dcvv");
+    const std::string* dcvv = response.FindStringKey("dcvv");
     response_details_.dcvv = dcvv ? *dcvv : std::string();
 
-    const auto* creation_options = response.FindKeyOfType(
+    const base::Value* expiration =
+        response.FindKeyOfType("expiration", base::Value::Type::DICTIONARY);
+    if (expiration) {
+      if (absl::optional<int> month = expiration->FindIntKey("month")) {
+        response_details_.expiration_month =
+            base::NumberToString(month.value());
+      }
+
+      if (absl::optional<int> year = expiration->FindIntKey("year"))
+        response_details_.expiration_year = base::NumberToString(year.value());
+    }
+
+    const base::Value* creation_options = response.FindKeyOfType(
         "fido_creation_options", base::Value::Type::DICTIONARY);
     if (creation_options)
       response_details_.fido_creation_options = creation_options->Clone();
 
-    const auto* request_options = response.FindKeyOfType(
+    const base::Value* request_options = response.FindKeyOfType(
         "fido_request_options", base::Value::Type::DICTIONARY);
     if (request_options)
       response_details_.fido_request_options = request_options->Clone();
 
-    const auto* token = response.FindStringKey("card_authorization_token");
+    const std::string* token =
+        response.FindStringKey("card_authorization_token");
     response_details_.card_authorization_token = token ? *token : std::string();
+
+    if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
+      response_details_.card_type =
+          AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD;
+    } else if (request_details_.card.record_type() ==
+               CreditCard::MASKED_SERVER_CARD) {
+      response_details_.card_type =
+          AutofillClient::PaymentsRpcCardType::SERVER_CARD;
+    } else {
+      NOTREACHED();
+    }
   }
 
   bool IsResponseComplete() override {
-    return !response_details_.real_pan.empty();
+    switch (response_details_.card_type) {
+      case AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE:
+        return false;
+      case AutofillClient::PaymentsRpcCardType::SERVER_CARD:
+        return !response_details_.real_pan.empty();
+      case AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD:
+        return !response_details_.real_pan.empty() &&
+               !response_details_.expiration_month.empty() &&
+               !response_details_.expiration_year.empty() &&
+               !response_details_.dcvv.empty();
+    }
   }
 
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override {
@@ -1034,6 +1078,7 @@ PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
   } else {
     fido_assertion_info.reset();
   }
+  last_committed_url_origin = other.last_committed_url_origin;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 

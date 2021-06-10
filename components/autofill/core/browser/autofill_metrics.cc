@@ -1993,6 +1993,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         break;
       case CreditCard::VIRTUAL_CARD:
         // This card type is not persisted in Chrome.
+        NOTREACHED();
         break;
     }
   }

@@ -70,11 +70,18 @@ struct CardUnmaskOptions {
     return *this;
   }
 
+  CardUnmaskOptions& with_virtual_card(bool b) {
+    virtual_card = b;
+    return *this;
+  }
+
   // If true, use FIDO authentication instead of CVC authentication.
   bool use_fido = false;
   // If not using FIDO authentication, the CVC value the user entered, to be
   // sent to Google Payments.
   std::string cvc = "123";
+  // If true, mock that the unmasking is for a virtual card.
+  bool virtual_card = false;
   // The reason for unmasking this card.
   AutofillClient::UnmaskCardReason reason = AutofillClient::UNMASK_FOR_AUTOFILL;
 };
@@ -205,6 +212,10 @@ class PaymentsClientTest : public testing::Test {
           base::Value(base::Value::Type::DICTIONARY);
     } else {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
+    }
+    if (options.virtual_card) {
+      request_details.last_committed_url_origin =
+          GURL("https://www.example.com");
     }
     client_->UnmaskCard(request_details,
                         base::BindOnce(&PaymentsClientTest::OnDidGetRealPan,
@@ -467,6 +478,19 @@ TEST_F(PaymentsClientTest, UnmaskSuccessAccountFromSyncTest) {
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
+TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardInformation) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card(true));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
+                 "\"expiration\": { \"month\":12, \"year\":2099 } }");
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ("999", unmask_response_details_->dcvv);
+  EXPECT_EQ("12", unmask_response_details_->expiration_month);
+  EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
 TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
@@ -492,6 +516,15 @@ TEST_F(PaymentsClientTest,
   // ChromeUserContext was set.
   EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card(true));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // last_committed_url_origin was set.
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 }
 
 TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofill) {

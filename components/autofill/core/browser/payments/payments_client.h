@@ -104,6 +104,9 @@ class PaymentsClient {
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
     absl::optional<base::Value> fido_assertion_info;
+    // The url origin of the website where the unmasking happened. Should be
+    // populated when the unmasking is for a virtual card.
+    absl::optional<GURL> last_committed_url_origin;
   };
 
   // Information retrieved from an UnmaskRequest.
@@ -125,6 +128,14 @@ class PaymentsClient {
 
     std::string real_pan;
     std::string dcvv;
+    // The expiration month of the card. It falls in between 1 - 12. Should be
+    // populated when the card is a virtual card which does not necessarily have
+    // the same expiration date as its related actual card.
+    std::string expiration_month;
+    // The four-digit expiration year of the card. Should be populated when the
+    // card is a virtual card which does not necessarily have the same
+    // expiration date as its related actual card.
+    std::string expiration_year;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
     absl::optional<base::Value> fido_creation_options;
@@ -135,7 +146,7 @@ class PaymentsClient {
     // OptChange calls together.
     std::string card_authorization_token = std::string();
 
-    // The type of the credit card the current request is fetching.
+    // The type of the returned credit card.
     AutofillClient::PaymentsRpcCardType card_type =
         AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE;
   };
