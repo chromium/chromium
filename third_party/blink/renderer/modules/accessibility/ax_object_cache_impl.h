@@ -98,8 +98,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void SelectionChanged(Node*) override;
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);
-  void ChildrenChanged(AXObject*);
-  void ChildrenChanged(const AXObject*);
+  // void ChildrenChanged(AXObject*);
+  // void ChildrenChanged(const AXObject*);
   void ChildrenChanged(Node*) override;
   void ChildrenChanged(const LayoutObject*) override;
   void ChildrenChanged(AccessibleNode*) override;
@@ -116,6 +116,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(Node*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
+  // For any ancetor that could contain the passed-in AXObject* in their cached
+  // children, clear their children and set needs to update children on them.
+  // In addition, ChildrenChanged() on an included ancestor that might contain
+  // this child, if one exists.
+  void ChildrenChangedOnAncestorOf(AXObject*);
 
   const Element* RootAXEditableElement(const Node*) override;
 

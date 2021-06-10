@@ -379,7 +379,7 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   // An HTML <title> does not require an AXObject: the document's name is
   // retrieved directly via the inner text.
   if (IsA<HTMLTitleElement>(node))
-    return false;
+    return node->IsSVGElement();
 
   return true;
 }
@@ -474,7 +474,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // An HTML <title> does not require an AXObject: the document's name is
   // retrieved directly via the inner text.
   if (IsA<HTMLTitleElement>(node))
-    return false;
+    return node->IsSVGElement();
 
   // The node is either hidden or display locked:
   // Do not consider <head>/<style>/<script> relevant in these cases.
@@ -515,35 +515,6 @@ bool IsNodeRelevantForAccessibility(const Node* node,
 
   // All other objects are relevant, even if hidden.
   return true;
-}
-
-void DetachAndRemoveFromChildrenOfAncestors(AXObject* obj) {
-  DCHECK(obj);
-
-  bool has_included_object_in_subtree =
-      obj->LastKnownIsIncludedInTreeValue() ||
-      obj->CachedUChildrenIncludingIgnored().size();
-
-  AXObject* parent = obj->CachedParentObject();
-
-  obj->Detach();
-
-  // If |obj| is not included, and it has no included descendants, then there is
-  // nothing in any ancestor's cached children that needs clearing. This rule
-  // improves performance when removing an entire subtree of unincluded nodes.
-  if (!has_included_object_in_subtree)
-    return;
-
-  // Clear children of ancestors in order to ensure this detached object is not
-  // cached an ancestor's list of children:
-  // Any ancestor up to the first included ancestor can contain the now-detached
-  // child in it's cached children, and therefore must update children.
-  while (parent && !parent->LastKnownIsIncludedInTreeValue()) {
-    if (parent->NeedsToUpdateChildren() || parent->IsDetached())
-      break;  // Processing has already occurred for this ancestor.
-    parent->SetNeedsToUpdateChildren();
-    parent = parent->CachedParentObject();
-  }
 }
 
 }  // namespace
@@ -1365,9 +1336,8 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
-  AXObject* parent = obj->CachedParentObject();
-
-  DetachAndRemoveFromChildrenOfAncestors(obj);
+  ChildrenChangedOnAncestorOf(obj);
+  obj->Detach();
 
   RemoveAXID(obj);
 
@@ -1378,12 +1348,6 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
     return;
 
   DCHECK_GE(objects_.size(), ids_in_use_.size());
-
-  // This will clear the children of |parent| immediately, and therefore must
-  // come after obj->Detach(), which accesses the children in order
-  // to detach all of them from |parent|.
-  // It will also fire a children changed event.
-  ChildrenChanged(parent);
 }
 
 // This is safe to call even if there isn't a current mapping.
@@ -1576,15 +1540,20 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!tree_update_document->GetPage()->Animator().IsServicingAnimations() ||
-         (tree_update_document->Lifecycle().GetState() <
-              DocumentLifecycle::kInAccessibility ||
-          tree_update_document->Lifecycle().StateAllowsDetach()))
-      << "DeferTreeUpdateInternal should only be outside of the lifecycle or "
-         "before the accessibility state:"
-      << "\n* IsServicingAnimations: "
-      << tree_update_document->GetPage()->Animator().IsServicingAnimations()
-      << "\n* Lifecycle: " << tree_update_document->Lifecycle().ToString();
+  // TODO(accessibility) Restore this check. Currently must be removed because a
+  // loop in ProcessDeferredAccessibilityEvents() is allowed to queue deferred
+  // ChildrenChanged() events and process them.
+  // DCHECK(!tree_update_document->GetPage()->Animator().IsServicingAnimations()
+  // ||
+  //        (tree_update_document->Lifecycle().GetState() <
+  //             DocumentLifecycle::kInAccessibility ||
+  //         tree_update_document->Lifecycle().StateAllowsDetach()))
+  //     << "DeferTreeUpdateInternal should only be outside of the lifecycle or
+  //     "
+  //        "before the accessibility state:"
+  //     << "\n* IsServicingAnimations: "
+  //     << tree_update_document->GetPage()->Animator().IsServicingAnimations()
+  //     << "\n* Lifecycle: " << tree_update_document->Lifecycle().ToString();
 #endif
 
   tree_update_callback_queue_.push_back(MakeGarbageCollected<TreeUpdateParams>(
@@ -1908,19 +1877,55 @@ void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
   }
 }
 
-void AXObjectCacheImpl::ChildrenChanged(const AXObject* obj) {
-  ChildrenChanged(const_cast<AXObject*>(obj));
-}
+// This is called by Remove(), which Blink calls for DOM and layout changes,
+// iterating over all removed content in the subtree:
+// - When a DOM subtree is removed, it is called with the root node first, and
+//   then descending down into the subtree.
+// - When layout for a subtree is detached, it is called on layout objects,
+//   starting with leaves and moving upward, ending with the subtree root.
+// TODO(accessibility) Consider how these types of optimizations could be made
+// for other ChildrenChanged() processing.
+void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
+  DCHECK(obj);
+  DCHECK(!obj->IsDetached());
 
-void AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
-  if (!obj || obj->IsDetached())
+  // If |obj| is not included, and it has no included descendants, then there is
+  // nothing in any ancestor's cached children that needs clearing. This rule
+  // improves performance when removing an entire subtree of unincluded nodes.
+  // For example, if a <div id="root" style="display:none"> will be
+  // included because it is a potential relation target. If unincluded
+  // descendants change, no ChildrenChanged() processing is necessary, because
+  // #root has no children.
+  if (!obj->LastKnownIsIncludedInTreeValue() &&
+      obj->CachedChildrenIncludingIgnored().IsEmpty()) {
+    return;
+  }
+
+  // Clear children of ancestors in order to ensure this detached object is not
+  // cached an ancestor's list of children:
+  // Any ancestor up to the first included ancestor can contain the now-detached
+  // child in it's cached children, and therefore must update children.
+  AXObject* ancestor = obj->CachedParentObject();
+  while (ancestor && !ancestor->LastKnownIsIncludedInTreeValue()) {
+    if (ancestor->NeedsToUpdateChildren() || ancestor->IsDetached())
+      return;  // Processing has already occurred for this ancestor.
+    ancestor->SetNeedsToUpdateChildren();
+    ancestor = ancestor->CachedParentObject();
+  }
+
+  // Only process ChildrenChanged() events on the included ancestor. This allows
+  // deduping of ChildrenChanged() occurrences within the same subtree.
+  // For example, if a subtree has unincluded children, but included
+  // grandchildren have changed, only the root children changed needs to be
+  // processed.
+  if (!ancestor)
     return;
 
-  Node* node = obj->GetNode();
+  Node* node = ancestor->GetNode();
   if (node && !nodes_with_pending_children_changed_.insert(node).is_new_entry)
     return;
 
-  DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, obj);
+  DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, ancestor);
 }
 
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
@@ -2051,23 +2056,38 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Accessibility.Performance.ProcessDeferredAccessibilityEvents");
 
-  // Destroy and recreate any objects which are no longer valid, for example
-  // they used AXNodeObject and now must be an AXLayoutObject, or vice-versa.
-  // Also fires children changed on the parent of these nodes.
-  ProcessInvalidatedObjects(document);
+#if DCHECK_IS_ON()
+  int loop_counter = 0;
+#endif
 
-  // Call the queued callback methods that do processing which must occur when
-  // layout is clean. These callbacks are stored in tree_update_callback_queue_,
-  // and have names like FooBarredWithCleanLayout().
-  ProcessCleanLayoutCallbacks(document);
+  do {
+    // Destroy and recreate any objects which are no longer valid, for example
+    // they used AXNodeObject and now must be an AXLayoutObject, or vice-versa.
+    // Also fires children changed on the parent of these nodes.
+    ProcessInvalidatedObjects(document);
 
-  // Changes to ids or aria-owns may have resulted in queued up relation
-  // cache work; do that now.
-  relation_cache_->ProcessUpdatesWithCleanLayout();
+    // Call the queued callback methods that do processing which must occur when
+    // layout is clean. These callbacks are stored in
+    // tree_update_callback_queue_, and have names like
+    // FooBarredWithCleanLayout().
+    ProcessCleanLayoutCallbacks(document);
 
-  // Perform this step a second time, to refresh any new invalidated objects
-  // from the previous deferred processing steps.
-  ProcessInvalidatedObjects(document);
+    // Changes to ids or aria-owns may have resulted in queued up relation
+    // cache work; do that now.
+    relation_cache_->ProcessUpdatesWithCleanLayout();
+
+    // Keep going if there are more ids to invalidate or children changes to
+    // process from previous steps. For examople, a display locked
+    // (content-visibility:auto) element could be invalidated as it is scrolled
+    // in or out of view, causing Invalidate() to add it to invalidated_ids_.
+    // As ProcessInvalidatedObjects() refreshes the objectt and calls
+    // ChildrenChanged() on the parent, more objects may be invalidated, or
+    // more objects may have children changed called on them.
+#if DCHECK_IS_ON()
+    DCHECK_LE(++loop_counter, 100) << "Probable infinite loop detected.";
+#endif
+  } while (!nodes_with_pending_children_changed_.IsEmpty() ||
+           !invalidated_ids_.IsEmpty());
 
   // Send events to RenderAccessibilityImpl, which serializes them and then
   // sends the serialized events and dirty objects to the browser process.
@@ -2091,12 +2111,12 @@ void AXObjectCacheImpl::EmbeddingTokenChanged(HTMLFrameOwnerElement* element) {
 void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
   HashSet<AXID> wrong_document_invalidated_ids;
   HashSet<AXID> old_invalidated_ids;
-  HashSet<AXID> pending_children_changed_ids;
 
   // Create a new object with the same AXID as the old one.
   // Currently only supported for objects with a backing node.
   // Returns the new object.
   auto refresh = [this](AXObject* current) {
+    DCHECK(current);
     Node* node = current->GetNode();
     DCHECK(node) << "Refresh() is currently only supported for objects "
                     "with a backing node.";
@@ -2111,7 +2131,8 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
           << node << " " << node->GetLayoutObject();
     }
 
-    DetachAndRemoveFromChildrenOfAncestors(current);
+    ChildrenChangedOnAncestorOf(current);
+    current->Detach();
 
     // TODO(accessibility) We don't use the return value, can we use .erase()
     // and it will still make sure that the object is cleaned up?
@@ -2138,9 +2159,9 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
   };
 
   while (!invalidated_ids_.IsEmpty()) {
-    // ChildrenChanged() below may invalidate more objects. This outer loop
-    // ensures all newly invalid objects are caught and refreshed before the
-    // function returns.
+    // ChildrenChanged() calls from below work may invalidate more objects. This
+    // outer loop ensures all newly invalid objects are caught and refreshed
+    // before the function returns.
     old_invalidated_ids.swap(invalidated_ids_);
     for (AXID ax_id : old_invalidated_ids) {
       AXObject* object = ObjectFromAXID(ax_id);
@@ -2181,12 +2202,12 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
           break;  // No higher candidate parent found, will invalidate |parent|.
 
         // Queue up a ChildrenChanged() call for this parent.
-        pending_children_changed_ids.insert(parent->AXObjectID());
         if (parent->LastKnownIsIncludedInTreeValue())
           break;  // Stop here (otherwise continue to higher ancestor).
       }
 
       if (!parent) {
+        // If no parent is possible, prune from the tree.
         Remove(object);
         continue;
       }
@@ -2204,18 +2225,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
           << new_object->ToString(true, true);
 #endif
     }
-    // Update parents' children.
-    for (AXID parent_id : pending_children_changed_ids) {
-      AXObject* parent = ObjectFromAXID(parent_id);
-      if (parent && !parent->NeedsToUpdateChildren()) {
-        // Invalidate the parent's children.
-        ChildrenChangedWithCleanLayout(parent->GetNode(), parent);
-        // Update children now.
-        parent->UpdateChildrenIfNecessary();
-      }
-    }
     old_invalidated_ids.clear();
-    pending_children_changed_ids.clear();
   }
   // Invalidate these objects when their document is clean.
   invalidated_ids_.swap(wrong_document_invalidated_ids);
