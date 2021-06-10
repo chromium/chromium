@@ -330,6 +330,12 @@ const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
 
 mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
     content::RenderFrameHost* render_frame_host) {
+  // Attempting to get a remote interface before IsRenderFrameLive() will fail,
+  // leaving a broken pipe that will block all further messages. Return nullptr
+  // instead. Callers should try again after RenderFrameCreated().
+  if (!render_frame_host->IsRenderFrameLive())
+    return nullptr;
+
   mojo::AssociatedRemote<mojom::LocalFrame>& remote =
       local_frame_map_[render_frame_host];
   if (!remote.is_bound()) {

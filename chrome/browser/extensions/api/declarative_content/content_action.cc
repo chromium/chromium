@@ -366,11 +366,17 @@ void RequestContentScript::InstructRenderProcessToInject(
   ContentScriptTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
                                         contents->GetMainFrame(), *extension);
 
-  ExtensionWebContentsObserver::GetForWebContents(contents)
-      ->GetLocalFrame(contents->GetMainFrame())
-      ->ExecuteDeclarativeScript(
-          sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
-          script_.id(), contents->GetLastCommittedURL());
+  mojom::LocalFrame* local_frame =
+      ExtensionWebContentsObserver::GetForWebContents(contents)->GetLocalFrame(
+          contents->GetMainFrame());
+  if (!local_frame) {
+    // TODO(https://crbug.com/1203579): Need to review when this method is
+    // called with non-live frame.
+    return;
+  }
+  local_frame->ExecuteDeclarativeScript(
+      sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
+      script_.id(), contents->GetLastCommittedURL());
 }
 
 void RequestContentScript::OnScriptsLoaded(

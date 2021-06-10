@@ -77,6 +77,9 @@ void AppWindowContentsImpl::NativeWindowChanged(
 }
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
+  // Return early if this method is called when the render frame is not live.
+  if (!web_contents_->GetMainFrame()->IsRenderFrameLive())
+    return;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
       ->GetLocalFrame(web_contents_->GetMainFrame())
       ->AppWindowClosed(send_onclosed);

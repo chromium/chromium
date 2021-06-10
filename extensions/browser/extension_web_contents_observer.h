@@ -74,7 +74,8 @@ class ExtensionWebContentsObserver
 
   // Returns mojom::LocalFrame* corresponding |render_frame_host|. It emplaces
   // AssociatedRemote<mojom::LocalFrame> to |local_frame_map_| if the map
-  // doesn't have it. Note that it does not return nullptr.
+  // doesn't have it. Note that it could return nullptr if |render_frame_host|
+  // is not live.
   mojom::LocalFrame* GetLocalFrame(content::RenderFrameHost* render_frame_host);
 
  protected:
