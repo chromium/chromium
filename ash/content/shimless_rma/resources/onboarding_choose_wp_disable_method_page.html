@@ -7,7 +7,19 @@
     <h1>Choose Hardware Write Protection Disable Method</h1>
   </div>
   <div slot="body">
-    <input type="radio" name="hwwpDisableMethod" id="hwwpDisableMethodManual">Manual</input>
-    <input type="radio" name="hwwpDisableMethod" id="hwwpDisableMethodRsu">RSU</input>
-  </div>
+    <cr-radio-group
+        id="hwwpDisableMethod"
+        on-selected-changed="onHwwpDisableMethodSelectionChanged_">
+      <cr-radio-button
+          name="hwwpDisableMethodManual"
+          id="hwwpDisableMethodManual">
+        Manual
+      </cr-radio-button>
+      <cr-radio-button
+          name="hwwpDisableMethodRsu"
+          id="hwwpDisableMethodRsu">
+        RSU
+      </cr-radio-button>
+    </cr-radio-group>
+</div>
 </base-page>

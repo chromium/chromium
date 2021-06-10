@@ -8,7 +8,7 @@ import './base_page.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -31,6 +31,12 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
         type: Object,
         value: {},
       },
+
+      /** @private {string} */
+      hwwpMethod_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -40,11 +46,24 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextButtonClicked that will:
-  //  - call shimlessRmaService_.chooseManuallyDisableWriteProtect() if manual
-  //    chosen.
-  //  - call shimlessRmaService_.chooseRsuDisableWriteProtect(code) if RSU
-  //    chosen.
+  /**
+   * @param {!CustomEvent<{value: string}>} event
+   * @protected
+   */
+  onHwwpDisableMethodSelectionChanged_(event) {
+    this.hwwpMethod_ = event.detail.value;
+  }
+
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    if (this.hwwpMethod_ === 'hwwpDisableMethodManual') {
+      return this.shimlessRmaService_.chooseManuallyDisableWriteProtect();
+    } else if (this.hwwpMethod_ === 'hwwpDisableMethodRsu') {
+      return this.shimlessRmaService_.chooseRsuDisableWriteProtect();
+    } else {
+      return Promise.reject(new Error('No disable method selected'));
+    }
+  }
 };
 
 customElements.define(
