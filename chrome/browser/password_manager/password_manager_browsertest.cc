@@ -60,6 +60,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -4231,11 +4232,34 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 }
 #endif  // ENABLE_DICE_SUPPORT
 
+class TestPasswordManagerClient : public ChromePasswordManagerClient {
+ public:
+  static void CreateForWebContentsWithAutofillClient(
+      content::WebContents* contents,
+      autofill::AutofillClient* autofill_client) {
+    if (FromWebContents(contents))
+      return;
+    contents->SetUserData(
+        UserDataKey(),
+        std::make_unique<TestPasswordManagerClient>(contents, autofill_client));
+  }
+  TestPasswordManagerClient(content::WebContents* web_contents,
+                            autofill::AutofillClient* autofill_client)
+      : ChromePasswordManagerClient(web_contents, autofill_client) {}
+  ~TestPasswordManagerClient() override = default;
+
+  MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+};
+
+MATCHER_P(IsKeyEvent, type, std::string()) {
+  return arg.GetType() == type;
+}
+
 class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
  public:
   PasswordManagerPrerenderBrowserTest()
       : prerender_helper_(base::BindRepeating(
-            &PasswordManagerPrerenderBrowserTest::WebContents,
+            &PasswordManagerPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {}
   ~PasswordManagerPrerenderBrowserTest() override = default;
 
@@ -4251,6 +4275,55 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
 
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
+  }
+
+  void SendKey(::ui::KeyboardCode key,
+               content::RenderFrameHost* render_frame_host) {
+    content::NativeWebKeyboardEvent event(
+        blink::WebKeyboardEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key;
+    render_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+  }
+
+  // Adds a tab with TestPasswordManagerClient which is a customized
+  // ChromePasswordManagerClient.
+  // Note that it doesn't use CustomManagePasswordsUIController and it's not
+  // useful to test UI. After calling this,
+  // PasswordManagerBrowserTest::WebContents() is not available.
+  void GetNewTabWithTestPasswordManagerClient() {
+    content::WebContents* preexisting_tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::unique_ptr<content::WebContents> owned_web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    ASSERT_TRUE(owned_web_contents.get());
+
+    // ManagePasswordsUIController needs ChromePasswordManagerClient for
+    // logging.
+    autofill::ChromeAutofillClient::CreateForWebContents(
+        owned_web_contents.get());
+    TestPasswordManagerClient::CreateForWebContentsWithAutofillClient(
+        owned_web_contents.get(),
+        autofill::ChromeAutofillClient::FromWebContents(
+            owned_web_contents.get()));
+    ASSERT_TRUE(
+        ChromePasswordManagerClient::FromWebContents(owned_web_contents.get()));
+    ManagePasswordsUIController::CreateForWebContents(owned_web_contents.get());
+    ASSERT_TRUE(
+        ManagePasswordsUIController::FromWebContents(owned_web_contents.get()));
+    ASSERT_FALSE(owned_web_contents.get()->IsLoading());
+    browser()->tab_strip_model()->AppendWebContents(
+        std::move(owned_web_contents), true);
+    if (preexisting_tab) {
+      browser()->tab_strip_model()->CloseWebContentsAt(
+          0, TabStripModel::CLOSE_NONE);
+    }
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
@@ -4385,6 +4458,45 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   // After the page is activated, it gets binding mojom::CredentialManager.
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(WebContents())
                   ->has_binding_for_credential_manager());
+}
+
+// Tests that RenderWidgetHost::InputEventObserver is updated with the
+// RenderFrameHost that NavigationHandle has when the RenderFrameHost is
+// activated from the prerendering.
+IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
+                       InputWorksAfterPrerenderActivation) {
+  GetNewTabWithTestPasswordManagerClient();
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  auto prerender_url =
+      embedded_test_server()->GetURL("/password/password_form.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  base::RunLoop().RunUntilIdle();
+  // Sets to ignore mouse events. Otherwise, OnInputEvent() could be called
+  // multiple times if the mouse cursor is over on the test window during
+  // testing.
+  web_contents()->GetMainFrame()->GetRenderWidgetHost()->AddMouseEventCallback(
+      base::BindRepeating(
+          [](const blink::WebMouseEvent& event) { return true; }));
+
+  EXPECT_CALL(
+      *static_cast<TestPasswordManagerClient*>(
+          ChromePasswordManagerClient::FromWebContents(web_contents())),
+      OnInputEvent(IsKeyEvent(blink::WebInputEvent::Type::kRawKeyDown)));
+  // Sends a key event.
+  SendKey(::ui::VKEY_DOWN, render_frame_host);
 }
 
 }  // namespace

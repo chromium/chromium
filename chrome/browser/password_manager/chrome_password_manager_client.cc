@@ -1240,7 +1240,8 @@ void ChromePasswordManagerClient::DidFinishNavigation(
   password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
 
   AddToWidgetInputEventObservers(
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget(), this);
+      navigation_handle->GetRenderFrameHost()->GetRenderWidgetHost(), this);
+
 #if defined(OS_ANDROID)
   // This unblocklisted info is only used after form submission to determine
   // whether to record PasswordManager.SaveUIDismissalReasonAfterUnblacklisting.
@@ -1319,8 +1320,8 @@ void ChromePasswordManagerClient::RenderFrameCreated(
   // that we can accurately report that the password was reused on a subframe.
   // Currently any password reuse for this WebContents will report password
   // reuse on the main frame URL.
-  AddToWidgetInputEventObservers(
-      render_frame_host->GetView()->GetRenderWidgetHost(), this);
+  AddToWidgetInputEventObservers(render_frame_host->GetRenderWidgetHost(),
+                                 this);
 }
 
 void ChromePasswordManagerClient::OnInputEvent(
