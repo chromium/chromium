@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "components/content_creation/notes/core/server/note.pb.h"
 #include "components/content_creation/notes/core/server/note_data.h"
+#include "components/content_creation/notes/core/server/save_note_response.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,10 +65,10 @@ void NotesServerSaver::Start() {
 
 void NotesServerSaver::SendSaveNoteRequest() {
   // Prepare the Note payload.
-  web_notes::SaveNoteRequest save_request;
-  web_notes::Note* note_proto = save_request.mutable_note();
+  web_notes::PutWebnoteRequest save_request;
+  web_notes::Webnote* note_proto = save_request.mutable_webnote();
   note_proto->set_quote(note_data_.quote);
-  note_proto->set_comment(note_data_.comment);
+  note_proto->set_note(note_data_.comment);
   note_proto->set_web_page_url(note_data_.webpage_url.spec());
   note_proto->set_highlight_directive(note_data_.highlight_directive);
   std::string request_body = save_request.SerializeAsString();
@@ -93,7 +94,27 @@ void NotesServerSaver::SendSaveNoteRequest() {
 
 void NotesServerSaver::OnSaveNoteComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTIMPLEMENTED();
+  SaveNoteResponse response;
+  if (!response_body || !HasValidNonEmptyResponse(*response_body.get())) {
+    DVLOG(1) << "Has empty or invalid response";
+  } else {
+    // Parse the response.
+    web_notes::PutWebnoteResponse save_note_response;
+    if (!save_note_response.ParseFromString(*response_body.get())) {
+      DVLOG(1) << "Failed to parse note";
+    } else if (!save_note_response.has_webnote_content_id()) {
+      DVLOG(1) << "Response did not contain content ID information";
+    } else {
+      web_notes::WebnoteContentId note_content_id =
+          save_note_response.webnote_content_id();
+      response.account_id = note_content_id.account_id();
+      response.note_id = note_content_id.account_id();
+    }
+  }
+
+  url_loader_.reset();
+
+  std::move(save_callback_).Run(response);
 }
 
 void NotesServerSaver::AccessTokenFetchFinished(

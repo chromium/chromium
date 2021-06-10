@@ -11,7 +11,7 @@ namespace content_creation {
 
 // A struct holding the server response when saving a note.
 struct SaveNoteResponse {
-  std::string content_id;
+  std::string account_id;
   std::string note_id;
 };
 

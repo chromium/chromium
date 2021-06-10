@@ -7,9 +7,9 @@ package web_notes;
 
 option optimize_for = LITE_RUNTIME;
 
-message Note {
+message Webnote {
   // The user's comment about the highlighted quote.
-  string comment = 1;
+  string note = 1;
   // The highlighted text on the web page.
   string quote = 2;
   // The URL of the page of the note and quote.
@@ -18,17 +18,17 @@ message Note {
   string highlight_directive = 4;
 }
 
-message NoteContentId {
+message WebnoteContentId {
   // The contributor account ID.
   string account_id = 1;
   // The note ID.
   string webnote_id = 2;
 }
 
-message SaveNoteRequest {
-  Note note = 1;
+message PutWebnoteRequest {
+  Webnote webnote = 1;
 }
 
-message SaveNoteResponse {
-  NoteContentId note_content_id = 1;
+message PutWebnoteResponse {
+  WebnoteContentId webnote_content_id = 1;
 }

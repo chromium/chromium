@@ -48,7 +48,22 @@ NotesServerBase::CreateNoteResourceRequest(GURL request_url,
 
 bool NotesServerBase::HasValidNonEmptyResponse(
     const std::string& response_body) {
-  NOTIMPLEMENTED();
+  DCHECK(url_loader_);
+
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+
+  if (response_code < 200 || response_code > 299) {
+    DVLOG(1) << "HTTP status: " << response_code;
+    return false;
+  }
+
+  if (response_body.empty()) {
+    DVLOG(1) << "Failed to get response or empty response";
+    return false;
+  }
 
   return true;
 }
