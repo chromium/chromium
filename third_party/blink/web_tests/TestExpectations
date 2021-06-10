@@ -6943,3 +6943,4 @@ crbug.com/1217342 [ Linux ] http/tests/devtools/sources/debugger-async/async-cal
 # Sheriff 2021-06-10
 crbug.com/626703 [ Linux ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Pass Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Pass Failure ]
+crbug.com/1177996 [ Mac10.15 ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
