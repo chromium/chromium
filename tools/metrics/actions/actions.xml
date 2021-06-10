@@ -28482,6 +28482,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="_" ordering="suffix">
+  <suffix name="AddToHomescreenMessage"
+      label="For AddToHomescreen IPH feature."/>
+  <suffix name="AddToHomescreenTextBubble"
+      label="For AddToHomescreen IPH feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
   <suffix name="Bookmark" label="For Bookmark feature."/>
   <suffix name="BottomToolbarTip" label="For BottomToolbarTip feature."/>
