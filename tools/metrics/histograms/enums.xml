@@ -76908,11 +76908,6 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SurveyDownloadResponseCodes2">
-<!-- This enum allocations are not without meaning. Thus, these allocations
-     should never be changed, and new possible return values should be appended
-     as new items with new values.
-  -->
-
   <summary>
     Results when download survey response is available. Used by
     Android.Survey.SurveyDownloadResponseCodes2.
