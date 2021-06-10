@@ -54,8 +54,6 @@ const char kActiveTimeKey[] = "active_time";
 // TODO(https://crbug.com/1211292): this pref is obsolete. Remove it.
 const char kIsAuthErrorKey[] = "is_auth_error";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
-// TODO(https://crbug.com/1211292): this pref is obsolete. Remove it.
-const char kSigninRequiredKey[] = "signin_required";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
 
@@ -78,6 +76,9 @@ const char kIsOmittedFromProfileListKey[] = "is_omitted_from_profile_list";
 // Deprecated 3/2021.
 const char kAuthCredentialsKey[] = "local_auth_credentials";
 const char kPasswordTokenKey[] = "gaia_password_token";
+
+// Deprecated 6/2021.
+const char kSigninRequiredKey[] = "signin_required";
 
 constexpr int kIntegerNotSet = -1;
 
@@ -167,17 +168,6 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
     // signin policy has been disabled.
     SetBool(kForceSigninProfileLockedKey, false);
   }
-
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
-  if (!signin_util::IsForceSigninEnabled() && IsSigninRequired()) {
-    // Profiles that require signin in the absence of an enterprise policy are
-    // left-overs from legacy supervised users. Just unlock them, so users can
-    // keep using them.
-    SetAuthInfo(std::string(), std::u16string(), false);
-    SetIsSigninRequired(false);
-  }
-#endif
 }
 
 void ProfileAttributesEntry::InitializeLastNameToDisplay() {
@@ -383,7 +373,7 @@ bool ProfileAttributesEntry::IsOmitted() const {
 }
 
 bool ProfileAttributesEntry::IsSigninRequired() const {
-  return GetBool(kSigninRequiredKey) || GetBool(kForceSigninProfileLockedKey);
+  return GetBool(kForceSigninProfileLockedKey);
 }
 
 std::string ProfileAttributesEntry::GetSupervisedUserId() const {
@@ -551,15 +541,6 @@ void ProfileAttributesEntry::SetGAIAPicture(
 void ProfileAttributesEntry::SetIsUsingGAIAPicture(bool value) {
   profile_info_cache_->SetIsUsingGAIAPictureOfProfileAtIndex(
       profile_index(), value);
-}
-
-void ProfileAttributesEntry::SetIsSigninRequired(bool value) {
-  if (value != GetBool(kSigninRequiredKey)) {
-    SetBool(kSigninRequiredKey, value);
-    profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
-  }
-  if (signin_util::IsForceSigninEnabled())
-    LockForceSigninProfile(value);
 }
 
 void ProfileAttributesEntry::SetSignedInWithCredentialProvider(bool value) {
@@ -954,6 +935,9 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 3/2021.
   ClearValue(kAuthCredentialsKey);
   ClearValue(kPasswordTokenKey);
+
+  // Added 6/2021.
+  ClearValue(kSigninRequiredKey);
 }
 
 void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {

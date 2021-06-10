@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -383,13 +384,14 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 #endif
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        MAYBE_OpenBrowserWindowForProfileWithSigninRequired) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
+  entry->LockForceSigninProfile(true);
   size_t num_browsers = BrowserList::GetInstance()->size();
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(

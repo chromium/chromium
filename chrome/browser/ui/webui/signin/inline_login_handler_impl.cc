@@ -187,20 +187,21 @@ void LogHistogramValue(signin_metrics::AccessPointAction action) {
 }
 
 void SetProfileLocked(const base::FilePath profile_path, bool locked) {
-  if (!profile_path.empty()) {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    if (profile_manager) {
-      ProfileAttributesEntry* entry =
-          profile_manager->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile_path);
-      if (entry) {
-        if (locked)
-          entry->LockForceSigninProfile(true);
-        else
-          entry->SetIsSigninRequired(false);
-      }
-    }
-  }
+  if (profile_path.empty())
+    return;
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return;
+
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry)
+    return;
+
+  if (signin_util::IsForceSigninEnabled())
+    entry->LockForceSigninProfile(locked);
 }
 
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,

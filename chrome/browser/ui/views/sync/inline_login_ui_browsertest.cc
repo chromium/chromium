@@ -529,6 +529,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, WithAuthCode) {
 // signing in with default sync options.
 IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
                        SigninCreatesSyncStarter1) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   InlineLoginHandlerImpl handler;
   // See Source enum in components/signin/public/base/signin_metrics.h for
   // possible values of access_point=, reason=.
@@ -553,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile()->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
+  entry->LockForceSigninProfile(true);
 
   ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
@@ -667,6 +668,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
                        ForceSigninWithUserManager) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   InlineLoginHandlerImpl handler;
   GURL url("chrome://chrome-signin/?access_point=0&reason=5");
   // MockSyncStarterInlineSigninHelper will delete itself when done using
@@ -686,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile()->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
+  entry->LockForceSigninProfile(true);
 
   ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");

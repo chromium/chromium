@@ -874,7 +874,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {
   ASSERT_TRUE(entry->IsSigninRequired());
 
   EXPECT_CALL(observer(), OnProfileSigninRequiredChanged(path)).Times(1);
-  entry->SetIsSigninRequired(false);
+  entry->LockForceSigninProfile(false);
   VerifyAndResetCallExpectations();
   ASSERT_FALSE(entry->IsSigninRequired());
 }

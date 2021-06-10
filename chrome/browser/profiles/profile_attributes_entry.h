@@ -108,6 +108,9 @@ class ProfileAttributesEntry {
   // Returns true if the profile should not be displayed to the user in the
   // list of profiles.
   bool IsOmitted() const;
+  // Returns true if the user must sign before a profile can be opened.
+  // Currently, this returns true iff a profile is locked due to the force
+  // sign-in policy.
   bool IsSigninRequired() const;
   // Gets the supervised user ID of the profile's signed in account, if it's a
   // supervised user.
@@ -164,7 +167,6 @@ class ProfileAttributesEntry {
   void SetGAIAGivenName(const std::u16string& name);
   void SetGAIAPicture(const std::string& image_url_with_size, gfx::Image image);
   void SetIsUsingGAIAPicture(bool value);
-  void SetIsSigninRequired(bool value);
   void SetSignedInWithCredentialProvider(bool value);
   // Only non-omitted profiles can be set as non-ephemeral. It's the
   // responsibility of the caller to make sure that the entry is set as

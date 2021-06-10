@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1014,34 +1015,35 @@ TEST_F(ProfileInfoCacheTest, RemoveProfileByAccountId) {
   EXPECT_EQ(0u, GetCache()->GetNumberOfProfiles());
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
 // Checks that ProfileInfoCache doesn't crash when ProfileAttributesEntry
 // initialization modifies the cache entry.
 // This is a regression test for https://crbug.com/1180497.
 TEST_F(ProfileInfoCacheTest, ModifiyEntryWhileInitializing) {
   base::FilePath profile_path = GetProfilePath("test");
-  AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
-  ProfileAttributesInitParams params;
-  params.profile_path = profile_path;
-  params.profile_name = u"Test";
-  params.gaia_id = account_id.GetGaiaId();
-  params.user_name = UTF8ToUTF16(account_id.GetUserEmail());
-  GetCache()->AddProfileToCache(std::move(params));
-  ProfileAttributesEntry* entry =
-      GetCache()->GetProfileAttributesWithPath(profile_path);
-  // Set up the state so that ProfileAttributesEntry::Initialize() will modify
-  // the cache entry.
-  entry->SetIsSigninRequired(true);
+  {
+    signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+    AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = u"Test";
+    params.gaia_id = account_id.GetGaiaId();
+    params.user_name = UTF8ToUTF16(account_id.GetUserEmail());
+    GetCache()->AddProfileToCache(std::move(params));
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
+    // Set up the state so that ProfileAttributesEntry::Initialize() will modify
+    // the cache entry.
+    entry->LockForceSigninProfile(true);
+  }
   // Reinitialize ProfileInfoCache.
   ResetCache();
   GetCache();  // Should not crash.
 
   // The IsSigninRequired attribute should be cleaned up.
-  entry = GetCache()->GetProfileAttributesWithPath(profile_path);
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
   EXPECT_FALSE(entry->IsSigninRequired());
 }
-#endif
 
 TEST_F(ProfileInfoCacheTest, ProfileNamesOnInit) {
   // Set up the cache with two profiles having the same GAIA given name.

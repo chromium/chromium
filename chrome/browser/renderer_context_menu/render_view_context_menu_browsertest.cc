@@ -33,6 +33,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -1379,6 +1380,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPr
 #define MAYBE_OpenLinkInProfile OpenLinkInProfile
 #endif
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   // Create |num_profiles| extra profiles for testing.
   const int num_profiles = 8;
   // The following are the profile numbers that are omitted and need signin.
@@ -1401,6 +1403,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
     ProfileAttributesEntry* entry =
         storage.GetProfileAttributesWithPath(profile->GetPath());
     ASSERT_NE(entry, nullptr);
+    entry->LockForceSigninProfile(false);
     // Open a browser window for the profile if and only if the profile is not
     // omitted nor needing signin.
     if (std::binary_search(profiles_omit.begin(), profiles_omit.end(), i)) {
@@ -1408,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       entry->SetIsOmitted(true);
     } else if (std::binary_search(profiles_signin_required.begin(),
                                   profiles_signin_required.end(), i)) {
-      entry->SetIsSigninRequired(true);
+      entry->LockForceSigninProfile(true);
     } else {
       profiles::FindOrCreateNewWindowForProfile(
           profile, chrome::startup::IS_NOT_PROCESS_STARTUP,

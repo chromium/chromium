@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -126,11 +127,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
           extensions::ExtensionSystem::Get(profile()));
   extension_system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(1, model_->count());
   // Calling the function again reuses the tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(1, model_->count());
 
@@ -142,11 +143,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
       base::CompareCase::INSENSITIVE_ASCII));
 
   // Changing the parameter opens a new tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(2, model_->count());
   // Calling the function again reuses the tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(2, model_->count());
   tab = model_->GetWebContentsAt(1);
@@ -158,16 +159,17 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
 }
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, AsLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile()->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  entry->LockForceSigninProfile(true);
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(0, model_->count());
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(0, model_->count());
 }

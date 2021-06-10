@@ -67,8 +67,6 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
   if (clear_profile) {
     entry->SetAuthInfo(std::string(), std::u16string(),
                        /*is_consented_primary_account=*/false);
-    if (!signin_util::IsForceSigninEnabled())
-      entry->SetIsSigninRequired(false);
   } else {
     entry->SetAuthInfo(
         account_info.gaia, base::UTF8ToUTF16(account_info.email),

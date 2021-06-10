@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
+  entry->LockForceSigninProfile(true);
   EXPECT_TRUE(entry->IsSigninRequired());
 
   EXPECT_EQ(1u, active_browser_list()->size());

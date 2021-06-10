@@ -45,6 +45,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1224,6 +1225,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
                        LaunchMultipleLockedProfiles) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1250,11 +1252,18 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref pref(SessionStartupPref::URLS);
   pref.urls = urls;
   SessionStartupPref::SetStartupPref(profile2, pref);
-  ProfileAttributesEntry* entry =
+
+  ProfileAttributesEntry* entry1 =
       profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile1->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
+  ASSERT_NE(entry1, nullptr);
+  entry1->LockForceSigninProfile(true);
+
+  ProfileAttributesEntry* entry2 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
+  entry2->LockForceSigninProfile(false);
 
   browser_creator.Start(command_line, profile_manager->user_data_dir(),
                         profile1, last_opened_profiles);
