@@ -2363,7 +2363,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3537881477201137177">Można to później zmienić w Ustawieniach</translation>
 <translation id="3538066758857505094">Błąd podczas odinstalowywania Linuksa. Spróbuj ponownie.</translation>
 <translation id="354060433403403521">Zasilacz</translation>
-<translation id="354068948465830244">Może odczytywać i modyfikować dane stron</translation>
+<translation id="354068948465830244">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="3541823293333232175">Przypisano</translation>
 <translation id="3543393733900874979">Aktualizacja zakończona niepowodzeniem (błąd: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Podpis X9.62 ECDSA z SHA-512</translation>
@@ -2547,7 +2547,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3728188878314831180">Pokazuj powiadomienia z telefonu</translation>
 <translation id="3728681439294129328">Skonfiguruj adres sieci</translation>
 <translation id="3729303374699765035">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu</translation>
-<translation id="3729506734996624908">Dozwolone strony</translation>
+<translation id="3729506734996624908">Dozwolone witryny</translation>
 <translation id="3730076362938942381">Aplikacja do pisania rysikiem</translation>
 <translation id="3732078975418297900">Błąd w wierszu <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Kod PIN może mieć maksymalnie 63 znaki</translation>
@@ -5558,7 +5558,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7067725467529581407">Nie pokazuj tego ponownie.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> może wymagać nowszego lub innego rodzaju klucza bezpieczeństwa</translation>
 <translation id="7070269827082111569">Nie zezwolono na otwieranie określonych typów plików</translation>
-<translation id="7070484045139057854">Może odczytywać i modyfikować dane stron</translation>
+<translation id="7070484045139057854">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="7072010813301522126">Nazwa skrótu</translation>
 <translation id="707392107419594760">Wybierz klawiaturę:</translation>
 <translation id="7075513071073410194">PKCS #1, MD5 z szyfrowaniem RSA</translation>
@@ -6768,7 +6768,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8388770971141403598">Profile dodatkowe nie są obsługiwane</translation>
 <translation id="8389416080014625855">Utwórz kod QR powiązany z tą stroną</translation>
-<translation id="8389492867173948260">Zezwól temu rozszerzeniu na odczytywanie i zmienianie wszystkich Twoich danych na stronach, które otwierasz:</translation>
+<translation id="8389492867173948260">Zezwól temu rozszerzeniu na odczytywanie i zmienianie wszystkich Twoich danych w witrynach, które otwierasz:</translation>
 <translation id="8390449457866780408">Serwer jest niedostępny.</translation>
 <translation id="8391218455464584335">Płyta winylowa</translation>
 <translation id="8392364544846746346">Pytaj, gdy witryna chce edytować pliki lub foldery na urządzeniu</translation>

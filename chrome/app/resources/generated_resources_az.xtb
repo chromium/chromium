@@ -4345,7 +4345,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5739458112391494395">Çox böyük</translation>
 <translation id="5740328398383587084">Yaxındakılarla Paylaşma</translation>
 <translation id="574104302965107104">Displeyin əks etdirilməsi</translation>
-<translation id="574209121243317957">Pitç</translation>
+<translation id="574209121243317957">Ton</translation>
 <translation id="5746169159649715125">PDF olaraq saxlayın</translation>
 <translation id="5746261205461426123">Ayarlama bələdçisini açın</translation>
 <translation id="5747552184818312860">Vaxtı bitir</translation>
@@ -5525,7 +5525,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7034692021407794547">Faktura İdarəetmə imtiyazlarına sahib bir administrator əvvəlcə Admin konsolunun Google Meet Avadanlıq bölməsində Google Meet Avadanlıq Xidmət Şərtlərini qəbul etməlidir.</translation>
 <translation id="7036706669646341689">Linux üçün <ph name="DISK_SIZE" /> boş yerin olması tövsiyə edilir. Yer boşaltmaq üçün cihazdan faylları silin.</translation>
 <translation id="7037509989619051237">Önizləniləcək mətn</translation>
-<translation id="7038632520572155338">Düymə ilə giriş</translation>
+<translation id="7038632520572155338">Açarlı idarəetmə</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> üçün başqa Google Hesabı əlavə edin</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> vendordan USB cihazlara giriş</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -5949,7 +5949,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7522255036471229694">"Ok Google" deyin</translation>
 <translation id="7523585675576642403">Profilin adını dəyişdirin</translation>
 <translation id="7525067979554623046">Yaradın</translation>
-<translation id="7525625923260515951">Seçilmiş mətni eşidin</translation>
+<translation id="7525625923260515951">Seçilən mətn səsləndirilsin</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Daha 1 element}other{Daha {NUM_DOWNLOADS} element}}</translation>
 <translation id="7526989658317409655">Yertutan</translation>
 <translation id="7529411698175791732">İnternet bağlantısını yoxlayın. Problem hələ də davam edirsə, hesabdan çıxaraq yenidən daxil olmağa çalışın.</translation>
@@ -7458,7 +7458,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="9130015405878219958">Yanlış rejimə daxil olmusunuz.</translation>
 <translation id="9131487537093447019">Bluetooth cihazlarına mesaj göndərin və mesaj alın.</translation>
 <translation id="9137013805542155359">Originalı göstərin</translation>
-<translation id="9137157311132182254">Tərcih edilən axtarış mühərriki</translation>
+<translation id="9137157311132182254">Defolt axtarış sistemi</translation>
 <translation id="9137248913990643158">Bu tətbiqi istifadə etməzdən əvvəl başlayın və Chrome'a daxil olun.</translation>
 <translation id="9137916601698928395">Linki <ph name="USER" /> kimi açın</translation>
 <translation id="9138978632494473300">Aşağıdakı yerlər üçün qısayollar yaradın:</translation>

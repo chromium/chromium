@@ -4388,7 +4388,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5788367137662787332">Žao nam je, najmanje jednu particiju na uređaju <ph name="DEVICE_LABEL" /> nije bilo moguće uključiti.</translation>
 <translation id="5790085346892983794">Uspešno</translation>
 <translation id="5790651917470750848">Prosleđivanje porta već postoji</translation>
-<translation id="5792728279623964091">Dodirnite dugme za napajanje</translation>
+<translation id="5792728279623964091">Dodirnite dugme za uključivanje</translation>
 <translation id="5793339252089865437">Ako preuzmete ažuriranje preko mobilne mreže, to može da izazove troškove prekoračenja.</translation>
 <translation id="5794414402486823030">Uvek otvaraj pomoću sistemskog prikazivača</translation>
 <translation id="5794700615121138172">Deljeni Linux direktorijumi</translation>
@@ -7584,7 +7584,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="969096075394517431">Promeni jezike</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="971774202801778802">URL obeleživača</translation>
-<translation id="972996901592717370">Prstom dodirnite dugme za napajanje. Podaci se bezbedno čuvaju isključivo na uređaju <ph name="DEVICE_TYPE" />.</translation>
+<translation id="972996901592717370">Prstom dodirnite dugme za uključivanje. Podaci se bezbedno čuvaju isključivo na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Izađi</translation>
 <translation id="975893173032473675">Jezik na koji želite da prevodite</translation>
 <translation id="976499800099896273">Prikazuje se dijalog za opozivanje automatskog ispravljanja reči <ph name="TYPED_WORD" /> u <ph name="CORRECTED_WORD" />.  Pritisnite strelicu nagore da biste pristupili toj reči ili Escape da biste je ignorisali.</translation>

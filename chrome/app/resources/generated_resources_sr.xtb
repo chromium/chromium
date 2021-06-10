@@ -4388,7 +4388,7 @@
 <translation id="5788367137662787332">Жао нам је, најмање једну партицију на уређају <ph name="DEVICE_LABEL" /> није било могуће укључити.</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5790651917470750848">Прослеђивање порта већ постоји</translation>
-<translation id="5792728279623964091">Додирните дугме за напајање</translation>
+<translation id="5792728279623964091">Додирните дугме за укључивање</translation>
 <translation id="5793339252089865437">Ако преузмете ажурирање преко мобилне мреже, то може да изазове трошкове прекорачења.</translation>
 <translation id="5794414402486823030">Увек отварај помоћу системског приказивача</translation>
 <translation id="5794700615121138172">Дељени Linux директоријуми</translation>
@@ -7584,7 +7584,7 @@
 <translation id="969096075394517431">Промени језике</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
 <translation id="971774202801778802">URL обележивача</translation>
-<translation id="972996901592717370">Прстом додирните дугме за напајање. Подаци се безбедно чувају искључиво на уређају <ph name="DEVICE_TYPE" />.</translation>
+<translation id="972996901592717370">Прстом додирните дугме за укључивање. Подаци се безбедно чувају искључиво на уређају <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Изађи</translation>
 <translation id="975893173032473675">Језик на који желите да преводите</translation>
 <translation id="976499800099896273">Приказује се дијалог за опозивање аутоматског исправљања речи <ph name="TYPED_WORD" /> у <ph name="CORRECTED_WORD" />.  Притисните стрелицу нагоре да бисте приступили тој речи или Escape да бисте је игнорисали.</translation>
