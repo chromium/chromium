@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/region.h"
+#include "components/exo/buffer.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface_delegate.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -229,6 +230,13 @@ class Surface final : public ui::PropertyHandler {
   // Returns whether the surface has an uncommitted acquire fence.
   bool HasPendingAcquireFence() const;
 
+  // Request a callback when the buffer attached at the next commit is
+  // no longer used by that commit.
+  void SetPerCommitBufferReleaseCallback(
+      Buffer::PerCommitExplicitReleaseCallback callback);
+  // Whether the surface has an uncommitted per-commit buffer release callback.
+  bool HasPendingPerCommitBufferReleaseCallback() const;
+
   // Surface state (damage regions, attached buffers, etc.) is double-buffered.
   // A Commit() call atomically applies all pending state, replacing the
   // current state. Commit() is not guaranteed to be synchronous. See
@@ -397,6 +405,11 @@ class Surface final : public ui::PropertyHandler {
     std::list<PresentationCallback> presentation_callbacks;
     // The acquire gpu fence to associate with the surface buffer.
     std::unique_ptr<gfx::GpuFence> acquire_fence;
+    // Callback to notify about the per-commit buffer release. The wayland
+    // Exo backend uses this callback to implement the immediate_release
+    // event of the explicit sync protocol.
+    Buffer::PerCommitExplicitReleaseCallback
+        per_commit_explicit_release_callback_;
   };
 
   friend class subtle::PropertyHelper;

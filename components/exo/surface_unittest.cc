@@ -125,6 +125,11 @@ void ReleaseBuffer(int* release_buffer_call_count) {
   (*release_buffer_call_count)++;
 }
 
+void ExplicitReleaseBuffer(int* release_buffer_call_count,
+                           gfx::GpuFenceHandle release_fence) {
+  (*release_buffer_call_count)++;
+}
+
 // Instantiate the Boolean which is used to toggle mouse and touch events in
 // the parameterized tests.
 INSTANTIATE_TEST_SUITE_P(All, SurfaceTest, testing::Values(1.0f, 1.25f, 2.0f));
@@ -1314,6 +1319,114 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
   EXPECT_EQ(1, observer.num_occlusion_changes());
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
             child_surface->window()->GetOcclusionState());
+}
+
+TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(1, 1)));
+  auto surface = std::make_unique<Surface>();
+
+  // We can only commit a buffer release callback if a buffer is attached.
+  surface->Attach(buffer.get());
+
+  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
+  surface->SetPerCommitBufferReleaseCallback(
+      base::BindOnce([](gfx::GpuFenceHandle) {}));
+  EXPECT_TRUE(surface->HasPendingPerCommitBufferReleaseCallback());
+  surface->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
+}
+
+TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForSameSurface) {
+  gfx::Size buffer_size(1, 1);
+  auto buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  int per_commit_release_count = 0;
+
+  // Set the release callback that will be run when buffer is no longer in use.
+  int buffer_release_count = 0;
+  buffer1->set_release_callback(base::BindRepeating(
+      &ReleaseBuffer, base::Unretained(&buffer_release_count)));
+
+  surface->SetPerCommitBufferReleaseCallback(base::BindOnce(
+      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
+  surface->Attach(buffer1.get());
+  surface->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count, 0);
+  EXPECT_EQ(buffer_release_count, 0);
+
+  // Attaching the same buffer causes the per-commit callback to be emitted.
+  surface->SetPerCommitBufferReleaseCallback(base::BindOnce(
+      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
+  surface->Attach(buffer1.get());
+  surface->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count, 1);
+  EXPECT_EQ(buffer_release_count, 0);
+
+  // Attaching a different buffer causes the per-commit callback to be emitted.
+  surface->Attach(buffer2.get());
+  surface->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count, 2);
+  // The buffer should now be completely released.
+  EXPECT_EQ(buffer_release_count, 1);
+}
+
+TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
+  gfx::Size buffer_size(1, 1);
+  auto buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface1 = std::make_unique<Surface>();
+  auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
+  auto surface2 = std::make_unique<Surface>();
+  auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
+  int per_commit_release_count1 = 0;
+  int per_commit_release_count2 = 0;
+
+  // Set the release callback that will be run when buffer is no longer in use.
+  int buffer_release_count = 0;
+  buffer1->set_release_callback(base::BindRepeating(
+      &ReleaseBuffer, base::Unretained(&buffer_release_count)));
+
+  // Attach buffer1 to both surface1 and surface2.
+  surface1->SetPerCommitBufferReleaseCallback(base::BindOnce(
+      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count1)));
+  surface1->Attach(buffer1.get());
+  surface1->Commit();
+  surface2->SetPerCommitBufferReleaseCallback(base::BindOnce(
+      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count2)));
+  surface2->Attach(buffer1.get());
+  surface2->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count1, 0);
+  EXPECT_EQ(per_commit_release_count2, 0);
+  EXPECT_EQ(buffer_release_count, 0);
+
+  // Attach buffer2 to surface1, only the surface1 callback should be emitted.
+  surface1->Attach(buffer2.get());
+  surface1->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count1, 1);
+  EXPECT_EQ(per_commit_release_count2, 0);
+  EXPECT_EQ(buffer_release_count, 0);
+
+  // Attach buffer2 to surface2, only the surface2 callback should be emitted.
+  surface2->Attach(buffer2.get());
+  surface2->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(per_commit_release_count1, 1);
+  EXPECT_EQ(per_commit_release_count2, 1);
+  // The buffer should now be completely released.
+  EXPECT_EQ(buffer_release_count, 1);
 }
 
 }  // namespace

@@ -229,6 +229,12 @@ const std::string& GetApplicationId(aura::Window* window) {
 
 int surface_id = 0;
 
+void ImmediateExplicitRelease(
+    Buffer::PerCommitExplicitReleaseCallback callback) {
+  if (callback)
+    std::move(callback).Run(/*release_fence=*/gfx::GpuFenceHandle());
+}
+
 }  // namespace
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
@@ -281,6 +287,13 @@ Surface::~Surface() {
                                        pending_state_.presentation_callbacks);
   for (const auto& presentation_callback : state_.presentation_callbacks)
     presentation_callback.Run(gfx::PresentationFeedback());
+
+  // Call explicit release on all explicit release callbacks that have been
+  // committed.
+  ImmediateExplicitRelease(
+      std::move(state_.per_commit_explicit_release_callback_));
+  ImmediateExplicitRelease(
+      std::move(cached_state_.per_commit_explicit_release_callback_));
 
   WMHelper::GetInstance()->ResetDragDropDelegate(window_.get());
 }
@@ -680,6 +693,17 @@ bool Surface::HasPendingAcquireFence() const {
   return !!pending_state_.acquire_fence;
 }
 
+void Surface::SetPerCommitBufferReleaseCallback(
+    Buffer::PerCommitExplicitReleaseCallback callback) {
+  TRACE_EVENT0("exo", "Surface::SetPerCommitBufferReleaseCallback");
+
+  pending_state_.per_commit_explicit_release_callback_ = std::move(callback);
+}
+
+bool Surface::HasPendingPerCommitBufferReleaseCallback() const {
+  return !!pending_state_.per_commit_explicit_release_callback_;
+}
+
 void Surface::Commit() {
   TRACE_EVENT1("exo", "Surface::Commit", "buffer_id",
                static_cast<const void*>(
@@ -699,6 +723,8 @@ void Surface::Commit() {
   has_pending_contents_ = false;
   cached_state_.buffer = std::move(pending_state_.buffer);
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
+  cached_state_.per_commit_explicit_release_callback_ =
+      std::move(pending_state_.per_commit_explicit_release_callback_);
   cached_state_.frame_callbacks.splice(cached_state_.frame_callbacks.end(),
                                        pending_state_.frame_callbacks);
   cached_state_.damage.Union(pending_state_.damage);
@@ -820,6 +846,8 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
       state_.buffer = std::move(cached_state_.buffer);
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
+      state_.per_commit_explicit_release_callback_ =
+          std::move(cached_state_.per_commit_explicit_release_callback_);
       if (state_.basic_state.alpha)
         needs_update_resource_ = true;
     }
@@ -827,6 +855,8 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
     // a new buffer, and it was already moved to state_.acquire_fence. Note that
     // it is a commit-time client error to commit a fence without a buffer.
     DCHECK(!cached_state_.acquire_fence);
+    // Similarly for the per commit buffer release callback.
+    DCHECK(!cached_state_.per_commit_explicit_release_callback_);
 
     if (needs_update_buffer_transform)
       UpdateBufferTransform(cached_invert_y);
@@ -938,8 +968,14 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
         device_scale_factor, resource_manager, frame);
   }
 
-  if (needs_update_resource_)
+  // Update the resource, or if not required, ensure we call the buffer release
+  // callback, since the buffer will not be used for this commit.
+  if (needs_update_resource_) {
     UpdateResource(resource_manager);
+  } else {
+    ImmediateExplicitRelease(
+        std::move(state_.per_commit_explicit_release_callback_));
+  }
 
   AppendContentsToFrame(origin, device_scale_factor, frame);
 
@@ -1099,7 +1135,7 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
             resource_manager, std::move(state_.acquire_fence),
             state_.basic_state.only_visible_on_secure_output,
             &current_resource_,
-            /*per_commit_explicit_release_callback=*/base::DoNothing())) {
+            std::move(state_.per_commit_explicit_release_callback_))) {
       current_resource_has_alpha_ =
           FormatHasAlpha(state_.buffer.buffer()->GetFormat());
       // Planar buffers are sampled as RGB. Technically, the driver is supposed
@@ -1122,6 +1158,8 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     current_resource_.id = viz::kInvalidResourceId;
     current_resource_.size = gfx::Size();
     current_resource_has_alpha_ = false;
+    ImmediateExplicitRelease(
+        std::move(state_.per_commit_explicit_release_callback_));
   }
 }
 
