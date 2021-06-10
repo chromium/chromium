@@ -128,9 +128,8 @@ class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {
  protected:
   ~SocketsUdpSendFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int net_result);
   void SetSendResult(int net_result, int bytes_sent);
 
@@ -142,7 +141,7 @@ class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {
 
   std::unique_ptr<sockets_udp::Send::Params> params_;
   scoped_refptr<net::IOBuffer> io_buffer_;
-  size_t io_buffer_size_;
+  size_t io_buffer_size_ = 0;
 };
 
 class SocketsUdpCloseFunction : public UDPSocketAsyncApiFunction {

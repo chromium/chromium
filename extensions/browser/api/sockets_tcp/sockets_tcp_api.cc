@@ -271,30 +271,27 @@ void SocketsTcpSetNoDelayFunction::OnCompleted(bool success) {
   AsyncWorkCompleted();
 }
 
-SocketsTcpConnectFunction::SocketsTcpConnectFunction()
-    : socket_event_dispatcher_(nullptr) {}
+SocketsTcpConnectFunction::SocketsTcpConnectFunction() = default;
 
-SocketsTcpConnectFunction::~SocketsTcpConnectFunction() {}
+SocketsTcpConnectFunction::~SocketsTcpConnectFunction() = default;
 
-bool SocketsTcpConnectFunction::Prepare() {
+ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
   params_ = sockets_tcp::Connect::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   socket_event_dispatcher_ = TCPSocketEventDispatcher::Get(browser_context());
-  DCHECK(socket_event_dispatcher_)
-      << "There is no socket event dispatcher. "
-         "If this assertion is failing during a test, then it is likely that "
-         "TestExtensionSystem is failing to provide an instance of "
-         "TCPSocketEventDispatcher.";
-  return !!socket_event_dispatcher_;
-}
+  if (!socket_event_dispatcher_) {
+    NOTREACHED()
+        << "There is no socket event dispatcher. "
+           "If this assertion is failing during a test, then it is likely that "
+           "TestExtensionSystem is failing to provide an instance of "
+           "TCPSocketEventDispatcher.";
+    return RespondNow(NoArguments());
+  }
 
-void SocketsTcpConnectFunction::AsyncWorkStart() {
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
   socket->set_hostname(params_->peer_address);
@@ -303,12 +300,11 @@ void SocketsTcpConnectFunction::AsyncWorkStart() {
                                          params_->peer_address,
                                          params_->peer_port);
   if (!SocketsManifestData::CheckRequest(extension(), param)) {
-    error_ = kPermissionError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(Error(kPermissionError));
   }
 
   StartDnsLookup(net::HostPortPair(params_->peer_address, params_->peer_port));
+  return RespondLater();
 }
 
 void SocketsTcpConnectFunction::AfterDnsLookup(int lookup_result) {
@@ -322,8 +318,7 @@ void SocketsTcpConnectFunction::AfterDnsLookup(int lookup_result) {
 void SocketsTcpConnectFunction::StartConnect() {
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
+    Respond(Error(kSocketNotFoundError));
     return;
   }
 
@@ -338,11 +333,11 @@ void SocketsTcpConnectFunction::OnCompleted(int net_result) {
                                               params_->socket_id);
   }
 
-  if (net_result != net::OK)
-    error_ = net::ErrorToString(net_result);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::Connect::Results::Create(net_result));
-  AsyncWorkCompleted();
+  if (net_result == net::OK) {
+    Respond(OneArgument(base::Value(net_result)));
+  } else {
+    Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));
+  }
 }
 
 SocketsTcpDisconnectFunction::SocketsTcpDisconnectFunction() {}

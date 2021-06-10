@@ -113,10 +113,32 @@ class SocketResourceManager : public SocketResourceManagerInterface {
   ApiResourceManager<T>* manager_;
 };
 
-// TODO(crbug.com/1200440): Stop using an AsyncApiFunction-like API to avoid
-// confusion. Use plain ExtensionFunction::Run() and re-write each function so
-// they don't split Prepare/Work/AsyncWorkStart.
-class SocketAsyncApiFunction : public ExtensionFunction {
+class SocketApiFunctionBase : public ExtensionFunction {
+ public:
+  SocketApiFunctionBase();
+
+ protected:
+  ~SocketApiFunctionBase() override;
+
+  virtual std::unique_ptr<SocketResourceManagerInterface>
+  CreateSocketResourceManager();
+
+  int AddSocket(Socket* socket);
+  Socket* GetSocket(int api_resource_id);
+  void ReplaceSocket(int api_resource_id, Socket* socket);
+  void RemoveSocket(int api_resource_id);
+  std::unordered_set<int>* GetSocketIds();
+
+  // A no-op outside of Chrome OS. Returns an error string.
+  absl::optional<std::string> OpenFirewallHoleImpl(const std::string& address,
+                                                   int socket_id,
+                                                   Socket* ksocket);
+
+  std::unique_ptr<SocketResourceManagerInterface> manager_;
+};
+
+// TODO(crbug.com/1200440): Migrate all subclasses to SocketApiFunction.
+class SocketAsyncApiFunction : public SocketApiFunctionBase {
  public:
   SocketAsyncApiFunction();
 
@@ -146,15 +168,6 @@ class SocketAsyncApiFunction : public ExtensionFunction {
   // EXTENSION_FUNCTION_VALIDATE() macro.
   static bool ValidationFailure(SocketAsyncApiFunction* function);
 
-  virtual std::unique_ptr<SocketResourceManagerInterface>
-  CreateSocketResourceManager();
-
-  int AddSocket(Socket* socket);
-  Socket* GetSocket(int api_resource_id);
-  void ReplaceSocket(int api_resource_id, Socket* socket);
-  void RemoveSocket(int api_resource_id);
-  std::unordered_set<int>* GetSocketIds();
-
   // A no-op outside of Chrome OS.
   void OpenFirewallHole(const std::string& address,
                         int socket_id,
@@ -165,19 +178,41 @@ class SocketAsyncApiFunction : public ExtensionFunction {
 
  private:
   ResponseValue GetResponseValue();
+};
 
-  std::unique_ptr<SocketResourceManagerInterface> manager_;
+// Base class for socket API functions, with some helper functions.
+//
+// TODO(crbug.com/1200440): Migrate all SocketAsyncApiFunction subclasses to
+// this.
+class SocketApiFunction : public SocketApiFunctionBase {
+ public:
+  SocketApiFunction();
+
+ protected:
+  ~SocketApiFunction() override;
+
+  // Subclasses should implement this instead of Run().
+  virtual ResponseAction Work() = 0;
+
+  // ExtensionFunction:
+  ResponseAction Run() final;
+
+  // Convenience wrapper for ErrorWithArguments(), where the arguments are just
+  // one integer value.
+  ResponseValue ErrorWithCode(int error_code, const std::string& error);
+
+  // A no-op outside of Chrome OS. Calls Respond() with an error if it fails.
+  void OpenFirewallHole(const std::string& address,
+                        int socket_id,
+                        Socket* socket);
 };
 
 class SocketExtensionWithDnsLookupFunction
-    : public SocketAsyncApiFunction,
+    : public SocketApiFunction,
       public network::ResolveHostClientBase {
  protected:
   SocketExtensionWithDnsLookupFunction();
   ~SocketExtensionWithDnsLookupFunction() override;
-
-  // AsyncApiFunction:
-  bool PrePrepare() override;
 
   void StartDnsLookup(const net::HostPortPair& host_port_pair);
   virtual void AfterDnsLookup(int lookup_result) = 0;
@@ -249,9 +284,8 @@ class SocketConnectFunction : public SocketExtensionWithDnsLookupFunction {
  protected:
   ~SocketConnectFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
   // SocketExtensionWithDnsLookupFunction:
   void AfterDnsLookup(int lookup_result) override;
@@ -260,9 +294,9 @@ class SocketConnectFunction : public SocketExtensionWithDnsLookupFunction {
   void StartConnect();
   void OnConnect(int result);
 
-  int socket_id_;
+  int socket_id_ = 0;
   std::string hostname_;
-  uint16_t port_;
+  uint16_t port_ = 0;
 };
 
 class SocketDisconnectFunction : public SocketAsyncApiFunction {
@@ -411,9 +445,9 @@ class SocketSendToFunction : public SocketExtensionWithDnsLookupFunction {
  protected:
   ~SocketSendToFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction::
+  ResponseAction Work() override;
+
   void OnCompleted(int result);
 
   // SocketExtensionWithDnsLookupFunction:
@@ -422,11 +456,11 @@ class SocketSendToFunction : public SocketExtensionWithDnsLookupFunction {
  private:
   void StartSendTo();
 
-  int socket_id_;
+  int socket_id_ = 0;
   scoped_refptr<net::IOBuffer> io_buffer_;
-  size_t io_buffer_size_;
+  size_t io_buffer_size_ = 0;
   std::string hostname_;
-  uint16_t port_;
+  uint16_t port_ = 0;
 };
 
 class SocketSetKeepAliveFunction : public SocketAsyncApiFunction {

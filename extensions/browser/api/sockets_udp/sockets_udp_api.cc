@@ -241,37 +241,30 @@ void SocketsUdpBindFunction::OnCompleted(int net_result) {
   OpenFirewallHole(params_->address, params_->socket_id, socket);
 }
 
-SocketsUdpSendFunction::SocketsUdpSendFunction() : io_buffer_size_(0) {}
+SocketsUdpSendFunction::SocketsUdpSendFunction() = default;
 
-SocketsUdpSendFunction::~SocketsUdpSendFunction() {}
+SocketsUdpSendFunction::~SocketsUdpSendFunction() = default;
 
-bool SocketsUdpSendFunction::Prepare() {
+ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
   params_ = sockets_udp::Send::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
   io_buffer_size_ = params_->data.size();
   io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(
       reinterpret_cast<const char*>(params_->data.data()));
 
-  return true;
-}
-
-void SocketsUdpSendFunction::AsyncWorkStart() {
   ResumableUDPSocket* socket = GetUdpSocket(params_->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_SEND_TO, params_->address, params_->port);
   if (!SocketsManifestData::CheckRequest(extension(), param)) {
-    error_ = kPermissionError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(Error(kPermissionError));
   }
 
   StartDnsLookup(net::HostPortPair(params_->address, params_->port));
+  return RespondLater();
 }
 
 void SocketsUdpSendFunction::AfterDnsLookup(int lookup_result) {
@@ -285,9 +278,7 @@ void SocketsUdpSendFunction::AfterDnsLookup(int lookup_result) {
 void SocketsUdpSendFunction::StartSendTo() {
   ResumableUDPSocket* socket = GetUdpSocket(params_->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
-    return;
+    return Respond(Error(kSocketNotFoundError));
   }
 
   socket->SendTo(io_buffer_, io_buffer_size_, addresses_.front(),
@@ -311,11 +302,13 @@ void SocketsUdpSendFunction::SetSendResult(int net_result, int bytes_sent) {
     send_info.bytes_sent = std::make_unique<int>(bytes_sent);
   }
 
-  if (net_result != net::OK)
-    error_ = net::ErrorToString(net_result);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_udp::Send::Results::Create(send_info));
-  AsyncWorkCompleted();
+  auto args = sockets_udp::Send::Results::Create(send_info);
+  if (net_result == net::OK) {
+    Respond(ArgumentList(std::move(args)));
+  } else {
+    Respond(
+        ErrorWithArguments(std::move(args), net::ErrorToString(net_result)));
+  }
 }
 
 SocketsUdpCloseFunction::SocketsUdpCloseFunction() {}

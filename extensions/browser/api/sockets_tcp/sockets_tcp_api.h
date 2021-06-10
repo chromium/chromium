@@ -148,9 +148,8 @@ class SocketsTcpConnectFunction
  protected:
   ~SocketsTcpConnectFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
   // SocketExtensionWithDnsLookupFunction:
   void AfterDnsLookup(int lookup_result) override;
@@ -160,7 +159,7 @@ class SocketsTcpConnectFunction
   void OnCompleted(int net_result);
 
   std::unique_ptr<sockets_tcp::Connect::Params> params_;
-  TCPSocketEventDispatcher* socket_event_dispatcher_;
+  TCPSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
 };
 
 class SocketsTcpDisconnectFunction : public TCPSocketAsyncApiFunction {

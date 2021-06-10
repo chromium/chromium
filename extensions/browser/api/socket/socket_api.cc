@@ -75,9 +75,75 @@ bool IsPortValid(int port) {
 using content::BrowserThread;
 using content::SocketPermissionRequest;
 
-SocketAsyncApiFunction::SocketAsyncApiFunction() {}
+SocketApiFunctionBase::SocketApiFunctionBase() = default;
 
-SocketAsyncApiFunction::~SocketAsyncApiFunction() {}
+SocketApiFunctionBase::~SocketApiFunctionBase() = default;
+
+int SocketApiFunctionBase::AddSocket(Socket* socket) {
+  return manager_->Add(socket);
+}
+
+Socket* SocketApiFunctionBase::GetSocket(int api_resource_id) {
+  return manager_->Get(extension_id(), api_resource_id);
+}
+
+void SocketApiFunctionBase::ReplaceSocket(int api_resource_id, Socket* socket) {
+  manager_->Replace(extension_id(), api_resource_id, socket);
+}
+
+std::unordered_set<int>* SocketApiFunctionBase::GetSocketIds() {
+  return manager_->GetResourceIds(extension_id());
+}
+
+void SocketApiFunctionBase::RemoveSocket(int api_resource_id) {
+  manager_->Remove(extension_id(), api_resource_id);
+}
+
+std::unique_ptr<SocketResourceManagerInterface>
+SocketApiFunctionBase::CreateSocketResourceManager() {
+  return std::make_unique<SocketResourceManager<Socket>>();
+}
+
+absl::optional<std::string> SocketApiFunctionBase::OpenFirewallHoleImpl(
+    const std::string& address,
+    int socket_id,
+    Socket* socket) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!net::HostStringIsLocalhost(address)) {
+    net::IPEndPoint local_address;
+    if (!socket->GetLocalAddress(&local_address)) {
+      NOTREACHED() << "Cannot get address of recently bound socket.";
+      return kFirewallFailure;
+    }
+
+    AppFirewallHole::PortType type = socket->GetSocketType() == Socket::TYPE_TCP
+                                         ? AppFirewallHole::PortType::TCP
+                                         : AppFirewallHole::PortType::UDP;
+
+    AppFirewallHoleManager* manager =
+        AppFirewallHoleManager::Get(browser_context());
+    std::unique_ptr<AppFirewallHole> hole(
+        manager->Open(type, local_address.port(), extension_id()).release());
+
+    if (!hole) {
+      return kFirewallFailure;
+    }
+
+    Socket* socket = GetSocket(socket_id);
+    if (!socket) {
+      return kSocketNotFoundError;
+    }
+
+    socket->set_firewall_hole(std::move(hole));
+  }
+#endif
+  return absl::nullopt;
+}
+
+SocketAsyncApiFunction::SocketAsyncApiFunction() = default;
+
+SocketAsyncApiFunction::~SocketAsyncApiFunction() = default;
 
 ExtensionFunction::ResponseAction SocketAsyncApiFunction::Run() {
   manager_ = CreateSocketResourceManager();
@@ -117,6 +183,18 @@ ExtensionFunction::ResponseValue SocketAsyncApiFunction::GetResponseValue() {
   return response;
 }
 
+void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
+                                              int socket_id,
+                                              Socket* socket) {
+  absl::optional<std::string> error =
+      OpenFirewallHoleImpl(address, socket_id, socket);
+  if (error.has_value()) {
+    error_ = std::move(*error);
+    SetResult(std::make_unique<base::Value>(-1));
+  }
+  AsyncWorkCompleted();
+}
+
 void SocketAsyncApiFunction::AsyncWorkCompleted() {
   Respond(GetResponseValue());
 }
@@ -126,106 +204,58 @@ void SocketAsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
   results_->Append(std::move(result));
 }
 
-std::unique_ptr<SocketResourceManagerInterface>
-SocketAsyncApiFunction::CreateSocketResourceManager() {
-  return std::unique_ptr<SocketResourceManagerInterface>(
-      new SocketResourceManager<Socket>());
-}
-
 // static
 bool SocketAsyncApiFunction::ValidationFailure(
     SocketAsyncApiFunction* function) {
   return false;
 }
 
-int SocketAsyncApiFunction::AddSocket(Socket* socket) {
-  return manager_->Add(socket);
+SocketApiFunction::SocketApiFunction() = default;
+
+SocketApiFunction::~SocketApiFunction() = default;
+
+ExtensionFunction::ResponseAction SocketApiFunction::Run() {
+  manager_ = CreateSocketResourceManager();
+  manager_->SetBrowserContext(browser_context());
+  return Work();
 }
 
-Socket* SocketAsyncApiFunction::GetSocket(int api_resource_id) {
-  return manager_->Get(extension_->id(), api_resource_id);
+ExtensionFunction::ResponseValue SocketApiFunction::ErrorWithCode(
+    int error_code,
+    const std::string& error) {
+  std::vector<base::Value> args;
+  args.emplace_back(error_code);
+  return ErrorWithArguments(std::move(args), error);
 }
 
-void SocketAsyncApiFunction::ReplaceSocket(int api_resource_id,
-                                           Socket* socket) {
-  manager_->Replace(extension_->id(), api_resource_id, socket);
-}
-
-std::unordered_set<int>* SocketAsyncApiFunction::GetSocketIds() {
-  return manager_->GetResourceIds(extension_->id());
-}
-
-void SocketAsyncApiFunction::RemoveSocket(int api_resource_id) {
-  manager_->Remove(extension_->id(), api_resource_id);
-}
-
-void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
-                                              int socket_id,
-                                              Socket* socket) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!net::HostStringIsLocalhost(address)) {
-    net::IPEndPoint local_address;
-    if (!socket->GetLocalAddress(&local_address)) {
-      NOTREACHED() << "Cannot get address of recently bound socket.";
-      error_ = kFirewallFailure;
-      SetResult(std::make_unique<base::Value>(-1));
-      AsyncWorkCompleted();
-      return;
-    }
-
-    AppFirewallHole::PortType type = socket->GetSocketType() == Socket::TYPE_TCP
-                                         ? AppFirewallHole::PortType::TCP
-                                         : AppFirewallHole::PortType::UDP;
-
-    AppFirewallHoleManager* manager =
-        AppFirewallHoleManager::Get(browser_context());
-    std::unique_ptr<AppFirewallHole> hole(
-        manager->Open(type, local_address.port(), extension_id()).release());
-
-    if (!hole) {
-      error_ = kFirewallFailure;
-      SetResult(std::make_unique<base::Value>(-1));
-      AsyncWorkCompleted();
-      return;
-    }
-
-    Socket* socket = GetSocket(socket_id);
-    if (!socket) {
-      error_ = kSocketNotFoundError;
-      SetResult(std::make_unique<base::Value>(-1));
-      AsyncWorkCompleted();
-      return;
-    }
-
-    socket->set_firewall_hole(std::move(hole));
+void SocketApiFunction::OpenFirewallHole(const std::string& address,
+                                         int socket_id,
+                                         Socket* socket) {
+  absl::optional<std::string> error =
+      OpenFirewallHoleImpl(address, socket_id, socket);
+  if (error.has_value()) {
+    Respond(ErrorWithCode(-1, std::move(*error)));
   }
-#endif
-  AsyncWorkCompleted();
 }
 
 SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction() =
     default;
 
-SocketExtensionWithDnsLookupFunction::~SocketExtensionWithDnsLookupFunction() {
-}
+SocketExtensionWithDnsLookupFunction::~SocketExtensionWithDnsLookupFunction() =
+    default;
 
-bool SocketExtensionWithDnsLookupFunction::PrePrepare() {
-  if (!SocketAsyncApiFunction::PrePrepare())
-    return false;
+void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
+    const net::HostPortPair& host_port_pair) {
+  DCHECK(!receiver_.is_bound());
+
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateHostResolver(
           absl::nullopt,
           pending_host_resolver_.InitWithNewPipeAndPassReceiver());
-  return true;
-}
-
-void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
-    const net::HostPortPair& host_port_pair) {
   DCHECK(pending_host_resolver_);
-  DCHECK(!receiver_.is_bound());
+
   host_resolver_.Bind(std::move(pending_host_resolver_));
   url::Origin origin = url::Origin::Create(extension_->url());
   host_resolver_->ResolveHost(host_port_pair,
@@ -249,8 +279,6 @@ void SocketExtensionWithDnsLookupFunction::OnComplete(
   if (result == net::OK) {
     DCHECK(resolved_addresses && !resolved_addresses->empty());
     addresses_ = resolved_addresses.value();
-  } else {
-    error_ = kDnsLookupFailedError;
   }
   AfterDnsLookup(result);
 
@@ -316,32 +344,23 @@ void SocketDestroyFunction::Work() {
   RemoveSocket(socket_id_);
 }
 
-SocketConnectFunction::SocketConnectFunction()
-    : socket_id_(0), hostname_(), port_(0) {
-}
+SocketConnectFunction::SocketConnectFunction() = default;
 
-SocketConnectFunction::~SocketConnectFunction() {}
+SocketConnectFunction::~SocketConnectFunction() = default;
 
-bool SocketConnectFunction::Prepare() {
+ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &socket_id_));
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &hostname_));
   int port;
   EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(2, &port));
   if (!IsPortValid(port)) {
-    error_ = kPortInvalidError;
-    return false;
+    return RespondNow(Error(kPortInvalidError));
   }
   port_ = static_cast<uint16_t>(port);
-  return true;
-}
 
-void SocketConnectFunction::AsyncWorkStart() {
   Socket* socket = GetSocket(socket_id_);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(ErrorWithCode(-1, kSocketNotFoundError));
   }
 
   socket->set_hostname(hostname_);
@@ -363,30 +382,25 @@ void SocketConnectFunction::AsyncWorkStart() {
   SocketPermission::CheckParam param(operation_type, hostname_, port_);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
           APIPermissionID::kSocket, &param)) {
-    error_ = kPermissionError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
   StartDnsLookup(net::HostPortPair(hostname_, port_));
+  return RespondLater();
 }
 
 void SocketConnectFunction::AfterDnsLookup(int lookup_result) {
   if (lookup_result == net::OK) {
     StartConnect();
   } else {
-    SetResult(std::make_unique<base::Value>(lookup_result));
-    AsyncWorkCompleted();
+    Respond(ErrorWithCode(lookup_result, kDnsLookupFailedError));
   }
 }
 
 void SocketConnectFunction::StartConnect() {
   Socket* socket = GetSocket(socket_id_);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
+    Respond(ErrorWithCode(-1, kSocketNotFoundError));
     return;
   }
 
@@ -395,8 +409,7 @@ void SocketConnectFunction::StartConnect() {
 }
 
 void SocketConnectFunction::OnConnect(int result) {
-  SetResult(std::make_unique<base::Value>(result));
-  AsyncWorkCompleted();
+  Respond(OneArgument(base::Value(result)));
 }
 
 bool SocketDisconnectFunction::Prepare() {
@@ -687,12 +700,11 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
   AsyncWorkCompleted();
 }
 
-SocketSendToFunction::SocketSendToFunction()
-    : socket_id_(0), io_buffer_(nullptr), io_buffer_size_(0), port_(0) {}
+SocketSendToFunction::SocketSendToFunction() = default;
 
-SocketSendToFunction::~SocketSendToFunction() {}
+SocketSendToFunction::~SocketSendToFunction() = default;
 
-bool SocketSendToFunction::Prepare() {
+ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
   const auto& list = args_->GetList();
   EXTENSION_FUNCTION_VALIDATE(list.size() >= 4);
   const auto& socket_id_value = list[0];
@@ -706,8 +718,7 @@ bool SocketSendToFunction::Prepare() {
 
   int port = port_value.GetInt();
   if (!IsPortValid(port)) {
-    error_ = kPortInvalidError;
-    return false;
+    return RespondNow(Error(kPortInvalidError));
   }
   port_ = static_cast<uint16_t>(port);
   socket_id_ = socket_id_value.GetInt();
@@ -716,16 +727,10 @@ bool SocketSendToFunction::Prepare() {
   io_buffer_size_ = data_value.GetBlob().size();
   io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(
       reinterpret_cast<const char*>(data_value.GetBlob().data()));
-  return true;
-}
 
-void SocketSendToFunction::AsyncWorkStart() {
   Socket* socket = GetSocket(socket_id_);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(ErrorWithCode(-1, kSocketNotFoundError));
   }
 
   if (socket->GetSocketType() == Socket::TYPE_UDP) {
@@ -733,31 +738,26 @@ void SocketSendToFunction::AsyncWorkStart() {
         SocketPermissionRequest::UDP_SEND_TO, hostname_, port_);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
             APIPermissionID::kSocket, &param)) {
-      error_ = kPermissionError;
-      SetResult(std::make_unique<base::Value>(-1));
-      AsyncWorkCompleted();
-      return;
+      return RespondNow(ErrorWithCode(-1, kPermissionError));
     }
   }
 
   StartDnsLookup(net::HostPortPair(hostname_, port_));
+  return RespondLater();
 }
 
 void SocketSendToFunction::AfterDnsLookup(int lookup_result) {
   if (lookup_result == net::OK) {
     StartSendTo();
   } else {
-    SetResult(std::make_unique<base::Value>(lookup_result));
-    AsyncWorkCompleted();
+    Respond(ErrorWithCode(lookup_result, kDnsLookupFailedError));
   }
 }
 
 void SocketSendToFunction::StartSendTo() {
   Socket* socket = GetSocket(socket_id_);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
+    Respond(ErrorWithCode(-1, kSocketNotFoundError));
     return;
   }
 
@@ -766,11 +766,9 @@ void SocketSendToFunction::StartSendTo() {
 }
 
 void SocketSendToFunction::OnCompleted(int bytes_written) {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetInteger(kBytesWrittenKey, bytes_written);
-  SetResult(std::move(result));
-
-  AsyncWorkCompleted();
+  api::socket::WriteInfo info;
+  info.bytes_written = bytes_written;
+  Respond(ArgumentList(api::socket::SendTo::Results::Create(info)));
 }
 
 SocketSetKeepAliveFunction::SocketSetKeepAliveFunction() {}
