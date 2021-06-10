@@ -102,7 +102,6 @@ class WebAppsBase : public apps::PublisherBase,
   void OpenNativeSettings(const std::string& app_id) override;
 
   // WebAppPublisherHelper::Delegate overrides.
-  void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
   void PublishWebApp(apps::mojom::AppPtr app) override;
 
   // AppRegistrarObserver:
