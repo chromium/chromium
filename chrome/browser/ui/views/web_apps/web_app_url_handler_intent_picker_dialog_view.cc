@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_hover_button.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
+#include "chrome/browser/web_applications/components/url_handler_prefs.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -45,6 +47,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -77,11 +80,12 @@ std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
 }  // namespace
 
 void WebAppUrlHandlerIntentPickerView::Show(
+    const GURL& url,
     std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     chrome::WebAppUrlHandlerAcceptanceCallback dialog_close_callback) {
   auto view = std::make_unique<WebAppUrlHandlerIntentPickerView>(
-      std::move(launch_params_list), std::move(keep_alive),
+      url, std::move(launch_params_list), std::move(keep_alive),
       std::move(dialog_close_callback));
 
   views::DialogDelegate::CreateDialogWidget(std::move(view),
@@ -91,10 +95,12 @@ void WebAppUrlHandlerIntentPickerView::Show(
 }
 
 WebAppUrlHandlerIntentPickerView::WebAppUrlHandlerIntentPickerView(
+    const GURL& url,
     std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     chrome::WebAppUrlHandlerAcceptanceCallback dialog_close_callback)
-    : launch_params_list_(std::move(launch_params_list)),
+    : url_(url),
+      launch_params_list_(std::move(launch_params_list)),
       close_callback_(std::move(dialog_close_callback)),
       // Pass the ScopedKeepAlive into here ensures the process is alive until
       // the dialog is closed, and initiates the shutdown at closure if there
@@ -291,6 +297,9 @@ void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {
       accepted_override = accepted;
       launch_params = GetSelectedLaunchParams();
       break;
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
+      remember_selection_checkbox_->SetChecked(/*checked=*/true);
+      FALLTHROUGH;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
       accepted_override = true;
       selected_app_tag_ =
@@ -309,8 +318,16 @@ void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {
 
   if (accepted_override && enable_remember_checkbox_ &&
       remember_selection_checkbox_->GetChecked()) {
-    // TODO(crbug.com/1072058): Save choice if the user has checked the
-    // "Remember my choice" box.
+    if (launch_params) {
+      // An app is selected as the default choice.
+      web_app::url_handler_prefs::SaveOpenInApp(
+          g_browser_process->local_state(), launch_params->app_id,
+          launch_params->profile_path, launch_params->url);
+    } else {
+      // The browser is the selected default choice.
+      web_app::url_handler_prefs::SaveOpenInBrowser(
+          g_browser_process->local_state(), url_);
+    }
   }
 
   std::move(close_callback_).Run(accepted_override, std::move(launch_params));
@@ -332,6 +349,7 @@ namespace chrome {
 
 // static
 void ShowWebAppUrlHandlerIntentPickerDialog(
+    const GURL& url,
     std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
     WebAppUrlHandlerAcceptanceCallback dialog_close_callback) {
   DCHECK(dialog_close_callback);
@@ -346,7 +364,7 @@ void ShowWebAppUrlHandlerIntentPickerDialog(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&WebAppUrlHandlerIntentPickerView::Show,
+      base::BindOnce(&WebAppUrlHandlerIntentPickerView::Show, url,
                      std::move(launch_params_list), std::move(keep_alive),
                      std::move(dialog_close_callback)));
 }

@@ -25,17 +25,20 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
+#include "chrome/common/chrome_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+namespace web_app {
 
 namespace {
 
 void LaunchApp(const base::FilePath& profile_path,
-               const web_app::AppId& app_id,
+               const AppId& app_id,
                const base::CommandLine& command_line,
                const base::FilePath& cur_dir,
                const GURL& url,
-               web_app::startup::FinalizeWebAppLaunchCallback callback) {
+               startup::FinalizeWebAppLaunchCallback callback) {
   apps::AppServiceProxyFactory::GetForProfile(
       g_browser_process->profile_manager()->GetProfile(profile_path))
       ->BrowserAppLauncher()
@@ -48,9 +51,9 @@ void OnUrlHandlerIntentPickerDialogCompleted(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     base::OnceClosure on_urls_unhandled_cb,
-    web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
+    startup::FinalizeWebAppLaunchCallback app_launched_callback,
     bool accepted,
-    absl::optional<web_app::UrlHandlerLaunchParams> selected_match) {
+    absl::optional<UrlHandlerLaunchParams> selected_match) {
   // Dialog is not accepted. Quit the process and do nothing.
   if (!accepted)
     return;
@@ -66,24 +69,66 @@ void OnUrlHandlerIntentPickerDialogCompleted(
   }
 }
 
-std::vector<web_app::UrlHandlerLaunchParams> GetValidUrlHandlerMatches(
-    std::vector<web_app::UrlHandlerLaunchParams> url_handler_matches,
+std::vector<UrlHandlerLaunchParams> GetValidUrlHandlerMatches(
+    std::vector<UrlHandlerLaunchParams> url_handler_matches,
     const base::FilePath& last_used_profile) {
   // TODO(crbug.com/1200951): Save matches from all valid profiles, not just
   // the last used profile.
   url_handler_matches.erase(
-      std::remove_if(
-          url_handler_matches.begin(), url_handler_matches.end(),
-          [&last_used_profile](const web_app::UrlHandlerLaunchParams& match) {
-            return match.profile_path != last_used_profile;
-          }),
+      std::remove_if(url_handler_matches.begin(), url_handler_matches.end(),
+                     [&last_used_profile](const UrlHandlerLaunchParams& match) {
+                       return match.profile_path != last_used_profile;
+                     }),
       url_handler_matches.end());
   return url_handler_matches;
 }
 
+bool ShouldLaunchSavedChoice(
+    const std::vector<UrlHandlerLaunchParams>& url_handler_matches) {
+  return url_handler_matches.size() == 1 &&
+         url_handler_matches.front().saved_choice ==
+             UrlHandlerSavedChoice::kInApp;
+}
+
+void LaunchSavedChoice(
+    const std::vector<UrlHandlerLaunchParams>& url_handler_matches,
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    startup::FinalizeWebAppLaunchCallback app_launched_callback) {
+  // Default choice found. The first match returned is the saved choice,
+  // which should be launched directly. Do not show the dialog.
+  const UrlHandlerLaunchParams& saved_choice = url_handler_matches.front();
+  LaunchApp(saved_choice.profile_path, saved_choice.app_id, command_line,
+            cur_dir, saved_choice.url, std::move(app_launched_callback));
+}
+
+// Check if there is a saved choice and launch it directly if there is. If not,
+// show the dialog.
+// `url` is the URL to launch, and `url_handler_matches` contains launch info
+// of all the options to show in the dialog. There needs to be at least one
+// match to run this function.
+void MaybeLaunchIntentPickerDialog(
+    const GURL& url,
+    std::vector<UrlHandlerLaunchParams> url_handler_matches,
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    base::OnceCallback<void()> open_urls_in_browser,
+    startup::FinalizeWebAppLaunchCallback app_launched_callback) {
+  if (ShouldLaunchSavedChoice(url_handler_matches)) {
+    LaunchSavedChoice(url_handler_matches, command_line, cur_dir,
+                      std::move(app_launched_callback));
+    return;
+  }
+
+  chrome::ShowWebAppUrlHandlerIntentPickerDialog(
+      url, std::move(url_handler_matches),
+      base::BindOnce(&OnUrlHandlerIntentPickerDialogCompleted, command_line,
+                     cur_dir, std::move(open_urls_in_browser),
+                     std::move(app_launched_callback)));
+}
+
 }  // namespace
 
-namespace web_app {
 namespace startup {
 
 bool MaybeLaunchUrlHandlerWebAppFromCmd(
@@ -92,17 +137,20 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
     Profile* last_used_profile,
     base::OnceClosure on_urls_unhandled_cb,
     FinalizeWebAppLaunchCallback app_launched_callback) {
+  absl::optional<GURL> url =
+      UrlHandlerManagerImpl::GetUrlFromCommandLine(command_line);
+  if (!url)
+    return false;
+
   auto valid_matches = GetValidUrlHandlerMatches(
-      UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line),
+      UrlHandlerManagerImpl::GetUrlHandlerMatches(url.value()),
       last_used_profile->GetPath());
   if (valid_matches.empty())
     return false;
 
-  chrome::ShowWebAppUrlHandlerIntentPickerDialog(
-      std::move(valid_matches),
-      base::BindOnce(&OnUrlHandlerIntentPickerDialogCompleted, command_line,
-                     cur_dir, std::move(on_urls_unhandled_cb),
-                     std::move(app_launched_callback)));
+  MaybeLaunchIntentPickerDialog(
+      url.value(), std::move(valid_matches), command_line, cur_dir,
+      std::move(on_urls_unhandled_cb), std::move(app_launched_callback));
   return true;
 }
 
@@ -125,12 +173,10 @@ void MaybeLaunchUrlHandlerWebAppFromUrls(
     return;
   }
 
-  chrome::ShowWebAppUrlHandlerIntentPickerDialog(
-      std::move(valid_matches),
-      base::BindOnce(&OnUrlHandlerIntentPickerDialogCompleted,
-                     base::CommandLine(base::CommandLine::NO_PROGRAM),
-                     base::FilePath(), std::move(on_urls_unhandled_cb),
-                     std::move(app_launched_callback)));
+  MaybeLaunchIntentPickerDialog(
+      urls.front(), std::move(valid_matches),
+      base::CommandLine(base::CommandLine::NO_PROGRAM), base::FilePath(),
+      std::move(on_urls_unhandled_cb), std::move(app_launched_callback));
 }
 
 }  // namespace startup

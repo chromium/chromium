@@ -683,6 +683,7 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
                                     ExtensionInstallPrompt::Result::ACCEPTED));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(

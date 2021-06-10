@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +16,13 @@
 #include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if defined(OS_WIN)
+#include "base/strings/string_util_win.h"
+#endif
 
 namespace web_app {
 
@@ -27,27 +32,37 @@ UrlHandlerManagerImpl::UrlHandlerManagerImpl(Profile* profile)
 UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 
 // static
-std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
+absl::optional<GURL> UrlHandlerManagerImpl::GetUrlFromCommandLine(
     const base::CommandLine& command_line) {
   // Return early to not interfere with switch based app launches.
   if (command_line.HasSwitch(switches::kApp) ||
       command_line.HasSwitch(switches::kAppId)) {
-    return {};
+    return absl::nullopt;
   }
 
   // Only handle commandline with single URL. If multiple URLs are found, return
-  // early so they can be handled normally. If the OS calls the system default
-  // browser to handle a URL activation, this is usually with a single URL.
+  // null. If the OS calls the system default browser to handle a URL
+  // activation, this is usually with a single URL.
   if (command_line.GetArgs().size() != 1)
-    return {};
+    return absl::nullopt;
 
 #if defined(OS_WIN)
-  GURL url(base::WideToUTF16(command_line.GetArgs()[0]));
+  GURL url(base::AsStringPiece16(command_line.GetArgs().front()));
 #else
-  GURL url(command_line.GetArgs()[0]);
+  GURL url(command_line.GetArgs().front());
 #endif
 
-  return GetUrlHandlerMatches(url);
+  return url;
+}
+
+// static
+std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
+    const base::CommandLine& command_line) {
+  absl::optional<GURL> url = GetUrlFromCommandLine(command_line);
+  if (!url)
+    return {};
+
+  return GetUrlHandlerMatches(url.value());
 }
 
 // static

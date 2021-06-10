@@ -101,6 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   WebAppUrlHandlerIntentPickerView::Show(
+      GURL(kStartUrl),
       CreateUrlHandlerLaunchParams(browser()->profile()->GetPath(),
                                    test_app_id),
       std::move(keep_alive), show_dialog_callback.Get());
@@ -134,6 +135,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   WebAppUrlHandlerIntentPickerView::Show(
+      GURL(kStartUrl),
       CreateUrlHandlerLaunchParams(browser()->profile()->GetPath(),
                                    test_app_id),
       std::move(keep_alive), show_dialog_callback.Get());
@@ -169,8 +171,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
       browser()->profile()->GetPath(), test_app_id);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-  WebAppUrlHandlerIntentPickerView::Show(
-      launch_params_list, std::move(keep_alive), show_dialog_callback.Get());
+  WebAppUrlHandlerIntentPickerView::Show(GURL(kStartUrl), launch_params_list,
+                                         std::move(keep_alive),
+                                         show_dialog_callback.Get());
 
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
   EXPECT_TRUE(dialog_accepted);
@@ -201,8 +204,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
       browser()->profile()->GetPath(), test_app_id);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-  WebAppUrlHandlerIntentPickerView::Show(
-      launch_params_list, std::move(keep_alive), show_dialog_callback.Get());
+  WebAppUrlHandlerIntentPickerView::Show(GURL(kStartUrl), launch_params_list,
+                                         std::move(keep_alive),
+                                         show_dialog_callback.Get());
 
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
   // Select the second choice - the app.
@@ -223,6 +227,7 @@ class WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest
         KeepAliveOrigin::WEB_APP_INTENT_PICKER,
         KeepAliveRestartOption::DISABLED);
     WebAppUrlHandlerIntentPickerView::Show(
+        GURL(kStartUrl),
         CreateUrlHandlerLaunchParams(browser()->profile()->GetPath(),
                                      test_app_id),
         std::move(keep_alive), base::DoNothing());

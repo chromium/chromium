@@ -162,8 +162,10 @@ using WebAppUrlHandlerAcceptanceCallback = base::OnceCallback<void(
 // Shows the Web App URL Handler Intent Picker dialog and runs
 // `dialog_close_callback` on closure with the dialog acceptance status and
 // information of the user-selected app. `launch_params_list` contains
-// information of all the apps to show.
+// information of all the apps to show. `url` is the URL to launch if the
+// dialog is accepted by the user.
 void ShowWebAppUrlHandlerIntentPickerDialog(
+    const GURL& url,
     std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
     WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
 #endif

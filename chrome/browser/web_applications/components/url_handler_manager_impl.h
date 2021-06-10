@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -32,8 +33,14 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
   UrlHandlerManagerImpl(const UrlHandlerManagerImpl&) = delete;
   UrlHandlerManagerImpl& operator=(const UrlHandlerManagerImpl&) = delete;
 
+  // Looks for a URL in `command_line` and returns it if there is a single URL
+  // and it's not an app launch. Returns null otherwise.
+  static absl::optional<GURL> GetUrlFromCommandLine(
+      const base::CommandLine& command_line);
+
   // Looks for a URL in |command_line|. If one is found, find registered URL
   // handlers that match that URL.
+  // TODO(crbug.com/1072058): Remove as it's only used in tests now.
   static std::vector<UrlHandlerLaunchParams> GetUrlHandlerMatches(
       const base::CommandLine& command_line);
 

@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
+#include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1005,6 +1006,112 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   // Check the link of the new tab that was opened.
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(1);
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
+                       DialogAccepted_RememberBrowserLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // Get matches before dialog launch.
+  auto url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(GURL(kStartUrl));
+
+  // Select and remember the first choice, which is the browser.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 0);
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // Wait for browser launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // When dialog is closed, URL will be launched in a browser tab.
+  // Check for new tab.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_strip->count());
+  // Check the link of the new tab that was opened.
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(1);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+
+  // Get matches after dialog is closed.
+  auto new_url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(GURL(kStartUrl));
+  ASSERT_NE(url_handler_matches, new_url_handler_matches);
+  // Verify opening in browser is saved as the default choice (i.e. no matches
+  // found).
+  ASSERT_TRUE(new_url_handler_matches.empty());
+
+  // Start with the same URL again. A new tab should be opened directly.
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+  content::RunAllTasksUntilIdle();
+  // Verify a new tab is launched.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+  tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(3, tab_strip->count());
+  // Check the link of the new tab that was opened.
+  web_contents = tab_strip->GetWebContentsAt(2);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
+                       DialogAccepted_RememberWebAppLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // Get matches before dialog launch.
+  auto url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(GURL(kStartUrl));
+
+  // Select and remember the second choice, which is the app.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 1);
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check for new app window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser;
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+
+  // Get matches after dialog is closed.
+  auto new_url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(GURL(kStartUrl));
+  ASSERT_NE(url_handler_matches, new_url_handler_matches);
+
+  // Close the app window and start with the same URL again. App should be
+  // launched directly.
+  CloseBrowserSynchronously(app_browser);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+  content::RunAllTasksUntilIdle();
+  // Verify app window is launched.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,

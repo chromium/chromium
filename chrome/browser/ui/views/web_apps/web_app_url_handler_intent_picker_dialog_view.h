@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 class ScopedKeepAlive;
 class WebAppUrlHandlerHoverButton;
@@ -38,6 +39,7 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   METADATA_HEADER(WebAppUrlHandlerIntentPickerView);
 
   WebAppUrlHandlerIntentPickerView(
+      const GURL& url,
       std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       chrome::WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
@@ -48,6 +50,7 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   ~WebAppUrlHandlerIntentPickerView() override;
 
   static void Show(
+      const GURL& url,
       std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       chrome::WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
@@ -80,6 +83,8 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   // Return if the user has selected an app in the dialog.
   bool HasUserSelectedApp() const;
 
+  // The URL to launch if the dialog is accepted.
+  const GURL url_;
   const std::vector<web_app::UrlHandlerLaunchParams> launch_params_list_;
   chrome::WebAppUrlHandlerAcceptanceCallback close_callback_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;

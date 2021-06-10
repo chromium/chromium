@@ -149,6 +149,7 @@ void ExtensionUninstallDialog::OnIconUpdated(ChromeAppIcon* icon) {
       Show();
       break;
     case ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
+    case ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       OnDialogClosed(CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED);
       break;
     case ScopedTestDialogAutoConfirm::ACCEPT:

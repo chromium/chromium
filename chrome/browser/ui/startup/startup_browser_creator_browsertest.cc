@@ -123,6 +123,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
+#include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
@@ -1666,15 +1667,22 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
         browser()->profile(), GURL(kStartUrl), kAppName, url_handlers);
   }
 
-  void SetUpCommandlineAndStart(const std::string& url) {
+  base::CommandLine SetUpCommandLineWithUrl(const std::string& url) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendArg(url);
+    return command_line;
+  }
 
+  void Start(const base::CommandLine& command_line) {
     std::vector<Profile*> last_opened_profiles;
     StartupBrowserCreator browser_creator;
     browser_creator.Start(command_line,
                           g_browser_process->profile_manager()->user_data_dir(),
                           browser()->profile(), last_opened_profiles);
+  }
+
+  void SetUpCommandlineAndStart(const std::string& url) {
+    Start(SetUpCommandLineWithUrl(url));
   }
 
   void OverrideAssociationManager() {
@@ -1742,6 +1750,114 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   ASSERT_TRUE(other_browser);
   ASSERT_FALSE(
       web_app::AppBrowserController::IsForWebApp(other_browser, app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
+                       DialogAccepted_RememberBrowserLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  auto command_line = SetUpCommandLineWithUrl(kStartUrl);
+  // Get matches before dialog launch.
+  auto url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
+
+  // Select and remember the first choice, which is the browser.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 0);
+  Start(command_line);
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // Wait for browser launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // When dialog is closed, URL will be launched in a browser window.
+  // Check for new browser window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+  Browser* other_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(other_browser);
+  ASSERT_FALSE(
+      web_app::AppBrowserController::IsForWebApp(other_browser, app_id));
+
+  // Get matches after dialog is closed.
+  auto new_url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
+  ASSERT_NE(url_handler_matches, new_url_handler_matches);
+  // Verify opening in browser is saved as the default choice (i.e. no matches
+  // found).
+  ASSERT_TRUE(new_url_handler_matches.empty());
+
+  // Close the browser window and start with the same command line again.
+  // Browser should be launched directly.
+  CloseBrowserSynchronously(other_browser);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  Start(command_line);
+  content::RunAllTasksUntilIdle();
+  // Verify browser window is launched.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  other_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(other_browser);
+  ASSERT_FALSE(
+      web_app::AppBrowserController::IsForWebApp(other_browser, app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
+                       DialogAccepted_RememberWebAppLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  auto command_line = SetUpCommandLineWithUrl(kStartUrl);
+  // Get matches before dialog launch.
+  auto url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
+
+  // Select and remember the second choice, which is the app.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 1);
+  Start(command_line);
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check for new app window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser;
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+
+  // Get matches after dialog is closed.
+  auto new_url_handler_matches =
+      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
+  ASSERT_NE(url_handler_matches, new_url_handler_matches);
+
+  // Close the app window and start with the same command line again. App
+  // should be launched directly.
+  CloseBrowserSynchronously(app_browser);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  Start(command_line);
+  content::RunAllTasksUntilIdle();
+  // Verify app window is launched.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,

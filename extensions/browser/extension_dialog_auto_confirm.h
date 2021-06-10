@@ -13,11 +13,13 @@ namespace extensions {
 class ScopedTestDialogAutoConfirm {
  public:
   enum AutoConfirm {
-    NONE,               // The prompt will show normally.
-    ACCEPT,             // The prompt will always accept.
-    ACCEPT_AND_OPTION,  // The prompt will always check an option (if any)
-                        // and accept.
-    CANCEL,             // The prompt will always cancel.
+    NONE,                        // The prompt will show normally.
+    ACCEPT,                      // The prompt will always accept.
+    ACCEPT_AND_OPTION,           // The prompt will always check an option (if
+                                 // any) and accept.
+    ACCEPT_AND_REMEMBER_OPTION,  // The prompt will check an option (if any),
+                                 // remember the option, and accept.
+    CANCEL,                      // The prompt will always cancel.
   };
 
   // Set up auto confirm value to |override_confirm_value| so the dialog is
