@@ -452,6 +452,7 @@ public class MultiInstanceManager
         onMultiInstanceModeStarted();
         ReparentingTask.from(tab).begin(mActivity, intent,
                 mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+        RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
     private void openNewWindow() {
@@ -466,6 +467,7 @@ public class MultiInstanceManager
 
         onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
+        RecordUserAction.record("MobileMenuNewWindow");
     }
 
     /**
