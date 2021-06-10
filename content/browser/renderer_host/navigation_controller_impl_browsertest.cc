@@ -3736,7 +3736,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(main_url, entry->GetURL());
-  FrameNavigationEntry* root_entry = entry->root_node()->frame_entry.get();
+  scoped_refptr<FrameNavigationEntry> root_entry =
+      entry->root_node()->frame_entry.get();
   EXPECT_EQ(main_url, root_entry->url());
   EXPECT_EQ(main_origin, root_entry->committed_origin());
   EXPECT_FALSE(root_entry->initiator_origin().has_value());
@@ -3744,7 +3745,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Verify subframe entries.  The entry should now have one blank subframe
   // FrameNavigationEntry, but this does not count as committing a real load.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(about_blank_url, frame_entry->url());
   EXPECT_EQ(main_origin, frame_entry->committed_origin());
@@ -4362,14 +4363,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(main_url, entry->GetURL());
-  FrameNavigationEntry* root_entry = entry->root_node()->frame_entry.get();
+  scoped_refptr<FrameNavigationEntry> root_entry =
+      entry->root_node()->frame_entry.get();
   EXPECT_EQ(main_url, root_entry->url());
   EXPECT_FALSE(root_entry->initiator_origin().has_value());
   EXPECT_FALSE(controller.GetPendingEntry());
 
   // The entry should now have a subframe FrameNavigationEntry.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(frame_url, frame_entry->url());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
@@ -4542,7 +4544,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
   EXPECT_NE(entry, entry2);
   EXPECT_EQ(main_url, entry2->GetURL());
-  FrameNavigationEntry* root_entry2 = entry2->root_node()->frame_entry.get();
+  scoped_refptr<FrameNavigationEntry> root_entry2 =
+      entry2->root_node()->frame_entry.get();
   EXPECT_EQ(entry->root_node()->frame_entry.get(), root_entry2);
   EXPECT_EQ(main_url, root_entry2->url());
   EXPECT_FALSE(root_entry2->initiator_origin().has_value());
@@ -4593,7 +4596,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationEntryImpl* entry3 = controller.GetLastCommittedEntry();
   EXPECT_NE(entry, entry3);
   EXPECT_EQ(main_url, entry3->GetURL());
-  FrameNavigationEntry* root_entry3 = entry3->root_node()->frame_entry.get();
+  scoped_refptr<FrameNavigationEntry> root_entry3 =
+      entry3->root_node()->frame_entry.get();
   EXPECT_EQ(main_url, root_entry3->url());
   EXPECT_EQ(root_entry2, root_entry3);
 
@@ -4637,7 +4641,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationEntryImpl* entry4 = controller.GetLastCommittedEntry();
   EXPECT_NE(entry, entry4);
   EXPECT_EQ(main_url, entry4->GetURL());
-  FrameNavigationEntry* root_entry4 = entry4->root_node()->frame_entry.get();
+  scoped_refptr<FrameNavigationEntry> root_entry4 =
+      entry4->root_node()->frame_entry.get();
   EXPECT_EQ(root_entry3, root_entry4);
   EXPECT_EQ(main_url, root_entry4->url());
 
@@ -5373,7 +5378,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* child_frame_entry =
+  scoped_refptr<FrameNavigationEntry> child_frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(blank_url, child_frame_entry->url());
 
@@ -5445,7 +5450,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* child_frame_entry =
+  scoped_refptr<FrameNavigationEntry> child_frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(inner_url,
@@ -5541,7 +5546,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* child_frame_entry =
+  scoped_refptr<FrameNavigationEntry> child_frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_TRUE(
       entry->root_node()->children[0]->frame_entry->url().IsAboutSrcdoc());
@@ -5637,7 +5642,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have a FrameNavigationEntry for the blank subframe.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* blank_entry =
+  scoped_refptr<FrameNavigationEntry> blank_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(blank_url, blank_entry->url());
 
@@ -5791,7 +5796,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // We should not have lost subframe entries for the nested frame.
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
-  FrameNavigationEntry* nested_entry =
+  scoped_refptr<FrameNavigationEntry> nested_entry =
       entry2->GetFrameEntry(root->child_at(0)->child_at(0));
   EXPECT_TRUE(nested_entry);
   EXPECT_EQ(data_url, nested_entry->url());
@@ -5959,7 +5964,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // We should not have lost subframe entries for the nested frame.
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
-  FrameNavigationEntry* nested_entry =
+  scoped_refptr<FrameNavigationEntry> nested_entry =
       entry2->GetFrameEntry(root->child_at(0)->child_at(0));
   EXPECT_TRUE(nested_entry);
   EXPECT_EQ(data_url, nested_entry->url());
@@ -6210,7 +6215,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       root->current_frame_host()->GetSiteInstance();
 
   // The main frame defaults to an empty name.
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(root);
   EXPECT_EQ("", frame_entry->frame_unique_name());
 
@@ -6231,7 +6236,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* subframe = root->child_at(0);
   EXPECT_EQ(main_site_instance,
             subframe->current_frame_host()->GetSiteInstance());
-  FrameNavigationEntry* subframe_entry =
+  scoped_refptr<FrameNavigationEntry> subframe_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(subframe);
   EXPECT_THAT(subframe_entry->frame_unique_name(),
               testing::HasSubstr("dynamicFrame"));
@@ -6257,7 +6262,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* foo_subframe = root->child_at(1);
   EXPECT_EQ(main_site_instance,
             foo_subframe->current_frame_host()->GetSiteInstance());
-  FrameNavigationEntry* foo_subframe_entry =
+  scoped_refptr<FrameNavigationEntry> foo_subframe_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(foo_subframe);
   EXPECT_THAT(foo_subframe_entry->frame_unique_name(),
               testing::HasSubstr("dynamicFrame"));
@@ -6876,7 +6881,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_NE(main_site_instance,
               subframe->current_frame_host()->GetSiteInstance());
   }
-  FrameNavigationEntry* subframe_entry =
+  scoped_refptr<FrameNavigationEntry> subframe_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(subframe);
   EXPECT_EQ(frame_url, subframe_entry->url());
 
@@ -6920,7 +6925,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                             ->GetFrameTree()
                             ->root();
 
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(root);
   int64_t isn_1 = frame_entry->item_sequence_number();
   int64_t dsn_1 = frame_entry->document_sequence_number();
@@ -6954,7 +6959,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // We should have a unique ISN and DSN for the subframe entry.
   FrameTreeNode* subframe = root->child_at(0);
-  FrameNavigationEntry* subframe_entry =
+  scoped_refptr<FrameNavigationEntry> subframe_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(subframe);
   int64_t isn_3 = subframe_entry->item_sequence_number();
   int64_t dsn_3 = subframe_entry->document_sequence_number();
@@ -7030,7 +7035,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check that the FrameNavigationEntry's redirect chain contains 2 urls.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(frame_entry->redirect_chain().size(), 2u);
   EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_redirect_url);
@@ -7067,7 +7072,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check that the FrameNavigationEntry's redirect chain contains 2 urls.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  FrameNavigationEntry* frame_entry =
+  scoped_refptr<FrameNavigationEntry> frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
   EXPECT_EQ(frame_entry->redirect_chain().size(), 2u);
   EXPECT_EQ(frame_entry->redirect_chain()[0], frame_redirect_url);
@@ -7503,7 +7508,7 @@ IN_PROC_BROWSER_TEST_P(
     navigation_manager.WaitForNavigationFinished();
 
     EXPECT_EQ(1, controller.GetEntryCount());
-    FrameNavigationEntry* frame_entry =
+    scoped_refptr<FrameNavigationEntry> frame_entry =
         controller.GetLastCommittedEntry()->GetFrameEntry(iframe);
     EXPECT_EQ(iframe_url, frame_entry->url());
 
@@ -7522,7 +7527,7 @@ IN_PROC_BROWSER_TEST_P(
     navigation_manager.WaitForNavigationFinished();
 
     EXPECT_EQ(1, controller.GetEntryCount());
-    FrameNavigationEntry* frame_entry =
+    scoped_refptr<FrameNavigationEntry> frame_entry =
         controller.GetLastCommittedEntry()->GetFrameEntry(iframe);
     EXPECT_EQ(iframe_url, frame_entry->url());
 
@@ -9639,8 +9644,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, PostInSubframe) {
 
   {
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
-    FrameNavigationEntry* root_entry = entry->GetFrameEntry(root);
-    FrameNavigationEntry* frame_entry = entry->GetFrameEntry(frame);
+    scoped_refptr<FrameNavigationEntry> root_entry = entry->GetFrameEntry(root);
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->GetFrameEntry(frame);
     EXPECT_NE(nullptr, root_entry);
     EXPECT_NE(nullptr, frame_entry);
     EXPECT_EQ("GET", root_entry->method());
@@ -9659,8 +9665,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, PostInSubframe) {
   EXPECT_EQ(2, controller.GetEntryCount());
   {
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
-    FrameNavigationEntry* root_entry = entry->GetFrameEntry(root);
-    FrameNavigationEntry* frame_entry = entry->GetFrameEntry(frame);
+    scoped_refptr<FrameNavigationEntry> root_entry = entry->GetFrameEntry(root);
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->GetFrameEntry(frame);
     EXPECT_NE(nullptr, root_entry);
     EXPECT_NE(nullptr, frame_entry);
     EXPECT_EQ("GET", root_entry->method());
@@ -9894,7 +9901,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Verify only the parts of the NavigationEntry affected by this test.
   {
     // * Main frame has 3 subframes.
-    FrameNavigationEntry* root_entry = entry->GetFrameEntry(root);
+    scoped_refptr<FrameNavigationEntry> root_entry = entry->GetFrameEntry(root);
     EXPECT_NE(nullptr, root_entry);
     EXPECT_EQ("", root_entry->frame_unique_name());
     EXPECT_EQ(3U, entry->root_node()->children.size());
@@ -9903,7 +9910,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // * The first child of the main frame is named and has two more children.
     FrameTreeNode* frame = root->child_at(0)->child_at(0);
     NavigationEntryImpl::TreeNode* tree_node = entry->GetTreeNode(frame);
-    FrameNavigationEntry* frame_entry = entry->GetFrameEntry(frame);
+    scoped_refptr<FrameNavigationEntry> frame_entry =
+        entry->GetFrameEntry(frame);
     EXPECT_NE(nullptr, tree_node);
     EXPECT_NE(nullptr, frame_entry);
     EXPECT_EQ("1-1: 2-1: name", frame_entry->frame_unique_name());
@@ -9919,7 +9927,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // However, the FrameNavigationEntry objects for the frame that was removed
   // should still be around.
   {
-    FrameNavigationEntry* root_entry = entry->GetFrameEntry(root);
+    scoped_refptr<FrameNavigationEntry> root_entry = entry->GetFrameEntry(root);
     EXPECT_NE(nullptr, root_entry);
     EXPECT_EQ(3U, entry->root_node()->children.size());
     EXPECT_EQ(2U, entry->root_node()->children[0]->children.size());
@@ -9960,7 +9968,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Verify that the FrameNavigationEntry for the original frame is now gone.
   {
-    FrameNavigationEntry* root_entry = entry->GetFrameEntry(root);
+    scoped_refptr<FrameNavigationEntry> root_entry = entry->GetFrameEntry(root);
     EXPECT_NE(nullptr, root_entry);
     EXPECT_EQ(3U, entry->root_node()->children.size());
 
@@ -10545,7 +10553,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // Check the FrameNavigationEntry's referrer.
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
     ASSERT_EQ(1U, entry->root_node()->children.size());
-    FrameNavigationEntry* frame_entry =
+    scoped_refptr<FrameNavigationEntry> frame_entry =
         entry->root_node()->children[0]->frame_entry.get();
     EXPECT_EQ(frame_entry->referrer().url, url);
   }
@@ -15814,7 +15822,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
   GURL child_url = child->current_url();
   NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
-  FrameNavigationEntry* previous_frame_entry =
+  scoped_refptr<FrameNavigationEntry> previous_frame_entry =
       previous_entry->GetFrameEntry(child);
   EXPECT_EQ(1, controller.GetEntryCount());
 
@@ -16013,7 +16021,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ("foo", EvalJs(child, "history.state"));
 
   NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
-  FrameNavigationEntry* previous_frame_entry =
+  scoped_refptr<FrameNavigationEntry> previous_frame_entry =
       previous_entry->GetFrameEntry(child);
 
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -16100,7 +16108,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
-  FrameNavigationEntry* previous_frame_entry =
+  scoped_refptr<FrameNavigationEntry> previous_frame_entry =
       previous_entry->GetFrameEntry(child);
 
   {
@@ -16949,7 +16957,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // This results in it not being committed.
   EXPECT_FALSE(cc_frame->current_frame_host()->has_committed_any_navigation());
 
-  FrameNavigationEntry* b_entry =
+  scoped_refptr<FrameNavigationEntry> b_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(b_frame);
   int64_t b_isn = b_entry->item_sequence_number();
 
@@ -16958,7 +16966,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   controller.GoBack();
   capturer.Wait();
 
-  FrameNavigationEntry* b2_entry =
+  scoped_refptr<FrameNavigationEntry> b2_entry =
       controller.GetLastCommittedEntry()->GetFrameEntry(b_frame);
   int64_t b2_isn = b2_entry->item_sequence_number();
 
