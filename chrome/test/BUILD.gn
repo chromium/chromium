@@ -1320,6 +1320,7 @@ if (!is_android) {
       "../browser/profiles/profile_theme_update_service_browsertest.cc",
       "../browser/push_messaging/push_messaging_browsertest.cc",
       "../browser/referrer_policy_browsertest.cc",
+      "../browser/renderer_context_menu/accessibility_labels_bubble_model_browsertest.cc",
       "../browser/renderer_context_menu/accessibility_labels_menu_observer_browsertest.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
