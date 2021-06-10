@@ -66,8 +66,7 @@ bool StyleCrossfadeImage::IsAccessAllowed(String& failing_url) const {
          (!to_image_ || to_image_->IsAccessAllowed(failing_url));
 }
 
-FloatSize StyleCrossfadeImage::ImageSize(const Document& document,
-                                         float multiplier,
+FloatSize StyleCrossfadeImage::ImageSize(float multiplier,
                                          const FloatSize& default_object_size,
                                          RespectImageOrientationEnum) const {
   if (!from_image_ || !to_image_)
@@ -75,9 +74,9 @@ FloatSize StyleCrossfadeImage::ImageSize(const Document& document,
 
   // TODO(fs): Consider |respect_orientation|?
   FloatSize from_image_size = from_image_->ImageSize(
-      document, multiplier, default_object_size, kRespectImageOrientation);
+      multiplier, default_object_size, kRespectImageOrientation);
   FloatSize to_image_size = to_image_->ImageSize(
-      document, multiplier, default_object_size, kRespectImageOrientation);
+      multiplier, default_object_size, kRespectImageOrientation);
 
   // Rounding issues can cause transitions between images of equal size to
   // return a different fixed size; avoid performing the interpolation if the
@@ -128,8 +127,8 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     return nullptr;
   if (!from_image_ || !to_image_)
     return Image::NullImage();
-  const FloatSize resolved_size = ImageSize(
-      document, style.EffectiveZoom(), target_size, kRespectImageOrientation);
+  const FloatSize resolved_size =
+      ImageSize(style.EffectiveZoom(), target_size, kRespectImageOrientation);
   return CrossfadeGeneratedImage::Create(
       from_image_->GetImage(*this, document, style, target_size),
       to_image_->GetImage(*this, document, style, target_size),

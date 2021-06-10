@@ -49,8 +49,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsAccessAllowed(String&) const override { return true; }
 
-  FloatSize ImageSize(const Document&,
-                      float multiplier,
+  FloatSize ImageSize(float multiplier,
                       const FloatSize& default_object_size,
                       RespectImageOrientationEnum) const override;
   bool HasIntrinsicSize() const override { return false; }
