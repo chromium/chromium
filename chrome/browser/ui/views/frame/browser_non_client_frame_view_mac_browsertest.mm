@@ -202,19 +202,20 @@ class WebAppBrowserFrameViewMacWindowControlsOverlayTest
     // http://127.0.0.1/test_file_*.html.
     static int s_test_file_number = 1;
 
-    const char kTestHTML[] = "<!DOCTYPE html>"
-                             "<style>"
-                             "  #target {"
-                             "    -webkit-app-region: drag;"
-                             "     height: 100px;"
-                             "     width: 100px;"
-                             "     padding-left: env(titlebar-area-x);"
-                             "     padding-right: env(titlebar-area-width);"
-                             "     padding-top: env(titlebar-area-y);"
-                             "     padding-bottom: env(titlebar-area-height);"
-                             "  }"
-                             "</style>"
-                             "<div id=target></div>";
+    constexpr char kTestHTML[] =
+        "<!DOCTYPE html>"
+        "<style>"
+        "  #target {"
+        "    -webkit-app-region: drag;"
+        "     height: 100px;"
+        "     width: 100px;"
+        "     padding-left: env(titlebar-area-x);"
+        "     padding-right: env(titlebar-area-width);"
+        "     padding-top: env(titlebar-area-y);"
+        "     padding-bottom: env(titlebar-area-height);"
+        "  }"
+        "</style>"
+        "<div id=target></div>";
 
     base::FilePath file_path = temp_dir_.GetPath().AppendASCII(
         base::StringPrintf("test_file_%d.html", s_test_file_number++));
@@ -248,29 +249,30 @@ class WebAppBrowserFrameViewMacWindowControlsOverlayTest
     content::TestNavigationObserver navigation_observer(start_url);
     base::RunLoop loop;
     navigation_observer.StartWatchingNewWebContents();
-    app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
     // TODO(crbug.com/1191186): Register binder for BrowserInterfaceBroker
     // during testing.
-    app_browser_->app_controller()->SetOnUpdateDraggableRegionForTesting(
+    app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
         loop.QuitClosure());
-    web_app::NavigateToURLAndWait(app_browser_, start_url);
+    web_app::NavigateToURLAndWait(app_browser, start_url);
     loop.Run();
     navigation_observer.WaitForNavigationFinished();
 
-    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     frame_view_ = static_cast<BrowserNonClientFrameViewMac*>(frame_view);
-    web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
+    auto* web_app_frame_toolbar =
+        frame_view_->web_app_frame_toolbar_for_testing();
 
-    DCHECK(web_app_frame_toolbar_);
-    DCHECK(web_app_frame_toolbar_->GetVisible());
+    DCHECK(web_app_frame_toolbar);
+    DCHECK(web_app_frame_toolbar->GetVisible());
   }
 
-  void RunCallbackAndWaitForGeometryChangeEvent(
-      base::OnceCallback<void()> callback) {
+  void RunCallbackAndWaitForGeometryChangeEvent(base::OnceClosure callback) {
     auto* web_contents = browser_view_->GetActiveWebContents();
     EXPECT_TRUE(
         ExecJs(web_contents->GetMainFrame(),
@@ -338,10 +340,8 @@ class WebAppBrowserFrameViewMacWindowControlsOverlayTest
     return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
   }
 
-  Browser* app_browser_ = nullptr;
   BrowserView* browser_view_ = nullptr;
   BrowserNonClientFrameViewMac* frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
                        NoGeometryChangeEventIfOverlayIsOff) {
   InstallAndLaunchWebAppWithWindowControlsOverlay();
 
-  const char kTestScript[] =
+  constexpr char kTestScript[] =
       "document.title = 'beforeevent';"
       "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
       "  document.title = 'ongeometrychange';"
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
                        ToggleWindowControlsOverlay) {
   InstallAndLaunchWebAppWithWindowControlsOverlay();
 
-  // Make sure it launches in standalone mode by default.
+  // Make sure the app launches in standalone mode by default.
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(browser_view_->browser()
                   ->app_controller()

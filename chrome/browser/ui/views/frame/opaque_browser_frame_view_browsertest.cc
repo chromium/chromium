@@ -377,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
   gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
   EXPECT_EQ(gfx::Point(), bounds.origin());
-  EXPECT_NE(0, bounds.width());
-  EXPECT_NE(0, bounds.height());
+  EXPECT_FALSE(bounds.IsEmpty());
 
   // Toggle overlay off, and validate JS API reflects the expected
   // values.
@@ -390,7 +389,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        GeometryChangeEvent) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
   ToggleWindowControlsOverlayEnabledAndWait();
 
   // Store the initial bounding client rect for comparison later.
@@ -421,7 +422,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        NoGeometryChangeEventIfOverlayIsOff) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
 
   constexpr char kTestScript[] =
       "document.title = 'beforeevent';"
@@ -472,7 +474,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        WindowControlsOverlayRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
   ToggleWindowControlsOverlayEnabledAndWait();
 
   const gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
@@ -484,7 +488,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CSSRectTestLTR) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
   ToggleWindowControlsOverlayEnabledAndWait();
 
   constexpr char kTestScript[] =
@@ -550,7 +556,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CSSRectTestRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
   ToggleWindowControlsOverlayEnabledAndWait();
 
   constexpr char kTestScript[] =
@@ -614,7 +622,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        ToggleWindowControlsOverlay) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
 
   // Make sure the app launches in standalone mode by default.
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());

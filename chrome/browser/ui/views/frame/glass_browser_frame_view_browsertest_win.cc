@@ -153,7 +153,7 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     // http://127.0.0.1/test_file_*.html.
     static int s_test_file_number = 1;
 
-    const char kTestHTML[] =
+    constexpr char kTestHTML[] =
         "<!DOCTYPE html>"
         "<style>"
         "  #target {"
@@ -197,17 +197,18 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     content::TestNavigationObserver navigation_observer(start_url);
     base::RunLoop loop;
     navigation_observer.StartWatchingNewWebContents();
-    app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
     // TODO(crbug.com/1191186): Register binder for BrowserInterfaceBroker
     // during testing.
-    app_browser_->app_controller()->SetOnUpdateDraggableRegionForTesting(
+    app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
         loop.QuitClosure());
-    web_app::NavigateToURLAndWait(app_browser_, start_url);
+    web_app::NavigateToURLAndWait(app_browser, start_url);
     loop.Run();
     navigation_observer.WaitForNavigationFinished();
 
-    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
@@ -215,16 +216,15 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
       return false;
 
     glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
-    web_app_frame_toolbar_ =
+    auto* web_app_frame_toolbar =
         glass_frame_view_->web_app_frame_toolbar_for_testing();
 
-    DCHECK(web_app_frame_toolbar_);
-    DCHECK(web_app_frame_toolbar_->GetVisible());
+    DCHECK(web_app_frame_toolbar);
+    DCHECK(web_app_frame_toolbar->GetVisible());
     return true;
   }
 
-  void RunCallbackAndWaitForGeometryChangeEvent(
-      base::OnceCallback<void()> callback) {
+  void RunCallbackAndWaitForGeometryChangeEvent(base::OnceClosure callback) {
     auto* web_contents = browser_view_->GetActiveWebContents();
     EXPECT_TRUE(
         ExecJs(web_contents->GetMainFrame(),
@@ -292,10 +292,8 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
   }
 
-  Browser* app_browser_ = nullptr;
   BrowserView* browser_view_ = nullptr;
   GlassBrowserFrameView* glass_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -312,21 +310,16 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   ToggleWindowControlsOverlayEnabledAndWait();
 
   gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
-  EXPECT_EQ(0, bounds.x());
-  EXPECT_EQ(0, bounds.y());
-  EXPECT_NE(0, bounds.width());
-  EXPECT_NE(0, bounds.height());
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+  EXPECT_EQ(gfx::Point(), bounds.origin());
+  EXPECT_FALSE(bounds.IsEmpty());
 
   // Toggle overlay off, and validate JS API reflects the expected
   // values.
   ToggleWindowControlsOverlayEnabledAndWait();
   bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_EQ(false, GetWindowControlOverlayVisibility());
-  EXPECT_EQ(0, bounds.x());
-  EXPECT_EQ(0, bounds.y());
-  EXPECT_EQ(0, bounds.width());
-  EXPECT_EQ(0, bounds.height());
+  EXPECT_FALSE(GetWindowControlOverlayVisibility());
+  EXPECT_EQ(gfx::Rect(), bounds);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
@@ -337,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   ToggleWindowControlsOverlayEnabledAndWait();
 
   // Store the initial bounding client rect for comparison later.
-  gfx::Rect initial_js_overlay_bounds =
+  const gfx::Rect initial_js_overlay_bounds =
       GetWindowControlOverlayBoundingClientRect();
   gfx::Rect new_bounds = browser_view_->GetLocalBounds();
   new_bounds.set_width(new_bounds.width() - 1);
@@ -345,14 +338,14 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   // Validate both the event payload and JS bounding client rect reflect
   // the new size.
-  gfx::Rect resized_js_overlay_bounds =
+  const gfx::Rect resized_js_overlay_bounds =
       GetWindowControlOverlayBoundingClientRect();
-  gfx::Rect resized_js_overlay_event_bounds =
+  const gfx::Rect resized_js_overlay_event_bounds =
       GetWindowControlOverlayBoundingClientRectFromEvent();
   EXPECT_EQ(
       1, EvalJs(browser_view_->GetActiveWebContents(), "geometrychangeCount"));
-  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
-  EXPECT_EQ(true, GetWindowControlOverlayVisibilityFromEvent());
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+  EXPECT_TRUE(GetWindowControlOverlayVisibilityFromEvent());
   EXPECT_EQ(resized_js_overlay_bounds, resized_js_overlay_event_bounds);
   EXPECT_EQ(initial_js_overlay_bounds.origin(),
             resized_js_overlay_bounds.origin());
@@ -367,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  const char kTestSCript[] =
+  constexpr char kTestScript[] =
       "document.title = 'beforeevent';"
       "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
       "  document.title = 'ongeometrychange';"
@@ -380,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   auto* web_contents = browser_view_->GetActiveWebContents();
   gfx::Rect new_bounds = browser_view_->GetLocalBounds();
   new_bounds.set_width(new_bounds.width() + 10);
-  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestSCript));
+  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestScript));
   browser_view_->GetWidget()->SetBounds(new_bounds);
   content::TitleWatcher title_watcher(web_contents, u"onresize");
   title_watcher.AlsoWaitForTitle(u"ongeometrychange");
@@ -390,9 +383,9 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   ToggleWindowControlsOverlayEnabledAndWait();
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  // Validate event is not fired
+  // Validate event is not fired.
   new_bounds.set_width(new_bounds.width() - 10);
-  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestSCript));
+  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestScript));
   browser_view_->GetWidget()->SetBounds(new_bounds);
   content::TitleWatcher title_watcher2(web_contents, u"onresize");
   title_watcher2.AlsoWaitForTitle(u"ongeometrychange");
@@ -421,12 +414,11 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
+  const gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
   EXPECT_NE(0, bounds.x());
   EXPECT_EQ(0, bounds.y());
-  EXPECT_NE(0, bounds.width());
-  EXPECT_NE(0, bounds.height());
+  EXPECT_FALSE(bounds.IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
@@ -436,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  const char kTestScript[] =
+  constexpr char kTestScript[] =
       "var element = document.getElementById('target');"
       "var titlebarAreaX = "
       "    getComputedStyle(element).getPropertyValue('padding-left');"
@@ -456,11 +448,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   auto* web_contents = browser_view_->GetActiveWebContents();
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
 
-  int initial_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  int initial_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  int initial_width_value =
+  const int initial_x_value =
+      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  const int initial_y_value =
+      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  const int initial_width_value =
       EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  int initial_height_value =
+  const int initial_height_value =
       EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
 
   EXPECT_EQ(0, initial_x_value);
@@ -476,11 +470,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
 
-  int updated_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  int updated_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  int updated_width_value =
+  const int updated_x_value =
+      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  const int updated_y_value =
+      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  const int updated_width_value =
       EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  int updated_height_value =
+  const int updated_height_value =
       EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
 
   // Changing the window dimensions should only change the overlay width. The
@@ -495,13 +491,12 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
                        CSSRectTestRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
-
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  const char kTestScript[] =
+  constexpr char kTestScript[] =
       "var element = document.getElementById('target');"
       "var titlebarAreaX = "
       "    getComputedStyle(element).getPropertyValue('padding-left');"
@@ -521,11 +516,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   auto* web_contents = browser_view_->GetActiveWebContents();
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
 
-  int initial_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  int initial_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  int initial_width_value =
+  const int initial_x_value =
+      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  const int initial_y_value =
+      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  const int initial_width_value =
       EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  int initial_height_value =
+  const int initial_height_value =
       EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
 
   EXPECT_NE(0, initial_x_value);
@@ -541,11 +538,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
 
-  int updated_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  int updated_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  int updated_width_value =
+  const int updated_x_value =
+      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  const int updated_y_value =
+      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  const int updated_width_value =
       EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  int updated_height_value =
+  const int updated_height_value =
       EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
 
   // Changing the window dimensions should only change the overlay width. The
@@ -561,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  // Make sure it launches in standalone mode by default.
+  // Make sure the app launches in standalone mode by default.
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(browser_view_->browser()
                   ->app_controller()
@@ -574,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
                   ->app_controller()
                   ->AppUsesWindowControlsOverlay());
 
-  // Toggle WCO off, and verify that the app returns to 'standalone' mode
+  // Toggle WCO off, and verify that the app returns to 'standalone' mode.
   browser_view_->ToggleWindowControlsOverlayEnabled();
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(browser_view_->browser()
