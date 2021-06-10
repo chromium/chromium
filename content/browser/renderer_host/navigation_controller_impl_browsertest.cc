@@ -3229,7 +3229,11 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
     EXPECT_EQ(GURL("about:blank"),
               root->child_at(subframe_index)->current_url());
+    // The frame should be on its initial empty document.
     EXPECT_FALSE(root->child_at(subframe_index)->has_committed_real_load());
+    EXPECT_TRUE(
+        root->child_at(subframe_index)
+            ->is_on_initial_empty_document_or_subsequent_empty_documents());
 
     // Do a document.open() on it.
     EXPECT_TRUE(ExecJs(shell(), R"(
@@ -3251,7 +3255,13 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(url_1, root->child_at(subframe_index)
                          ->current_frame_host()
                          ->last_url_in_renderer());
-    EXPECT_TRUE(root->child_at(subframe_index)->has_committed_real_load());
+    // The frame lost its "initial empty document" status, but
+    // `has_committed_real_load` is still false because the last committed URL
+    // stays the same.
+    EXPECT_FALSE(root->child_at(subframe_index)->has_committed_real_load());
+    EXPECT_FALSE(
+        root->child_at(subframe_index)
+            ->is_on_initial_empty_document_or_subsequent_empty_documents());
 
     // Do a navigation on the "child5" subframe to |url_2|.
     // The navigation is classified as a new navigation, and appended a new
@@ -3434,8 +3444,12 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigationControllerImpl& controller = new_contents->GetController();
     EXPECT_EQ(0, controller.GetEntryCount());
     EXPECT_FALSE(controller.GetLastCommittedEntry());
-    EXPECT_FALSE(
-        new_contents->GetFrameTree()->root()->has_committed_real_load());
+    // The window should be on its initial empty document.
+
+    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    EXPECT_FALSE(new_root->has_committed_real_load());
+    EXPECT_TRUE(
+        new_root->is_on_initial_empty_document_or_subsequent_empty_documents());
 
     // Do a document.open() on the blank window.
     TestNavigationObserver nav_observer(new_contents);
@@ -3456,8 +3470,13 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
               new_contents->GetMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(main_window_url,
               new_contents->GetMainFrame()->last_url_in_renderer());
-    EXPECT_TRUE(
-        new_contents->GetFrameTree()->root()->has_committed_real_load());
+
+    // The window lost its "initial empty document" status, but
+    // `has_committed_real_load` is still false because the last committed URL
+    // stays the same.
+    EXPECT_FALSE(new_root->has_committed_real_load());
+    EXPECT_FALSE(
+        new_root->is_on_initial_empty_document_or_subsequent_empty_documents());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
     // add a new entry.

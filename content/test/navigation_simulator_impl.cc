@@ -340,10 +340,12 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
     render_frame_host->InitializeRenderFrameIfNeeded();
 
   if (render_frame_host && render_frame_host->GetParent()) {
-    if (!render_frame_host->frame_tree_node()->has_committed_real_load())
+    if (render_frame_host->frame_tree_node()
+            ->is_on_initial_empty_document_or_subsequent_empty_documents()) {
       transition_ = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
-    else
+    } else {
       transition_ = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
+    }
   }
 
   browser_interface_broker_receiver_ =
@@ -1383,7 +1385,8 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   } else {
     params->should_replace_current_entry |=
         (!frame_tree_node_->IsMainFrame() &&
-         !frame_tree_node_->has_committed_real_load());
+         frame_tree_node_
+             ->is_on_initial_empty_document_or_subsequent_empty_documents());
   }
 
   params->navigation_token = request_

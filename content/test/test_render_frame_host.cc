@@ -533,7 +533,8 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
   } else {
     params->should_replace_current_entry |=
         (!frame_tree_node()->IsMainFrame() &&
-         !frame_tree_node()->has_committed_real_load());
+         frame_tree_node()
+             ->is_on_initial_empty_document_or_subsequent_empty_documents());
   }
   params->gesture = NavigationGestureUser;
   params->contents_mime_type = "text/html";

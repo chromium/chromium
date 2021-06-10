@@ -96,6 +96,10 @@ class CrossOriginOpenerPolicyStatus {
   int virtual_browsing_context_group_;
 
   // Whether this is the first navigation happening in the browsing context.
+  // TODO(https://crbug.com/1216244): This should be set to whether this
+  // navigation happens on the initial empty document instead. Currently it's
+  // set to FrameTreeNode's has_committed_real_load(), which does not consider
+  // document.open(), etc.
   const bool is_initial_navigation_;
 
   network::CrossOriginOpenerPolicy current_coop_;

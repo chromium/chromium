@@ -4074,10 +4074,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             root->child_at(0)->child_at(0)->current_url());
 
-  // This is true because of the document.open() call, which is considered
-  // committing a real load. The FrameTreeVisualizer test should be enough to
-  // ensure that the childmost frame is not loaded.
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->has_committed_real_load());
+  // The frame is no longer on the initial empty document, but we don't consider
+  // it as having committed a real load.  The FrameTreeVisualizer test should be
+  // enough to ensure that the childmost frame is not loaded.
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->has_committed_real_load());
+  EXPECT_FALSE(
+      root->child_at(0)
+          ->child_at(0)
+          ->is_on_initial_empty_document_or_subsequent_empty_documents());
 }
 
 // Ensure that navigating a subframe to the same URL as its parent twice in a
