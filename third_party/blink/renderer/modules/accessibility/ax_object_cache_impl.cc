@@ -2726,7 +2726,7 @@ void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
 
   // Invalidate the subtree because aria-hidden affects the
   // accessibility ignored state for the entire subtree.
-  MarkAXObjectDirty(obj, /*subtree=*/true);
+  MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/true);
   ChildrenChangedWithCleanLayout(node->parentNode());
 }
 

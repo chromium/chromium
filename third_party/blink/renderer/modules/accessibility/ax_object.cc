@@ -4186,6 +4186,8 @@ void AXObject::UpdateChildrenIfNecessary() {
   }
 #endif
 
+  UpdateCachedAttributeValuesIfNeeded();
+
   AddChildren();
 }
 
