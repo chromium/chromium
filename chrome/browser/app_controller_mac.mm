@@ -311,24 +311,44 @@ base::FilePath GetStartupProfilePathMac(const base::FilePath& user_data_dir) {
 }
 
 // Open the urls in the last used browser from a regular profile.
-void OpenUrlsInBrowser(const std::vector<GURL>& urls,
-                       Profile* safe_last_profile) {
+void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
+  // TODO(https://crbug.com/1176734): This may create the profile synchronously,
+  // replace this by an asynchronous call.
   Profile* profile =
       g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  // if no browser window exists then create one with no tabs to be filled in
-  if (!browser) {
-    browser = Browser::Create(
-        Browser::CreateParams(safe_last_profile, /*user_gesture=*/true));
+  int startupIndex = TabStripModel::kNoTab;
+  content::WebContents* startupContent = nullptr;
+  if (browser && browser->tab_strip_model()->count() == 1) {
+    // If there's only 1 tab and the tab is NTP, close this NTP tab and open all
+    // startup urls in new tabs, because the omnibox will stay focused if we
+    // load url in NTP tab.
+    startupIndex = browser->tab_strip_model()->active_index();
+    startupContent = browser->tab_strip_model()->GetActiveWebContents();
+  } else if (!browser) {
+    // if no browser window exists then create one with no tabs to be filled in.
+    browser = Browser::Create(Browser::CreateParams(profile, true));
     browser->window()->Show();
   }
 
+  // Various methods to open URLs that we get in a native fashion. We use
+  // StartupBrowserCreator here because on the other platforms, URLs to open
+  // come through the ProcessSingleton, and it calls StartupBrowserCreator. It's
+  // best to bottleneck the openings through that for uniform handling.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun first_run =
       first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
                                     : chrome::startup::IS_NOT_FIRST_RUN;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
   launch.OpenURLsInBrowser(browser, false, urls);
+
+  // This NTP check should be replaced once https://crbug.com/624410 is fixed.
+  if (startupIndex != TabStripModel::kNoTab &&
+      (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
+       startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {
+    browser->tab_strip_model()->CloseWebContentsAt(startupIndex,
+                                                   TabStripModel::CLOSE_NONE);
+  }
 }
 
 }  // namespace
@@ -364,9 +384,6 @@ Profile* GetLastProfileMac() {
 - (void)profileWasRemoved:(const base::FilePath&)profilePath
              forIncognito:(bool)isIncognito;
 - (void)setLastProfile:(Profile*)profile;
-
-// Opens a tab for each GURL in |urls|.
-- (void)openUrls:(const std::vector<GURL>&)urls;
 
 // This class cannot open urls until startup has finished. The urls that cannot
 // be opened are cached in |startupUrls_|. This method must be called exactly
@@ -899,30 +916,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return;
   }
 
-  // If there's only 1 tab and the tab is NTP, close this NTP tab and open all
-  // startup urls in new tabs, because the omnibox will stay focused if we
-  // load url in NTP tab.
-  Profile* profile =
-      g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-
-  int startupIndex = TabStripModel::kNoTab;
-  content::WebContents* startupContent = NULL;
-
-  if (browser && browser->tab_strip_model()->count() == 1) {
-    startupIndex = browser->tab_strip_model()->active_index();
-    startupContent = browser->tab_strip_model()->GetActiveWebContents();
-  }
-
-  [self openUrls:urls];
-
-  // This NTP check should be replaced once https://crbug.com/624410 is fixed.
-  if (startupIndex != TabStripModel::kNoTab &&
-      (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
-       startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {
-    browser->tab_strip_model()->CloseWebContentsAt(startupIndex,
-        TabStripModel::CLOSE_NONE);
-  }
+  StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
+      urls, base::BindOnce(&OpenUrlsInBrowser, urls));
 }
 
 // This is called after profiles have been loaded and preferences registered.
@@ -1604,21 +1599,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   const PrefService* prefs = g_browser_process->local_state();
   return (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) ||
          prefs->GetBoolean(prefs::kBrowserGuestModeEnabled);
-}
-
-// Various methods to open URLs that we get in a native fashion. We use
-// StartupBrowserCreator here because on the other platforms, URLs to open come
-// through the ProcessSingleton, and it calls StartupBrowserCreator. It's best
-// to bottleneck the openings through that for uniform handling.
-- (void)openUrls:(const std::vector<GURL>&)urls {
-  if (!_startupComplete) {
-    _startupUrls.insert(_startupUrls.end(), urls.begin(), urls.end());
-    return;
-  }
-
-  StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
-      urls, base::BindOnce(&OpenUrlsInBrowser, urls,
-                           [self safeProfileForNewWindows:[self lastProfile]]));
 }
 
 - (void)getUrl:(NSAppleEventDescriptor*)event
