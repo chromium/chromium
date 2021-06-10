@@ -117,6 +117,10 @@
                desc="Title of the new tab page, not to be confused with the action of opening a new tab.">
         New Tab
       </message>
+      <message name="IDS_NEW_INCOGNITO_TAB_TITLE"
+               desc="Title of the new incognito tab page, not to be confused with the action of opening a new incognito tab.">
+        New Incognito Tab
+      </message>
       <if expr="not is_android">
         <message name="IDS_NEW_TAB_OTR_HEADING"
                  desc="Heading used when a person opens an OTR window">

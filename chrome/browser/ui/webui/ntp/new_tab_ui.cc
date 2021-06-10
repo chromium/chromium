@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -54,9 +55,17 @@ const char* GetHtmlTextDirection(const std::u16string& text) {
 // NewTabUI
 
 NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
-  web_ui->OverrideTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
-
   Profile* profile = GetProfile();
+
+  // The title should be "New Tab" for regular mode and guest mode, while it
+  // should be "New Incognito Tab" for incognito mode.
+  const int title_resource_id =
+      base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito) &&
+              profile->IsOffTheRecord() && !profile->IsGuestSession()
+          ? IDS_NEW_INCOGNITO_TAB_TITLE
+          : IDS_NEW_TAB_TITLE;
+  web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_resource_id));
 
   if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
     web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
