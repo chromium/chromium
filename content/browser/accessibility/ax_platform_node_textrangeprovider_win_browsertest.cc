@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
+#include "base/command_line.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -21,6 +22,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -86,6 +88,11 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
  protected:
   const std::wstring kEmbeddedCharacterAsString{
       base::as_wcstr(&ui::AXPlatformNodeBase::kEmbeddedCharacter), 1};
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kEnableExperimentalUIAutomation);
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
