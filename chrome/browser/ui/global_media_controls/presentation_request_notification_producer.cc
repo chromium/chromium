@@ -40,8 +40,7 @@ GetActiveWebContentsPresentationManager() {
 content::WebContents* GetWebContentsFromPresentationRequest(
     const content::PresentationRequest& request) {
   auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
-  DCHECK(rfh);
-  return content::WebContents::FromRenderFrameHost(rfh);
+  return rfh ? content::WebContents::FromRenderFrameHost(rfh) : nullptr;
 }
 }  // namespace
 
@@ -253,9 +252,12 @@ void PresentationRequestNotificationProducer::ShowOrHideItem() {
     return;
   }
 
+  auto* web_contents = GetWebContentsFromPresentationRequest(item_->request());
   bool new_visibility =
-      notification_service_->HasActiveNotificationsForWebContents(
-          GetWebContentsFromPresentationRequest(item_->request()));
+      web_contents
+          ? notification_service_->HasActiveNotificationsForWebContents(
+                web_contents)
+          : true;
   if (should_hide_ == new_visibility)
     return;
 
