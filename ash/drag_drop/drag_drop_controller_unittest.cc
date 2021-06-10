@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/drag_drop/drag_drop_tracker.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/public/cpp/ash_features.h"
@@ -430,11 +429,6 @@ class DragDropControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void UpdateDragData() {
-    drag_drop_controller_->drag_data_ = std::make_unique<ui::OSExchangeData>();
-    drag_drop_controller_->drag_data_->SetString(u"I am being dragged");
-  }
-
   aura::Window* GetDragWindow() { return drag_drop_controller_->drag_window_; }
 
   aura::Window* GetDragSourceWindow() {
@@ -456,10 +450,6 @@ class DragDropControllerTest : public AshTestBase {
     return drag_drop_controller_->drag_image_widget_
                ? drag_drop_controller_->drag_image_widget_->GetNativeWindow()
                : nullptr;
-  }
-
-  DragDropTracker* drag_drop_tracker() {
-    return drag_drop_controller_->drag_drop_tracker_.get();
   }
 
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
@@ -500,16 +490,7 @@ TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {
 
   int num_drags = 17;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.ReleaseLeftButton();
@@ -538,16 +519,8 @@ TEST_F(DragDropControllerTest, DragDropWithZeroDragUpdates) {
 
   int num_drags = drag_view->VerticalDragThreshold() + 1;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
   }
-
-  UpdateDragData();
 
   generator.ReleaseLeftButton();
 
@@ -578,16 +551,7 @@ TEST_F(DragDropControllerTest, DragDropInMultipleViewsSingleWidgetTest) {
 
   int num_drags = drag_view1->width();
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(1, 0);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.ReleaseLeftButton();
@@ -634,16 +598,7 @@ TEST_F(DragDropControllerTest, DragDropInMultipleViewsMultipleWidgetsTest) {
 
   int num_drags = drag_view1->width();
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(1, 0);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.ReleaseLeftButton();
@@ -682,27 +637,14 @@ TEST_F(DragDropControllerTest, ViewRemovedWhileInDragDropTest) {
 
   int num_drags_1 = 17;
   for (int i = 0; i < num_drags_1; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   drag_view->parent()->RemoveChildView(drag_view.get());
   // View has been removed. We will not get any of the following drag updates.
   int num_drags_2 = 23;
   for (int i = 0; i < num_drags_2; ++i) {
-    UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.ReleaseLeftButton();
@@ -770,16 +712,7 @@ TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
 
   int num_drags = 17;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
 
     if (i > drag_view->VerticalDragThreshold())
       EXPECT_EQ(window, GetDragWindow());
@@ -790,8 +723,6 @@ TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
 
   num_drags = 23;
   for (int i = 0; i < num_drags; ++i) {
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
     // We should not crash here.
   }
@@ -812,12 +743,6 @@ TEST_F(DragDropControllerTest, SyntheticEventsDuringDragDrop) {
 
   int num_drags = 17;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
 
     // We send a unexpected mouse move event. Note that we cannot use
@@ -859,16 +784,7 @@ TEST_F(DragDropControllerTest, PressingEscapeCancelsDragDrop) {
 
   int num_drags = 17;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we created.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.PressKey(ui::VKEY_ESCAPE, 0);
@@ -888,7 +804,7 @@ TEST_F(DragDropControllerTest, PressingEscapeCancelsDragDrop) {
   EXPECT_TRUE(drag_view->drag_done_received_);
 }
 
-TEST_F(DragDropControllerTest, CaptureLostCancelsDragDrop) {
+TEST_F(DragDropControllerTest, CaptureLostDoesNotCancelsDragDrop) {
   std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
   DragTestView* drag_view = new DragTestView;
   AddViewToWidgetAndResize(widget.get(), drag_view);
@@ -898,38 +814,24 @@ TEST_F(DragDropControllerTest, CaptureLostCancelsDragDrop) {
 
   int num_drags = 17;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0)
-      UpdateDragData();
     generator.MoveMouseBy(0, 1);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
-  // Make sure the capture window won't handle mouse events.
-  aura::Window* capture_window = drag_drop_tracker()->capture_window();
-  ASSERT_TRUE(capture_window);
-  EXPECT_EQ("0x0", capture_window->bounds().size().ToString());
-  EXPECT_EQ(NULL, capture_window->GetEventHandlerForPoint(gfx::Point()));
 
   aura::client::GetCaptureClient(widget->GetNativeView()->GetRootWindow())
-      ->SetCapture(NULL);
+      ->SetCapture(nullptr);
 
   EXPECT_TRUE(drag_drop_controller_->drag_start_received_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
-  EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
+  EXPECT_FALSE(drag_drop_controller_->drag_canceled_);
   EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
             drag_view->num_drag_updates_);
   EXPECT_EQ(0, drag_view->num_drops_);
-  EXPECT_EQ(1, drag_view->num_drag_exits_);
+  EXPECT_EQ(0, drag_view->num_drag_exits_);
   EXPECT_TRUE(drag_view->drag_done_received_);
 }
 
@@ -953,19 +855,11 @@ TEST_F(DragDropControllerTest, TouchDragDropInMultipleWindows) {
   generator.PressTouch();
   gfx::Point point = gfx::Rect(drag_view1->bounds()).CenterPoint();
   DispatchGesture(ui::ET_GESTURE_LONG_PRESS, point);
-  // Because we are not doing a blocking drag and drop, the original
-  // OSDragExchangeData object is lost as soon as we return from the drag
-  // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-  // drag_data_ to a fake drag data object that we create.
-  UpdateDragData();
   gfx::Point gesture_location = point;
   int num_drags = drag_view1->width();
   for (int i = 0; i < num_drags; ++i) {
     gesture_location.Offset(1, 0);
     DispatchGesture(ui::ET_GESTURE_SCROLL_UPDATE, gesture_location);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   DispatchGesture(ui::ET_GESTURE_SCROLL_END, gesture_location);
@@ -1054,14 +948,6 @@ TEST_F(DragDropControllerTest, DragDropWithChangingIcon) {
   int num_drags = drag_view1->width();
   int icon_replacements = 0;
   for (int i = 0; i < num_drags; ++i) {
-    // Because we are not doing a blocking drag and drop, the original
-    // OSDragExchangeData object is lost as soon as we return from the drag
-    // initiation in DragDropController::StartDragAndDrop(). Hence we set the
-    // drag_data_ to a fake drag data object that we create.
-    if (i > 0) {
-      UpdateDragData();
-    }
-
     if (drag_drop_controller_->IsDragDropInProgress()) {
       if (!GetDragSourceWindow())
         SetDragSourceWindow(widget->GetNativeWindow());
@@ -1076,9 +962,6 @@ TEST_F(DragDropControllerTest, DragDropWithChangingIcon) {
     }
 
     generator.MoveMouseBy(1, 0);
-
-    // Execute any scheduled draws to process deferred mouse events.
-    base::RunLoop().RunUntilIdle();
   }
 
   generator.ReleaseLeftButton();
@@ -1267,7 +1150,6 @@ TEST_F(DragDropControllerTest, TouchDragDropCompletesOnFling) {
   generator.Dispatch(&press);
 
   DispatchGesture(ui::ET_GESTURE_LONG_PRESS, start);
-  UpdateDragData();
   timestamp += base::TimeDelta::FromMilliseconds(10);
   ui::TouchEvent move1(ui::ET_TOUCH_MOVED, mid, timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));

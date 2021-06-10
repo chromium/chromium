@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -36,8 +37,6 @@ class LocatedEvent;
 }
 
 namespace ash {
-class DragDropTracker;
-class DragDropTrackerDelegate;
 class ToplevelWindowDragDelegate;
 
 class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
@@ -152,15 +151,12 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Closure for quitting nested run loop.
   base::OnceClosure quit_closure_;
 
-  std::unique_ptr<DragDropTracker> drag_drop_tracker_;
-  std::unique_ptr<DragDropTrackerDelegate> drag_drop_window_delegate_;
-
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;
 
   // Holds a synthetic long tap event to be sent to the |drag_source_window_|.
   // See comment in OnGestureEvent() on why we need this.
-  std::unique_ptr<ui::GestureEvent> pending_long_tap_;
+  std::unique_ptr<ui::Event> pending_long_tap_;
 
   gfx::Point start_location_;
   gfx::Point current_location_;
