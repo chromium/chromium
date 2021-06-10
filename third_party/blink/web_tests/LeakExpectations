@@ -90,9 +90,6 @@ crbug.com/1000768 [ Linux ] external/wpt/geolocation-API/idlharness.window.html 
 crbug.com/1000768 [ Linux ] external/wpt/web-share/idlharness.https.window.html [ Pass Failure ]
 crbug.com/1000768 [ Linux ] external/wpt/storage/idlharness.https.any.html [ Pass Failure ]
 
-# Sheriff 2019-11-29
-crbug.com/1029417 [ Linux ] external/wpt/web-nfc/NDEFReader_scan_filter.https.html [ Failure ]
-
 # Sheriff 2020-04-06
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer/worker-module.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin/worker-classic.http.html [ Pass Timeout ]
