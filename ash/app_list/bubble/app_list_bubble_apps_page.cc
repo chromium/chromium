@@ -15,11 +15,13 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -77,6 +79,12 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(
       std::make_unique<RecentAppsView>(view_delegate));
+
+  // Horizontal separator.
+  auto* separator =
+      scroll_contents->AddChildView(std::make_unique<views::Separator>());
+  separator->SetColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor));
 
   // All apps section.
   auto* apps_grid =

@@ -15,6 +15,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
@@ -38,6 +39,9 @@ constexpr int kDefaultWidth = 544;
 // Space between the AppListBubbleView and the top of the screen should be at
 // least this value plus the shelf height.
 constexpr int kExtraTopOfScreenSpacing = 16;
+
+// Insets for the bubble contents.
+constexpr gfx::Insets kContentMargins(16);
 
 // Returns the point on the screen to which the bubble is anchored.
 gfx::Point GetAnchorPointInScreen(aura::Window* root_window,
@@ -87,8 +91,12 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   set_parent_window(
       Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
 
-  // TODO(https://crbug.com/1204551): Add transparency and rounded corners.
-  // See TrayBubbleView and BubbleBorder.
+  // Match the system tray bubble radius.
+  set_corner_radius(kUnifiedTrayCornerRadius);
+  set_margins(kContentMargins);
+
+  // TODO(https://crbug.com/1218229): Add background blur. See TrayBubbleView
+  // and BubbleBorder.
   set_color(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kOpaque));
 
