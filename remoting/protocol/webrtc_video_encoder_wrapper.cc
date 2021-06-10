@@ -103,6 +103,12 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
 
 WebrtcVideoEncoderWrapper::~WebrtcVideoEncoderWrapper() = default;
 
+void WebrtcVideoEncoderWrapper::SetEncoderForTest(
+    std::unique_ptr<WebrtcVideoEncoder> encoder) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  encoder_ = std::move(encoder);
+}
+
 int32_t WebrtcVideoEncoderWrapper::InitEncode(
     const webrtc::VideoCodec* codec_settings,
     const webrtc::VideoEncoder::Settings& settings) {
@@ -144,6 +150,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
 
   if (encode_pending_) {
     LOG(WARNING) << "Encoder busy, dropping frame.";
+    accumulated_update_rect_.Union(frame.update_rect());
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
@@ -174,6 +181,46 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   }
 
   frame_stats_->encode_started_time = base::TimeTicks::Now();
+
+  // Get the update-rect that WebRTC provides, which will include any
+  // accumulated updates from frames that WebRTC dropped.
+  auto update_rect = frame.update_rect();
+
+  // Combine it with any updates from frames dropped by this class.
+  update_rect.Union(accumulated_update_rect_);
+
+  // In case the new frame has a different resolution, ensure the update-rect
+  // is constrained by the frame's bounds. On the first frame with a new
+  // resolution, WebRTC sets the update-rect to the full area of the frame, so
+  // this line will give the correct result in that case. If the resolution did
+  // not change (for this frame or any prior dropped frames), the update-region
+  // will already be constrained by the resolution, so this line will be a
+  // no-op.
+  update_rect.Intersect(
+      webrtc::VideoFrame::UpdateRect{0, 0, frame.width(), frame.height()});
+
+  auto desktop_frame = video_frame_adapter->TakeDesktopFrame();
+
+  // The empty case should only happen if the original captured frame had an
+  // empty update-region, so there is no need to change it here.
+  if (!update_rect.IsEmpty()) {
+    // |update_rect| includes any updates from frames dropped by WebRTC or by
+    // this class, so apply it to the desktop-frame before sending it to the
+    // encoder.
+    // TODO(crbug.com/1192865): As an optimization, detect if no frames were
+    // dropped (for example, by implementing an incrementing ID for captured
+    // desktop frames). In that case, the desktop-frame's original
+    // update-region can be used as-is, instead of applying the bounding rect
+    // here.
+    desktop_frame->mutable_updated_region()->SetRect(
+        webrtc::DesktopRect::MakeXYWH(update_rect.offset_x,
+                                      update_rect.offset_y, update_rect.width,
+                                      update_rect.height));
+  }
+
+  // The update-region has now been applied to the desktop_frame which is being
+  // sent to the encoder, so empty it here.
+  accumulated_update_rect_.MakeEmptyUpdate();
 
   // TODO(crbug.com/1192865): Implement large-frame detection for VP8, and
   // ensure VP9 is configured to do this automatically. If the frame has a
@@ -209,7 +256,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&WebrtcVideoEncoderWrapper::OnFrameEncoded,
                      weak_factory_.GetWeakPtr()));
-  encoder_->Encode(video_frame_adapter->TakeDesktopFrame(), frame_params,
+  encoder_->Encode(std::move(desktop_frame), frame_params,
                    std::move(encode_callback));
   return WEBRTC_VIDEO_CODEC_OK;
 }

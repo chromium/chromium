@@ -25,10 +25,28 @@ WebrtcVideoFrameAdapter::~WebrtcVideoFrameAdapter() = default;
 webrtc::VideoFrame WebrtcVideoFrameAdapter::CreateVideoFrame(
     std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
     std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats) {
+  // The frame-builder only accepts a bounding rectangle, so compute it here.
+  // WebRTC only tracks and accumulates update-rectangles, not regions, when
+  // sending video-frames to the encoder.
+  webrtc::VideoFrame::UpdateRect video_update_rect{};
+  for (webrtc::DesktopRegion::Iterator i(desktop_frame->updated_region());
+       !i.IsAtEnd(); i.Advance()) {
+    const auto& rect = i.rect();
+    video_update_rect.Union(webrtc::VideoFrame::UpdateRect{
+        rect.left(), rect.top(), rect.width(), rect.height()});
+  }
+
   rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter =
       new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
           std::move(desktop_frame), std::move(frame_stats));
-  return webrtc::VideoFrame::Builder().set_video_frame_buffer(adapter).build();
+
+  // In the empty case, it is important to set the video-frame's update
+  // rectangle explicitly to empty, otherwise an unset value would be
+  // interpreted as a full frame update - see webrtc::VideoFrame::update_rect().
+  return webrtc::VideoFrame::Builder()
+      .set_video_frame_buffer(adapter)
+      .set_update_rect(video_update_rect)
+      .build();
 }
 
 std::unique_ptr<webrtc::DesktopFrame>

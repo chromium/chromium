@@ -35,6 +35,8 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
       base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer);
   ~WebrtcVideoEncoderWrapper() override;
 
+  void SetEncoderForTest(std::unique_ptr<WebrtcVideoEncoder> encoder);
+
   // webrtc::VideoEncoder interface.
   int32_t InitEncode(const webrtc::VideoCodec* codec_settings,
                      const webrtc::VideoEncoder::Settings& settings) override;
@@ -92,6 +94,20 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // True when a frame is being encoded. This guards against encoding multiple
   // frames in parallel, which the encoders are not prepared to handle.
   bool encode_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Keeps track of any update-rectangles from dropped frames. When WebRTC
+  // requests to encode a frame, this class will either:
+  // * Send it to be encoded - this accumulated update-rect will be added to
+  //   the incoming frame, then it will be reset to empty.
+  // * Drop the frame - the frame's update-rect will be stored and combined with
+  //   this accumulated update-rect.
+  // This tracking is similar to what WebRTC does whenever it drops frames
+  // internally.  WebRTC will also detect resolution-changes and set the
+  // frame's update-rect to the full area, so no special logic is needed here
+  // for changes in resolution (except to make sure that any frame's update-rect
+  // always lies within the frame's bounding rect).
+  webrtc::VideoFrame::UpdateRect accumulated_update_rect_
+      GUARDED_BY_CONTEXT(sequence_checker_){};
 
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

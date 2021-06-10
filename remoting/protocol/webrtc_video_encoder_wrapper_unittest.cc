@@ -15,10 +15,14 @@
 
 using testing::_;
 using testing::Field;
+using testing::InSequence;
 using testing::NiceMock;
+using testing::Pointee;
 using testing::Return;
 using webrtc::BasicDesktopFrame;
 using webrtc::CodecSpecificInfo;
+using webrtc::DesktopRect;
+using webrtc::DesktopRegion;
 using webrtc::DesktopSize;
 using webrtc::EncodedImage;
 using webrtc::EncodedImageCallback;
@@ -85,6 +89,11 @@ VideoFrame MakeVideoFrame() {
                                                    std::move(stats));
 }
 
+// DesktopFrame arg, DesktopRect expected_update_rect
+MATCHER_P(MatchesUpdateRect, expected_update_rect, "") {
+  return arg.updated_region().Equals(DesktopRegion(expected_update_rect));
+}
+
 class MockVideoChannelStateObserver : public VideoChannelStateObserver {
  public:
   MockVideoChannelStateObserver() = default;
@@ -126,10 +135,39 @@ class MockEncodedImageCallback : public EncodedImageCallback {
               (override));
 };
 
+class MockVideoEncoder : public WebrtcVideoEncoder {
+ public:
+  MockVideoEncoder() = default;
+  ~MockVideoEncoder() override = default;
+
+  MOCK_METHOD(void, SetLosslessColor, (bool want_lossless), (override));
+  MOCK_METHOD(void,
+              Encode,
+              (std::unique_ptr<webrtc::DesktopFrame> frame,
+               const FrameParams& param,
+               EncodeCallback done),
+              (override));
+};
+
 }  // namespace
 
 class WebrtcVideoEncoderWrapperTest : public testing::Test {
  public:
+  void SetUp() override {
+    mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
+
+    // Configure the mock encoder's default behavior to mimic a real encoder.
+    ON_CALL(*mock_video_encoder_, Encode)
+        .WillByDefault([](std::unique_ptr<webrtc::DesktopFrame> frame,
+                          const WebrtcVideoEncoder::FrameParams& param,
+                          WebrtcVideoEncoder::EncodeCallback done) {
+          auto encoded_frame =
+              std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
+          std::move(done).Run(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
+                              std::move(encoded_frame));
+        });
+  }
+
   std::unique_ptr<WebrtcVideoEncoderWrapper> InitEncoder(SdpVideoFormat sdp,
                                                          VideoCodec codec) {
     auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
@@ -154,6 +192,7 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
 
   NiceMock<MockVideoChannelStateObserver> observer_;
   MockEncodedImageCallback callback_;
+  std::unique_ptr<NiceMock<MockVideoEncoder>> mock_video_encoder_;
 };
 
 TEST_F(WebrtcVideoEncoderWrapperTest, ReturnsVP8EncodedFrames) {
@@ -226,8 +265,46 @@ TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfEncoderBusy) {
   std::vector<VideoFrameType> frame_types;
   frame_types.push_back(VideoFrameType::kVideoFrameKey);
   encoder->Encode(frame1, &frame_types);
-  encoder->Encode(frame1, &frame_types);
+  encoder->Encode(frame2, &frame_types);
 
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest,
+       DroppedFrameUpdateRectCombinedWithNextFrame) {
+  {
+    InSequence s;
+
+    // Encode frame1.
+    EXPECT_CALL(*mock_video_encoder_, Encode);
+
+    // Encode frame3. Its update-region should be the rectangle-union of frame2
+    // and frame3.
+    auto combined_rect = DesktopRect::MakeLTRB(100, 200, 310, 410);
+    EXPECT_CALL(*mock_video_encoder_,
+                Encode(Pointee(MatchesUpdateRect(combined_rect)), _, _));
+  }
+
+  auto frame1 = MakeVideoFrame();
+  auto frame2 = MakeVideoFrame();
+  frame2.set_update_rect(VideoFrame::UpdateRect{
+      .offset_x = 100, .offset_y = 200, .width = 10, .height = 10});
+  auto frame3 = MakeVideoFrame();
+  frame3.set_update_rect(VideoFrame::UpdateRect{
+      .offset_x = 300, .offset_y = 400, .width = 10, .height = 10});
+
+  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
+  std::vector<VideoFrameType> frame_types;
+  frame_types.push_back(VideoFrameType::kVideoFrameKey);
+
+  // frame2 should be dropped since the encoder is busy.
+  // RunUntilIdle() will wait until frame1 is encoded so that frame3 will not
+  // be dropped.
+  encoder->Encode(frame1, &frame_types);
+  encoder->Encode(frame2, &frame_types);
+  task_environment_.RunUntilIdle();
+  encoder->Encode(frame3, &frame_types);
   PostQuitAndRun();
 }
 

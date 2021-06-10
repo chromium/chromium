@@ -12,7 +12,9 @@
 
 using webrtc::BasicDesktopFrame;
 using webrtc::DesktopFrame;
+using webrtc::DesktopRect;
 using webrtc::DesktopSize;
+using webrtc::VideoFrame;
 
 namespace {
 
@@ -30,7 +32,7 @@ TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
   auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   DesktopFrame* desktop_frame_ptr = desktop_frame.get();
 
-  webrtc::VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
+  VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
       std::move(desktop_frame), std::move(frame_stats));
 
   auto* adapter = static_cast<WebrtcVideoFrameAdapter*>(
@@ -48,6 +50,32 @@ TEST(WebrtcVideoFrameAdapter, AdapterHasCorrectSize) {
 
   EXPECT_EQ(100, adapter->width());
   EXPECT_EQ(200, adapter->height());
+}
+
+TEST(WebrtcVideoFrameAdapter, EmptyUpdateRegionGivesFrameWithEmptyUpdateRect) {
+  auto desktop_frame = MakeDesktopFrame(100, 200);
+  ASSERT_TRUE(desktop_frame->updated_region().is_empty());
+  auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
+  VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
+      std::move(desktop_frame), std::move(frame_stats));
+
+  EXPECT_TRUE(video_frame.update_rect().IsEmpty());
+}
+
+TEST(WebrtcVideoFrameAdapter, VideoUpdateRectSpansDesktopUpdateRegion) {
+  auto desktop_frame = MakeDesktopFrame(100, 200);
+  desktop_frame->mutable_updated_region()->AddRect(
+      DesktopRect::MakeLTRB(10, 20, 30, 40));
+  desktop_frame->mutable_updated_region()->AddRect(
+      DesktopRect::MakeLTRB(50, 60, 70, 80));
+
+  auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
+  VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
+      std::move(desktop_frame), std::move(frame_stats));
+
+  EXPECT_EQ(video_frame.update_rect(),
+            (VideoFrame::UpdateRect{
+                .offset_x = 10, .offset_y = 20, .width = 60, .height = 60}));
 }
 
 }  // namespace protocol
