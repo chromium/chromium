@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -91,12 +90,9 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "see crbug.com/1038151")
     public void testEnterPip() throws Throwable {
         enterFullscreen();
-        triggerAutoPiP();
-
-        CriteriaHelper.pollUiThread(mActivity::isInPictureInPictureMode);
+        triggerAutoPiPAndWait();
     }
 
     /** Tests that PiP is left when we navigate the main page. */
@@ -112,7 +108,6 @@ public class PictureInPictureControllerTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitPipOnPortalActivation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
@@ -123,7 +118,6 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
     }
@@ -132,7 +126,6 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
         mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
@@ -144,7 +137,6 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents(), false));
     }
@@ -153,7 +145,6 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(new Runnable() {
             @Override
@@ -171,7 +162,6 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1034412")
     public void testNoExitOnIframeNavigation() throws Throwable {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
         // we are still in PiP.
@@ -179,14 +169,16 @@ public class PictureInPictureControllerTest {
         mActivity.getActivityTab().addObserver(navigationObserver);
 
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(mActivity::isInPictureInPictureMode);
+        triggerAutoPiPAndWait();
 
         JavaScriptUtils.executeJavaScript(getWebContents(),
                 "document.getElementById('iframe').src = 'https://www.example.com/'");
 
         CriteriaHelper.pollUiThread(navigationObserver::didNavigationOccur);
 
+        // Wait for isInPictureInPictureMode rather than getLast...ForTesting, since the latter
+        // isn't synchronous with navigation occurring.  It has to wait for some back-and-forth with
+        // the framework.
         Assert.assertTrue(
                 TestThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
     }
@@ -198,26 +190,26 @@ public class PictureInPictureControllerTest {
     @DisabledTest(message = "crbug.com/1038151")
     public void testReenterPip() throws Throwable {
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(mActivity::isInPictureInPictureMode);
+        triggerAutoPiPAndWait();
 
+        // This waits for Stage.CREATED, but we never get one.  We go right to Stage.RESUMED .
         mActivityTestRule.startMainActivityFromLauncher();
-        CriteriaHelper.pollUiThread(() -> !mActivity.isInPictureInPictureMode());
+        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
 
         enterFullscreen(false);
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(mActivity::isInPictureInPictureMode);
+        triggerAutoPiPAndWait();
     }
 
     private WebContents getWebContents() {
         return mActivity.getCurrentWebContents();
     }
 
-    private void triggerAutoPiP() throws Throwable{
+    private void triggerAutoPiPAndWait() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> InstrumentationRegistry.getInstrumentation().callActivityOnUserLeaving(
                                 mActivity));
+        CriteriaHelper.pollUiThread(mActivity::getLastPictureInPictureModeForTesting);
     }
 
     private void enterFullscreen() throws Throwable {
@@ -242,8 +234,7 @@ public class PictureInPictureControllerTest {
         // Before entering fullscreen, get the (nonzero) size of the video element.
         final int inline_width = DOMUtils.getNodeBounds(getWebContents(), VIDEO_ID).width();
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(mActivity::isInPictureInPictureMode);
+        triggerAutoPiPAndWait();
 
         // Wait for layout to finish.  We assume this means that the video element is now smaller
         // than its initial size.  If we don't wait, and if the runnable beats layout, then the
@@ -254,7 +245,7 @@ public class PictureInPictureControllerTest {
 
         runnable.run();
 
-        CriteriaHelper.pollUiThread(() -> !mActivity.isInPictureInPictureMode());
+        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
     }
 
     /** A TabObserver that tracks whether a navigation has occurred. */

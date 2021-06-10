@@ -374,6 +374,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private ShareRegistrationCoordinator mShareRegistrationCoordinator;
 
+    // Whether this Activity is in Picture in Picture mode, based on the most recent call to
+    // {@link onPictureInPictureModeChanged} from the platform.  This might disagree with the value
+    // returned by {@link isInPictureInPictureMode}.
+    private boolean mLastPictureInPictureModeForTesting;
+
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -1104,7 +1109,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ensurePictureInPictureController();
         mPictureInPictureController.attemptPictureInPicture();
         // The attempt might not be successful.  If it is, then `onPictureInPictureModeChanged` will
-        // let us know later.
+        // let us know later.  Note that the activity might report that it is in PictureInPicture
+        // mode at any point after this, which might be before we finish setup after receiving
+        // notification from mOnPictureInPictureModeChanged.
     }
 
     /**
@@ -1116,9 +1123,20 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (inPicture) {
             ensurePictureInPictureController();
             mPictureInPictureController.onEnteredPictureInPictureMode();
+            mLastPictureInPictureModeForTesting = true;
         } else if (mPictureInPictureController != null) {
+            mLastPictureInPictureModeForTesting = false;
             mPictureInPictureController.cleanup();
         }
+    }
+
+    /**
+     * Return the status of a Picture-in-Picture transition.  This is separate from
+     * {@link isInPictureInPictureMode}, because this will trigger only after we have received and
+     * processed an Activity.onPictureInPictureModeChanged call.
+     */
+    public boolean getLastPictureInPictureModeForTesting() {
+        return mLastPictureInPictureModeForTesting;
     }
 
     @Override
