@@ -678,6 +678,11 @@ Response InspectorOverlayAgent::highlightNode(
   if (!response.IsSuccess())
     return response;
 
+  if (node->GetDocument().Lifecycle().GetState() <=
+      DocumentLifecycle::LifecycleState::kInactive) {
+    return Response::InvalidRequest("The node's document is not active");
+  }
+
   std::unique_ptr<InspectorHighlightConfig> highlight_config;
   response = HighlightConfigFromInspectorObject(
       std::move(highlight_inspector_object), &highlight_config);
