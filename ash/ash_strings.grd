@@ -3572,6 +3572,15 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SHORTCUT_DEPRECATION_SEARCH_PERIOD_INSERT" desc="Message telling user to use search/launcher + shift + backspace instead of search/launcher + period to emulate the delete key. The name of the launcher key varies by device and may be either Search or Launcher depending on the glyph on the keyboard.">
         The <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + Period keyboard shortcut has changed. To use the Insert key, press the <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + Shift + Backspace.
       </message>
+      <message name="IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_BODY" desc="Message body of notification telling user that this release has changes to keyboard shortcuts.">
+        To see the updates, open the Shortcuts app
+      </message>
+      <message name="IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_TITLE" desc="Title of notification telling user that this release has changes to keyboard shortcuts.">
+        Keyboard shortcuts have been improved
+      </message>
+      <message name="IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_LEARN_MORE_BUTTON_TEXT" desc="Button text on notification to learn more. Links to a help page.">
+        Learn more
+      </message>
 
       <!-- PciePeripheral notifications -->
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE" desc="Notification title to indicate to users that their peripheral device's performance may be limited.">

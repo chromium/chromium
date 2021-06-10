@@ -235,6 +235,7 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char kLastUsedImeShortcutReminderDismissed[];
 ASH_PUBLIC_EXPORT extern const char kNextImeShortcutReminderDismissed[];
 
+ASH_PUBLIC_EXPORT extern const char kImprovedShortcutsNotificationShownCount[];
 }  // namespace prefs
 
 }  // namespace ash

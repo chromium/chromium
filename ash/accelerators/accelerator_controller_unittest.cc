@@ -228,6 +228,11 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void, OpenCalculator, (), (override));
+  MOCK_METHOD(void, ShowKeyboardShortcutViewer, (), (override));
+  MOCK_METHOD(void,
+              NewTabWithUrl,
+              (const GURL& url, bool from_user_interaction),
+              (override));
 };
 
 }  // namespace
@@ -2217,6 +2222,189 @@ TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
       ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
   EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
       ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+}
+
+namespace {
+
+// Overrides SetUp() to do nothing so that the flag can be tested in both
+// directions during setup.
+// TODO(crbug.com/1179893): Remove suite once the feature is enabled by
+// default.
+class AcceleratorControllerStartupNotificationTest
+    : public NoSessionAshTestBase {
+ public:
+  AcceleratorControllerStartupNotificationTest() {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
+  }
+
+  ~AcceleratorControllerStartupNotificationTest() override {
+    // Set back to false to avoid any future test having the wrong value.
+    AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(false);
+  }
+
+  // Setup is a no-op to allow changing features/flags before SetUp(). Tests
+  // need to call SetupLater() manually.
+  void SetUp() override {}
+
+ protected:
+  // Perform the setup, but defer it to be called manually by the test.
+  void SetUpLater(bool improved_shortcuts_enabled) {
+    if (improved_shortcuts_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ::features::kImprovedKeyboardShortcuts);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ::features::kImprovedKeyboardShortcuts);
+    }
+
+    NoSessionAshTestBase::SetUp();
+    AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(true);
+  }
+
+  message_center::MessageCenter* message_center() const {
+    return message_center::MessageCenter::Get();
+  }
+
+  MockNewWindowDelegate* new_window_delegate_ = nullptr;  // Not owned.
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationShownWhenEnabled) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should be shown at login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationNotShownWhenDisabled) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/false);
+
+  // Notification should not be shown at login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationShownOnlyOnce) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should be shown at login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Reset the notifications.
+  message_center()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+
+  // Login again and there should not be another notification.
+  SimulateUserLogin("user1@email.com");
+  notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationShownToEachUser) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should be shown at first login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Reset the notifications.
+  message_center()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+
+  // Switch to user 2, and also should be shown at first login.
+  SimulateUserLogin("user2@email.com");
+  notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Reset the notifications.
+  message_center()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+
+  // Switch back to to user 1, and it should not be shown.
+  auto* session = GetSessionControllerClient();
+  session->SwitchActiveUser(AccountId::FromUserEmail("user1@email.com"));
+  notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+
+  // Switch again to user 2, and it should not be shown.
+  session->SwitchActiveUser(AccountId::FromUserEmail("user2@email.com"));
+  notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationLearnMoreLink) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should be shown at login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Setup the expectation that the learn more button opens this shortcut
+  // help link.
+  EXPECT_CALL(*new_window_delegate_, NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kKeyboardShortcutHelpPageUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+
+  // Clicking the learn more button should trigger the NewWindowDelegate and
+  // complete the expectation above.
+  notification->delegate()->Click(/*button_index=*/0,
+                                  /*reply=*/absl::nullopt);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationOpenShortcutViewer) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  // Notification should be shown at login.
+  SimulateUserLogin("user1@email.com");
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Setup the expectation that clicking the message body will show the
+  // shortcut viewer.
+  EXPECT_CALL(*new_window_delegate_, ShowKeyboardShortcutViewer)
+      .WillOnce(testing::Return());
+
+  // Clicking the message body should trigger the NewWindowDelegate and
+  // complete the expectation above.
+  notification->delegate()->Click(/*button_index=*/absl::nullopt,
+                                  /*reply=*/absl::nullopt);
 }
 
 namespace {

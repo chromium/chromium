@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/ash_prefs.h"
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
@@ -54,6 +55,7 @@ namespace {
 
 // Registers prefs whose default values are same in user and signin prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
+  AcceleratorControllerImpl::RegisterProfilePrefs(registry);
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);

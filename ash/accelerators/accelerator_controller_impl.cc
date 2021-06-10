@@ -121,9 +121,13 @@
 namespace ash {
 
 const char kNotifierAccelerator[] = "ash.accelerator-controller";
+const char kStartupNewShortcutNotificationId[] =
+    "accelerator_controller.new_shortcuts_in_release";
 
 const char kTabletCountOfVolumeAdjustType[] = "Tablet.CountOfVolumeAdjustType";
 
+const char kKeyboardShortcutHelpPageUrl[] =
+    "https://support.google.com/chromebook/answer/183101";
 const char kHighContrastToggleAccelNotificationId[] =
     "chrome://settings/accessibility/highcontrast";
 const char kDockedMagnifierToggleAccelNotificationId[] =
@@ -245,6 +249,77 @@ void ShowDeprecatedAcceleratorNotification(const char* const notification_id,
       kNotificationKeyboardIcon, SystemNotificationWarningLevel::NORMAL);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
+}
+
+// Returns the number of times the startup notification has been shown
+// from prefs.
+int GetStartupNotificationPrefCount(PrefService* pref_service) {
+  DCHECK(pref_service);
+  return pref_service->GetInteger(
+      prefs::kImprovedShortcutsNotificationShownCount);
+}
+
+// Increments the number of times the startup notification has been shown
+// in prefs.
+void IncrementStartupNotificationCount(PrefService* pref_service) {
+  DCHECK(pref_service);
+  int count = GetStartupNotificationPrefCount(pref_service);
+
+  // Increment the pref count.
+  pref_service->SetInteger(prefs::kImprovedShortcutsNotificationShownCount,
+                           count + 1);
+}
+
+// Shows a notification that accelerators/shortcuts have changed in this
+// release.
+// TODO(crbug.com/1179893): Remove this function in M97/M98.
+void NotifyShortcutChangesInRelease(PrefService* pref_service) {
+  DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
+  DCHECK(pref_service);
+
+  if (GetStartupNotificationPrefCount(pref_service) > 0)
+    return;
+
+  // The notification only has one button, "Learn more".
+  message_center::RichNotificationData rich_data;
+  rich_data.buttons.push_back(
+      message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_LEARN_MORE_BUTTON_TEXT)));
+
+  // When the learn more button is clicked, open the keyboard shortcuts help
+  // page. Otherwise if the body is clicked, open the shortcut viewer app.
+  auto on_click_handler =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](absl::optional<int> button_index) {
+            if (Shell::Get()->session_controller()->IsUserSessionBlocked())
+              return;
+
+            if (button_index.has_value()) {
+              DCHECK_EQ(0, button_index.value());
+              NewWindowDelegate::GetInstance()->NewTabWithUrl(
+                  GURL(kKeyboardShortcutHelpPageUrl),
+                  /*from_user_interaction=*/true);
+            } else {
+              NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
+            }
+          }));
+
+  auto notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kStartupNewShortcutNotificationId,
+      l10n_util::GetStringUTF16(
+          IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_BODY),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierAccelerator),
+      rich_data, std::move(on_click_handler), kNotificationKeyboardIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+
+  IncrementStartupNotificationCount(pref_service);
 }
 
 void ShowToast(std::string id, const std::u16string& text) {
@@ -1640,6 +1715,8 @@ constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideBottom;
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, public:
 
+bool AcceleratorControllerImpl::should_show_shortcut_notification_ = true;
+
 AcceleratorControllerImpl::TestApi::TestApi(
     AcceleratorControllerImpl* controller)
     : controller_(controller) {
@@ -1697,6 +1774,9 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
     // shortcuts. Calling AddObserver will cause InputMethodChanged to be
     // called once even when the method does not change.
     InputMethodManager::Get()->AddObserver(this);
+
+    // Observe session changes.
+    Shell::Get()->session_controller()->AddObserver(this);
   }
 
   Init();
@@ -1713,9 +1793,21 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
+}
 
+// static
+void AcceleratorControllerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kImprovedShortcutsNotificationShownCount,
+                                0);
+}
+
+void AcceleratorControllerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  DCHECK(pref_service);
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    InputMethodManager::Get()->RemoveObserver(this);
+    if (should_show_shortcut_notification_)
+      NotifyShortcutChangesInRelease(pref_service);
   }
 }
 
@@ -2643,6 +2735,13 @@ void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
                           &side_volume_button_location_.region);
   info_in_dict->GetString(kVolumeButtonSide,
                           &side_volume_button_location_.side);
+}
+
+void AcceleratorControllerImpl::Shutdown() {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    InputMethodManager::Get()->RemoveObserver(this);
+    Shell::Get()->session_controller()->RemoveObserver(this);
+  }
 }
 
 bool AcceleratorControllerImpl::IsInternalKeyboardOrUncategorizedDevice(
