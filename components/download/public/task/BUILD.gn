@@ -9,7 +9,6 @@ if (is_android) {
 
 source_set("public") {
   sources = [
-    "download_task_types.h",
     "empty_task_scheduler.cc",
     "empty_task_scheduler.h",
     "task_manager.cc",
@@ -19,7 +18,14 @@ source_set("public") {
     "task_scheduler.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":task_type",
+    "//base",
+  ]
+}
+
+source_set("task_type") {
+  sources = [ "download_task_types.h" ]
 }
 
 if (is_android) {

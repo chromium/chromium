@@ -62,6 +62,7 @@ source_set("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/dom_distiller/core",
+    "//components/download/public/background_service:public",
     "//components/feature_engagement",
     "//components/flags_ui",
     "//components/flags_ui:switches",
