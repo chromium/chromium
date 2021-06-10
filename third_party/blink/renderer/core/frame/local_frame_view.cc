@@ -794,26 +794,19 @@ void LocalFrameView::PerformLayout() {
         }
       }
       for (auto& root : layout_subtree_root_list_.Ordered()) {
-        {
-#if DCHECK_IS_ON()
-          // TODO(crbug.com/1214198): This should not be needed, but DCHECK
-          // hits.
-          NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
-#endif
-          LayoutBlock* cb = root->ContainingBlock();
-          auto it = fragment_tree_spines.find(cb);
-          DCHECK(it == fragment_tree_spines.end() || it->value > 0);
-          // Ensure fragment-tree consistency just after all the cb's
-          // descendants have completed their subtree layout.
-          bool should_rebuild_fragments =
-              it != fragment_tree_spines.end() && --it->value == 0;
+        LayoutBlock* cb = root->ContainingBlock();
+        auto it = fragment_tree_spines.find(cb);
+        DCHECK(it == fragment_tree_spines.end() || it->value > 0);
+        // Ensure fragment-tree consistency just after all the cb's
+        // descendants have completed their subtree layout.
+        bool should_rebuild_fragments =
+            it != fragment_tree_spines.end() && --it->value == 0;
 
-          if (!LayoutFromRootObject(*root))
-            continue;
+        if (!LayoutFromRootObject(*root))
+          continue;
 
-          if (should_rebuild_fragments)
-            cb->RebuildFragmentTreeSpine();
-        }
+        if (should_rebuild_fragments)
+          cb->RebuildFragmentTreeSpine();
 
         // We need to ensure that we mark up all layoutObjects up to the
         // LayoutView for paint invalidation. This simplifies our code as we
