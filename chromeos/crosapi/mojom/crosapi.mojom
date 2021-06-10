@@ -34,6 +34,7 @@ import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
+import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/token.mojom";
@@ -62,8 +63,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 34
-// Next method id: 39
+// Next version: 35
+// Next method id: 40
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -245,6 +246,12 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
+
+  // Binds the web page info factory interface which allows ash to request web
+  // page info from Lacros.
+  // Added in M93.
+  [MinVersion=34]
+  BindWebPageInfoFactory@39(pending_receiver<WebPageInfoFactory> receiver);
 
   // Binds the app publisher service to allow web app publishing from
   // lacros-chrome.

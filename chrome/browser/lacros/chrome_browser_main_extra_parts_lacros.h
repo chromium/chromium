@@ -14,7 +14,8 @@ class DownloadControllerClientLacros;
 
 namespace crosapi {
 class TaskManagerLacros;
-}
+class WebPageInfoProviderLacros;
+}  // namespace crosapi
 
 // Browser initialization for Lacros.
 class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
@@ -37,6 +38,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros download information to ash.
   std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;
+
+  // Handles tab property requests from ash.
+  std::unique_ptr<crosapi::WebPageInfoProviderLacros> web_page_info_provider_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

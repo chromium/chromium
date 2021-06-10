@@ -41,6 +41,7 @@ class ScreenManagerAsh;
 class SelectFileAsh;
 class SystemDisplayAsh;
 class TaskManagerAsh;
+class WebPageInfoFactoryAsh;
 class TestControllerAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
@@ -120,6 +121,8 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindSystemDisplay(
       mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
+  void BindWebPageInfoFactory(
+      mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void BindTaskManager(
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
@@ -144,6 +147,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DownloadControllerAsh* download_controller_ash() {
     return download_controller_ash_.get();
+  }
+
+  WebPageInfoFactoryAsh* web_page_info_factory_ash() {
+    return web_page_info_factory_ash_.get();
   }
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
@@ -178,6 +185,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
+  std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;

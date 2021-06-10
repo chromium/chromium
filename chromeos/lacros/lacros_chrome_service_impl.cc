@@ -39,6 +39,7 @@
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 #include "chromeos/lacros/native_theme_cache.h"
@@ -272,6 +273,10 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::UrlHandler,
                   &crosapi::mojom::Crosapi::BindUrlHandler,
                   Crosapi::MethodMinVersions::kBindUrlHandlerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::WebPageInfoFactory,
+      &crosapi::mojom::Crosapi::BindWebPageInfoFactory,
+      Crosapi::MethodMinVersions::kBindWebPageInfoFactoryMinVersion>();
   ConstructRemote<
       crosapi::mojom::DriveIntegrationService,
       &crosapi::mojom::Crosapi::BindDriveIntegrationService,

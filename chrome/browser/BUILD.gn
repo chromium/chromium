@@ -4764,6 +4764,8 @@ static_library("browser") {
       "lacros/task_manager_lacros.h",
       "lacros/web_contents_can_go_back_observer.cc",
       "lacros/web_contents_can_go_back_observer.h",
+      "lacros/web_page_info_lacros.cc",
+      "lacros/web_page_info_lacros.h",
       "metrics/enrollment_status.h",
       "metrics/lacros_metrics_provider.cc",
       "metrics/lacros_metrics_provider.h",

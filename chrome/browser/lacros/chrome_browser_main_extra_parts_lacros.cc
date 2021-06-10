@@ -7,6 +7,7 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
+#include "chrome/browser/lacros/web_page_info_lacros.h"
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
     default;
@@ -18,4 +19,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
+  web_page_info_provider_ =
+      std::make_unique<crosapi::WebPageInfoProviderLacros>();
 }

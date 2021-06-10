@@ -39,6 +39,7 @@ mojom("mojom") {
     "test_controller.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "web_page_info.mojom",
   ]
   disable_variants = true
 

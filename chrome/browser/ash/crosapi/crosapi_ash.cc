@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
+#include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -113,6 +114,7 @@ CrosapiAsh::CrosapiAsh()
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
+      web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
@@ -269,6 +271,11 @@ void CrosapiAsh::BindTaskManager(
 void CrosapiAsh::BindTestController(
     mojo::PendingReceiver<mojom::TestController> receiver) {
   test_controller_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindWebPageInfoFactory(
+    mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) {
+  web_page_info_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindClipboard(
