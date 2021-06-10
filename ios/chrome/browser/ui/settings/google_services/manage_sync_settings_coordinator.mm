@@ -239,11 +239,11 @@ using signin_metrics::PromoAction;
   [handler closeSettingsUIAndOpenURL:command];
 }
 
-- (void)showTurnOffSyncOptions {
+- (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect {
   self.signOutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                            rect:self.viewController.view.frame
+                            rect:targetRect
                             view:self.viewController.view];
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   self.signOutCoordinator.completion = ^(BOOL success) {
