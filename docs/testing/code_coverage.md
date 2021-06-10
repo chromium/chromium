@@ -231,6 +231,7 @@ code coverage report:
 ```
 $ llvm-cov show -output-dir=out/report -format=html \
     -instr-profile=out/report/coverage.profdata \
+    -compilation-dir=out/coverage \
     -object=out/coverage/url_unittests \
     out/coverage/crypto_unittests
 ```

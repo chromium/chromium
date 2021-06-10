@@ -232,6 +232,7 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
 
   subprocess_cmd = [
       LLVM_COV_PATH, 'show', '-format={}'.format(output_format),
+      '-compilation-dir={}'.format(BUILD_DIR),
       '-output-dir={}'.format(OUTPUT_DIR),
       '-instr-profile={}'.format(profdata_file_path), binary_paths[0]
   ]
@@ -617,6 +618,7 @@ def _GeneratePerFileCoverageSummary(binary_paths, profdata_file_path, filters,
       logging.error("Binary %s does not exist", path)
   subprocess_cmd = [
       LLVM_COV_PATH, 'export', '-summary-only',
+      '-compilation-dir={}'.format(BUILD_DIR),
       '-instr-profile=' + profdata_file_path, binary_paths[0]
   ]
   subprocess_cmd.extend(

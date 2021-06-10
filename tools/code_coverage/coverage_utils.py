@@ -462,7 +462,7 @@ class CoverageReportPostProcessor(object):
 
     per_file_coverage_summary = {}
     for file_coverage_data in files_coverage_data:
-      file_path = file_coverage_data['filename']
+      file_path = os.path.normpath(file_coverage_data['filename'])
       assert file_path.startswith(self.src_root_dir), (
           'File path "%s" in coverage summary is outside source checkout.' %
           file_path)
