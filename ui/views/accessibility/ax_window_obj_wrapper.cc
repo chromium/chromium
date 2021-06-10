@@ -124,6 +124,10 @@ void AXWindowObjWrapper::GetChildren(
     return;
   }
 
+  // Ignore this window's children if it is forced to be invisible.
+  if (window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren))
+    return;
+
   for (auto* child : window_->children())
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
 
@@ -163,11 +167,17 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
     out_node_data->role = ax::mojom::Role::kWindow;
   out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                     base::UTF16ToUTF8(window_->GetTitle()));
-  if (!window_->IsVisible())
+  if (!window_->IsVisible() ||
+      window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren)) {
     out_node_data->AddState(ax::mojom::State::kInvisible);
+  }
 
   out_node_data->relative_bounds.bounds =
       gfx::RectF(window_->GetBoundsInScreen());
+
+  out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                    GetWindowName(window_));
+
   std::string* child_ax_tree_id_ptr = window_->GetProperty(ui::kChildAXTreeID);
   if (child_ax_tree_id_ptr) {
     ui::AXTreeID child_ax_tree_id =
@@ -184,16 +194,14 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
       // non-visible so prune it.
       if (!window_->GetToplevelWindow() ||
           GetWidgetForWindow(window_->GetToplevelWindow()) ||
-          !window_->IsVisible()) {
+          !window_->IsVisible() ||
+          window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren)) {
         return;
       }
 
       out_node_data->AddChildTreeId(child_ax_tree_id);
     }
   }
-
-  out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                    GetWindowName(window_));
 }
 
 ui::AXNodeID AXWindowObjWrapper::GetUniqueId() const {
@@ -241,11 +249,13 @@ void AXWindowObjWrapper::OnWindowBoundsChanged(
 void AXWindowObjWrapper::OnWindowPropertyChanged(aura::Window* window,
                                                  const void* key,
                                                  intptr_t old) {
-  if (window_destroying_)
+  if (window_destroying_ || window != window_)
     return;
 
-  if (window == window_ && key == ui::kChildAXTreeID)
+  if (key == ui::kChildAXTreeID ||
+      key == ui::kAXConsiderInvisibleAndIgnoreChildren) {
     FireEvent(ax::mojom::Event::kChildrenChanged);
+  }
 }
 
 void AXWindowObjWrapper::OnWindowVisibilityChanged(aura::Window* window,

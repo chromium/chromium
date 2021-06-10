@@ -22,6 +22,11 @@ AX_EXPORT extern const aura::WindowProperty<std::string*>* const kChildAXTreeID;
 AX_EXPORT extern const aura::WindowProperty<ax::mojom::Role>* const
     kAXRoleOverride;
 
+// Whether to force a window to be invisible with its children ignored. Used
+// to hide the non-lock screen contents when the lock screen is shown.
+AX_EXPORT extern const aura::WindowProperty<bool>* const
+    kAXConsiderInvisibleAndIgnoreChildren;
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AURA_AURA_WINDOW_PROPERTIES_H_
