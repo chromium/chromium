@@ -28,6 +28,9 @@
 
 namespace {
 
+// 6 refers to CHROME_OMNIBOX in the ClientId enum.
+constexpr int chromeOmniboxClientId = 6;
+
 // Builds a document search request body. Inputs that affect the request are:
 //   |query|: Current omnibox query text, passed as an argument.
 //   |locale|: Current browser locale as BCP-47, obtained inside the function.
@@ -38,6 +41,7 @@ namespace {
 //       pageSize: 10,
 //       requestOptions: {
 //            searchApplicationId: "searchapplications/chrome",
+//            clientId: 6,
 //            languageCode: "|locale|",
 //       }
 //     }
@@ -52,6 +56,10 @@ std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
   base::Value request_options(base::Value::Type::DICTIONARY);
   request_options.SetKey("searchApplicationId",
                          base::Value("searchapplications/chrome"));
+  // While the searchApplicationId is a specific config being used by a client
+  // and can be shared among multiple clients in some instances, clientId
+  // identifies a client uniquely.
+  request_options.SetKey("clientId", base::Value(chromeOmniboxClientId));
   request_options.SetKey("languageCode",
                          base::Value(base::i18n::GetConfiguredLocale()));
   root.SetKey("requestOptions", std::move(request_options));
