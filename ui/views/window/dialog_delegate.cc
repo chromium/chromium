@@ -66,7 +66,7 @@ Widget* DialogDelegate::CreateDialogWidget(
     std::unique_ptr<WidgetDelegate> delegate,
     gfx::NativeWindow context,
     gfx::NativeView parent) {
-  DCHECK(delegate->owned_by_widget());
+  CHECK(delegate->owned_by_widget());
   return CreateDialogWidget(delegate.release(), context, parent);
 }
 
@@ -148,21 +148,21 @@ bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
 }
 
 bool DialogDelegate::Cancel() {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_);
   if (cancel_callback_)
     RunCloseCallback(std::move(cancel_callback_));
   return true;
 }
 
 bool DialogDelegate::Accept() {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_);
   if (accept_callback_)
     RunCloseCallback(std::move(accept_callback_));
   return true;
 }
 
 void DialogDelegate::RunCloseCallback(base::OnceClosure callback) {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_);
   already_started_close_ = true;
   std::move(callback).Run();
 }
@@ -220,7 +220,7 @@ void DialogDelegate::WindowWillClose() {
     return;
 
   // This is set here instead of before the invocations of Accept()/Cancel() so
-  // that those methods can DCHECK that !already_started_close_. Otherwise,
+  // that those methods can CHECK that !already_started_close_. Otherwise,
   // client code could (eg) call Accept() from inside the cancel callback, which
   // could lead to multiple callbacks being delivered from this class.
   already_started_close_ = true;
@@ -382,7 +382,7 @@ void DialogDelegate::SetButtonRowInsets(const gfx::Insets& insets) {
 }
 
 void DialogDelegate::AcceptDialog() {
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   if (already_started_close_ || !Accept())
     return;
 
@@ -392,7 +392,7 @@ void DialogDelegate::AcceptDialog() {
 }
 
 void DialogDelegate::CancelDialog() {
-  // Note: don't DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
+  // Note: don't CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
   // CancelDialog() is *always* reachable via Esc closing the dialog, even if
   // the cancel button is disabled or there is no cancel button at all.
   if (already_started_close_ || !Cancel())
