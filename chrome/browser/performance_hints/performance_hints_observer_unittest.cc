@@ -29,6 +29,7 @@ using optimization_guide::proto::PerformanceHint;
 using testing::_;
 using testing::DoAll;
 using testing::Eq;
+using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
 using testing::SetArgPointee;
@@ -83,14 +84,14 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
         ->InitializeRenderFrameIfNeeded();
 
     mock_optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
+        static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
             OptimizationGuideKeyedServiceFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
                     profile(),
                     base::BindRepeating([](content::BrowserContext* context)
                                             -> std::unique_ptr<KeyedService> {
                       return std::make_unique<
-                          MockOptimizationGuideKeyedService>(context);
+                          NiceMock<MockOptimizationGuideKeyedService>>(context);
                     })));
 
     mock_otr_optimization_guide_keyed_service_ =
@@ -139,8 +140,8 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service_ =
-      nullptr;
+  NiceMock<MockOptimizationGuideKeyedService>*
+      mock_optimization_guide_keyed_service_ = nullptr;
   MockOptimizationGuideKeyedService*
       mock_otr_optimization_guide_keyed_service_ = nullptr;
 
