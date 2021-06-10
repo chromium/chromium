@@ -17,10 +17,12 @@ struct PartitionDirectMapExtent {
   PartitionDirectMapExtent<thread_safe>* next_extent;
   PartitionDirectMapExtent<thread_safe>* prev_extent;
   PartitionBucket<thread_safe>* bucket;
-  // Mapped size, not including guard pages and meta-data or alignment padding.
-  size_t map_size;
+  // Size of the entire reservation, including guard pages, meta-data,
+  // padding for alignment before allocation, and padding for granularity at the
+  // end of the allocation.
+  size_t reservation_size;
   // Padding between the first partition page (guard pages + meta-data) and
-  // the map.
+  // the allocation.
   size_t padding_for_alignment;
 
   ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(

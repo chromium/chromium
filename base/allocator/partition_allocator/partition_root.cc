@@ -664,54 +664,75 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   PA_DCHECK(internal::IsManagedByDirectMap(slot_span));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
+  auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
+  size_t current_reservation_size = extent->reservation_size;
+  // Calculate the new reservation size the way PartitionDirectMap() would, but
+  // skip the alignment, because this call isn't requesting it.
+  size_t new_reservation_size = GetDirectMapReservationSize(raw_size);
+
+  // If new reservation would be larger, there is nothing we can do to
+  // reallocate in-place.
+  if (new_reservation_size > current_reservation_size)
+    return false;
+
+  // Don't reallocate in-place if new reservation size would be less than 80 %
+  // of the current one, to avoid holding on to too much unused address space.
+  // Make this check before comparing slot sizes, as even with equal or similar
+  // slot sizes we can save a lot if the original allocation was heavily padded
+  // for alignment.
+  if ((new_reservation_size / SystemPageSize()) * 5 <
+      (current_reservation_size / SystemPageSize()) * 4)
+    return false;
+
   // Note that the new size isn't a bucketed size; this function is called
-  // whenever we're reallocating a direct mapped allocation.
+  // whenever we're reallocating a direct mapped allocation, so calculate it
+  // the way PartitionDirectMap() would.
   size_t new_slot_size = GetDirectMapSlotSize(raw_size);
   if (new_slot_size < kMinDirectMappedDownsize)
     return false;
 
-  // bucket->slot_size is the current size of the allocation.
+  // Past this point, we decided we'll attempt to reallocate without relocating,
+  // so we have to honor the padding for alignment in front of the original
+  // allocation, even though this function isn't requesting any alignment.
+
+  // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
   char* slot_start =
       static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
-  // TODO(bartekn): Drop the alignment requirement of the existing allocation.
+  // This is the available part of the reservation up to which the new
+  // allocation can grow.
+  size_t available_reservation_size =
+      current_reservation_size - extent->padding_for_alignment -
+      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
+#if DCHECK_IS_ON()
+  char* reservation_start = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(slot_start) & kSuperPageBaseMask);
+  PA_DCHECK(internal::IsReservationStart(reservation_start));
+  PA_DCHECK(slot_start + available_reservation_size ==
+            reservation_start + current_reservation_size -
+                GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
+#endif
+
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
   } else if (new_slot_size < current_slot_size) {
-    auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
-    size_t current_map_size = extent->map_size;
-    // Calculate the new map size the way PartitionDirectMap() would, but
-    // assume keeping the same alignment.
-    size_t new_map_size =
-        GetDirectMapReservedSize(raw_size + extent->padding_for_alignment) -
-        extent->padding_for_alignment - GetDirectMapMetadataAndGuardPagesSize();
-
-    // Don't reallocate in-place if new map size would be less than 80 % of the
-    // current map size, to avoid holding on to too much unused address space.
-    // TODO(bartekn): Compare reserved size, to get the whole picture.
-    if ((new_map_size / SystemPageSize()) * 5 <
-        (current_map_size / SystemPageSize()) * 4)
-      return false;
-
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
     DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
                                PageUpdatePermissions);
     // Since the decommited system pages are still reserved, we don't need to
-    // change the entries for decommitted pages of the reservation offset table.
-  } else if (new_slot_size <=
-             DirectMapExtent::FromSlotSpan(slot_span)->map_size) {
-    // Grow within the actually allocated memory. Just need to make the
+    // change the entries for decommitted pages in the reservation offset table.
+  } else if (new_slot_size <= available_reservation_size) {
+    // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
     RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
-    // The recommited system pages have been already reserved and all the
-    // entries (for map_size) have been already initialized when reserving the
-    // pages. So we don't need to change the entries of the reservation offset
-    // table.
+    // The recommited system pages had been already reserved and all the
+    // entries in the reservation offset table (for entire reservation_size
+    // region) have been already initialized.
 
 #if DCHECK_IS_ON()
     memset(slot_start + current_slot_size, kUninitializedByte,

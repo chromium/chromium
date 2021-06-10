@@ -281,7 +281,7 @@ static const size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxDirectMapped() {
   // Subtract kSuperPageSize to accommodate for granularity inside
-  // PartitionRoot::GetDirectMapReservedSize.
+  // PartitionRoot::GetDirectMapReservationSize.
   return (1UL << 31) - kSuperPageSize;
 }
 

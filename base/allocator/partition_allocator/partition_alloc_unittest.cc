@@ -1102,25 +1102,39 @@ TEST_F(PartitionAllocTest, Realloc) {
   allocator.root()->Free(ptr);
 
   // Test that shrinking a direct mapped allocation happens in-place.
-  size = kMaxBucketed + 16 * SystemPageSize();
+  // Pick a large size so that Realloc doesn't think it's worthwhile to
+  // downsize even if one less super page is used (due to high granularity on
+  // 64-bit systems).
+  size = 10 * kSuperPageSize + SystemPageSize() - 42;
   ptr = allocator.root()->Alloc(size, type_name);
   size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   ptr2 = allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
+  EXPECT_EQ(ptr, ptr2);
   EXPECT_EQ(actual_capacity - SystemPageSize(),
             allocator.root()->AllocationCapacityFromPtr(ptr2));
+  void* ptr3 =
+      allocator.root()->Realloc(ptr2, size - 32 * SystemPageSize(), type_name);
+  EXPECT_EQ(ptr2, ptr3);
+  EXPECT_EQ(actual_capacity - 32 * SystemPageSize(),
+            allocator.root()->AllocationCapacityFromPtr(ptr3));
 
   // Test that a previously in-place shrunk direct mapped allocation can be
   // expanded up again up to its original size.
-  ptr = allocator.root()->Realloc(ptr2, size, type_name);
-  EXPECT_EQ(ptr2, ptr);
+  ptr = allocator.root()->Realloc(ptr3, size, type_name);
+  EXPECT_EQ(ptr3, ptr);
   EXPECT_EQ(actual_capacity, allocator.root()->AllocationCapacityFromPtr(ptr));
+
+  // Test that the allocation can be expanded in place up to its capacity.
+  ptr2 = allocator.root()->Realloc(ptr, actual_capacity, type_name);
+  EXPECT_EQ(ptr, ptr2);
+  EXPECT_EQ(actual_capacity, allocator.root()->AllocationCapacityFromPtr(ptr2));
 
   // Test that a direct mapped allocation is performed not in-place when the
   // new size is small enough.
-  ptr2 = allocator.root()->Realloc(ptr, SystemPageSize(), type_name);
-  EXPECT_NE(ptr, ptr2);
+  ptr3 = allocator.root()->Realloc(ptr2, SystemPageSize(), type_name);
+  EXPECT_NE(ptr2, ptr3);
 
-  allocator.root()->Free(ptr2);
+  allocator.root()->Free(ptr3);
 }
 
 TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
@@ -1133,7 +1147,10 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
 
   for (size_t alignment : alignments) {
     // Test that shrinking a direct mapped allocation happens in-place.
-    size_t size = kMaxBucketed + 2 * SystemPageSize();
+    // Pick a large size so that Realloc doesn't think it's worthwhile to
+    // downsize even if one less super page is used (due to high granularity on
+    // 64-bit systems), even if the alignment padding is taken out.
+    size_t size = 10 * kSuperPageSize + SystemPageSize() - 42;
     void* ptr =
         allocator.root()->AllocFlagsInternal(0, size, alignment, type_name);
     size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
@@ -1142,21 +1159,55 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
     EXPECT_EQ(ptr, ptr2);
     EXPECT_EQ(actual_capacity - SystemPageSize(),
               allocator.root()->AllocationCapacityFromPtr(ptr2));
+    void* ptr3 = allocator.root()->Realloc(ptr2, size - 32 * SystemPageSize(),
+                                           type_name);
+    EXPECT_EQ(ptr2, ptr3);
+    EXPECT_EQ(actual_capacity - 32 * SystemPageSize(),
+              allocator.root()->AllocationCapacityFromPtr(ptr3));
 
     // Test that a previously in-place shrunk direct mapped allocation can be
     // expanded up again up to its original size.
-    ptr = allocator.root()->Realloc(ptr2, size, type_name);
-    EXPECT_EQ(ptr2, ptr);
+    ptr = allocator.root()->Realloc(ptr3, size, type_name);
+    EXPECT_EQ(ptr3, ptr);
     EXPECT_EQ(actual_capacity,
               allocator.root()->AllocationCapacityFromPtr(ptr));
 
+    // Test that the allocation can be expanded in place up to its capacity.
+    ptr2 = allocator.root()->Realloc(ptr, actual_capacity, type_name);
+    EXPECT_EQ(ptr, ptr2);
+    EXPECT_EQ(actual_capacity,
+              allocator.root()->AllocationCapacityFromPtr(ptr2));
+
     // Test that a direct mapped allocation is performed not in-place when the
     // new size is small enough.
-    ptr2 = allocator.root()->Realloc(ptr, SystemPageSize(), type_name);
-    EXPECT_NE(ptr, ptr2);
+    ptr3 = allocator.root()->Realloc(ptr2, SystemPageSize(), type_name);
+    EXPECT_NE(ptr2, ptr3);
 
-    allocator.root()->Free(ptr2);
+    allocator.root()->Free(ptr3);
   }
+}
+
+TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
+  // Pick size such that the alignment will put it cross the super page
+  // boundary.
+  size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  void* ptr = allocator.root()->AllocFlagsInternal(
+      0, size, kMaxSupportedAlignment, type_name);
+  // Reallocating with the same size will actually relocate, because without a
+  // need for alignment we can downsize the reservation significantly.
+  void* ptr2 = allocator.root()->Realloc(ptr, size, type_name);
+  EXPECT_NE(ptr, ptr2);
+  allocator.root()->Free(ptr2);
+
+  // Again pick size such that the alignment will put it cross the super page
+  // boundary, but this time make it so large that Realloc doesn't fing it worth
+  // shrinking.
+  size = 10 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  ptr = allocator.root()->AllocFlagsInternal(0, size, kMaxSupportedAlignment,
+                                             type_name);
+  ptr2 = allocator.root()->Realloc(ptr, size, type_name);
+  EXPECT_EQ(ptr, ptr2);
+  allocator.root()->Free(ptr2);
 }
 
 // Tests the handing out of freelists for partial slot spans.

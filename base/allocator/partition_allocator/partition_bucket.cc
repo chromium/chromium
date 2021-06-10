@@ -215,13 +215,15 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // requests. Note, |slot_span_alignment| is at least 1 partition page.
     const size_t padding_for_alignment =
         slot_span_alignment - PartitionPageSize();
-    const size_t reserved_size =
-        PartitionRoot<thread_safe>::GetDirectMapReservedSize(
+    const size_t reservation_size =
+        PartitionRoot<thread_safe>::GetDirectMapReservationSize(
             raw_size + padding_for_alignment);
-    const size_t map_size =
-        reserved_size - padding_for_alignment -
+#if DCHECK_IS_ON()
+    const size_t available_reservation_size =
+        reservation_size - padding_for_alignment -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
-    PA_DCHECK(slot_size <= map_size);
+    PA_DCHECK(slot_size <= available_reservation_size);
+#endif
 
     // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
     // BackupRefPtr support.
@@ -230,22 +232,23 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 #else
     pool_handle pool = GetNonBRPPool();
 #endif
-    char* ptr = ReserveMemoryFromGigaCage(pool, nullptr, reserved_size);
-
-    if (UNLIKELY(!ptr)) {
+    char* reservation_start =
+        ReserveMemoryFromGigaCage(pool, nullptr, reservation_size);
+    if (UNLIKELY(!reservation_start)) {
       if (return_null)
         return nullptr;
 
-      PartitionOutOfMemoryMappingFailure(root, reserved_size);
+      PartitionOutOfMemoryMappingFailure(root, reservation_size);
     }
 
     root->total_size_of_direct_mapped_pages.fetch_add(
-        reserved_size, std::memory_order_relaxed);
+        reservation_size, std::memory_order_relaxed);
 
     // Shift by 1 partition page (metadata + guard pages) and alignment padding.
-    char* const slot_start = ptr + PartitionPageSize() + padding_for_alignment;
+    char* const slot_start =
+        reservation_start + PartitionPageSize() + padding_for_alignment;
     RecommitSystemPages(
-        ptr + SystemPageSize(),
+        reservation_start + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
     BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
         // If ENABLE_BRP_DIRECTMAP_SUPPORT and PUT_REF_COUNT_IN_PREVIOUS_SLOT
@@ -274,8 +277,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
 
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool, ptr,
-                                                              reserved_size);
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          pool, reservation_start, reservation_size);
       return nullptr;
     }
 
@@ -284,8 +287,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // so no other thread can update the same offset table entries at the
     // same time. Furthermore, nobody will be ready these offsets until this
     // function returns.
-    uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
-    uintptr_t ptr_end = ptr_start + reserved_size;
+    uintptr_t ptr_start = reinterpret_cast<uintptr_t>(reservation_start);
+    uintptr_t ptr_end = ptr_start + reservation_size;
     auto* offset_ptr = ReservationOffsetPointer(ptr_start);
     int offset = 0;
     while (ptr_start < ptr_end) {
@@ -297,7 +300,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     auto* super_page_extent =
         reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
-            PartitionSuperPageToMetadataArea(ptr));
+            PartitionSuperPageToMetadataArea(reservation_start));
     super_page_extent->root = root;
     // The new structures are all located inside a fresh system page so they
     // will all be zeroed out. These DCHECKs are for documentation and to assert
@@ -354,7 +357,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     page->slot_span_metadata.SetFreelistHead(next_entry);
 
     map_extent = &metadata->direct_map_extent;
-    map_extent->map_size = map_size;
+    map_extent->reservation_size = reservation_size;
     map_extent->padding_for_alignment = padding_for_alignment;
     map_extent->bucket = &metadata->bucket;
   }
@@ -465,15 +468,15 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
               PartitionPageSize()));
 
   size_t num_partition_pages = get_pages_per_slot_span();
-  size_t slot_span_reserved_size = PartitionPageSize() * num_partition_pages;
+  size_t slot_span_reservation_size = PartitionPageSize() * num_partition_pages;
   size_t slot_span_committed_size = get_bytes_per_span();
   PA_DCHECK(num_partition_pages <= NumPartitionPagesPerSuperPage());
   PA_DCHECK(slot_span_committed_size % SystemPageSize() == 0);
-  PA_DCHECK(slot_span_committed_size <= slot_span_reserved_size);
+  PA_DCHECK(slot_span_committed_size <= slot_span_reservation_size);
 
   auto adjusted_next_partition_page =
       bits::AlignUp(root->next_partition_page, slot_span_alignment);
-  if (UNLIKELY(adjusted_next_partition_page + slot_span_reserved_size >
+  if (UNLIKELY(adjusted_next_partition_page + slot_span_reservation_size >
                root->next_partition_page_end)) {
     // In this case, we can no longer hand out pages from the current super page
     // allocation. Get a new super page.
@@ -483,7 +486,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
     // AllocNewSuperPage() updates root->next_partition_page, re-query.
     adjusted_next_partition_page =
         bits::AlignUp(root->next_partition_page, slot_span_alignment);
-    PA_CHECK(adjusted_next_partition_page + slot_span_reserved_size <=
+    PA_CHECK(adjusted_next_partition_page + slot_span_reservation_size <=
              root->next_partition_page_end);
   }
 
@@ -496,7 +499,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
     page->has_valid_span_after_this = 1;
   }
   root->next_partition_page =
-      adjusted_next_partition_page + slot_span_reserved_size;
+      adjusted_next_partition_page + slot_span_reservation_size;
 
   void* slot_span_start = adjusted_next_partition_page;
   auto* slot_span = &gap_end_page->slot_span_metadata;
@@ -544,15 +547,15 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
 
   root->next_super_page = super_page + kSuperPageSize;
   char* quarantine_bitmaps = super_page + PartitionPageSize();
-  const size_t quarantine_bitmaps_reserved_size =
+  const size_t quarantine_bitmaps_reservation_size =
       root->IsQuarantineAllowed() ? ReservedQuarantineBitmapsSize() : 0;
   const size_t quarantine_bitmaps_size_to_commit =
       root->IsQuarantineAllowed() ? CommittedQuarantineBitmapsSize() : 0;
-  PA_DCHECK(quarantine_bitmaps_reserved_size % PartitionPageSize() == 0);
+  PA_DCHECK(quarantine_bitmaps_reservation_size % PartitionPageSize() == 0);
   PA_DCHECK(quarantine_bitmaps_size_to_commit % SystemPageSize() == 0);
   PA_DCHECK(quarantine_bitmaps_size_to_commit <=
-            quarantine_bitmaps_reserved_size);
-  char* ret = quarantine_bitmaps + quarantine_bitmaps_reserved_size;
+            quarantine_bitmaps_reservation_size);
+  char* ret = quarantine_bitmaps + quarantine_bitmaps_reservation_size;
   root->next_partition_page = ret;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(ret ==

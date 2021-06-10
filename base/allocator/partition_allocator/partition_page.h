@@ -48,12 +48,13 @@ static_assert(
 // released. Callers of SlotSpanMetadata::Free() must invoke Run().
 // TODO(1061437): Reconsider once the new locking mechanism is implemented.
 struct DeferredUnmap {
-  void* ptr = nullptr;
-  size_t size = 0;
+  void* reservation_start = nullptr;
+  size_t reservation_size = 0;
   bool use_brp_pool = false;
 
-  // In most cases there is no page to unmap and ptr == nullptr. This function
-  // is inlined to avoid the overhead of a function call in the common case.
+  // In most cases there is no page to unmap and reservation_start == nullptr.
+  // This function is inlined to avoid the overhead of a function call in the
+  // common case.
   ALWAYS_INLINE void Run();
 
  private:
@@ -623,7 +624,7 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Reset() {
 }
 
 ALWAYS_INLINE void DeferredUnmap::Run() {
-  if (UNLIKELY(ptr)) {
+  if (UNLIKELY(reservation_start)) {
     Unmap();
   }
 }
