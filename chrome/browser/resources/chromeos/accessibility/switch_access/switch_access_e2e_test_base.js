@@ -76,6 +76,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
       const automationNode = newNode.automationNode || {};
       return (!expected.instance || newNode instanceof expected.instance) &&
           (!expected.role || expected.role === automationNode.role) &&
+          (!expected.name || expected.name === automationNode.name) &&
           (!expected.className ||
            expected.className === automationNode.className);
     };

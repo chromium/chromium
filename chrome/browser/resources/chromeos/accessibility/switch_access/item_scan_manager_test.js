@@ -503,3 +503,73 @@ TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', function() {
         `Unexpected focus ${manager.node_.debugString()}`);
   });
 });
+
+TEST_F('SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow', function() {
+  const website1 = `<button autofocus>one</button>`;
+  const website2 = `<button autofocus>two</button>`;
+  this.runWithLoadedTree(website1, async (root) => {
+    // Wait for the first button to get SA focused.
+    const button1 = await this.untilFocusIs(
+        {role: chrome.automation.RoleType.BUTTON, name: 'one'});
+
+    // Launch a new browser window and load up the second site.
+    EventGenerator.sendKeyPress(KeyCode.N, {ctrl: true});
+    this.runWithLoadedTree(website2, async (root) => {
+      // Wait for the second button to get SA focused.
+      const button2 = await this.untilFocusIs(
+          {role: chrome.automation.RoleType.BUTTON, name: 'two'});
+
+      // Do a search for the title bar nodes for each of the browser windows. We
+      // do this by walking up to the widget for each window from the buttons.
+      let widget1 = button1.automationNode;
+      while (widget1.role !== chrome.automation.RoleType.WINDOW ||
+             widget1.className !== 'Widget') {
+        widget1 = widget1.parent;
+      }
+      assertTrue(!!widget1);
+
+      let widget2 = button2.automationNode;
+      while (widget2.role !== chrome.automation.RoleType.WINDOW ||
+             widget2.className !== 'Widget') {
+        widget2 = widget2.parent;
+      }
+      assertTrue(!!widget2);
+
+      const titleBar1 =
+          widget1.find({role: chrome.automation.RoleType.TITLE_BAR});
+      assertTrue(!!titleBar1);
+      const titleBar2 =
+          widget2.find({role: chrome.automation.RoleType.TITLE_BAR});
+      assertTrue(!!titleBar2);
+
+      // The focus is currently on widget2 (since button2 has focus). Start with
+      // focusing widget1 which should occur as a result of moving SA to title
+      // bar 1.
+      Navigator.byItem.moveTo_(titleBar1);
+
+      // Simulate entering this group to trigger the focus.
+      Navigator.byItem.enterGroup();
+
+      // Note that this and the second instance below is system OS focus, but
+      // doesn't impact SA focus to preserve current behavior and prevent
+      // flickering.
+      let currentFocus = await new Promise(r => {
+        widget1.addEventListener(
+            chrome.automation.EventType.FOCUS, e => r(e.target));
+      });
+      assertEquals(currentFocus, button1.automationNode);
+
+      // Now, switch to widget2 by moving to title bar 2.
+      Navigator.byItem.moveTo_(titleBar2);
+
+      // Simulate entering this group to trigger the focus.
+      Navigator.byItem.enterGroup();
+
+      currentFocus = await new Promise(r => {
+        widget2.addEventListener(
+            chrome.automation.EventType.FOCUS, e => r(e.target));
+      });
+      assertEquals(currentFocus, button2.automationNode);
+    });
+  });
+});

@@ -311,7 +311,6 @@ export class ItemScanManager extends ItemNavigatorInterface {
       return;
     }
 
-
     if (this.node_.isEquivalentTo(event.target)) {
       return;
     }
@@ -523,6 +522,38 @@ export class ItemScanManager extends ItemNavigatorInterface {
       this.moveToValidNode();
       return;
     }
+
+    // Check to see if the new node requires we try and focus a new window.
+    chrome.automation.getFocus(currentAutomationFocus => {
+      const newAutomationNode = node.automationNode;
+      if (!newAutomationNode || !currentAutomationFocus) {
+        return;
+      }
+
+      // First, if the current focus is a descendant of the new node or vice
+      // versa, then we're done here.
+      if (AutomationUtil.isDescendantOf(
+              currentAutomationFocus, newAutomationNode) ||
+          AutomationUtil.isDescendantOf(
+              newAutomationNode, currentAutomationFocus)) {
+        return;
+      }
+
+      // The current focus and new node do not have one another in their
+      // ancestry; try to focus an ancestor window of the new node. In
+      // particular, the parenting aura::Window of the views::Widget.
+      let widget = newAutomationNode;
+      while (widget &&
+             (widget.role !== chrome.automation.RoleType.WINDOW ||
+              widget.className !== 'Widget')) {
+        widget = widget.parent;
+      }
+
+      if (widget && widget.parent) {
+        widget.parent.focus();
+      }
+    });
+
     this.setNode_(node);
   }
 
