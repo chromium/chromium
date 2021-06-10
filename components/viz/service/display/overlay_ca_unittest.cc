@@ -407,6 +407,94 @@ TEST_F(CALayerOverlayTest, SkipNonVisible) {
   EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
 }
 
+TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
+  const gfx::Size y_size(640, 480);
+  const gfx::Size uv_size(320, 240);
+  bool is_overlay_candidate = true;
+  ResourceId y_resource_id =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), y_size, is_overlay_candidate);
+
+  ResourceId u_resource_id =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), uv_size, is_overlay_candidate);
+
+  ResourceId v_resource_id =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), uv_size, is_overlay_candidate);
+
+  ResourceId uv_resource_id =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), uv_size, is_overlay_candidate);
+
+  // NV12 frames should be promoted to overlays.
+  {
+    auto pass = CreateRenderPass();
+    auto* yuv_quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
+    yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
+                     gfx::Rect(y_size),
+                     /*needs_blending=*/false,
+                     /*ya_texcoord_rect=*/gfx::RectF(0, 0, 640, 480),
+                     /*uv_texcoord_rect=*/gfx::RectF(0, 0, 320, 240), y_size,
+                     uv_size, y_resource_id, uv_resource_id, uv_resource_id,
+                     kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
+                     /*offset=*/0.0f,
+                     /*multiplier=*/1.0f,
+                     /*bits_per_channel=*/8);
+
+    gfx::Rect damage_rect;
+    CALayerOverlayList ca_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+        &damage_rect_, &content_bounds_);
+    EXPECT_EQ(gfx::Rect(), damage_rect);
+    EXPECT_EQ(1U, ca_layer_list.size());
+  }
+
+  // If seprate Y, U, and V resources are specified, then we cannot represent
+  // them as overlays. Only Y and U==V resources are supported.
+  // https://crbug.com/1216345
+  {
+    auto pass = CreateRenderPass();
+    auto* yuv_quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
+    yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
+                     gfx::Rect(y_size),
+                     /*needs_blending=*/false,
+                     /*ya_texcoord_rect=*/gfx::RectF(0, 0, 640, 480),
+                     /*uv_texcoord_rect=*/gfx::RectF(0, 0, 320, 240), y_size,
+                     uv_size, y_resource_id, u_resource_id, v_resource_id,
+                     kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
+                     /*offset=*/0.0f,
+                     /*multiplier=*/1.0f,
+                     /*bits_per_channel=*/8);
+
+    gfx::Rect damage_rect;
+    CALayerOverlayList ca_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+        &damage_rect_, &content_bounds_);
+    EXPECT_EQ(gfx::Rect(), damage_rect);
+    EXPECT_EQ(0U, ca_layer_list.size());
+    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
+  }
+}
+
 class CALayerOverlayRPDQTest : public CALayerOverlayTest {
  protected:
   void SetUp() override {

@@ -66,6 +66,7 @@ enum CALayerResult {
   CA_LAYER_FAILED_TOO_MANY_QUADS = 27,
   CA_LAYER_FAILED_YUV_NOT_CANDIDATE = 28,
   CA_LAYER_FAILED_Y_UV_TEXCOORD_MISMATCH = 29,
+  CA_LAYER_FAILED_YUV_INVALID_PLANES = 30,
   CA_LAYER_FAILED_COUNT,
 };
 
@@ -181,6 +182,12 @@ CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
       !resource_provider->IsOverlayCandidate(quad->v_plane_resource_id())) {
     return CA_LAYER_FAILED_YUV_NOT_CANDIDATE;
   }
+  if (quad->y_plane_resource_id() == quad->u_plane_resource_id() ||
+      quad->y_plane_resource_id() == quad->v_plane_resource_id() ||
+      quad->u_plane_resource_id() != quad->v_plane_resource_id()) {
+    return CA_LAYER_FAILED_YUV_INVALID_PLANES;
+  }
+
   gfx::RectF ya_contents_rect =
       gfx::ScaleRect(quad->ya_tex_coord_rect, 1.f / quad->ya_tex_size.width(),
                      1.f / quad->ya_tex_size.height());
