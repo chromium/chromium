@@ -16,25 +16,14 @@
 
 namespace {
 
-const float kNetworkPortalWebDialogWidthFraction = .8;
-const float kNetworkPortalWebDialogHeightFraction = .8;
+const float kNetworkPortalWebDialogScale = .8;
 
 gfx::Size GetPortalDialogSize() {
   const display::Display display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
-  gfx::Size display_size = display.size();
-
-  if (display.rotation() == display::Display::ROTATE_90 ||
-      display.rotation() == display::Display::ROTATE_270) {
-    display_size = gfx::Size(display_size.height(), display_size.width());
-  }
-
-  display_size =
-      gfx::Size(display_size.width() * kNetworkPortalWebDialogWidthFraction,
-                display_size.height() * kNetworkPortalWebDialogHeightFraction);
-
-  return display_size;
+  return gfx::Size(display.size().width() * kNetworkPortalWebDialogScale,
+                   display.size().height() * kNetworkPortalWebDialogScale);
 }
 
 }  // namespace
@@ -75,8 +64,7 @@ GURL NetworkPortalWebDialog::GetDialogContentURL() const {
 }
 
 void NetworkPortalWebDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {
-}
+    std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void NetworkPortalWebDialog::GetDialogSize(gfx::Size* size) const {
   *size = GetPortalDialogSize();
