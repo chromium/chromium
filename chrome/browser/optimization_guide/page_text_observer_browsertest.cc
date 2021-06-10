@@ -210,7 +210,9 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
+// Flaky. See crbug/1187264.
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest,
+                       DISABLED_FirstLayoutAndOnLoad) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
