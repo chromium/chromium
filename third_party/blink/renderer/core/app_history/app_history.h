@@ -19,6 +19,7 @@ namespace blink {
 class AppHistoryEntry;
 class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
+class AppHistoryNavigationOptions;
 class HTMLFormElement;
 class HistoryItem;
 class KURL;
@@ -29,7 +30,12 @@ class SerializedScriptValue;
 // TODO(japhet): This should probably move to frame_loader_types.h and possibly
 // be used more broadly once it is in the HTML spec.
 enum class UserNavigationInvolvement { kBrowserUI, kActivation, kNone };
-enum class NavigateEventType { kFragment, kHistoryApi, kCrossDocument };
+enum class NavigateEventType {
+  kFragment,
+  kHistoryApi,
+  kAppHistorySameDocumentGoto,
+  kCrossDocument
+};
 
 class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                                      public Supplement<LocalDOMWindow> {
@@ -52,6 +58,9 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   AppHistoryEntry* current() const;
   HeapVector<Member<AppHistoryEntry>> entries();
 
+  bool canGoBack() const;
+  bool canGoForward() const;
+
   ScriptPromise navigate(ScriptState*,
                          const String& url,
                          AppHistoryNavigateOptions*,
@@ -59,6 +68,17 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   ScriptPromise navigate(ScriptState*,
                          AppHistoryNavigateOptions*,
                          ExceptionState&);
+
+  ScriptPromise goTo(ScriptState*,
+                     const String& key,
+                     AppHistoryNavigationOptions*,
+                     ExceptionState&);
+  ScriptPromise back(ScriptState*,
+                     AppHistoryNavigationOptions*,
+                     ExceptionState&);
+  ScriptPromise forward(ScriptState*,
+                        AppHistoryNavigationOptions*,
+                        ExceptionState&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
@@ -70,7 +90,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              NavigateEventType,
                              WebFrameLoadType,
                              UserNavigationInvolvement,
-                             SerializedScriptValue* = nullptr);
+                             SerializedScriptValue* = nullptr,
+                             HistoryItem* destination_item = nullptr);
   void CancelOngoingNavigateEvent();
 
   int GetIndexFor(AppHistoryEntry*);
@@ -95,6 +116,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   scoped_refptr<SerializedScriptValue> navigate_serialized_state_;
 
   bool did_react_to_promise_ = false;
+  Member<ScriptPromiseResolver> goto_promise_resolver_;
+
   ScriptValue navigate_event_info_;
 };
 

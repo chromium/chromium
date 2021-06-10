@@ -1558,8 +1558,9 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   if (is_same_document && GetLastCommittedEntry()) {
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
-        params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-        params.url, GetCommittedOriginForFrameEntry(params, request),
+        params.document_sequence_number, params.app_history_key,
+        rfh->GetSiteInstance(), nullptr, params.url,
+        GetCommittedOriginForFrameEntry(params, request),
         Referrer(*params.referrer), initiator_origin,
         request->GetRedirectChain(), params.page_state, params.method,
         params.post_id, nullptr /* blob_url_loader_factory */,
@@ -1701,6 +1702,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     frame_entry->set_frame_unique_name(rfh->frame_tree_node()->unique_name());
     frame_entry->set_item_sequence_number(params.item_sequence_number);
     frame_entry->set_document_sequence_number(params.document_sequence_number);
+    frame_entry->set_app_history_key(params.app_history_key);
     frame_entry->set_redirect_chain(request->GetRedirectChain());
     frame_entry->SetPageState(params.page_state);
     frame_entry->set_method(params.method);
@@ -1937,7 +1939,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), NavigationEntryImpl::UpdatePolicy::kUpdate,
       params.item_sequence_number, params.document_sequence_number,
-      rfh->GetSiteInstance(), nullptr, params.url,
+      params.app_history_key, rfh->GetSiteInstance(), nullptr, params.url,
       GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
@@ -1998,8 +2000,9 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       request->common_params().initiator_origin;
   auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
-      params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params, request),
+      params.document_sequence_number, params.app_history_key,
+      rfh->GetSiteInstance(), nullptr, params.url,
+      GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -2111,8 +2114,9 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       request->common_params().initiator_origin;
   last_committed->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), update_policy, params.item_sequence_number,
-      params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params, request),
+      params.document_sequence_number, params.app_history_key,
+      rfh->GetSiteInstance(), nullptr, params.url,
+      GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -2459,7 +2463,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     // committed NavigationEntry that will be referenced to construct the new
     // FrameNavigationEntry tree when this navigation commits.
     entry->AddOrUpdateFrameEntry(
-        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, nullptr,
+        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* commit_origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
@@ -2493,7 +2497,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   scoped_refptr<FrameNavigationEntry> frame_entry(entry->GetFrameEntry(node));
   if (!frame_entry) {
     frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
-        node->unique_name(), -1, -1, nullptr,
+        node->unique_name(), -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
@@ -3316,7 +3320,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
     }
 
     entry->AddOrUpdateFrameEntry(
-        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, nullptr,
+        node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()),
         params.url, absl::nullopt, params.referrer, params.initiator_origin,
         params.redirect_chain, blink::PageState(), "GET", -1,
@@ -4187,6 +4191,59 @@ void NavigationControllerImpl::PopulateAppHistoryEntryVectors(
         PopulateSingleAppHistoryEntryVector(
             Direction::kForward, entry_index, pending_origin, node,
             site_instance.get(), pending_item_sequence_number));
+  }
+}
+
+NavigationControllerImpl::HistoryNavigationAction
+NavigationControllerImpl::ShouldNavigateToEntryForAppHistoryKey(
+    FrameNavigationEntry* current_entry,
+    FrameNavigationEntry* target_entry,
+    const std::string& app_history_key) {
+  if (!target_entry || !target_entry->committed_origin())
+    return HistoryNavigationAction::kStopLooking;
+  if (current_entry->site_instance() != target_entry->site_instance())
+    return HistoryNavigationAction::kStopLooking;
+  if (!current_entry->committed_origin()->IsSameOriginWith(
+          *target_entry->committed_origin())) {
+    return HistoryNavigationAction::kStopLooking;
+  }
+
+  // NOTE: We don't actually care between kSameDocument and
+  // kDifferentDocument, so always use kDifferentDocument by convention.
+  if (target_entry->app_history_key() == app_history_key)
+    return HistoryNavigationAction::kDifferentDocument;
+  return HistoryNavigationAction::kKeepLooking;
+}
+
+void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
+                                                       const std::string& key) {
+  FrameNavigationEntry* current_entry =
+      GetLastCommittedEntry()->GetFrameEntry(node);
+  if (!current_entry)
+    return;
+
+  // We want to find the nearest matching entry that is contiguously
+  // same-instance and same-origin. Check back first, then forward.
+  // TODO(japhet): Link spec here once it exists.
+  for (int i = GetCurrentEntryIndex() - 1; i >= 0; i--) {
+    auto result = ShouldNavigateToEntryForAppHistoryKey(
+        current_entry, GetEntryAtIndex(i)->GetFrameEntry(node), key);
+    if (result == HistoryNavigationAction::kStopLooking)
+      break;
+    if (result != HistoryNavigationAction::kKeepLooking) {
+      GoToIndex(i);
+      return;
+    }
+  }
+  for (int i = GetCurrentEntryIndex() + 1; i < GetEntryCount(); i++) {
+    auto result = ShouldNavigateToEntryForAppHistoryKey(
+        current_entry, GetEntryAtIndex(i)->GetFrameEntry(node), key);
+    if (result == HistoryNavigationAction::kStopLooking)
+      break;
+    if (result != HistoryNavigationAction::kKeepLooking) {
+      GoToIndex(i);
+      return;
+    }
   }
 }
 

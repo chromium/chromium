@@ -5115,6 +5115,21 @@ void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
   }
 }
 
+void RenderFrameHostImpl::NavigateToAppHistoryKey(const std::string& key,
+                                                  bool has_user_gesture) {
+  // Non-user initiated navigations coming from the renderer should be ignored
+  // if there is an ongoing browser-initiated navigation.
+  // See https://crbug.com/879965.
+  // TODO(arthursonzogni): See if this should check for ongoing navigations in
+  // the frame(s) affected by the session history navigation, rather than just
+  // the main frame.
+  if (Navigator::ShouldIgnoreIncomingRendererRequest(
+          frame_tree_->root()->navigation_request(), has_user_gesture)) {
+    return;
+  }
+  frame_tree_->controller().NavigateToAppHistoryKey(frame_tree_node(), key);
+}
+
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
     blink::mojom::FindInPageResultAXParamsPtr params) {
   // Only update FindInPageResult on active RenderFrameHost. Note that, it is

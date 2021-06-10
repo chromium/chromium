@@ -1,0 +1,23 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  // step_timeout because blink doesn't create history entries if onload has not
+  // yet completed.
+  window.onload = () => t.step_timeout(() => {
+    appHistory.navigate("#foo").then(() => {
+      appHistory.onnavigate = t.step_func_done(e => {
+        assert_true(e.cancelable);
+        assert_true(e.canRespond);
+        assert_false(e.userInitiated);
+        assert_false(e.hashChange);
+        assert_equals(e.formData, null);
+        assert_equals(e.info, "hi");
+      });
+      assert_true(appHistory.canGoBack);
+      appHistory.back({ navigateInfo: "hi" });
+    });
+  }, 0);
+}, "navigate event for appHistory.back() - same-document");
+</script>

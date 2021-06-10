@@ -350,6 +350,19 @@ interface LocalFrameHost {
   // of a user action.
   GoToEntryAtOffset(int32 offset, bool has_user_gesture);
 
+  // Tells the browser to navigate back or forward in session history to the
+  // history entry associated with |key|. |key| is a renderer-generated random
+  // UUID, per
+  // https://wicg.github.io/app-history/#session-history-entry-app-history-key
+  //
+  // The key is only used to trigger a back/forward navigation, so it is
+  // fundamentally similar to |offset| in GoToEntryAtOffset(). However,
+  // appHistory also requires that |key| match a FrameNavigationEntry in this
+  // frame, and that the target FNE is contiguously same-origin and
+  // same-site-instance with the current FNE, so navigating via this
+  // function is more restrictive than GoToEntryAtOffset().
+  NavigateToAppHistoryKey(string key, bool has_user_gesture);
+
   // Changes the title for the page in the UI when the page is navigated or the
   // title changes. Sent for top-level frames. This can be null when loading an
   // initial empty document (and in some tests).

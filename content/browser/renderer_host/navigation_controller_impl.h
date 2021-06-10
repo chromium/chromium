@@ -184,6 +184,23 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       const absl::optional<blink::Impression>& impression);
 
+  // Navigates to the history entry associated with the given app history |key|.
+  // Searches |entries_| for a FrameNavigationEntry associated with |node|
+  // that has |key| as its app history key. Searches back from the current
+  // index, then forward, so if there are multiple entries with the same key,
+  // the nearest to current should be selected. Stops searching in the current
+  // direction if it finds a NavigationEntry without a FrameNavigationEntry for
+  // |node|, or if the FrameNavigationEntry doesn't match origin or site
+  // instance.
+  //
+  // If no matching entry is found, the navigation is dropped. The renderer
+  // should only send the navigation to the browser if it believes the entry is
+  // in |entries_|, but it might be wrong (if the entry was dropped from
+  // |entries_|, or due to a race condition) or compromised.
+  // If a matching entry is found, navigate to that entry and proceed like any
+  // other history navigation.
+  void NavigateToAppHistoryKey(FrameTreeNode* node, const std::string& key);
+
   // Whether this is the initial navigation in an unmodified new tab.  In this
   // case, we know there is no content displayed in the page.
   bool IsUnmodifiedBlankTab();
@@ -658,6 +675,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameTreeNode* node,
       SiteInstance* site_instance,
       int64_t previous_item_sequence_number);
+  // Helper for NavigateToAppHistoryKey(). Ensures that we only navigate to
+  // |target_entry| if it matches |current_entry|'s origin and site instance, as
+  // well as having |app_history_key| as its key.
+  HistoryNavigationAction ShouldNavigateToEntryForAppHistoryKey(
+      FrameNavigationEntry* current_entry,
+      FrameNavigationEntry* target_entry,
+      const std::string& app_history_key);
 
   // ---------------------------------------------------------------------------
 

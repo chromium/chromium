@@ -232,12 +232,17 @@ interface AnimationTimeline
     method constructor
 interface AppHistory : EventTarget
     attribute @@toStringTag
+    getter canGoBack
+    getter canGoForward
     getter current
     getter onnavigate
     getter onnavigateerror
     getter onnavigatesuccess
+    method back
     method constructor
     method entries
+    method forward
+    method goTo
     method navigate
     setter onnavigate
     setter onnavigateerror

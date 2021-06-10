@@ -4532,6 +4532,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 
   params->item_sequence_number = item.ItemSequenceNumber();
   params->document_sequence_number = item.DocumentSequenceNumber();
+  params->app_history_key = item.GetAppHistoryKey().Utf8();
 
   // If the page contained a client redirect (meta refresh, document.loc...),
   // set the referrer appropriately.

@@ -4423,4 +4423,70 @@ TEST_F(NavigationControllerTest, PruneForwardEntriesAfterClone) {
   EXPECT_EQ(1, delegate->navigation_state_change_count());
 }
 
+TEST_F(NavigationControllerTest,
+       NavigateToAppHistoryKey_DifferentSiteInstance) {
+  NavigationControllerImpl& controller = controller_impl();
+  const GURL url1("http://foo1");
+  const GURL url2("http://foo2");
+
+  // Navigate and set a key.
+  NavigateAndCommit(url1);
+  std::string first_key = "12345";
+  controller.GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn())
+      ->set_app_history_key(first_key);
+
+  // Navigate to a new site instance. The key should not be shared.
+  NavigateAndCommit(url2);
+  EXPECT_NE(controller.GetLastCommittedEntry()
+                ->GetFrameEntry(root_ftn())
+                ->app_history_key(),
+            first_key);
+  EXPECT_FALSE(controller.GetPendingEntry());
+
+  // Attempte to provide the cross-site-instance key to
+  // NavigateToAppHistoryKey(). No navigation should occur.
+  controller.NavigateToAppHistoryKey(root_ftn(), first_key);
+  EXPECT_FALSE(controller.GetPendingEntry());
+}
+
+TEST_F(NavigationControllerTest, NavigateToAppHistoryKey_KeyForWrongFrame) {
+  const GURL kUrl1("http://google.com");
+
+  // Simulate navigating to a page that has a same-origin subframe.
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, main_test_rfh());
+  TestRenderFrameHost* subframe = main_test_rfh()->AppendChild("subframe");
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, subframe);
+
+  // Set a main frame key
+  std::string first_main_key = "12345";
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn())
+      ->set_app_history_key(first_main_key);
+
+  // Navigate both frames again.
+  const GURL kUrl2("http://google.com#bar");
+  auto same_document_navigation_main =
+      NavigationSimulator::CreateRendererInitiated(kUrl2, main_test_rfh());
+  same_document_navigation_main->CommitSameDocument();
+  auto same_document_navigation_subframe =
+      NavigationSimulator::CreateRendererInitiated(kUrl2, subframe);
+  same_document_navigation_subframe->CommitSameDocument();
+  ASSERT_EQ(3, controller_impl().GetEntryCount());
+
+  // Call NavigateToAppHistoryKey() on the subframe with the key from the main
+  // frame. No navigation should begin, because we should only match keys for
+  // the target frame.
+  FrameTreeNode* subframe_node =
+      main_test_rfh()->frame_tree_node()->child_at(0);
+  controller_impl().NavigateToAppHistoryKey(subframe_node, first_main_key);
+  EXPECT_FALSE(controller_impl().GetPendingEntry());
+
+  // Call NavigateToAppHistoryKey() on the main frame with the key from the main
+  // frame. This time a navigation should begin.
+  controller_impl().NavigateToAppHistoryKey(root_ftn(), first_main_key);
+  EXPECT_TRUE(controller_impl().GetPendingEntry());
+}
+
 }  // namespace content

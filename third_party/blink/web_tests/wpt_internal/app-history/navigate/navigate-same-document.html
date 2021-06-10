@@ -10,5 +10,14 @@ promise_test(async () => {
   assert_equals(location.hash, "#d");
   assert_true(onnavigate_called);
   assert_equals(document.querySelector(":target"), d);
-}, "navigate() navigates same-document and fires onnavigate");
+}, "navigate() navigates same-document and fires onnavigate (async)");
+
+test(() => {
+  let onnavigate_called = false;
+  appHistory.onnavigate = () => onnavigate_called = true;
+  appHistory.navigate("#d");
+  assert_equals(location.hash, "#d");
+  assert_true(onnavigate_called);
+  assert_equals(document.querySelector(":target"), d);
+}, "navigate() navigates same-document and fires onnavigate (sync)");
 </script>

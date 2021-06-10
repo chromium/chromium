@@ -41,6 +41,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const std::string& frame_unique_name,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
+      const std::string& app_history_key,
       scoped_refptr<SiteInstanceImpl> site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
@@ -66,6 +67,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const std::string& frame_unique_name,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
+      const std::string& app_history_key,
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
@@ -104,6 +106,10 @@ class CONTENT_EXPORT FrameNavigationEntry
   int64_t item_sequence_number() const { return item_sequence_number_; }
   void set_document_sequence_number(int64_t document_sequence_number);
   int64_t document_sequence_number() const { return document_sequence_number_; }
+
+  // Identifies a "slot" in the frame's session history for the AppHistory API.
+  void set_app_history_key(const std::string& app_history_key);
+  const std::string& app_history_key() const { return app_history_key_; }
 
   // The SiteInstance, as assigned at commit time, responsible for rendering
   // this frame.  All frames sharing a SiteInstance must live in the same
@@ -230,8 +236,14 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // See the accessors above for descriptions.
   std::string frame_unique_name_;
+
+  // sequence numbers and the app history key are also stored in |page_state_|.
+  // When SetPageState() is called as part of a restore, it also initializes
+  // these.
   int64_t item_sequence_number_;
   int64_t document_sequence_number_;
+  std::string app_history_key_;
+
   scoped_refptr<SiteInstanceImpl> site_instance_;
   // This member is cleared at commit time and is not persisted.
   scoped_refptr<SiteInstanceImpl> source_site_instance_;

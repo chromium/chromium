@@ -20,6 +20,7 @@ FrameNavigationEntry::FrameNavigationEntry(
     const std::string& frame_unique_name,
     int64_t item_sequence_number,
     int64_t document_sequence_number,
+    const std::string& app_history_key,
     scoped_refptr<SiteInstanceImpl> site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
@@ -38,6 +39,7 @@ FrameNavigationEntry::FrameNavigationEntry(
     : frame_unique_name_(frame_unique_name),
       item_sequence_number_(item_sequence_number),
       document_sequence_number_(document_sequence_number),
+      app_history_key_(app_history_key),
       site_instance_(std::move(site_instance)),
       source_site_instance_(std::move(source_site_instance)),
       url_(url),
@@ -63,9 +65,9 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
   // Omit any fields cleared at commit time.
   copy->UpdateEntry(
       frame_unique_name_, item_sequence_number_, document_sequence_number_,
-      site_instance_.get(), nullptr, url_, committed_origin_, referrer_,
-      initiator_origin_, redirect_chain_, page_state_, method_, post_id_,
-      nullptr /* blob_url_loader_factory */,
+      app_history_key_, site_instance_.get(), nullptr, url_, committed_origin_,
+      referrer_, initiator_origin_, redirect_chain_, page_state_, method_,
+      post_id_, nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */,
       nullptr /* subresource_web_bundle_navigation_info */,
       policy_container_policies_ ? policy_container_policies_->Clone()
@@ -80,6 +82,7 @@ void FrameNavigationEntry::UpdateEntry(
     const std::string& frame_unique_name,
     int64_t item_sequence_number,
     int64_t document_sequence_number,
+    const std::string& app_history_key,
     SiteInstanceImpl* site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
@@ -98,6 +101,7 @@ void FrameNavigationEntry::UpdateEntry(
   frame_unique_name_ = frame_unique_name;
   item_sequence_number_ = item_sequence_number;
   document_sequence_number_ = document_sequence_number;
+  app_history_key_ = app_history_key;
   site_instance_ = site_instance;
   source_site_instance_ = std::move(source_site_instance);
   redirect_chain_ = redirect_chain;
@@ -131,6 +135,13 @@ void FrameNavigationEntry::set_document_sequence_number(
   document_sequence_number_ = document_sequence_number;
 }
 
+void FrameNavigationEntry::set_app_history_key(
+    const std::string& app_history_key) {
+  // Once assigned, the app history key shouldn't change.
+  DCHECK(app_history_key_.empty() || app_history_key_ == app_history_key);
+  app_history_key_ = app_history_key;
+}
+
 void FrameNavigationEntry::SetPageState(const blink::PageState& page_state) {
   page_state_ = page_state;
 
@@ -140,6 +151,8 @@ void FrameNavigationEntry::SetPageState(const blink::PageState& page_state) {
 
   item_sequence_number_ = exploded_state.top.item_sequence_number;
   document_sequence_number_ = exploded_state.top.document_sequence_number;
+  app_history_key_ = base::UTF16ToUTF8(
+      exploded_state.top.app_history_key.value_or(std::u16string()));
 }
 
 void FrameNavigationEntry::SetBindings(int bindings) {
