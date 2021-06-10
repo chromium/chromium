@@ -242,7 +242,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kEnabledOrDisabledWhenNotAvailable = 14,
     kErrorCellularDeviceBusy = 15,
     kErrorConnectTimeout = 16,
-    kMaxValue = kErrorConnectTimeout,
+    kConnectableCellularTimeout = 17,
+    kMaxValue = kConnectableCellularTimeout,
   };
 
   // Result of state changes to a cellular network triggered by any connection

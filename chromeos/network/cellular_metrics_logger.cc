@@ -210,6 +210,9 @@ CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
   if (error_name == NetworkConnectionHandler::kErrorConnectTimeout)
     return CellularMetricsLogger::ConnectResult::kErrorConnectTimeout;
 
+  if (error_name == NetworkConnectionHandler::kConnectableCellularTimeout)
+    return CellularMetricsLogger::ConnectResult::kConnectableCellularTimeout;
+
   return CellularMetricsLogger::ConnectResult::kUnknown;
 }
 

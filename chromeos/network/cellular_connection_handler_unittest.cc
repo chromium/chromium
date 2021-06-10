@@ -343,7 +343,7 @@ TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
                    kRefreshProfilesFailed);
 }
 
-TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable) {
+TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_ESim) {
   const base::TimeDelta kWaitingForConnectableTimeout =
       base::TimeDelta::FromSeconds(30);
 
@@ -358,7 +358,35 @@ TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable) {
 
   base::RunLoop run_loop;
   ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
+                NetworkConnectionHandler::kConnectableCellularTimeout,
+                &run_loop);
+  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
+
+  // Let all operations run, then wait for the timeout to occur.
+  base::RunLoop().RunUntilIdle();
+  AdvanceClock(kWaitingForConnectableTimeout);
+
+  run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kTimeoutWaitingForConnectable);
+}
+
+TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_PSim) {
+  const base::TimeDelta kWaitingForConnectableTimeout =
+      base::TimeDelta::FromSeconds(30);
+
+  SetEnableProfileBehavior(HermesProfileClient::TestInterface::
+                               EnableProfileBehavior::kNotConnectable);
+
+  AddCellularDevice();
+  AddCellularService(/*profile_num=*/1);
+  SetServiceIccid(/*profile_num=*/1);
+
+  base::RunLoop run_loop;
+  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
+                NetworkConnectionHandler::kConnectableCellularTimeout,
+                &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
 
   // Let all operations run, then wait for the timeout to occur.
