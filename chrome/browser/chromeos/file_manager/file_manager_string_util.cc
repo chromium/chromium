@@ -59,9 +59,10 @@ const int kGoogleDriveErrorHelpNumber = 2649458;
 // Location of the help page about no-action-available files.
 const int kNoActionForFileHelpNumber = 1700055;
 
-#define SET_STRING(id, idr) dict->SetString(id, l10n_util::GetStringUTF16(idr))
+#define SET_STRING(id, idr) \
+  dict->SetStringKey(id, l10n_util::GetStringUTF16(idr))
 
-void AddStringsForFileTypes(base::DictionaryValue* dict) {
+void AddStringsForFileTypes(base::Value* dict) {
   // TODO(crbug.com/438921): Rename string IDs to something like
   // FILE_TYPE_WHATEVER.
   SET_STRING("AUDIO_FILE_TYPE", IDS_FILE_BROWSER_AUDIO_FILE_TYPE);
@@ -107,7 +108,7 @@ void AddStringsForFileTypes(base::DictionaryValue* dict) {
   SET_STRING("TINI_FILE_TYPE", IDS_FILE_BROWSER_TINI_FILE_TYPE);
 }
 
-void AddStringsForDrive(base::DictionaryValue* dict) {
+void AddStringsForDrive(base::Value* dict) {
   SET_STRING("DRIVE_BUY_MORE_SPACE", IDS_FILE_BROWSER_DRIVE_BUY_MORE_SPACE);
   SET_STRING("DRIVE_BUY_MORE_SPACE_LINK",
              IDS_FILE_BROWSER_DRIVE_BUY_MORE_SPACE_LINK);
@@ -172,7 +173,7 @@ void AddStringsForDrive(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
 }
 
-void AddStringsForMediaView(base::DictionaryValue* dict) {
+void AddStringsForMediaView(base::Value* dict) {
   SET_STRING("MEDIA_VIEW_AUDIO_ROOT_LABEL",
              IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_IMAGES_ROOT_LABEL",
@@ -181,7 +182,7 @@ void AddStringsForMediaView(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
 }
 
-void AddStringsForMediaPlayer(base::DictionaryValue* dict) {
+void AddStringsForMediaPlayer(base::Value* dict) {
   SET_STRING("MEDIA_PLAYER_PLAY_BUTTON_LABEL",
              IDS_MEDIA_PLAYER_PLAY_BUTTON_LABEL);
   SET_STRING("MEDIA_PLAYER_PAUSE_BUTTON_LABEL",
@@ -200,7 +201,7 @@ void AddStringsForMediaPlayer(base::DictionaryValue* dict) {
              IDS_MEDIA_PLAYER_VOLUME_SLIDER_LABEL);
 }
 
-void AddStringsForVideoPlayer(base::DictionaryValue* dict) {
+void AddStringsForVideoPlayer(base::Value* dict) {
   SET_STRING("VIDEO_PLAYER_LOOPED_MODE", IDS_VIDEO_PLAYER_LOOPED_MODE);
   SET_STRING("VIDEO_PLAYER_PLAYBACK_ERROR", IDS_VIDEO_PLAYER_PLAYBACK_ERROR);
   SET_STRING("VIDEO_PLAYER_PLAYING_ON", IDS_VIDEO_PLAYER_PLAYING_ON);
@@ -221,7 +222,7 @@ void AddStringsForVideoPlayer(base::DictionaryValue* dict) {
              IDS_VIDEO_PLAYER_DISABLE_SUBTITLES_BUTTON_LABEL);
 }
 
-void AddStringsForAudioPlayer(base::DictionaryValue* dict) {
+void AddStringsForAudioPlayer(base::Value* dict) {
   SET_STRING("AUDIO_ERROR", IDS_FILE_BROWSER_AUDIO_ERROR);
   SET_STRING("AUDIO_OFFLINE", IDS_FILE_BROWSER_AUDIO_OFFLINE);
   SET_STRING("AUDIO_PLAYER_DEFAULT_ARTIST",
@@ -237,7 +238,7 @@ void AddStringsForAudioPlayer(base::DictionaryValue* dict) {
              IDS_AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL);
 }
 
-void AddStringsForCloudImport(base::DictionaryValue* dict) {
+void AddStringsForCloudImport(base::Value* dict) {
   SET_STRING("CLOUD_IMPORT_TITLE", IDS_FILE_BROWSER_CLOUD_IMPORT_TITLE);
   SET_STRING("CLOUD_IMPORT_DESTINATION_FOLDER",
              IDS_FILE_BROWSER_CLOUD_DESTINATION_FOLDER);
@@ -288,7 +289,7 @@ void AddStringsForCloudImport(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_SCANNING);
 }
 
-void AddStringsForCrUiMenuItemShortcuts(base::DictionaryValue* dict) {
+void AddStringsForCrUiMenuItemShortcuts(base::Value* dict) {
   // Shortcut key names: used from cr.ui.MenuItem.updateShortcut_.
   SET_STRING("SHORTCUT_ALT", IDS_FILE_BROWSER_SHORTCUT_ALT);
   SET_STRING("SHORTCUT_BACKSPACE", IDS_FILE_BROWSER_SHORTCUT_BACKSPACE);
@@ -299,7 +300,7 @@ void AddStringsForCrUiMenuItemShortcuts(base::DictionaryValue* dict) {
   SET_STRING("SHORTCUT_SPACE", IDS_FILE_BROWSER_SHORTCUT_SPACE);
 }
 
-void AddStringsForFileErrors(base::DictionaryValue* dict) {
+void AddStringsForFileErrors(base::Value* dict) {
   SET_STRING("FILE_ERROR_GENERIC", IDS_FILE_BROWSER_FILE_ERROR_GENERIC);
   SET_STRING("FILE_ERROR_INVALID_MODIFICATION",
              IDS_FILE_BROWSER_FILE_ERROR_INVALID_MODIFICATION);
@@ -316,7 +317,7 @@ void AddStringsForFileErrors(base::DictionaryValue* dict) {
   SET_STRING("FILE_ERROR_SECURITY", IDS_FILE_BROWSER_FILE_ERROR_SECURITY);
 }
 
-void AddStringsForZipArchiver(base::DictionaryValue* dict) {
+void AddStringsForZipArchiver(base::Value* dict) {
   SET_STRING("ZIP_ARCHIVER_DESCRIPTION", IDS_ZIP_ARCHIVER_DESCRIPTION);
   SET_STRING("ZIP_ARCHIVER_MOUNTING_MESSAGE",
              IDS_ZIP_ARCHIVER_MOUNTING_MESSAGE);
@@ -346,11 +347,11 @@ void AddStringsForZipArchiver(base::DictionaryValue* dict) {
   SET_STRING("ZIP_ARCHIVER_TOO_MANY_OPENED", IDS_ZIP_ARCHIVER_TOO_MANY_OPENED);
 }
 
-void AddStringsForSharesheet(base::DictionaryValue* dict) {
+void AddStringsForSharesheet(base::Value* dict) {
   SET_STRING("SHARESHEET_BUTTON_LABEL", IDS_SHARESHEET_TITLE_LABEL);
 }
 
-void AddStringsForHoldingSpace(base::DictionaryValue* dict) {
+void AddStringsForHoldingSpace(base::Value* dict) {
   SET_STRING("HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL",
              IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
   SET_STRING("HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL",
@@ -365,31 +366,13 @@ void AddStringsForHoldingSpace(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE);
 }
 
-void AddStringsForPhotos(base::DictionaryValue* dict) {
+void AddStringsForPhotos(base::Value* dict) {
   SET_STRING("PHOTOS_WELCOME_DISMISS", IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS);
   SET_STRING("PHOTOS_WELCOME_TEXT", IDS_FILE_BROWSER_PHOTOS_WELCOME_TEXT);
   SET_STRING("PHOTOS_WELCOME_TITLE", IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE);
 }
 
-}  // namespace
-
-std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-
-  AddStringsForDrive(dict.get());
-  AddStringsForMediaView(dict.get());
-  AddStringsForFileTypes(dict.get());
-  AddStringsForMediaPlayer(dict.get());
-  AddStringsForVideoPlayer(dict.get());
-  AddStringsForAudioPlayer(dict.get());
-  AddStringsForCloudImport(dict.get());
-  AddStringsForCrUiMenuItemShortcuts(dict.get());
-  AddStringsForFileErrors(dict.get());
-  AddStringsForZipArchiver(dict.get());
-  AddStringsForSharesheet(dict.get());
-  AddStringsForHoldingSpace(dict.get());
-  AddStringsForPhotos(dict.get());
-
+void AddStringsGeneric(base::Value* dict) {
   SET_STRING("ALL_FILES_FILTER", IDS_FILE_BROWSER_ALL_FILES_FILTER);
   SET_STRING("ARCHIVE_MOUNT_FAILED", IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED);
   SET_STRING("ARCHIVE_MOUNT_MESSAGE", IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE);
@@ -955,68 +938,90 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   SET_STRING("GRID_VIEW_FILES_TITLE", IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
   SET_STRING("LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL",
              IDS_FILE_BROWSER_LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL);
+}
 
 #undef SET_STRING
 
-  dict->SetString(
+}  // namespace
+
+base::Value GetFileManagerStrings() {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  AddStringsForDrive(&dict);
+  AddStringsForMediaView(&dict);
+  AddStringsForFileTypes(&dict);
+  AddStringsForMediaPlayer(&dict);
+  AddStringsForVideoPlayer(&dict);
+  AddStringsForAudioPlayer(&dict);
+  AddStringsForCloudImport(&dict);
+  AddStringsForCrUiMenuItemShortcuts(&dict);
+  AddStringsForFileErrors(&dict);
+  AddStringsForZipArchiver(&dict);
+  AddStringsForSharesheet(&dict);
+  AddStringsForHoldingSpace(&dict);
+  AddStringsForPhotos(&dict);
+  AddStringsGeneric(&dict);
+
+  dict.SetStringKey(
       "DOWNLOADS_LOW_SPACE_WARNING_HELP_URL",
       base::StringPrintf(kHelpURLFormat, kDownloadsLowSpaceWarningHelpNumber));
-  dict->SetString("FILES_APP_HELP_URL",
-                  base::StringPrintf(kHelpURLFormat, kFilesAppHelpNumber));
+  dict.SetStringKey("FILES_APP_HELP_URL",
+                    base::StringPrintf(kHelpURLFormat, kFilesAppHelpNumber));
 
-  dict->SetString("GOOGLE_DRIVE_BUY_STORAGE_URL", kGoogleDriveBuyStorageUrl);
-  dict->SetString(
+  dict.SetStringKey("GOOGLE_DRIVE_BUY_STORAGE_URL", kGoogleDriveBuyStorageUrl);
+  dict.SetStringKey(
       "GOOGLE_DRIVE_ERROR_HELP_URL",
       base::StringPrintf(kHelpURLFormat, kGoogleDriveErrorHelpNumber));
-  dict->SetString("GOOGLE_DRIVE_HELP_URL", kGoogleDriveHelpUrl);
-  dict->SetString("GOOGLE_DRIVE_OFFLINE_HELP_URL", kGoogleDriveOfflineHelpUrl);
-  dict->SetString("GOOGLE_DRIVE_OVERVIEW_URL", kGoogleDriveOverviewUrl);
-  dict->SetString("GOOGLE_DRIVE_ROOT_URL", kGoogleDriveRootUrl);
-  dict->SetString(
+  dict.SetStringKey("GOOGLE_DRIVE_HELP_URL", kGoogleDriveHelpUrl);
+  dict.SetStringKey("GOOGLE_DRIVE_OFFLINE_HELP_URL",
+                    kGoogleDriveOfflineHelpUrl);
+  dict.SetStringKey("GOOGLE_DRIVE_OVERVIEW_URL", kGoogleDriveOverviewUrl);
+  dict.SetStringKey("GOOGLE_DRIVE_ROOT_URL", kGoogleDriveRootUrl);
+  dict.SetStringKey(
       "NO_TASK_FOR_FILE_URL",
       base::StringPrintf(kHelpURLFormat, kNoActionForFileHelpNumber));
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
-                                 dict.get());
+                                 &dict);
 
   return dict;
 }
 
 void AddFileManagerFeatureStrings(const std::string& locale,
                                   Profile* profile,
-                                  base::DictionaryValue* dict) {
+                                  base::Value* dict) {
   DCHECK(profile);
 
-  dict->SetBoolean("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
-  dict->SetBoolean("ARC_USB_STORAGE_UI_ENABLED",
+  dict->SetBoolKey("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
+  dict->SetBoolKey("ARC_USB_STORAGE_UI_ENABLED",
                    base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
-  dict->SetBoolean("CROSTINI_ENABLED",
+  dict->SetBoolKey("CROSTINI_ENABLED",
                    crostini::CrostiniFeatures::Get()->IsEnabled(profile));
-  dict->SetBoolean("PLUGIN_VM_ENABLED",
+  dict->SetBoolKey("PLUGIN_VM_ENABLED",
                    plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
-  dict->SetBoolean("COPY_IMAGE_ENABLED",
+  dict->SetBoolKey("COPY_IMAGE_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kEnableFilesAppCopyImage));
-  dict->SetBoolean("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
+  dict->SetBoolKey("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
-  dict->SetBoolean("ZIP_MOUNT", base::FeatureList::IsEnabled(
+  dict->SetBoolKey("ZIP_MOUNT", base::FeatureList::IsEnabled(
                                     chromeos::features::kFilesZipMount));
-  dict->SetBoolean("ZIP_PACK", base::FeatureList::IsEnabled(
+  dict->SetBoolKey("ZIP_PACK", base::FeatureList::IsEnabled(
                                    chromeos::features::kFilesZipPack));
-  dict->SetBoolean("ZIP_UNPACK", base::FeatureList::IsEnabled(
+  dict->SetBoolKey("ZIP_UNPACK", base::FeatureList::IsEnabled(
                                      chromeos::features::kFilesZipUnpack));
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "DRIVE_DSS_PIN_ENABLED",
       base::FeatureList::IsEnabled(
           chromeos::features::kDriveFsBidirectionalNativeMessaging));
-  dict->SetBoolean("SHARESHEET_ENABLED",
+  dict->SetBoolKey("SHARESHEET_ENABLED",
                    base::FeatureList::IsEnabled(features::kSharesheet));
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "FILTERS_IN_RECENTS_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecents));
-  dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
+  dict->SetBoolKey("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
 
-  dict->SetString("UI_LOCALE", locale);
+  dict->SetStringKey("UI_LOCALE", locale);
 }

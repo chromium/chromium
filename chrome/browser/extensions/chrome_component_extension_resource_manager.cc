@@ -115,7 +115,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   // tests.
   if (ui::ResourceBundle::HasSharedInstance() && g_browser_process) {
     ui::TemplateReplacements file_manager_replacements;
-    ui::TemplateReplacementsFromDictionaryValue(*GetFileManagerStrings(),
+    ui::TemplateReplacementsFromDictionaryValue(GetFileManagerStrings(),
                                                 &file_manager_replacements);
     template_replacements_[extension_misc::kFilesManagerAppId] =
         std::move(file_manager_replacements);

@@ -5,19 +5,18 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILE_MANAGER_FILE_MANAGER_STRING_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_FILE_MANAGER_FILE_MANAGER_STRING_UTIL_H_
 
-#include <memory>
 #include <string>
 
 namespace base {
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 class Profile;
 
-std::unique_ptr<base::DictionaryValue> GetFileManagerStrings();
+base::Value GetFileManagerStrings();
 
 void AddFileManagerFeatureStrings(const std::string& locale,
                                   Profile* profile,
-                                  base::DictionaryValue* dict);
+                                  base::Value* dict);
 
 #endif  // CHROME_BROWSER_CHROMEOS_FILE_MANAGER_FILE_MANAGER_STRING_UTIL_H_

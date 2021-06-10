@@ -19,10 +19,10 @@ ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
 
 void ChromeFileManagerUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) const {
-  std::unique_ptr<base::DictionaryValue> dict = GetFileManagerStrings();
+  base::Value dict = GetFileManagerStrings();
 
   const std::string locale = g_browser_process->GetApplicationLocale();
-  AddFileManagerFeatureStrings(locale, Profile::FromWebUI(web_ui_), dict.get());
+  AddFileManagerFeatureStrings(locale, Profile::FromWebUI(web_ui_), &dict);
 
-  source->AddLocalizedStrings(*dict.get());
+  source->AddLocalizedStrings(base::Value::AsDictionaryValue(dict));
 }
