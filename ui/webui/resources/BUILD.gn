@@ -15,7 +15,6 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
   deps = [
-    ":build_ts_grdp",
     "css:build_grdp",
     "html:build_grdp",
     "images:build_grdp",
@@ -24,7 +23,6 @@ generate_grd("build_grd") {
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
-    "$target_gen_dir/ts_resources.grdp",
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
@@ -120,16 +118,7 @@ group("modulize") {
   }
 }
 
-# Experimental TypeScript targets, to test how TS files can depend on
-# chrome://resources files.
-# TODO(dpapad): Delete once the TypeScript demo page is no longer needed.
-
-generate_grd("build_ts_grdp") {
-  grd_prefix = "webui"
-  out_grd = "$target_gen_dir/ts_resources.grdp"
-  deps = [ ":library" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
+# TypeScript targets
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
@@ -174,10 +163,6 @@ ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
   composite = true
-  in_files = [
-    "js/cr/world.ts",
-    "js/hello_world.ts",
-  ]
 
   definitions = []
 
@@ -231,7 +216,6 @@ ts_library("library") {
   extra_deps = [
     ":copy_checked_in_dts_files",
     ":generate_definitions",
-    "js:preprocess_src_ts",
   ]
 }
 

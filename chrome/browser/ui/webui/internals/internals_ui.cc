@@ -79,7 +79,6 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   if (!profile_->IsOffTheRecord())
     AddQueryTilesInternals(web_ui);
 #else
-  source_->AddResourcePath("hello-ts", IDR_HELLO_TS_HELLO_TS_HTML);
   source_->AddResourcePath("user-education",
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 

@@ -30,7 +30,6 @@ group("preprocess") {
   public_deps = [
     ":preprocess_generated",
     ":preprocess_src",
-    ":preprocess_src_ts",
     "cr/ui:preprocess",
   ]
 }
@@ -82,17 +81,6 @@ preprocess_if_expr("preprocess_src") {
       "ios/web_ui.js",
     ]
   }
-}
-
-# Put TS files on a separate target, so that they are not included in the
-# manifest file.
-preprocess_if_expr("preprocess_src_ts") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  in_files = [
-    "cr/world.ts",
-    "hello_world.ts",
-  ]
 }
 
 preprocess_if_expr("preprocess_generated") {

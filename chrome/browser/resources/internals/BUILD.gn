@@ -15,12 +15,10 @@ generate_grd("build_grd") {
 
   if (!is_android) {
     deps = [
-      "hello_ts:build_grdp",
       "user_education:build_grdp",
       "user_education:build_mojo_grdp",
     ]
     grdp_files = [
-      "$target_gen_dir/hello_ts/resources.grdp",
       "$target_gen_dir/user_education/resources.grdp",
       "$target_gen_dir/user_education/mojo_resources.grdp",
     ]
