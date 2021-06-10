@@ -288,7 +288,7 @@ CHAR_LIMIT guidelines:
         Google activity controls
       </message>
       <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_SUMMARY" desc="Message of Google activity controls preference in signed in accounts settings screen">
-        Control how your browsing history is used to personalize Search, ads, and more
+        Control how your browsing history is used to personalize Search and more
       </message>
       <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_SUMMARY_CHILD_ACCOUNT" desc="Message of Google activity controls preference in signed in accounts settings screen">
         Control how your browsing history is used to personalize Search and more
@@ -2654,7 +2654,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Sync your passwords, history &amp; more on all devices
       </message>
       <message name="IDS_SIGNIN_SYNC_DESCRIPTION" desc="Description of Sync feature for the screen that asks users to sign-in and turn on Sync.">
-        Google may use your history to personalize Search, ads, and other Google services
+        Google may use your history to personalize Search and other Google services
       </message>
       <message name="IDS_SIGNIN_SYNC_DESCRIPTION_CHILD_ACCOUNT" desc="Description of Sync feature for the screen that asks users to sign-in and turn on Sync.">
         Google may use your history to personalize Search and other Google services

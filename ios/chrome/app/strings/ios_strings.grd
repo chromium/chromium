@@ -196,7 +196,7 @@ locale.  The strings in this file are specific to iOS.
         Sync your passwords, history &amp; more on all devices
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE" desc="Subtitle of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
-        Google may use your history to personalize Search, ads, and other Google services.
+        Google may use your history to personalize Search and other Google services.
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS" desc="Explination text on the sync consent dialog to explain the user they can customize sync settings. [iOS only]">
         You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
@@ -871,7 +871,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Sign In…
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
-        Google may use your history to personalize Search, ads, and other Google services
+        Google may use your history to personalize Search and other Google services
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_MINOR_MODE" desc="Content string on the sync screen presented to the user on First Run for minor and family link users [iOS only]">
         Google may use your history to personalize Search and other Google services
@@ -1160,7 +1160,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Google Activity Controls
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION" desc="Subtitle for the cell to open 'Google Activity Controls' dialog.">
-        Control how your browsing history is used to personalize Search, ads and more
+        Control how your browsing history is used to personalize Search and more
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
         Manage synced data on Google Dashboard

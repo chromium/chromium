@@ -1102,7 +1102,7 @@
     Personalize Google services
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION" desc="The description of how services personalization works and a URL to configure personalization settings in Google user profile.">
-    Google may use your browsing history to personalize Search, ads, and other Google services. You can change this anytime at myaccount.google.com/activitycontrols/search
+    Google may use your browsing history to personalize Search and other Google services. You can change this anytime at myaccount.google.com/activitycontrols/search
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION_SUPERVISED_USER" desc="The description of how services personalization works and a URL to configure personalization settings in Google supervised user profile.">
     Google may use your browsing history to personalize Search and other Google services. You or your parent can change this anytime at myaccount.google.com/activitycontrols/search

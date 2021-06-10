@@ -56,8 +56,8 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
   const STANDARD_CONSENT_DESCRIPTION_TEXT = [
     'Turn on sync?',
     'Sync your bookmarks, passwords, history, and more on all your devices',
-    'Google may use your history to personalize Search, ads, and other ' +
-        'Google services',
+    'Google may use your history to personalize Search and other Google ' +
+        'services',
   ];
 
 

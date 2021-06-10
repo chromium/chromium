@@ -8237,7 +8237,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Sync your bookmarks, passwords, history, and more on all your devices
       </message>
       <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC" desc="Description in the information about sync on the sync confirmation dialog when Unity is enabled">
-        Google may use your history to personalize Search, ads, and other Google services
+        Google may use your history to personalize Search and other Google services
       </message>
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_INFO" desc="Information about customizing Sync settings in the sync confirmation dialog when Unity is enabled">
         You can always choose what to sync in settings.
