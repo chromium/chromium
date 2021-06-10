@@ -35,7 +35,6 @@
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -212,11 +211,11 @@ IndexedDBDispatcherHost::~IndexedDBDispatcherHost() {
 }
 
 void IndexedDBDispatcherHost::AddReceiver(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  receivers_.Add(this, std::move(pending_receiver), origin);
+  receivers_.Add(this, std::move(pending_receiver), storage_key);
 }
 
 void IndexedDBDispatcherHost::AddDatabaseBinding(
@@ -229,12 +228,11 @@ void IndexedDBDispatcherHost::AddDatabaseBinding(
 
 mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>
 IndexedDBDispatcherHost::CreateCursorBinding(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     std::unique_ptr<IndexedDBCursor> cursor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cursor_impl = std::make_unique<CursorImpl>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      std::move(cursor), blink::StorageKey(origin), this, IDBTaskRunner());
+      std::move(cursor), storage_key, this, IDBTaskRunner());
   auto* cursor_impl_ptr = cursor_impl.get();
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> remote;
   mojo::ReceiverId receiver_id = cursor_receivers_.Add(
@@ -274,15 +272,13 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& origin = receivers_.current_context();
+  const auto& storage_key = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      this->AsWeakPtr(), blink::StorageKey(origin),
-      std::move(pending_callbacks), IDBTaskRunner());
+      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      std::move(callbacks), blink::StorageKey(origin), indexed_db_path);
+      std::move(callbacks), storage_key, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::Open(
@@ -296,11 +292,10 @@ void IndexedDBDispatcherHost::Open(
     int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& origin = receivers_.current_context();
+  const auto& storage_key = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      this->AsWeakPtr(), blink::StorageKey(origin),
-      std::move(pending_callbacks), IDBTaskRunner());
+      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
@@ -308,17 +303,15 @@ void IndexedDBDispatcherHost::Open(
 
   auto create_transaction_callback =
       base::BindOnce(&IndexedDBDispatcherHost::CreateAndBindTransactionImpl,
-                     AsWeakPtr(), std::move(transaction_receiver), origin);
+                     AsWeakPtr(), std::move(transaction_receiver), storage_key);
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,
           version, std::move(create_transaction_callback));
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
-  indexed_db_context_->GetIDBFactory()->Open(
-      name, std::move(connection),
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      blink::StorageKey(origin), indexed_db_path);
+  indexed_db_context_->GetIDBFactory()->Open(name, std::move(connection),
+                                             storage_key, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
@@ -327,52 +320,45 @@ void IndexedDBDispatcherHost::DeleteDatabase(
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& origin = receivers_.current_context();
+  const auto& storage_key = receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      this->AsWeakPtr(), blink::StorageKey(origin),
-      std::move(pending_callbacks), IDBTaskRunner());
+      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      name, std::move(callbacks), blink::StorageKey(origin), indexed_db_path,
-      force_close);
+      name, std::move(callbacks), storage_key, indexed_db_path, force_close);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
     AbortTransactionsAndCompactDatabaseCallback mojo_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& origin = receivers_.current_context();
+  const auto& storage_key = receivers_.current_context();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallCompactionStatusCallbackOnIDBThread, std::move(mojo_callback));
   indexed_db_context_->GetIDBFactory()->AbortTransactionsAndCompactDatabase(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      std::move(callback_on_io), blink::StorageKey(origin));
+      std::move(callback_on_io), storage_key);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
     AbortTransactionsForDatabaseCallback mojo_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& origin = receivers_.current_context();
+  const auto& storage_key = receivers_.current_context();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallAbortStatusCallbackOnIDBThread, std::move(mojo_callback));
   indexed_db_context_->GetIDBFactory()->AbortTransactionsForDatabase(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      std::move(callback_on_io), blink::StorageKey(origin));
+      std::move(callback_on_io), storage_key);
 }
 
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         transaction_receiver,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::WeakPtr<IndexedDBTransaction> transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto transaction_impl = std::make_unique<TransactionImpl>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      transaction, blink::StorageKey(origin), this->AsWeakPtr(),
-      IDBTaskRunner());
+      transaction, storage_key, this->AsWeakPtr(), IDBTaskRunner());
   AddTransactionBinding(std::move(transaction_impl),
                         std::move(transaction_receiver));
 }
@@ -404,7 +390,7 @@ void IndexedDBDispatcherHost::RemoveBoundReaders(const base::FilePath& path) {
 }
 
 void IndexedDBDispatcherHost::CreateAllExternalObjects(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::vector<IndexedDBExternalObject>& objects,
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -468,7 +454,8 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
         } else {
           DCHECK(!blob_info.file_system_access_token().empty());
           file_system_access_context()->DeserializeHandle(
-              origin, blob_info.file_system_access_token(),
+              // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+              storage_key.origin(), blob_info.file_system_access_token(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }
         mojo_object->get_file_system_access_token() = std::move(mojo_token);

@@ -129,9 +129,7 @@ void DatabaseImpl::CreateTransaction(
   connection_->database()->RegisterAndScheduleTransaction(transaction);
 
   dispatcher_host_->CreateAndBindTransactionImpl(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      std::move(transaction_receiver), storage_key_.origin(),
-      transaction->AsWeakPtr());
+      std::move(transaction_receiver), storage_key_, transaction->AsWeakPtr());
 }
 
 void DatabaseImpl::Close() {

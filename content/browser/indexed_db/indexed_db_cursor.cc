@@ -132,7 +132,9 @@ leveldb::Status IndexedDBCursor::CursorAdvanceOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host->CreateAllExternalObjects(origin_, external_objects,
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    dispatcher_host->CreateAllExternalObjects(blink::StorageKey(origin_),
+                                              external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -213,7 +215,9 @@ leveldb::Status IndexedDBCursor::CursorContinueOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host->CreateAllExternalObjects(origin_, external_objects,
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    dispatcher_host->CreateAllExternalObjects(blink::StorageKey(origin_),
+                                              external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -340,7 +344,8 @@ leveldb::Status IndexedDBCursor::CursorPrefetchIterationOperation(
     mojo_values.push_back(
         IndexedDBValue::ConvertAndEraseValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        origin_, found_values[i].external_objects,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin_), found_values[i].external_objects,
         &mojo_values[i]->external_objects);
   }
 

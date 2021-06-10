@@ -207,7 +207,8 @@ void IndexedDBContextImpl::Bind(
 void IndexedDBContextImpl::BindIndexedDB(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  dispatcher_host_.AddReceiver(origin, std::move(receiver));
+  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+  dispatcher_host_.AddReceiver(blink::StorageKey(origin), std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {

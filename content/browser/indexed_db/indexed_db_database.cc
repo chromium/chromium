@@ -78,7 +78,8 @@ std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
     mojo_values.push_back(
         IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        origin, found_values[i].external_objects,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin), found_values[i].external_objects,
         &mojo_values[i]->value->external_objects);
   }
   return mojo_values;
@@ -842,7 +843,9 @@ Status IndexedDBDatabase::GetOperation(
     blink::mojom::IDBReturnValuePtr mojo_value =
         IndexedDBReturnValue::ConvertReturnValue(&value);
     dispatcher_host->CreateAllExternalObjects(
-        origin(), value.external_objects, &mojo_value->value->external_objects);
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin()), value.external_objects,
+        &mojo_value->value->external_objects);
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
     return s;
@@ -899,7 +902,9 @@ Status IndexedDBDatabase::GetOperation(
   blink::mojom::IDBReturnValuePtr mojo_value =
       IndexedDBReturnValue::ConvertReturnValue(&value);
   dispatcher_host->CreateAllExternalObjects(
-      origin(), value.external_objects, &mojo_value->value->external_objects);
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin()), value.external_objects,
+      &mojo_value->value->external_objects);
   std::move(callback).Run(
       blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
   return s;
@@ -1478,14 +1483,18 @@ Status IndexedDBDatabase::OpenCursorOperation(
   }
 
   if (mojo_value) {
-    dispatcher_host->CreateAllExternalObjects(origin, external_objects,
+    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    dispatcher_host->CreateAllExternalObjects(blink::StorageKey(origin),
+                                              external_objects,
                                               &mojo_value->external_objects);
   }
 
   std::move(params->callback)
       .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewValue(
           blink::mojom::IDBDatabaseOpenCursorValue::New(
-              dispatcher_host->CreateCursorBinding(origin, std::move(cursor)),
+              // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+              dispatcher_host->CreateCursorBinding(blink::StorageKey(origin),
+                                                   std::move(cursor)),
               cursor_ptr->key(), cursor_ptr->primary_key(),
               std::move(mojo_value))));
   return s;
