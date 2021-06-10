@@ -369,6 +369,8 @@ class PsmHelper {
       case DM_STATUS_REQUEST_FAILED: {
         LOG(ERROR)
             << "PSM error: RLWE OPRF request failed due to connection error";
+        base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
+                                 -net_error);
         StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }
@@ -495,6 +497,8 @@ class PsmHelper {
       case DM_STATUS_REQUEST_FAILED: {
         LOG(ERROR)
             << "PSM error: RLWE query request failed due to connection error";
+        base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
+                                 -net_error);
         StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }

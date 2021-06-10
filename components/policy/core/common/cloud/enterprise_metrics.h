@@ -262,6 +262,7 @@ POLICY_EXPORT extern const char kUMAPsmHashDanceComparison[];
 POLICY_EXPORT extern const char kUMAPsmHashDanceDifferentResultsComparison[];
 POLICY_EXPORT extern const char kUMAPsmSuccessTime[];
 POLICY_EXPORT extern const char kUMAPsmResult[];
+POLICY_EXPORT extern const char kUMAPsmNetworkErrorCode[];
 
 // DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
 POLICY_EXPORT extern const char kUMAHashDanceSuccessTime[];

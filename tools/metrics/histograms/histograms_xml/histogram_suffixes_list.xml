@@ -6044,6 +6044,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Enterprise.AutoEnrollmentExtraTime"/>
   <affected-histogram name="Enterprise.AutoEnrollmentHashDanceSuccessTime"/>
   <affected-histogram name="Enterprise.AutoEnrollmentProtocolTime"/>
+  <affected-histogram
+      name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode"/>
   <affected-histogram name="Enterprise.AutoEnrollmentPsmResult"/>
   <affected-histogram name="Enterprise.AutoEnrollmentRequestNetworkErrorCode"/>
   <affected-histogram name="Enterprise.AutoEnrollmentRequestStatus"/>
