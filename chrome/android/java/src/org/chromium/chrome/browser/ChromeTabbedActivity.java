@@ -719,10 +719,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return mLayoutManager != null;
     }
 
+    /**
+     * The UndoBarPopupController relies on the tab model being set up which is post native, but
+     * also requires that the controller be created post inflation. So once both are done whichever
+     * order we can initialize mUndoBarPopupController.
+     */
+    private void maybeInitializeUndoBarPopupController() {
+        if (didFinishNativeInitialization() && mUndoBarPopupController != null
+                && !mUndoBarPopupController.isInitialized()) {
+            mUndoBarPopupController.initialize();
+        }
+    }
+
     private void initializeToolbarManager() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeToolbarManager")) {
-            mUndoBarPopupController.initialize();
-
             OnClickListener tabSwitcherClickHandler = v -> {
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
                     Profile profile = mTabModelProfileSupplier.get();
@@ -875,6 +885,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
+        maybeInitializeUndoBarPopupController();
 
         // TODO(jinsukkim): Let these classes handle the registration by themselves.
         mCompositorViewHolder = getCompositorViewHolder();
@@ -1612,6 +1623,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mUndoBarPopupController = new UndoBarController(this, mTabModelSelectorImpl,
                 this::getSnackbarManager, mOverviewModeBehaviorSupplier, dialogVisibilitySupplier);
+        maybeInitializeUndoBarPopupController();
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
