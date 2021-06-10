@@ -1642,8 +1642,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 #endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1217869): Test is disabled on Mac since it causes failures
-// in many bots.
 #if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
  protected:
