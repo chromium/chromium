@@ -117,7 +117,9 @@ class MockWorkingSetTrimmerPolicyChromeOS
     return memory_pressure_listener_.value();
   }
 
-  base::TimeTicks get_last_graph_walk() { return last_graph_walk_; }
+  base::TimeTicks get_last_graph_walk() {
+    return last_graph_walk_ ? *last_graph_walk_ : base::TimeTicks();
+  }
 
   // Allows us to tweak the tests parameters per test.
   features::TrimOnMemoryPressureParams& params() { return params_; }

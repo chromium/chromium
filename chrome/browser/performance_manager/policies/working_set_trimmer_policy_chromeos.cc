@@ -130,22 +130,23 @@ void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
   // memory pressure notifications every 10s.
 
   if (trim_on_memory_pressure_) {
-    if (base::TimeTicks::Now() - last_graph_walk_ >
-        params_.graph_walk_backoff_time) {
+    if (!last_graph_walk_ || (base::TimeTicks::Now() - *last_graph_walk_ >
+                              params_.graph_walk_backoff_time)) {
       TrimNodesOnGraph();
     }
   }
 
   if (trim_arc_on_memory_pressure_) {
-    if (base::TimeTicks::Now() - last_arc_process_fetch_ >
-        params_.arc_process_list_fetch_backoff_time) {
+    if (!last_arc_process_fetch_ ||
+        (base::TimeTicks::Now() - *last_arc_process_fetch_ >
+         params_.arc_process_list_fetch_backoff_time)) {
       TrimArcProcesses();
     }
   }
 
   if (trim_arcvm_on_memory_pressure_) {
-    if (base::TimeTicks::Now() - last_arcvm_trim_ >
-        params_.arcvm_trim_backoff_time) {
+    if (!last_arcvm_trim_ || (base::TimeTicks::Now() - *last_arcvm_trim_ >
+                              params_.arcvm_trim_backoff_time)) {
       TrimArcVmProcesses(level);
     }
   }

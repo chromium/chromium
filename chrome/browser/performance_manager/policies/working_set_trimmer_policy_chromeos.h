@@ -119,13 +119,13 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // Keeps track of the last time we walked the graph looking for processes
   // to trim.
-  base::TimeTicks last_graph_walk_;
+  absl::optional<base::TimeTicks> last_graph_walk_;
 
   // We keep track of the last time we fetched the ARC process list.
-  base::TimeTicks last_arc_process_fetch_;
+  absl::optional<base::TimeTicks> last_arc_process_fetch_;
 
   // We also keep track of the last time we reclaimed memory from ARCVM.
-  base::TimeTicks last_arcvm_trim_;
+  absl::optional<base::TimeTicks> last_arcvm_trim_;
 
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
