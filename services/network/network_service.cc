@@ -729,6 +729,9 @@ void NetworkService::UpdateCtLogList(
           certificate_transparency::features::
               kCertificateTransparencyComponentUpdater)) {
     ct_log_list_distributor_->OnNewCtConfig(log_list_);
+    for (auto* context : network_contexts_) {
+      context->OnCTLogListUpdated(log_list_);
+    }
   }
 }
 

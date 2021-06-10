@@ -141,6 +141,13 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
   return compliance;
 }
 
+void ChromeCTPolicyEnforcer::UpdateCTLogList(
+    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+    std::vector<std::string> operated_by_google_logs) {
+  disqualified_logs_ = std::move(disqualified_logs);
+  operated_by_google_logs_ = std::move(operated_by_google_logs);
+}
+
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     base::StringPiece log_id,
     base::Time* disqualification_date) const {

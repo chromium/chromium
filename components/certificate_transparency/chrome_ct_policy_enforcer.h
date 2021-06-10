@@ -43,6 +43,13 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
       const net::ct::SCTList& verified_scts,
       const net::NetLogWithSource& net_log) override;
 
+  // Updates the list of logs used for compliance checks. |disqualified_logs| is
+  // a map of log ID to disqualification date.  |operated_by_google_logs| is a
+  // list of log IDs operated by Google
+  void UpdateCTLogList(
+      std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+      std::vector<std::string> operated_by_google_logs);
+
   void SetClockForTesting(const base::Clock* clock) { clock_ = clock; }
 
   // TODO(https://crbug.com/999240): These are exposed to allow end-to-end

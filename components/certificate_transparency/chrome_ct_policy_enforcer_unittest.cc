@@ -471,6 +471,36 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
 }
 
+TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  chrome_policy_enforcer->UpdateCTLogList(disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should fail since the Google Aviator log is no longer in the
+  // list after the update with an empty list.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+
+  // Update the list again, this time including all the known operated by Google
+  // logs.
+  operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
+  chrome_policy_enforcer->UpdateCTLogList(disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should now succeed.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+}
+
 }  // namespace
 
 }  // namespace certificate_transparency
