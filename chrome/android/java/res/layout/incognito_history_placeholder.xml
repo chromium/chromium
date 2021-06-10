@@ -24,7 +24,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/menu_history"
-            android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+            android:textAppearance="@style/TextAppearance.Headline"/>
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/close_history_placeholder_button"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:textAppearance="@style/TextAppearance.Headline"
                 android:text="@string/incognito_history_placeholder_title"
                 app:leading="@dimen/text_size_large_leading" />
 
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+                android:textAppearance="@style/TextAppearance.TextMedium"
                 android:text="@string/incognito_history_placeholder_description"
                 app:leading="@dimen/text_size_small_leading" />
 
