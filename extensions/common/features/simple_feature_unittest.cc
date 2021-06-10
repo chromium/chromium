@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"

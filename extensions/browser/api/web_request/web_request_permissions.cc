@@ -4,9 +4,9 @@
 
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"

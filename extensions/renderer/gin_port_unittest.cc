@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"

@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/guest_view/browser/guest_view_message_filter.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"

@@ -9,9 +9,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"

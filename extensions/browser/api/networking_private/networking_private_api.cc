@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/onc/onc_constants.h"

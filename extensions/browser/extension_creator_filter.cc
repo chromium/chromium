@@ -9,7 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "extensions/common/constants.h"
 

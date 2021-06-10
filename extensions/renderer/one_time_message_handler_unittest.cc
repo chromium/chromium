@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"

@@ -4,7 +4,7 @@
 
 #include "extensions/common/constants.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"

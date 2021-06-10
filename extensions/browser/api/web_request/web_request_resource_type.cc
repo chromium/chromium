@@ -5,9 +5,9 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"

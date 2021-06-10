@@ -5,7 +5,7 @@
 #include "extensions/renderer/runtime_hooks_delegate.h"
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"

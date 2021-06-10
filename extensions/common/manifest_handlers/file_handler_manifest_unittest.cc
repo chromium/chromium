@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"

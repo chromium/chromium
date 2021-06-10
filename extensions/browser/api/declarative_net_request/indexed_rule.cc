@@ -9,10 +9,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern_index/url_pattern_index.h"

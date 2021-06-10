@@ -7,11 +7,11 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_registry.h"

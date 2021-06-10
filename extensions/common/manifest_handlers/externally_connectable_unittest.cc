@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"

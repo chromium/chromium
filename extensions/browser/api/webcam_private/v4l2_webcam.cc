@@ -12,9 +12,9 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 
 #define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE+32)
 #define V4L2_CID_TILT_SPEED (V4L2_CID_CAMERA_CLASS_BASE+33)

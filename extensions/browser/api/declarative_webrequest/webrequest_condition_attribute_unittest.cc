@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"

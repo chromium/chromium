@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"

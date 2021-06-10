@@ -5,9 +5,9 @@
 #include <set>
 #include <tuple>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "extensions/common/api/sockets/sockets_manifest_permission.h"
 #include "extensions/common/manifest_constants.h"

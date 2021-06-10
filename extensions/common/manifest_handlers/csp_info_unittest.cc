@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/common/manifest_handlers/csp_info.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/error_utils.h"

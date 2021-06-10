@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/storage_area.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"

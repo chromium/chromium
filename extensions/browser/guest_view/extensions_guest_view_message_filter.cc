@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"

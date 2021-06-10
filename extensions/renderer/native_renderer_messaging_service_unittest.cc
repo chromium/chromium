@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"

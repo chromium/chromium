@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/common/event_filtering_info.h"

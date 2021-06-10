@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/web_request_hooks.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/web_request.h"
