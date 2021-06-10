@@ -23,7 +23,8 @@
 
 class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
  public:
-  AccountsTableViewControllerTest() {
+  AccountsTableViewControllerTest()
+      : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP) {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
