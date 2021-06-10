@@ -439,6 +439,8 @@ namespace autotestPrivate {
     DOMString? arcPackageName;
 
     OverviewInfo? overviewInfo;
+
+    DOMString? fullRestoreWindowAppId;
   };
 
   dictionary Accelerator {
