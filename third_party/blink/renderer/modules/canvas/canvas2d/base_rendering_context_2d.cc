@@ -1831,6 +1831,18 @@ ImageData* BaseRenderingContext2D::createImageData(
 ImageData* BaseRenderingContext2D::createImageData(
     int sw,
     int sh,
+    ExceptionState& exception_state) const {
+  ImageData::ValidateAndCreateParams params;
+  params.context_2d_error_mode = true;
+  params.default_color_space = GetCanvas2DColorParams().ColorSpace();
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
+                                      /*settings=*/nullptr, params,
+                                      exception_state);
+}
+
+ImageData* BaseRenderingContext2D::createImageData(
+    int sw,
+    int sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
   ImageData::ValidateAndCreateParams params;
@@ -1839,6 +1851,16 @@ ImageData* BaseRenderingContext2D::createImageData(
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
                                       image_data_settings, params,
                                       exception_state);
+}
+
+ImageData* BaseRenderingContext2D::getImageData(
+    int sx,
+    int sy,
+    int sw,
+    int sh,
+    ExceptionState& exception_state) {
+  return getImageDataInternal(sx, sy, sw, sh, /*image_data_settings=*/nullptr,
+                              exception_state);
 }
 
 ImageData* BaseRenderingContext2D::getImageData(

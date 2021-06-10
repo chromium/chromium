@@ -12,9 +12,9 @@
 namespace blink {
 
 // Some values for PredefinedColorSpace are specified in the IDL but are
-// supposed to be guarded behind the CanvasColorManagement feature (e.g,
+// supposed to be guarded behind the CanvasColorManagementV2 feature (e.g,
 // 'rec2020'). This function will throw the exception that the IDL would
-// have thrown, if CanvasColorManagement is not enabled.
+// have thrown, if CanvasColorManagementV2 is not enabled.
 bool CORE_EXPORT ColorSpaceNameIsValid(const String& color_space_name,
                                        ExceptionState& exception_state);
 

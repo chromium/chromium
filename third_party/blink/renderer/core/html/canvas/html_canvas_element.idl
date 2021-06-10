@@ -40,7 +40,7 @@
 
     [HighEntropy, MeasureAs=CanvasToBlob, RaisesException] void toBlob(BlobCallback _callback, optional DOMString type = "image/png", optional any quality);
 
-    [HighEntropy, RuntimeEnabled=CanvasColorManagement, MeasureAs=CanvasConvertToBlob, RaisesException, CallWith=ScriptState] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
+    [HighEntropy, RuntimeEnabled=CanvasColorManagementV2, MeasureAs=CanvasConvertToBlob, RaisesException, CallWith=ScriptState] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
 };
 
 // https://html.spec.whatwg.org/C/#blobcallback

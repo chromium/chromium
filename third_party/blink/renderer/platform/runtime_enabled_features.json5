@@ -330,6 +330,10 @@
     },
     {
       name: "CanvasColorManagement",
+      status: "stable",
+    },
+    {
+      name: "CanvasColorManagementV2",
       status: "experimental",
     },
     {

@@ -1022,7 +1022,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 
   // TODO(https://crbug.com/1208480): Move color space to being a read-write
   // attribute instead of a context creation attribute.
-  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
     color_params_ = CanvasColorParams(requested_attributes.color_space,
                                       requested_attributes.pixel_format,
                                       requested_attributes.alpha);

@@ -1148,10 +1148,10 @@ CanvasRenderingContext2D::getContextAttributes() const {
   CanvasRenderingContext2DSettings* settings =
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
-  settings->setColorSpace(GetCanvas2DColorParams().GetColorSpaceAsString());
-  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled())
+    settings->setColorSpace(GetCanvas2DColorParams().GetColorSpaceAsString());
+  if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled())
     settings->setPixelFormat(GetCanvas2DColorParams().GetPixelFormatAsString());
-  }
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
     settings->setWillReadFrequently(CreationAttributes().will_read_frequently);

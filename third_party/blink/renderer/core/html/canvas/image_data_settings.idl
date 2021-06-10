@@ -16,5 +16,5 @@ enum ImageDataStorageFormat {
 
 dictionary ImageDataSettings {
   PredefinedColorSpace colorSpace;
-  [RuntimeEnabled=CanvasColorManagement] ImageDataStorageFormat storageFormat = "uint8";
+  [RuntimeEnabled=CanvasColorManagementV2] ImageDataStorageFormat storageFormat = "uint8";
 };

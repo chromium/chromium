@@ -11,8 +11,8 @@ namespace blink {
 
 bool ColorSpaceNameIsValid(const String& color_space_name,
                            ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-    // The enum value 'rec2020' is not valid unless CanvasColorManagement is
+  if (!RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
+    // The enum value 'rec2020' is not valid unless CanvasColorManagementV2 is
     // enabled.
     if (color_space_name == kRec2020CanvasColorSpaceName) {
       exception_state.ThrowTypeError(
