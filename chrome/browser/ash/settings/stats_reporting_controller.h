@@ -110,7 +110,7 @@ class StatsReportingController
   void NotifyObservers();
 
   // Gets the current ownership status - owned, unowned, or unknown.
-  DeviceSettingsService::OwnershipStatus GetOwnershipStatus();
+  DeviceSettingsService::OwnershipStatus GetOwnershipStatus() const;
 
   // Get the owner-settings service for a particular profile. A variety of
   // different results can be returned, depending on the profile.
@@ -127,6 +127,10 @@ class StatsReportingController
   // Sets |*value| to the value signed and stored in CrosSettings, if one
   // exists. Returns false if there is no such value.
   bool GetSignedStoredValue(bool* value);
+
+  // Returns whether pending value should be used when determining the value
+  // of `IsEnabled`.
+  bool ShouldReadFromPendingValue() const;
 
   base::WeakPtr<StatsReportingController> as_weak_ptr() {
     return weak_factory_.GetWeakPtr();
