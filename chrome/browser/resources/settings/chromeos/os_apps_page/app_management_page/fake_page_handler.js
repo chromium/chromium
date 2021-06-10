@@ -205,6 +205,20 @@ cr.define('app_management', function() {
 
     /**
      * @param {string} appId
+     * @param {boolean} preferredAppValue
+     */
+    setPreferredApp(appId, preferredAppValue) {
+      const app =
+          app_management.AppManagementStore.getInstance().data.apps[appId];
+
+      const newApp =
+          /** @type {!App} */ (
+              Object.assign({}, app, {isPreferredApp: preferredAppValue}));
+      this.page.onAppChanged(newApp);
+    }
+
+    /**
+     * @param {string} appId
      */
     openNativeSettings(appId) {}
 

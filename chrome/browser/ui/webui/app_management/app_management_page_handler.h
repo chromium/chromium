@@ -42,6 +42,8 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
                      apps::mojom::PermissionPtr permission) override;
   void Uninstall(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void SetPreferredApp(const std::string& app_id,
+                       bool is_preferred_app) override;
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

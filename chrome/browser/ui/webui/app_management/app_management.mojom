@@ -51,6 +51,7 @@ interface PageHandler {
                 apps.mojom.Permission permission);
   Uninstall(string app_id);
   OpenNativeSettings(string app_id);
+  SetPreferredApp(string app_id, bool is_preferred_app);
 };
 
 // Frontend interface.

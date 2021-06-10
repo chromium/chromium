@@ -234,4 +234,28 @@ std::set<std::string> AppManagementGetSupportedLinks(
   return supported_links;
 }
 
+bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
+  bool scheme = false;
+  bool host = false;
+  for (auto& condition : intent_filter->conditions) {
+    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
+      for (auto& condition_value : condition->condition_values) {
+        if (condition_value->value == "http" ||
+            condition_value->value == "https") {
+          scheme = true;
+          break;
+        }
+      }
+    } else if (condition->condition_type == apps::mojom::ConditionType::kHost) {
+      host = true;
+    }
+
+    if (scheme && host) {
+      break;
+    }
+  }
+
+  return scheme && host;
+}
+
 }  // namespace apps_util

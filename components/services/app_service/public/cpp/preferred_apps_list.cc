@@ -21,32 +21,6 @@ void Clone(apps::PreferredAppsList::PreferredApps& source,
   }
 }
 
-// Given an intent filter, decide if the filter matches the required parameters
-// that determine that a filter has a supported link.
-bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
-  bool scheme = false;
-  bool host = false;
-  for (auto& condition : intent_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
-      for (auto& condition_value : condition->condition_values) {
-        if (condition_value->value == "http" ||
-            condition_value->value == "https") {
-          scheme = true;
-          break;
-        }
-      }
-    } else if (condition->condition_type == apps::mojom::ConditionType::kHost) {
-      host = true;
-    }
-
-    if (scheme && host) {
-      break;
-    }
-  }
-
-  return scheme && host;
-}
-
 }  // namespace
 
 namespace apps {
@@ -127,7 +101,7 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
       apps::mojom::PreferredApp::New(intent_filter->Clone(), app_id);
   preferred_apps_.push_back(std::move(new_preferred_app));
 
-  if (IsSupportedLink(intent_filter)) {
+  if (apps_util::IsSupportedLink(intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, true);
       for (auto& app : replaced_preference_map) {
@@ -155,7 +129,7 @@ bool PreferredAppsList::DeletePreferredApp(
     }
   }
 
-  if (IsSupportedLink(intent_filter)) {
+  if (apps_util::IsSupportedLink(intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, false);
     }
@@ -193,7 +167,7 @@ void PreferredAppsList::Init(PreferredApps& preferred_apps) {
   Clone(preferred_apps, &preferred_apps_);
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
-    if (IsSupportedLink((*iter)->intent_filter)) {
+    if (apps_util::IsSupportedLink((*iter)->intent_filter)) {
       for (auto& obs : observers_) {
         obs.OnPreferredAppChanged((*iter)->app_id, true);
       }
@@ -244,7 +218,7 @@ bool PreferredAppsList::IsPreferredAppForSupportedLinks(
     const std::string& app_id) {
   for (const auto& preferred_app : preferred_apps_) {
     if (preferred_app->app_id == app_id &&
-        IsSupportedLink(preferred_app->intent_filter)) {
+        apps_util::IsSupportedLink(preferred_app->intent_filter)) {
       return true;
     }
   }

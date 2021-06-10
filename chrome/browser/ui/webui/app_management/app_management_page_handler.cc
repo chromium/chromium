@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -184,6 +185,44 @@ void AppManagementPageHandler::Uninstall(const std::string& app_id) {
 void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
       app_id);
+}
+
+void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
+                                               bool is_preferred_app) {
+  if (is_preferred_app &&
+      !preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id)) {
+    // Only deal with overlapping links if we actually changed the permission
+    // to true.
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->AppRegistryCache()
+        .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+          if (update.Readiness() == apps::mojom::Readiness::kReady) {
+            for (auto& filter : update.IntentFilters()) {
+              if (apps_util::IsSupportedLink(filter)) {
+                this->preferred_apps_list_.AddPreferredApp(update.AppId(),
+                                                           filter);
+              }
+            }
+          }
+        });
+  } else if (!is_preferred_app &&
+             preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id)) {
+    // If changed to false, remove all of the filters for that app.
+    // Only deal with overlapping links if we actually changed the permission
+    // to true.
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->AppRegistryCache()
+        .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+          if (update.Readiness() == apps::mojom::Readiness::kReady) {
+            for (auto& filter : update.IntentFilters()) {
+              if (apps_util::IsSupportedLink(filter)) {
+                this->preferred_apps_list_.DeletePreferredApp(update.AppId(),
+                                                              filter);
+              }
+            }
+          }
+        });
+  }
 }
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(

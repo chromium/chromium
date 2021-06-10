@@ -91,6 +91,10 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter);
 
+// Given an intent filter, decide if the filter matches the required
+// parameters that determine whether the filter has a supported link.
+bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter);
+
 }  // namespace apps_util
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_UTIL_H_
