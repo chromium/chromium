@@ -755,6 +755,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BiometricAuthPwdFill.AuthRequester"
+    enum="BiometricAuthRequester" expires_after="2021-10-31">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhosrchig@google.com</owner>
+  <summary>
+    Recorded when a password filling surface or the account chooser dialog
+    requests to re-auth the user via biometrics. It records the UI surface that
+    made the request.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
     enum="BiometricAuthResult" expires_after="2021-10-31">
   <owner>ioanap@chromium.org</owner>
@@ -772,17 +783,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Recorded whenever a password filling surface or the account chooser dialog
     checks whether it can use biometrics to re-authenticate the user.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.BiometricAuthPwdFill.Requester"
-    enum="BiometricAuthRequester" expires_after="2021-10-31">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhosrchig@google.com</owner>
-  <summary>
-    Recorded when a password filling surface or the account chooser dialog
-    requests to re-auth the user via biometrics. It records the UI surface that
-    made the request.
   </summary>
 </histogram>
 
