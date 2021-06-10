@@ -161,11 +161,6 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       *accel = ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
       return true;
 
-    case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
-      *accel = ui::Accelerator(ui::VKEY_I,
-                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-      return true;
-
     case IDC_CONTENT_CONTEXT_PASTE:
       *accel = ui::Accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN);
       return true;
