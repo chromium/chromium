@@ -144,8 +144,7 @@ public class AccessorySheetRenderTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                NightModeTestUtils::tearDownNightModeForDummyUiActivity);
+        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
         setRtlForTesting(false);
         try {
             ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());

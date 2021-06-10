@@ -82,8 +82,7 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { NightModeTestUtils.tearDownNightModeForDummyUiActivity(); });
+        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
         super.tearDownTest();
     }
 
