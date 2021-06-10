@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
@@ -59,7 +60,7 @@ public class ChildAccountService {
      */
     @MainThread
     public static void checkChildAccountStatus(
-            List<Account> accounts, ChildAccountStatusListener listener) {
+            @NonNull List<Account> accounts, @NonNull ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
         if (accounts.size() == 1) {
             // Child accounts can't share a device.
