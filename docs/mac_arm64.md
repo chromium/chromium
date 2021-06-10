@@ -1,35 +1,29 @@
-# Chromium for arm Macs
+# Chromium for Arm Macs
 
 This document describes the state of Chromium on Apple Silicon Macs.
 
 There's a [bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
-that builds for arm. It cross-builds on an Intel machine.
+that builds for Arm. It cross-builds on an Intel machine.
 
 There's also a [tester
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel-tests)
 that continuously runs tests. Most tests pass.
 
-## Building _for_ arm Macs
+## Building _for_ Arm Macs
 
-You can build Chrome for arm macs on an Intel Mac. To build for arm64, you have
-to do 2 things:
+If you are on an Intel Mac, all that's required to build Chromium for arm64
+is to add a `target_cpu = "arm64"` line to your `args.gn`. Then build normally.
+If you are on an Arm Mac, your build will by default be an Arm build, though
+please see the section below about building _on_ Arm Macs for specific things
+to keep in mind.
 
-1. use the `MacOSX11.0.sdk` that comes with Xcode 12.2. If you're on Google's
-   corporate network, this SDK is part of the hermetic toolchain and will be
-   used automatically. Otherwise, manually download and install this version of
-   Xcode and, if necessary, make it the active Xcode with `xcode-select`.
-
-2. Add `target_cpu = "arm64"` to your `args.gn`.
-
-Then build normally.
-
-To run a built Chromium, you need to copy it to your arm mac. If you don't
-do a component build (e.g. a regular `is_debug=false` build), you can just
-copy over Chromium.app from your build directory. If you copy it using
+A note about copying a Chromium build to your Arm Mac. If you don't do a
+component build (e.g. a regular `is_debug=false` build), you can just copy
+over Chromium.app from your build directory. If you copy it using
 macOS's "Shared Folder" feature and Finder, Chromium.app should be directly
 runnable. If you zip, upload Chromium.app to some web service and download
-it on the DTK, browsers will set the `com.apple.quarantine` bit, which will
-cause Finder to say `"Chromium" is damanged and can't be opened. You should
+it to an Arm Mac, browsers will set the `com.apple.quarantine` bit, which will
+cause the Finder to say `"Chromium" is damanged and can't be opened. You should
 move it to the Trash."`. In Console.app, the kernel will log
 `kernel: Security policy would not allow process: 2204,
 /Users/you/Downloads/Chromium.app/Contents/MacOS/Chromium` and amfid will log
@@ -46,8 +40,8 @@ trybot](https://ci.chromium.org/p/chromium/builders/try/mac-arm64-rel). A small
 number of [swarming bots](https://goto.corp.google.com/run-on-dtk) are also
 available for Googlers to run tests on.
 
-You can follow the [Mac-ARM64 label](https://crbug.com/?q=label%3Amac-arm64) to
-get updates on progress.
+Arm Mac-specific bugs are tagged with the
+[Mac-ARM64 label](https://crbug.com/?q=label%3Amac-arm64).
 
 ### Universal Builds
 
@@ -83,15 +77,16 @@ all-encompassing `gn` configuration because:
 
 It's possible to build _on_ an arm Mac, without Rosetta. However, this
 configuration is not yet covered by bots, so it might be broken from time to
-time. If you run into issues, complain on https://crbug.com/1103236
+time. If you run into issues, complain on
+[https://crbug.com/1103236](https://crbug.com/1103236).
 
-Also, some of the hermetic binaries in depot\_tools aren't available for
-arm yet. Most notably, some parts of `vpython` are not yet working ([tracking
+Also, some of the hermetic binaries in `depot_tools` aren't available for
+Arm yet. Most notably, some parts of `vpython` are not yet working ([tracking
 bug](https://crbug.com/1103275)). The main effect of this is that some
 presubmits don't yet work, and **you need to use
 `git cl upload --bypass-hooks`** to upload CLs.
 
-(The build will also use `git` from `PATH`, instead of depot\_tools's
+(The build will also use `git` from `PATH`, instead of `depot_tools`'s
 hermetic versions for now.)
 
 Other than that, checking out and building (with goma too) should just work.
@@ -99,5 +94,5 @@ You should be able to run `fetch chromium` normally, and then build, using
 `gn`, `ninja` etc like normal.
 
 gtest-based binaries should build, run, and mostly pass. Web tests probably
-don't work yet due to lack of an arm apache binary
+don't work yet due to lack of an Arm Apache binary
 ([tracking bug](https://crbug.com/1190885)).
