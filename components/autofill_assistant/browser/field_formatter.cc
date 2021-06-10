@@ -50,42 +50,37 @@ std::map<std::string, std::string> CreateFormGroupMappings(
 }
 
 void GetNameAndAbbreviationViaAlternativeStateNameMap(
-    const std::u16string& u16_country_code,
-    const std::u16string& state_string_from_profile,
+    const std::u16string& country_name,
+    const std::u16string& state_from_profile,
     std::u16string* name,
     std::u16string* abbreviation) {
   std::string country_code =
-      autofill::CountryNames::GetInstance()->GetCountryCode(u16_country_code);
+      autofill::CountryNames::GetInstance()->GetCountryCode(country_name);
   absl::optional<autofill::StateEntry> state_entry =
       autofill::AlternativeStateNameMap::GetInstance()->GetEntry(
           autofill::AlternativeStateNameMap::CountryCode(country_code),
-          autofill::AlternativeStateNameMap::StateName(
-              state_string_from_profile));
-  if (state_entry) {
-    VLOG(3) << "Got state_entry from AlternativeStateNameMap";
-    if (state_entry->has_canonical_name() &&
-        !state_entry->canonical_name().empty()) {
-      std::u16string full = base::ASCIIToUTF16(state_entry->canonical_name());
-      std::u16string abbr = state_string_from_profile;
-      auto curr_min_abbr_size = full.size();
-      for (const auto& it_abbr : state_entry->abbreviations()) {
-        if (!it_abbr.empty() && it_abbr.size() < curr_min_abbr_size) {
-          abbr = base::ASCIIToUTF16(it_abbr);
-          curr_min_abbr_size = it_abbr.size();
-        }
-      }
-      if (name) {
-        name->swap(full);
-      }
-      if (abbreviation) {
-        abbreviation->swap(abbr);
+          autofill::AlternativeStateNameMap::StateName(state_from_profile));
+  if (!state_entry) {
+    // Name and abbreviation are already prefilled.
+    return;
+  }
+  if (state_entry->has_canonical_name() &&
+      !state_entry->canonical_name().empty()) {
+    std::u16string full = base::ASCIIToUTF16(state_entry->canonical_name());
+    std::u16string abbr;
+    size_t curr_min_abbr_size = INT_MAX;
+    for (const auto& it_abbr : state_entry->abbreviations()) {
+      if (!it_abbr.empty() && it_abbr.size() < curr_min_abbr_size) {
+        abbr = base::ASCIIToUTF16(it_abbr);
+        curr_min_abbr_size = it_abbr.size();
       }
     }
-  } else {
-    std::u16string non_const_state_string_from_profile =
-        state_string_from_profile;
-    name->swap(non_const_state_string_from_profile);
-    VLOG(3) << "Didn't get any state details from AlternativeStateNameMap";
+    if (name) {
+      name->swap(full);
+    }
+    if (abbreviation) {
+      abbreviation->swap(abbr);
+    }
   }
 }
 
@@ -199,10 +194,10 @@ CreateAutofillMappings<autofill::AutofillProfile>(
     if (abbreviation.empty() &&
         base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      const std::u16string& u16_country_code = profile.GetInfo(
+      const std::u16string& country_name = profile.GetInfo(
           autofill::AutofillType(autofill::ADDRESS_HOME_COUNTRY), locale);
       GetNameAndAbbreviationViaAlternativeStateNameMap(
-          u16_country_code, state, &full_name, &abbreviation);
+          country_name, state, &full_name, &abbreviation);
     }
     mappings[base::NumberToString(
         static_cast<int>(AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] =

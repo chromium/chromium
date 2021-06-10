@@ -77,13 +77,16 @@ class FieldFormatterStateMapTest : public ::testing::Test {
   autofill::TestPersonalDataManager personal_data_manager_;
 };
 
-TEST_F(FieldFormatterStateMapTest, AlternativeStateNameMapTest) {
+TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonUS) {
   autofill::test::ClearAlternativeStateNameMapForTesting();
   WritePathToPref(GetPath());
-  // Use non-US country for testing, because older state_names helper doesn't
-  // work for non-US.
-  base::WriteFile(GetPath().AppendASCII("DE"),
-                  autofill::test::CreateStatesProtoAsString());
+  autofill::test::TestStateEntry test_state_entry;
+  test_state_entry.canonical_name = "Bavaria";
+  test_state_entry.abbreviations = {"Bay", "BY"};
+  test_state_entry.alternative_names = {"Bayern"};
+  base::WriteFile(
+      GetPath().AppendASCII("DE"),
+      autofill::test::CreateStatesProtoAsString("DE", {test_state_entry}));
 
   autofill::AutofillProfile alternative_state_map_profile;
   alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_STATE,
@@ -106,9 +109,8 @@ TEST_F(FieldFormatterStateMapTest, AlternativeStateNameMapTest) {
 
   // State handling from abbreviation.
   autofill::AutofillProfile state_abbr_profile(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetProfileInfo(
-      &state_abbr_profile, "John", "", "Doe", "editor@gmail.com", "",
-      "203 Barfield Lane", "", "Munich", "BY", "80337", "DE", "+49794522222");
+  autofill::test::SetProfileInfo(&state_abbr_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "BY", "", "DE", "");
   EXPECT_EQ(*FormatString("${34}",
                           CreateAutofillMappings(state_abbr_profile, "en-US")),
             "BY");
@@ -136,6 +138,60 @@ TEST_F(FieldFormatterStateMapTest, AlternativeStateNameMapTest) {
   EXPECT_EQ(*FormatString("${-6}",
                           CreateAutofillMappings(state_name_profile, "en-US")),
             "Invalid");
+}
+
+TEST_F(FieldFormatterStateMapTest,
+       AlternativeStateNameDoesNotOverrideUSResult) {
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  WritePathToPref(GetPath());
+  autofill::test::TestStateEntry test_state_entry;
+  test_state_entry.canonical_name = "Chesapeake Bay State";
+  test_state_entry.abbreviations = {"MD"};
+  test_state_entry.alternative_names = {"Free State", "Maryland"};
+  base::WriteFile(
+      GetPath().AppendASCII("US"),
+      autofill::test::CreateStatesProtoAsString("US", {test_state_entry}));
+
+  autofill::AutofillProfile alternative_state_map_profile;
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"MD",
+                                        "en-US");
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"US",
+                                        "en-US");
+
+  base::RunLoop run_loop;
+  autofill::MockAlternativeStateNameMapUpdater
+      mock_alternative_state_name_updater(run_loop.QuitClosure(),
+                                          autofill_client_.GetPrefs(),
+                                          &personal_data_manager_);
+  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
+  personal_data_manager_.AddProfile(alternative_state_map_profile);
+  run_loop.Run();
+  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
+
+  EXPECT_FALSE(autofill::AlternativeStateNameMap::GetInstance()
+                   ->IsLocalisedStateNamesMapEmpty());
+
+  // State handling from abbreviation.
+  autofill::AutofillProfile state_abbr_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_abbr_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "MD", "", "US", "");
+  EXPECT_EQ(*FormatString("${34}",
+                          CreateAutofillMappings(state_abbr_profile, "en-US")),
+            "MD");
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_abbr_profile, "en-US")),
+            "Maryland");
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "Maryland", "", "US", "");
+  EXPECT_EQ(*FormatString("${34}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "MD");
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "Maryland");
 }
 
 TEST(FieldFormatterTest, FormatString) {
