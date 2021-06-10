@@ -23,8 +23,11 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
 
   // Initializes the UI handler with the provided flags storage and flags
   // access. If there were flags experiments requested from javascript before
-  // this was called, it calls |HandleRequestExperimentalFeatures| again.
+  // this was called, it calls |SendExperimentalFeatures|.
   void Init(flags_ui::FlagsStorage* flags_storage, flags_ui::FlagAccess access);
+
+  // Sends experimental features lists to the UI.
+  void SendExperimentalFeatures();
 
   // Configures the handler to return either all features or deprecated
   // features only.
@@ -53,7 +56,7 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
-  bool experimental_features_requested_;
+  std::string experimental_features_callback_id_;
   bool deprecated_features_only_;
 
   DISALLOW_COPY_AND_ASSIGN(FlagsUIHandler);
