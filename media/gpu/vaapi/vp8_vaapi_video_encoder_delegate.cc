@@ -85,9 +85,9 @@ void VP8VaapiVideoEncoderDelegate::Reset() {
 }
 
 VP8VaapiVideoEncoderDelegate::VP8VaapiVideoEncoderDelegate(
-    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
-    : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
+    : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
 VP8VaapiVideoEncoderDelegate::~VP8VaapiVideoEncoderDelegate() {
   // VP8VaapiVideoEncoderDelegate can be destroyed on any thread.
@@ -185,7 +185,7 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
     return true;
   }
   VLOGF(2) << "New bitrate: " << bitrate_allocation.GetSumBps()
-           << ", New framerate: " << framerate;
+           << ", new framerate: " << framerate;
 
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
@@ -212,12 +212,12 @@ void VP8VaapiVideoEncoderDelegate::InitializeFrameHeader() {
   // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
   // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
   // only when a macroblock level loop filter adjustment.
-  current_frame_hdr_.loopfilter_hdr.loop_filter_adj_enable = 1;
+  current_frame_hdr_.loopfilter_hdr.loop_filter_adj_enable = true;
 
   // Set mb_no_skip_coeff to 1 that some decoders (e.g. kepler) could not decode
   // correctly a stream encoded with mb_no_skip_coeff=0. It also enables an
   // encoder to produce a more optimized stream than when mb_no_skip_coeff=0.
-  current_frame_hdr_.mb_no_skip_coeff = 1;
+  current_frame_hdr_.mb_no_skip_coeff = true;
 }
 
 void VP8VaapiVideoEncoderDelegate::UpdateFrameHeader(bool keyframe) {
@@ -366,8 +366,8 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.clamp_qindex_low = encode_params.min_qp;
 
   VAQMatrixBufferVP8 qmatrix_buf = {};
-  for (size_t i = 0; i < base::size(qmatrix_buf.quantization_index); ++i)
-    qmatrix_buf.quantization_index[i] = frame_header->quantization_hdr.y_ac_qi;
+  for (auto index : qmatrix_buf.quantization_index)
+    index = frame_header->quantization_hdr.y_ac_qi;
 
   qmatrix_buf.quantization_index_delta[0] =
       frame_header->quantization_hdr.y_dc_delta;

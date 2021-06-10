@@ -88,7 +88,7 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper(CodecMode mode) : VaapiWrapper(mode) {}
+  explicit MockVaapiWrapper(CodecMode mode) : VaapiWrapper(mode) {}
 
   MOCK_METHOD2(GetVAEncMaxNumOfRefFrames, bool(VideoCodecProfile, size_t*));
   MOCK_METHOD5(CreateContextAndSurfaces,
@@ -317,6 +317,8 @@ class VaapiVideoEncodeAcceleratorTest
   std::vector<VASurfaceID> va_surfaces_;
   base::test::TaskEnvironment task_environment_;
   MockVideoEncodeAcceleratorClient client_;
+  // |encoder_| is a VideoEncodeAccelerator to use its specialized Deleter that
+  // calls Destroy() so that destruction threading is respected.
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   MockVP9VaapiVideoEncoderDelegate* mock_encoder_ = nullptr;

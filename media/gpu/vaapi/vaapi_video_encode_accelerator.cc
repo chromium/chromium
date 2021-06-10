@@ -185,7 +185,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
   client_ = client_ptr_factory_->GetWeakPtr();
 
-  VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
   if (codec != kCodecH264 && codec != kCodecVP8 && codec != kCodecVP9) {
     VLOGF(1) << "Unsupported profile: "
              << GetProfileName(config.output_profile);
@@ -218,11 +218,11 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   const SupportedProfiles& profiles = GetSupportedProfiles();
-  auto profile = find_if(profiles.begin(), profiles.end(),
-                         [output_profile = config.output_profile](
-                             const SupportedProfile& profile) {
-                           return profile.profile == output_profile;
-                         });
+  const auto profile = find_if(profiles.begin(), profiles.end(),
+                               [output_profile = config.output_profile](
+                                   const SupportedProfile& profile) {
+                                 return profile.profile == output_profile;
+                               });
   if (profile == profiles.end()) {
     VLOGF(1) << "Unsupported output profile "
              << GetProfileName(config.output_profile);
@@ -281,25 +281,28 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       base::Unretained(this));
   switch (output_codec_) {
     case kCodecH264:
-      if (!IsConfiguredForTesting())
+      if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
+      }
 
       DCHECK_EQ(ave_config.bitrate_control,
                 VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case kCodecVP8:
-      if (!IsConfiguredForTesting())
+      if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP8VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
+      }
 
       DCHECK_EQ(ave_config.bitrate_control,
                 VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case kCodecVP9:
-      if (!IsConfiguredForTesting())
+      if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
+      }
 
       ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
           kConstantQuantizationParameter;
@@ -431,8 +434,9 @@ void VaapiVideoEncodeAccelerator::UploadFrame(
 
   DVLOGF(4) << "frame is uploading: " << va_surface_id;
   if (!vaapi_wrapper_->UploadVideoFrameToSurface(*frame, va_surface_id,
-                                                 va_surface_size))
+                                                 va_surface_size)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed to upload frame");
+  }
 }
 
 void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffer() {
@@ -518,7 +522,8 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
       frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
       frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     NOTIFY_ERROR(kPlatformFailureError,
-                 "Unexpected storage: " << frame->storage_type());
+                 "Unexpected storage: "
+                     << VideoFrame::StorageTypeToString(frame->storage_type()));
     return nullptr;
   }
 
@@ -538,8 +543,9 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
   scoped_refptr<VASurface> input_surface;
   if (native_input_mode_) {
     if (frame->format() != PIXEL_FORMAT_NV12) {
-      NOTIFY_ERROR(kPlatformFailureError,
-                   "Expected NV12, got: " << frame->format());
+      NOTIFY_ERROR(
+          kPlatformFailureError,
+          "Expected NV12, got: " << VideoPixelFormatToString(frame->format()));
       return nullptr;
     }
     DCHECK(frame);

@@ -68,9 +68,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     size_t max_ref_pic_list1_size;
   };
 
-  H264VaapiVideoEncoderDelegate(
-      const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-      base::RepeatingClosure error_cb);
+  H264VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                                base::RepeatingClosure error_cb);
   ~H264VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.

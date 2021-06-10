@@ -103,9 +103,9 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       max_ref_pic_list1_size(kMaxRefIdxL1Size) {}
 
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
-    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
-    : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb),
+    : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb),
       packed_sps_(new H264BitstreamBuffer()),
       packed_pps_(new H264BitstreamBuffer()) {}
 
@@ -709,14 +709,14 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   slice_param.pic_order_cnt_lsb = pic->pic_order_cnt_lsb;
   slice_param.num_ref_idx_active_override_flag = true;
 
-  for (size_t i = 0; i < base::size(pic_param.ReferenceFrames); ++i)
-    InitVAPictureH264(&pic_param.ReferenceFrames[i]);
+  for (VAPictureH264& picture : pic_param.ReferenceFrames)
+    InitVAPictureH264(&picture);
 
-  for (size_t i = 0; i < base::size(slice_param.RefPicList0); ++i)
-    InitVAPictureH264(&slice_param.RefPicList0[i]);
+  for (VAPictureH264& picture : slice_param.RefPicList0)
+    InitVAPictureH264(&picture);
 
-  for (size_t i = 0; i < base::size(slice_param.RefPicList1); ++i)
-    InitVAPictureH264(&slice_param.RefPicList1[i]);
+  for (VAPictureH264& picture : slice_param.RefPicList1)
+    InitVAPictureH264(&picture);
 
   VAPictureH264* ref_frames_entry = pic_param.ReferenceFrames;
   VAPictureH264* ref_list_entry = slice_param.RefPicList0;

@@ -183,9 +183,9 @@ void VP9VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
 }
 
 VP9VaapiVideoEncoderDelegate::VP9VaapiVideoEncoderDelegate(
-    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
-    : VaapiVideoEncoderDelegate(vaapi_wrapper, error_cb) {}
+    : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
 VP9VaapiVideoEncoderDelegate::~VP9VaapiVideoEncoderDelegate() {
   // VP9VaapiVideoEncoderDelegate can be destroyed on any thread.

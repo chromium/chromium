@@ -51,7 +51,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     bool error_resilient_mode;
   };
 
-  VP9VaapiVideoEncoderDelegate(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+  VP9VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                base::RepeatingClosure error_cb);
   ~VP9VaapiVideoEncoderDelegate() override;
 

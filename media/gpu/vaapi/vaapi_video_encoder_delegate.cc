@@ -90,6 +90,7 @@ const scoped_refptr<VASurface>&
 VaapiVideoEncoderDelegate::EncodeJob::input_surface() const {
   return input_surface_;
 }
+
 const scoped_refptr<CodecPicture>&
 VaapiVideoEncoderDelegate::EncodeJob::picture() const {
   return picture_;

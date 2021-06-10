@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
-#include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
@@ -48,8 +47,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
  private:
   friend class VaapiVideoEncodeAcceleratorTest;
-  class H264Accelerator;
-  class VP9Accelerator;
 
   using EncodeJob = VaapiVideoEncoderDelegate::EncodeJob;
 
