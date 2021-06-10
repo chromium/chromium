@@ -28,13 +28,13 @@ static gfx::ColorSpace test;
 static gfx::ColorSpace srgb;
 
 static void ColorTransform(size_t hash) {
-  const auto kIntent = static_cast<gfx::ColorTransform::Intent>(hash & 1);
+  const gfx::ColorTransform::Options options;
 
   std::unique_ptr<gfx::ColorTransform> transform;
   if (hash & 2) {
-    transform = gfx::ColorTransform::NewColorTransform(test, srgb, kIntent);
+    transform = gfx::ColorTransform::NewColorTransform(test, srgb, options);
   } else {
-    transform = gfx::ColorTransform::NewColorTransform(srgb, test, kIntent);
+    transform = gfx::ColorTransform::NewColorTransform(srgb, test, options);
   }
 
   transform->Transform(pixels, kPixels);

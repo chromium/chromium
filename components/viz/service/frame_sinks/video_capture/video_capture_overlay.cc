@@ -465,9 +465,8 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
   }
   if (image_color_space != color_space_) {
-    const auto color_transform = gfx::ColorTransform::NewColorTransform(
-        image_color_space, color_space_,
-        gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
+    const auto color_transform =
+        gfx::ColorTransform::NewColorTransform(image_color_space, color_space_);
     color_transform->Transform(colors.get(), num_pixels);
   }
 

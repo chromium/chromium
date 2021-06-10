@@ -231,8 +231,7 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
                                  dst_color_space.ToString().c_str()));
 
           auto color_transform = gfx::ColorTransform::NewColorTransform(
-              adjusted_color_space, dst_color_space,
-              gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+              adjusted_color_space, dst_color_space);
 
           ASSERT_EQ(color_transform->GetShaderSource(),
                     renderer()

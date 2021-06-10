@@ -3767,8 +3767,7 @@ const gfx::ColorTransform* GLRenderer::GetColorTransform(
   std::unique_ptr<gfx::ColorTransform>& transform =
       color_transform_cache_[dst][src];
   if (!transform) {
-    transform = gfx::ColorTransform::NewColorTransform(
-        src, dst, gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+    transform = gfx::ColorTransform::NewColorTransform(src, dst);
   }
   return transform.get();
 }

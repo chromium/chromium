@@ -321,9 +321,8 @@ class VideoCaptureOverlayRenderTest
         }
 
         // Execute the YUV→RGB conversion.
-        gfx::ColorTransform::NewColorTransform(
-            frame.ColorSpace(), png_color_space,
-            gfx::ColorTransform::Intent::INTENT_ABSOLUTE)
+        gfx::ColorTransform::NewColorTransform(frame.ColorSpace(),
+                                               png_color_space)
             ->Transform(colors.get(), size.GetArea());
 
         // Map back from interleaved [0.0,1.0] values to intervealed ARGB,

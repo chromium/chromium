@@ -75,8 +75,7 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
 
   // Construct the ColorTransform.
   const auto transform = gfx::ColorTransform::NewColorTransform(
-      frame.ColorSpace(), gfx::ColorSpace::CreateSRGB(),
-      gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
+      frame.ColorSpace(), gfx::ColorSpace::CreateSRGB());
   CHECK(transform);
 
   // Convert one row at a time.

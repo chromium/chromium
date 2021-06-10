@@ -208,8 +208,7 @@ bool GLScaler::Configure(const Parameters& new_params) {
   std::unique_ptr<gfx::ColorTransform> transform;
   if (scaling_color_space_ != params_.output_color_space) {
     transform = gfx::ColorTransform::NewColorTransform(
-        scaling_color_space_, params_.output_color_space,
-        gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+        scaling_color_space_, params_.output_color_space);
   }
   ScalerStage* const final_stage = chain.get();
   final_stage->set_shader_program(
@@ -239,8 +238,7 @@ bool GLScaler::Configure(const Parameters& new_params) {
         input_stage->scale_from()));
     input_stage = input_stage->input_stage();
     transform = gfx::ColorTransform::NewColorTransform(
-        params_.source_color_space, scaling_color_space_,
-        gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+        params_.source_color_space, scaling_color_space_);
     input_stage->set_shader_program(
         GetShaderProgram(input_stage->shader(), intermediate_texture_type,
                          transform.get(), kNoSwizzle));

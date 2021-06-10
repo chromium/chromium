@@ -204,10 +204,8 @@ class ColorTransformStep {
 class ColorTransformInternal : public ColorTransform {
  public:
   ColorTransformInternal(const ColorSpace& src,
-                         int src_bit_depth,
                          const ColorSpace& dst,
-                         int dst_bit_depth,
-                         Intent intent);
+                         const Options& options);
   ~ColorTransformInternal() override;
 
   gfx::ColorSpace GetSrcColorSpace() const override { return src_; }
@@ -225,9 +223,8 @@ class ColorTransformInternal : public ColorTransform {
 
  private:
   void AppendColorSpaceToColorSpaceTransform(const ColorSpace& src,
-                                             int src_bit_depth,
                                              const ColorSpace& dst,
-                                             int dst_bit_depth);
+                                             const Options& options);
   void Simplify();
 
   std::list<std::unique_ptr<ColorTransformStep>> steps_;
@@ -935,16 +932,15 @@ class ColorTransformFromBT2020CL : public ColorTransformStep {
 
 void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     const ColorSpace& src,
-    int src_bit_depth,
     const ColorSpace& dst,
-    int dst_bit_depth) {
+    const Options& options) {
   // ITU-T H.273: If MatrixCoefficients is equal to 0 (Identity) or 8 (YCgCo),
   // range adjustment is performed on R,G,B samples rather than Y,U,V samples.
   const bool src_matrix_is_identity_or_ycgco =
       src.GetMatrixID() == ColorSpace::MatrixID::GBR ||
       src.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
   auto src_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
-      GetRangeAdjustMatrix(src, src_bit_depth));
+      GetRangeAdjustMatrix(src, options.src_bit_depth));
 
   if (!src_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(src_range_adjust_matrix));
@@ -954,7 +950,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(std::make_unique<ColorTransformFromBT2020CL>());
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(GetTransferMatrix(src, src_bit_depth))));
+        Invert(GetTransferMatrix(src, options.src_bit_depth))));
   }
 
   if (src_matrix_is_identity_or_ycgco)
@@ -993,7 +989,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(GetTransferMatrix(src, src_bit_depth))));
+        Invert(GetTransferMatrix(src, options.src_bit_depth))));
   }
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(GetPrimaryTransform(src)));
@@ -1003,7 +999,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        GetTransferMatrix(dst, dst_bit_depth)));
+        GetTransferMatrix(dst, options.dst_bit_depth)));
   }
 
   skcms_TransferFunction dst_from_linear_fn;
@@ -1037,7 +1033,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       dst.GetMatrixID() == ColorSpace::MatrixID::GBR ||
       dst.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
   auto dst_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
-      Invert(GetRangeAdjustMatrix(dst, dst_bit_depth)));
+      Invert(GetRangeAdjustMatrix(dst, options.dst_bit_depth)));
 
   if (dst_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(dst_range_adjust_matrix));
@@ -1046,7 +1042,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     NOTREACHED();
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        GetTransferMatrix(dst, dst_bit_depth)));
+        GetTransferMatrix(dst, options.dst_bit_depth)));
   }
 
   if (!dst_matrix_is_identity_or_ycgco)
@@ -1054,18 +1050,15 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 }
 
 ColorTransformInternal::ColorTransformInternal(const ColorSpace& src,
-                                               int src_bit_depth,
                                                const ColorSpace& dst,
-                                               int dst_bit_depth,
-                                               Intent intent)
+                                               const Options& options)
     : src_(src), dst_(dst) {
   // If no source color space is specified, do no transformation.
   // TODO(ccameron): We may want dst assume sRGB at some point in the future.
   if (!src_.IsValid())
     return;
-  AppendColorSpaceToColorSpaceTransform(src_, src_bit_depth, dst_,
-                                        dst_bit_depth);
-  if (intent != Intent::TEST_NO_OPT)
+  AppendColorSpaceToColorSpaceTransform(src_, dst_, options);
+  if (!options.disable_optimizations)
     Simplify();
 }
 
@@ -1127,12 +1120,17 @@ void ColorTransformInternal::Simplify() {
 // static
 std::unique_ptr<ColorTransform> ColorTransform::NewColorTransform(
     const ColorSpace& src,
-    int src_bit_depth,
+    const ColorSpace& dst) {
+  Options options;
+  return std::make_unique<ColorTransformInternal>(src, dst, options);
+}
+
+// static
+std::unique_ptr<ColorTransform> ColorTransform::NewColorTransform(
+    const ColorSpace& src,
     const ColorSpace& dst,
-    int dst_bit_depth,
-    Intent intent) {
-  return std::make_unique<ColorTransformInternal>(src, src_bit_depth, dst,
-                                                  dst_bit_depth, intent);
+    const Options& options) {
+  return std::make_unique<ColorTransformInternal>(src, dst, options);
 }
 
 ColorTransform::ColorTransform() {}

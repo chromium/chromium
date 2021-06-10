@@ -201,8 +201,7 @@ gfx::ColorSpace GLScalerTestUtil::DefaultYUVColorSpace() {
 // static
 void GLScalerTestUtil::ConvertBitmapToYUV(SkBitmap* image) {
   const auto transform = gfx::ColorTransform::NewColorTransform(
-      DefaultRGBColorSpace(), DefaultYUVColorSpace(),
-      gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
+      DefaultRGBColorSpace(), DefaultYUVColorSpace());
 
   // Loop, transforming one row of pixels at a time.
   std::vector<gfx::ColorTransform::TriStim> stims(image->width());

@@ -5041,9 +5041,8 @@ class ColorTransformPixelTest
     }
 
     std::unique_ptr<gfx::ColorTransform> transform =
-        gfx::ColorTransform::NewColorTransform(
-            this->src_color_space_, this->dst_color_space_,
-            gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+        gfx::ColorTransform::NewColorTransform(this->src_color_space_,
+                                               this->dst_color_space_);
 
     for (size_t i = 0; i < expected_output_colors.size(); ++i) {
       gfx::ColorTransform::TriStim color;

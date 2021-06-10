@@ -17,7 +17,14 @@ namespace gfx {
 
 class GFX_EXPORT ColorTransform {
  public:
-  enum class Intent { INTENT_ABSOLUTE, INTENT_PERCEPTUAL, TEST_NO_OPT };
+  struct Options {
+    // Used in testing to verify that optimizations have no effect.
+    bool disable_optimizations = false;
+
+    // Used to adjust the transfer and range adjust matrices.
+    uint32_t src_bit_depth = kDefaultBitDepth;
+    uint32_t dst_bit_depth = kDefaultBitDepth;
+  };
 
   // TriStimulus is a color coordinate in any color space.
   // Channel order is XYZ, RGB or YUV.
@@ -52,20 +59,12 @@ class GFX_EXPORT ColorTransform {
   // for YUV to RGB color conversion.
   static std::unique_ptr<ColorTransform> NewColorTransform(
       const ColorSpace& src,
-      int src_bit_depth,
-      const ColorSpace& dst,
-      int dst_bit_depth,
-      Intent intent);
+      const ColorSpace& dst);
 
-  // Assumes bit depth 8. For higher bit depths, use above NewColorTransform()
-  // method instead.
   static std::unique_ptr<ColorTransform> NewColorTransform(
       const ColorSpace& src,
       const ColorSpace& dst,
-      Intent intent) {
-    return NewColorTransform(src, kDefaultBitDepth, dst, kDefaultBitDepth,
-                             intent);
-  }
+      const Options& options);
 
  private:
   // The default bit depth assumed by NewColorTransform().

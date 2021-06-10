@@ -71,14 +71,13 @@ ColorSpace::RangeID all_ranges[] = {ColorSpace::RangeID::FULL,
                                     ColorSpace::RangeID::LIMITED,
                                     ColorSpace::RangeID::DERIVED};
 
-ColorTransform::Intent intents[] = {ColorTransform::Intent::INTENT_ABSOLUTE,
-                                    ColorTransform::Intent::TEST_NO_OPT};
+bool optimizations[] = {true, false};
 
 TEST(SimpleColorSpace, BT709toSRGB) {
   ColorSpace bt709 = ColorSpace::CreateREC709();
   ColorSpace sRGB = ColorSpace::CreateSRGB();
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      bt709, sRGB, ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(bt709, sRGB));
 
   ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
   t->Transform(&tmp, 1);
@@ -106,8 +105,8 @@ TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
   ColorSpace bt2020rgb(ColorSpace::PrimaryID::BT2020,
                        ColorSpace::TransferID::BT2020_10,
                        ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      bt2020cl, bt2020rgb, ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(bt2020cl, bt2020rgb));
 
   ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
   t->Transform(&tmp, 1);
@@ -133,8 +132,8 @@ TEST(SimpleColorSpace, YCOCGLimitedToSRGB) {
                    ColorSpace::TransferID::IEC61966_2_1,
                    ColorSpace::MatrixID::YCOCG, ColorSpace::RangeID::LIMITED);
   ColorSpace sRGB = ColorSpace::CreateSRGB();
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      ycocg, sRGB, ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(ycocg, sRGB));
 
   ColorTransform::TriStim tmp(16.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f);
   t->Transform(&tmp, 1);
@@ -192,29 +191,24 @@ TEST(SimpleColorSpace, TransferFnCancel) {
   // out (so the transfer between them should be the identity). This particular
   // case is important for power reasons.
   std::unique_ptr<ColorTransform> bt709_to_srgb(
-      ColorTransform::NewColorTransform(
-          bt709, srgb, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(bt709, srgb));
   EXPECT_EQ(bt709_to_srgb->NumberOfStepsForTesting(), 0u);
 
   // Gamma 2.8 isn't even close to BT709 and won't cancel out (so we will have
   // two steps in the transform -- to-linear and from-linear).
   std::unique_ptr<ColorTransform> bt709_to_gamma28(
-      ColorTransform::NewColorTransform(
-          bt709, gamma28, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(bt709, gamma28));
   EXPECT_EQ(bt709_to_gamma28->NumberOfStepsForTesting(), 2u);
 
   // Gamma 2.4 is closer to BT709, but not close enough to actually cancel out.
   std::unique_ptr<ColorTransform> bt709_to_gamma24(
-      ColorTransform::NewColorTransform(
-          bt709, gamma24, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(bt709, gamma24));
   EXPECT_EQ(bt709_to_gamma24->NumberOfStepsForTesting(), 2u);
 
   // Rec 601 YUV to RGB conversion should have a single step.
   gfx::ColorSpace rec601 = gfx::ColorSpace::CreateREC601();
   std::unique_ptr<ColorTransform> rec601_yuv_to_rgb(
-      ColorTransform::NewColorTransform(
-          rec601, rec601.GetAsFullRangeRGB(),
-          ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(rec601, rec601.GetAsFullRangeRGB()));
   EXPECT_EQ(rec601_yuv_to_rgb->NumberOfStepsForTesting(), 1u);
 }
 
@@ -231,15 +225,13 @@ TEST(SimpleColorSpace, SRGBFromICCAndNotICC) {
   value_fromicc = value_default = ColorTransform::TriStim(0.1f, 0.5f, 0.9f);
 
   std::unique_ptr<ColorTransform> toxyzd50_fromicc(
-      ColorTransform::NewColorTransform(
-          srgb_fromicc, xyzd50, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(srgb_fromicc, xyzd50));
   // This will be converted to a transfer function and then linear transform.
   EXPECT_EQ(toxyzd50_fromicc->NumberOfStepsForTesting(), 2u);
   toxyzd50_fromicc->Transform(&value_fromicc, 1);
 
   std::unique_ptr<ColorTransform> toxyzd50_default(
-      ColorTransform::NewColorTransform(
-          srgb_default, xyzd50, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(srgb_default, xyzd50));
   // This will have a transfer function and then linear transform.
   EXPECT_EQ(toxyzd50_default->NumberOfStepsForTesting(), 2u);
   toxyzd50_default->Transform(&value_default, 1);
@@ -251,13 +243,11 @@ TEST(SimpleColorSpace, SRGBFromICCAndNotICC) {
   value_fromicc = value_default = ColorTransform::TriStim(0.1f, 0.5f, 0.9f);
 
   std::unique_ptr<ColorTransform> fromxyzd50_fromicc(
-      ColorTransform::NewColorTransform(
-          xyzd50, srgb_fromicc, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(xyzd50, srgb_fromicc));
   fromxyzd50_fromicc->Transform(&value_fromicc, 1);
 
   std::unique_ptr<ColorTransform> fromxyzd50_default(
-      ColorTransform::NewColorTransform(
-          xyzd50, srgb_default, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(xyzd50, srgb_default));
   fromxyzd50_default->Transform(&value_default, 1);
 
   EXPECT_NEAR(value_fromicc.x(), value_default.x(), kPixelEpsilon);
@@ -269,8 +259,8 @@ TEST(SimpleColorSpace, BT709toSRGBICC) {
   ICCProfile srgb_icc = ICCProfileForTestingSRGB();
   ColorSpace bt709 = ColorSpace::CreateREC709();
   ColorSpace sRGB = srgb_icc.GetColorSpace();
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      bt709, sRGB, ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(bt709, sRGB));
 
   ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
   t->Transform(&tmp, 1);
@@ -304,8 +294,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyXYZ) {
 
   // Two steps should be needed, transfer fn and matrix.
   std::unique_ptr<ColorTransform> icc_to_xyzd50(
-      ColorTransform::NewColorTransform(
-          icc_space, xyzd50, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(icc_space, xyzd50));
   EXPECT_EQ(icc_to_xyzd50->NumberOfStepsForTesting(), 2u);
   icc_to_xyzd50->Transform(&transformed_value, 1);
   EXPECT_NEAR(transformed_value.x(), expected_transformed_value.x(),
@@ -317,8 +306,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyXYZ) {
 
   // Two steps should be needed, matrix and transfer fn.
   std::unique_ptr<ColorTransform> xyzd50_to_icc(
-      ColorTransform::NewColorTransform(
-          xyzd50, icc_space, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(xyzd50, icc_space));
   EXPECT_EQ(xyzd50_to_icc->NumberOfStepsForTesting(), 2u);
   xyzd50_to_icc->Transform(&transformed_value, 1);
   EXPECT_NEAR(input_value.x(), transformed_value.x(), kPixelEpsilon);
@@ -339,8 +327,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyColorSpin) {
 
   // Three steps will be needed.
   std::unique_ptr<ColorTransform> icc_to_colorspin(
-      ColorTransform::NewColorTransform(
-          icc_space, colorspin, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(icc_space, colorspin));
   EXPECT_EQ(icc_to_colorspin->NumberOfStepsForTesting(), 3u);
   icc_to_colorspin->Transform(&transformed_value, 1);
   EXPECT_NEAR(transformed_value.x(), expected_transformed_value.x(),
@@ -352,8 +339,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyColorSpin) {
 
   transformed_value = expected_transformed_value;
   std::unique_ptr<ColorTransform> colorspin_to_icc(
-      ColorTransform::NewColorTransform(
-          colorspin, icc_space, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(colorspin, icc_space));
   EXPECT_EQ(colorspin_to_icc->NumberOfStepsForTesting(), 3u);
   transformed_value = expected_transformed_value;
   colorspin_to_icc->Transform(&transformed_value, 1);
@@ -367,8 +353,8 @@ TEST(SimpleColorSpace, GetColorSpace) {
   ColorSpace sRGB = srgb_icc.GetColorSpace();
   ColorSpace sRGB2 = sRGB;
 
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      sRGB, sRGB2, ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(sRGB, sRGB2));
 
   ColorTransform::TriStim tmp(1.0f, 1.0f, 1.0f);
   t->Transform(&tmp, 1);
@@ -398,8 +384,8 @@ TEST(SimpleColorSpace, GetColorSpace) {
 TEST(SimpleColorSpace, Scale) {
   ColorSpace srgb = ColorSpace::CreateSRGB();
   ColorSpace srgb_scaled = srgb.GetScaledColorSpace(2.0f);
-  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
-      srgb, srgb_scaled, ColorTransform::Intent::INTENT_PERCEPTUAL));
+  std::unique_ptr<ColorTransform> t(
+      ColorTransform::NewColorTransform(srgb, srgb_scaled));
 
   ColorTransform::TriStim tmp(1.0f, 1.0f, 1.0f);
   t->Transform(&tmp, 1);
@@ -415,60 +401,52 @@ TEST(SimpleColorSpace, ToUndefined) {
   // Anything else should have 0 steps.
   ColorSpace video = gfx::ColorSpace::CreateREC709();
   std::unique_ptr<ColorTransform> video_to_null(
-      ColorTransform::NewColorTransform(
-          video, null, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(video, null));
   EXPECT_EQ(video_to_null->NumberOfStepsForTesting(), 1u);
   // Without optimization, video should have 2 steps: limited range to full
   // range, and YUV to RGB.
+  ColorTransform::Options options;
+  options.disable_optimizations = true;
   std::unique_ptr<ColorTransform> video_to_null_no_opt(
-      ColorTransform::NewColorTransform(video, null,
-                                        ColorTransform::Intent::TEST_NO_OPT));
+      ColorTransform::NewColorTransform(video, null, options));
   EXPECT_EQ(video_to_null_no_opt->NumberOfStepsForTesting(), 2u);
 
   // Test with an ICC profile that can't be represented as matrix+transfer.
   ColorSpace luttrcicc = ICCProfileForTestingNoAnalyticTrFn().GetColorSpace();
   std::unique_ptr<ColorTransform> luttrcicc_to_null(
-      ColorTransform::NewColorTransform(
-          luttrcicc, null, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(luttrcicc, null));
   EXPECT_EQ(luttrcicc_to_null->NumberOfStepsForTesting(), 0u);
   std::unique_ptr<ColorTransform> luttrcicc_to_nonnull(
-      ColorTransform::NewColorTransform(
-          luttrcicc, nonnull, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(luttrcicc, nonnull));
   EXPECT_GT(luttrcicc_to_nonnull->NumberOfStepsForTesting(), 0u);
 
   // Test with an ICC profile that can.
   ColorSpace adobeicc = ICCProfileForTestingAdobeRGB().GetColorSpace();
   std::unique_ptr<ColorTransform> adobeicc_to_null(
-      ColorTransform::NewColorTransform(
-          adobeicc, null, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(adobeicc, null));
   EXPECT_EQ(adobeicc_to_null->NumberOfStepsForTesting(), 0u);
   std::unique_ptr<ColorTransform> adobeicc_to_nonnull(
-      ColorTransform::NewColorTransform(
-          adobeicc, nonnull, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(adobeicc, nonnull));
   EXPECT_GT(adobeicc_to_nonnull->NumberOfStepsForTesting(), 0u);
 
   // And with something analytic.
   ColorSpace xyzd50 = gfx::ColorSpace::CreateXYZD50();
   std::unique_ptr<ColorTransform> xyzd50_to_null(
-      ColorTransform::NewColorTransform(
-          xyzd50, null, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(xyzd50, null));
   EXPECT_EQ(xyzd50_to_null->NumberOfStepsForTesting(), 0u);
   std::unique_ptr<ColorTransform> xyzd50_to_nonnull(
-      ColorTransform::NewColorTransform(
-          xyzd50, nonnull, ColorTransform::Intent::INTENT_PERCEPTUAL));
+      ColorTransform::NewColorTransform(xyzd50, nonnull));
   EXPECT_GT(xyzd50_to_nonnull->NumberOfStepsForTesting(), 0u);
 }
 
 TEST(SimpleColorSpace, DefaultToSRGB) {
   // The default value should do no transformation, regardless of destination.
   ColorSpace unknown;
-  std::unique_ptr<ColorTransform> t1(ColorTransform::NewColorTransform(
-      unknown, ColorSpace::CreateSRGB(),
-      ColorTransform::Intent::INTENT_PERCEPTUAL));
+  std::unique_ptr<ColorTransform> t1(
+      ColorTransform::NewColorTransform(unknown, ColorSpace::CreateSRGB()));
   EXPECT_EQ(t1->NumberOfStepsForTesting(), 0u);
-  std::unique_ptr<ColorTransform> t2(ColorTransform::NewColorTransform(
-      unknown, ColorSpace::CreateXYZD50(),
-      ColorTransform::Intent::INTENT_PERCEPTUAL));
+  std::unique_ptr<ColorTransform> t2(
+      ColorTransform::NewColorTransform(unknown, ColorSpace::CreateXYZD50()));
   EXPECT_EQ(t2->NumberOfStepsForTesting(), 0u);
 }
 
@@ -489,15 +467,13 @@ TEST(SimpleColorSpace, ShaderSourceTrFnOptimizations) {
   std::string shader_string;
 
   src = gfx::ColorSpace::CreateCustom(primaries, fn_no_pow);
-  shader_string = ColorTransform::NewColorTransform(
-                      src, dst, ColorTransform::Intent::INTENT_PERCEPTUAL)
-                      ->GetShaderSource();
+  shader_string =
+      ColorTransform::NewColorTransform(src, dst)->GetShaderSource();
   EXPECT_EQ(shader_string.find("pow("), std::string::npos);
 
   src = gfx::ColorSpace::CreateCustom(primaries, fn_yes_pow);
-  shader_string = ColorTransform::NewColorTransform(
-                      src, dst, ColorTransform::Intent::INTENT_PERCEPTUAL)
-                      ->GetShaderSource();
+  shader_string =
+      ColorTransform::NewColorTransform(src, dst)->GetShaderSource();
   EXPECT_NE(shader_string.find("pow("), std::string::npos);
 }
 
@@ -510,9 +486,7 @@ TEST(SimpleColorSpace, SampleShaderSource) {
   ColorSpace output(ColorSpace::PrimaryID::BT2020,
                     ColorSpace::TransferID::GAMMA28);
   std::string source =
-      ColorTransform::NewColorTransform(
-          bt709, output, ColorTransform::Intent::INTENT_PERCEPTUAL)
-          ->GetShaderSource();
+      ColorTransform::NewColorTransform(bt709, output)->GetShaderSource();
   std::string expected =
       "float TransferFn1(float v) {\n"
       "  if (v < 4.04499359e-02)\n"
@@ -559,8 +533,7 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
       ColorSpace::CreateREC709()};
   for (const auto& src : common_color_spaces) {
     for (const auto& dst : common_color_spaces) {
-      auto transform = ColorTransform::NewColorTransform(
-          src, dst, ColorTransform::Intent::INTENT_PERCEPTUAL);
+      auto transform = ColorTransform::NewColorTransform(src, dst);
       std::string source =
           "half4 main(half4 color) {\n" +
           transform->GetSkShaderSource() + " return color; }";
@@ -582,13 +555,11 @@ TEST_P(TransferTest, basicTest) {
       ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::LINEAR,
       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
 
-  std::unique_ptr<ColorTransform> to_linear(ColorTransform::NewColorTransform(
-      space_with_transfer, space_linear,
-      ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> to_linear(
+      ColorTransform::NewColorTransform(space_with_transfer, space_linear));
 
-  std::unique_ptr<ColorTransform> from_linear(ColorTransform::NewColorTransform(
-      space_linear, space_with_transfer,
-      ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> from_linear(
+      ColorTransform::NewColorTransform(space_linear, space_with_transfer));
 
   // The transforms will have 1 or 0 steps (0 for linear).
   size_t expected_steps = 1u;
@@ -621,13 +592,11 @@ TEST_P(ExtendedTransferTest, extendedTest) {
       ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::LINEAR,
       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
 
-  std::unique_ptr<ColorTransform> to_linear(ColorTransform::NewColorTransform(
-      space_with_transfer, space_linear,
-      ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> to_linear(
+      ColorTransform::NewColorTransform(space_with_transfer, space_linear));
 
-  std::unique_ptr<ColorTransform> from_linear(ColorTransform::NewColorTransform(
-      space_linear, space_with_transfer,
-      ColorTransform::Intent::INTENT_ABSOLUTE));
+  std::unique_ptr<ColorTransform> from_linear(
+      ColorTransform::NewColorTransform(space_linear, space_with_transfer));
 
   for (float x = -2.0f; x <= 2.0f; x += 1.0f / 32.0f) {
     ColorTransform::TriStim tristim(x, x, x);
@@ -645,7 +614,7 @@ typedef std::tuple<ColorSpace::PrimaryID,
                    ColorSpace::TransferID,
                    ColorSpace::MatrixID,
                    ColorSpace::RangeID,
-                   ColorTransform::Intent>
+                   bool>
     ColorSpaceTestData;
 
 class ColorSpaceTest : public testing::TestWithParam<ColorSpaceTestData> {
@@ -654,17 +623,18 @@ class ColorSpaceTest : public testing::TestWithParam<ColorSpaceTestData> {
       : color_space_(std::get<0>(GetParam()),
                      std::get<1>(GetParam()),
                      std::get<2>(GetParam()),
-                     std::get<3>(GetParam())),
-        intent_(std::get<4>(GetParam())) {}
+                     std::get<3>(GetParam())) {
+    options_.disable_optimizations = std::get<4>(GetParam());
+  }
 
  protected:
   ColorSpace color_space_;
-  ColorTransform::Intent intent_;
+  ColorTransform::Options options_;
 };
 
 TEST_P(ColorSpaceTest, testNullTransform) {
   std::unique_ptr<ColorTransform> t(
-      ColorTransform::NewColorTransform(color_space_, color_space_, intent_));
+      ColorTransform::NewColorTransform(color_space_, color_space_, options_));
   ColorTransform::TriStim tristim(0.4f, 0.5f, 0.6f);
   t->Transform(&tristim, 1);
   EXPECT_NEAR(tristim.x(), 0.4f, kMathEpsilon);
@@ -674,9 +644,9 @@ TEST_P(ColorSpaceTest, testNullTransform) {
 
 TEST_P(ColorSpaceTest, toXYZandBack) {
   std::unique_ptr<ColorTransform> t1(ColorTransform::NewColorTransform(
-      color_space_, ColorSpace::CreateXYZD50(), intent_));
+      color_space_, ColorSpace::CreateXYZD50(), options_));
   std::unique_ptr<ColorTransform> t2(ColorTransform::NewColorTransform(
-      ColorSpace::CreateXYZD50(), color_space_, intent_));
+      ColorSpace::CreateXYZD50(), color_space_, options_));
   ColorTransform::TriStim tristim(0.4f, 0.5f, 0.6f);
   t1->Transform(&tristim, 1);
   t2->Transform(&tristim, 1);
@@ -692,7 +662,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(simple_transfers),
                      testing::Values(ColorSpace::MatrixID::BT709),
                      testing::Values(ColorSpace::RangeID::LIMITED),
-                     testing::ValuesIn(intents)));
+                     testing::ValuesIn(optimizations)));
 
 INSTANTIATE_TEST_SUITE_P(
     B,
@@ -701,7 +671,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(simple_transfers),
                      testing::ValuesIn(all_matrices),
                      testing::ValuesIn(all_ranges),
-                     testing::ValuesIn(intents)));
+                     testing::ValuesIn(optimizations)));
 
 INSTANTIATE_TEST_SUITE_P(
     C,
@@ -710,7 +680,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(ColorSpace::TransferID::BT709),
                      testing::ValuesIn(all_matrices),
                      testing::ValuesIn(all_ranges),
-                     testing::ValuesIn(intents)));
+                     testing::ValuesIn(optimizations)));
 
 TEST(ColorSpaceTest, ExtendedSRGBScale) {
   ColorSpace space_unscaled = ColorSpace::CreateSRGB();
@@ -726,12 +696,9 @@ TEST(ColorSpaceTest, ExtendedSRGBScale) {
                           ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
 
   std::unique_ptr<ColorTransform> xform_scaled(
-      ColorTransform::NewColorTransform(
-          space_scaled, space_target, ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(space_scaled, space_target));
   std::unique_ptr<ColorTransform> xform_unscaled(
-      ColorTransform::NewColorTransform(
-          space_unscaled, space_target,
-          ColorTransform::Intent::INTENT_ABSOLUTE));
+      ColorTransform::NewColorTransform(space_unscaled, space_target));
 
   // Make sure that we're testing something in the linear (0.001) and nonlinear
   // (the rest) segments of the function.
@@ -773,8 +740,8 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     ColorSpace target(ColorSpace::PrimaryID::BT2020,
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-    std::unique_ptr<ColorTransform> xform(ColorTransform::NewColorTransform(
-        hdr10, target, ColorTransform::Intent::INTENT_ABSOLUTE));
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(hdr10, target));
 
     // Do the transform to the values in |pq_encoded_nits|.
     ColorTransform::TriStim val(pq_encoded_nits[0], pq_encoded_nits[1],
@@ -803,8 +770,8 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     EXPECT_NEAR(val.z() / val.x(), nits[2] / nits[0], kMathEpsilon);
 
     // Test the inverse transform.
-    std::unique_ptr<ColorTransform> xform_inv(ColorTransform::NewColorTransform(
-        target, hdr10, ColorTransform::Intent::INTENT_ABSOLUTE));
+    std::unique_ptr<ColorTransform> xform_inv(
+        ColorTransform::NewColorTransform(target, hdr10));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), pq_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), pq_encoded_nits[1], kMathEpsilon);
@@ -840,8 +807,8 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     ColorSpace target(ColorSpace::PrimaryID::BT2020,
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-    std::unique_ptr<ColorTransform> xform(ColorTransform::NewColorTransform(
-        hlg, target, ColorTransform::Intent::INTENT_ABSOLUTE));
+    std::unique_ptr<ColorTransform> xform(
+        ColorTransform::NewColorTransform(hlg, target));
 
     // Do the transform to the values in |hlg_encoded_nits|.
     ColorTransform::TriStim val(hlg_encoded_nits[0], hlg_encoded_nits[1],
@@ -871,8 +838,8 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     EXPECT_NEAR(val.z() / val.x(), nits[2] / nits[0], kMathEpsilon);
 
     // Test the inverse transform.
-    std::unique_ptr<ColorTransform> xform_inv(ColorTransform::NewColorTransform(
-        target, hlg, ColorTransform::Intent::INTENT_ABSOLUTE));
+    std::unique_ptr<ColorTransform> xform_inv(
+        ColorTransform::NewColorTransform(target, hlg));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), hlg_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), hlg_encoded_nits[1], kMathEpsilon);
@@ -907,11 +874,9 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
       ColorSpace linear(ColorSpace::PrimaryID::BT709,
                         ColorSpace::TransferID::LINEAR_HDR);
       std::unique_ptr<ColorTransform> xform_to(
-          ColorTransform::NewColorTransform(
-              hdr, linear, ColorTransform::Intent::INTENT_ABSOLUTE));
+          ColorTransform::NewColorTransform(hdr, linear));
       std::unique_ptr<ColorTransform> xform_from(
-          ColorTransform::NewColorTransform(
-              linear, hdr, ColorTransform::Intent::INTENT_ABSOLUTE));
+          ColorTransform::NewColorTransform(linear, hdr));
 
       // We're going to to test both sides of the joint points. Use this
       // epsilon, which is much smaller than kMathEpsilon, to make that

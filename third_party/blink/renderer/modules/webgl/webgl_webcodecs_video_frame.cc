@@ -429,9 +429,7 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
 
   gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
   std::unique_ptr<gfx::ColorTransform> color_transform(
-      gfx::ColorTransform::NewColorTransform(
-          src_color_space, dst_color_space,
-          gfx::ColorTransform::Intent::INTENT_ABSOLUTE));
+      gfx::ColorTransform::NewColorTransform(src_color_space, dst_color_space));
   video_frame_handle->setColorConversionShaderFunc(
       color_transform->GetShaderSource().c_str());
 

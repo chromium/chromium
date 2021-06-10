@@ -123,9 +123,8 @@ STRINGIZE(
 YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
                                      const gfx::ColorSpace& color_space) {
   std::unique_ptr<gfx::ColorTransform> color_transform =
-      gfx::ColorTransform::NewColorTransform(
-          color_space, color_space.GetAsFullRangeRGB(),
-          gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+      gfx::ColorTransform::NewColorTransform(color_space,
+                                             color_space.GetAsFullRangeRGB());
   std::string do_color_conversion = color_transform->GetShaderSource();
 
   // On MacOS, the default texture target for native GpuMemoryBuffers is
