@@ -3300,7 +3300,6 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @DisabledTest(message = "https://crbug.com/1144935")
     public void testAllowMixedMode() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient() {
             @Override
