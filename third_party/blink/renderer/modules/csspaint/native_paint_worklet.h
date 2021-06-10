@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -19,7 +20,6 @@ class LocalFrame;
 class NativePaintWorkletProxyClient;
 class PaintWorkletPaintDispatcher;
 class SingleThreadTaskRunner;
-class Thread;
 
 // NativePaintWorklet contains the shared information by all kinds of native
 // paint worklet. We allow the instance creation of its subclasses, but not this
@@ -54,7 +54,7 @@ class MODULES_EXPORT NativePaintWorklet
   base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue_;
   // The worker thread that does the paint work.
-  std::unique_ptr<Thread> worker_thread_;
+  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
 };
 
 }  // namespace blink

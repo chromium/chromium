@@ -42,6 +42,13 @@ struct CrossThreadCopier<absl::optional<blink::WorkerBackingThreadStartupData>>
     : public CrossThreadCopierPassThrough<
           absl::optional<blink::WorkerBackingThreadStartupData>> {};
 
+// This allows to pass WorkerBackingThreadStartupData across threads by
+// PostTask().
+template <>
+struct CrossThreadCopier<blink::WorkerBackingThreadStartupData>
+    : public CrossThreadCopierPassThrough<
+          blink::WorkerBackingThreadStartupData> {};
+
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_BACKING_THREAD_STARTUP_DATA_H_
