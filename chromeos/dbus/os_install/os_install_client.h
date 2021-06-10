@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
 class Bus;
@@ -41,8 +40,6 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
                                const std::string& service_log) = 0;
   };
 
-  using StartOsInstallCallback = DBusMethodCallback<Status>;
-
   OsInstallClient(const OsInstallClient&) = delete;
   OsInstallClient& operator=(const OsInstallClient&) = delete;
 
@@ -64,10 +61,9 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
   // Returns true if this object has the given observer.
   virtual bool HasObserver(const Observer* observer) const = 0;
 
-  // Start the installation process. If starting the installation
-  // works this will respond with the InProgress status; updates are
-  // sent back via the OsInstallStatusChanged signal.
-  virtual void StartOsInstall(StartOsInstallCallback callback) = 0;
+  // Start the installation process. Status updates can be monitored
+  // by adding an Observer.
+  virtual void StartOsInstall() = 0;
 
  protected:
   OsInstallClient();

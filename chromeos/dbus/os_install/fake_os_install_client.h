@@ -24,9 +24,11 @@ class COMPONENT_EXPORT(OS_INSTALL) FakeOsInstallClient
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
-  void StartOsInstall(StartOsInstallCallback callback) override;
+  void StartOsInstall() override;
 
  private:
+  void NotifyObservers(Status status, const std::string& service_log);
+
   base::ObserverList<Observer> observers_;
 };
 

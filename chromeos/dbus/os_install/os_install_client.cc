@@ -44,11 +44,12 @@ class OsInstallClientImpl : public OsInstallClient {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
-  void StartOsInstall(StartOsInstallCallback callback) override;
+  void StartOsInstall() override;
 
  private:
-  void HandleStartResponse(StartOsInstallCallback callback,
-                           dbus::Response* response);
+  void NotifyStatusChanged(absl::optional<Status> status,
+                           const std::string& service_log);
+  void HandleStartResponse(dbus::Response* response);
   void StatusUpdateReceived(dbus::Signal* signal);
   void StatusUpdateConnected(const std::string& interface_name,
                              const std::string& signal_name,
@@ -86,20 +87,29 @@ bool OsInstallClientImpl::HasObserver(const Observer* observer) const {
   return observers_.HasObserver(observer);
 }
 
-void OsInstallClientImpl::StartOsInstall(StartOsInstallCallback callback) {
+void OsInstallClientImpl::StartOsInstall() {
   dbus::MethodCall method_call(os_install_service::kOsInstallServiceInterface,
                                os_install_service::kMethodStartOsInstall);
-  proxy_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OsInstallClientImpl::HandleStartResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                     base::BindOnce(&OsInstallClientImpl::HandleStartResponse,
+                                    weak_factory_.GetWeakPtr()));
 }
 
-void OsInstallClientImpl::HandleStartResponse(StartOsInstallCallback callback,
-                                              dbus::Response* response) {
+void OsInstallClientImpl::NotifyStatusChanged(absl::optional<Status> status,
+                                              const std::string& service_log) {
+  if (!status) {
+    status = Status::Failed;
+  }
+
+  for (auto& observer : observers_) {
+    observer.StatusChanged(*status, service_log);
+  }
+}
+
+void OsInstallClientImpl::HandleStartResponse(dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Invalid response";
-    std::move(callback).Run(absl::nullopt);
+    NotifyStatusChanged(Status::Failed, /*service_log=*/"");
     return;
   }
 
@@ -107,11 +117,11 @@ void OsInstallClientImpl::HandleStartResponse(StartOsInstallCallback callback,
   std::string status_str;
   if (!reader.PopString(&status_str)) {
     LOG(ERROR) << "Missing status";
-    std::move(callback).Run(absl::nullopt);
+    NotifyStatusChanged(Status::Failed, /*service_log=*/"");
     return;
   }
 
-  std::move(callback).Run(ParseStatus(status_str));
+  NotifyStatusChanged(ParseStatus(status_str), /*service_log=*/"");
 }
 
 void OsInstallClientImpl::StatusUpdateReceived(dbus::Signal* signal) {
@@ -135,9 +145,7 @@ void OsInstallClientImpl::StatusUpdateReceived(dbus::Signal* signal) {
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.StatusChanged(*status, service_log);
-  }
+  NotifyStatusChanged(*status, service_log);
 }
 
 void OsInstallClientImpl::StatusUpdateConnected(
