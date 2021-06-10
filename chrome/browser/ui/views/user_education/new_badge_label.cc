@@ -111,6 +111,8 @@ void NewBadgeLabel::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 
 void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
   Label::OnPaint(canvas);
+  if (!display_new_badge_)
+    return;
   const gfx::Rect contents_bounds = GetContentsBounds();
   int extra_width = 0;
   if (badge_placement_ == BadgePlacement::kImmediatelyAfterText)
