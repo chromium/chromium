@@ -30,6 +30,19 @@ class InfobarSaveAddressProfileTableViewControllerTest
         initWithModalDelegate:modal_delegate_];
   }
 
+  NSDictionary* GetDataForSaveModal() {
+    NSDictionary* prefs = @{
+      kAddressPrefKey : @"Test Envelope Address",
+      kPhonePrefKey : @"Test Phone Number",
+      kEmailPrefKey : @"Test Email Address",
+      kCurrentAddressProfileSavedPrefKey : @(false),
+      kIsUpdateModalPrefKey : @(false),
+      kProfileDataDiffKey : @{},
+      kUpdateModalDescriptionKey : @""
+    };
+    return prefs;
+  }
+
   NSDictionary* GetDataForUpdateModal() {
     NSDictionary* prefs = @{
       kAddressPrefKey : @"",
@@ -48,6 +61,22 @@ class InfobarSaveAddressProfileTableViewControllerTest
 
   id modal_delegate_;
 };
+
+// Tests that the save address profile modal has been initialized.
+TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
+       TestSaveModalInitialization) {
+  CreateController();
+  CheckController();
+  InfobarSaveAddressProfileTableViewController* save_view_controller =
+      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+          controller());
+  [save_view_controller
+      setupModalViewControllerWithPrefs:GetDataForSaveModal()];
+  [save_view_controller loadModel];
+
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(4, NumberOfItemsInSection(0));
+}
 
 // Tests that the update modal has been initialized.
 TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
