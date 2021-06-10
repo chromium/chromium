@@ -12,6 +12,7 @@
     "contentSettings",
     "metricsPrivate",
     "resourcesPrivate",
+    "tabs",
     {"fileSystem": ["write"]}
   ],
   "mime_types": [
