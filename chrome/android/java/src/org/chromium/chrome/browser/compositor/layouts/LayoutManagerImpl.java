@@ -271,8 +271,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 HistoryNavigationCoordinator.getSceneOverlayClass(),
                 ContinuousSearchContainerCoordinator.getSceneOverlayClass(),
                 TopToolbarOverlayCoordinator.class,
-                ScrollingBottomViewSceneLayer.class,
+                // StripLayoutHelperManager should be updated before ScrollingBottomViewSceneLayer
+                // Since ScrollingBottomViewSceneLayer change the container size,
+                // it causes relocation tab strip scene layer.
                 StripLayoutHelperManager.class,
+                ScrollingBottomViewSceneLayer.class,
                 StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
         // clang-format on
