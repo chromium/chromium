@@ -10,7 +10,6 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
     "calculator.svg",
-    "clock.svg",
     "drive_docs.svg",
     "drive_folder.svg",
     "drive_form.svg",

@@ -168,8 +168,8 @@
     margin-inline-start: 8px;
   }
 
-  .loupe {
-    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
+  .clock {
+    -webkit-mask-image: url(chrome://resources/images/icon_clock.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
     background-color: var(--cr-secondary-text-color);
@@ -237,7 +237,7 @@
         items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
       <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
           on-auxclick="onPillClick_">
-        <div class="loupe"></div>
+        <div class="clock"></div>
         <div class="search-text">[[item.text]]</div>
       </a>
     </template>

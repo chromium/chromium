@@ -57,7 +57,8 @@ constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.png";
 constexpr char kBookmarkIconResourceName[] =
     "chrome://resources/images/icon_bookmark.svg";
 constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
-constexpr char kClockIconResourceName[] = "realbox/icons/clock.svg";
+constexpr char kClockIconResourceName[] =
+    "chrome://resources/images/icon_clock.svg";
 constexpr char kDriveDocsIconResourceName[] = "realbox/icons/drive_docs.svg";
 constexpr char kDriveFolderIconResourceName[] =
     "realbox/icons/drive_folder.svg";
