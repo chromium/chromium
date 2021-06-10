@@ -4089,6 +4089,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "os-settings-app-notifications-page",
+    "owners": ["hsuregan"],
+    "expiry_milestone": 99
+  },
+  {
     "name": "os-settings-deep-linking",
     "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
     "expiry_milestone": 90
