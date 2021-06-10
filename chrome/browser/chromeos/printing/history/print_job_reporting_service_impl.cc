@@ -32,6 +32,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
  public:
   PrintJobReportingServiceImpl() : cros_settings_(CrosSettings::Get()) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    UpdateShouldReport();
     should_report_subscription_ = cros_settings_->AddSettingsObserver(
         kReportDevicePrintJobs,
         base::BindRepeating(&PrintJobReportingServiceImpl::UpdateShouldReport,

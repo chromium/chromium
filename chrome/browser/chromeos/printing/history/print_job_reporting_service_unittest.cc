@@ -354,4 +354,29 @@ TEST_F(PrintJobReportingServiceTest, PendingPrintJobsEnqueue) {
   EXPECT_EQ(priorities_[2], reporting::Priority::SLOW_BATCH);
 }
 
+TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
+  ChangeReportingSetting(true);
+  // Create the reporting service after setting the policy to true.
+  print_job_reporting_service_ = PrintJobReportingService::Create();
+  SetReportQueue();
+
+  print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], IsPrintJobEvent(JobEvent1()));
+  EXPECT_EQ(priorities_[0], reporting::Priority::SLOW_BATCH);
+}
+
+TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyDisabled) {
+  ChangeReportingSetting(false);
+  // Create the reporting service after setting the policy to false.
+  print_job_reporting_service_ = PrintJobReportingService::Create();
+  SetReportQueue();
+
+  print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
+
+  EXPECT_TRUE(events_.empty());
+  EXPECT_TRUE(priorities_.empty());
+}
+
 }  // namespace chromeos
