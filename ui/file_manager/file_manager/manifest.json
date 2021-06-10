@@ -208,6 +208,7 @@
     "background/js/progress_center.m.js",
     "background/js/runtime_loaded_test_util.js",
     "background/js/task_queue.m.js",
+    "background/js/test_util.m.js",
     "background/js/test_util_base.m.js",
     "background/js/trash.m.js",
     "background/js/volume_info_impl.m.js",
