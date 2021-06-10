@@ -14,8 +14,9 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/management_resources.h"
+#include "chrome/grit/management_resources_map.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
@@ -140,14 +141,9 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
-  // Add required resources.
-  source->AddResourcePath("management_browser_proxy.js",
-                          IDR_MANAGEMENT_BROWSER_PROXY_JS);
-  source->AddResourcePath("management_ui.js", IDR_MANAGEMENT_UI_JS);
-  source->AddResourcePath("icons.js", IDR_MANAGEMENT_ICONS_JS);
-  source->SetDefaultResource(IDR_MANAGEMENT_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kManagementResources, kManagementResourcesSize),
+      IDR_MANAGEMENT_MANAGEMENT_HTML);
   return source;
 }
 

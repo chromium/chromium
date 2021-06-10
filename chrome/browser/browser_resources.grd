@@ -141,12 +141,6 @@
       <if expr="desktop_linux">
         <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
       </if>
-      <if expr="not is_android">
-        <include name="IDR_MANAGEMENT_HTML" file="resources\management\management.html" type="BINDATA" />
-        <include name="IDR_MANAGEMENT_UI_JS" file="${root_gen_dir}/chrome/browser/resources/management/management_ui.js" use_base_dir="false" type="BINDATA" preprocess="true" />
-        <include name="IDR_MANAGEMENT_BROWSER_PROXY_JS" file="resources\management\management_browser_proxy.js" type="BINDATA" preprocess="true" />
-        <include name="IDR_MANAGEMENT_ICONS_JS" file="${root_gen_dir}/chrome/browser/resources/management/icons.js" use_base_dir="false" type="BINDATA" preprocess="true" />
-      </if>
       <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <if expr="is_win or is_macosx or desktop_linux or chromeos">
         <include name="IDR_SYNC_LOADING_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_loading_confirmation.html" type="BINDATA" />
