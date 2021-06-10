@@ -58,10 +58,11 @@ component("idle") {
   }
 
   if (is_linux) {
-    sources += [ "idle_linux.cc" ]
     if (use_dbus) {
+      sources += [ "idle_linux.cc" ]
       deps += [ "//dbus" ]
-      defines += [ "USE_DBUS" ]
+    } else {
+      sources += [ "idle_stub.cc" ]
     }
   }
 
