@@ -42,16 +42,26 @@ class TestExternallyManagedAppManagerImpl
       base::RepeatingCallback<ExternallyManagedAppManager::InstallResult(
           const ExternalInstallOptions&)>;
 
+  using HandleUninstallRequestCallback =
+      base::RepeatingCallback<bool(const GURL&, ExternalInstallSource)>;
+
   // Set a callback to handle install requests. If set, this callback will be
   // used in place of the real installation process. The callback takes a const
   // ExternalInstallOptions& and should return a InstallResultCode.
   void SetHandleInstallRequestCallback(HandleInstallRequestCallback callback);
+
+  // Set a callback to handle uninstall requests. If set, this callback will be
+  // used in place of the real uninstallation process. The callback takes a
+  // const ExternalInstallOptions& and should return a bool.
+  void SetHandleUninstallRequestCallback(
+      HandleUninstallRequestCallback callback);
 
  private:
   std::vector<ExternalInstallOptions> install_requests_;
   std::vector<GURL> uninstall_requests_;
   bool drop_requests_for_testing_ = false;
   HandleInstallRequestCallback handle_install_request_callback_;
+  HandleUninstallRequestCallback handle_uninstall_request_callback_;
 };
 
 }  // namespace web_app
