@@ -25,6 +25,44 @@ DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*,
                              nullptr)
 
 ////////////////////////////////////////////////////////////////////////////////
+// linux_buffer_release_v1 interface:
+
+// Implements the buffer release interface.
+class LinuxBufferRelease {
+ public:
+  LinuxBufferRelease(wl_resource* resource, Surface* surface)
+      : resource_(resource),
+        release_callback_(
+            base::BindOnce(&LinuxBufferRelease::HandleExplicitRelease,
+                           base::Unretained(this))) {
+    surface->SetPerCommitBufferReleaseCallback(release_callback_.callback());
+  }
+
+  LinuxBufferRelease(const LinuxBufferRelease&) = delete;
+  LinuxBufferRelease& operator=(const LinuxBufferRelease&) = delete;
+
+ private:
+  void HandleExplicitRelease(gfx::GpuFenceHandle release_fence) {
+    if (!release_fence.is_null()) {
+      // Fd will be dup'd for us.
+      zwp_linux_buffer_release_v1_send_fenced_release(
+          resource_, release_fence.owned_fd.get());
+    } else {
+      zwp_linux_buffer_release_v1_send_immediate_release(resource_);
+    }
+    // Protocol specifies that either of these events result in the buffer
+    // release object's destruction.
+    wl_client_flush(wl_resource_get_client(resource_));
+    wl_resource_destroy(resource_);
+  }
+
+  wl_resource* resource_;
+  // Use a cancelable callback in case this object is destroyed while a commit
+  // is still in flight.
+  base::CancelableOnceCallback<void(gfx::GpuFenceHandle)> release_callback_;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // linux_surface_synchronization_v1 interface:
 
 // Implements the surface synchronization interface, providing explicit
@@ -104,7 +142,29 @@ void linux_surface_synchronization_set_acquire_fence(wl_client* client,
 void linux_surface_synchronization_get_release(wl_client* client,
                                                wl_resource* resource,
                                                uint32_t id) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* surface =
+      GetUserDataAs<LinuxSurfaceSynchronization>(resource)->surface();
+
+  if (!surface) {
+    wl_resource_post_error(
+        resource, ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_NO_SURFACE,
+        "surface no longer exists");
+    return;
+  }
+
+  if (surface->HasPendingPerCommitBufferReleaseCallback()) {
+    wl_resource_post_error(
+        resource, ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_DUPLICATE_RELEASE,
+        "already has a buffer release");
+    return;
+  }
+
+  auto* linux_buffer_release_resource =
+      wl_resource_create(client, &zwp_linux_buffer_release_v1_interface, 1, id);
+
+  SetImplementation(linux_buffer_release_resource, nullptr,
+                    std::make_unique<LinuxBufferRelease>(
+                        linux_buffer_release_resource, surface));
 }
 
 const struct zwp_linux_surface_synchronization_v1_interface
@@ -165,8 +225,10 @@ void bind_linux_explicit_synchronization(wl_client* client,
 }
 
 bool linux_surface_synchronization_validate_commit(Surface* surface) {
-  if (surface->HasPendingAcquireFence() &&
-      !surface->HasPendingAttachedBuffer()) {
+  if (surface->HasPendingAttachedBuffer())
+    return true;
+
+  if (surface->HasPendingAcquireFence()) {
     wl_resource* linux_surface_synchronization_resource =
         surface->GetProperty(kSurfaceSynchronizationResource);
     DCHECK(linux_surface_synchronization_resource);
@@ -175,6 +237,19 @@ bool linux_surface_synchronization_validate_commit(Surface* surface) {
         linux_surface_synchronization_resource,
         ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_NO_BUFFER,
         "surface has acquire fence but no buffer for synchronization");
+
+    return false;
+  }
+
+  if (surface->HasPendingPerCommitBufferReleaseCallback()) {
+    wl_resource* linux_surface_synchronization_resource =
+        surface->GetProperty(kSurfaceSynchronizationResource);
+    DCHECK(linux_surface_synchronization_resource);
+
+    wl_resource_post_error(
+        linux_surface_synchronization_resource,
+        ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_NO_BUFFER,
+        "surface has buffer_release but no buffer for synchronization");
 
     return false;
   }
