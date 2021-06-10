@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
 #include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"

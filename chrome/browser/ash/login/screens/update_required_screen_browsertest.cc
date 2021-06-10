@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/policy/minimum_version_policy_test_helpers.h"
+#include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
