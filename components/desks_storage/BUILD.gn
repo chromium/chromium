@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("desks_storage") {
+  output_name = "desks_storage_lib"
+
+  sources = [
+    "core/desk_model.cc",
+    "core/desk_model.h",
+    "core/desk_model_observer.h",
+    "core/desk_template.cc",
+    "core/desk_template.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+  ]
+
+  defines = [ "IS_DESKS_STORAGE_IMPL" ]
+
+  public_deps = []
+}
