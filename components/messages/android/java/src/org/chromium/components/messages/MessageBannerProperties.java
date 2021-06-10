@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
@@ -25,6 +26,11 @@ public class MessageBannerProperties {
     @ColorInt
     public static final int TINT_NONE = Color.TRANSPARENT;
 
+    /**
+     * The identifier for the message for recording metrics. It should be one of the values from
+     * MessageIdentifier enum.
+     */
+    public static final ReadableIntPropertyKey MESSAGE_IDENTIFIER = new ReadableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_PRIMARY_ACTION =
@@ -78,10 +84,10 @@ public class MessageBannerProperties {
     static final WritableObjectPropertyKey<OnClickListener> PRIMARY_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
-            PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, DESCRIPTION_MAX_LINES, ICON,
-            ICON_RESOURCE_ID, ICON_TINT_COLOR, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
-            SECONDARY_BUTTON_MENU_TEXT, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
-            TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
-            ON_SECONDARY_ACTION, ON_DISMISSED};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {MESSAGE_IDENTIFIER,
+            PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION,
+            DESCRIPTION_MAX_LINES, ICON, ICON_RESOURCE_ID, ICON_TINT_COLOR, SECONDARY_ICON,
+            SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
+            SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION, TRANSLATION_X, TRANSLATION_Y,
+            ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION, ON_DISMISSED};
 }

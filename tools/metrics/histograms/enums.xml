@@ -52966,15 +52966,26 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MessageDismissReason">
-  <int value="0" label="Unknown"/>
+  <int value="0" label="Unknown (controlled by client)"/>
   <int value="1" label="Primary action"/>
-  <int value="2" label="Secondary action"/>
+  <int value="2" label="Secondary action (controlled by client)"/>
   <int value="3" label="Timer"/>
   <int value="4" label="Gesture"/>
   <int value="5" label="Tab switched"/>
   <int value="6" label="Tab destroyed"/>
   <int value="7" label="Activity destroyed"/>
   <int value="8" label="Scope destroyed"/>
+</enum>
+
+<enum name="MessageIdentifier">
+  <int value="1" label="SavePassword"/>
+  <int value="2" label="UpdatePassword"/>
+  <int value="3" label="GeneratedPasswordSaved"/>
+  <int value="4" label="PopupBlocked"/>
+  <int value="5" label="SafetyTip"/>
+  <int value="6" label="SaveAddressProfile"/>
+  <int value="7" label="MerchantTrust"/>
+  <int value="8" label="AddToHomescreenIPH"/>
 </enum>
 
 <enum name="MessageLoopProblems">

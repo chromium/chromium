@@ -67,6 +67,8 @@ public class MessageBannerMediatorUnitTest {
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                 MessageIdentifier.TEST_MESSAGE)
                          .with(MessageBannerProperties.TITLE, "Title")
                          .with(MessageBannerProperties.DESCRIPTION, "Desc")
                          .build();

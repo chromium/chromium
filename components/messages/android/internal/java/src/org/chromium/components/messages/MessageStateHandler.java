@@ -26,4 +26,8 @@ public interface MessageStateHandler {
      * @param dismissReason The reason why the message is being dismissed.
      */
     void dismiss(@DismissReason int dismissReason);
+
+    /** Returns MessageIdentifier of the current message. */
+    @MessageIdentifier
+    int getMessageIdentifier();
 }

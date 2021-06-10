@@ -11,14 +11,16 @@
 
 namespace messages {
 
-MessageWrapper::MessageWrapper(base::OnceClosure action_callback,
+MessageWrapper::MessageWrapper(MessageIdentifier message_identifier,
+                               base::OnceClosure action_callback,
                                DismissCallback dismiss_callback)
     : action_callback_(std::move(action_callback)),
       dismiss_callback_(std::move(dismiss_callback)),
       message_dismissed_(false) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_message_wrapper_ =
-      Java_MessageWrapper_create(env, reinterpret_cast<int64_t>(this));
+      Java_MessageWrapper_create(env, reinterpret_cast<int64_t>(this),
+                                 static_cast<int>(message_identifier));
 }
 
 MessageWrapper::~MessageWrapper() {

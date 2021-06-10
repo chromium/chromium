@@ -47,7 +47,7 @@ public class MessageWrapperTest {
     @Test
     @SmallTest
     public void testMessageProperties() {
-        MessageWrapper message = MessageWrapper.create(1);
+        MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.setTitle("Title");
@@ -86,7 +86,7 @@ public class MessageWrapperTest {
     @SmallTest
     public void testCallbacks() {
         final long nativePtr = 1;
-        MessageWrapper message = MessageWrapper.create(nativePtr);
+        MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
         messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
@@ -104,7 +104,7 @@ public class MessageWrapperTest {
     @SmallTest
     public void testDestroyedMessageWrapperCallbacks() {
         final long nativePtr = 1;
-        MessageWrapper message = MessageWrapper.create(nativePtr);
+        MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.clearNativePtr();

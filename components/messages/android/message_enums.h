@@ -12,6 +12,9 @@ namespace messages {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// TODO(crbug.com/1188983): Revisit enum values. TAB_SWITCHED is not currently
+// used. Likely the same for TAB_DESTROYED and ACTIVITY_DESTROYED. We also need
+// a dedicated value for message dismissed from feature code.
 enum class DismissReason {
   // Dismiss reasons that are fully controlled by clients (i.e. are not used
   // inside the Messages implementation are marked "Controlled by client" on
@@ -38,14 +41,44 @@ enum class DismissReason {
   // A message was dismissed due to the destruction of the corresponding scopes.
   SCOPE_DESTROYED = 8,
 
-  // Always update MAX_VALUE to match the last reason in the list.
-  MAX_VALUE = 8
+  // Insert new values before this line.
+  COUNT
 };
 
 // The constants of message scope type.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
+
+// Enumerates unique identifiers for various messages. Used for recording
+// messages related histograms.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// When adding a new message identifier, make corresponding changes in the
+// following locations:
+// - tools/metrics/histograms/enums.xml: <enum name="MessageIdentifier">
+// - tools/metrics/histograms/histograms_xml/android/histograms.xml:
+//       <variants name="MessageIdentifiers">
+// - MessagesMetrics.java: #messageIdentifierToHistogramSuffix()
+//
+// A Java counterpart is generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+enum class MessageIdentifier {
+  TEST_MESSAGE = 0,
+  SAVE_PASSWORD = 1,
+  UPDATE_PASSWORD = 2,
+  GENERATED_PASSWORD_SAVED = 3,
+  POPUP_BLOCKED = 4,
+  SAFETY_TIP = 5,
+  SAVE_ADDRESS_PROFILE = 6,
+  MERCHANT_TRUST = 7,
+  ADD_TO_HOMESCREEN_IPH = 8,
+
+  // Insert new values before this line.
+  COUNT
+};
 
 }  // namespace messages
 

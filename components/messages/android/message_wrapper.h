@@ -24,7 +24,8 @@ class MessageWrapper {
  public:
   using DismissCallback = base::OnceCallback<void(DismissReason)>;
 
-  MessageWrapper(base::OnceClosure action_callback,
+  MessageWrapper(MessageIdentifier message_identifier,
+                 base::OnceClosure action_callback,
                  DismissCallback dismiss_callback);
   ~MessageWrapper();
 

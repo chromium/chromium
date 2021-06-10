@@ -55,6 +55,7 @@ void SaveAddressProfileMessageController::DisplayMessage(
   // SaveAddressProfileMessageController owns message_. Callbacks won't be
   // called after the current object is destroyed.
   message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::SAVE_ADDRESS_PROFILE,
       base::BindOnce(&SaveAddressProfileMessageController::OnPrimaryAction,
                      base::Unretained(this)),
       base::BindOnce(&SaveAddressProfileMessageController::OnMessageDismissed,

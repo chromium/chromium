@@ -30,6 +30,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
@@ -160,6 +161,8 @@ public class AddToHomescreenIPHController {
 
         PropertyModel model =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.ADD_TO_HOMESCREEN_IPH)
                         .with(MessageBannerProperties.ICON,
                                 VectorDrawableCompat.create(mActivity.getResources(),
                                         R.drawable.ic_apps_blue_24dp, mActivity.getTheme()))
