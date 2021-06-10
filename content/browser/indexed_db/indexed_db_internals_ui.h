@@ -21,8 +21,8 @@ namespace base {
 class ListValue;
 }
 
-namespace url {
-class Origin;
+namespace blink {
+class StorageKey;
 }
 
 namespace download {
@@ -53,7 +53,8 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
 
  private:
   void GetAllOrigins(const base::ListValue* args);
-  void OnOriginsReady(const base::Value& origins, const base::FilePath& path);
+  void OnOriginsReady(const base::Value& storage_keys,
+                      const base::FilePath& path);
 
   void DownloadOriginData(const base::ListValue* args);
   void OnDownloadDataReady(const std::string& callback_id,
@@ -71,12 +72,12 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
   void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
   bool GetOriginControl(const base::FilePath& path,
-                        const url::Origin& origin,
+                        const blink::StorageKey& storage_key,
                         storage::mojom::IndexedDBControl** control);
   bool GetOriginData(const base::ListValue* args,
                      std::string* callback_id,
                      base::FilePath* path,
-                     url::Origin* origin,
+                     blink::StorageKey* storage_key,
                      storage::mojom::IndexedDBControl** control);
 
   base::WeakPtrFactory<IndexedDBInternalsHandler> weak_factory_{this};

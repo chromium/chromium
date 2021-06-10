@@ -29,10 +29,9 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "url/origin.h"
-
-using url::Origin;
 
 namespace content {
 
@@ -114,10 +113,11 @@ void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
           weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBInternalsHandler::OnOriginsReady(const base::Value& origins,
+void IndexedDBInternalsHandler::OnOriginsReady(const base::Value& storage_keys,
                                                const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FireWebUIListener("origins-ready", origins, base::Value(path.AsUTF8Unsafe()));
+  FireWebUIListener("origins-ready", storage_keys,
+                    base::Value(path.AsUTF8Unsafe()));
 }
 
 static void FindControl(const base::FilePath& partition_path,
@@ -134,7 +134,7 @@ bool IndexedDBInternalsHandler::GetOriginData(
     const base::ListValue* args,
     std::string* callback_id,
     base::FilePath* partition_path,
-    Origin* origin,
+    blink::StorageKey* storage_key,
     storage::mojom::IndexedDBControl** control) {
   std::string callback_string;
   if (!args->GetString(0, &callback_string)) {
@@ -151,14 +151,14 @@ bool IndexedDBInternalsHandler::GetOriginData(
   if (!args->GetString(2, &url_string))
     return false;
 
-  *origin = Origin::Create(GURL(url_string));
+  *storage_key = blink::StorageKey(url::Origin::Create(GURL(url_string)));
 
-  return GetOriginControl(*partition_path, *origin, control);
+  return GetOriginControl(*partition_path, *storage_key, control);
 }
 
 bool IndexedDBInternalsHandler::GetOriginControl(
     const base::FilePath& path,
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::IndexedDBControl** control) {
   // search the origins to find the right context
   BrowserContext* browser_context =
@@ -181,18 +181,21 @@ void IndexedDBInternalsHandler::DownloadOriginData(
 
   std::string callback_id;
   base::FilePath partition_path;
-  Origin origin;
+  blink::StorageKey storage_key;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
+  if (!GetOriginData(args, &callback_id, &partition_path, &storage_key,
+                     &control))
     return;
 
   AllowJavascript();
   DCHECK(control);
   control->ForceClose(
-      origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      storage_key.origin(),
+      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
-             storage::mojom::IndexedDBControl* control,
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+             url::Origin origin, storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
@@ -200,7 +203,8 @@ void IndexedDBInternalsHandler::DownloadOriginData(
                 origin,
                 base::BindOnce(
                     [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                       Origin origin, storage::mojom::IndexedDBControl* control,
+                       url::Origin origin,
+                       storage::mojom::IndexedDBControl* control,
                        const std::string& callback_id,
                        uint64_t connection_count) {
                       if (!handler)
@@ -214,7 +218,9 @@ void IndexedDBInternalsHandler::DownloadOriginData(
                     },
                     handler, origin, control, callback_id));
           },
-          weak_factory_.GetWeakPtr(), origin, control, callback_id));
+          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+          weak_factory_.GetWeakPtr(), storage_key.origin(), control,
+          callback_id));
 }
 
 void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
@@ -222,17 +228,20 @@ void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
 
   std::string callback_id;
   base::FilePath partition_path;
-  Origin origin;
+  blink::StorageKey storage_key;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
+  if (!GetOriginData(args, &callback_id, &partition_path, &storage_key,
+                     &control))
     return;
 
   AllowJavascript();
   control->ForceClose(
-      origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      storage_key.origin(),
+      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
-             storage::mojom::IndexedDBControl* control,
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+             url::Origin origin, storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             if (!handler)
               return;
@@ -241,7 +250,9 @@ void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
                 base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,
                                handler, callback_id));
           },
-          weak_factory_.GetWeakPtr(), origin, control, callback_id));
+          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+          weak_factory_.GetWeakPtr(), storage_key.origin(), control,
+          callback_id));
 }
 
 void IndexedDBInternalsHandler::OnForcedClose(const std::string& callback_id,
