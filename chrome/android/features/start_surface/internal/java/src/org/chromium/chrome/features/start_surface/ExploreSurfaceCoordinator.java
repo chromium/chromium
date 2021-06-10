@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -174,7 +175,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 mSnackbarManager, mWindowAndroid, null, null, sectionHeaderView, isInNightMode,
                 this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
                 bottomSheetController, mShareDelegateSupplier, scrollableContainerDelegate,
-                mTabModelSelector, launchOrigin, feedLaunchReliabilityLoggingState);
+                mTabModelSelector, launchOrigin, PrivacyPreferencesManagerImpl.getInstance(),
+                feedLaunchReliabilityLoggingState);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

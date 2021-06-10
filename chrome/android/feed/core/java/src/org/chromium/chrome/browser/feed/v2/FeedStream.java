@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -512,7 +513,9 @@ public class FeedStream implements Stream {
     @Override
     public void bind(RecyclerView rootView, NtpListContentManager manager,
             FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer) {
+            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger) {
+        launchReliabilityLogger.logFeedReloading(System.nanoTime());
+
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
         mSliceViewTracker =

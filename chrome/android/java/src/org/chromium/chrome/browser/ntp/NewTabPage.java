@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
@@ -441,6 +442,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
                 tabModelSelector, NewTabPageUtils.decodeOriginFromNtpUrl(url),
+                PrivacyPreferencesManagerImpl.getInstance(),
                 new FeedLaunchReliabilityLoggingState(
                         SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs));
 

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
 import org.chromium.chrome.browser.ntp.snippets.SectionType;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 
@@ -110,10 +111,12 @@ public interface Stream {
      *         content.
      * @param surfaceScope The {@link SurfaceScope} that is hosting the renderer.
      * @param renderer The {@link HybridListRenderer} that is rendering the feed.
+     * @param launchReliabilityLogger Logger for timestamps and status codes related to launching
+     *         the feed.
      */
     void bind(RecyclerView view, NtpListContentManager manager,
             FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer);
+            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger);
 
     /**
      * Unbinds the feed. Removes all views this feed has added to the previously bound

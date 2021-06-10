@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedP
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderViewBinder;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -142,6 +144,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
 
     private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
+    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
+    private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     @IntDef({StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
@@ -250,6 +254,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
             TabModelSelector tabModelSelector, @NewTabPageLaunchOrigin int launchOrigin,
+            PrivacyPreferencesManagerImpl privacyPreferencesManager,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
@@ -266,6 +271,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
         mTabModelSelector = tabModelSelector;
         mLaunchReliabilityLoggingState = launchReliabilityLoggingState;
+        mPrivacyPreferencesManager = privacyPreferencesManager;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -449,10 +455,18 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         if (mSurfaceScope != null) {
             mHybridListRenderer = mSurfaceScope.provideListRenderer();
-            mLaunchReliabilityLoggingState.onLoggerAvailable(
-                    mSurfaceScope.getFeedLaunchReliabilityLogger());
+
+            if (isReliabilityLoggingEnabled()) {
+                mLaunchReliabilityLogger = mSurfaceScope.getFeedLaunchReliabilityLogger();
+                mLaunchReliabilityLoggingState.onLoggerAvailable(mLaunchReliabilityLogger);
+            }
         } else {
             mHybridListRenderer = new NativeViewListRenderer(context);
+        }
+
+        if (mLaunchReliabilityLogger == null) {
+            // No-op logger.
+            mLaunchReliabilityLogger = new FeedLaunchReliabilityLogger() {};
         }
 
         RecyclerView view;
@@ -485,6 +499,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     /** @return The {@link NtpListContentManager} managing the contents of this feed. */
     NtpListContentManager getContentManager() {
         return mContentManager;
+    }
+
+    /** @return Returns this surface's {@link FeedLaunchReliabilityLogger}. */
+    public FeedLaunchReliabilityLogger getLaunchReliabilityLogger() {
+        return mLaunchReliabilityLogger;
     }
 
     /**
@@ -785,5 +804,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         return true;
+    }
+
+    private boolean isReliabilityLoggingEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_RELIABILITY_LOGGING)
+                && mPrivacyPreferencesManager.isMetricsReportingEnabled();
     }
 }

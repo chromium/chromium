@@ -56,9 +56,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -530,7 +532,8 @@ public class FeedSurfaceMediator
      * Binds a stream to the {@link NtpListContentManager}. Unbinds currently active stream if
      * different from new stream. Once bound, the stream can add/remove contents.
      */
-    private void bindStream(Stream stream) {
+    @VisibleForTesting
+    void bindStream(Stream stream) {
         if (mCurrentStream == stream) return;
         if (mCurrentStream != null) {
             unbindStream();
@@ -544,7 +547,7 @@ public class FeedSurfaceMediator
 
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
-                mCoordinator.getHybridListRenderer());
+                mCoordinator.getHybridListRenderer(), mCoordinator.getLaunchReliabilityLogger());
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
     }
@@ -569,6 +572,14 @@ public class FeedSurfaceMediator
         mCurrentStream.unbind();
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
+
+        FeedLaunchReliabilityLogger launchLogger = mCoordinator.getLaunchReliabilityLogger();
+        if (launchLogger.isLaunchInProgress()) {
+            // This is the catch-all feed launch end event to ensure a complete flow is logged
+            // even if we don't know a more specific reason for the stream unbinding.
+            launchLogger.logLaunchFinished(
+                    System.nanoTime(), DiscoverLaunchResult.FRAGMENT_STOPPED.getNumber());
+        }
     }
 
     void onSurfaceOpened() {

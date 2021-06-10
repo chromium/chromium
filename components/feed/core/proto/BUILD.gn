@@ -62,6 +62,9 @@ proto_library("proto_v2") {
 if (is_android) {
   proto_java_library("proto_java_v2") {
     proto_path = "../../../../"
-    sources = [ "v2/ui.proto" ]
+    sources = [
+      "v2/ui.proto",
+      "v2/wire/reliability_logging_enums.proto",
+    ]
   }
 }
