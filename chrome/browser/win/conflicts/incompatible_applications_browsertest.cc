@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(IncompatibleApplicationsBrowserTest,
         ModuleDatabase* module_database = ModuleDatabase::GetInstance();
 
         // Speed up the test.
-        module_database->IncreaseInspectionPriority();
+        module_database->ForceStartInspection();
 
         // Simulate the download of the module list component.
         module_database->third_party_conflicts_manager()->LoadModuleList(

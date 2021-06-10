@@ -424,7 +424,7 @@ void ConflictsDataFetcher::GetListOfModules() {
   module_list_ = std::make_unique<base::ListValue>();
 
   auto* module_database = ModuleDatabase::GetInstance();
-  module_database->IncreaseInspectionPriority();
+  module_database->ForceStartInspection();
   module_database->AddObserver(this);
 }
 

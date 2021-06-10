@@ -72,18 +72,12 @@ void WriteInspectionResultCacheOnBackgroundSequence(
 }  // namespace
 
 // static
-constexpr base::Feature ModuleInspector::kWinOOPInspectModuleFeature;
-
-// static
 constexpr base::TimeDelta ModuleInspector::kFlushInspectionResultsTimerTimeout;
 
 ModuleInspector::ModuleInspector(
     const OnModuleInspectedCallback& on_module_inspected_callback)
     : on_module_inspected_callback_(on_module_inspected_callback),
       is_after_startup_(false),
-      inspection_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       path_mapping_(GetPathMapping()),
       cache_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -119,14 +113,8 @@ void ModuleInspector::AddModule(const ModuleInfoKey& module_key) {
     StartInspectingModule();
 }
 
-void ModuleInspector::IncreaseInspectionPriority() {
+void ModuleInspector::ForceStartInspection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Create a task runner with higher priority so that future inspections are
-  // done faster.
-  inspection_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-
   // Assume startup is finished to immediately begin inspecting modules.
   OnStartupFinished();
 }
@@ -151,8 +139,6 @@ base::FilePath ModuleInspector::GetInspectionResultsCachePath() {
 }
 
 void ModuleInspector::EnsureUtilWinServiceBound() {
-  DCHECK(base::FeatureList::IsEnabled(kWinOOPInspectModuleFeature));
-
   if (test_remote_util_win_ || remote_util_win_)
     return;
 
@@ -170,8 +156,7 @@ void ModuleInspector::EnsureUtilWinServiceBound() {
 void ModuleInspector::OnStartupFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // This function will be invoked twice if IncreaseInspectionPriority() is
-  // called.
+  // This function will be invoked twice if ForceStartInspection() is called.
   if (is_after_startup_)
     return;
 
@@ -232,36 +217,17 @@ void ModuleInspector::StartInspectingModule() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kWinOOPInspectModuleFeature)) {
-    EnsureUtilWinServiceBound();
+  EnsureUtilWinServiceBound();
 
-    // Use the test UtilWin remote if it exists.
-    chrome::mojom::UtilWin* util_win = test_remote_util_win_
-                                           ? test_remote_util_win_.get()
-                                           : remote_util_win_.get();
+  // Use the test UtilWin remote if it exists.
+  chrome::mojom::UtilWin* util_win = test_remote_util_win_
+                                         ? test_remote_util_win_.get()
+                                         : remote_util_win_.get();
 
-    util_win->InspectModule(
-        module_key.module_path,
-        base::BindOnce(&ModuleInspector::OnModuleNewlyInspected,
-                       weak_ptr_factory_.GetWeakPtr(), module_key));
-  } else {
-    // There is a small priority inversion that happens when
-    // IncreaseInspectionPriority() is called while a module is currently being
-    // inspected.
-    //
-    // This is because all the subsequent tasks on |inspection_task_runner_|
-    // will be posted at a higher priority, but they are waiting on the current
-    // task that is currently running at a lower priority.
-    //
-    // In practice, this is not an issue because the only caller of
-    // IncreaseInspectionPriority() (chrome://conflicts) does not depend on the
-    // inspection to finish synchronously and is not blocking anything else.
-    base::PostTaskAndReplyWithResult(
-        inspection_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&InspectModule, module_key.module_path),
-        base::BindOnce(&ModuleInspector::OnModuleNewlyInspected,
-                       weak_ptr_factory_.GetWeakPtr(), module_key));
-  }
+  util_win->InspectModule(
+      module_key.module_path,
+      base::BindOnce(&ModuleInspector::OnModuleNewlyInspected,
+                     weak_ptr_factory_.GetWeakPtr(), module_key));
 }
 
 void ModuleInspector::OnModuleNewlyInspected(
