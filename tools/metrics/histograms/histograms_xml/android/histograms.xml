@@ -3208,7 +3208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
-    units="minutes" expires_after="2021-07-20">
+    units="minutes" expires_after="2022-06-07">
   <owner>hazems@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -3222,7 +3222,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.NumHistograms"
-    units="histograms" expires_after="2021-07-20">
+    units="histograms" expires_after="2022-06-07">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -3235,7 +3235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.ParsingLogResult"
     enum="AndroidWebViewNonEmbeddedMetricsParsingLogResult"
-    expires_after="2021-07-20">
+    expires_after="2022-06-07">
   <owner>hazems@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -3249,7 +3249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus"
     enum="AndroidWebViewNonEmbeddedMetricsRetrieveMetricsTaskStatus"
-    expires_after="2021-07-20">
+    expires_after="2022-06-07">
   <owner>hazems@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -3261,7 +3261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.TransmissionResult"
-    enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2021-07-20">
+    enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2022-06-07">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
