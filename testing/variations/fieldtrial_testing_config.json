@@ -2551,32 +2551,6 @@
             ]
         }
     ],
-    "DelayCompetingLowPriorityRequests": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "priority_threshold": "high",
-                        "until": "first_contentful_paint"
-                    },
-                    "enable_features": [
-                        "DelayCompetingLowPriorityRequests"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeleteOverwrittenDownloads": [
         {
             "platforms": [
