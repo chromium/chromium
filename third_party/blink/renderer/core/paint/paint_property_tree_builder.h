@@ -110,6 +110,8 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // reference a scroll offset transform, scroll nodes should be updated if
     // the transform tree changes.
     const ScrollPaintPropertyNode* scroll = nullptr;
+
+    FloatSize pending_scroll_anchor_adjustment;
   };
 
   ContainingBlockContext current;

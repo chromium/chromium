@@ -2125,6 +2125,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       FloatPoint scroll_position = FloatPoint(box.ScrollOrigin()) +
                                    box.GetScrollableArea()->GetScrollOffset();
       TransformPaintPropertyNode::State state{-ToFloatSize(scroll_position)};
+      if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
+        context_.current.pending_scroll_anchor_adjustment +=
+            box.GetScrollableArea()->PendingScrollAnchorAdjustment();
+        box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
+      }
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
       state.rendering_context_id = context_.current.rendering_context_id;
@@ -2855,8 +2860,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     context_.translation_2d_to_layout_shift_root_delta = FloatSize();
     // Don't reset scroll_offset_to_layout_shift_root_delta if this object has
     // scroll translation because we need to propagate the delta to descendants.
-    if (!properties_ || !properties_->ScrollTranslation())
+    if (!properties_ || !properties_->ScrollTranslation()) {
       context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
+      context_.current.pending_scroll_anchor_adjustment = FloatSize();
+    }
   }
 
 #if DCHECK_IS_ON()

@@ -256,6 +256,14 @@ ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
   return result;
 }
 
+ScrollOffset ScrollableArea::PendingScrollAnchorAdjustment() const {
+  return pending_scroll_anchor_adjustment_;
+}
+
+void ScrollableArea::ClearPendingScrollAnchorAdjustment() {
+  pending_scroll_anchor_adjustment_ = ScrollOffset();
+}
+
 void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
                                      mojom::blink::ScrollBehavior behavior,
@@ -272,8 +280,10 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     }
   }
 
+  ScrollOffset previous_offset = GetScrollOffset();
+
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-  if (clamped_offset == GetScrollOffset()) {
+  if (clamped_offset == previous_offset) {
     return;
   }
 
@@ -298,6 +308,8 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     case mojom::blink::ScrollType::kAnchoring:
       GetScrollAnimator().AdjustAnimationAndSetScrollOffset(clamped_offset,
                                                             scroll_type);
+
+      pending_scroll_anchor_adjustment_ += clamped_offset - previous_offset;
       break;
     case mojom::blink::ScrollType::kProgrammatic:
       ProgrammaticScrollHelper(clamped_offset, behavior, false,

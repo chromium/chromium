@@ -238,6 +238,7 @@ void LayoutShiftTracker::ObjectShifted(
     const FloatPoint& old_starting_point,
     const FloatSize& translation_delta,
     const FloatSize& scroll_delta,
+    const FloatSize& scroll_anchor_adjustment,
     const FloatPoint& new_starting_point) {
   // The caller should ensure these conditions.
   DCHECK(!old_rect.IsEmpty());
@@ -263,6 +264,12 @@ void LayoutShiftTracker::ObjectShifted(
     if (!scroll_delta.IsZero() &&
         EqualWithinMovementThreshold(old_starting_point + scroll_delta,
                                      new_starting_point, threshold_physical_px))
+      return;
+
+    if (!scroll_anchor_adjustment.IsZero() &&
+        EqualWithinMovementThreshold(
+            old_starting_point + scroll_delta + scroll_anchor_adjustment,
+            new_starting_point, threshold_physical_px))
       return;
   }
 
@@ -441,11 +448,12 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
     const PhysicalOffset& old_paint_offset,
     const FloatSize& translation_delta,
     const FloatSize& scroll_delta,
+    const FloatSize& scroll_anchor_adjustment,
     const PhysicalOffset& new_paint_offset) {
   DCHECK(NeedsToTrack(box));
   ObjectShifted(box, property_tree_state, old_rect, new_rect,
                 StartingPoint(old_paint_offset, box, box.PreviousSize()),
-                translation_delta, scroll_delta,
+                translation_delta, scroll_delta, scroll_anchor_adjustment,
                 StartingPoint(new_paint_offset, box, box.Size()));
 }
 
@@ -457,6 +465,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
     const PhysicalOffset& old_paint_offset,
     const FloatSize& translation_delta,
     const FloatSize& scroll_delta,
+    const FloatSize& scroll_anchor_adjustment,
     const PhysicalOffset& new_paint_offset,
     LayoutUnit logical_height) {
   DCHECK(NeedsToTrack(text));
@@ -486,7 +495,8 @@ void LayoutShiftTracker::NotifyTextPrePaint(
 
   ObjectShifted(text, property_tree_state, old_rect, new_rect,
                 FloatPoint(old_physical_starting_point), translation_delta,
-                scroll_delta, FloatPoint(new_physical_starting_point));
+                scroll_delta, scroll_anchor_adjustment,
+                FloatPoint(new_physical_starting_point));
 }
 
 double LayoutShiftTracker::SubframeWeightingFactor() const {

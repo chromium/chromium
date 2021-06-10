@@ -553,6 +553,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // box. GetLayoutBox()->GetNode() doesn't work in this case.
   Node* EventTargetNode() const;
 
+  ScrollOffset PendingScrollAnchorAdjustment() const;
+  void ClearPendingScrollAnchorAdjustment();
+
   scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
 
  protected:
@@ -645,6 +648,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       fade_overlay_scrollbars_timer_;
 
   Vector<ScrollCallback> pending_scroll_complete_callbacks_;
+
+  ScrollOffset pending_scroll_anchor_adjustment_;
 
   unsigned scrollbar_overlay_color_theme_ : 2;
 

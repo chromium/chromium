@@ -227,6 +227,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
         adjusted_old_paint_offset,
         tree_builder_context.translation_2d_to_layout_shift_root_delta,
         tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        tree_builder_context.current.pending_scroll_anchor_adjustment,
         new_paint_offset, logical_height);
     return;
   }
@@ -288,6 +289,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
         box, property_tree_state, old_rect, new_rect, adjusted_old_paint_offset,
         tree_builder_context.translation_2d_to_layout_shift_root_delta,
         tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        tree_builder_context.current.pending_scroll_anchor_adjustment,
         new_paint_offset);
   }
 }

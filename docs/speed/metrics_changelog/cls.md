@@ -2,6 +2,8 @@
 
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
+* Chrome 93
+  * Metric definition improvement: [Bug fix involving scroll anchoring](2021_06_cls.md)
 * Chrome 91
   * Metric definition improvement: [Cumulative Layout Shift uses max session window](2021_06_cls.md)
 * Chrome 90

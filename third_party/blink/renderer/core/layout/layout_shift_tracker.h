@@ -59,6 +59,7 @@ class CORE_EXPORT LayoutShiftTracker final
                          const PhysicalOffset& old_paint_offset,
                          const FloatSize& translation_delta,
                          const FloatSize& scroll_delta,
+                         const FloatSize& scroll_anchor_adjustment,
                          const PhysicalOffset& new_paint_offset);
 
   void NotifyTextPrePaint(const LayoutText& text,
@@ -68,6 +69,7 @@ class CORE_EXPORT LayoutShiftTracker final
                           const PhysicalOffset& old_paint_offset,
                           const FloatSize& translation_delta,
                           const FloatSize& scroll_delta,
+                          const FloatSize& scroll_anchor_adjustment,
                           const PhysicalOffset& new_paint_offset,
                           const LayoutUnit logical_height);
 
@@ -161,6 +163,7 @@ class CORE_EXPORT LayoutShiftTracker final
                      const FloatPoint& old_starting_point,
                      const FloatSize& translation_delta,
                      const FloatSize& scroll_offset_delta,
+                     const FloatSize& scroll_anchor_adjustment,
                      const FloatPoint& new_starting_point);
 
   void ReportShift(double score_delta, double weighted_score_delta);
