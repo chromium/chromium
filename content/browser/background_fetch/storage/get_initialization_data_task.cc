@@ -330,7 +330,9 @@ class FillFromMetadataTask : public InitializationSubTask {
     sub_task_init().initialization_data->registration_id =
         BackgroundFetchRegistrationId(
             sub_task_init().service_worker_registration_id,
-            url::Origin::Create(GURL(metadata.origin())),
+            // TODO(https://crbug.com/1199077): Store the full serialization of
+            // the storage key inside `metadata`.
+            blink::StorageKey(url::Origin::Create(GURL(metadata.origin()))),
             metadata.registration().developer_id(),
             metadata.registration().unique_id());
 

@@ -112,8 +112,10 @@ void BackgroundFetchJobController::InitializeRequestStatus(
   for (const auto& request_info : active_fetch_requests)
     active_guids.push_back(request_info->download_guid());
 
+  // TODO(https://crbug.com/1199077): Should we update
+  // BackgroundFetchDescription to StorageKey?
   auto fetch_description = std::make_unique<BackgroundFetchDescription>(
-      registration_id().unique_id(), registration_id().origin(),
+      registration_id().unique_id(), registration_id().storage_key().origin(),
       options_->title, icon_, completed_downloads_, total_downloads_,
       complete_requests_downloaded_bytes_cache_,
       complete_requests_uploaded_bytes_cache_, options_->download_total,
@@ -146,7 +148,8 @@ void BackgroundFetchJobController::StartRequest(
       request->download_guid(), std::move(request_finished_callback));
 
   if (IsMixedContent(*request.get()) ||
-      RequiresCorsPreflight(*request.get(), registration_id_.origin())) {
+      RequiresCorsPreflight(*request.get(),
+                            registration_id_.storage_key().origin())) {
     request->SetEmptyResultWithFailureReason(
         BackgroundFetchResult::FailureReason::FETCH_ERROR);
 
@@ -156,7 +159,8 @@ void BackgroundFetchJobController::StartRequest(
 
   active_request_map_[request->download_guid()] = request;
   delegate_proxy_->StartRequest(registration_id().unique_id(),
-                                registration_id().origin(), request.get());
+                                registration_id().storage_key().origin(),
+                                request.get());
 }
 
 void BackgroundFetchJobController::DidStartRequest(
@@ -171,7 +175,8 @@ void BackgroundFetchJobController::DidStartRequest(
   request->PopulateWithResponse(std::move(response));
 
   // TODO(crbug.com/884672): Stop the fetch if the cross origin filter fails.
-  BackgroundFetchCrossOriginFilter filter(registration_id_.origin(), *request);
+  BackgroundFetchCrossOriginFilter filter(
+      registration_id_.storage_key().origin(), *request);
   request->set_can_populate_body(filter.CanPopulateBody());
 }
 

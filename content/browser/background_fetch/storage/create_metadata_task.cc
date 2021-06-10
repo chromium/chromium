@@ -33,26 +33,28 @@ namespace background_fetch {
 namespace {
 
 // TODO(crbug.com/889401): Consider making this configurable by finch.
-constexpr size_t kRegistrationLimitPerOrigin = 5u;
+constexpr size_t kRegistrationLimitPerStorageKey = 5u;
 
-// Finds the number of active registrations associated with the provided origin,
-// and compares it with the limit to determine whether this registration can go
-// through.
+// Finds the number of active registrations associated with the provided storage
+// key, and compares it with the limit to determine whether this registration
+// can go through.
 class CanCreateRegistrationTask : public DatabaseTask {
  public:
   using CanCreateRegistrationCallback =
       base::OnceCallback<void(blink::mojom::BackgroundFetchError, bool)>;
 
   CanCreateRegistrationTask(DatabaseTaskHost* host,
-                            const url::Origin& origin,
+                            const blink::StorageKey& storage_key,
                             CanCreateRegistrationCallback callback)
-      : DatabaseTask(host), origin_(origin), callback_(std::move(callback)) {}
+      : DatabaseTask(host),
+        storage_key_(storage_key),
+        callback_(std::move(callback)) {}
 
   ~CanCreateRegistrationTask() override = default;
 
   void Start() override {
     service_worker_context()->GetRegistrationsForStorageKey(
-        blink::StorageKey(origin_),
+        storage_key_,
         base::BindOnce(
             &CanCreateRegistrationTask::DidGetRegistrationsForStorageKey,
             weak_factory_.GetWeakPtr()));
@@ -111,11 +113,11 @@ class CanCreateRegistrationTask : public DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override {
     std::move(callback_).Run(
-        error, num_active_registrations_ < kRegistrationLimitPerOrigin);
+        error, num_active_registrations_ < kRegistrationLimitPerStorageKey);
     Finished();  // Destroys |this|.
   }
 
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   CanCreateRegistrationCallback callback_;
 
   // The number of existing registrations found for |origin_|.
@@ -148,7 +150,7 @@ CreateMetadataTask::~CreateMetadataTask() = default;
 void CreateMetadataTask::Start() {
   // Check if the registration can be created.
   AddSubTask(std::make_unique<CanCreateRegistrationTask>(
-      this, registration_id_.origin(),
+      this, registration_id_.storage_key(),
       base::BindOnce(&CreateMetadataTask::DidGetCanCreateRegistration,
                      weak_factory_.GetWeakPtr())));
 }
@@ -171,7 +173,7 @@ void CreateMetadataTask::DidGetCanCreateRegistration(
 
   // Check if there is enough quota to download the data first.
   if (options_->download_total > 0) {
-    IsQuotaAvailable(registration_id_.origin(), options_->download_total,
+    IsQuotaAvailable(registration_id_.storage_key(), options_->download_total,
                      base::BindOnce(&CreateMetadataTask::DidGetIsQuotaAvailable,
                                     weak_factory_.GetWeakPtr()));
   } else {
@@ -279,7 +281,11 @@ void CreateMetadataTask::InitializeMetadataProto() {
   }
 
   // Set other metadata fields.
-  metadata_proto_->set_origin(registration_id_.origin().Serialize());
+  //
+  // TODO(https://crbug.com/1199077): Store the full serialization of the
+  // storage key inside `metadata_proto_`.
+  metadata_proto_->set_origin(
+      registration_id_.storage_key().origin().Serialize());
   metadata_proto_->set_creation_microseconds_since_unix_epoch(
       (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
   metadata_proto_->set_num_fetches(requests_.size());
@@ -346,7 +352,7 @@ void CreateMetadataTask::StoreMetadata() {
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      blink::StorageKey(registration_id_.origin()), entries,
+      registration_id_.storage_key(), entries,
       base::BindOnce(&CreateMetadataTask::DidStoreMetadata,
                      weak_factory_.GetWeakPtr()));
 }

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -51,7 +52,9 @@ void BackgroundFetchServiceImpl::CreateForWorker(
           WrapRefCounted(static_cast<StoragePartitionImpl*>(
                              render_process_host->GetStoragePartition())
                              ->GetBackgroundFetchContext()),
-          info.origin,
+          // TODO(https://crbug.com/1199077): Pass directly the worker's
+          // StorageKey when we will have it.
+          blink::StorageKey(info.origin),
           /* render_frame_tree_node_id= */ 0,
           /* wc_getter= */ base::NullCallback(), std::move(receiver)));
 }
@@ -81,7 +84,9 @@ void BackgroundFetchServiceImpl::CreateForFrame(
           WrapRefCounted(static_cast<StoragePartitionImpl*>(
                              render_process_host->GetStoragePartition())
                              ->GetBackgroundFetchContext()),
-          render_frame_host->GetLastCommittedOrigin(),
+          // TODO(https://crbug.com/1199077): Pass directly the document's
+          // StorageKey when we will have it.
+          blink::StorageKey(render_frame_host->GetLastCommittedOrigin()),
           render_frame_host->GetFrameTreeNodeId(), std::move(wc_getter),
           std::move(receiver)));
 }
@@ -89,7 +94,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
 // static
 void BackgroundFetchServiceImpl::CreateOnCoreThread(
     scoped_refptr<BackgroundFetchContext> background_fetch_context,
-    url::Origin origin,
+    blink::StorageKey storage_key,
     int render_frame_tree_node_id,
     WebContents::Getter wc_getter,
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
@@ -97,18 +102,18 @@ void BackgroundFetchServiceImpl::CreateOnCoreThread(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BackgroundFetchServiceImpl>(
-          std::move(background_fetch_context), std::move(origin),
+          std::move(background_fetch_context), std::move(storage_key),
           render_frame_tree_node_id, std::move(wc_getter)),
       std::move(receiver));
 }
 
 BackgroundFetchServiceImpl::BackgroundFetchServiceImpl(
     scoped_refptr<BackgroundFetchContext> background_fetch_context,
-    url::Origin origin,
+    blink::StorageKey storage_key,
     int render_frame_tree_node_id,
     WebContents::Getter wc_getter)
     : background_fetch_context_(std::move(background_fetch_context)),
-      origin_(std::move(origin)),
+      storage_key_(std::move(storage_key)),
       render_frame_tree_node_id_(render_frame_tree_node_id),
       wc_getter_(std::move(wc_getter)) {
   DCHECK(background_fetch_context_);
@@ -138,7 +143,7 @@ void BackgroundFetchServiceImpl::Fetch(
   // New |unique_id|, since this is a new Background Fetch registration. This is
   // the only place new |unique_id|s should be created outside of tests.
   BackgroundFetchRegistrationId registration_id(service_worker_registration_id,
-                                                origin_, developer_id,
+                                                storage_key_, developer_id,
                                                 base::GenerateGUID());
 
   background_fetch_context_->StartFetch(
@@ -166,7 +171,7 @@ void BackgroundFetchServiceImpl::GetRegistration(
   }
 
   background_fetch_context_->GetRegistration(service_worker_registration_id,
-                                             origin_, developer_id,
+                                             storage_key_, developer_id,
                                              std::move(callback));
 }
 
@@ -175,7 +180,7 @@ void BackgroundFetchServiceImpl::GetDeveloperIds(
     GetDeveloperIdsCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   background_fetch_context_->GetDeveloperIdsForServiceWorker(
-      service_worker_registration_id, origin_, std::move(callback));
+      service_worker_registration_id, storage_key_, std::move(callback));
 }
 
 bool BackgroundFetchServiceImpl::ValidateDeveloperId(

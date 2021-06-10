@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 
@@ -98,22 +99,22 @@ BackgroundFetchScheduler::RegistrationData::~RegistrationData() = default;
 bool BackgroundFetchScheduler::ScheduleDownload() {
   DCHECK_LT(num_running_downloads_, max_running_downloads_);
 
-  // 1. Try to activate a registration from a different origin.
+  // 1. Try to activate a registration from a different storage key.
   if (num_active_registrations_ < max_active_registrations_ &&
       !controller_ids_.empty()) {
-    // Try to find a pending registration with a different origin.
+    // Try to find a pending registration with a different storage key.
     for (const auto& controller_id : controller_ids_) {
-      // Make sure the origin is not already active.
-      bool is_new_origin = true;
+      // Make sure the storage key is not already active.
+      bool is_new_storage_key = true;
       for (auto* controller : active_controllers_) {
-        if (controller->registration_id().origin().IsSameOriginWith(
-                controller_id.origin())) {
-          is_new_origin = false;
+        if (controller->registration_id().storage_key() ==
+            controller_id.storage_key()) {
+          is_new_storage_key = false;
           break;
         }
       }
 
-      if (is_new_origin) {
+      if (is_new_storage_key) {
         // Start new registration, and move to the front of the queue.
         auto* controller = job_controllers_[controller_id.unique_id()].get();
         active_controllers_.push_front(controller);
@@ -515,7 +516,8 @@ BackgroundFetchJobController* BackgroundFetchScheduler::GetActiveController(
   // this creates a |unique_id| wrapper with default values for other
   // parameters.
   BackgroundFetchRegistrationId registration_id(
-      /* service_worker_registration_id= */ 0, /* origin= */ url::Origin(),
+      /* service_worker_registration_id= */ 0,
+      /* storage_key= */ blink::StorageKey(),
       /* developer_id= */ "", unique_id);
   return GetActiveController(registration_id);
 }
@@ -570,10 +572,12 @@ void BackgroundFetchScheduler::LogBackgroundFetchEventForDevTools(
           base::NumberToString(request_info->request_body_size());
   }
 
+  // TODO(https://crbug.com/1199077): Pass `registration_id.storage_key()`
+  // directly once DevToolsBackgroundServicesContextImpl implements StorageKey.
   devtools_context_->LogBackgroundServiceEventOnCoreThread(
       registration_id.service_worker_registration_id(),
-      registration_id.origin(), DevToolsBackgroundService::kBackgroundFetch,
-      std::move(event_name),
+      registration_id.storage_key().origin(),
+      DevToolsBackgroundService::kBackgroundFetch, std::move(event_name),
       /* instance_id= */ registration_id.developer_id(), metadata);
 }
 

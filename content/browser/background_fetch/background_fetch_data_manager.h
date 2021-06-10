@@ -25,8 +25,8 @@
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 class BlobDataHandle;
@@ -116,7 +116,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   // Get the BackgroundFetchRegistration.
   void GetRegistration(int64_t service_worker_registration_id,
-                       const url::Origin& origin,
+                       const blink::StorageKey& storage_key,
                        const std::string& developer_id,
                        GetRegistrationCallback callback);
 
@@ -176,7 +176,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // Worker.
   void GetDeveloperIdsForServiceWorker(
       int64_t service_worker_registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback);
 
   const base::ObserverList<BackgroundFetchDataManagerObserver>::Unchecked&
@@ -215,18 +215,18 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   void Cleanup();
 
-  // Get a CacheStorage remote for the given |origin| and |unique_id|.  This
+  // Get a CacheStorage remote for the given |storage_key| and |unique_id|. This
   // will either be a reference to an existing remote or will cause the
   // CacheStorage to be opened.  The BackgroundFetchDataManager owns this
   // remote for the lifetime of the connection.
   mojo::Remote<blink::mojom::CacheStorage>& GetOrOpenCacheStorage(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& unique_id);
-  void OpenCache(const url::Origin& origin,
+  void OpenCache(const blink::StorageKey& storage_key,
                  const std::string& unique_id,
                  int64_t trace_id,
                  blink::mojom::CacheStorage::OpenCallback callback);
-  void DeleteCache(const url::Origin& origin,
+  void DeleteCache(const blink::StorageKey& storage_key,
                    const std::string& unique_id,
                    int64_t trace_id,
                    blink::mojom::CacheStorage::DeleteCallback callback);
@@ -234,7 +234,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
                       blink::mojom::CacheStorage::DeleteCallback callback,
                       blink::mojom::CacheStorageError result);
 
-  void HasCache(const url::Origin& origin,
+  void HasCache(const blink::StorageKey& storage_key,
                 const std::string& unique_id,
                 int64_t trace_id,
                 blink::mojom::CacheStorage::HasCallback callback);

@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -78,8 +79,8 @@ class BackgroundFetchTestBase : public ::testing::Test {
   // Returns the once-initialized default storage partition to be used in tests.
   StoragePartition* storage_partition() { return storage_partition_; }
 
-  // Returns the origin that should be used for Background Fetch tests.
-  const url::Origin& origin() const { return origin_; }
+  // Returns the storage key that should be used for Background Fetch tests.
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // Returns the DevTools context for logging events.
   scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context() const;
@@ -94,7 +95,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
 
   EmbeddedWorkerTestHelper embedded_worker_test_helper_;
 
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
 
   StoragePartition* storage_partition_;
 

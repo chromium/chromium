@@ -11,6 +11,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -24,7 +25,7 @@ void RecordRegistrationsOnStartup(int num_registrations) {
 }
 
 void RecordBackgroundFetchUkmEvent(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     int requests_size,
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
@@ -44,7 +45,8 @@ void RecordBackgroundFetchUkmEvent(
   // Only record UKM data if the origin of the page currently being displayed
   // is the same as the one the background fetch was started with.
   auto displayed_origin = web_contents->GetLastCommittedURL().GetOrigin();
-  if (!origin.IsSameOriginWith(url::Origin::Create(displayed_origin)))
+  if (!storage_key.origin().IsSameOriginWith(
+          url::Origin::Create(displayed_origin)))
     return;
   ukm::SourceId source_id = static_cast<WebContentsImpl*>(web_contents)
                                 ->GetMainFrame()

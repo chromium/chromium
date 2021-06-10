@@ -10,8 +10,8 @@
 
 #include "content/browser/background_fetch/storage/database_task.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 namespace background_fetch {
@@ -21,7 +21,7 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
  public:
   DeleteRegistrationTask(DatabaseTaskHost* host,
                          int64_t service_worker_registration_id,
-                         const url::Origin& origin,
+                         const blink::StorageKey& storage_key,
                          const std::string& unique_id,
                          HandleBackgroundFetchErrorCallback callback);
 
@@ -46,7 +46,7 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
   std::string HistogramName() const override;
 
   int64_t service_worker_registration_id_;
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   std::string unique_id_;
   HandleBackgroundFetchErrorCallback callback_;
 

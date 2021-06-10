@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -80,13 +81,16 @@ void DatabaseTask::AbandonFetches(int64_t service_worker_registration_id) {
     observer.OnServiceWorkerDatabaseCorrupted(service_worker_registration_id);
 }
 
-void DatabaseTask::IsQuotaAvailable(const url::Origin& origin,
+void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
                                     int64_t size,
                                     IsQuotaAvailableCallback callback) {
   DCHECK(quota_manager_proxy());
   DCHECK_GT(size, 0);
+
+  // TODO(https://crbug.com/1199077): Pass `storage_key` directly once the quota
+  // manager supports StorageKey.
   quota_manager_proxy()->GetUsageAndQuota(
-      origin, blink::mojom::StorageType::kTemporary,
+      storage_key.origin(), blink::mojom::StorageType::kTemporary,
       base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
@@ -193,7 +197,7 @@ void DatabaseTask::OpenCache(
     base::OnceCallback<void(blink::mojom::CacheStorageError)> callback) {
   DCHECK(!cache_storage_cache_remote_.is_bound());
   data_manager()->OpenCache(
-      registration_id.origin(), registration_id.unique_id(), trace_id,
+      registration_id.storage_key(), registration_id.unique_id(), trace_id,
       base::BindOnce(&DatabaseTask::DidOpenCache,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -211,11 +215,12 @@ void DatabaseTask::DidOpenCache(
 }
 
 void DatabaseTask::DeleteCache(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& unique_id,
     int64_t trace_id,
     blink::mojom::CacheStorage::DeleteCallback callback) {
-  data_manager()->DeleteCache(origin, unique_id, trace_id, std::move(callback));
+  data_manager()->DeleteCache(storage_key, unique_id, trace_id,
+                              std::move(callback));
 }
 
 }  // namespace background_fetch

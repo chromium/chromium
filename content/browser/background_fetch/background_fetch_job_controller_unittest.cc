@@ -111,7 +111,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
 
     // New |unique_id|, since this is a new Background Fetch registration.
     *registration_id = BackgroundFetchRegistrationId(
-        kExampleServiceWorkerRegistrationId, origin(), kExampleDeveloperId,
+        kExampleServiceWorkerRegistrationId, storage_key(), kExampleDeveloperId,
         base::GenerateGUID());
 
     std::vector<scoped_refptr<BackgroundFetchRequestInfo>> request_infos;

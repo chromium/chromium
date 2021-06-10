@@ -8,6 +8,10 @@
 #include "content/public/browser/background_fetch_delegate.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 namespace background_fetch {
 
@@ -19,7 +23,7 @@ void RecordRegistrationsOnStartup(int num_registrations);
 // Fetch registration has been created. Will be a no-op if |frame_tree_node_id|
 // does not identify a valid, live frame.
 void RecordBackgroundFetchUkmEvent(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     int requests_size,
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,

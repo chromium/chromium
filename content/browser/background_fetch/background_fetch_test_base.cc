@@ -80,7 +80,7 @@ BackgroundFetchTestBase::BackgroundFetchTestBase()
     : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
       delegate_(browser_context_.GetBackgroundFetchDelegate()),
       embedded_worker_test_helper_(base::FilePath()),
-      origin_(url::Origin::Create(GURL(kTestOrigin))),
+      storage_key_(blink::StorageKey(url::Origin::Create(GURL(kTestOrigin)))),
       storage_partition_(browser_context()->GetDefaultStoragePartition()) {}
 
 BackgroundFetchTestBase::~BackgroundFetchTestBase() {
@@ -98,7 +98,7 @@ void BackgroundFetchTestBase::TearDown() {
 }
 
 int64_t BackgroundFetchTestBase::RegisterServiceWorker() {
-  return RegisterServiceWorkerForOrigin(origin_);
+  return RegisterServiceWorkerForOrigin(storage_key_.origin());
 }
 
 int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(

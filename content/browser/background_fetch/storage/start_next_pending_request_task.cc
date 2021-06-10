@@ -76,7 +76,7 @@ void StartNextPendingRequestTask::DidGetPendingRequests(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      blink::StorageKey(registration_id_.origin()),
+      registration_id_.storage_key(),
       {{ActiveRequestKey(active_request_.unique_id(),
                          active_request_.request_index()),
         active_request_.SerializeAsString()}},

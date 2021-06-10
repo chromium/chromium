@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -26,7 +26,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
  public:
   BackgroundFetchServiceImpl(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
-      url::Origin origin,
+      blink::StorageKey storage_key,
       int render_frame_tree_node_id,
       WebContents::Getter wc_getter);
   ~BackgroundFetchServiceImpl() override;
@@ -57,7 +57,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
  private:
   static void CreateOnCoreThread(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
-      url::Origin origin,
+      blink::StorageKey storage_key,
       int render_frame_tree_node_id,
       WebContents::Getter wc_getter,
       mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
@@ -73,7 +73,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   // The Background Fetch context on which operations will be dispatched.
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
 
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
 
   int render_frame_tree_node_id_;
   WebContents::Getter wc_getter_;

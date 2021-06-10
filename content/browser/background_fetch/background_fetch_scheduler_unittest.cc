@@ -22,6 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -99,22 +100,22 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
 
  protected:
   void InitializeControllerWithRequests(
-      const url::Origin& fetch_origin,
+      const blink::StorageKey& storage_key,
       const std::vector<std::string>& requests) {
     std::vector<blink::mojom::FetchAPIRequestPtr> fetch_requests;
     for (auto& request : requests) {
       auto fetch_request = blink::mojom::FetchAPIRequest::New();
       fetch_request->referrer = blink::mojom::Referrer::New();
-      fetch_request->url = GURL(fetch_origin.GetURL().spec() + request);
+      fetch_request->url = GURL(storage_key.origin().GetURL().spec() + request);
       CreateRequestWithProvidedResponse(fetch_request->method,
                                         fetch_request->url,
                                         TestResponseBuilder(200).Build());
       fetch_requests.push_back(std::move(fetch_request));
     }
 
-    int64_t sw_id = RegisterServiceWorkerForOrigin(fetch_origin);
+    int64_t sw_id = RegisterServiceWorkerForOrigin(storage_key.origin());
     BackgroundFetchRegistrationId registration_id(
-        sw_id, fetch_origin, base::GenerateGUID(), base::GenerateGUID());
+        sw_id, storage_key, base::GenerateGUID(), base::GenerateGUID());
     data_manager_->CreateRegistration(
         registration_id, std::move(fetch_requests),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(),
@@ -177,7 +178,7 @@ TEST_F(BackgroundFetchSchedulerTest, SingleControllerSynchronous) {
   MakeSchedulerSequential();
 
   std::vector<std::string> requests = {"A1", "A2", "A3", "A4"};
-  InitializeControllerWithRequests(origin(), requests);
+  InitializeControllerWithRequests(storage_key(), requests);
   RunSchedulerToCompletion();
   EXPECT_EQ(requests, controller_sequence_list_);
 }
@@ -186,7 +187,7 @@ TEST_F(BackgroundFetchSchedulerTest, SingleControllerConcurrent) {
   MakeSchedulerConcurrent();
 
   std::vector<std::string> requests = {"A1", "A2", "A3", "A4"};
-  InitializeControllerWithRequests(origin(), requests);
+  InitializeControllerWithRequests(storage_key(), requests);
   RunSchedulerToCompletion();
   EXPECT_EQ(requests, controller_sequence_list_);
 }
@@ -199,12 +200,12 @@ TEST_F(BackgroundFetchSchedulerTest, TwoControllersSynchronous) {
 
   // Create a controller with A1 -> A4.
   InitializeControllerWithRequests(
-      url::Origin::Create(GURL("https://A.com")),
+      blink::StorageKey(url::Origin::Create(GURL("https://A.com"))),
       std::vector<std::string>(all_requests.begin(), all_requests.begin() + 4));
 
   // Create a controller with B1 -> B4.
   InitializeControllerWithRequests(
-      url::Origin::Create(GURL("https://B.com")),
+      blink::StorageKey(url::Origin::Create(GURL("https://B.com"))),
       std::vector<std::string>(all_requests.begin() + 4, all_requests.end()));
 
   RunSchedulerToCompletion();
@@ -219,12 +220,12 @@ TEST_F(BackgroundFetchSchedulerTest, TwoControllersConcurrent) {
 
   // Create a controller with A1 -> A4.
   InitializeControllerWithRequests(
-      url::Origin::Create(GURL("https://A.com")),
+      blink::StorageKey(url::Origin::Create(GURL("https://A.com"))),
       std::vector<std::string>(all_requests.begin(), all_requests.begin() + 4));
 
   // Create a controller with B1 -> B4.
   InitializeControllerWithRequests(
-      url::Origin::Create(GURL("https://B.com")),
+      blink::StorageKey(url::Origin::Create(GURL("https://B.com"))),
       std::vector<std::string>(all_requests.begin() + 4, all_requests.end()));
 
   RunSchedulerToCompletion();
@@ -242,12 +243,12 @@ TEST_F(BackgroundFetchSchedulerTest, TwoControllersConcurrentSameOrigin) {
 
   // Create a controller with A1 -> A4.
   InitializeControllerWithRequests(
-      origin(),
+      storage_key(),
       std::vector<std::string>(all_requests.begin(), all_requests.begin() + 4));
 
   // Create a controller with B1 -> B4.
   InitializeControllerWithRequests(
-      origin(),
+      storage_key(),
       std::vector<std::string>(all_requests.begin() + 4, all_requests.end()));
 
   RunSchedulerToCompletion();

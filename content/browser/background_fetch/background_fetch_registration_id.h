@@ -9,7 +9,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -23,7 +23,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
   // See corresponding getters for descriptions of |developer_id| and
   // |unique_id|.
   BackgroundFetchRegistrationId(int64_t service_worker_registration_id,
-                                const url::Origin& origin,
+                                const blink::StorageKey& storage_key,
                                 const std::string& developer_id,
                                 const std::string& unique_id);
 
@@ -50,7 +50,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
   int64_t service_worker_registration_id() const {
     return service_worker_registration_id_;
   }
-  const url::Origin& origin() const { return origin_; }
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // The IDL 'id' attribute provided by the website.
   //
@@ -74,8 +74,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
 
  private:
   int64_t service_worker_registration_id_;
-  // TODO(crbug.com/1199077): Implement StorageKey.
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   std::string developer_id_;
   std::string unique_id_;
 };

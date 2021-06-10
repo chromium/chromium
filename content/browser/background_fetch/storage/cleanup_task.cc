@@ -13,6 +13,7 @@
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/background_fetch/storage/delete_registration_task.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -81,8 +82,11 @@ void CleanupTask::DidGetActiveUniqueIds(
           // DeleteRegistrationTask for the actual deletion logic.
           AddDatabaseTask(std::make_unique<DeleteRegistrationTask>(
               data_manager(), service_worker_registration_id,
-              url::Origin::Create(GURL(metadata_proto.origin())), unique_id,
-              base::BindOnce(&EmptyErrorHandler)));
+              // TODO(https://crbug.com/1199077): Store the full serialization
+              // of the storage key inside `metadata`.
+              blink::StorageKey(
+                  url::Origin::Create(GURL(metadata_proto.origin()))),
+              unique_id, base::BindOnce(&EmptyErrorHandler)));
         }
       }
     }
