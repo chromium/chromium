@@ -139,7 +139,7 @@ FloatPoint NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
       inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
           item->Style().GetFontBaseline());
   const auto& item_rect = item->SvgFragmentData()->rect;
-  const bool is_ltr = item->Style().IsLeftToRightDirection();
+  const bool is_ltr = IsLtr(item->ResolvedDirection());
   FloatPoint point;
   if (item->IsHorizontal()) {
     point = is_ltr ? item_rect.Location() : item_rect.MaxXMinYCorner();
@@ -167,7 +167,7 @@ FloatPoint NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
       inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
           item->Style().GetFontBaseline());
   const auto& item_rect = item->SvgFragmentData()->rect;
-  const bool is_ltr = item->Style().IsLeftToRightDirection();
+  const bool is_ltr = IsLtr(item->ResolvedDirection());
   FloatPoint point;
   if (item->IsHorizontal()) {
     point = is_ltr ? item_rect.MaxXMinYCorner() : item_rect.Location();
