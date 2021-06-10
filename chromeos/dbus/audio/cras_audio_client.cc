@@ -395,6 +395,18 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void SetDisplayRotation(uint64_t node_id,
+                          cras::DisplayRotation rotation) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetDisplayRotation);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint64(node_id);
+    writer.AppendUint32(static_cast<uint32_t>(rotation));
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
   void SetGlobalOutputChannelRemix(int32_t channels,
                                    const std::vector<double>& mixer) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,

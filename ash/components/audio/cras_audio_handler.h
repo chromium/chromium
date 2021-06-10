@@ -262,6 +262,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool has_alternative_input() const;
   bool has_alternative_output() const;
 
+  // Sets the current display |rotation| to CrasAudioHandler and updates the
+  // |rotation| to the internal speaker.
+  void SetDisplayRotation(cras::DisplayRotation rotation);
+
   // Sets all active output devices' volume levels to |volume_percent|, whose
   // range is from 0-100%.
   void SetOutputVolumePercent(int volume_percent);
@@ -744,6 +748,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
+  cras::DisplayRotation display_rotation_ = cras::DisplayRotation::ROTATE_0;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 

@@ -613,6 +613,17 @@ void CrasAudioHandler::SwapInternalSpeakerLeftRightChannel(bool swap) {
   }
 }
 
+void CrasAudioHandler::SetDisplayRotation(cras::DisplayRotation rotation) {
+  display_rotation_ = rotation;
+  for (const auto& item : audio_devices_) {
+    const AudioDevice& device = item.second;
+    if (device.type == AudioDeviceType::kInternalSpeaker) {
+      CrasAudioClient::Get()->SetDisplayRotation(device.id, display_rotation_);
+      break;
+    }
+  }
+}
+
 void CrasAudioHandler::SetOutputMonoEnabled(bool enabled) {
   if (output_mono_enabled_ == enabled)
     return;
@@ -1581,6 +1592,17 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   bool input_devices_changed =
       HasDeviceChange(nodes, true, &hotplug_input_nodes, &has_input_removed,
                       &active_input_removed);
+
+  // Updates the display_rotation to the internal speaker when it's added.
+  for (auto node : nodes) {
+    AudioDevice device = ConvertAudioNodeWithModifiedPriority(node);
+    DeviceStatus status = CheckDeviceStatus(device);
+    if (status == NEW_DEVICE &&
+        device.type == AudioDeviceType::kInternalSpeaker) {
+      CrasAudioClient::Get()->SetDisplayRotation(device.id, display_rotation_);
+    }
+  }
+
   audio_devices_.clear();
   has_alternative_input_ = false;
   has_alternative_output_ = false;
