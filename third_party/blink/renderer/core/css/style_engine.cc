@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -2021,7 +2022,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
   WritingMode writing_mode = style.GetWritingMode();
-  PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
+  PhysicalSize physical_size = AdjustForAbsoluteZoom::AdjustPhysicalSize(
+      ToPhysicalSize(logical_size, writing_mode), style);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
   StyleRecalcChange::Propagate propagate =

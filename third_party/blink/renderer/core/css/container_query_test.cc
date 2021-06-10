@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -193,6 +194,58 @@ TEST_F(ContainerQueryTest, QueriedAxes) {
   // another way to author a container query that queries no axes (or make it
   // illegal altogether).
   EXPECT_EQ(none, QueriedAxes("(resolution: 150dpi)"));
+}
+
+TEST_F(ContainerQueryTest, QueryZoom) {
+  GetFrame().SetPageZoomFactor(2.0f);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container1 {
+        width: 100px;
+        height: 200px;
+        container-type: inline-size block-size;
+      }
+      #container2 {
+        width: 200px;
+        height: 400px;
+        container-type: inline-size block-size;
+      }
+      @container (width: 100px) {
+        div { --w100:1; }
+      }
+      @container (width: 200px) {
+        div { --w200:1; }
+      }
+      @container (height: 200px) {
+        div { --h200:1; }
+      }
+      @container (height: 400px) {
+        div { --h400:1; }
+      }
+    </style>
+    <div id=container1>
+      <div id=target1></div>
+    </div>
+    <div id=container2>
+      <div id=target2></div>
+    </div>
+  )HTML");
+
+  Element* target1 = GetDocument().getElementById("target1");
+  Element* target2 = GetDocument().getElementById("target2");
+  ASSERT_TRUE(target1);
+  ASSERT_TRUE(target2);
+
+  EXPECT_TRUE(target1->ComputedStyleRef().GetVariableData("--w100"));
+  EXPECT_TRUE(target1->ComputedStyleRef().GetVariableData("--h200"));
+  EXPECT_FALSE(target1->ComputedStyleRef().GetVariableData("--w200"));
+  EXPECT_FALSE(target1->ComputedStyleRef().GetVariableData("--h400"));
+
+  EXPECT_FALSE(target2->ComputedStyleRef().GetVariableData("--w100"));
+  EXPECT_FALSE(target2->ComputedStyleRef().GetVariableData("--h200"));
+  EXPECT_TRUE(target2->ComputedStyleRef().GetVariableData("--w200"));
+  EXPECT_TRUE(target2->ComputedStyleRef().GetVariableData("--h400"));
 }
 
 }  // namespace blink
