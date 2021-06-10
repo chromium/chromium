@@ -363,16 +363,18 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
   // js-based tests that have the ability to ask the text field for its value.
 }
 
-// Disabled due to high flake rate; https://crbug.com/1216246.
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
-                       DISABLED_PointScanClickWhenMouseEventsEnabled) {
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
   ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<input type=checkbox title='checkbox'"
-                      "style='width: 800px; height: 800px;'>"));
+      browser(),
+      GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
+           "style='width: 800px; height: 800px;'>"));
+
+  // Wait for switch access to focus on the checkbox.
+  WaitForFocusRing("primary", "checkBox", "checkbox");
 
   // Enable mouse events (within root window containing checkbox).
   EnableMouseEvents(600, 600);
@@ -393,16 +395,19 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
   ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
 }
 
-// Test is flaky: https://crbug.com/1216048.
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
-                       DISABLED_PointScanClickWhenMouseEventsDisabled) {
+                       PointScanClickWhenMouseEventsDisabled) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
   ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<input type=checkbox title='checkbox'"
-                      "style='width: 800px; height: 800px;'>"));
+      browser(),
+      GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
+           "style='width: 800px; height: 800px;'>"));
+
+  // Wait for switch access to focus on the checkbox.
+  WaitForFocusRing("primary", "checkBox", "checkbox");
 
   // Disable mouse events (within root window containing checkbox).
   DisableMouseEvents(600, 600);
