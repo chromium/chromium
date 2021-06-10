@@ -2953,6 +2953,17 @@ int64_t aom_sse_c(const uint8_t* a,
                   int height);
 #define aom_sse aom_sse_c
 
+void aom_ssim_parms_8x8_c(const uint8_t* s,
+                          int sp,
+                          const uint8_t* r,
+                          int rp,
+                          uint32_t* sum_s,
+                          uint32_t* sum_r,
+                          uint32_t* sum_sq_s,
+                          uint32_t* sum_sq_r,
+                          uint32_t* sum_sxr);
+#define aom_ssim_parms_8x8 aom_ssim_parms_8x8_c
+
 uint32_t aom_sub_pixel_avg_variance128x128_c(const uint8_t* src_ptr,
                                              int source_stride,
                                              int xoffset,
