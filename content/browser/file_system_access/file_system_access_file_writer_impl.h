@@ -50,6 +50,10 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
       bool has_transient_user_activation,
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
+  FileSystemAccessFileWriterImpl(const FileSystemAccessFileWriterImpl&) =
+      delete;
+  FileSystemAccessFileWriterImpl& operator=(
+      const FileSystemAccessFileWriterImpl&) = delete;
   ~FileSystemAccessFileWriterImpl() override;
 
   const storage::FileSystemURL& swap_url() const { return swap_url_; }
@@ -150,8 +154,6 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
   base::WeakPtrFactory<FileSystemAccessFileWriterImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessFileWriterImpl);
 };
 
 }  // namespace content

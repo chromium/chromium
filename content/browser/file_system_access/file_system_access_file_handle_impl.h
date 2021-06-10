@@ -31,6 +31,10 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                                  const BindingContext& context,
                                  const storage::FileSystemURL& url,
                                  const SharedHandleState& handle_state);
+  FileSystemAccessFileHandleImpl(const FileSystemAccessFileHandleImpl&) =
+      delete;
+  FileSystemAccessFileHandleImpl& operator=(
+      const FileSystemAccessFileHandleImpl&) = delete;
   ~FileSystemAccessFileHandleImpl() override;
 
   // blink::mojom::FileSystemAccessFileHandle:
@@ -93,7 +97,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
   base::WeakPtrFactory<FileSystemAccessFileHandleImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessFileHandleImpl);
 };
 
 }  // namespace content

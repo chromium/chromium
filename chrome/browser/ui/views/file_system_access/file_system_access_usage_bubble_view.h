@@ -25,6 +25,12 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
     std::vector<base::FilePath> writable_files;
     std::vector<base::FilePath> writable_directories;
   };
+
+  FileSystemAccessUsageBubbleView(const FileSystemAccessUsageBubbleView&) =
+      delete;
+  FileSystemAccessUsageBubbleView& operator=(
+      const FileSystemAccessUsageBubbleView&) = delete;
+
   static void ShowBubble(content::WebContents* web_contents,
                          const url::Origin& origin,
                          Usage usage);
@@ -40,6 +46,8 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
    public:
     FilePathListModel(std::vector<base::FilePath> files,
                       std::vector<base::FilePath> directories);
+    FilePathListModel(const FilePathListModel&) = delete;
+    FilePathListModel& operator=(const FilePathListModel&) = delete;
     ~FilePathListModel() override;
     // ui::TableModel:
     int RowCount() override;
@@ -51,7 +59,6 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
    private:
     const std::vector<base::FilePath> files_;
     const std::vector<base::FilePath> directories_;
-    DISALLOW_COPY_AND_ASSIGN(FilePathListModel);
   };
 
   FileSystemAccessUsageBubbleView(views::View* anchor_view,
@@ -79,8 +86,6 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   const Usage usage_;
   FilePathListModel readable_paths_model_;
   FilePathListModel writable_paths_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessUsageBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_H_

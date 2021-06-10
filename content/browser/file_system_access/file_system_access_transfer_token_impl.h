@@ -34,6 +34,10 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
       FileSystemAccessManagerImpl* manager,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
+  FileSystemAccessTransferTokenImpl(const FileSystemAccessTransferTokenImpl&) =
+      delete;
+  FileSystemAccessTransferTokenImpl& operator=(
+      const FileSystemAccessTransferTokenImpl&) = delete;
   ~FileSystemAccessTransferTokenImpl() override;
 
   const base::UnguessableToken& token() const { return token_; }
@@ -73,8 +77,6 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   const url::Origin origin_;
   const FileSystemAccessManagerImpl::SharedHandleState handle_state_;
   mojo::ReceiverSet<blink::mojom::FileSystemAccessTransferToken> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessTransferTokenImpl);
 };
 
 }  // namespace content

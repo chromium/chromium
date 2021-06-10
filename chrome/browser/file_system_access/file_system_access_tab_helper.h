@@ -16,6 +16,9 @@ class FileSystemAccessTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<FileSystemAccessTabHelper> {
  public:
+  FileSystemAccessTabHelper(const FileSystemAccessTabHelper&) = delete;
+  FileSystemAccessTabHelper& operator=(const FileSystemAccessTabHelper&) =
+      delete;
   ~FileSystemAccessTabHelper() override;
 
   // content::WebContentsObserver
@@ -27,7 +30,6 @@ class FileSystemAccessTabHelper
   explicit FileSystemAccessTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FileSystemAccessTabHelper>;
 
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessTabHelper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -53,6 +53,10 @@ class ChromeFileSystemAccessPermissionContext
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
       const base::Clock* clock = base::DefaultClock::GetInstance());
+  ChromeFileSystemAccessPermissionContext(
+      const ChromeFileSystemAccessPermissionContext&) = delete;
+  ChromeFileSystemAccessPermissionContext& operator=(
+      const ChromeFileSystemAccessPermissionContext&) = delete;
   ~ChromeFileSystemAccessPermissionContext() override;
 
   // permissions::ObjectPermissionContextBase
@@ -255,8 +259,6 @@ class ChromeFileSystemAccessPermissionContext
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemAccessPermissionContext);
 };
 
 #endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_CHROME_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_

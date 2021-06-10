@@ -91,6 +91,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       scoped_refptr<ChromeBlobStorageContext> blob_context,
       FileSystemAccessPermissionContext* permission_context,
       bool off_the_record);
+  FileSystemAccessManagerImpl(const FileSystemAccessManagerImpl&) = delete;
+  FileSystemAccessManagerImpl& operator=(const FileSystemAccessManagerImpl&) =
+      delete;
 
   void BindReceiver(
       const BindingContext& binding_context,
@@ -402,7 +405,6 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       auto_file_picker_result_for_test_;
 
   base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessManagerImpl);
 };
 
 }  // namespace content

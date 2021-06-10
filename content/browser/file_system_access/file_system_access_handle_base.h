@@ -47,6 +47,9 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
                              const BindingContext& context,
                              const storage::FileSystemURL& url,
                              const SharedHandleState& handle_state);
+  FileSystemAccessHandleBase(const FileSystemAccessHandleBase&) = delete;
+  FileSystemAccessHandleBase& operator=(const FileSystemAccessHandleBase&) =
+      delete;
   ~FileSystemAccessHandleBase() override;
 
   const storage::FileSystemURL& url() const { return url_; }
@@ -192,8 +195,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
   const BindingContext context_;
   const storage::FileSystemURL url_;
   const SharedHandleState handle_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessHandleBase);
 };
 
 template <typename CallbackArgType>

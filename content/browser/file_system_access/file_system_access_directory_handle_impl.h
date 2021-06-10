@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
@@ -31,6 +30,10 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
                                       const BindingContext& context,
                                       const storage::FileSystemURL& url,
                                       const SharedHandleState& handle_state);
+  FileSystemAccessDirectoryHandleImpl(
+      const FileSystemAccessDirectoryHandleImpl&) = delete;
+  FileSystemAccessDirectoryHandleImpl& operator=(
+      const FileSystemAccessDirectoryHandleImpl&) = delete;
   ~FileSystemAccessDirectoryHandleImpl() override;
 
   // blink::mojom::FileSystemAccessDirectoryHandle:
@@ -110,7 +113,6 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
   base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessDirectoryHandleImpl);
 };
 
 }  // namespace content

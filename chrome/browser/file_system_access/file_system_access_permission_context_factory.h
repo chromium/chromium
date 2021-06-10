@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,11 @@ class FileSystemAccessPermissionContextFactory
       content::BrowserContext* profile);
   static FileSystemAccessPermissionContextFactory* GetInstance();
 
+  FileSystemAccessPermissionContextFactory(
+      const FileSystemAccessPermissionContextFactory&) = delete;
+  FileSystemAccessPermissionContextFactory& operator=(
+      const FileSystemAccessPermissionContextFactory&) = delete;
+
  private:
   friend class base::NoDestructor<FileSystemAccessPermissionContextFactory>;
 
@@ -33,8 +37,6 @@ class FileSystemAccessPermissionContextFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessPermissionContextFactory);
 };
 
 #endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_FACTORY_H_
