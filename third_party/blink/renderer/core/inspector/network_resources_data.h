@@ -100,15 +100,17 @@ class NetworkResourcesData final
 
     KURL RequestedURL() const { return requested_url_; }
 
+    // Returns the size of request and response content.
+    size_t ContentSize() const;
     bool HasContent() const { return !content_.IsNull(); }
     String Content() const { return content_; }
     void SetContent(const String&, bool base64_encoded);
 
     bool Base64Encoded() const { return base64_encoded_; }
 
-    size_t RemoveContent();
     bool IsContentEvicted() const { return is_content_evicted_; }
-    size_t EvictContent();
+    // Evicts the post data and the respone content.
+    WARN_UNUSED_RESULT size_t EvictContent();
 
     InspectorPageAgent::ResourceType GetType() const { return type_; }
     void SetType(InspectorPageAgent::ResourceType type) { type_ = type; }
@@ -172,8 +174,9 @@ class NetworkResourcesData final
 
    private:
     bool HasData() const { return data_buffer_.get(); }
-    uint64_t DataLength() const;
     void AppendData(const char* data, size_t data_length);
+    // Removes just the response content.
+    WARN_UNUSED_RESULT size_t RemoveResponseContent();
     size_t DecodeDataToContent();
     void ProcessCustomWeakness(const LivenessBroker&);
 

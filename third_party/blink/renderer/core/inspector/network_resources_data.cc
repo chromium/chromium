@@ -91,31 +91,36 @@ void NetworkResourcesData::ResourceData::SetContent(const String& content,
   base64_encoded_ = base64_encoded;
 }
 
-size_t NetworkResourcesData::ResourceData::RemoveContent() {
-  size_t result = 0;
+size_t NetworkResourcesData::ResourceData::ContentSize() const {
+  size_t size = 0;
   if (HasData()) {
     DCHECK(!HasContent());
-    result = data_buffer_->size();
-    data_buffer_ = nullptr;
+    size = data_buffer_->size();
   }
-
   if (HasContent()) {
     DCHECK(!HasData());
-    result = content_.CharactersSizeInBytes();
-    content_ = String();
+    size = content_.CharactersSizeInBytes();
   }
+  if (post_data_)
+    size += post_data_->SizeInBytes();
+  return size;
+}
 
-  if (post_data_ && post_data_->SizeInBytes()) {
-    result += post_data_->SizeInBytes();
-    post_data_ = nullptr;
-  }
-
-  return result;
+size_t NetworkResourcesData::ResourceData::RemoveResponseContent() {
+  DCHECK(HasContent());
+  DCHECK(!HasData());
+  const size_t size = content_.CharactersSizeInBytes();
+  content_ = String();
+  return size;
 }
 
 size_t NetworkResourcesData::ResourceData::EvictContent() {
+  size_t size = ContentSize();
   is_content_evicted_ = true;
-  return RemoveContent();
+  data_buffer_ = nullptr;
+  content_ = String();
+  post_data_ = nullptr;
+  return size;
 }
 
 void NetworkResourcesData::ResourceData::SetResource(
@@ -159,17 +164,6 @@ void NetworkResourcesData::ResourceData::FontResourceDataWillBeCleared() {
   // There is no point tracking the resource anymore.
   cached_resource_ = nullptr;
   network_resources_data_->MaybeDecodeDataToContent(RequestId());
-}
-
-uint64_t NetworkResourcesData::ResourceData::DataLength() const {
-  uint64_t data_length = 0;
-  if (data_buffer_)
-    data_length += data_buffer_->size();
-
-  if (post_data_)
-    data_length += post_data_->SizeInBytes();
-
-  return data_length;
 }
 
 void NetworkResourcesData::ResourceData::AppendData(const char* data,
@@ -274,7 +268,7 @@ void NetworkResourcesData::SetResourceContent(const String& request_id,
     // We can not be sure that we didn't try to save this request data while it
     // was loading, so remove it, if any.
     if (resource_data->HasContent())
-      content_size_ -= resource_data->RemoveContent();
+      content_size_ -= resource_data->RemoveResponseContent();
     request_ids_deque_.push_back(request_id);
     resource_data->SetContent(content, base64_encoded);
     content_size_ += data_length;
@@ -288,9 +282,10 @@ NetworkResourcesData::PrepareToAddResourceData(const String& request_id,
   if (!resource_data)
     return nullptr;
 
-  if (resource_data->DataLength() + data_length >
-      maximum_single_resource_content_size_)
+  if (resource_data->ContentSize() + data_length >
+      maximum_single_resource_content_size_) {
     content_size_ -= resource_data->EvictContent();
+  }
   if (resource_data->IsContentEvicted())
     return nullptr;
   if (!EnsureFreeSpace(data_length) || resource_data->IsContentEvicted())
@@ -417,8 +412,10 @@ void NetworkResourcesData::Clear(const String& preserved_loader_id) {
   for (auto& resource : request_id_to_resource_data_map_) {
     ResourceData* resource_data = resource.value;
     if (!preserved_loader_id.IsNull() &&
-        resource_data->LoaderId() == preserved_loader_id)
+        resource_data->LoaderId() == preserved_loader_id) {
       preserved_map.Set(resource.key, resource.value);
+      content_size_ += resource_data->ContentSize();
+    }
   }
   request_id_to_resource_data_map_.swap(preserved_map);
 }
@@ -426,9 +423,13 @@ void NetworkResourcesData::Clear(const String& preserved_loader_id) {
 void NetworkResourcesData::SetResourcesDataSizeLimits(
     size_t resources_content_size,
     size_t single_resource_content_size) {
-  Clear();
   maximum_resources_content_size_ = resources_content_size;
   maximum_single_resource_content_size_ = single_resource_content_size;
+  for (auto& entry : request_id_to_resource_data_map_) {
+    if (entry.value->ContentSize() > maximum_single_resource_content_size_)
+      content_size_ -= entry.value->EvictContent();
+  }
+  EnsureFreeSpace(0);
 }
 
 NetworkResourcesData::ResourceData*
