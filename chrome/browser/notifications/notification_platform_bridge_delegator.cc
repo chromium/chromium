@@ -52,12 +52,12 @@ namespace {
 // the platforms supported by the browser.
 bool SystemNotificationsEnabled(Profile* profile) {
 #if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
   return true;
 #elif defined(OS_WIN)
   return NotificationPlatformBridgeWin::SystemNotificationEnabled();
 #else
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX)
   if (profile) {
     // Prefs take precedence over flags.
     PrefService* prefs = profile->GetPrefs();

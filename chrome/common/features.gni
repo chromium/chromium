@@ -40,9 +40,7 @@ declare_args() {
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
   # Enables usage of notifications via Chrome's MessageCenter.
-  # TODO(crbug.com/1217088): Disable this on `is_chromeos_lacros`.
-  enable_chrome_notifications =
-      is_mac || is_win || is_linux || is_chromeos_lacros
+  enable_chrome_notifications = is_mac || is_win || is_linux
 
   # Enables the Click to Call feature on desktop platforms.
   enable_click_to_call = is_mac || is_win || is_linux || is_chromeos

@@ -207,7 +207,9 @@ void NotificationPlatformBridgeLacros::GetDisplayed(
 
 void NotificationPlatformBridgeLacros::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
-  std::move(callback).Run(!!message_center_remote_);
+  // Always return success even if |message_center_remote_| is not valid as we
+  // don't have another way of displaying notifications on ChromeOS via Lacros.
+  std::move(callback).Run(/*success=*/true);
 }
 
 void NotificationPlatformBridgeLacros::DisplayServiceShutDown(
