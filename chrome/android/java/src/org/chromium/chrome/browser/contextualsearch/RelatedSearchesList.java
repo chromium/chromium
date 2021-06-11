@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.net.Uri;
+
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,21 +20,47 @@ import java.util.List;
  * UI.
  */
 class RelatedSearchesList {
+    /** JSON keys sent by the server. */
     private static final String CONTENT_SUGGESTIONS = "content";
     private static final String TITLE = "title";
+    private static final String SEARCH_URL = "searchUrl";
 
+    /** The parsed Json suggestions. */
     private final JSONObject mJsonSuggestions;
+
+    /** A way to log warnings for the caller's benefit. */
+    @Nullable
+    private final WarningLog mWarningLog;
+
+    /**
+     * Provides a way to notify the clients of this class that something went wrong.
+     * TODO(donnd): Simplify by removing this interface and just logging directly in this class.
+     * The associated test will need to be converted from JUnit to RoboElectric for this.
+     * See https://crbug.com/1218621 to do this cleanup.
+     */
+    interface WarningLog {
+        /**
+         * Notifies the caller that something went wrong.
+         * @param warning The warning message to send to the client.
+         */
+        void notify(String warning);
+    }
 
     /**
      * Constructs an instance from a JSON string.
      * @param jsonString The JSON string for all the suggestions typically returned by the server.
+     * @param warningLog A {@link WarningLog} to report errors to, or {@code null} to ignore them.
      */
-    RelatedSearchesList(String jsonString) {
+    RelatedSearchesList(String jsonString, @Nullable WarningLog warningLog) {
+        mWarningLog = warningLog;
         JSONObject suggestions;
         try {
             suggestions = new JSONObject(jsonString);
         } catch (JSONException e) {
-            // TODO(donnd): log an error
+            if (mWarningLog != null) {
+                mWarningLog.notify("RelatedSearchesList cannot parse JSON: " + jsonString + "\n"
+                        + e.getMessage());
+            }
             suggestions = new JSONObject();
         }
         mJsonSuggestions = suggestions;
@@ -44,14 +74,55 @@ class RelatedSearchesList {
      */
     List<String> getQueries() {
         List<String> results = new ArrayList<String>();
-        try {
-            JSONArray suggestions = mJsonSuggestions.getJSONArray(CONTENT_SUGGESTIONS);
-            for (int i = 0; i < suggestions.length(); i++) {
+        JSONArray suggestions = getDefaultSuggestions();
+        if (suggestions == null) return results;
+        for (int i = 0; i < suggestions.length(); i++) {
+            try {
                 results.add(suggestions.getJSONObject(i).getString(TITLE));
+            } catch (JSONException e) {
+                if (mWarningLog != null) {
+                    mWarningLog.notify(
+                            "RelatedSearchesList cannot find a query with a title at suggestion "
+                            + "index: " + i + "\n" + e.getMessage());
+                }
             }
-        } catch (JSONException e) {
-            // TODO(donnd): log an error
         }
         return results;
+    }
+
+    /**
+     * Returns the URI for the search request for the given suggestion.
+     * @param suggestionIndex Which suggestion to get, zero-based from the list sent by the server.
+     * @return A URI that can be used to load the SERP in the Panel, or {@code null} in case of an
+     *         error.
+     */
+    @Nullable
+    Uri getSearchUri(int suggestionIndex) {
+        JSONArray suggestions = getDefaultSuggestions();
+        if (suggestions == null) return null;
+        try {
+            String searchUrl = suggestions.getJSONObject(suggestionIndex).getString(SEARCH_URL);
+            Uri searchUri = Uri.parse(searchUrl);
+            return RelatedSearchesStamp.updateUriForSuggestionPosition(searchUri, suggestionIndex);
+        } catch (JSONException e) {
+            if (mWarningLog != null) {
+                mWarningLog.notify("RelatedSearchesList cannot find a searchUrl in suggestion "
+                        + suggestionIndex + "\n" + e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    /** Returns the suggestions array to show in the UI by default, or {@code null} if none. */
+    @Nullable
+    JSONArray getDefaultSuggestions() {
+        try {
+            return mJsonSuggestions.getJSONArray(CONTENT_SUGGESTIONS);
+        } catch (JSONException e) {
+            if (mWarningLog != null) {
+                mWarningLog.notify("No suggestions found!\n" + e.getMessage());
+            }
+            return null;
+        }
     }
 }

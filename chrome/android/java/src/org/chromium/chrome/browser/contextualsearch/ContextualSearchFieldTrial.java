@@ -280,7 +280,7 @@ public class ContextualSearchFieldTrial {
      * @return The stamp parameter from the feature. If no stamp param is present then an empty
      *         string is returned.
      */
-    static String getRelatedSearchesExperiementConfigurationStamp() {
+    static String getRelatedSearchesExperimentConfigurationStamp() {
         return getRelatedSearchesParam(RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME);
     }
 

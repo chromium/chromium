@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -67,6 +68,15 @@ class ContextualSearchRequest {
      */
     ContextualSearchRequest(String searchTerm, boolean isLowPriorityEnabled) {
         this(searchTerm, null, null, isLowPriorityEnabled, null, null);
+    }
+
+    /**
+     * Creates a search request for the given URL without any alternate term or low priority
+     * loading capability for preload.
+     * @param searchUrlFull The URI for the full search to present in the overlay.
+     */
+    ContextualSearchRequest(@NonNull Uri searchUrlFull) {
+        this(null, null, null, false, searchUrlFull.toString(), null);
     }
 
     /**

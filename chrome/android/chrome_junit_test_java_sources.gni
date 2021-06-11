@@ -64,6 +64,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSelectionControllerTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTranslationImplTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesListTest.java",
+  "junit/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesStampTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/SelectionClientManagerTest.java",
   "junit/src/org/chromium/chrome/browser/cookies/CanonicalCookieTest.java",
   "junit/src/org/chromium/chrome/browser/crash/LogcatExtractionRunnableUnitTest.java",

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
@@ -210,7 +211,6 @@ public class ContextualSearchManager
     private ContextualSearchRequest mSearchRequest;
     private ContextualSearchRequest mLastSearchRequestLoaded;
 
-    @NonNull
     private RelatedSearchesList mRelatedSearches;
 
     /** Whether any current Search shown in the SERP is from Related Searches. */
@@ -777,7 +777,8 @@ public class ContextualSearchManager
         boolean receivedCaptionOrThumbnail = !TextUtils.isEmpty(resolvedSearchTerm.caption())
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
-        mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
+        mRelatedSearches = new RelatedSearchesList(
+                resolvedSearchTerm.relatedSearchesJson(), (warning) -> Log.w(TAG, warning));
         assert mSearchPanel != null;
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
@@ -1362,8 +1363,12 @@ public class ContextualSearchManager
         assert suggestionIndex < mRelatedSearches.getQueries().size();
         // TODO(donnd): Does the index reflect the default query? See https://crbug.com/1216593.
         String searchQuery = mRelatedSearches.getQueries().get(suggestionIndex);
-        // TODO(donnd): use the returned URL instead of building one here.
-        mSearchRequest = new ContextualSearchRequest(searchQuery);
+        Uri searchUri = mRelatedSearches.getSearchUri(suggestionIndex);
+        if (searchUri != null) {
+            mSearchRequest = new ContextualSearchRequest(searchUri);
+        } else {
+            mSearchRequest = new ContextualSearchRequest(searchQuery);
+        }
         mSearchPanel.setSearchTerm(searchQuery);
         mIsRelatedSearchesSerp = true;
         // TODO(donnd): determine what to show in the Caption.
