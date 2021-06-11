@@ -30,6 +30,7 @@ mojom("mojom") {
     "metrics_reporting.mojom",
     "native_theme.mojom",
     "notification.mojom",
+    "power.mojom",
     "prefs.mojom",
     "remoting.mojom",
     "screen_manager.mojom",

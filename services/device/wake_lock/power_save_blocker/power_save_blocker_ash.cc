@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
@@ -48,6 +47,9 @@ class PowerSaveBlocker::Delegate
         description_(description),
         block_id_(0),
         ui_task_runner_(ui_task_runner) {}
+
+  Delegate(const Delegate&) = delete;
+  const Delegate& operator=(const Delegate&) = delete;
 
   void ApplyBlock() {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
@@ -93,8 +95,6 @@ class PowerSaveBlocker::Delegate
   int block_id_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::PowerSaveBlocker(

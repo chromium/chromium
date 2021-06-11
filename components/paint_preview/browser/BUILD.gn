@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/version.gni")
 import("//testing/test.gni")
 
@@ -103,6 +104,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/paint_preview/common:test_utils",
     "//content/public/browser",
     "//content/test:test_support",
@@ -111,6 +113,10 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
+  }
 
   defines = [
     "CHROME_VERSION_MAJOR=" + chrome_version_major,
