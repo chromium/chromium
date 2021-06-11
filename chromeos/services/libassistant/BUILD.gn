@@ -110,7 +110,7 @@ source_set("internal") {
   deps = [
     ":audio",
     ":constants",
-    "//build/util:webkit_version",
+    "//build/util:chromium_git_revision",
     "//chromeos/assistant:buildflags",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:buildflags",

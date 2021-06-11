@@ -12,7 +12,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/util/webkit_version.h"
+#include "build/util/chromium_git_revision.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -62,14 +62,11 @@ std::string GetUnifiedPlatform() {
 }
 
 std::string GetWebKitVersion() {
-  return base::StringPrintf("%d.%d (%s)",
-                            WEBKIT_VERSION_MAJOR,
-                            WEBKIT_VERSION_MINOR,
-                            WEBKIT_SVN_REVISION);
+  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
 }
 
 std::string GetWebKitRevision() {
-  return WEBKIT_SVN_REVISION;
+  return CHROMIUM_GIT_REVISION;
 }
 
 std::string BuildCpuInfo() {
@@ -328,15 +325,10 @@ std::string BuildUserAgentFromOSAndProduct(const std::string& os_info,
   // This is done to expose our product name in a manner that is maximally
   // compatible with Safari, we hope!!
   std::string user_agent;
-  base::StringAppendF(
-      &user_agent,
-      "Mozilla/5.0 (%s) AppleWebKit/%d.%d (KHTML, like Gecko) %s Safari/%d.%d",
-      os_info.c_str(),
-      WEBKIT_VERSION_MAJOR,
-      WEBKIT_VERSION_MINOR,
-      product.c_str(),
-      WEBKIT_VERSION_MAJOR,
-      WEBKIT_VERSION_MINOR);
+  base::StringAppendF(&user_agent,
+                      "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "%s Safari/537.36",
+                      os_info.c_str(), product.c_str());
   return user_agent;
 }
 

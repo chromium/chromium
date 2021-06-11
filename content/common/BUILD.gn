@@ -183,7 +183,7 @@ source_set("common") {
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//build/util:webkit_version",
+    "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
     "//components/power_scheduler",
     "//components/services/filesystem/public/mojom",

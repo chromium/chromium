@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
-#include "build/util/webkit_version.h"
+#include "build/util/chromium_git_revision.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
@@ -42,11 +42,10 @@ void CreateUserAgent(std::string* user_agent) {
   DCHECK(user_agent->empty());
   base::StringAppendF(user_agent,
                       "Mozilla/5.0 (X11; CrOS %s %s; %s) "
-                      "AppleWebKit/%d.%d (KHTML, like Gecko)",
+                      "AppleWebKit/537.36 (KHTML, like Gecko)",
                       base::SysInfo::OperatingSystemArchitecture().c_str(),
                       base::SysInfo::OperatingSystemVersion().c_str(),
-                      base::SysInfo::GetLsbReleaseBoard().c_str(),
-                      WEBKIT_VERSION_MAJOR, WEBKIT_VERSION_MINOR);
+                      base::SysInfo::GetLsbReleaseBoard().c_str());
 
   std::string arc_version = chromeos::version_loader::GetARCVersion();
   if (!arc_version.empty())

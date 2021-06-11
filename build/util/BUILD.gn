@@ -4,27 +4,19 @@
 
 import("//build/util/lastchange.gni")
 
-action("webkit_version") {
-  script = "version.py"
+action("chromium_git_revision") {
+  script = "lastchange.py"
 
-  template_file = "webkit_version.h.in"
-  inputs = [
-    lastchange_file,
-    template_file,
-  ]
-
-  output_file = "$target_gen_dir/webkit_version.h"
+  output_file = "$target_gen_dir/chromium_git_revision.h"
   outputs = [ output_file ]
 
   args = [
-    # LASTCHANGE contains "<build hash>-<ref>".  The user agent only wants the
-    # "<build hash>" bit, so chop off everything after it.
-    "-e",
-    "LASTCHANGE=LASTCHANGE[:LASTCHANGE.find('-')]",
-    "-f",
-    rebase_path(lastchange_file, root_build_dir),
-    rebase_path(template_file, root_build_dir),
+    "--header",
     rebase_path(output_file, root_build_dir),
+    "--revision-id-only",
+    "--revision-id-prefix",
+    "@",
+    "-m CHROMIUM_GIT_REVISION",
   ]
 }
 
