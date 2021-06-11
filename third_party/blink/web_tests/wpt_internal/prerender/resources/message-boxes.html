@@ -16,7 +16,7 @@ function runConfirmTest() {
 function runPromptTest() {
   const result = window.prompt('Are you preprendering page?',
     'the default value');
-  return 'the return value is ' + (result === '' ? 'the empty string' : result);
+  return 'the return value is ' + (result === null ? 'null' : result);
 }
 
 const params = new URLSearchParams(location.search);

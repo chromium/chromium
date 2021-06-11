@@ -2,7 +2,6 @@
 <!--
 This file cannot be upstreamed to WPT until:
 * startPrerendering() usage is replaced with a WebDriver API
-* window.confirm() silently returns the default values `false`.
 -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -37,18 +36,15 @@ runTest(
     'alert() does not display the modal and returns immediately');
 
 // Test that a page invokes the comfirm modal during prerendering.
-// TODO(crbug.com/1214768) : window.confirm() should silently return
-// the default values `false`.
-// https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md
 runTest(
     'resources/message-boxes.html?confirm',
-    'the return value is yes',
+    'the return value is no',
     'comfirm() does not display the modal and returns immediately');
 
 // Test that a page invokes the prompt modal during prerendering.
 runTest(
     'resources/message-boxes.html?prompt',
-    'the return value is the empty string',
+    'the return value is null',
     'prompt() does not display the modal and returns immediately');
 </script>
 </body>

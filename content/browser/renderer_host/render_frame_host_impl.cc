@@ -4274,7 +4274,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // This happens when the RenderFrameHost is pending deletion or in the
   // back-forward cache.
   if (lifecycle_state() != LifecycleStateImpl::kActive) {
-    std::move(ipc_response_callback).Run(true, std::u16string());
+    std::move(ipc_response_callback).Run(false, std::u16string());
     return;
   }
 
