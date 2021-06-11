@@ -9,9 +9,6 @@
 
 namespace safe_browsing {
 
-constexpr char kAPIScope[] =
-    "https://www.googleapis.com/auth/chrome-safe-browsing";
-
 // This interface is used to fetch access tokens for communcations with Safe
 // Browsing. It asynchronously returns an access token for the current account
 // (as determined in concrete implementations), or the empty string if no access

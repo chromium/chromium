@@ -5,6 +5,7 @@
 #include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
 
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 
@@ -38,7 +39,8 @@ class TestAccessTokenFetchDelegate
 
     // All access token requests made by SafeBrowsingTokenFetcherImpl should be
     // for the safe browsing scope.
-    std::set<std::string> expected_scopes = {safe_browsing::kAPIScope};
+    std::set<std::string> expected_scopes = {
+        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     EXPECT_EQ(expected_scopes, scopes);
 
     outstanding_callbacks_[most_recent_request_id_] = std::move(callback);
@@ -48,7 +50,8 @@ class TestAccessTokenFetchDelegate
                                         const std::string& token) override {
     // All invalid token notifications originating from
     // SafeBrowsingTokenFetcherImpl should be for the safe browsing scope.
-    std::set<std::string> expected_scopes = {safe_browsing::kAPIScope};
+    std::set<std::string> expected_scopes = {
+        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     EXPECT_EQ(expected_scopes, scopes);
 
     invalid_token_ = token;

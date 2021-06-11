@@ -301,6 +301,7 @@ test("weblayer_unittests") {
     ":run_all_unittests",
     "//components/favicon/core:database",
     "//components/site_isolation",
+    "//google_apis",
   ]
   sources = [
     "../browser/favicon/favicon_backend_wrapper_unittest.cc",
