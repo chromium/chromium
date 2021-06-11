@@ -8950,6 +8950,23 @@
             ]
         }
     ],
+    "WebRTC-Audio-OpusAvoidNoisePumpingDuringDtx": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Bwe-ReceiverLimitCapsOnly": [
         {
             "platforms": [
