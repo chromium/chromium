@@ -4,6 +4,8 @@
 
 import os
 
+USE_PYTHON = True
+
 ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
