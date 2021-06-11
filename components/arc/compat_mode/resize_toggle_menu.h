@@ -60,7 +60,7 @@ class ResizeToggleMenu : public views::WidgetObserver {
   enum class CommandId {
     kResizePhone,
     kResizeTablet,
-    kResizeDesktop,
+    kResizable,
     kOpenSettings,
   };
 
@@ -100,7 +100,7 @@ class ResizeToggleMenu : public views::WidgetObserver {
   views::Widget* bubble_widget_{nullptr};
   MenuButtonView* phone_button_{nullptr};
   MenuButtonView* tablet_button_{nullptr};
-  MenuButtonView* desktop_button_{nullptr};
+  MenuButtonView* resizable_button_{nullptr};
 };
 
 }  // namespace arc

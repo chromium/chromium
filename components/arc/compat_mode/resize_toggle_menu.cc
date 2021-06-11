@@ -4,13 +4,16 @@
 
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/resize_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -31,14 +34,17 @@ namespace arc {
 namespace {
 
 absl::optional<ResizeToggleMenu::CommandId> PredictCurrentMode(
-    views::Widget* widget) {
+    views::Widget* widget,
+    ArcResizeLockPrefDelegate* pref_delegate) {
   const int width = widget->GetWindowBoundsInScreen().width();
   const int height = widget->GetWindowBoundsInScreen().height();
+  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
   // We don't use the exact size here to predict tablet or phone size because
   // the window size might be bigger than it due to the ARC app-side minimum
   // size constraints.
-  if (widget->IsMaximized())
-    return ResizeToggleMenu::CommandId::kResizeDesktop;
+  if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
+                    mojom::ArcResizeLockState::ON)
+    return ResizeToggleMenu::CommandId::kResizable;
   else if (width < height)
     return ResizeToggleMenu::CommandId::kResizePhone;
   else if (width > height)
@@ -237,9 +243,10 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   tablet_button_ =
       add_menu_button(CommandId::kResizeTablet, ash::kSystemMenuTabletIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
-  desktop_button_ =
-      add_menu_button(CommandId::kResizeDesktop, ash::kSystemMenuComputerIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP);
+  // TODO(b/185720091): Replace resizable icon.
+  resizable_button_ =
+      add_menu_button(CommandId::kResizable, ash::kSystemMenuComputerIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
 
@@ -248,25 +255,28 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
 void ResizeToggleMenu::UpdateSelectedButton() {
   DCHECK(widget_);
-  const auto selected_mode = PredictCurrentMode(widget_);
+  const auto selected_mode = PredictCurrentMode(widget_, pref_delegate_);
   phone_button_->SetSelected(selected_mode &&
                              *selected_mode == CommandId::kResizePhone);
   tablet_button_->SetSelected(selected_mode &&
                               *selected_mode == CommandId::kResizeTablet);
-  desktop_button_->SetSelected(selected_mode &&
-                               *selected_mode == CommandId::kResizeDesktop);
+  resizable_button_->SetSelected(selected_mode &&
+                                 *selected_mode == CommandId::kResizable);
 }
 
 void ResizeToggleMenu::ExecuteCommand(CommandId command_id) {
   switch (command_id) {
     case CommandId::kResizePhone:
-      ResizeToPhoneWithConfirmationIfNeeded(widget_, pref_delegate_);
+      ResizeLockToPhoneWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
     case CommandId::kResizeTablet:
-      ResizeToTabletWithConfirmationIfNeeded(widget_, pref_delegate_);
+      ResizeLockToTabletWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
-    case CommandId::kResizeDesktop:
-      ResizeToDesktopWithConfirmationIfNeeded(widget_, pref_delegate_);
+    case CommandId::kResizable:
+      EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);
+      // Enable resizing does not trigger bounds change, so force to update
+      // selected button status.
+      UpdateSelectedButton();
       break;
     case CommandId::kOpenSettings:
       // TODO(b/181614585): Implement this.

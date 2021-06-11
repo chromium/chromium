@@ -13,15 +13,15 @@ namespace arc {
 
 class ArcResizeLockPrefDelegate;
 
-void ResizeToPhoneWithConfirmationIfNeeded(
+void ResizeLockToPhoneWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 
-void ResizeToTabletWithConfirmationIfNeeded(
+void ResizeLockToTabletWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 
-void ResizeToDesktopWithConfirmationIfNeeded(
+void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 

@@ -19,8 +19,8 @@
   <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size.">
     Tablet
   </message>
-  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP" desc="Item in a list of possible sizes for the app. Makes the app expand to the whole screen.">
-    Maximized
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
+    Resizable
   </message>
   <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for the button to allow the user to go to resize settings.">
     Settings

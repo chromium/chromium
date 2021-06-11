@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ui/aura/window.h"
@@ -34,18 +35,24 @@ void ResizeToTablet(views::Widget* widget) {
   widget->CenterWindow(kLandscapeTabletDp);
 }
 
-void ResizeToDesktop(views::Widget* widget) {
-  widget->Maximize();
+void SetResizeLockState(views::Widget* widget,
+                        ArcResizeLockPrefDelegate* pref_delegate,
+                        mojom::ArcResizeLockState state) {
+  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
+  if (app_id && pref_delegate->GetResizeLockState(*app_id) != state)
+    pref_delegate->SetResizeLockState(*app_id, state);
 }
 
 void ProceedResizeWithConfirmationIfNeeded(
     views::Widget* target_widget,
     ArcResizeLockPrefDelegate* pref_delegate,
-    ResizeCallback resize_callback) {
+    ResizeCallback resize_callback,
+    mojom::ArcResizeLockState state) {
   const auto* app_id =
       target_widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
   if (app_id && !pref_delegate->GetResizeLockNeedsConfirmation(*app_id)) {
     // The user has already agreed not to show the dialog again.
+    SetResizeLockState(target_widget, pref_delegate, state);
     std::move(resize_callback).Run(target_widget);
     return;
   }
@@ -56,41 +63,45 @@ void ProceedResizeWithConfirmationIfNeeded(
       /*parent=*/target_widget->GetNativeWindow(),
       base::BindOnce(
           [](views::Widget* widget, ArcResizeLockPrefDelegate* delegate,
-             ResizeCallback callback, bool accepted, bool do_not_ask_again) {
+             ResizeCallback callback, mojom::ArcResizeLockState state,
+             bool accepted, bool do_not_ask_again) {
             if (accepted) {
               const auto* app_id =
                   widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
               if (do_not_ask_again && app_id)
                 delegate->SetResizeLockNeedsConfirmation(*app_id, false);
 
+              SetResizeLockState(widget, delegate, state);
               std::move(callback).Run(widget);
             }
           },
           base::Unretained(target_widget), base::Unretained(pref_delegate),
-          std::move(resize_callback)));
+          std::move(resize_callback), state));
 }
 
 }  // namespace
 
-void ResizeToPhoneWithConfirmationIfNeeded(
+void ResizeLockToPhoneWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
   ProceedResizeWithConfirmationIfNeeded(widget, pref_delegate,
-                                        base::BindOnce(&ResizeToPhone));
+                                        base::BindOnce(&ResizeToPhone),
+                                        mojom::ArcResizeLockState::ON);
 }
 
-void ResizeToTabletWithConfirmationIfNeeded(
+void ResizeLockToTabletWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
   ProceedResizeWithConfirmationIfNeeded(widget, pref_delegate,
-                                        base::BindOnce(&ResizeToTablet));
+                                        base::BindOnce(&ResizeToTablet),
+                                        mojom::ArcResizeLockState::ON);
 }
 
-void ResizeToDesktopWithConfirmationIfNeeded(
+void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
-  ProceedResizeWithConfirmationIfNeeded(widget, pref_delegate,
-                                        base::BindOnce(&ResizeToDesktop));
+  ProceedResizeWithConfirmationIfNeeded(
+      widget, pref_delegate, base::DoNothing(), mojom::ArcResizeLockState::OFF);
 }
 
 }  // namespace arc

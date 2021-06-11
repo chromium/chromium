@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/exo/test/exo_test_base_views.h"
@@ -30,10 +31,16 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
   // ArcResizeLockPrefDelegate:
   mojom::ArcResizeLockState GetResizeLockState(
       const std::string& app_id) const override {
-    return mojom::ArcResizeLockState::UNDEFINED;
+    auto it = resize_lock_states.find(app_id);
+    if (it == resize_lock_states.end())
+      return mojom::ArcResizeLockState::UNDEFINED;
+
+    return it->second;
   }
   void SetResizeLockState(const std::string& app_id,
-                          mojom::ArcResizeLockState state) override {}
+                          mojom::ArcResizeLockState state) override {
+    resize_lock_states[app_id] = state;
+  }
   bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
     return base::Contains(confirmation_needed_app_ids_, app_id);
   }
@@ -50,6 +57,7 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
 
  private:
   std::vector<std::string> confirmation_needed_app_ids_;
+  base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
 };
 
 }  // namespace
@@ -74,19 +82,19 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
 
 // Test that resize phone works properly in both needs-confirmation and no
 // needs-conirmation case.
-TEST_F(ResizeUtilTest, TestResizeToPhone) {
+TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
   widget()->Maximize();
 
   // Test the widget is NOT resized immediately if the confirmation dialog is
   // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_TRUE(widget()->IsMaximized());
 
   // Test the widget is resized without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
-  ResizeToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
@@ -94,40 +102,39 @@ TEST_F(ResizeUtilTest, TestResizeToPhone) {
 
 // Test that resize tablet works properly in both needs-confirmation and no
 // needs-conirmation case.
-TEST_F(ResizeUtilTest, TestResizeToTablet) {
+TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
   widget()->Maximize();
 
   // Test the widget is NOT resized immediately if the confirmation dialog is
   // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_TRUE(widget()->IsMaximized());
 
   // Test the widget is resized without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
-  ResizeToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 }
 
-// Test that resize desktop works properly in both needs-confirmation and no
+// Test that enabling resizing works properly in both needs-confirmation and no
 // needs-conirmation case.
-TEST_F(ResizeUtilTest, TestResizeToDesktop) {
-  widget()->Restore();
-
-  // Test the widget is NOT resized immediately if the confirmation dialog is
+TEST_F(ResizeUtilTest, TestEnableResizing) {
+  // Test the state is NOT changed immediately if the confirmation dialog is
   // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToDesktopWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_FALSE(widget()->IsMaximized());
+  EnableResizingWithConfirmationIfNeeded(widget(), pref_delegate());
+  EXPECT_NE(pref_delegate()->GetResizeLockState(kTestAppId),
+            mojom::ArcResizeLockState::OFF);
 
-  // Test the widget is resized without confirmation.
+  // Test the state is changed without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
-  EXPECT_FALSE(widget()->IsMaximized());
-  ResizeToDesktopWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_TRUE(widget()->IsMaximized());
+  EnableResizingWithConfirmationIfNeeded(widget(), pref_delegate());
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(kTestAppId),
+            mojom::ArcResizeLockState::OFF);
 }
 
 }  // namespace arc
