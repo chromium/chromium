@@ -313,11 +313,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayStartupError")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    OpenVideoFiles, /* open_video_files.js */
+    OpenVideoMediaApp, /* open_video_media_app.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("videoOpenDownloads").InGuestMode(),
-                      TestCase("videoOpenDownloads"),
-                      TestCase("videoOpenDrive")));
+    ::testing::Values(TestCase("videoOpenDownloads").MediaSwa().InGuestMode(),
+                      TestCase("videoOpenDownloads").MediaSwa(),
+                      TestCase("videoOpenDrive").MediaSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenAudioFiles, /* open_audio_files.js */
@@ -542,7 +542,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewTabIndexText"),
         TestCase("openQuickViewTabIndexHtml"),
         TestCase("openQuickViewTabIndexAudio"),
-        TestCase("openQuickViewTabIndexVideo"),
+        TestCase("openQuickViewTabIndexVideo").MediaSwa(),
         TestCase("openQuickViewTabIndexDeleteDialog"),
         TestCase("openQuickViewTabIndexDeleteDialog").EnableTrash(),
         TestCase("openQuickViewToggleInfoButtonKeyboard"),

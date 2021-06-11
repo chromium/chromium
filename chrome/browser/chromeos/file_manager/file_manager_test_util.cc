@@ -115,6 +115,12 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   service->component_loader()->AddDefaultComponentExtensions(false);
+  // AddDefaultComponentExtensions() is normally invoked during
+  // ExtensionService::Init() which also invokes UninstallMigratedExtensions().
+  // Invoke it here as well, otherwise migrated extensions will remain installed
+  // for the duration of the test. Note this may result in immediately
+  // uninstalling an extension just installed above.
+  service->UninstallMigratedExtensionsForTest();
 
   // The File Manager component extension should have been added for loading
   // into the user profile, but not into the sign-in profile.

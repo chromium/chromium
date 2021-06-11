@@ -673,7 +673,7 @@ async function isSinglePartitionFormat(appId) {
  * Waits until the MediaApp/Backlight shows up.
  */
 async function waitForMediaApp() {
-  // The MediaApp window should open for the image.
+  // The MediaApp window should open for the file.
   const caller = getCaller();
   const mediaAppAppId = 'jhdjimmaggjajfjphpljagpgkidjilnj';
   await repeatUntil(async () => {

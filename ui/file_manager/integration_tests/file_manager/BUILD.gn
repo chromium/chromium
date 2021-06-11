@@ -33,7 +33,8 @@ js_type_check("closure_compile") {
     ":my_files",
     ":open_audio_files",
     ":open_image_media_app",
-    ":open_video_files",
+    ":open_media_app",
+    ":open_video_media_app",
     ":providers",
     ":quick_view",
     ":recents",
@@ -176,9 +177,14 @@ js_library("open_audio_files") {
   deps = []
 }
 
-js_library("open_image_media_app") {
+js_library("open_media_app") {
   testonly = true
   deps = []
+}
+
+js_library("open_image_media_app") {
+  testonly = true
+  deps = [ ":open_media_app" ]
 }
 
 js_library("open_sniffed_files") {
@@ -186,9 +192,9 @@ js_library("open_sniffed_files") {
   deps = []
 }
 
-js_library("open_video_files") {
+js_library("open_video_media_app") {
   testonly = true
-  deps = []
+  deps = [ ":open_media_app" ]
 }
 
 js_library("providers") {

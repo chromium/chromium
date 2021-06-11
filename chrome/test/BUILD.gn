@@ -3247,7 +3247,6 @@ if (!is_android) {
         "../browser/chromeos/file_manager/file_manager_jstest_base.h",
         "../browser/chromeos/file_manager/file_tasks_browsertest.cc",
         "../browser/chromeos/file_manager/image_loader_jstest.cc",
-        "../browser/chromeos/file_manager/video_player_browsertest.cc",
         "../browser/chromeos/file_manager/video_player_jstest.cc",
         "../browser/chromeos/first_run/drive_first_run_browsertest.cc",
         "../browser/chromeos/full_restore/app_launch_handler_browsertest.cc",

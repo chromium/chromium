@@ -149,7 +149,11 @@ const char* const kMigratedExtensionIds[] = {
 // Note: We preserve at least one entry here for continued testing coverage.
 const char* const kObsoleteComponentExtensionIds[] = {
     // Obsolete since M91.
-    "nlkncpkkdoccmpiclbokaimcnedabhhm"  // Gallery
+    "nlkncpkkdoccmpiclbokaimcnedabhhm",  // Gallery
+    // The Video Player chrome app became obsolete in m93. This entry can be
+    // removed after references to kVideoPlayerAppId in component_loader.cc
+    // are removed (and it's no longer used for regression tests).
+    "jcgeabjmjgoblfofpppfkcoakmfobdko"  // Video Player
 };
 
 }  // namespace

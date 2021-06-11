@@ -377,8 +377,14 @@ void ComponentLoader::AddFileManagerExtension() {
 }
 
 void ComponentLoader::AddVideoPlayerExtension() {
-  Add(IDR_VIDEO_PLAYER_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("video_player")));
+  // TODO(b/186168810): Delete this entirely around M96 when it has has a
+  // chance to be cleaned up.
+  if (extensions::ExtensionPrefs::Get(profile_)
+          ->ShouldInstallObsoleteComponentExtension(
+              file_manager::kVideoPlayerAppId)) {
+    Add(IDR_VIDEO_PLAYER_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("video_player")));
+  }
 }
 
 void ComponentLoader::AddAudioPlayerExtension() {

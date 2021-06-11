@@ -141,22 +141,9 @@ class FileTasksBrowserTestBase
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
  public:
   FileTasksBrowserTest() {
-    // Enable Media App Video, but no PDF support.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kVideoPlayerAppHidden},
-        {ash::features::kMediaAppHandlesPdf});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class FileTasksBrowserTestNoVideo : public FileTasksBrowserTestBase {
- public:
-  FileTasksBrowserTestNoVideo() {
-    // Disable Media App video support.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {chromeos::features::kVideoPlayerAppHidden});
+    // Enable Media App without PDF support.
+    scoped_feature_list_.InitWithFeatures({},
+                                          {ash::features::kMediaAppHandlesPdf});
   }
 
  private:
@@ -186,22 +173,6 @@ class FileTasksBrowserTestWithPdf : public FileTasksBrowserTestBase {
 // from sample files.
 // The "deprecated" lists are those that use the old ChromeApps as handlers and
 // can be removed when those are gone.
-
-constexpr Expectation kVideoDeprecatedExpectations[] = {
-    {"3gp", kVideoPlayerAppId, "application/octet-stream"},
-    {"avi", kVideoPlayerAppId, "application/octet-stream"},
-    {"m4v", kVideoPlayerAppId},
-    {"mkv", kVideoPlayerAppId, "video/webm"},
-    {"mov", kVideoPlayerAppId, "application/octet-stream"},
-    {"mp4", kVideoPlayerAppId},
-    {"mpeg", kVideoPlayerAppId},
-    {"mpeg4", kVideoPlayerAppId, "video/mpeg"},
-    {"mpg", kVideoPlayerAppId},
-    {"mpg4", kVideoPlayerAppId, "video/mpeg"},
-    {"ogm", kVideoPlayerAppId},
-    {"ogv", kVideoPlayerAppId},
-    {"ogx", kVideoPlayerAppId, "video/ogg"},
-    {"webm", kVideoPlayerAppId}};
 
 constexpr Expectation kAudioDeprecatedExpectations[] = {
     {"amr", kAudioPlayerAppId, "application/octet-stream"},
@@ -343,19 +314,10 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
-// Tests the default handlers that are different with Video support enabled.
+// Test to ensure the media app handle known video file extensions.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations(std::begin(kVideoExpectations),
                                         std::end(kVideoExpectations));
-  TestExpectationsAgainstDefaultTasks(expectations);
-}
-
-// Tests the default handlers that are different with Video support disabled.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestNoVideo,
-                       VideoHandlerChangeDetector) {
-  std::vector<Expectation> expectations(
-      std::begin(kVideoDeprecatedExpectations),
-      std::end(kVideoDeprecatedExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
@@ -453,13 +415,6 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FileTasksBrowserTest,
-                         ::testing::Values(TestProfileType::kRegular,
-                                           TestProfileType::kIncognito,
-                                           TestProfileType::kGuest),
-                         TestProfileTypeToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         FileTasksBrowserTestNoVideo,
                          ::testing::Values(TestProfileType::kRegular,
                                            TestProfileType::kIncognito,
                                            TestProfileType::kGuest),

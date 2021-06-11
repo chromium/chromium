@@ -204,7 +204,7 @@ const char updates_from_webstore3[] = "bmfoocgfinpmkmlbjhcbofejhkhlbchk";
 const char permissions_blocklist[] = "noffkehfcaggllbcojjbopcmlhcnhcdn";
 const char cast_stable[] = "boadgeojelhgndaghljhdicfkmllpafd";
 const char cast_beta[] = "dliochdbjfkdbacpmhlcpmleaejidimm";
-const char gallery_app[] = "nlkncpkkdoccmpiclbokaimcnedabhhm";
+const char video_player_app[] = "jcgeabjmjgoblfofpppfkcoakmfobdko";
 const char kPrefBlocklist[] = "blacklist";
 
 struct BubbleErrorsTestData {
@@ -7684,19 +7684,20 @@ TEST_F(ExtensionServiceTest, UninstallDisabledMigratedExtension) {
 TEST_F(ExtensionServiceTest, UninstallMigratedComponentExtensions) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  ASSERT_TRUE(prefs->ShouldInstallObsoleteComponentExtension(gallery_app));
+  ASSERT_TRUE(prefs->ShouldInstallObsoleteComponentExtension(video_player_app));
 
-  scoped_refptr<const Extension> gallery_extension =
-      ExtensionBuilder("gallery")
-          .SetID(gallery_app)
+  scoped_refptr<const Extension> video_player_extension =
+      ExtensionBuilder("video player")
+          .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(gallery_extension.get());
-  ASSERT_TRUE(registry()->enabled_extensions().Contains(gallery_app));
+  service()->AddComponentExtension(video_player_extension.get());
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(video_player_app));
 
   service()->UninstallMigratedExtensionsForTest();
-  EXPECT_FALSE(registry()->GetInstalledExtension(gallery_app));
-  EXPECT_FALSE(prefs->ShouldInstallObsoleteComponentExtension(gallery_app));
+  EXPECT_FALSE(registry()->GetInstalledExtension(video_player_app));
+  EXPECT_FALSE(
+      prefs->ShouldInstallObsoleteComponentExtension(video_player_app));
 }
 
 // Tests that component extensions that are not marked as obsolete will not be
@@ -7729,19 +7730,19 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsMultipleCalls) {
           .SetID(cast_stable)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  scoped_refptr<const Extension> gallery_extension =
-      ExtensionBuilder("gallery")
-          .SetID(gallery_app)
+  scoped_refptr<const Extension> video_player_extension =
+      ExtensionBuilder("video player")
+          .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddExtension(cast_extension.get());
-  service()->AddComponentExtension(gallery_extension.get());
+  service()->AddComponentExtension(video_player_extension.get());
 
   service()->UninstallMigratedExtensionsForTest();
   service()->UninstallMigratedExtensionsForTest();
   service()->UninstallMigratedExtensionsForTest();
   EXPECT_FALSE(registry()->GetInstalledExtension(cast_stable));
-  EXPECT_FALSE(registry()->GetInstalledExtension(gallery_app));
+  EXPECT_FALSE(registry()->GetInstalledExtension(video_player_app));
 }
 
 // Tests the case of a user installing a non-policy extension (e.g. through the

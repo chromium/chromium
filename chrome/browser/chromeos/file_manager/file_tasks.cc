@@ -187,18 +187,9 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   if (media_app_task == tasks->end())
     return;
 
-  // If the video player is still available, check if it was offered and early
-  // exit. Unfortunately because obscure videos must be handled with extension
-  // matches, both the MediaApp and Video have equal priority for those. That
-  // causes them to be ordered by extension ID. Video is "jhd.." and Media is
-  // "jcg..". So to ensure the Video app takes precedence, we pretend the media
-  // app is actually a wildcard match. Note the video player will only be
-  // offered if _all_ the files in the selection are videos, and it is not
-  // already hidden by flags.
-  if (task_for_app(kVideoPlayerAppId) != tasks->end()) {
-    media_app_task->set_is_generic_file_handler(true);
-    return;
-  }
+  // Video Player app was replaced by media app in m91, deprecated in m93 and
+  // will be deleted m94.
+  DCHECK(task_for_app(kVideoPlayerAppId) == tasks->end());
 
   // TOOD(crbug/1071289): For a while is_file_extension_match() would always be
   // false for System Web App manifests, even when specifying extension matches.
@@ -242,7 +233,6 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   // an app other than kMediaAppId to be the default (b/153387960).
   constexpr const char* kBuiltInApps[] = {
       kFileManagerAppId,
-      kVideoPlayerAppId,
       kTextEditorAppId,
       kAudioPlayerAppId,
       extension_misc::kQuickOfficeComponentExtensionId,
@@ -677,16 +667,9 @@ void FindFileHandlerTasks(Profile* profile,
         !extensions::util::IsIncognitoEnabled(extension->id(), profile))
       continue;
 
-    if (base::FeatureList::IsEnabled(ash::features::kVideoPlayerAppHidden) &&
-        extension->id() == kVideoPlayerAppId) {
-      // "Hide" the video player component extension (i.e. skip the rest of this
-      // loop which would add it as a handler). Note this is not achieved by
-      // preventing the extension install in component_loader.cc. The component
-      // extension must first be properly "uninstalled" in a milestone after all
-      // entrypoints are removed.
-      // TODO(crbug/1158531): Remove this when the video player is uninstalled.
-      continue;
-    }
+    // Video player should no longer install itself or its file handlers
+    // starting in m93.
+    DCHECK_NE(kVideoPlayerAppId, extension->id());
 
     typedef std::vector<extensions::FileHandlerMatch> FileHandlerMatchList;
     FileHandlerMatchList file_handlers =

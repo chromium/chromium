@@ -339,11 +339,6 @@ const base::Feature kExoLockNotification{"ExoLockNotification",
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether to "hide" the legacy video player chrome app. Videos will instead be
-// handled by the media app. See https://crbug.com/1158531.
-const base::Feature kVideoPlayerAppHidden{"VideoPlayerAppHidden",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{
     "FilesSinglePartitionFormat", base::FEATURE_DISABLED_BY_DEFAULT};

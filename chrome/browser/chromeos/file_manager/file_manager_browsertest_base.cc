@@ -1694,10 +1694,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   // Make sure to run the ARC storage UI toast tests.
   enabled_features.push_back(arc::kUsbStorageUIFeature);
 
-  // FileManager tests exist for the deprecated video player app, which will be
-  // removed, along with the kVideoPlayerAppHidden flag by m93.
-  disabled_features.push_back(ash::features::kVideoPlayerAppHidden);
-
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);
   } else {
