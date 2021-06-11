@@ -74,6 +74,11 @@ bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   return web_app && !web_app->is_in_sync_install();
 }
 
+bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->is_uninstalling();
+}
+
 bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->is_locally_installed() : false;

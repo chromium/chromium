@@ -299,9 +299,9 @@ class WebApp {
   bool is_locally_installed_ = true;
   bool is_in_sync_install_ = false;
   // Note: This field is not persisted in the database.
-  // TODO: Add this field to the protocol buffer file and other places to
-  // save it to the database, and then make sure to continue uninstallation
-  // on startup if any web apps have this field set to true.
+  // TODO(crbug.com/1162477): Add this field to the protocol buffer file and
+  // other places to save it to the database, and then make sure to continue
+  // uninstallation on startup if any web apps have this field set to true.
   bool is_uninstalling_ = false;
   std::vector<WebApplicationIconInfo> icon_infos_;
   SortedSizesPx downloaded_icon_sizes_any_;

@@ -173,6 +173,7 @@ user_launch_ordinal: INVALID[]
 sources:
 is_locally_installed: 1
 is_in_sync_install: 0
+is_uninstalling: 0
 sync_fallback_data:
   name:
   theme_color: none
@@ -232,6 +233,7 @@ user_launch_ordinal: INVALID[]
 sources: WebAppStore Sync Default
 is_locally_installed: 1
 is_in_sync_install: 0
+is_uninstalling: 0
 sync_fallback_data:
   name: SyncName1234
   theme_color: rgba(61,127,69,0.8431372549019608)

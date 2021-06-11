@@ -36,6 +36,11 @@ bool TestAppRegistrar::IsInstalled(const AppId& app_id) const {
   return base::Contains(installed_apps_, app_id);
 }
 
+bool TestAppRegistrar::IsUninstalling(const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool TestAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return false;

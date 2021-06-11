@@ -50,6 +50,13 @@ class AppRegistrar {
   // used in other registrar methods.
   virtual bool IsInstalled(const AppId& app_id) const = 0;
 
+  // Returns whether the app is currently being uninstalled. This will be true
+  // after uninstall has begun but before the OS integration hooks for uninstall
+  // have completed. It will return false after uninstallation has completed.
+  // Note that the underlying field this checks is not yet persisted to the
+  // database; see https://crbug.com/1162477
+  virtual bool IsUninstalling(const AppId& app_id) const = 0;
+
   // Returns whether the app with |app_id| is currently fully locally installed.
   // ie. app is not grey in chrome://apps UI surface and may have OS integration
   // like shortcuts. |IsLocallyInstalled| apps is a subset of |IsInstalled|

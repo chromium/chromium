@@ -413,6 +413,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
 
   out << "is_in_sync_install: " << app.is_in_sync_install_ << std::endl;
 
+  out << "is_uninstalling: " << app.is_uninstalling_ << std::endl;
+
   out << "sync_fallback_data:" << std::endl
       << Indent(app.sync_fallback_data_) << std::endl;
 
@@ -553,6 +555,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.chromeos_data_,
         app.is_locally_installed_,
         app.is_in_sync_install_,
+        app.is_uninstalling_,
         app.icon_infos_,
         app.downloaded_icon_sizes_any_,
         app.downloaded_icon_sizes_monochrome_,

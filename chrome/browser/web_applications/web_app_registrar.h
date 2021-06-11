@@ -50,6 +50,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   void Start() override;
   void Shutdown() override;
   bool IsInstalled(const AppId& app_id) const override;
+  bool IsUninstalling(const AppId& app_id) const override;
   bool IsLocallyInstalled(const AppId& app_id) const override;
   bool WasInstalledByUser(const AppId& app_id) const override;
   bool WasInstalledByOem(const AppId& app_id) const override;
