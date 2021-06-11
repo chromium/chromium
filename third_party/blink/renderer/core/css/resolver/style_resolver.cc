@@ -1915,6 +1915,8 @@ void StyleResolver::PropagateStyleToViewport() {
                    false);
     PROPAGATE_FROM(document_element_style, ScrollbarGutter, SetScrollbarGutter,
                    kScrollbarGutterAuto);
+    PROPAGATE_FROM(document_element_style, ForcedColorAdjust,
+                   SetForcedColorAdjust, EForcedColorAdjust::kAuto);
   }
 
   changed |= PropagateScrollSnapStyleToViewport(

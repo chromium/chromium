@@ -2630,6 +2630,7 @@ void Document::Initialize() {
   DCHECK_EQ(lifecycle_.GetState(), DocumentLifecycle::kInactive);
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
+  UpdateForcedColors();
   layout_view_ = new LayoutView(this);
   SetLayoutObject(layout_view_);
 
@@ -2654,8 +2655,6 @@ void Document::Initialize() {
   // ExecutionContextLifecycleObserver::contextDestroyed wouldn't be fired.
   network_state_observer_ =
       MakeGarbageCollected<NetworkStateObserver>(GetExecutionContext());
-
-  UpdateForcedColors();
 }
 
 void Document::Shutdown() {
