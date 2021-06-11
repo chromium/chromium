@@ -199,5 +199,92 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   }
 }
 
+// Tests certain extension APIs which retrieve in-process extension windows.
+// Test these for a cross origin isolated extension with non-cross origin
+// isolated contexts.
+IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
+                       WebAccessibleFrame_WindowApis) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir coi_test_dir;
+  const Extension* coi_extension =
+      LoadExtension(coi_test_dir, "require-corp", "same-origin");
+  ASSERT_TRUE(coi_extension);
+  content::RenderFrameHost* coi_background_rfh =
+      GetBackgroundRenderFrameHost(*coi_extension);
+  ASSERT_TRUE(coi_background_rfh);
+
+  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_blank.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents, "test", extension_test_url));
+  content::RenderFrameHost* extension_iframe =
+      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  content::RenderFrameHost* extension_tab =
+      ui_test_utils::NavigateToURLWithDisposition(
+          browser(), extension_test_url,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(extension_tab);
+
+  // getBackgroundPage API.
+  {
+    auto test_get_background_page = [](content::RenderFrameHost* host,
+                                       bool expect_background_page) {
+      constexpr char kScript[] = R"(
+        const expectBackgroundPage = %s;
+        const hasBackgroundPage = !!chrome.extension.getBackgroundPage();
+        window.domAutomationController.send(
+            hasBackgroundPage === expectBackgroundPage);
+      )";
+      bool result = false;
+      ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+          host,
+          base::StringPrintf(kScript,
+                             expect_background_page ? "true" : "false"),
+          &result));
+      EXPECT_TRUE(result);
+    };
+
+    test_get_background_page(coi_background_rfh, true);
+    test_get_background_page(extension_tab, true);
+
+    // The extension iframe should be non-cross origin isolated and hence in a
+    // different process than the extension background page. Since the API can
+    // only retrieve the background page if it's in the same process,
+    // getBackgroundPage should return null here.
+    test_get_background_page(extension_iframe, false);
+  }
+
+  // getViews API.
+  {
+    auto verify_get_tabs = [](content::RenderFrameHost* host,
+                              int num_tabs_expected) {
+      constexpr char kScript[] = R"(
+        const numTabsExpected = %d;
+        const tabs = chrome.extension.getViews({type: 'tab'});
+        window.domAutomationController.send(tabs.length === numTabsExpected);
+      )";
+      bool result = false;
+      ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+          host, base::StringPrintf(kScript, num_tabs_expected), &result));
+      EXPECT_TRUE(result);
+    };
+
+    verify_get_tabs(coi_background_rfh, 1);
+    verify_get_tabs(extension_tab, 1);
+
+    // The extension iframe should be non-cross origin isolated and hence in a
+    // different process than the background page. Since the API can only
+    // retrieve windows in the same process, no windows will be returned.
+    verify_get_tabs(extension_iframe, 0);
+  }
+}
+
 }  // namespace
 }  // namespace extensions
