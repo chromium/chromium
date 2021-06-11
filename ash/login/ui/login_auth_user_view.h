@@ -252,8 +252,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   gfx::Size GetPaddingBelowPasswordView() const;
 
   // Convenience methods to determine UI text based on the InputFieldMode.
-  std::u16string GetPinPasswordToggleText();
+  std::u16string GetPinPasswordToggleText() const;
   std::u16string GetPasswordViewPlaceholder() const;
+  std::u16string GetMultiprofileDisableAuthMessage() const;
 
   // Authentication methods available and extra parameters that control the UI.
   AuthMethods auth_methods_ = AUTH_NONE;
@@ -268,7 +269,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   LoginPinInputView* pin_input_view_ = nullptr;
   views::LabelButton* pin_password_toggle_ = nullptr;
   LoginPinView* pin_view_ = nullptr;
-  views::LabelButton* online_sign_in_message_ = nullptr;
+  views::LabelButton* online_sign_in_button_ = nullptr;
   DisabledAuthMessageView* disabled_auth_message_ = nullptr;
   FingerprintView* fingerprint_view_ = nullptr;
   ChallengeResponseView* challenge_response_view_ = nullptr;

@@ -68,6 +68,29 @@ constexpr const char kDebugDefaultLocaleCode[] = "en-GB";
 constexpr const char kDebugDefaultLocaleTitle[] = "English";
 constexpr const char kDebugEnterpriseDomain[] = "library.com";
 
+enum class DebugAuthEnabledState {
+  kAuthEnabled,
+
+  // The auth disabled message is displayed because of unicorn account
+  // restrictions.
+  kTimeLimitOverride,
+  kTimeUsageLimit,
+  kTimeWindowLimit,
+
+  // The auth disabled message is displayed because of multiprofile policy.
+  // Note that this would only be displayed on the secondary login screen.
+  kMultiProfilePrimaryOnly,
+  kMultiProfileNotAllowed,
+  kMultiProfileOwnerPrimaryOnly,
+
+  // The auth disabled message is displayed because the force online
+  // sign in is unavailable on the secondary login screen.
+  // Note that this would only be displayed on the secondary login screen.
+  kForceOnlineSignIn,
+
+  kMaxValue = kForceOnlineSignIn,
+};
+
 // Additional state for a user that the debug UI needs to reference.
 struct UserMetadata {
   explicit UserMetadata(const UserInfo& user_info)
@@ -84,6 +107,7 @@ struct UserMetadata {
   user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
   EasyUnlockIconState easy_unlock_icon_state = EasyUnlockIconState::NONE;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
+  DebugAuthEnabledState auth_enable_state = DebugAuthEnabledState::kAuthEnabled;
 };
 
 std::string DetachableBasePairingStatusToString(
@@ -314,7 +338,7 @@ class LockDebugView::DebugDataDispatcherTransformer
         debug_user->account_id, debug_user->enable_tap_to_unlock);
   }
 
-  // Enables fingerprint auth for the user at |user_index|.
+  // Cycles fingerprint state for the user at |user_index|.
   void CycleFingerprintStateForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
@@ -325,6 +349,7 @@ class LockDebugView::DebugDataDispatcherTransformer
     debug_dispatcher_.SetFingerprintState(debug_user->account_id,
                                           debug_user->fingerprint_state);
   }
+
   void AuthenticateFingerprintForUserIndex(size_t user_index, bool success) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
@@ -332,10 +357,10 @@ class LockDebugView::DebugDataDispatcherTransformer
                                                   success);
   }
 
-  // Force online sign-in for the user at |user_index|.
-  void ForceOnlineSignInForUserIndex(size_t user_index) {
+  // Toggles force online sign-in for the user at |user_index|.
+  void ToggleForceOnlineSignInForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    debug_dispatcher_.ForceOnlineSignInForUser(
+    lock_debug_view_->lock()->ToggleForceOnlineSignInForUserForDebug(
         debug_users_[user_index].account_id);
   }
 
@@ -346,39 +371,76 @@ class LockDebugView::DebugDataDispatcherTransformer
         debug_users_[user_index].account_id);
   }
 
-  // Updates |auth_disabled_reason_| with the next enum value in a cyclic
-  // manner.
-  void UpdateAuthDisabledReason() {
-    switch (auth_disabled_reason_) {
-      case AuthDisabledReason::kTimeLimitOverride:
-        auth_disabled_reason_ = AuthDisabledReason::kTimeUsageLimit;
+  // Cycles disabled auth message for the user at |user_index|.
+  void CycleDisabledAuthMessageForUserIndex(size_t user_index) {
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    UserMetadata* debug_user = &debug_users_[user_index];
+
+    debug_user->auth_enable_state = static_cast<DebugAuthEnabledState>(
+        (static_cast<int>(debug_user->auth_enable_state) + 1) %
+        (static_cast<int>(DebugAuthEnabledState::kMaxValue) + 1));
+
+    debug_user->enable_auth = true;
+    AuthDisabledReason reason;
+    MultiProfileUserBehavior behavior = MultiProfileUserBehavior::UNRESTRICTED;
+
+    switch (debug_user->auth_enable_state) {
+      case DebugAuthEnabledState::kAuthEnabled:
+        debug_user->enable_auth = true;
         break;
-      case AuthDisabledReason::kTimeUsageLimit:
-        auth_disabled_reason_ = AuthDisabledReason::kTimeWindowLimit;
+      case DebugAuthEnabledState::kTimeLimitOverride:
+        reason = AuthDisabledReason::kTimeLimitOverride;
         break;
-      case AuthDisabledReason::kTimeWindowLimit:
-        auth_disabled_reason_ = AuthDisabledReason::kTimeLimitOverride;
+      case DebugAuthEnabledState::kTimeUsageLimit:
+        reason = AuthDisabledReason::kTimeUsageLimit;
+        break;
+      case DebugAuthEnabledState::kTimeWindowLimit:
+        reason = AuthDisabledReason::kTimeWindowLimit;
+        break;
+      case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
+        behavior = MultiProfileUserBehavior::PRIMARY_ONLY;
+        break;
+      case DebugAuthEnabledState::kMultiProfileNotAllowed:
+        behavior = MultiProfileUserBehavior::NOT_ALLOWED;
+        break;
+      case DebugAuthEnabledState::kMultiProfileOwnerPrimaryOnly:
+        behavior = MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
+        break;
+      case DebugAuthEnabledState::kForceOnlineSignIn:
         break;
     }
-  }
 
-  // Toggle the unlock allowed state for the user at |user_index|.
-  void ToggleAuthEnabledForUserIndex(size_t user_index) {
-    DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    UserMetadata& user = debug_users_[user_index];
-    user.enable_auth = !user.enable_auth;
-    if (user.enable_auth) {
-      debug_dispatcher_.EnableAuthForUser(user.account_id);
-    } else {
-      debug_dispatcher_.DisableAuthForUser(
-          user.account_id,
-          AuthDisabledData(auth_disabled_reason_,
-                           base::Time::Now() +
-                               base::TimeDelta::FromHours(user_index) +
-                               base::TimeDelta::FromHours(8),
-                           base::TimeDelta::FromMinutes(15),
-                           true /*bool disable_lock_screen_media*/));
-      UpdateAuthDisabledReason();
+    debug_dispatcher_.EnableAuthForUser(debug_user->account_id);
+    lock_debug_view_->lock()->SetMultiprofilePolicyForUserForDebug(
+        debug_users_[user_index].account_id, behavior);
+    lock_debug_view_->lock()->UndoForceOnlineSignInForUserForDebug(
+        debug_users_[user_index].account_id);
+
+    switch (debug_user->auth_enable_state) {
+      case DebugAuthEnabledState::kAuthEnabled:
+        break;
+      case DebugAuthEnabledState::kTimeLimitOverride:
+      case DebugAuthEnabledState::kTimeUsageLimit:
+      case DebugAuthEnabledState::kTimeWindowLimit:
+        debug_dispatcher_.DisableAuthForUser(
+            debug_user->account_id,
+            AuthDisabledData(reason,
+                             base::Time::Now() +
+                                 base::TimeDelta::FromHours(user_index) +
+                                 base::TimeDelta::FromHours(8),
+                             base::TimeDelta::FromMinutes(15),
+                             true /*bool disable_lock_screen_media*/));
+        break;
+      case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
+      case DebugAuthEnabledState::kMultiProfileNotAllowed:
+      case DebugAuthEnabledState::kMultiProfileOwnerPrimaryOnly:
+        lock_debug_view_->lock()->SetMultiprofilePolicyForUserForDebug(
+            debug_users_[user_index].account_id, behavior);
+        break;
+      case DebugAuthEnabledState::kForceOnlineSignIn:
+        debug_dispatcher_.ForceOnlineSignInForUser(
+            debug_users_[user_index].account_id);
+        break;
     }
   }
 
@@ -524,11 +586,6 @@ class LockDebugView::DebugDataDispatcherTransformer
   // direct calls to the lock screen. We need either an instance of
   // LockDebugView or LockContentsView in order to do so.
   LockDebugView* const lock_debug_view_;
-
-  // When auth is disabled, this property is used to define the reason, which
-  // customizes the UI accordingly.
-  AuthDisabledReason auth_disabled_reason_ =
-      AuthDisabledReason::kTimeLimitOverride;
 
   DISALLOW_COPY_AND_ASSIGN(DebugDataDispatcherTransformer);
 };
@@ -1055,10 +1112,10 @@ void LockDebugView::UpdatePerUserActionContainer() {
                   base::Unretained(debug_data_dispatcher_.get()), i, false),
               row);
     AddButton(
-        "Force online sign-in",
-        base::BindRepeating(
-            &DebugDataDispatcherTransformer::ForceOnlineSignInForUserIndex,
-            base::Unretained(debug_data_dispatcher_.get()), i),
+        "Toggle force online sign-in",
+        base::BindRepeating(&DebugDataDispatcherTransformer::
+                                ToggleForceOnlineSignInForUserIndex,
+                            base::Unretained(debug_data_dispatcher_.get()), i),
         row);
     AddButton("Toggle user is managed",
               base::BindRepeating(
@@ -1066,10 +1123,10 @@ void LockDebugView::UpdatePerUserActionContainer() {
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
     AddButton(
-        "Toggle auth enabled",
-        base::BindRepeating(
-            &DebugDataDispatcherTransformer::ToggleAuthEnabledForUserIndex,
-            base::Unretained(debug_data_dispatcher_.get()), i),
+        "Cycle disabled auth",
+        base::BindRepeating(&DebugDataDispatcherTransformer::
+                                CycleDisabledAuthMessageForUserIndex,
+                            base::Unretained(debug_data_dispatcher_.get()), i),
         row);
 
     if (debug_detachable_base_model_->debugging_pairing_state() &&

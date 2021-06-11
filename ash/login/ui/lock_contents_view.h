@@ -229,6 +229,17 @@ class ASH_EXPORT LockContentsView
   // a note in the menu user view.
   void ToggleManagementForUserForDebug(const AccountId& user);
 
+  // Called for debugging to make |user| having a multiprofile policy.
+  void SetMultiprofilePolicyForUserForDebug(
+      const AccountId& user,
+      const MultiProfileUserBehavior& multiprofile_policy);
+
+  // Called for debugging to toggle forced online sign-in form |user|.
+  void ToggleForceOnlineSignInForUserForDebug(const AccountId& user);
+
+  // Called for debugging to remove forced online sign-in form |user|.
+  void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
+
   // Called by LockScreenMediaControlsView.
   void CreateMediaControlsLayout();
   void HideMediaControlsLayout();

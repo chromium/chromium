@@ -1482,6 +1482,62 @@ void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
   }
 }
 
+void LockContentsView::SetMultiprofilePolicyForUserForDebug(
+    const AccountId& user,
+    const MultiProfileUserBehavior& multiprofile_policy) {
+  auto replace = [multiprofile_policy](const LoginUserInfo& user_info) {
+    auto changed = user_info;
+    changed.multiprofile_policy = multiprofile_policy;
+    changed.is_multiprofile_allowed =
+        multiprofile_policy == MultiProfileUserBehavior::UNRESTRICTED;
+    return changed;
+  };
+
+  LoginBigUserView* big = TryToFindBigUser(user, false /*require_auth_active*/);
+  if (big) {
+    big->UpdateForUser(replace(big->GetCurrentUser()));
+  }
+
+  LoginUserView* user_view =
+      users_list_ ? users_list_->GetUserView(user) : nullptr;
+  if (user_view) {
+    user_view->UpdateForUser(replace(user_view->current_user()),
+                             false /*animate*/);
+  }
+
+  LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
+}
+
+void LockContentsView::ToggleForceOnlineSignInForUserForDebug(
+    const AccountId& user) {
+  LockContentsView::UserState* state = FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user forcing online sign in";
+    return;
+  }
+  state->force_online_sign_in = !state->force_online_sign_in;
+
+  LoginBigUserView* big_user =
+      TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user())
+    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+}
+
+void LockContentsView::UndoForceOnlineSignInForUserForDebug(
+    const AccountId& user) {
+  LockContentsView::UserState* state = FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user forcing online sign in";
+    return;
+  }
+  state->force_online_sign_in = false;
+
+  LoginBigUserView* big_user =
+      TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user())
+    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+}
+
 void LockContentsView::FocusNextWidget(bool reverse) {
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   // Tell the focus direction to the status area or the shelf so they can focus

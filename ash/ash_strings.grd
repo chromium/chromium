@@ -2646,6 +2646,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE" desc="Message shown in the login screen when online sign-in is required.">
         Sign in required
       </message>
+      <message name="IDS_ASH_LOGIN_SIGN_IN_REQUIRED_SECONDARY_LOGIN_MESSAGE" desc="Message shown in the secondary login screen when online sign-in is required.">
+        To use <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph> you need to sign out of all accounts first. To sign out, select Cancel to go back. Then select the time to open the status area and select Sign out. Then sign in to <ph name="USER_EMAIL_ADDRESS_2">$2<ex>john.doe@example.com</ex></ph> again.
+      </message>
       <message name="IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE" desc="Message shown in the lock screen when online sign-in is required.">
         Verify account
       </message>

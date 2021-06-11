@@ -683,7 +683,12 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(ChallengeResponseView);
 };
 
-// The message shown to user when the auth method is |AUTH_DISABLED|.
+// The message shown to the user when auth is disabled. This could happen when:
+// -auth method is |AUTH_DISABLED|
+// -auth method is |AUTH_ONLINE_SIGN_IN| and the user is on the secondary login
+//  screen
+// -the selected account has a restricted multiprofile policy set and the user
+// is on the secondary login screen
 class LoginAuthUserView::DisabledAuthMessageView : public views::View {
  public:
   class ASH_EXPORT TestApi {
@@ -699,14 +704,7 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     DisabledAuthMessageView* const view_;
   };
 
-  // If the reason of disabled auth is multiprofile policy, then we can already
-  // set the text and message. Otherwise, in case of disabled auth because of
-  // time limit exceeded on child account, we wait for SetAuthDisabledMessage to
-  // be called.
-  DisabledAuthMessageView(bool shown_because_of_multiprofile_policy,
-                          MultiProfileUserBehavior multiprofile_policy)
-      : shown_because_of_multiprofile_policy_(
-            shown_because_of_multiprofile_policy) {
+  DisabledAuthMessageView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets(kDisabledAuthMessageVerticalBorderDp,
@@ -714,16 +712,12 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
         kDisabledAuthMessageChildrenSpacingDp));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetPreferredSize(gfx::Size(shown_because_of_multiprofile_policy
-                                   ? kDisabledAuthMessageMultiprofileWidthDp
-                                   : kDisabledAuthMessageTimeWidthDp,
-                               kDisabledAuthMessageHeightDp));
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    if (!shown_because_of_multiprofile_policy) {
-      message_icon_ = AddChildView(std::make_unique<views::ImageView>());
-      message_icon_->SetImageSize(gfx::Size(kDisabledAuthMessageIconSizeDp,
-                                            kDisabledAuthMessageIconSizeDp));
-    }
+
+    // The icon size has to be defined later if the image will be visible.
+    message_icon_ = AddChildView(std::make_unique<views::ImageView>());
+    message_icon_->SetImageSize(gfx::Size(kDisabledAuthMessageIconSizeDp,
+                                          kDisabledAuthMessageIconSizeDp));
 
     auto decorate_label = [](views::Label* label) {
       label->SetSubpixelRenderingEnabled(false);
@@ -746,27 +740,6 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
                                gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
     decorate_label(message_contents_);
     message_contents_->SetMultiLine(true);
-
-    if (shown_because_of_multiprofile_policy) {
-      message_title_->SetText(l10n_util::GetStringUTF16(
-          IDS_ASH_LOGIN_MULTI_PROFILES_RESTRICTED_POLICY_TITLE));
-      switch (multiprofile_policy) {
-        case MultiProfileUserBehavior::PRIMARY_ONLY:
-          message_contents_->SetText(l10n_util::GetStringUTF16(
-              IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG));
-          break;
-        case MultiProfileUserBehavior::NOT_ALLOWED:
-          message_contents_->SetText(l10n_util::GetStringUTF16(
-              IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG));
-          break;
-        case MultiProfileUserBehavior::OWNER_PRIMARY_ONLY:
-          message_contents_->SetText(l10n_util::GetStringUTF16(
-              IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG));
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
   }
 
   ~DisabledAuthMessageView() override = default;
@@ -774,17 +747,26 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   // Set the parameters needed to render the message.
   void SetAuthDisabledMessage(const AuthDisabledData& auth_disabled_data,
                               bool use_24hour_clock) {
-    // Do not do anything if message is already shown.
-    if (shown_because_of_multiprofile_policy_)
-      return;
     LockScreenMessage message = GetLockScreenMessage(
         auth_disabled_data.reason, auth_disabled_data.auth_reenabled_time,
         auth_disabled_data.device_used_time, use_24hour_clock);
+    SetPreferredSize(gfx::Size(kDisabledAuthMessageTimeWidthDp,
+                               kDisabledAuthMessageHeightDp));
+    message_icon_->SetVisible(true);
     message_vector_icon_ = message.icon;
     message_title_->SetText(message.title);
     message_contents_->SetText(message.content);
     UpdateColors();
-    Layout();
+  }
+
+  void SetAuthDisabledMessage(const std::u16string& title,
+                              const std::u16string& content) {
+    SetPreferredSize(gfx::Size(kDisabledAuthMessageMultiprofileWidthDp,
+                               kDisabledAuthMessageHeightDp));
+    message_icon_->SetVisible(false);
+    message_title_->SetText(title);
+    message_contents_->SetText(content);
+    UpdateColors();
   }
 
   // views::View:
@@ -828,10 +810,6 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   views::Label* message_contents_;
   views::ImageView* message_icon_;
   const gfx::VectorIcon* message_vector_icon_ = nullptr;
-  // Used in case a child account has triggered the disabled auth message
-  // because of time limit exceeded while it also has disabled auth by
-  // multiprofile policy.
-  bool shown_because_of_multiprofile_policy_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DisabledAuthMessageView);
 };
@@ -1000,7 +978,7 @@ views::Button* LoginAuthUserView::TestApi::pin_password_toggle() const {
 }
 
 views::Button* LoginAuthUserView::TestApi::online_sign_in_message() const {
-  return view_->online_sign_in_message_;
+  return view_->online_sign_in_button_;
 }
 
 views::View* LoginAuthUserView::TestApi::disabled_auth_message() const {
@@ -1113,22 +1091,15 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
     button_message =
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
   }
-  bool is_login_secondary =
-      Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::LOGIN_SECONDARY;
+
   auto online_sign_in_button = std::make_unique<SystemLabelButton>(
       base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
                           base::Unretained(this)),
       button_message, SystemLabelButton::DisplayType::ALERT_WITH_ICON,
       /*multiline*/ false);
-  // Disable online sign-in on secondary login screen as there is no OOBE there.
-  online_sign_in_button->SetEnabled(!is_login_secondary);
-  online_sign_in_message_ = online_sign_in_button.get();
+  online_sign_in_button_ = online_sign_in_button.get();
 
-  bool shown_because_of_multiprofile_policy =
-      !user.is_multiprofile_allowed && is_login_secondary;
-  auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>(
-      shown_because_of_multiprofile_policy, user.multiprofile_policy);
+  auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
   disabled_auth_message_ = disabled_auth_message.get();
 
   auto locked_tpm_message_view = std::make_unique<LockedTpmMessageView>();
@@ -1235,11 +1206,13 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   add_view(wrapped_challenge_response_view_ptr);
   add_padding(kDistanceFromPinKeyboardToBigUserViewBottomDp);
 
+  // The user needs to be set before SetAuthMethods is called.
+  user_view_->UpdateForUser(user, /*animate*/ false);
+
   // Update authentication UI.
   CaptureStateForAnimationPreLayout();
   SetAuthMethods(auth_methods_);
   ApplyAnimationPostLayout(/*animate*/ false);
-  user_view_->UpdateForUser(user, /*animate*/ false);
 }
 
 LoginAuthUserView::~LoginAuthUserView() = default;
@@ -1256,8 +1229,37 @@ void LoginAuthUserView::SetAuthMethods(
   UpdateInputFieldMode();
   const UiState current_state{this};
 
-  online_sign_in_message_->SetVisible(current_state.force_online_sign_in);
-  disabled_auth_message_->SetVisible(current_state.auth_disabled);
+  auto user = current_user();
+  const std::u16string user_display_email =
+      base::UTF8ToUTF16(user.basic_user_info.display_email);
+  bool is_secondary_login =
+      Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::LOGIN_SECONDARY;
+
+  if (is_secondary_login && !user.is_multiprofile_allowed) {
+    online_sign_in_button_->SetVisible(false);
+    disabled_auth_message_->SetVisible(true);
+    disabled_auth_message_->SetAuthDisabledMessage(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LOGIN_MULTI_PROFILES_RESTRICTED_POLICY_TITLE),
+        GetMultiprofileDisableAuthMessage());
+  }
+  // We do not want the online sign in button to be visible on the secondary
+  // login screen since we can not call OOBE there. In such a case, we indicate
+  // the user to return on the login screen to go through online sign in.
+  else if (is_secondary_login && current_state.force_online_sign_in) {
+    online_sign_in_button_->SetVisible(false);
+    disabled_auth_message_->SetVisible(true);
+    disabled_auth_message_->SetAuthDisabledMessage(
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_LOGIN_SIGN_IN_REQUIRED_SECONDARY_LOGIN_MESSAGE,
+            user_display_email, user_display_email));
+  } else {
+    online_sign_in_button_->SetVisible(current_state.force_online_sign_in);
+    disabled_auth_message_->SetVisible(current_state.auth_disabled);
+  }
+
   locked_tpm_message_view_->SetVisible(current_state.tpm_is_locked);
   if (current_state.tpm_is_locked &&
       auth_metadata.time_until_tpm_unlock.has_value())
@@ -1291,11 +1293,8 @@ void LoginAuthUserView::SetAuthMethods(
   padding_below_password_view_->SetPreferredSize(GetPaddingBelowPasswordView());
 
   password_view_->SetPlaceholderText(GetPasswordViewPlaceholder());
-  const std::string& user_display_email =
-      current_user().basic_user_info.display_email;
   password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
-      base::UTF8ToUTF16(user_display_email)));
+      IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME, user_display_email));
 
   // Only the active auth user view has authentication methods. If that is the
   // case, then render the user view as if it was always focused, since clicking
@@ -1514,7 +1513,7 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
     password_view_->SetDisplayPasswordButtonVisible(
         user.show_display_password_button);
   }
-  online_sign_in_message_->SetText(
+  online_sign_in_button_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE));
 }
 
@@ -1530,7 +1529,6 @@ void LoginAuthUserView::SetAuthDisabledMessage(
     const AuthDisabledData& auth_disabled_data) {
   disabled_auth_message_->SetAuthDisabledMessage(
       auth_disabled_data, current_user().use_24hour_clock);
-  Layout();
 }
 
 const LoginUserInfo& LoginAuthUserView::current_user() const {
@@ -1832,7 +1830,7 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
   return SizeFromHeight(0);
 }
 
-std::u16string LoginAuthUserView::GetPinPasswordToggleText() {
+std::u16string LoginAuthUserView::GetPinPasswordToggleText() const {
   if (input_field_mode_ == InputFieldMode::PWD_WITH_TOGGLE)
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PIN);
   else
@@ -1850,6 +1848,26 @@ std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
         IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER);
 
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);
+}
+
+std::u16string LoginAuthUserView::GetMultiprofileDisableAuthMessage() const {
+  int message_id;
+  switch (current_user().multiprofile_policy) {
+    case MultiProfileUserBehavior::PRIMARY_ONLY:
+      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG;
+      break;
+    case MultiProfileUserBehavior::NOT_ALLOWED:
+      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG;
+      break;
+    case MultiProfileUserBehavior::OWNER_PRIMARY_ONLY:
+      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG;
+      break;
+    case MultiProfileUserBehavior::UNRESTRICTED:
+      NOTREACHED();
+      message_id = 0;
+      break;
+  }
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 }  // namespace ash
