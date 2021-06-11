@@ -279,7 +279,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // 2) Depending on their return value, close the dialog's widget.
   // Neither of these methods can be called before the dialog has been
   // initialized.
-  void AcceptDialog();
+  // NOT_TAIL_CALLED forces the calling function to appear on the stack in
+  // crash dumps. https://crbug.com/1215247
+  void NOT_TAIL_CALLED AcceptDialog();
   void CancelDialog();
 
   // This method invokes the behavior that *would* happen if this dialog's

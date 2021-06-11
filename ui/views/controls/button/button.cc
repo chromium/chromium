@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/alias.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -63,6 +64,9 @@ void Button::DefaultButtonControllerDelegate::RequestFocusFromEvent() {
 void Button::DefaultButtonControllerDelegate::NotifyClick(
     const ui::Event& event) {
   button()->NotifyClick(event);
+  // Avoid outgoing tail calls to generate better stack frames for a crash.
+  // https://crbug.com/1215247
+  base::debug::Alias(nullptr);
 }
 
 void Button::DefaultButtonControllerDelegate::OnClickCanceled(
