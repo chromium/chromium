@@ -68,6 +68,9 @@ proto::GetClustersRequest CreateRequestProto(
       debug_visit.SetStringKey(
           "pageTransition",
           base::NumberToString(request_visit->page_transition()));
+      debug_visit.SetStringKey(
+          "referringVisitId",
+          base::NumberToString(request_visit->referring_visit_id()));
       debug_visits_list.Append(std::move(debug_visit));
     }
   }
