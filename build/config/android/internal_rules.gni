@@ -2163,6 +2163,10 @@ if (enable_java_templates) {
       if (defined(invoker.strip_drawables) && invoker.strip_drawables) {
         args += [ "--strip-drawables" ]
       }
+      if (defined(invoker.allow_missing_resources) &&
+          invoker.allow_missing_resources) {
+        args += [ "--allow-missing-resources" ]
+      }
     }
   }
 

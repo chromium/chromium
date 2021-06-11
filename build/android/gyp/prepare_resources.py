@@ -39,6 +39,12 @@ def _ParseArgs(args):
       'in the generated R.txt when generating R.java.')
 
   parser.add_argument(
+      '--allow-missing-resources',
+      action='store_true',
+      help='Do not fail if some resources exist in the res/ dir but are not '
+      'listed in the sources.')
+
+  parser.add_argument(
       '--resource-zip-out',
       help='Path to a zip archive containing all resources from '
       '--resource-dirs, merged into a single directory tree.')
@@ -130,7 +136,7 @@ def _GenerateRTxt(options, r_txt_path):
 
 def _OnStaleMd5(options):
   with resource_utils.BuildContext() as build:
-    if options.sources:
+    if options.sources and not options.allow_missing_resources:
       _CheckAllFilesListed(options.sources, options.resource_dirs)
     if options.r_text_in:
       r_txt_path = options.r_text_in

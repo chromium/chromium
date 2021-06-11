@@ -954,6 +954,8 @@ if (enable_java_templates) {
   #     merged into apks that directly or indirectly depend on this target.
   #   android_manifest_dep: Target that generates AndroidManifest (if applicable)
   #   custom_package: java package for generated .java files.
+  #   allow_missing_resources: Do not fail if a resource exists in a directory
+  #      but is not listed in sources.
   #   shared_resources: If true make a resource package that can be loaded by a
   #     different application at runtime to access the package's resources.
   #   resource_overlay: Whether the resources in 'sources' should override
@@ -1060,6 +1062,7 @@ if (enable_java_templates) {
       forward_variables_from(invoker,
                              [
                                "strip_drawables",
+                               "allow_missing_resources",
                                "visibility",
                              ])
       deps = _deps
