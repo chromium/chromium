@@ -270,6 +270,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
 
+  // Returns true if any animation is running within the view.
+  bool IsAnimationRunningForTest();
+  // Cancel any animations currently running within the view.
+  void CancelAnimationsForTest();
+
   bool FirePageFlipTimerForTest();
   bool FireFolderItemReparentTimerForTest();
   bool FireFolderDroppingTimerForTest();

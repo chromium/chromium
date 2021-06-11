@@ -1820,6 +1820,21 @@ const AppListConfig& AppsGridView::GetAppListConfig() const {
   return contents_view_->app_list_view()->GetAppListConfig();
 }
 
+bool AppsGridView::IsAnimationRunningForTest() {
+  return bounds_animator_->IsAnimating() ||
+         bounds_animation_for_cardified_state_in_progress_ > 0;
+}
+
+void AppsGridView::CancelAnimationsForTest() {
+  bounds_animator_->Cancel();
+
+  const int total_views = view_model_.view_size();
+  for (int i = 0; i < total_views; ++i) {
+    if (view_model_.view_at(i)->layer())
+      view_model_.view_at(i)->layer()->CompleteAllAnimations();
+  }
+}
+
 bool AppsGridView::FirePageFlipTimerForTest() {
   if (!page_flip_timer_.IsRunning())
     return false;
