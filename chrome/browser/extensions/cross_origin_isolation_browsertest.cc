@@ -169,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
     ASSERT_TRUE(process_manager);
     std::set<content::RenderFrameHost*> extension_hosts =
         process_manager->GetRenderFrameHostsForExtension(coi_extension->id());
-    EXPECT_THAT(extension_hosts,
-                ::testing::ElementsAre(coi_background_rfh, extension_iframe));
+    EXPECT_THAT(extension_hosts, ::testing::UnorderedElementsAre(
+                                     coi_background_rfh, extension_iframe));
 
     EXPECT_EQ(coi_extension, process_manager->GetExtensionForRenderFrameHost(
                                  coi_background_rfh));
