@@ -100,39 +100,23 @@ void GetSourceSettings(const blink::WebMediaStreamSource& web_source,
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
 }
 
-class ConsumerWrapper final : public AudioDestinationConsumer {
-  USING_FAST_MALLOC(ConsumerWrapper);
+}  // namespace
 
- public:
-  static ConsumerWrapper* Create(WebAudioDestinationConsumer* consumer) {
-    return new ConsumerWrapper(consumer);
-  }
+MediaStreamSource::ConsumerWrapper::ConsumerWrapper(
+    WebAudioDestinationConsumer* consumer)
+    : consumer_(consumer) {
+  // To avoid reallocation in ConsumeAudio, reserve initial capacity for most
+  // common known layouts.
+  bus_vector_.ReserveInitialCapacity(8);
+}
 
-  void SetFormat(size_t number_of_channels, float sample_rate) override;
-  void ConsumeAudio(AudioBus*, size_t number_of_frames) override;
-
-  WebAudioDestinationConsumer* Consumer() { return consumer_; }
-
- private:
-  explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer)
-      : consumer_(consumer) {
-    // To avoid reallocation in ConsumeAudio, reserve initial capacity for most
-    // common known layouts.
-    bus_vector_.ReserveInitialCapacity(8);
-  }
-
-  // m_consumer is not owned by this class.
-  WebAudioDestinationConsumer* consumer_;
-  // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
-  // member variable is to not have to reallocate it for each call.
-  Vector<const float*> bus_vector_;
-};
-
-void ConsumerWrapper::SetFormat(size_t number_of_channels, float sample_rate) {
+void MediaStreamSource::ConsumerWrapper::SetFormat(size_t number_of_channels,
+                                                   float sample_rate) {
   consumer_->SetFormat(number_of_channels, sample_rate);
 }
 
-void ConsumerWrapper::ConsumeAudio(AudioBus* bus, size_t number_of_frames) {
+void MediaStreamSource::ConsumerWrapper::ConsumeAudio(AudioBus* bus,
+                                                      size_t number_of_frames) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "ConsumerWrapper::ConsumeAudio");
 
@@ -149,8 +133,6 @@ void ConsumerWrapper::ConsumeAudio(AudioBus* bus, size_t number_of_frames) {
 
   consumer_->ConsumeAudio(bus_vector_, number_of_frames);
 }
-
-}  // namespace
 
 MediaStreamSource::MediaStreamSource(const String& id,
                                      StreamType type,
@@ -245,19 +227,18 @@ void MediaStreamSource::SetAudioProcessingProperties(
 void MediaStreamSource::AddAudioConsumer(
     WebAudioDestinationConsumer* consumer) {
   DCHECK(requires_consumer_);
-  auto* consumer_wrapper = ConsumerWrapper::Create(consumer);
+  auto consumer_wrapper = std::make_unique<ConsumerWrapper>(consumer);
 
   MutexLocker locker(audio_consumers_lock_);
-  audio_consumers_.insert(consumer_wrapper);
+  audio_consumers_.insert(consumer, std::move(consumer_wrapper));
 }
 
 bool MediaStreamSource::RemoveAudioConsumer(
     WebAudioDestinationConsumer* consumer) {
   DCHECK(requires_consumer_);
-  auto* consumer_wrapper = ConsumerWrapper::Create(consumer);
 
   MutexLocker locker(audio_consumers_lock_);
-  auto it = audio_consumers_.find(consumer_wrapper);
+  auto it = audio_consumers_.find(consumer);
   if (it == audio_consumers_.end())
     return false;
   audio_consumers_.erase(it);
@@ -313,7 +294,7 @@ void MediaStreamSource::SetAudioFormat(size_t number_of_channels,
                      .Utf8());
   DCHECK(requires_consumer_);
   MutexLocker locker(audio_consumers_lock_);
-  for (AudioDestinationConsumer* consumer : audio_consumers_)
+  for (auto&& consumer : audio_consumers_.Values())
     consumer->SetFormat(number_of_channels, sample_rate);
 }
 
@@ -323,7 +304,7 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, size_t number_of_frames) {
 
   DCHECK(requires_consumer_);
   MutexLocker locker(audio_consumers_lock_);
-  for (AudioDestinationConsumer* consumer : audio_consumers_)
+  for (auto&& consumer : audio_consumers_.Values())
     consumer->ConsumeAudio(bus, number_of_frames);
 }
 
