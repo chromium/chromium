@@ -72,6 +72,9 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
   __weak CRWJSWindowIDManager* weakSelf = self;
   [_webView evaluateJavaScript:scriptWithResult
              completionHandler:^(id result, NSError* error) {
+               CRWJSWindowIDManager* strongSelf = weakSelf;
+               if (!strongSelf)
+                 return;
                if (error) {
 #if DCHECK_IS_ON()
                  DCHECK(error.code == WKErrorWebViewInvalidated ||
@@ -96,7 +99,7 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                  // WKUserScript has not been injected yet. Retry window id
                  // injection, because it is critical for the system to
                  // function.
-                 [weakSelf inject];
+                 [strongSelf inject];
                }
              }];
 }
