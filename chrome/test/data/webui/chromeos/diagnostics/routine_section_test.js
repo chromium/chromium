@@ -235,6 +235,27 @@ export function routineSectionTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @param {boolean} hideRoutineStatus
+   * @return {!Promise}
+   */
+  function setHideRoutineStatus(hideRoutineStatus) {
+    routineSectionElement.hideRoutineStatus = hideRoutineStatus;
+    return flushTasks();
+  }
+
+  /**
+   * Returns the learn more button.
+   * @return {!CrButtonElement}
+   */
+  function getLearnMoreButton() {
+    const learnMoreButton =
+        /** @type {!CrButtonElement} */ (
+            routineSectionElement.$$('#learnMoreButton'));
+    assertTrue(!!learnMoreButton);
+    return learnMoreButton;
+  }
+
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
@@ -897,6 +918,18 @@ export function routineSectionTestSuite() {
           // Memory routine should be cancelled.
           assertEquals(
               ExecutionProgress.kCancelled, getEntries()[0].item.progress);
+        });
+  });
+
+  test('RoutineStatusAndActionsHidden', () => {
+    return initializeRoutineSection([])
+        .then(() => setHideRoutineStatus(true))
+        .then(() => {
+          assertFalse(isVisible(getLearnMoreButton()));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (
+              routineSectionElement.$$('.routine-status-container'))));
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (
+              routineSectionElement.$$('.button-container'))));
         });
   });
 }

@@ -63,7 +63,7 @@
 </style>
 <div class="routine-section-container">
   <div id="routineSection" class="routine-container">
-    <div class="routine-status-container">
+    <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
       <text-badge id="testStatusBadge"
           badge-type="[[badgeType_]]"
           hidden="[[isStatusHidden_(executionStatus_)]]"
@@ -79,7 +79,7 @@
         </span>
       </span>
     </div>
-    <div class="button-container">
+    <div class="button-container" hidden$="[[hideRoutineStatus]]">
         <iron-icon id="messageIcon" icon="diagnostics:info"
             hidden$="[[isAdditionalMessageHidden_(additionalMessage)]]">
         </iron-icon>
@@ -110,8 +110,9 @@
       <routine-result-list id="resultList"></routine-result-list>
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"
-        on-click="onLearnMoreClicked_" hidden$="[[!isLoggedIn_]]">
-        [[i18n('learnMore')]]
+        on-click="onLearnMoreClicked_"
+        hidden$="[[isLearnMoreButtonHidden_(isLoggedIn_, hideRoutineStatus)]]">
+      [[i18n('learnMore')]]
     </cr-button>
   </iron-collapse>
 </div>

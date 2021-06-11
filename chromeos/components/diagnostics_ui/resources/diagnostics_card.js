@@ -24,5 +24,20 @@ Polymer({
       value: false,
       reflectToAttribute: true,
     },
+
+    /** @type {boolean} */
+    isNetworkingCard: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+  },
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getTopSectionClassName_() {
+    return `top-section${this.isNetworkingCard ? '-padding' : ''}`;
   },
 });

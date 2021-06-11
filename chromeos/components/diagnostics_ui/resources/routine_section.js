@@ -182,6 +182,18 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    hideRoutineStatus: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @type {boolean} */
+    opened: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers: [
@@ -518,6 +530,14 @@ Polymer({
     if (this.runTestsAutomatically && !this.isTestRunning) {
       this.runTests_();
     }
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isLearnMoreButtonHidden_() {
+    return !this.isLoggedIn_ || this.hideRoutineStatus;
   },
 
   /** @override */

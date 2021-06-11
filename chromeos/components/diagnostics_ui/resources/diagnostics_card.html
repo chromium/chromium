@@ -65,6 +65,10 @@
     display: flex;
     margin-top: 16px;
   }
+
+  .top-section-padding {
+    padding-inline: 24px;
+  }
 </style>
 <div class="card-container">
   <div id="title" class="card-header">
@@ -72,7 +76,7 @@
     <slot name="chip"></slot>
   </div>
   <div class="card-wrapper">
-    <div class="top-section">
+    <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
       <slot name="icon"></slot>
       <slot name="left-panel"></slot>
     </div>
