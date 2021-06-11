@@ -522,7 +522,10 @@ test("components_unittests") {
   }
 
   if (enable_pdf) {
-    deps += [ "//components/pdf/renderer:unit_tests" ]
+    deps += [
+      "//components/pdf/browser:unit_tests",
+      "//components/pdf/renderer:unit_tests",
+    ]
   }
 
   # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.

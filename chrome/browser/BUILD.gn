@@ -6166,6 +6166,7 @@ static_library("browser") {
       "pdf/pdf_extension_util.h",
     ]
     deps += [
+      "//components/pdf/browser",
       "//pdf:buildflags",
       "//pdf:features",
     ]
@@ -6217,7 +6218,6 @@ static_library("browser") {
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
     ]
     deps += [
-      "//components/pdf/browser",
       "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy:ipc",
