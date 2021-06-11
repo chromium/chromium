@@ -234,7 +234,7 @@ class SocketExtensionWithDnsLookupFunction
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 };
 
-class SocketCreateFunction : public SocketAsyncApiFunction {
+class SocketCreateFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.create", SOCKET_CREATE)
 
@@ -243,36 +243,22 @@ class SocketCreateFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketCreateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SocketUnitTest, Create);
-  enum SocketType { kSocketTypeInvalid = -1, kSocketTypeTCP, kSocketTypeUDP };
-
-  // These two fields are only applicable if |socket_type_| is UDP.
-  mojo::PendingRemote<network::mojom::UDPSocket> socket_;
-  mojo::PendingReceiver<network::mojom::UDPSocketListener>
-      socket_listener_receiver_;
-
-  std::unique_ptr<api::socket::Create::Params> params_;
-  SocketType socket_type_;
 };
 
-class SocketDestroyFunction : public SocketAsyncApiFunction {
+class SocketDestroyFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.destroy", SOCKET_DESTROY)
 
  protected:
   ~SocketDestroyFunction() override {}
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  int socket_id_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
 class SocketConnectFunction : public SocketExtensionWithDnsLookupFunction {
@@ -299,31 +285,26 @@ class SocketConnectFunction : public SocketExtensionWithDnsLookupFunction {
   uint16_t port_ = 0;
 };
 
-class SocketDisconnectFunction : public SocketAsyncApiFunction {
+class SocketDisconnectFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.disconnect", SOCKET_DISCONNECT)
 
  protected:
   ~SocketDisconnectFunction() override {}
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  int socket_id_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketBindFunction : public SocketAsyncApiFunction {
+class SocketBindFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.bind", SOCKET_BIND)
 
  protected:
   ~SocketBindFunction() override {}
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int net_error);
@@ -333,7 +314,7 @@ class SocketBindFunction : public SocketAsyncApiFunction {
   uint16_t port_;
 };
 
-class SocketListenFunction : public SocketAsyncApiFunction {
+class SocketListenFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.listen", SOCKET_LISTEN)
 
@@ -342,16 +323,15 @@ class SocketListenFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketListenFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result, const std::string& error_msg);
   std::unique_ptr<api::socket::Listen::Params> params_;
 };
 
-class SocketAcceptFunction : public SocketAsyncApiFunction {
+class SocketAcceptFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.accept", SOCKET_ACCEPT)
 
@@ -360,9 +340,8 @@ class SocketAcceptFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketAcceptFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnAccept(int result_code,
@@ -370,11 +349,9 @@ class SocketAcceptFunction : public SocketAsyncApiFunction {
                 const absl::optional<net::IPEndPoint>& remote_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle);
-
-  std::unique_ptr<api::socket::Accept::Params> params_;
 };
 
-class SocketReadFunction : public SocketAsyncApiFunction {
+class SocketReadFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.read", SOCKET_READ)
 
@@ -383,18 +360,14 @@ class SocketReadFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketReadFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int result,
                    scoped_refptr<net::IOBuffer> io_buffer,
                    bool socket_destroying);
-
- private:
-  std::unique_ptr<api::socket::Read::Params> params_;
 };
 
-class SocketWriteFunction : public SocketAsyncApiFunction {
+class SocketWriteFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.write", SOCKET_WRITE)
 
@@ -403,18 +376,12 @@ class SocketWriteFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketWriteFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int result);
-
- private:
-  int socket_id_;
-  scoped_refptr<net::IOBuffer> io_buffer_;
-  size_t io_buffer_size_;
 };
 
-class SocketRecvFromFunction : public SocketAsyncApiFunction {
+class SocketRecvFromFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.recvFrom", SOCKET_RECVFROM)
 
@@ -423,17 +390,13 @@ class SocketRecvFromFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketRecvFromFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int result,
                    scoped_refptr<net::IOBuffer> io_buffer,
                    bool socket_destroying,
                    const std::string& address,
                    uint16_t port);
-
- private:
-  std::unique_ptr<api::socket::RecvFrom::Params> params_;
 };
 
 class SocketSendToFunction : public SocketExtensionWithDnsLookupFunction {
@@ -447,7 +410,6 @@ class SocketSendToFunction : public SocketExtensionWithDnsLookupFunction {
 
   // SocketApiFunction::
   ResponseAction Work() override;
-
   void OnCompleted(int result);
 
   // SocketExtensionWithDnsLookupFunction:
@@ -463,7 +425,7 @@ class SocketSendToFunction : public SocketExtensionWithDnsLookupFunction {
   uint16_t port_ = 0;
 };
 
-class SocketSetKeepAliveFunction : public SocketAsyncApiFunction {
+class SocketSetKeepAliveFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.setKeepAlive", SOCKET_SETKEEPALIVE)
 
@@ -472,17 +434,14 @@ class SocketSetKeepAliveFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketSetKeepAliveFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(bool success);
-
-  std::unique_ptr<api::socket::SetKeepAlive::Params> params_;
 };
 
-class SocketSetNoDelayFunction : public SocketAsyncApiFunction {
+class SocketSetNoDelayFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.setNoDelay", SOCKET_SETNODELAY)
 
@@ -491,9 +450,8 @@ class SocketSetNoDelayFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketSetNoDelayFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(bool success);
@@ -501,7 +459,7 @@ class SocketSetNoDelayFunction : public SocketAsyncApiFunction {
   std::unique_ptr<api::socket::SetNoDelay::Params> params_;
 };
 
-class SocketGetInfoFunction : public SocketAsyncApiFunction {
+class SocketGetInfoFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.getInfo", SOCKET_GETINFO)
 
@@ -510,12 +468,8 @@ class SocketGetInfoFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketGetInfoFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<api::socket::GetInfo::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
 class SocketGetNetworkListFunction : public ExtensionFunction {
@@ -533,7 +487,7 @@ class SocketGetNetworkListFunction : public ExtensionFunction {
       const absl::optional<net::NetworkInterfaceList>& interface_list);
 };
 
-class SocketJoinGroupFunction : public SocketAsyncApiFunction {
+class SocketJoinGroupFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.joinGroup", SOCKET_MULTICAST_JOIN_GROUP)
 
@@ -542,17 +496,14 @@ class SocketJoinGroupFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketJoinGroupFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result);
-
-  std::unique_ptr<api::socket::JoinGroup::Params> params_;
 };
 
-class SocketLeaveGroupFunction : public SocketAsyncApiFunction {
+class SocketLeaveGroupFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.leaveGroup", SOCKET_MULTICAST_LEAVE_GROUP)
 
@@ -561,17 +512,14 @@ class SocketLeaveGroupFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketLeaveGroupFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result);
-
-  std::unique_ptr<api::socket::LeaveGroup::Params> params_;
 };
 
-class SocketSetMulticastTimeToLiveFunction : public SocketAsyncApiFunction {
+class SocketSetMulticastTimeToLiveFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.setMulticastTimeToLive",
                              SOCKET_MULTICAST_SET_TIME_TO_LIVE)
@@ -581,15 +529,11 @@ class SocketSetMulticastTimeToLiveFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketSetMulticastTimeToLiveFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<api::socket::SetMulticastTimeToLive::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketSetMulticastLoopbackModeFunction : public SocketAsyncApiFunction {
+class SocketSetMulticastLoopbackModeFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.setMulticastLoopbackMode",
                              SOCKET_MULTICAST_SET_LOOPBACK_MODE)
@@ -599,15 +543,11 @@ class SocketSetMulticastLoopbackModeFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketSetMulticastLoopbackModeFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<api::socket::SetMulticastLoopbackMode::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketGetJoinedGroupsFunction : public SocketAsyncApiFunction {
+class SocketGetJoinedGroupsFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.getJoinedGroups",
                              SOCKET_MULTICAST_GET_JOINED_GROUPS)
@@ -617,15 +557,11 @@ class SocketGetJoinedGroupsFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketGetJoinedGroupsFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<api::socket::GetJoinedGroups::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketSecureFunction : public SocketAsyncApiFunction {
+class SocketSecureFunction : public SocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("socket.secure", SOCKET_SECURE)
   SocketSecureFunction();
@@ -633,9 +569,8 @@ class SocketSecureFunction : public SocketAsyncApiFunction {
  protected:
   ~SocketSecureFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void TlsConnectDone(
