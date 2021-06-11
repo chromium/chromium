@@ -183,7 +183,7 @@ bool IsOobeComplete() {
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return chromeos::StartupUtils::IsOobeCompleted() &&
          (!user_manager::UserManager::Get()->GetUsers().empty() ||
-          connector->IsEnterpriseManaged());
+          connector->IsDeviceEnterpriseManaged());
 }
 
 // Returns true if signin (not oobe) should be displayed.

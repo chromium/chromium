@@ -450,7 +450,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.SetBoolean("enterpriseManagedDevice",
                     g_browser_process->platform_part()
                         ->browser_policy_connector_chromeos()
-                        ->IsEnterpriseManaged());
+                        ->IsDeviceEnterpriseManaged());
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
   params.SetBoolean("hasDeviceOwner", owner_account_id.is_valid());
@@ -1334,7 +1334,7 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
   params.SetBoolean("enterpriseManaged",
                     g_browser_process->platform_part()
                         ->browser_policy_connector_chromeos()
-                        ->IsEnterpriseManaged());
+                        ->IsDeviceEnterpriseManaged());
 
   bool family_link_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,

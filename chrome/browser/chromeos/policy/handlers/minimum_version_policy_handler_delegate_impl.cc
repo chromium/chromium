@@ -31,10 +31,11 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode() const {
          user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
 }
 
-bool MinimumVersionPolicyHandlerDelegateImpl::IsEnterpriseManaged() const {
+bool MinimumVersionPolicyHandlerDelegateImpl::IsDeviceEnterpriseManaged()
+    const {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
-      ->IsEnterpriseManaged();
+      ->IsDeviceEnterpriseManaged();
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsUserLoggedIn() const {

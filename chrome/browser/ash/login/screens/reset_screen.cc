@@ -120,7 +120,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
         callback) {
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged()) {
+          ->IsDeviceEnterpriseManaged()) {
     // Powerwash is allowed by default, if the policy is loaded. Admin can
     // explicitly forbid powerwash. If the policy is not loaded yet, we
     // consider by default that the device is not allowed to powerwash.
@@ -442,7 +442,7 @@ void ResetScreen::OnRollbackCheck(bool can_rollback) {
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
 
   const bool rollback_available =
-      !connector->IsEnterpriseManaged() && can_rollback;
+      !connector->IsDeviceEnterpriseManaged() && can_rollback;
   reset::DialogViewType dialog_type =
       rollback_available
           ? reset::DialogViewType::kShortcutOfferingRollbackAvailable

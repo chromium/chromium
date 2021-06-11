@@ -69,7 +69,7 @@ class UpdateRequiredNotificationTest
   MOCK_CONST_METHOD0(IsLoginSessionState, bool());
   MOCK_CONST_METHOD0(IsKioskMode, bool());
   MOCK_CONST_METHOD0(IsLoginInProgress, bool());
-  MOCK_CONST_METHOD0(IsEnterpriseManaged, bool());
+  MOCK_CONST_METHOD0(IsDeviceEnterpriseManaged, bool());
   MOCK_CONST_METHOD0(IsUserLoggedIn, bool());
 
   void SetCurrentVersionString(const std::string& version);
@@ -120,7 +120,8 @@ class UpdateRequiredNotificationTest
 
 UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
     : local_state_(TestingBrowserProcess::GetGlobal()) {
-  ON_CALL(*this, IsEnterpriseManaged).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsDeviceEnterpriseManaged)
+      .WillByDefault(testing::Return(true));
   ON_CALL(*this, IsUserLoggedIn).WillByDefault(testing::Return(true));
 }
 

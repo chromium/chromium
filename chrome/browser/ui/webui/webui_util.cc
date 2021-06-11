@@ -57,7 +57,7 @@ bool IsEnterpriseManaged() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->IsEnterpriseManaged();
+  return connector->IsDeviceEnterpriseManaged();
 #elif defined(OS_WIN) || defined(OS_MAC)
   return base::IsMachineExternallyManaged();
 #else

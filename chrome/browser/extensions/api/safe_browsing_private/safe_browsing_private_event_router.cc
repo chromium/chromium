@@ -1024,7 +1024,7 @@ bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
   // The device must be managed.
   if (!g_browser_process->platform_part()
            ->browser_policy_connector_chromeos()
-           ->IsEnterpriseManaged())
+           ->IsDeviceEnterpriseManaged())
     return false;
 
   // The Chrome OS user must be affiliated with the device.

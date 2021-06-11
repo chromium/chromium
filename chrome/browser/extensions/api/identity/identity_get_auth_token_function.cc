@@ -243,7 +243,8 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
   bool is_public_session =
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
 
-  if (connector->IsEnterpriseManaged() && (is_kiosk || is_public_session)) {
+  if (connector->IsDeviceEnterpriseManaged() &&
+      (is_kiosk || is_public_session)) {
     if (is_public_session) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
@@ -483,7 +484,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
           policy::BrowserPolicyConnectorChromeOS* connector =
               g_browser_process->platform_part()
                   ->browser_policy_connector_chromeos();
-          if (connector->IsEnterpriseManaged()) {
+          if (connector->IsDeviceEnterpriseManaged()) {
             StartDeviceAccessTokenRequest();
           } else {
             StartTokenKeyAccountAccessTokenRequest();

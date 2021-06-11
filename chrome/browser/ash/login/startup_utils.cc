@@ -230,7 +230,7 @@ bool StartupUtils::IsDeviceOwned() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return !user_manager::UserManager::Get()->GetUsers().empty() ||
-         connector->IsEnterpriseManaged();
+         connector->IsDeviceEnterpriseManaged();
 }
 
 }  // namespace chromeos

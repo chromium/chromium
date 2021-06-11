@@ -948,7 +948,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_chromeos()
-                                         ->IsEnterpriseManaged();
+                                         ->IsDeviceEnterpriseManaged();
 
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
@@ -1016,7 +1016,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  DCHECK(connector->IsEnterpriseManaged());
+  DCHECK(connector->IsDeviceEnterpriseManaged());
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON)));

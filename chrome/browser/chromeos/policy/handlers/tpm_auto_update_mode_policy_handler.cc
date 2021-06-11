@@ -41,7 +41,7 @@ policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
     const base::RepeatingClosure callback) {
   if (!g_browser_process->platform_part()
            ->browser_policy_connector_chromeos()
-           ->IsEnterpriseManaged()) {
+           ->IsDeviceEnterpriseManaged()) {
     return policy::AutoUpdateMode::kNever;
   }
 

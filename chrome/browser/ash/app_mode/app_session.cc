@@ -267,7 +267,7 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
   // name and author after some idle timeout.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector->IsEnterpriseManaged()) {
+  if (!connector->IsDeviceEnterpriseManaged()) {
     PrefService* local_state = g_browser_process->local_state();
     local_state->SetBoolean(prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();

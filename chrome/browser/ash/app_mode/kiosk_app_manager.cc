@@ -417,7 +417,7 @@ bool KioskAppManager::IsAutoLaunchRequested() const {
   // consent through UI.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged())
+  if (connector->IsDeviceEnterpriseManaged())
     return false;
 
   return GetAutoLoginState() == AutoLoginState::kRequested;
@@ -431,7 +431,7 @@ bool KioskAppManager::IsAutoLaunchEnabled() const {
   // consent through UI.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged())
+  if (connector->IsDeviceEnterpriseManaged())
     return true;
 
   return GetAutoLoginState() == AutoLoginState::kApproved;

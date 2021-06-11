@@ -164,7 +164,7 @@ bool DeviceDisablingManager::HonorDeviceDisablingDuringNormalOperation() {
   // and device disabling has not been turned off by flag.
   return g_browser_process->platform_part()
              ->browser_policy_connector_chromeos()
-             ->IsEnterpriseManaged() &&
+             ->IsDeviceEnterpriseManaged() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableDeviceDisabling);
 }

@@ -297,7 +297,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector->IsEnterpriseManaged() &&
+  if (!connector->IsDeviceEnterpriseManaged() &&
       KioskAppManager::IsConsumerKioskEnabled()) {
     ShowEnableConsumerKioskScreen();
   }

@@ -658,7 +658,8 @@ bool ChromeUserManagerImpl::AreEphemeralUsersEnabled() const {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return GetEphemeralUsersEnabled() &&
-         (connector->IsEnterpriseManaged() || GetOwnerAccountId().is_valid());
+         (connector->IsDeviceEnterpriseManaged() ||
+          GetOwnerAccountId().is_valid());
 }
 
 void ChromeUserManagerImpl::OnUserRemoved(const AccountId& account_id) {
@@ -676,7 +677,7 @@ PrefService* ChromeUserManagerImpl::GetLocalState() const {
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->IsEnterpriseManaged();
+  return connector->IsDeviceEnterpriseManaged();
 }
 
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(

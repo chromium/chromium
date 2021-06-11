@@ -177,10 +177,10 @@ AccountId GetOwnerAccountId() {
   return owner;
 }
 
-bool IsEnterpriseManaged() {
+bool IsDeviceEnterpriseManaged() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->IsEnterpriseManaged();
+  return connector->IsDeviceEnterpriseManaged();
 }
 
 bool IsSigninToAdd() {
@@ -195,7 +195,7 @@ bool CanRemoveUser(const user_manager::User* user) {
   // Single user check here is necessary because owner info might not be
   // available when running into login screen on first boot.
   // See http://crosbug.com/12723
-  if (is_single_user && !IsEnterpriseManaged())
+  if (is_single_user && !IsDeviceEnterpriseManaged())
     return false;
   if (!user->GetAccountId().is_valid())
     return false;

@@ -82,7 +82,7 @@ void HeadlessBrowserPolicyConnector::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
 
-bool HeadlessBrowserPolicyConnector::IsEnterpriseManaged() const {
+bool HeadlessBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
   return false;
 }
 

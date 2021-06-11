@@ -225,7 +225,7 @@ void GetAvailableUpdateModes(
   std::set<Mode> modes;
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged()) {
+          ->IsDeviceEnterpriseManaged()) {
     // Split |completion| in two. This is necessary because of the
     // PrepareTrustedValues API, which for some return values invokes the
     // callback passed to it, and for others requires the code here to do so.

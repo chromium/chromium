@@ -385,7 +385,7 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
 
-  if (connector->IsEnterpriseManaged()) {
+  if (connector->IsDeviceEnterpriseManaged()) {
     localized_strings.SetString("enterpriseInfoVisible", "true");
     localized_strings.SetString("enterpriseLearnMore",
                                 l10n_util::GetStringUTF16(IDS_LEARN_MORE));

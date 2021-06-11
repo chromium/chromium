@@ -307,7 +307,7 @@ void CrostiniFeatures::CanChangeAdbSideloading(
   // Check the managed device and/or user case
   auto* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  bool is_device_enterprise_managed = connector->IsEnterpriseManaged();
+  bool is_device_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   bool is_profile_enterprise_managed =
       profile->GetProfilePolicyConnector()->IsManaged();
   bool is_owner_profile = chromeos::ProfileHelper::IsOwnerProfile(profile);

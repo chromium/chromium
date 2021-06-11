@@ -63,7 +63,7 @@ class MinimumVersionPolicyHandlerTest
 
   // MinimumVersionPolicyHandler::Delegate:
   bool IsKioskMode() const;
-  bool IsEnterpriseManaged() const;
+  bool IsDeviceEnterpriseManaged() const;
   base::Version GetCurrentVersion() const;
   bool IsUserEnterpriseManaged() const;
   bool IsUserLoggedIn() const;
@@ -160,7 +160,7 @@ bool MinimumVersionPolicyHandlerTest::IsKioskMode() const {
   return false;
 }
 
-bool MinimumVersionPolicyHandlerTest::IsEnterpriseManaged() const {
+bool MinimumVersionPolicyHandlerTest::IsDeviceEnterpriseManaged() const {
   return true;
 }
 

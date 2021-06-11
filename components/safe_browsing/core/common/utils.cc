@@ -42,7 +42,7 @@ ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
   else
     return ChromeUserPopulation::NOT_MANAGED;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!bpc || !bpc->IsEnterpriseManaged())
+  if (!bpc || !bpc->IsDeviceEnterpriseManaged())
     return ChromeUserPopulation::NOT_MANAGED;
   return ChromeUserPopulation::ENTERPRISE_MANAGED;
 #else

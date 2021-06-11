@@ -162,7 +162,7 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
-  if (!connector->IsEnterpriseManaged() &&
+  if (!connector->IsDeviceEnterpriseManaged() &&
       !profile->GetProfilePolicyConnector()->IsManaged()) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                       l10n_util::GetStringUTF16(device_type));

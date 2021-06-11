@@ -22,10 +22,10 @@
 namespace {
 
 // Returns true if the device is enterprise managed, false otherwise.
-bool IsEnterpriseManaged() {
+bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
-      ->IsEnterpriseManaged();
+      ->IsDeviceEnterpriseManaged();
 }
 
 // Returns the duration in minutes, capped at `max_duration` and rounded down to
@@ -48,7 +48,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void RecordSignInEvent(SignInEventType sign_in_event_type) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   UMA_HISTOGRAM_ENUMERATION(
       "Enterprise.UserSession.Logins", static_cast<int>(sign_in_event_type),
@@ -56,7 +56,7 @@ void RecordSignInEvent(SignInEventType sign_in_event_type) {
 }
 
 void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   const user_manager::UserType session_type = user_context.GetUserType();
   if (session_type == user_manager::USER_TYPE_REGULAR) {
@@ -72,7 +72,7 @@ void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
 
 void StoreSessionLength(user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   if (session_type != user_manager::USER_TYPE_REGULAR &&
       session_type != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
@@ -88,7 +88,7 @@ void StoreSessionLength(user_manager::UserType session_type,
 }
 
 void RecordStoredSessionLength() {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   PrefService* local_state = g_browser_process->local_state();
   if (!local_state->HasPrefPath(prefs::kLastSessionType) ||

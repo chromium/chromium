@@ -248,7 +248,7 @@ bool IsEnterpriseKiosk() {
 
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->IsEnterpriseManaged();
+  return connector->IsDeviceEnterpriseManaged();
 }
 
 std::string GetClientId() {
@@ -359,7 +359,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   if (property_name == kPropertyManagedDeviceStatus) {
     policy::BrowserPolicyConnectorChromeOS* connector =
         g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    if (connector->IsEnterpriseManaged()) {
+    if (connector->IsDeviceEnterpriseManaged()) {
       return std::make_unique<base::Value>(kManagedDeviceStatusManaged);
     }
     return std::make_unique<base::Value>(kManagedDeviceStatusNotManaged);

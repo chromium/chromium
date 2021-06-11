@@ -54,7 +54,7 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
   bool HasMachineLevelPolicies() override;
   void Shutdown() override;
 

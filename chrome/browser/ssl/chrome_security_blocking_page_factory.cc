@@ -327,7 +327,7 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
         report->SetIsEnterpriseManaged(g_browser_process->platform_part()
                                            ->browser_policy_connector_chromeos()
-                                           ->IsEnterpriseManaged());
+                                           ->IsDeviceEnterpriseManaged());
 #endif
 
         // TODO(estade): this one is probably necessary for all clients, and

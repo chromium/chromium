@@ -54,7 +54,7 @@ bool EolNotification::ShouldShowEolNotification() {
   // enterprise user.
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged()) {
+          ->IsDeviceEnterpriseManaged()) {
     return false;
   }
 

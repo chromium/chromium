@@ -269,7 +269,7 @@ Value ChromePolicyConversionsClient::GetIdentityFields() {
     LOG(ERROR) << "Cannot dump identity fields, no policy connector";
     return Value();
   }
-  if (connector->IsEnterpriseManaged()) {
+  if (connector->IsDeviceEnterpriseManaged()) {
     identity_fields.SetKey("enrollment_domain",
                            Value(connector->GetEnterpriseEnrollmentDomain()));
 

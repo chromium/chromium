@@ -69,7 +69,7 @@ void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
 bool UserCreationScreen::MaybeSkip(WizardContext* context) {
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged() ||
+          ->IsDeviceEnterpriseManaged() ||
       context->skip_to_login_for_tests) {
     context->is_user_creation_enabled = false;
     exit_callback_.Run(Result::SKIPPED);

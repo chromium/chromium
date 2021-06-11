@@ -66,7 +66,7 @@ class MinimumVersionPolicyHandler
     virtual bool IsKioskMode() const = 0;
 
     // Checks if the device is enterprise managed.
-    virtual bool IsEnterpriseManaged() const = 0;
+    virtual bool IsDeviceEnterpriseManaged() const = 0;
 
     // Checks if a user is logged in.
     virtual bool IsUserLoggedIn() const = 0;

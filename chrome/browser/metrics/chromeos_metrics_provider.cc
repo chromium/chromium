@@ -123,8 +123,8 @@ EnrollmentStatus ChromeOSMetricsProvider::GetEnrollmentStatus() {
   if (!connector)
     return EnrollmentStatus::kErrorGettingStatus;
 
-  return connector->IsEnterpriseManaged() ? EnrollmentStatus::kManaged
-                                          : EnrollmentStatus::kNonManaged;
+  return connector->IsDeviceEnterpriseManaged() ? EnrollmentStatus::kManaged
+                                                : EnrollmentStatus::kNonManaged;
 }
 
 void ChromeOSMetricsProvider::Init() {

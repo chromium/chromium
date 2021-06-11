@@ -422,7 +422,7 @@ void WizardController::Init(OobeScreenId first_screen) {
 
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded
-  // synchronously and at the first demand. IsEnterpriseManaged()
+  // synchronously and at the first demand. IsDeviceEnterpriseManaged()
   // check is required because currently powerwash is disabled for
   // enterprise-enrolled devices.
   //
@@ -430,7 +430,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   // corruption in the case of asynchronious loading.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  const bool is_enterprise_managed = connector->IsEnterpriseManaged();
+  const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   if (!is_enterprise_managed) {
     const PrefService::PrefInitializationStatus status =
         GetLocalState()->GetInitializationStatus();
@@ -1307,7 +1307,7 @@ void WizardController::OnEnrollmentDone() {
     AutoLaunchKioskApp(KioskAppType::kArcApp);
   } else if (g_browser_process->platform_part()
                  ->browser_policy_connector_chromeos()
-                 ->IsEnterpriseManaged()) {
+                 ->IsDeviceEnterpriseManaged()) {
     // Could be not managed in tests.
     DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
               OobeUI::kOobeDisplay);
@@ -2123,7 +2123,7 @@ void WizardController::OnTimezoneResolved(
 
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged()) {
+  if (connector->IsDeviceEnterpriseManaged()) {
     std::string policy_timezone;
     if (CrosSettings::Get()->GetString(kSystemTimezonePolicy,
                                        &policy_timezone) &&
@@ -2238,7 +2238,7 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
 void WizardController::ShowEnrollmentScreenIfEligible() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  const bool enterprise_managed = connector->IsEnterpriseManaged();
+  const bool enterprise_managed = connector->IsDeviceEnterpriseManaged();
   const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);

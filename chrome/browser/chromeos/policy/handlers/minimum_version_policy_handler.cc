@@ -210,7 +210,7 @@ bool MinimumVersionPolicyHandler::IsDeadlineTimerRunningForTesting() const {
 }
 
 bool MinimumVersionPolicyHandler::IsPolicyApplicable() {
-  bool device_managed = delegate_->IsEnterpriseManaged();
+  bool device_managed = delegate_->IsDeviceEnterpriseManaged();
   bool is_kiosk = delegate_->IsKioskMode();
   return device_managed && !is_kiosk;
 }

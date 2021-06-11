@@ -36,10 +36,10 @@ namespace extensions {
 
 namespace {
 
-bool IsEnterpriseManaged() {
+bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
-      ->IsEnterpriseManaged();
+      ->IsDeviceEnterpriseManaged();
 }
 
 bool IsChild(Profile* profile) {
@@ -59,7 +59,8 @@ bool IsOwnerProfile(Profile* profile) {
 
 bool CanModifyUserList(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return !IsEnterpriseManaged() && IsOwnerProfile(profile) && !IsChild(profile);
+  return !IsDeviceEnterpriseManaged() && IsOwnerProfile(profile) &&
+         !IsChild(profile);
 }
 
 bool IsExistingUser(const std::string& username) {
@@ -263,7 +264,7 @@ UsersPrivateIsUserListManagedFunction::
     ~UsersPrivateIsUserListManagedFunction() {}
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserListManagedFunction::Run() {
-  return RespondNow(OneArgument(base::Value(IsEnterpriseManaged())));
+  return RespondNow(OneArgument(base::Value(IsDeviceEnterpriseManaged())));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

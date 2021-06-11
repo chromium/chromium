@@ -108,7 +108,7 @@ void StartLoginOobeSession() {
   // Reset reboot after update flag when login screen is shown.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector->IsEnterpriseManaged()) {
+  if (!connector->IsDeviceEnterpriseManaged()) {
     PrefService* local_state = g_browser_process->local_state();
     local_state->ClearPref(prefs::kRebootAfterUpdate);
   }

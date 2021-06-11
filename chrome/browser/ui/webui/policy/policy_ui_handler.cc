@@ -661,7 +661,7 @@ void PolicyUIHandler::RegisterMessages() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged()) {
+  if (connector->IsDeviceEnterpriseManaged()) {
     if (connector->GetDeviceActiveDirectoryPolicyManager()) {
       device_status_provider_ =
           std::make_unique<DeviceActiveDirectoryPolicyStatusProvider>(

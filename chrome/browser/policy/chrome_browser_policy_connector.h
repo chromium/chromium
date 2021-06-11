@@ -53,7 +53,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
 
   bool HasMachineLevelPolicies() override;
 

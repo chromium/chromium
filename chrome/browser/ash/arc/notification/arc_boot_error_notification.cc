@@ -46,7 +46,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   // enterprise managed device. crbug.com/656788.
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged() &&
+          ->IsDeviceEnterpriseManaged() &&
       user_manager::UserManager::Get()->GetUsers().size() > 1) {
     LOG(WARNING) << "ARC booting is aborted due to low disk space, but the "
                  << "notification was suppressed on a managed device.";

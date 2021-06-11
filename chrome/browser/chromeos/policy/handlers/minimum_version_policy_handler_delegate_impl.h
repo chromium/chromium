@@ -16,7 +16,7 @@ class MinimumVersionPolicyHandlerDelegateImpl
   MinimumVersionPolicyHandlerDelegateImpl();
 
   bool IsKioskMode() const override;
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
   bool IsUserLoggedIn() const override;
   bool IsUserEnterpriseManaged() const override;
   bool IsLoginSessionState() const override;

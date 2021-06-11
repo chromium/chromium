@@ -363,7 +363,7 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
   ChromeBrowserPolicyConnector::Shutdown();
 }
 
-bool BrowserPolicyConnectorChromeOS::IsEnterpriseManaged() const {
+bool BrowserPolicyConnectorChromeOS::IsDeviceEnterpriseManaged() const {
   return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 

@@ -149,7 +149,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
 
   const bool is_enterprise_enrolled = g_browser_process->platform_part()
                                           ->browser_policy_connector_chromeos()
-                                          ->IsEnterpriseManaged();
+                                          ->IsDeviceEnterpriseManaged();
 
   // Do not show survey if this is a non dogfood enterprise enrolled device.
   if (is_enterprise_enrolled &&

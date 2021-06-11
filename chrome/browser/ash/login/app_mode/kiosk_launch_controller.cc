@@ -77,15 +77,15 @@ enum KioskLaunchType {
   KIOSK_LAUNCH_TYPE_COUNT  // This must be the last entry.
 };
 
-bool IsEnterpriseManaged() {
+bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
-      ->IsEnterpriseManaged();
+      ->IsDeviceEnterpriseManaged();
 }
 
 void RecordKioskLaunchUMA(bool is_auto_launch) {
   const KioskLaunchType launch_type =
-      IsEnterpriseManaged()
+      IsDeviceEnterpriseManaged()
           ? (is_auto_launch ? KIOSK_LAUNCH_ENTERPRISE_AUTO_LAUNCH
                             : KIOKS_LAUNCH_ENTERPRISE_MANUAL_LAUNCH)
           : (is_auto_launch ? KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH
@@ -94,7 +94,7 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
   UMA_HISTOGRAM_ENUMERATION("Kiosk.LaunchType", launch_type,
                             KIOSK_LAUNCH_TYPE_COUNT);
 
-  if (IsEnterpriseManaged()) {
+  if (IsDeviceEnterpriseManaged()) {
     enterprise_user_session_metrics::RecordSignInEvent(
         is_auto_launch
             ? enterprise_user_session_metrics::SignInEventType::AUTOMATIC_KIOSK
@@ -564,7 +564,7 @@ bool KioskLaunchController::CanConfigureNetwork() {
   if (can_configure_network_callback)
     return can_configure_network_callback->Run();
 
-  if (IsEnterpriseManaged()) {
+  if (IsDeviceEnterpriseManaged()) {
     bool should_prompt;
     if (CrosSettings::Get()->GetBoolean(
             kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
@@ -582,7 +582,7 @@ bool KioskLaunchController::NeedOwnerAuthToConfigureNetwork() {
   if (need_owner_auth_to_configure_network_callback)
     return need_owner_auth_to_configure_network_callback->Run();
 
-  return !IsEnterpriseManaged();
+  return !IsDeviceEnterpriseManaged();
 }
 
 void KioskLaunchController::MaybeShowNetworkConfigureUI() {

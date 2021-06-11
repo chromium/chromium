@@ -90,7 +90,7 @@ void DeviceNetworkConfigurationUpdater::Init() {
   // The highest authority regarding whether cellular data roaming should be
   // allowed is the Device Policy. If there is no Device Policy, then
   // data roaming should be allowed if this is a Cellular First device.
-  if (!connector->IsEnterpriseManaged() &&
+  if (!connector->IsDeviceEnterpriseManaged() &&
       chromeos::switches::IsCellularFirstDevice()) {
     network_device_handler_->SetCellularAllowRoaming(true);
   } else {
@@ -101,7 +101,7 @@ void DeviceNetworkConfigurationUpdater::Init() {
   // Set up MAC address randomization if we are not enterprise managed.
 
   network_device_handler_->SetMACAddressRandomizationEnabled(
-      !connector->IsEnterpriseManaged());
+      !connector->IsDeviceEnterpriseManaged());
 }
 
 void DeviceNetworkConfigurationUpdater::ImportClientCertificates() {

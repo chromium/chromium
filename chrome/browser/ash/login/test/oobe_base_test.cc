@@ -244,7 +244,7 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
   bool isEnterpriseManaged = !g_browser_process->platform_part()
                                   ->browser_policy_connector_chromeos()
-                                  ->IsEnterpriseManaged();
+                                  ->IsDeviceEnterpriseManaged();
   return isEnterpriseManaged ? UserCreationView::kScreenId
                              : GaiaView::kScreenId;
 }

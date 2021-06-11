@@ -61,7 +61,7 @@ bool HasBrowserPoliciesApplied(Profile* profile) {
   // The machine may be enrolled, via Google Cloud or Active Directory.
   auto* browser_connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (browser_connector->IsEnterpriseManaged())
+  if (browser_connector->IsDeviceEnterpriseManaged())
     return true;
 #else
   // There may be policies set in a platform-specific way (e.g. Windows

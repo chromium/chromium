@@ -154,7 +154,7 @@ void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   // mode domain.
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged()) {
+          ->IsDeviceEnterpriseManaged()) {
     if (!IsLegacyDemoRetailModeSession(user))
       AttemptRemoval(RemovalReason::kEnterpriseEnrolled, RemovalCallback());
     return;

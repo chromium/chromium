@@ -67,7 +67,7 @@ void BrowserPolicyConnectorIOS::Init(
   InitInternal(local_state, std::move(device_management_service));
 }
 
-bool BrowserPolicyConnectorIOS::IsEnterpriseManaged() const {
+bool BrowserPolicyConnectorIOS::IsDeviceEnterpriseManaged() const {
   NOTREACHED() << "This method is only defined for Chrome OS";
   return false;
 }

@@ -636,7 +636,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   policy::DeviceLocalAccount::Type account_type;
-  if (user && connector->IsEnterpriseManaged() &&
+  if (user && connector->IsDeviceEnterpriseManaged() &&
       policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
                                        &account_type)) {
     if (account_type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION)
@@ -688,7 +688,7 @@ void ExternalProviderImpl::CreateExternalProviders(
           g_browser_process->platform_part()
               ->browser_policy_connector_chromeos();
       ManifestLocation location = ManifestLocation::kExternalPref;
-      if (connector && connector->IsEnterpriseManaged())
+      if (connector && connector->IsDeviceEnterpriseManaged())
         location = ManifestLocation::kExternalPolicy;
 
       auto kiosk_app_provider = std::make_unique<ExternalProviderImpl>(

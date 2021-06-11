@@ -76,7 +76,7 @@ class BrowserPolicyConnectorChromeOS
       override;
 
   // Checks whether this devices is under any kind of enterprise management.
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
 
   bool HasMachineLevelPolicies() override;
 

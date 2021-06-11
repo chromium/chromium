@@ -123,7 +123,7 @@ KeyedService* ProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (user_manager::UserManager::IsInitialized() &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
-      connector->IsEnterpriseManaged()) {
+      connector->IsDeviceEnterpriseManaged()) {
     identity_provider = std::make_unique<DeviceIdentityProvider>(
         DeviceOAuth2TokenServiceFactory::Get());
   }

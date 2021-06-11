@@ -1130,7 +1130,7 @@ bool PrefsUtil::IsPrefTypeURL(const std::string& pref_name) {
 bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector->IsEnterpriseManaged())
+  if (!connector->IsDeviceEnterpriseManaged())
     return false;
   if (IsPrivilegedCrosSetting(pref_name))
     return true;

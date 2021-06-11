@@ -65,7 +65,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   policy::MinimumVersionPolicyHandler* handler =
       connector->GetMinimumVersionPolicyHandler();
-  bool device_managed = connector->IsEnterpriseManaged();
+  bool device_managed = connector->IsDeviceEnterpriseManaged();
 
   // |eol_return_banner_text| contains the update required end of life banner
   // text which is left empty when the banner should not be shown.

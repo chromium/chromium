@@ -285,7 +285,7 @@ void CreateConfigurationPolicyProvider(
             base::ThreadTaskRunnerHandle::Get());
 
     bool wildcard_match = false;
-    if (connector->IsEnterpriseManaged() &&
+    if (connector->IsDeviceEnterpriseManaged() &&
         ash::CrosSettings::Get()->IsUserAllowlisted(
             account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
         wildcard_match &&
