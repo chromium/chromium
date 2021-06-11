@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
+#include "components/arc/compat_mode/resize_util.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -57,13 +58,6 @@ class ResizeToggleMenu : public views::WidgetObserver {
     bool is_selected_{false};
   };
 
-  enum class CommandId {
-    kResizePhone,
-    kResizeTablet,
-    kResizable,
-    kOpenSettings,
-  };
-
   ResizeToggleMenu(views::Widget* widget,
                    ArcResizeLockPrefDelegate* pref_delegate);
   ResizeToggleMenu(const ResizeToggleMenu&) = delete;
@@ -80,14 +74,14 @@ class ResizeToggleMenu : public views::WidgetObserver {
 
   void UpdateSelectedButton();
 
-  void ExecuteCommand(CommandId command_id);
+  void ExecuteCommand(ResizeCompatMode mode);
 
   gfx::Rect GetAnchorRect() const;
 
   std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
       views::Widget* parent,
       gfx::Rect anchor_rect,
-      base::RepeatingCallback<void(CommandId)> command_handler);
+      base::RepeatingCallback<void(ResizeCompatMode)> command_handler);
 
   views::Widget* widget_;
 

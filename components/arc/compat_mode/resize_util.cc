@@ -104,4 +104,23 @@ void EnableResizingWithConfirmationIfNeeded(
       widget, pref_delegate, base::DoNothing(), mojom::ArcResizeLockState::OFF);
 }
 
+absl::optional<ResizeCompatMode> PredictCurrentMode(
+    views::Widget* widget,
+    ArcResizeLockPrefDelegate* pref_delegate) {
+  const int width = widget->GetWindowBoundsInScreen().width();
+  const int height = widget->GetWindowBoundsInScreen().height();
+  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
+  // We don't use the exact size here to predict tablet or phone size because
+  // the window size might be bigger than it due to the ARC app-side minimum
+  // size constraints.
+  if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
+                    mojom::ArcResizeLockState::ON)
+    return ResizeCompatMode::kResizable;
+  else if (width < height)
+    return ResizeCompatMode::kPhone;
+  else if (width > height)
+    return ResizeCompatMode::kTablet;
+  return absl::nullopt;
+}
+
 }  // namespace arc

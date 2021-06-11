@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ARC_COMPAT_MODE_RESIZE_UTIL_H_
 #define COMPONENTS_ARC_COMPAT_MODE_RESIZE_UTIL_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -12,6 +14,12 @@ class Widget;
 namespace arc {
 
 class ArcResizeLockPrefDelegate;
+
+enum class ResizeCompatMode {
+  kPhone,
+  kTablet,
+  kResizable,
+};
 
 void ResizeLockToPhoneWithConfirmationIfNeeded(
     views::Widget* widget,
@@ -22,6 +30,10 @@ void ResizeLockToTabletWithConfirmationIfNeeded(
     ArcResizeLockPrefDelegate* pref_delegate);
 
 void EnableResizingWithConfirmationIfNeeded(
+    views::Widget* widget,
+    ArcResizeLockPrefDelegate* pref_delegate);
+
+absl::optional<ResizeCompatMode> PredictCurrentMode(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 

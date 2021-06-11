@@ -4,16 +4,11 @@
 
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
-#include "components/arc/compat_mode/resize_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -32,25 +27,6 @@
 namespace arc {
 
 namespace {
-
-absl::optional<ResizeToggleMenu::CommandId> PredictCurrentMode(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate) {
-  const int width = widget->GetWindowBoundsInScreen().width();
-  const int height = widget->GetWindowBoundsInScreen().height();
-  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
-  // We don't use the exact size here to predict tablet or phone size because
-  // the window size might be bigger than it due to the ARC app-side minimum
-  // size constraints.
-  if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
-                    mojom::ArcResizeLockState::ON)
-    return ResizeToggleMenu::CommandId::kResizable;
-  else if (width < height)
-    return ResizeToggleMenu::CommandId::kResizePhone;
-  else if (width > height)
-    return ResizeToggleMenu::CommandId::kResizeTablet;
-  return absl::nullopt;
-}
 
 class RoundedCornerBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
@@ -206,7 +182,7 @@ std::unique_ptr<views::BubbleDialogDelegateView>
 ResizeToggleMenu::MakeBubbleDelegateView(
     views::Widget* parent,
     gfx::Rect anchor_rect,
-    base::RepeatingCallback<void(CommandId)> command_handler) {
+    base::RepeatingCallback<void(ResizeCompatMode)> command_handler) {
   constexpr int kCornerRadius = 16;
 
   auto delegate_view =
@@ -232,21 +208,21 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   const auto add_menu_button = [&delegate_view, &command_handler](
-                                   CommandId command_id,
+                                   ResizeCompatMode command_id,
                                    const gfx::VectorIcon& icon, int string_id) {
     return delegate_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
   phone_button_ =
-      add_menu_button(CommandId::kResizePhone, ash::kSystemMenuPhoneIcon,
+      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
   tablet_button_ =
-      add_menu_button(CommandId::kResizeTablet, ash::kSystemMenuTabletIcon,
+      add_menu_button(ResizeCompatMode::kTablet, ash::kSystemMenuTabletIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
   // TODO(b/185720091): Replace resizable icon.
-  resizable_button_ =
-      add_menu_button(CommandId::kResizable, ash::kSystemMenuComputerIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
+  resizable_button_ = add_menu_button(
+      ResizeCompatMode::kResizable, ash::kSystemMenuComputerIcon,
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
 
@@ -257,30 +233,26 @@ void ResizeToggleMenu::UpdateSelectedButton() {
   DCHECK(widget_);
   const auto selected_mode = PredictCurrentMode(widget_, pref_delegate_);
   phone_button_->SetSelected(selected_mode &&
-                             *selected_mode == CommandId::kResizePhone);
+                             *selected_mode == ResizeCompatMode::kPhone);
   tablet_button_->SetSelected(selected_mode &&
-                              *selected_mode == CommandId::kResizeTablet);
-  resizable_button_->SetSelected(selected_mode &&
-                                 *selected_mode == CommandId::kResizable);
+                              *selected_mode == ResizeCompatMode::kTablet);
+  resizable_button_->SetSelected(
+      selected_mode && *selected_mode == ResizeCompatMode::kResizable);
 }
 
-void ResizeToggleMenu::ExecuteCommand(CommandId command_id) {
+void ResizeToggleMenu::ExecuteCommand(ResizeCompatMode command_id) {
   switch (command_id) {
-    case CommandId::kResizePhone:
+    case ResizeCompatMode::kPhone:
       ResizeLockToPhoneWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
-    case CommandId::kResizeTablet:
+    case ResizeCompatMode::kTablet:
       ResizeLockToTabletWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
-    case CommandId::kResizable:
+    case ResizeCompatMode::kResizable:
       EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);
       // Enable resizing does not trigger bounds change, so force to update
       // selected button status.
       UpdateSelectedButton();
-      break;
-    case CommandId::kOpenSettings:
-      // TODO(b/181614585): Implement this.
-      NOTIMPLEMENTED();
       break;
   }
 }

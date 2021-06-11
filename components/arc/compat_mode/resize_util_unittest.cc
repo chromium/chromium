@@ -98,6 +98,8 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
+  EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
+            ResizeCompatMode::kPhone);
 }
 
 // Test that resize tablet works properly in both needs-confirmation and no
@@ -118,6 +120,8 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
+  EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
+            ResizeCompatMode::kTablet);
 }
 
 // Test that enabling resizing works properly in both needs-confirmation and no
@@ -135,6 +139,8 @@ TEST_F(ResizeUtilTest, TestEnableResizing) {
   EnableResizingWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_EQ(pref_delegate()->GetResizeLockState(kTestAppId),
             mojom::ArcResizeLockState::OFF);
+  EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
+            ResizeCompatMode::kResizable);
 }
 
 }  // namespace arc
