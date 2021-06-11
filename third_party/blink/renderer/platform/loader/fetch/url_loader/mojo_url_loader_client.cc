@@ -446,6 +446,7 @@ void MojoURLLoaderClient::OnStartLoadingResponseBody(
   has_received_response_body_ = true;
 
   if (!on_receive_response_time_.is_null()) {
+    recordreplay::Assert("MojoURLLoaderClient::OnStartLoadingResponseBody #1");
     UMA_HISTOGRAM_TIMES(
         "Renderer.OnReceiveResponseToOnStartLoadingResponseBody",
         base::TimeTicks::Now() - on_receive_response_time_);

@@ -702,8 +702,10 @@ void ResourceLoader::DidChangePriority(ResourceLoadPriority load_priority,
 }
 
 void ResourceLoader::ScheduleCancel() {
-  if (!cancel_timer_.IsActive())
+  if (!cancel_timer_.IsActive()) {
+    recordreplay::Assert("ResourceLoader::ScheduleCancel #1");
     cancel_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 }
 
 void ResourceLoader::CancelTimerFired(TimerBase*) {
