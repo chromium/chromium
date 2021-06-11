@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -186,7 +188,13 @@ void SpeechRecognitionServiceTest::SetUp() {
 void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
     const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
-  recognition_results_.push_back(std::move(result.transcription));
+  std::string transcription = result.transcription;
+  // The language pack used by the MacOS builder is newer and has punctuation
+  // enabled whereas the one used by the Linux builder does not.
+  transcription.erase(
+      std::remove(transcription.begin(), transcription.end(), ','),
+      transcription.end());
+  recognition_results_.push_back(std::move(transcription));
   std::move(reply).Run(is_client_requesting_speech_recognition_);
 }
 

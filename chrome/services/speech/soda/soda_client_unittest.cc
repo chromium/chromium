@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/services/speech/soda/soda_client.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -65,6 +66,9 @@ void OnSodaResponse(const char* serialized_proto,
 }
 
 void SodaClientUnitTest::AddRecognitionResult(std::string result) {
+  // The language pack used by the MacOS builder is newer and has punctuation
+  // enabled whereas the one used by the Linux builder does not.
+  result.erase(std::remove(result.begin(), result.end(), ','), result.end());
   recognition_results_.push_back(std::move(result));
 }
 
