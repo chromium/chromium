@@ -256,11 +256,10 @@ class ExtensionInstallPrompt {
 
   using DoneCallback = base::OnceCallback<void(Result result)>;
 
-  typedef base::RepeatingCallback<void(
-      ExtensionInstallPromptShowParams*,
+  using ShowDialogCallback = base::RepeatingCallback<void(
+      std::unique_ptr<ExtensionInstallPromptShowParams>,
       DoneCallback,
-      std::unique_ptr<ExtensionInstallPrompt::Prompt>)>
-      ShowDialogCallback;
+      std::unique_ptr<ExtensionInstallPrompt::Prompt>)>;
 
   // Callback to show the default extension install dialog.
   // The implementations of this function are platform-specific.
