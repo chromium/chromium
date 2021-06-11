@@ -45,6 +45,34 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 
+namespace {
+// Test implementation of PermissionUiSelector that always returns a canned
+// decision.
+class TestQuietNotificationPermissionUiSelector
+    : public permissions::PermissionUiSelector {
+ public:
+  explicit TestQuietNotificationPermissionUiSelector(
+      const Decision& canned_decision)
+      : canned_decision_(canned_decision) {}
+  ~TestQuietNotificationPermissionUiSelector() override = default;
+
+ protected:
+  // permissions::PermissionUiSelector:
+  void SelectUiToUse(permissions::PermissionRequest* request,
+                     DecisionMadeCallback callback) override {
+    std::move(callback).Run(canned_decision_);
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return request_type == permissions::RequestType::kNotifications;
+  }
+
+ private:
+  Decision canned_decision_;
+};
+}  // namespace
+
 class PermissionPromptBubbleViewBrowserTest
     : public DialogBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -187,6 +215,12 @@ class PermissionPromptBubbleViewBrowserTest
         ADD_FAILURE() << "Not a permission type, or one that doesn't prompt.";
         return;
     }
+  }
+
+  void VerifyDisposition(permissions::PermissionPromptDisposition disposition) {
+    EXPECT_EQ(
+        test_api_->manager()->current_request_prompt_disposition_for_testing(),
+        disposition);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -475,6 +509,173 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   ShowAndVerifyUi();
 }
 #endif
+
+// Test that the quiet prompt disposition returns the same value when permission
+// is not considered abusive (currently only applicable for Notifications) vs.
+// when permission is not considered abusive.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
+                       DispositionNoAbusiveTest) {
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+}
+
+class PermissionPromptBubbleViewQuietUiBrowserTest
+    : public PermissionPromptBubbleViewBrowserTest {
+ public:
+  PermissionPromptBubbleViewQuietUiBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kQuietNotificationPrompts, true);
+  }
+
+ protected:
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+
+  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
+                           absl::optional<WarningReason> warning_reason) {
+    test_api_->manager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
+                                                        warning_reason)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the quiet prompt disposition differs when permission is considered
+// abusive (currently only applicable for Notifications) vs. when permission is
+// not considered abusive. For `QuietUiReason::kTriggeredDueToAbusiveContent`
+// reputation we show a static UI icon.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewQuietUiBrowserTest,
+                       DispositionAbusiveContentTest) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
+                      WarningReason::kAbusiveContent);
+
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(
+      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewQuietUiBrowserTest,
+                       DispositionCrowdDenyTest) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredByCrowdDeny, absl::nullopt);
+
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(
+      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
+}
+
+// For `QuietUiReason::kEnabledInPrefs` reputation we show an animated quiet UI
+// icon.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewQuietUiBrowserTest,
+                       DispositionEnabledInPrefsTest) {
+  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, absl::nullopt);
+
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(permissions::PermissionPromptDisposition::
+                        LOCATION_BAR_RIGHT_ANIMATED_ICON);
+}
+
+// For `QuietUiReason::kPredictedVeryUnlikelyGrant` reputation we show an
+// animated quiet UI icon.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewQuietUiBrowserTest,
+                       DispositionPredictedVeryUnlikelyGrantTest) {
+  SetCannedUiDecision(QuietUiReason::kPredictedVeryUnlikelyGrant,
+                      absl::nullopt);
+
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(permissions::PermissionPromptDisposition::
+                        LOCATION_BAR_RIGHT_ANIMATED_ICON);
+}
+
+// For `QuietUiReason::kTriggeredDueToAbusiveRequests` reputation we show a
+// static quiet UI icon.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewQuietUiBrowserTest,
+                       DispositionAbusiveRequestsTest) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                      WarningReason::kAbusiveRequests);
+
+  ShowUi("geolocation");
+
+  VerifyDisposition(
+      GetParam()
+          ? permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP
+          : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  ShowUi("notifications");
+
+  VerifyDisposition(
+      permissions::PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PermissionPromptBubbleViewQuietUiBrowserTest,
+                         ::testing::Values(false, true));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionPromptBubbleViewBrowserTest,
