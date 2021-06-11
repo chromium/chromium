@@ -278,15 +278,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 }
 
 // Tests that the user isn't signed out and the UI is correct when the
-// disconnect is cancelled in the Account Settings screen.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/669613): Re-enable this test on devices.
-#define MAYBE_testSignInDisconnectCancelled \
-  DISABLED_testSignInDisconnectCancelled
-#else
-#define MAYBE_testSignInDisconnectCancelled testSignInDisconnectCancelled
-#endif
-- (void)MAYBE_testSignInDisconnectCancelled {
+// sign-out is cancelled in the Account Settings screen.
+- (void)testSignOutCancelled {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
 
   // Sign In |fakeIdentity|, then open the Account Settings.
@@ -294,7 +287,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  // Open the "Disconnect Account" dialog, then tap "Cancel".
+  // Open the SignOut dialog, then tap "Cancel".
   [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
   // Note that the iPad does not provide a CANCEL button by design. Click
   // anywhere on the screen to exit.
