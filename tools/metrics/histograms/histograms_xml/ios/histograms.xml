@@ -905,6 +905,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReadingList.Javascript.ExecutionTime" units="ms"
+    expires_after="2022-06-11">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    Tracks the execution time of the distillability scoring JavaScript for the
+    Reading List Messages presentation heuristic. Reported for each main frame
+    navigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReadingList.Javascript.LongPageDistillabilityScore"
+    units="Score" expires_after="2022-06-11">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    The calculated distillability score for a page returned by
+    DistillablePageDetector::GetLongPageModel(). Score is translated by +1 to
+    make histogram logging simpler by keeping all scores positive. It is
+    multiplied by 100 to get granular scoring logging to the hundredth digit.
+    Reported for each main frame navigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReadingList.Javascript.RegularDistillabilityScore"
+    units="Score" expires_after="2022-06-11">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    The calculated distillability score for a page returned by
+    DistillablePageDetector::GetNewModel(). Score is translated by +1 to make
+    histogram logging simpler by keeping all scores positive. It is multiplied
+    by 100 to get granular scoring logging to the hundredth digit. Reported for
+    each main frame navigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReadingList.Javascript.TimeToRead" units="Minutes"
+    expires_after="2022-06-11">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    The estimated &quot;time to read&quot; calculated for a page. Reported for
+    each main frame navigation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
     expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>

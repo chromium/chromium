@@ -88,6 +88,7 @@ source_set("reading_list_javascript_feature") {
     ":distiller_js",
     "//base",
     "//components/dom_distiller/core",
+    "//ios/chrome/browser",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
   ]
