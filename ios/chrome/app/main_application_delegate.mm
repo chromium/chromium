@@ -51,7 +51,7 @@ const int kMainIntentCheckDelay = 1;
   // Helper to open new tabs.
   id<TabOpening> _tabOpener;
   // Handles tab switcher.
-  id<TabSwitching> _tabSwitcherProtocol;
+  id<TabSwitching> _tabSwitcher;
 }
 
 // The state representing the only "scene" on iOS 12. On iOS 13, only created
@@ -94,7 +94,7 @@ const int kMainIntentCheckDelay = 1;
           [[SceneController alloc] initWithSceneState:_sceneState];
       _sceneState.controller = _sceneController;
 
-      _tabSwitcherProtocol = _sceneController;
+      _tabSwitcher = _sceneController;
       _tabOpener = _sceneController;
     }
   }
@@ -171,7 +171,7 @@ const int kMainIntentCheckDelay = 1;
 
   if (!base::ios::IsSceneStartupSupported()) {
     [_appState resumeSessionWithTabOpener:_tabOpener
-                              tabSwitcher:_tabSwitcherProtocol
+                              tabSwitcher:_tabSwitcher
                     connectionInformation:self.sceneController];
   }
 }
@@ -260,11 +260,19 @@ const int kMainIntentCheckDelay = 1;
 - (void)sceneWillConnect:(NSNotification*)notification {
   DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
-    UIWindowScene* scene = (UIWindowScene*)notification.object;
-    SceneDelegate* sceneDelegate = (SceneDelegate*)scene.delegate;
-    SceneController* sceneController = sceneDelegate.sceneController;
+    UIWindowScene* scene =
+        base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+    SceneDelegate* sceneDelegate =
+        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
-    _tabSwitcherProtocol = sceneController;
+    // Under some iOS 15 betas, Chrome gets scene connection events for some
+    // system scene connections. To handle this, early return if the connecting
+    // scene doesn't have a valid delegate. (See crbug.com/1217461)
+    if (!sceneDelegate)
+      return;
+
+    SceneController* sceneController = sceneDelegate.sceneController;
+    _tabSwitcher = sceneController;
     _tabOpener = sceneController;
 
     // TODO(crbug.com/1060645): This should be called later, or this flow should
