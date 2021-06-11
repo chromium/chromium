@@ -25,6 +25,8 @@ bool StyleRecalcChange::TraverseChild(const Node& node) const {
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
+  if (flags_ & kSuppressRecalc)
+    return false;
   if (RecalcChildren())
     return true;
   if (node.NeedsStyleRecalc())
@@ -58,16 +60,12 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
 
 StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
     const Element& element) const {
-  // kRecalc[Descendant]ContainerQueryDependent means we are at the container
-  // root for a container query recalc.
-  if (propagate_ == kRecalcContainerQueryDependent)
-    return flags_ | kRecalcContainer;
-  if (propagate_ == kRecalcDescendantContainerQueryDependent)
-    return flags_ | kRecalcDescendantContainers;
-
   Flags result = flags_;
 
-  if ((result & kRecalcContainerFlags) == kRecalcContainer) {
+  // Note that kSuppressRecalc is used on the root container for the
+  // interleaved style recalc.
+  if ((result & (kRecalcContainerFlags | kSuppressRecalc)) ==
+      kRecalcContainer) {
     // Don't traverse into children if we hit a descendant container while
     // recalculating container queries. If the queries for this container also
     // changes, we will enter another container query recalc for this subtree
@@ -76,6 +74,8 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
     if (old_style && old_style->IsContainerForContainerQueries())
       result &= ~kRecalcContainer;
   }
+
+  result &= ~kSuppressRecalc;
 
   return result;
 }

@@ -2027,20 +2027,34 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       ToPhysicalSize(logical_size, writing_mode), style);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
-  StyleRecalcChange::Propagate propagate =
-      StyleRecalcChange::kRecalcContainerQueryDependent;
+  StyleRecalcChange change;
 
   auto* evaluator = container.GetContainerQueryEvaluator();
   DCHECK(evaluator);
-  auto change = evaluator->ContainerChanged(physical_size, physical_axes);
-  if (change == ContainerQueryEvaluator::Change::kNone)
-    return;
-  if (change == ContainerQueryEvaluator::Change::kNamed)
-    propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
+
+  switch (evaluator->ContainerChanged(physical_size, physical_axes)) {
+    case ContainerQueryEvaluator::Change::kNone:
+      return;
+    case ContainerQueryEvaluator::Change::kUnnamed:
+      change = change.ForceRecalcContainer();
+      break;
+    case ContainerQueryEvaluator::Change::kNamed:
+      change = change.ForceRecalcDescendantContainers();
+      break;
+  }
+
+  // The container node must not need recalc at this point.
+  DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
+
+  // If the container itself depends on an outer container, then its
+  // DependsOnContainerQueries flag will be set, and we would recalc its
+  // style (due to ForceRecalcContainer/ForceRecalcDescendantContainers).
+  // This is not necessary, hence we suppress recalc for this element.
+  change = change.SuppressRecalc();
 
   NthIndexCache nth_index_cache(GetDocument());
   style_recalc_root_.Update(nullptr, &container);
-  RecalcStyle({propagate}, StyleRecalcContext());
+  RecalcStyle(change, StyleRecalcContext());
 
   // Nodes are marked for whitespace reattachment for DOM removal only. This set
   // should have been cleared before layout.
