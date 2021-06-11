@@ -45157,6 +45157,7 @@ from previous Chrome versions.
   <int value="-2012266745"
       label="OmniboxLocalZeroSuggestFrecencyRanking:disabled"/>
   <int value="-2011532551" label="SignedExchangeSubresourcePrefetch:disabled"/>
+  <int value="-2011428140" label="RelatedSearchesAlternateUx:disabled"/>
   <int value="-2010634516" label="OmniboxLocalEntitySuggestions:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
@@ -45662,6 +45663,7 @@ from previous Chrome versions.
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
+  <int value="-1597053083" label="RelatedSearchesInBar:enabled"/>
   <int value="-1596859081" label="WebAuthenticationPINSupport:enabled"/>
   <int value="-1596559650" label="max-tiles-for-interest-area"/>
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
@@ -46365,6 +46367,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:enabled"/>
   <int value="-1042579955" label="ChromeOSParentalControlsSettings:enabled"/>
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
+  <int value="-1041643783" label="SingleTouchSelect:enabled"/>
   <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>
   <int value="-1039889738" label="NativeNotifications:enabled"/>
@@ -47181,6 +47184,7 @@ from previous Chrome versions.
   <int value="-333216449" label="MouseSubframeNoImplicitCapture:enabled"/>
   <int value="-329727402" label="disable-files-quick-view"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
+  <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
@@ -47871,6 +47875,7 @@ from previous Chrome versions.
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="293134455" label="AutofillSendBillingCustomerNumber:disabled"/>
   <int value="293996306" label="ArrayPrototypeValues:disabled"/>
+  <int value="294150128" label="RelatedSearchesSimplifiedUx:enabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
   <int value="296296761" label="MediaFoundationVideoCapture:disabled"/>
@@ -47962,6 +47967,7 @@ from previous Chrome versions.
   <int value="363997248" label="UseXpsForPrinting:enabled"/>
   <int value="365068212" label="PiexWasm:disabled"/>
   <int value="365467768" label="prefetch-search-results"/>
+  <int value="365737168" label="SingleTouchSelect:disabled"/>
   <int value="367063319" label="PasswordImport:disabled"/>
   <int value="368854020" label="ash-screen-rotation-animation"/>
   <int value="369301993" label="PrinterStatus:enabled"/>
@@ -48804,6 +48810,7 @@ from previous Chrome versions.
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
+  <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>
   <int value="1094506652" label="UseGoogleLocalNtp:enabled"/>
   <int value="1095061640" label="enable-prominent-url-app-flow"/>
@@ -48946,6 +48953,7 @@ from previous Chrome versions.
   <int value="1203821857" label="Vulkan:disabled"/>
   <int value="1205849612" label="enable-sync-synced-notifications"/>
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
+  <int value="1206140820" label="RelatedSearchesInBar:disabled"/>
   <int value="1210298193" label="FontAccessPersistent:enabled"/>
   <int value="1210343926" label="enable-drop-sync-credential"/>
   <int value="1211284676" label="V8NoTurbo:enabled"/>

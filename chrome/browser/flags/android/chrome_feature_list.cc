@@ -217,6 +217,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReaderModeInCCT,
     &kReengagementNotification,
     &kRelatedSearches,
+    &kRelatedSearchesAlternateUx,
+    &kRelatedSearchesInBar,
+    &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
     &kSearchEnginePromoExistingDevice,
     &kSearchEnginePromoNewDevice,
@@ -224,6 +227,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
+    &kSingleTouchSelect,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -606,6 +610,15 @@ const base::Feature kReengagementNotification{
 const base::Feature kRelatedSearches{"RelatedSearches",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRelatedSearchesAlternateUx{
+    "RelatedSearchesAlternateUx", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRelatedSearchesInBar{"RelatedSearchesInBar",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRelatedSearchesSimplifiedUx{
+    "RelatedSearchesSimplifiedUx", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -617,6 +630,9 @@ const base::Feature kServiceManagerForDownload{
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSingleTouchSelect{"SingleTouchSelect",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSpannableInlineAutocomplete{
     "SpannableInlineAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};

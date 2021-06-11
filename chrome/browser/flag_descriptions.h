@@ -1884,8 +1884,20 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesName[];
 extern const char kRelatedSearchesDescription[];
 
+extern const char kRelatedSearchesAlternateUxName[];
+extern const char kRelatedSearchesAlternateUxDescription[];
+
+extern const char kRelatedSearchesInBarName[];
+extern const char kRelatedSearchesInBarDescription[];
+
+extern const char kRelatedSearchesSimplifiedUxName[];
+extern const char kRelatedSearchesSimplifiedUxDescription[];
+
 extern const char kRelatedSearchesUiName[];
 extern const char kRelatedSearchesUiDescription[];
+
+extern const char kSingleTouchSelectName[];
+extern const char kSingleTouchSelectDescription[];
 
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];

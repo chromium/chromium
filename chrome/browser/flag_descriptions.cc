@@ -3284,6 +3284,24 @@ const char kRelatedSearchesDescription[] =
     "Enables requesting related searches suggestions. These will be requested "
     "but not shown unless the UI flag is also enabled.";
 
+const char kRelatedSearchesAlternateUxName[] =
+    "Enables showing Related Searches in an alternate user experience.";
+const char kRelatedSearchesAlternateUxDescription[] =
+    "Enables showing related searches with an alternative from the normal "
+    "user experience treatment.";
+
+const char kRelatedSearchesInBarName[] =
+    "Enables showing Related Searches in the peeking bar.";
+const char kRelatedSearchesInBarDescription[] =
+    "Enables showing related searches suggestions in a carousel in the "
+    "peeking bar of the bottom sheet on Android.";
+
+const char kRelatedSearchesSimplifiedUxName[] =
+    "Enables showing Related Searches in a simplified user experience.";
+const char kRelatedSearchesSimplifiedUxDescription[] =
+    "Enables showing related searches with a simplified form of the normal "
+    "user experience treatment.";
+
 const char kRelatedSearchesUiName[] =
     "Forces showing of the Related Searches UI on Android";
 const char kRelatedSearchesUiDescription[] =
@@ -3320,6 +3338,11 @@ const char kSetMarketUrlForTestingName[] = "Set market URL for testing";
 const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "
     "item.";
+
+const char kSingleTouchSelectName[] =
+    "Enables selecting plain text with a single touch.";
+const char kSingleTouchSelectDescription[] =
+    "Enables selecting plain text with a single touch on Android.";
 
 const char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";

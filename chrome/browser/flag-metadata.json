@@ -4496,12 +4496,27 @@
   },
   {
     "name": "related-searches",
-    "owners": [ "ayman", "donnd" ],
+    "owners": [ "donnd", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
+    "name": "related-searches-alternate-ux",
+    "owners": [ "donnd", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
+    "name": "related-searches-in-bar",
+    "owners": [ "donnd", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
+    "name": "related-searches-simplified-ux",
+    "owners": [ "donnd", "related-searches-vteam@google.com" ],
     "expiry_milestone": 97
   },
   {
     "name": "related-searches-ui",
-    "owners": [ "ayman", "donnd" ],
+    "owners": [ "donnd", "related-searches-vteam@google.com" ],
     "expiry_milestone": 97
   },
   {
@@ -4848,6 +4863,11 @@
     "name": "simplify-sign-out-ios",
     "owners": [ "jlebel", "msarda", "fernandex" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "single-touch-select",
+    "owners": [ "donnd", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "_comment1": "Shipping some form of Site Isolation to Android is tracked",
