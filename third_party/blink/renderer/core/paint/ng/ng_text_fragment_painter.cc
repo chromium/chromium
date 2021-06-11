@@ -194,7 +194,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       AsDisplayItemClient(cursor_, selection.has_value());
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
-  // whether the diplay item that contains the actual selection painting is
+  // whether the display item that contains the actual selection painting is
   // reused.
   absl::optional<SelectionBoundsRecorder> selection_recorder;
   if (UNLIKELY(selection && paint_info.phase == PaintPhase::kForeground &&
