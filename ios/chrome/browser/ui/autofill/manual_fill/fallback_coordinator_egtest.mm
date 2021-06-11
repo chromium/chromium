@@ -255,7 +255,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the input accessory view continues working after a picker is
 // present.
-- (void)testInputAccessoryBarIsPresentAfterPickers {
+// TODO(crbug.com/1218869): Re-enable this test.
+- (void)DISABLED_testInputAccessoryBarIsPresentAfterPickers {
   // Add the profile to be used.
   [AutofillAppInterface saveExampleProfile];
 
@@ -395,7 +396,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Test the input accessory bar is present when undocking then docking the
 // keyboard.
-- (void)testInputAccessoryBarIsPresentAfterUndockingKeyboard {
+// TODO(crbug.com/1218869): Re-enable this test.
+- (void)DISABLED_testInputAccessoryBarIsPresentAfterUndockingKeyboard {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPhone.");
   }
