@@ -4419,21 +4419,6 @@
             ]
         }
     ],
-    "InvalidationsSkipUnsubscription": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InvalidationsSkipUnsubscription"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolatePasswordSites": [
         {
             "platforms": [
