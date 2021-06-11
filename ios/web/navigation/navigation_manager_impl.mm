@@ -268,10 +268,15 @@ void NavigationManagerImpl::AddPendingItem(
     // since it will be a duplicate.
     NavigationItemImpl* current_item =
         GetNavigationItemFromWKItem(current_wk_item);
+    ui::PageTransition transition = pending_item_->GetTransitionType();
     if (!current_item) {
       current_item = pending_item_.get();
       SetNavigationItemInWKItem(current_wk_item, std::move(pending_item_));
     }
+    // Updating the transition type of the item is needed, for example when
+    // doing a FormSubmit with a GET method on the same URL. See
+    // crbug.com/1211879.
+    current_item->SetTransitionType(transition);
 
     pending_item_.reset();
   }

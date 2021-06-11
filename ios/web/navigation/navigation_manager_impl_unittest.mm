@@ -704,6 +704,8 @@ TEST_F(NavigationManagerTest, AddPendingItemIfDiffernetURL) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   [mock_wk_list_ setCurrentURL:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([NSURL URLWithString:@"http://www.existing.com"]);
   navigation_manager()->CommitPendingItem();
 
   ASSERT_TRUE(navigation_manager()->GetLastCommittedItem());
@@ -730,6 +732,8 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfNotFormSubmission) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   [mock_wk_list_ setCurrentURL:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([NSURL URLWithString:@"http://www.existing.com"]);
   navigation_manager()->CommitPendingItem();
 
   ASSERT_TRUE(navigation_manager()->GetLastCommittedItem());
@@ -746,6 +750,8 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfNotFormSubmission) {
   // NavigationManagerImpl assumes that AddPendingItem() is only called for
   // new navigation, so it always creates a new pending item.
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(navigation_manager()->GetPendingItem(),
+            navigation_manager()->GetLastCommittedItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_LINK));
@@ -762,6 +768,8 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItemIfFormSubmission) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   [mock_wk_list_ setCurrentURL:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([NSURL URLWithString:@"http://www.existing.com"]);
   navigation_manager()->CommitPendingItem();
 
   ASSERT_TRUE(navigation_manager()->GetLastCommittedItem());
@@ -776,6 +784,8 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItemIfFormSubmission) {
       existing_url, Referrer(), ui::PAGE_TRANSITION_FORM_SUBMIT,
       web::NavigationInitiationType::BROWSER_INITIATED);
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(navigation_manager()->GetPendingItem(),
+            navigation_manager()->GetLastCommittedItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_FORM_SUBMIT));
@@ -791,6 +801,8 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfOverrideInherit) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   [mock_wk_list_ setCurrentURL:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([NSURL URLWithString:@"http://www.existing.com"]);
   navigation_manager()->CommitPendingItem();
 
   ASSERT_TRUE(navigation_manager()->GetLastCommittedItem());
@@ -806,6 +818,8 @@ TEST_F(NavigationManagerTest, NotAddSameUrlPendingItemIfOverrideInherit) {
   // NavigationManagerImpl assumes that AddPendingItem() is only called for
   // new navigation, so it always creates a new pending item.
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(navigation_manager()->GetPendingItem(),
+            navigation_manager()->GetLastCommittedItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_LINK));
@@ -821,6 +835,8 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItem) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   [mock_wk_list_ setCurrentURL:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([NSURL URLWithString:@"http://www.existing.com"]);
   navigation_manager()->CommitPendingItem();
 
   ASSERT_TRUE(navigation_manager()->GetLastCommittedItem());
@@ -834,6 +850,8 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItem) {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(navigation_manager()->GetPendingItem(),
+            navigation_manager()->GetLastCommittedItem());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_RELOAD));
