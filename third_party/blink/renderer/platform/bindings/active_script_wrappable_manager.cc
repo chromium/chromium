@@ -37,9 +37,8 @@ void ActiveScriptWrappableManager::RecomputeActiveScriptWrappables(
     return;
   ThreadState::NoAllocationScope no_allocations(ThreadState::Current());
   for (auto& pair : active_script_wrappables_) {
-    if (!ScriptWrappableIsActive(*pair.first) || pair.second)
-      continue;
-    pair.second = pair.first.Get();
+    pair.second =
+        ScriptWrappableIsActive(*pair.first) ? pair.first.Get() : nullptr;
   }
   recomputed_cnt_++;
 }
@@ -49,7 +48,6 @@ void ActiveScriptWrappableManager::IterateActiveScriptWrappables(
   RecomputeActiveScriptWrappables(RecomputeMode::kRequired);
   for (auto& pair : active_script_wrappables_) {
     visitor->Trace(pair.second);
-    pair.second = nullptr;
   }
   recomputed_cnt_ = 0;
 }
@@ -63,8 +61,6 @@ void ActiveScriptWrappableManager::
           [broker](auto& pair) {
             // If the ASW is not alive, the Member reference must be nullptr.
             DCHECK(broker.IsHeapObjectAlive(pair.first) || !pair.second);
-            // Clear out Member reference in any case.
-            pair.second = nullptr;
             return !broker.IsHeapObjectAlive(pair.first);
           }),
       active_script_wrappables_.end());
