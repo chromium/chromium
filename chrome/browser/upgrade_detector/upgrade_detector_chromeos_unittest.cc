@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/environment.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -24,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -67,7 +69,8 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
  protected:
   UpgradeDetectorChromeosTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_local_state_(TestingBrowserProcess::GetGlobal()) {
+        scoped_local_state_(TestingBrowserProcess::GetGlobal()),
+        env_(base::Environment::Create()) {
     // By default, test with the relaunch policy enabled.
     SetIsRelaunchNotificationPolicyEnabled(true /* enabled */);
 
@@ -86,19 +89,20 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     // Fast forward to set current time to local 2am . This is done to align the
     // relaunch deadline within the default relaunch window of 2am to 4am so
     // that it is not adjusted in tests.
-    const char* tz = getenv("TZ");
-    if (tz)
-      old_tz_ = tz;
-    setenv("TZ", "UTC", 1);
+    std::string env_tz;
+    if (env_->GetVar("TZ", &env_tz))
+      original_tz_ = env_tz;
+    env_->SetVar("TZ", "UTC");
     tzset();
     FastForwardBy(base::TimeDelta::FromHours(2));
   }
 
   ~UpgradeDetectorChromeosTest() override {
-    if (!old_tz_.empty()) {
-      setenv("TZ", old_tz_.c_str(), 1);
+    // Revert back to the original timezone.
+    if (original_tz_) {
+      env_->SetVar("TZ", original_tz_.value());
     } else {
-      unsetenv("TZ");
+      env_->UnSetVar("TZ");
     }
     tzset();
 
@@ -177,7 +181,8 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
-  std::string old_tz_;
+  std::unique_ptr<base::Environment> env_;
+  absl::optional<std::string> original_tz_;
 
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 

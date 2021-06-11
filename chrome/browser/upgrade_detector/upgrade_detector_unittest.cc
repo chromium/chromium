@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdlib.h>
-#include <time.h>
-
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/environment.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -20,6 +18,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -61,24 +60,28 @@ class UpgradeDetectorTest : public ::testing::Test {
     if (!tz_overridden_)
       return;
 
-    if (!old_tz_.empty()) {
-      setenv("TZ", old_tz_.c_str(), 1);
+    // Revert back to the original timezone.
+    DCHECK(env_);
+    if (original_tz_) {
+      env_->SetVar("TZ", original_tz_.value());
     } else {
-      unsetenv("TZ");
+      env_->UnSetVar("TZ");
     }
     tzset();
   }
 
   void OverrideTimezone(const std::string& tz) {
     if (!tz_overridden_) {
+      env_ = base::Environment::Create();
       // Store the original timezone of the device so that it can be restored in
       // the destructor at the end of the test.
-      const char* tz = getenv("TZ");
-      if (tz)
-        old_tz_ = tz;
+      std::string env_tz;
+      if (env_->GetVar("TZ", &env_tz))
+        original_tz_ = env_tz;
       tz_overridden_ = true;
     }
-    setenv("TZ", tz.c_str(), 1);
+    DCHECK(env_);
+    env_->SetVar("TZ", tz);
     tzset();
   }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -108,7 +111,8 @@ class UpgradeDetectorTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  std::string old_tz_;
+  std::unique_ptr<base::Environment> env_;
+  absl::optional<std::string> original_tz_;
   bool tz_overridden_ = false;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 };
