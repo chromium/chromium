@@ -293,8 +293,8 @@ class FuchsiaVideoDecoderTest : public testing::Test {
       : raster_context_provider_(
             base::MakeRefCounted<TestRasterContextProvider>()),
         decoder_(
-            CreateFuchsiaVideoDecoderForTests(raster_context_provider_.get(),
-                                              /*enable_sw_decoding=*/true)) {}
+            FuchsiaVideoDecoder::CreateForTests(raster_context_provider_.get(),
+                                                /*enable_sw_decoding=*/true)) {}
   ~FuchsiaVideoDecoderTest() override = default;
 
   bool InitializeDecoder(VideoDecoderConfig config) WARN_UNUSED_RESULT {

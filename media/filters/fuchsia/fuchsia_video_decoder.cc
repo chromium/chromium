@@ -4,7 +4,6 @@
 
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 
-#include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <vulkan/vulkan.h>
@@ -31,8 +30,6 @@
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
-#include "media/base/video_decoder.h"
-#include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_context.h"
@@ -41,7 +38,6 @@
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
-#include "media/fuchsia/common/sysmem_client.h"
 #include "third_party/libyuv/include/libyuv/video_common.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -75,9 +71,11 @@ constexpr size_t kNumInputBuffers = 2;
 // codecs, not just H264).
 constexpr size_t kInputBufferSize = 1920 * 1080 * 3 / 2 / 2 + 128 * 1024;
 
+}  // namespace
+
 // Helper used to hold mailboxes for the output textures. OutputMailbox may
 // outlive FuchsiaVideoDecoder if is referenced by a VideoFrame.
-class OutputMailbox {
+class FuchsiaVideoDecoder::OutputMailbox {
  public:
   OutputMailbox(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
@@ -178,134 +176,21 @@ class OutputMailbox {
   DISALLOW_COPY_AND_ASSIGN(OutputMailbox);
 };
 
-struct InputDecoderPacket {
-  StreamProcessorHelper::IoPacket packet;
-  bool used_for_current_stream = true;
-};
+// static
+std::unique_ptr<VideoDecoder> FuchsiaVideoDecoder::Create(
+    scoped_refptr<viz::RasterContextProvider> raster_context_provider) {
+  return std::make_unique<FuchsiaVideoDecoder>(
+      std::move(raster_context_provider),
+      /*enable_sw_decoding=*/false);
+}
 
-}  // namespace
-
-class FuchsiaVideoDecoder : public VideoDecoder,
-                            public SysmemBufferStream::Sink,
-                            public StreamProcessorHelper::Client {
- public:
-  FuchsiaVideoDecoder(
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      bool enable_sw_decoding);
-  ~FuchsiaVideoDecoder() override;
-
-  FuchsiaVideoDecoder(const FuchsiaVideoDecoder&) = delete;
-  FuchsiaVideoDecoder& operator=(const FuchsiaVideoDecoder&) = delete;
-
-  // Decoder implementation.
-  bool IsPlatformDecoder() const override;
-  bool SupportsDecryption() const override;
-  VideoDecoderType GetDecoderType() const override;
-
-  // VideoDecoder implementation.
-  void Initialize(const VideoDecoderConfig& config,
-                  bool low_delay,
-                  CdmContext* cdm_context,
-                  InitCB init_cb,
-                  const OutputCB& output_cb,
-                  const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
-  void Reset(base::OnceClosure closure) override;
-  bool NeedsBitstreamConversion() const override;
-  bool CanReadWithoutStalling() const override;
-  int GetMaxDecodeRequests() const override;
-
- private:
-  StatusCode InitializeSysmemBufferStream(bool is_encrypted,
-                                          CdmContext* cdm_context,
-                                          bool* secure_mode);
-
-  // SysmemBufferStream::Sink implementation.
-  void OnSysmemBufferStreamBufferCollectionToken(
-      fuchsia::sysmem::BufferCollectionTokenPtr token) override;
-  void OnSysmemBufferStreamOutputPacket(
-      StreamProcessorHelper::IoPacket packet) override;
-  void OnSysmemBufferStreamEndOfStream() override;
-  void OnSysmemBufferStreamError() override;
-  void OnSysmemBufferStreamNoKey() override;
-
-  // StreamProcessorHelper::Client implementation.
-  void OnStreamProcessorAllocateOutputBuffers(
-      const fuchsia::media::StreamBufferConstraints& stream_constraints)
-      override;
-  void OnStreamProcessorEndOfStream() override;
-  void OnStreamProcessorOutputFormat(
-      fuchsia::media::StreamOutputFormat format) override;
-  void OnStreamProcessorOutputPacket(
-      StreamProcessorHelper::IoPacket packet) override;
-  void OnStreamProcessorNoKey() override;
-  void OnStreamProcessorError() override;
-
-  // Calls next callback in the |decode_callbacks_| queue.
-  void CallNextDecodeCallback();
-
-  // Drops all pending input buffers and then calls all pending DecodeCB with
-  // |status|. Returns true if the decoder still exists.
-  bool DropInputQueue(DecodeStatus status);
-
-  // Called on errors to shutdown the decoder and notify the client.
-  void OnError();
-
-  // Callback for SysmemBufferCollection::CreateSharedToken(), used to send the
-  // sysmem buffer collection token to the GPU process.
-  void SetBufferCollectionTokenForGpu(
-      fuchsia::sysmem::BufferCollectionTokenPtr token);
-
-  // Called by OutputMailbox to signal that the output buffer can be reused.
-  void ReleaseOutputPacket(StreamProcessorHelper::IoPacket packet);
-
-  // Releases BufferCollection used for output buffers if any.
-  void ReleaseOutputBuffers();
-
-  const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  const bool enable_sw_decoding_;
-  const bool use_overlays_for_video_;
-
-  OutputCB output_cb_;
-  WaitingCB waiting_cb_;
-
-  // Aspect ratio specified in container.
-  VideoAspectRatio container_aspect_ratio_;
-
-  std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
-
-  size_t max_decoder_requests_ = kNumInputBuffers + 1;
-
-  VideoDecoderConfig current_config_;
-
-  std::unique_ptr<StreamProcessorHelper> decoder_;
-
-  SysmemAllocatorClient sysmem_allocator_;
-  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
-
-  // Callbacks for pending Decode() request.
-  std::deque<DecodeCB> decode_callbacks_;
-
-  // Input buffers for |decoder_|.
-  std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
-
-  // Output buffers for |decoder_|.
-  fuchsia::media::VideoUncompressedFormat output_format_;
-  std::unique_ptr<SysmemCollectionClient> output_buffer_collection_;
-  gfx::SysmemBufferCollectionId output_buffer_collection_id_;
-  std::vector<OutputMailbox*> output_mailboxes_;
-
-  size_t num_used_output_buffers_ = 0;
-
-  base::WeakPtr<FuchsiaVideoDecoder> weak_this_;
-  base::WeakPtrFactory<FuchsiaVideoDecoder> weak_factory_{this};
-
-  // WeakPtrFactory used to schedule CallNextDecodeCallbacks(). These pointers
-  // are discarded in DropInputQueue() in order to avoid calling
-  // Decode() callback when the decoder queue is discarded.
-  base::WeakPtrFactory<FuchsiaVideoDecoder> decode_callbacks_weak_factory_{
-      this};
-};
+// static
+std::unique_ptr<VideoDecoder> FuchsiaVideoDecoder::CreateForTests(
+    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+    bool enable_sw_decoding) {
+  return std::make_unique<FuchsiaVideoDecoder>(
+      std::move(raster_context_provider), enable_sw_decoding);
+}
 
 FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
@@ -794,20 +679,6 @@ void FuchsiaVideoDecoder::ReleaseOutputPacket(
     StreamProcessorHelper::IoPacket output_packet) {
   DCHECK_GT(num_used_output_buffers_, 0U);
   num_used_output_buffers_--;
-}
-
-std::unique_ptr<VideoDecoder> CreateFuchsiaVideoDecoder(
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider) {
-  return std::make_unique<FuchsiaVideoDecoder>(
-      std::move(raster_context_provider),
-      /*enable_sw_decoding=*/false);
-}
-
-std::unique_ptr<VideoDecoder> CreateFuchsiaVideoDecoderForTests(
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    bool enable_sw_decoding) {
-  return std::make_unique<FuchsiaVideoDecoder>(
-      std::move(raster_context_provider), enable_sw_decoding);
 }
 
 }  // namespace media

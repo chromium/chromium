@@ -215,6 +215,7 @@ source_set("filters") {
       "fuchsia/fuchsia_video_decoder.cc",
       "fuchsia/fuchsia_video_decoder.h",
     ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media" ]
     deps += [
       "//components/viz/common",
       "//gpu/command_buffer/client",
@@ -222,7 +223,6 @@ source_set("filters") {
       "//gpu/ipc/common",
       "//media/fuchsia/cdm",
       "//media/fuchsia/common",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
