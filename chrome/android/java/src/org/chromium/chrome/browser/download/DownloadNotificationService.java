@@ -712,7 +712,7 @@ public class DownloadNotificationService {
         }
     }
 
-    private void cancelOffTheRecordDownloads() {
+    public void cancelOffTheRecordDownloads() {
         boolean cancelActualDownload = BrowserStartupController.getInstance().isFullBrowserStarted()
                 && Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile();
 

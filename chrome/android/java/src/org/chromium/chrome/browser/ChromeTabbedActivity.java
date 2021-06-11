@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -807,6 +808,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // background.
             if (!IncognitoUtils.doIncognitoTabsExist()) {
                 IncognitoNotificationManager.dismissIncognitoNotification();
+                DownloadNotificationService.getInstance().cancelOffTheRecordDownloads();
             }
         }
     }
