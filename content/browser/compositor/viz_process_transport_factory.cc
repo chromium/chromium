@@ -182,15 +182,15 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
               std::move(receiver), std::move(client), debug_renderer_settings);
         }
       };
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(connect_on_io_thread,
-                     std::move(frame_sink_manager_receiver),
-                     std::move(frame_sink_manager_client),
-                     GetHostFrameSinkManager()->debug_renderer_settings()));
+  auto task = base::BindOnce(
+      connect_on_io_thread, std::move(frame_sink_manager_receiver),
+      std::move(frame_sink_manager_client),
+      GetHostFrameSinkManager()->debug_renderer_settings());
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    std::move(task).Run();
+  } else {
+    GetIOThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+  }
 }
 
 void VizProcessTransportFactory::CreateLayerTreeFrameSink(
