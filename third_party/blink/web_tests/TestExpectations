@@ -1681,6 +1681,10 @@ crbug.com/909597 external/wpt/css/css-ui/text-overflow-ruby.html [ Failure ]
 crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-001.html [ Failure ]
 crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-002.html [ Failure ]
 
+# crbug.com/1218721: These tests fail when libvpx_for_vp8 is enabled.
+crbug.com/1218721 fast/borders/border-radius-mask-video-shadow.html [ Failure ]
+crbug.com/1218721 fast/borders/border-radius-mask-video.html [ Failure ]
+
 crbug.com/637055 fast/css/outline-offset-large.html [ Skip ]
 
 # Either "combo" or split should run: http://testthewebforward.org/docs/css-naming.html
