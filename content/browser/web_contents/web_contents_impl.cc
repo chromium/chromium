@@ -5494,13 +5494,13 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // is changed due to the override above, or if the navigation is served from
     // the back-forward cache, because the WebPreferences value stored in the
     // renderer might be stale (because we don't send WebPreferences updates to
-    // bfcached renderers).
+    // bfcached renderers). Same for prerendering.
     // TODO(rakina): Maybe handle the back-forward cache case in
     // ReadyToCommitNavigation instead?
     // TODO(https://crbug.com/1194880): Maybe sync RendererPreferences as well?
     if (value_changed_due_to_override ||
-        NavigationRequest::From(navigation_handle)
-            ->IsServedFromBackForwardCache()) {
+        navigation_handle->IsServedFromBackForwardCache() ||
+        navigation_handle->IsPrerenderedPageActivation()) {
       SetWebPreferences(*web_preferences_.get());
     }
   }
