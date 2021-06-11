@@ -92,20 +92,20 @@ namespace api {
 
 using content::SocketPermissionRequest;
 
-TCPSocketAsyncApiFunction::~TCPSocketAsyncApiFunction() {}
+TCPSocketApiFunction::~TCPSocketApiFunction() = default;
 
 std::unique_ptr<SocketResourceManagerInterface>
-TCPSocketAsyncApiFunction::CreateSocketResourceManager() {
+TCPSocketApiFunction::CreateSocketResourceManager() {
   return std::unique_ptr<SocketResourceManagerInterface>(
       new SocketResourceManager<ResumableTCPSocket>());
 }
 
-ResumableTCPSocket* TCPSocketAsyncApiFunction::GetTcpSocket(int socket_id) {
+ResumableTCPSocket* TCPSocketApiFunction::GetTcpSocket(int socket_id) {
   return static_cast<ResumableTCPSocket*>(GetSocket(socket_id));
 }
 
 TCPSocketExtensionWithDnsLookupFunction::
-    ~TCPSocketExtensionWithDnsLookupFunction() {}
+    ~TCPSocketExtensionWithDnsLookupFunction() = default;
 
 std::unique_ptr<SocketResourceManagerInterface>
 TCPSocketExtensionWithDnsLookupFunction::CreateSocketResourceManager() {
@@ -118,157 +118,137 @@ ResumableTCPSocket* TCPSocketExtensionWithDnsLookupFunction::GetTcpSocket(
   return static_cast<ResumableTCPSocket*>(GetSocket(socket_id));
 }
 
-SocketsTcpCreateFunction::SocketsTcpCreateFunction() {}
+SocketsTcpCreateFunction::SocketsTcpCreateFunction() = default;
 
-SocketsTcpCreateFunction::~SocketsTcpCreateFunction() {}
+SocketsTcpCreateFunction::~SocketsTcpCreateFunction() = default;
 
-bool SocketsTcpCreateFunction::Prepare() {
-  params_ = sockets_tcp::Create::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpCreateFunction::Work() {
+  std::unique_ptr<sockets_tcp::Create::Params> params =
+      sockets_tcp::Create::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpCreateFunction::Work() {
   ResumableTCPSocket* socket =
-      new ResumableTCPSocket(browser_context(), extension_->id());
+      new ResumableTCPSocket(browser_context(), extension_id());
 
-  sockets_tcp::SocketProperties* properties = params_->properties.get();
+  sockets_tcp::SocketProperties* properties = params->properties.get();
   if (properties) {
     SetSocketProperties(socket, properties);
   }
 
   sockets_tcp::CreateInfo create_info;
   create_info.socket_id = AddSocket(socket);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::Create::Results::Create(create_info));
+  return RespondNow(
+      ArgumentList(sockets_tcp::Create::Results::Create(create_info)));
 }
 
-SocketsTcpUpdateFunction::SocketsTcpUpdateFunction() {}
+SocketsTcpUpdateFunction::SocketsTcpUpdateFunction() = default;
 
-SocketsTcpUpdateFunction::~SocketsTcpUpdateFunction() {}
+SocketsTcpUpdateFunction::~SocketsTcpUpdateFunction() = default;
 
-bool SocketsTcpUpdateFunction::Prepare() {
-  params_ = sockets_tcp::Update::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpUpdateFunction::Work() {
+  std::unique_ptr<sockets_tcp::Update::Params> params =
+      sockets_tcp::Update::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpUpdateFunction::Work() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
-  SetSocketProperties(socket, &params_->properties);
-  results_ =
-      std::make_unique<base::ListValue>(sockets_tcp::Update::Results::Create());
+  SetSocketProperties(socket, &params->properties);
+  return RespondNow(NoArguments());
 }
 
-SocketsTcpSetPausedFunction::SocketsTcpSetPausedFunction()
-    : socket_event_dispatcher_(nullptr) {}
+SocketsTcpSetPausedFunction::SocketsTcpSetPausedFunction() = default;
 
-SocketsTcpSetPausedFunction::~SocketsTcpSetPausedFunction() {}
+SocketsTcpSetPausedFunction::~SocketsTcpSetPausedFunction() = default;
 
-bool SocketsTcpSetPausedFunction::Prepare() {
-  params_ = api::sockets_tcp::SetPaused::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+ExtensionFunction::ResponseAction SocketsTcpSetPausedFunction::Work() {
+  std::unique_ptr<sockets_tcp::SetPaused::Params> params =
+      api::sockets_tcp::SetPaused::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  socket_event_dispatcher_ = TCPSocketEventDispatcher::Get(browser_context());
-  DCHECK(socket_event_dispatcher_)
+  TCPSocketEventDispatcher* socket_event_dispatcher =
+      TCPSocketEventDispatcher::Get(browser_context());
+  DCHECK(socket_event_dispatcher)
       << "There is no socket event dispatcher. "
          "If this assertion is failing during a test, then it is likely that "
          "TestExtensionSystem is failing to provide an instance of "
          "TCPSocketEventDispatcher.";
-  return !!socket_event_dispatcher_;
-}
 
-void SocketsTcpSetPausedFunction::Work() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
-  if (socket->paused() != params_->paused) {
-    socket->set_paused(params_->paused);
-    if (socket->IsConnected() && !params_->paused) {
-      socket_event_dispatcher_->OnSocketResume(extension_->id(),
-                                               params_->socket_id);
+  if (socket->paused() != params->paused) {
+    socket->set_paused(params->paused);
+    if (socket->IsConnected() && !params->paused) {
+      socket_event_dispatcher->OnSocketResume(extension_id(),
+                                              params->socket_id);
     }
   }
 
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::SetPaused::Results::Create());
+  return RespondNow(NoArguments());
 }
 
-SocketsTcpSetKeepAliveFunction::SocketsTcpSetKeepAliveFunction() {}
+SocketsTcpSetKeepAliveFunction::SocketsTcpSetKeepAliveFunction() = default;
 
-SocketsTcpSetKeepAliveFunction::~SocketsTcpSetKeepAliveFunction() {}
+SocketsTcpSetKeepAliveFunction::~SocketsTcpSetKeepAliveFunction() = default;
 
-bool SocketsTcpSetKeepAliveFunction::Prepare() {
-  params_ = api::sockets_tcp::SetKeepAlive::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpSetKeepAliveFunction::Work() {
+  std::unique_ptr<sockets_tcp::SetKeepAlive::Params> params =
+      api::sockets_tcp::SetKeepAlive::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpSetKeepAliveFunction::AsyncWorkStart() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    results_ = std::make_unique<base::ListValue>(
-        sockets_tcp::SetKeepAlive::Results::Create(net::ERR_FAILED));
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(ErrorWithCode(net::ERR_FAILED, kSocketNotFoundError));
   }
 
-  int delay = params_->delay ? *params_->delay : 0;
+  int delay = params->delay ? *params->delay : 0;
 
   socket->SetKeepAlive(
-      params_->enable, delay,
+      params->enable, delay,
       base::BindOnce(&SocketsTcpSetKeepAliveFunction::OnCompleted, this));
+  return RespondLater();
 }
 
 void SocketsTcpSetKeepAliveFunction::OnCompleted(bool success) {
-  int net_result = (success ? net::OK : net::ERR_FAILED);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::SetKeepAlive::Results::Create(net_result));
-  if (net_result != net::OK)
-    error_ = net::ErrorToString(net_result);
-  AsyncWorkCompleted();
+  if (success) {
+    Respond(OneArgument(base::Value(net::OK)));
+  } else {
+    Respond(
+        ErrorWithCode(net::ERR_FAILED, net::ErrorToString(net::ERR_FAILED)));
+  }
 }
 
-SocketsTcpSetNoDelayFunction::SocketsTcpSetNoDelayFunction() {}
+SocketsTcpSetNoDelayFunction::SocketsTcpSetNoDelayFunction() = default;
 
-SocketsTcpSetNoDelayFunction::~SocketsTcpSetNoDelayFunction() {}
+SocketsTcpSetNoDelayFunction::~SocketsTcpSetNoDelayFunction() = default;
 
-bool SocketsTcpSetNoDelayFunction::Prepare() {
-  params_ = api::sockets_tcp::SetNoDelay::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpSetNoDelayFunction::Work() {
+  std::unique_ptr<sockets_tcp::SetNoDelay::Params> params =
+      api::sockets_tcp::SetNoDelay::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpSetNoDelayFunction::AsyncWorkStart() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    results_ = std::make_unique<base::ListValue>(
-        sockets_tcp::SetNoDelay::Results::Create(net::ERR_FAILED));
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(ErrorWithCode(net::ERR_FAILED, kSocketNotFoundError));
   }
   socket->SetNoDelay(
-      params_->no_delay,
+      params->no_delay,
       base::BindOnce(&SocketsTcpSetNoDelayFunction::OnCompleted, this));
+  return RespondLater();
 }
 
 void SocketsTcpSetNoDelayFunction::OnCompleted(bool success) {
-  int net_result = (success ? net::OK : net::ERR_FAILED);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::SetNoDelay::Results::Create(net_result));
-  if (net_result != net::OK)
-    error_ = net::ErrorToString(net_result);
-  AsyncWorkCompleted();
+  if (success) {
+    Respond(OneArgument(base::Value(net::OK)));
+  } else {
+    Respond(
+        ErrorWithCode(net::ERR_FAILED, net::ErrorToString(net::ERR_FAILED)));
+  }
 }
 
 SocketsTcpConnectFunction::SocketsTcpConnectFunction() = default;
@@ -280,14 +260,11 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   socket_event_dispatcher_ = TCPSocketEventDispatcher::Get(browser_context());
-  if (!socket_event_dispatcher_) {
-    NOTREACHED()
-        << "There is no socket event dispatcher. "
-           "If this assertion is failing during a test, then it is likely that "
-           "TestExtensionSystem is failing to provide an instance of "
-           "TCPSocketEventDispatcher.";
-    return RespondNow(NoArguments());
-  }
+  DCHECK(socket_event_dispatcher_)
+      << "There is no socket event dispatcher. "
+         "If this assertion is failing during a test, then it is likely that "
+         "TestExtensionSystem is failing to provide an instance of "
+         "TCPSocketEventDispatcher.";
 
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {
@@ -329,7 +306,7 @@ void SocketsTcpConnectFunction::StartConnect() {
 
 void SocketsTcpConnectFunction::OnCompleted(int net_result) {
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnSocketConnect(extension_->id(),
+    socket_event_dispatcher_->OnSocketConnect(extension_id(),
                                               params_->socket_id);
   }
 
@@ -340,51 +317,46 @@ void SocketsTcpConnectFunction::OnCompleted(int net_result) {
   }
 }
 
-SocketsTcpDisconnectFunction::SocketsTcpDisconnectFunction() {}
+SocketsTcpDisconnectFunction::SocketsTcpDisconnectFunction() = default;
 
-SocketsTcpDisconnectFunction::~SocketsTcpDisconnectFunction() {}
+SocketsTcpDisconnectFunction::~SocketsTcpDisconnectFunction() = default;
 
-bool SocketsTcpDisconnectFunction::Prepare() {
-  params_ = sockets_tcp::Disconnect::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpDisconnectFunction::Work() {
+  std::unique_ptr<sockets_tcp::Disconnect::Params> params =
+      sockets_tcp::Disconnect::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpDisconnectFunction::Work() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
   socket->Disconnect(false /* socket_destroying */);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::Disconnect::Results::Create());
+  return RespondNow(NoArguments());
 }
 
-SocketsTcpSendFunction::SocketsTcpSendFunction() : io_buffer_size_(0) {}
+SocketsTcpSendFunction::SocketsTcpSendFunction() = default;
 
-SocketsTcpSendFunction::~SocketsTcpSendFunction() {}
+SocketsTcpSendFunction::~SocketsTcpSendFunction() = default;
 
-bool SocketsTcpSendFunction::Prepare() {
-  params_ = sockets_tcp::Send::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  io_buffer_size_ = params_->data.size();
-  io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-      reinterpret_cast<const char*>(params_->data.data()));
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
+  std::unique_ptr<sockets_tcp::Send::Params> params =
+      sockets_tcp::Send::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+  size_t io_buffer_size = params->data.size();
 
-void SocketsTcpSendFunction::AsyncWorkStart() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  scoped_refptr<net::IOBuffer> io_buffer =
+      base::MakeRefCounted<net::IOBuffer>(params->data.size());
+  std::copy(params->data.begin(), params->data.end(), io_buffer->data());
+
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
-  socket->Write(io_buffer_, io_buffer_size_,
+  socket->Write(io_buffer, io_buffer_size,
                 base::BindOnce(&SocketsTcpSendFunction::OnCompleted, this));
+  return RespondLater();
 }
 
 void SocketsTcpSendFunction::OnCompleted(int net_result) {
@@ -404,65 +376,58 @@ void SocketsTcpSendFunction::SetSendResult(int net_result, int bytes_sent) {
     send_info.bytes_sent = std::make_unique<int>(bytes_sent);
   }
 
-  if (net_result != net::OK)
-    error_ = net::ErrorToString(net_result);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::Send::Results::Create(send_info));
-  AsyncWorkCompleted();
+  auto args = sockets_tcp::Send::Results::Create(send_info);
+  if (net_result == net::OK) {
+    Respond(ArgumentList(std::move(args)));
+  } else {
+    Respond(
+        ErrorWithArguments(std::move(args), net::ErrorToString(net_result)));
+  }
 }
 
-SocketsTcpCloseFunction::SocketsTcpCloseFunction() {}
+SocketsTcpCloseFunction::SocketsTcpCloseFunction() = default;
 
-SocketsTcpCloseFunction::~SocketsTcpCloseFunction() {}
+SocketsTcpCloseFunction::~SocketsTcpCloseFunction() = default;
 
-bool SocketsTcpCloseFunction::Prepare() {
-  params_ = sockets_tcp::Close::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpCloseFunction::Work() {
+  std::unique_ptr<sockets_tcp::Close::Params> params =
+      sockets_tcp::Close::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpCloseFunction::Work() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
-  RemoveSocket(params_->socket_id);
-  results_ =
-      std::make_unique<base::ListValue>(sockets_tcp::Close::Results::Create());
+  RemoveSocket(params->socket_id);
+  return RespondNow(NoArguments());
 }
 
-SocketsTcpGetInfoFunction::SocketsTcpGetInfoFunction() {}
+SocketsTcpGetInfoFunction::SocketsTcpGetInfoFunction() = default;
 
-SocketsTcpGetInfoFunction::~SocketsTcpGetInfoFunction() {}
+SocketsTcpGetInfoFunction::~SocketsTcpGetInfoFunction() = default;
 
-bool SocketsTcpGetInfoFunction::Prepare() {
-  params_ = sockets_tcp::GetInfo::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
+ExtensionFunction::ResponseAction SocketsTcpGetInfoFunction::Work() {
+  std::unique_ptr<sockets_tcp::GetInfo::Params> params =
+      sockets_tcp::GetInfo::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-void SocketsTcpGetInfoFunction::Work() {
-  ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
-    error_ = kSocketNotFoundError;
-    return;
+    return RespondNow(Error(kSocketNotFoundError));
   }
 
   sockets_tcp::SocketInfo socket_info =
-      CreateSocketInfo(params_->socket_id, socket);
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::GetInfo::Results::Create(socket_info));
+      CreateSocketInfo(params->socket_id, socket);
+  return RespondNow(
+      ArgumentList(sockets_tcp::GetInfo::Results::Create(socket_info)));
 }
 
-SocketsTcpGetSocketsFunction::SocketsTcpGetSocketsFunction() {}
+SocketsTcpGetSocketsFunction::SocketsTcpGetSocketsFunction() = default;
 
-SocketsTcpGetSocketsFunction::~SocketsTcpGetSocketsFunction() {}
+SocketsTcpGetSocketsFunction::~SocketsTcpGetSocketsFunction() = default;
 
-bool SocketsTcpGetSocketsFunction::Prepare() { return true; }
-
-void SocketsTcpGetSocketsFunction::Work() {
+ExtensionFunction::ResponseAction SocketsTcpGetSocketsFunction::Work() {
   std::vector<sockets_tcp::SocketInfo> socket_infos;
   std::unordered_set<int>* resource_ids = GetSocketIds();
   if (resource_ids) {
@@ -473,34 +438,23 @@ void SocketsTcpGetSocketsFunction::Work() {
       }
     }
   }
-  results_ = std::make_unique<base::ListValue>(
-      sockets_tcp::GetSockets::Results::Create(socket_infos));
+  return RespondNow(
+      ArgumentList(sockets_tcp::GetSockets::Results::Create(socket_infos)));
 }
 
-SocketsTcpSecureFunction::SocketsTcpSecureFunction() {
-}
+SocketsTcpSecureFunction::SocketsTcpSecureFunction() = default;
 
-SocketsTcpSecureFunction::~SocketsTcpSecureFunction() {
-}
+SocketsTcpSecureFunction::~SocketsTcpSecureFunction() = default;
 
-bool SocketsTcpSecureFunction::Prepare() {
+ExtensionFunction::ResponseAction SocketsTcpSecureFunction::Work() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   params_ = api::sockets_tcp::Secure::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
-  return true;
-}
-
-// Override the regular implementation, which would call AsyncWorkCompleted
-// immediately after Work().
-void SocketsTcpSecureFunction::AsyncWorkStart() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {
-    SetResult(std::make_unique<base::Value>(net::ERR_INVALID_ARGUMENT));
-    error_ = kSocketNotFoundError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(
+        ErrorWithCode(net::ERR_INVALID_ARGUMENT, kSocketNotFoundError));
   }
 
   paused_ = socket->paused();
@@ -509,17 +463,13 @@ void SocketsTcpSecureFunction::AsyncWorkStart() {
   // Make sure it's a connected TCP client socket. Error out if it's already
   // secure()'d.
   if (socket->GetSocketType() != Socket::TYPE_TCP) {
-    SetResult(std::make_unique<base::Value>(net::ERR_INVALID_ARGUMENT));
-    error_ = kInvalidSocketStateError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(
+        ErrorWithCode(net::ERR_INVALID_ARGUMENT, kInvalidSocketStateError));
   }
 
   if (!socket->IsConnected()) {
-    SetResult(std::make_unique<base::Value>(net::ERR_INVALID_ARGUMENT));
-    error_ = kSocketNotConnectedError;
-    AsyncWorkCompleted();
-    return;
+    return RespondNow(
+        ErrorWithCode(net::ERR_INVALID_ARGUMENT, kSocketNotConnectedError));
   }
 
   // UpgradeSocketToTLS() uses the older API's SecureOptions. Copy over the
@@ -541,6 +491,7 @@ void SocketsTcpSecureFunction::AsyncWorkStart() {
   socket->UpgradeToTLS(
       &legacy_params,
       base::BindOnce(&SocketsTcpSecureFunction::TlsConnectDone, this));
+  return RespondLater();
 }
 
 void SocketsTcpSecureFunction::TlsConnectDone(
@@ -552,10 +503,7 @@ void SocketsTcpSecureFunction::TlsConnectDone(
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
   if (result != net::OK) {
     RemoveSocket(params_->socket_id);
-    error_ = net::ErrorToString(result);
-    results_ = std::make_unique<base::ListValue>(
-        api::sockets_tcp::Secure::Results::Create(result));
-    AsyncWorkCompleted();
+    Respond(ErrorWithCode(result, net::ErrorToString(result)));
     return;
   }
   auto socket =
@@ -565,9 +513,7 @@ void SocketsTcpSecureFunction::TlsConnectDone(
   socket->set_persistent(persistent_);
   socket->set_paused(paused_);
   ReplaceSocket(params_->socket_id, socket.release());
-  results_ = std::make_unique<base::ListValue>(
-      api::sockets_tcp::Secure::Results::Create(result));
-  AsyncWorkCompleted();
+  Respond(OneArgument(base::Value(result)));
 }
 
 }  // namespace api
