@@ -275,6 +275,14 @@ bool ForceInstalledTracker::IsMisconfiguration(
     }
   }
 
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::MANIFEST_INVALID) {
+    auto extension = extensions_.find(id);
+    if (extension != extensions_.end() && !extension->second.is_from_store) {
+      return true;
+    }
+  }
+
   return false;
 }
 
