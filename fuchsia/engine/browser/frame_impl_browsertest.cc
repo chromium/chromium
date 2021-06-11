@@ -1369,6 +1369,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
   ASSERT_TRUE(default_dpr);
 
+  EXPECT_EQ(default_dpr->GetDouble(), 1.0f);
+
   // Update scale and verify that devicePixelRatio is updated accordingly.
   const float kZoomInScale = 1.5;
   frame->SetPageScale(kZoomInScale);
@@ -1377,8 +1379,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
   ASSERT_TRUE(scaled_dpr);
 
-  EXPECT_NEAR(scaled_dpr->GetDouble() / default_dpr->GetDouble(), kZoomInScale,
-              1e-6);
+  EXPECT_EQ(scaled_dpr->GetDouble(), kZoomInScale);
 
   // Navigate to the same page on http://localhost. This is a different site,
   // so it will be loaded in a new renderer process. Page scale value should be
@@ -1395,14 +1396,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
 
   EXPECT_EQ(dpr_after_navigation, scaled_dpr);
 
-  // Reset the scale to 1.0 (default) and verify that reported DPR is equal to
-  // the same as when the frame was created.
+  // Reset the scale to 1.0 (default) and verify that reported DPR is updated
+  // to 1.0.
   frame->SetPageScale(1.0);
   absl::optional<base::Value> dpr_after_reset =
       cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
   ASSERT_TRUE(dpr_after_reset);
 
-  EXPECT_EQ(dpr_after_reset.value(), default_dpr.value());
+  EXPECT_EQ(dpr_after_reset->GetDouble(), 1.0);
 
   // Zoom out by setting scale to 0.5.
   const float kZoomOutScale = 0.5;
@@ -1412,8 +1413,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
   ASSERT_TRUE(zoomed_out_dpr);
 
-  EXPECT_NEAR(zoomed_out_dpr->GetDouble() / default_dpr->GetDouble(),
-              kZoomOutScale, 1e-6);
+  EXPECT_EQ(zoomed_out_dpr->GetDouble(), kZoomOutScale);
 
   // Create another frame. Verify that the scale factor is not applied to the
   // new frame.
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       cr_fuchsia::ExecuteJavaScript(frame2.get(), "window.devicePixelRatio");
   ASSERT_TRUE(frame2_dpr);
 
-  EXPECT_EQ(frame2_dpr.value(), default_dpr.value());
+  EXPECT_EQ(frame2_dpr->GetDouble(), 1.0);
 }
 
 // Send a MessagePort to the content, then perform bidirectional messaging

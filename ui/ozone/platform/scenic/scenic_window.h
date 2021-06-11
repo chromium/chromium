@@ -144,8 +144,11 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
 
   std::unique_ptr<scenic::ViewHolder> surface_view_holder_;
 
-  // The ratio used for translating device-independent coordinates to absolute
-  // pixel coordinates.
+  // The scale between logical pixels and physical pixels, set based on the
+  // fuchsia::ui::gfx::Metrics event. It's used to calculate dimensions of the
+  // view in physical pixels in UpdateSize(). This value doesn't affect the
+  // device_scale_factor reported by ScenicScreen for the corresponding display
+  // (currently always 1.0, see crbug.com/1215330).
   float device_pixel_ratio_ = 0.f;
 
   // Current view size in DIPs.

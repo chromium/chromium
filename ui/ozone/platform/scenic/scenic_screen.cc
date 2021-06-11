@@ -49,25 +49,6 @@ void ScenicScreen::OnWindowBoundsChanged(int32_t window_id, gfx::Rect bounds) {
   display_it->set_bounds(bounds);
 }
 
-void ScenicScreen::OnWindowMetrics(int32_t window_id,
-                                   float device_pixel_ratio) {
-  if (display::Display::HasForceDeviceScaleFactor())
-    return;
-
-  auto display_it = std::find_if(displays_.begin(), displays_.end(),
-                                 [window_id](display::Display& display) {
-                                   return display.id() == window_id;
-                                 });
-  DCHECK(display_it != displays_.end());
-
-  display_it->set_device_scale_factor(device_pixel_ratio);
-  for (auto& observer : observers_) {
-    observer.OnDisplayMetricsChanged(
-        *display_it,
-        display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR);
-  }
-}
-
 base::WeakPtr<ScenicScreen> ScenicScreen::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
