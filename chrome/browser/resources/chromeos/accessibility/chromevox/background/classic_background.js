@@ -25,7 +25,6 @@ goog.require('ExtensionBridge');
 goog.require('InjectedScriptLoader');
 goog.require('NavBraille');
 goog.require('QueueMode');
-goog.require('TabsApiHandler');
 goog.require('TtsBackground');
 
 
@@ -62,8 +61,6 @@ ChromeVoxBackground = class {
      * @private
      */
     this.backgroundBraille_ = BrailleBackground.getInstance();
-
-    this.tabsApiHandler_ = new TabsApiHandler();
 
     // Export globals on ChromeVox.
     ChromeVox.tts = this.tts;

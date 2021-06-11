@@ -6,6 +6,7 @@ import {Earcons} from './earcons.js';
 import {FindHandler} from './find_handler.js';
 import {LiveRegions} from './live_regions.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
+import {PageLoadSoundHandler} from './page_load_sound_handler.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
 
 /**
@@ -94,6 +95,8 @@ export class Background extends ChromeVoxState {
     this.focusAutomationHandler_ = new FocusAutomationHandler();
     /** @private {!MediaAutomationHandler} */
     this.mediaAutomationHandler_ = new MediaAutomationHandler();
+    /** @private {!PageLoadSoundHandler} */
+    this.pageLoadSoundHandler_ = new PageLoadSoundHandler();
 
     CommandHandler.init();
     FindHandler.init();

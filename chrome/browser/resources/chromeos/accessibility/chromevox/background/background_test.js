@@ -3516,3 +3516,41 @@ TEST_F('ChromeVoxBackgroundTest', 'DetailsChanged', function() {
         .replay();
   });
 });
+
+SYNC_TEST_F('ChromeVoxBackgroundTest', 'PageLoadEarcons', async function() {
+  const sawEarcons = [];
+  const fakeEarcons = {playEarcon: (earcon) => sawEarcons.push(earcon)};
+  Object.defineProperty(ChromeVox, 'earcons', {get: () => fakeEarcons});
+  AutomationUtil.getTopLevelRoot = (node) => node;
+
+  const module = await import('./page_load_sound_handler.js');
+  const PageLoadSoundHandler = module.PageLoadSoundHandler;
+
+  // Use this specific object to control the load environment.
+  const handler = new PageLoadSoundHandler();
+
+  // Build up a fake automation node with a parent and root.
+  const fakeNode = {};
+  fakeNode.docUrl = 'foo';
+  fakeNode.root = fakeNode;
+  fakeNode.parent = {state: {focused: true}};
+
+  handler.onLoadStart({target: fakeNode});
+  assertEqualStringArrays([Earcon.PAGE_START_LOADING], sawEarcons);
+  handler.onLoadComplete({target: fakeNode});
+  assertEqualStringArrays(
+      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+
+  // No extra earcons.
+  handler.onLoadComplete({target: fakeNode});
+  assertEqualStringArrays(
+      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+
+  // Try a range change that finishes the load sound.
+  sawEarcons.length = 0;
+  handler.onLoadStart({target: fakeNode});
+  fakeNode.docLoadingProgress = 1;
+  handler.onCurrentRangeChanged({start: {node: fakeNode}});
+  assertEqualStringArrays(
+      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+});

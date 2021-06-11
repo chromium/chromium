@@ -595,7 +595,6 @@ TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
         .call(doCmd('nextObject'))
         .expectSpeech('ChromeVox Command Reference', 'Link')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('tab created')
         .expectSpeech('support.google.com')
         .replay();
   });
