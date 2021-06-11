@@ -390,18 +390,23 @@ body {
 }
 
 /*
-* Highlight-when-hovered for week picker, in 3 parts:
-* 1. Highlight all cells in the hovered row except for Monday, because it
-*    belongs to the previous week.
-* 2. Highlight Monday of the row after the hovered row, because it belongs to
-*    this week
-* 3. Highlight the week number cell for the hovered week
+* Highlight-when-hovered for the week picker:
+* 1.  Highlight the week number cell for the hovered week.
+* 2.  If the first date column is Monday, highlight all cells in the row
+*     because the week picker considers Monday to be the first day
+*     of the week regardless of locale.
+* 3a. If the first date column is Sunday, highlight all cells in the hovered
+*     row except for Sunday, because Sunday belongs to the previous week.
+* 3b. If the first date column is Sunday, highlight Sunday of the row after
+*     the hovered row, because that Sunday belongs to the hovered week.
 */
-.week-picker .calendar-row-cell:hover
+.calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+.week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+    .day-cell:not(.selected):not(.disabled),
+.week-picker .calendar-row-cell.week-starts-on-sunday:hover
     .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
-.week-picker .calendar-row-cell:hover + .calendar-row-cell
-    .day-cell:not(.selected):not(.disabled):nth-child(2),
-.calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled) {
+.week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+    .day-cell:not(.selected):not(.disabled):nth-child(2) {
   background-color: rgba(0, 117, 255, 0.3);
 }
 
@@ -535,19 +540,25 @@ body {
     border-color: Highlight !important;
   }
 
+
   /*
-  * Highlight-when-hovered for week picker, in 3 parts:
-  * 1. Highlight all cells in the hovered row except for Monday, because it
-  *    belongs to the previous week.
-  * 2. Highlight Monday of the row after the hovered row, because it belongs to
-  *    this week
-  * 3. Highlight the week number cell for the hovered week
+  * Highlight-when-hovered for the week picker:
+  * 1.  Highlight the week number cell for the hovered week.
+  * 2.  If the first date column is Monday, highlight all cells in the row
+  *     because the week picker considers Monday to be the first day
+  *     of the week regardless of locale.
+  * 3a. If the first date column is Sunday, highlight all cells in the hovered
+  *     row except for Sunday, because Sunday belongs to the previous week.
+  * 3b. If the first date column is Sunday, highlight Sunday of the row after
+  *     the hovered row, because that Sunday belongs to the hovered week.
   */
-  .week-picker .calendar-row-cell:hover
-  .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
-  .week-picker .calendar-row-cell:hover + .calendar-row-cell
-  .day-cell:not(.selected):not(.disabled):nth-child(2),
-  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled) {
+  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+      .day-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover
+      .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+      .day-cell:not(.selected):not(.disabled):nth-child(2) {
     border-color: Highlight !important;
     background-color: Window !important;
   }
@@ -658,11 +669,24 @@ body {
     color: #3B3B3B;
   }
 
-  .week-picker .calendar-row-cell:hover
+  /*
+  * Highlight-when-hovered for the week picker:
+  * 1.  Highlight the week number cell for the hovered week.
+  * 2.  If the first date column is Monday, highlight all cells in the row
+  *     because the week picker considers Monday to be the first day
+  *     of the week regardless of locale.
+  * 3a. If the first date column is Sunday, highlight all cells in the hovered
+  *     row except for Sunday, because Sunday belongs to the previous week.
+  * 3b. If the first date column is Sunday, highlight Sunday of the row after
+  *     the hovered row, because that Sunday belongs to the hovered week.
+  */
+  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+      .day-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover
       .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
-  .week-picker .calendar-row-cell:hover + .calendar-row-cell
-      .day-cell:not(.selected):not(.disabled):nth-child(2),
-  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled) {
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+      .day-cell:not(.selected):not(.disabled):nth-child(2) {
     background-color: #D1E6FF;
     color: #3B3B3B;
   }

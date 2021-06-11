@@ -3828,6 +3828,9 @@ function CalendarRowCell() {
   ListCell.call(this);
 
   this.element.classList.add(CalendarRowCell.ClassNameCalendarRowCell);
+  if (global.params.weekStartDay === WeekDay.Sunday) {
+    this.element.classList.add(CalendarRowCell.ClassNameWeekStartsOnSunday);
+  }
   this.element.style.height = CalendarRowCell.GetHeight() + 'px';
   this.element.setAttribute('role', 'row');
 
@@ -3853,6 +3856,7 @@ CalendarRowCell.GetHeight = function() {
   return CalendarRowCell._Height;
 };
 CalendarRowCell.ClassNameCalendarRowCell = 'calendar-row-cell';
+CalendarRowCell.ClassNameWeekStartsOnSunday = 'week-starts-on-sunday';
 
 CalendarRowCell._recycleBin = [];
 
