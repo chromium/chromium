@@ -35,3 +35,12 @@ export function promisifyOnload(element, id, afterNextRender) {
   });
   return promise;
 }
+
+/**
+ * Convert an UnguessableToken to string to use as a key.
+ * @param {!mojoBase.mojom.UnguessableToken} param0
+ * @return {string}
+ */
+export function unguessableTokenToString({high, low}) {
+  return `${high},${low}`;
+}

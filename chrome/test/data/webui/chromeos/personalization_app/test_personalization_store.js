@@ -11,7 +11,7 @@
  * @suppress {checkTypes}
  */
 
-import {emptyState, reduce} from 'chrome://personalization/trusted/personalization_actions.js';
+import {emptyState, reduce} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {PersonalizationStore} from 'chrome://personalization/trusted/personalization_store.js';
 import {TestStore} from '../../test_store.m.js';
 

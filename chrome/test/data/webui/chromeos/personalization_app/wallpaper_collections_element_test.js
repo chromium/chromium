@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {untrustedOrigin} from 'chrome://personalization/common/constants.js';
-import {selectCollection} from 'chrome://personalization/common/iframe_api.js';
+import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {promisifySendCollectionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper_collections_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.m.js';
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
+import {TestPersonalizationStore} from './test_personalization_store.js';
 
 export function WallpaperCollectionsTest() {
   /** @type {?HTMLElement} */
@@ -17,8 +17,13 @@ export function WallpaperCollectionsTest() {
   /** @type {?TestWallpaperProvider} */
   let wallpaperProvider = null;
 
+  /** @type {?TestPersonalizationStore} */
+  let personalizationStore = null;
+
   setup(function() {
-    wallpaperProvider = baseSetup().wallpaperProvider;
+    const mocks = baseSetup();
+    wallpaperProvider = mocks.wallpaperProvider;
+    personalizationStore = mocks.personalizationStore;
   });
 
   teardown(async () => {
@@ -26,37 +31,34 @@ export function WallpaperCollectionsTest() {
     wallpaperCollectionsElement = null;
   });
 
-  test(
-      'fetches wallpaper collections and shows loading on startup',
-      async () => {
-        wallpaperCollectionsElement =
-            initElement(WallpaperCollections.is, {active: true});
-        await wallpaperProvider.whenCalled('fetchCollections');
-        assertEquals(1, wallpaperProvider.getCallCount('fetchCollections'));
-
-        const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
-            'paper-spinner-lite');
-        assertTrue(!!spinner);
-        assertTrue(spinner.active);
-
-        const iframe =
-            wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-        assertTrue(iframe.hidden);
-      });
-
-  test('shows wallpaper collections when loaded', async () => {
-    const sendCollectionsPromise = promisifySendCollectionsForTesting();
-    wallpaperCollectionsElement =
-        initElement(WallpaperCollections.is, {active: true});
+  test('shows loading on startup', async () => {
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
     const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
         'paper-spinner-lite');
     assertTrue(!!spinner);
     assertTrue(spinner.active);
 
-    // Wait for collections to be fetched.
-    await wallpaperProvider.whenCalled('fetchCollections');
-    // Wait for iframe to load and |sendCollections| to be called.
+    const iframe =
+        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
+    assertTrue(iframe.hidden);
+  });
+
+  test('shows wallpaper collections when loaded', async () => {
+    const sendCollectionsPromise = promisifySendCollectionsForTesting();
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+
+    const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
+        'paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+
+    personalizationStore.data.loading = {collections: false};
+    personalizationStore.data.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.notifyObservers();
+
+    // Wait for |sendCollections| to be called.
     const [target, data] = await sendCollectionsPromise;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
@@ -71,9 +73,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('shows error when fails to load', async () => {
-    wallpaperProvider.setCollectionsToFail();
-    wallpaperCollectionsElement =
-        initElement(WallpaperCollections.is, {active: true});
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
     const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
         'paper-spinner-lite');
@@ -84,7 +84,9 @@ export function WallpaperCollectionsTest() {
         wallpaperCollectionsElement.shadowRoot.querySelector('#error');
     assertTrue(error.hidden);
 
-    await wallpaperProvider.whenCalled('fetchCollections');
+    personalizationStore.data.loading = {collections: false};
+    personalizationStore.data.backdrop.collections = null;
+    personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     assertFalse(spinner.active);
@@ -95,58 +97,38 @@ export function WallpaperCollectionsTest() {
         wallpaperCollectionsElement.shadowRoot.querySelector('iframe').hidden);
   });
 
-  test(
-      'calls selectCollection callback when SelectCollectionEvent is received',
-      async () => {
-        const sendCollectionsPromise = promisifySendCollectionsForTesting();
-        wallpaperCollectionsElement =
-            initElement(WallpaperCollections.is, {active: true});
-        const selectCollectionPromise = new Promise((resolve) => {
-          wallpaperCollectionsElement.selectCollection = resolve;
-          const original = wallpaperCollectionsElement.onCollectionSelected_;
-          function patched(event) {
-            // Rewrite event to make it look as if coming from untrusted origin.
-            original.call(
-                wallpaperCollectionsElement,
-                {data: event.data, origin: untrustedOrigin});
-          }
-          window.removeEventListener('message', original);
-          window.addEventListener('message', patched, {once: true});
-        });
-        await sendCollectionsPromise;
-        await waitAfterNextRender(wallpaperCollectionsElement);
+  test('loads backdrop data and saves to store', async () => {
+    // Make sure state starts at expected value.
+    assertDeepEquals(emptyState(), personalizationStore.data);
+    // Actually run the reducers.
+    personalizationStore.setReducersEnabled(true);
 
-        selectCollection(window, 'id_0');
-        const id = await selectCollectionPromise;
-        assertEquals('id_0', id);
-      });
+    const sendCollectionsPromise = promisifySendCollectionsForTesting();
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-  test(
-      'throws error when invalid SelectCollectionEvent is received',
-      async () => {
-        const sendCollectionsPromise = promisifySendCollectionsForTesting();
-        wallpaperCollectionsElement =
-            initElement(WallpaperCollections.is, {active: true});
-        const original = wallpaperCollectionsElement.onCollectionSelected_;
-        const selectCollectionPromise = new Promise((resolve) => {
-          function patched(event) {
-            // Rewrite event to make it look as if coming from untrusted origin.
-            assertThrows(
-                () => original.call(
-                    wallpaperCollectionsElement,
-                    {data: event.data, origin: untrustedOrigin}),
-                'Assertion failed: No valid selection found in choices');
-            resolve();
-          }
-          window.removeEventListener('message', original);
-          window.addEventListener('message', patched, {once: true});
-        });
+    const [_, data] = await sendCollectionsPromise;
+    assertDeepEquals(wallpaperProvider.collections, data);
 
-        await sendCollectionsPromise;
-        await waitAfterNextRender(wallpaperCollectionsElement);
-
-        selectCollection(window, 'does_not_exist');
-        // Wait for the message handler |patched| to run.
-        await selectCollectionPromise;
-      });
+    assertDeepEquals(
+        {
+          collections: wallpaperProvider.collections,
+          images: {
+            'id_0': wallpaperProvider.images,
+            'id_1': wallpaperProvider.images,
+          },
+        },
+        personalizationStore.data.backdrop,
+    );
+    assertDeepEquals(
+        {
+          ...emptyState().loading,
+          collections: false,
+          images: {
+            'id_0': false,
+            'id_1': false,
+          },
+        },
+        personalizationStore.data.loading,
+    );
+  });
 }

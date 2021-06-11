@@ -5,7 +5,7 @@
 import {Store, StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {emptyState, PersonalizationState, reduce} from './personalization_actions.js';
+import {emptyState, PersonalizationState, reduce} from './personalization_reducers.js';
 
 /**
  * @fileoverview A singleton datastore for the personalization app. Page state

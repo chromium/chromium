@@ -9,7 +9,7 @@
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {setCurrentImageAction} from './personalization_actions.js';
+import {getCurrentWallpaper} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /**
@@ -43,13 +43,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
        */
       image_: {
         type: Object,
-        value: null,
       },
 
       /** @private */
       isLoading_: {
         type: Boolean,
-        value: true,
+        listener: 'onIsLoadingChanged_',
       },
 
       /** @private */
@@ -68,30 +67,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   constructor() {
     super();
+    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  ready() {
-    super.ready();
-    this.getCurrentWallpaper_();
-  }
-
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.watch('image_', store => store.selectedImage);
+    this.watch('image_', state => state.selected);
+    this.watch('isLoading_', state => state.loading.selected);
     this.updateFromStore();
-  }
-
-  /**
-   * Fetches current wallpaper information, including image url and attribution
-   * text.
-   * @private
-   */
-  async getCurrentWallpaper_() {
-    this.isLoading_ = true;
-    const {image} = await this.wallpaperProvider_.getCurrentWallpaper();
-    this.dispatch(setCurrentImageAction(image));
-    this.isLoading_ = false;
+    getCurrentWallpaper(this.wallpaperProvider_, this.getStore());
   }
 
   /**

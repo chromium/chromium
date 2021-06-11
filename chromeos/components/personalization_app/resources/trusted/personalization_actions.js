@@ -3,60 +3,123 @@
 // found in the LICENSE file.
 
 import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+import {unguessableTokenToString} from '../common/utils.js';
 
 /**
- * @fileoverview Defines the global app state and the actions to change state.
+ * @fileoverview Defines the actions to change state.
  */
-
-/**
- * @typedef {{
- *   selectedImage: ?chromeos.personalizationApp.mojom.WallpaperImage,
- * }}
- */
-export let PersonalizationState;
-
-/**
- * Returns an empty or initial state.
- * @return {!PersonalizationState}
- */
-export function emptyState() {
-  return {selectedImage: null};
-}
 
 /** @enum {string} */
 export const ActionName = {
-  SET_CURRENT_IMAGE: 'set_current_image',
+  BEGIN_LOAD_IMAGES_FOR_COLLECTIONS: 'begin_load_images_for_collections',
+  BEGIN_LOAD_LOCAL_IMAGE_DATA: 'begin_load_local_image_data',
+  BEGIN_SELECT_IMAGE: 'begin_select_image',
+  SET_COLLECTIONS: 'set_collections',
+  SET_IMAGES_FOR_COLLECTION: 'set_images_for_collection',
+  SET_LOCAL_IMAGES: 'set_local_images',
+  SET_LOCAL_IMAGE_DATA: 'set_local_image_data',
+  SET_SELECTED_IMAGE: 'set_selected_image',
 };
 
+
 /**
- * Returns an action to set the current image as currently selected across the
- * app. Can be called with null to represent no image currently selected.
- * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+ * Notify that app is loading image list for the given collection.
+ * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+ *     collections
  * @return {!Action}
  */
-export function setCurrentImageAction(image) {
+export function beginLoadImagesForCollectionsAction(collections) {
   return {
-    image,
-    name: ActionName.SET_CURRENT_IMAGE,
+    collections,
+    name: ActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS,
   };
 }
 
 /**
- * Reducer for personalization app. Must be a pure function that returns a new
- * |PersonalizationState| object. |state| is considered immutable and any
- * changes must return a new object.
- * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
- * @param {!PersonalizationState} state
- * @param {!Action} action
- * @return {!PersonalizationState}
+ * Notify that app is loading thumbnail for the given local image.
+ * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+ * @return {!Action}
  */
-export function reduce(state, action) {
-  switch (action.name) {
-    case ActionName.SET_CURRENT_IMAGE:
-      return /** @type {PersonalizationState} */ (
-          Object.assign({}, state, {selectedImage: action.image}));
-    default:
-      console.warn('Unknown action name', action.name);
-      return state;
-  }
+export function beginLoadLocalImageDataAction(image) {
+  return {
+    id: unguessableTokenToString(image.id),
+    name: ActionName.BEGIN_LOAD_LOCAL_IMAGE_DATA,
+  };
+}
+
+/**
+ * Notify that a user has clicked on an image to set as wallpaper.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+ * @return {!Action}
+ */
+export function beginSelectImageAction(image) {
+  return {name: ActionName.BEGIN_SELECT_IMAGE, image};
+}
+
+/**
+ * Set the collections. May be called with null if an error occurred.
+ * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+ *     collections
+ * @return {!Action}
+ */
+export function setCollectionsAction(collections) {
+  return {
+    collections,
+    name: ActionName.SET_COLLECTIONS,
+  };
+}
+
+/**
+ * Set the images for a given collection. May be called with null if an error
+ * occurred.
+ * @param {string} collectionId
+ * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>} images
+ * @returns
+ */
+export function setImagesForCollectionAction(collectionId, images) {
+  return {
+    collectionId,
+    images,
+    name: ActionName.SET_IMAGES_FOR_COLLECTION,
+  };
+}
+
+/**
+ * Set the thumbnail data for a local image.
+ * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+ * @param {string} data
+ * @return {!Action}
+ */
+export function setLocalImageDataAction(image, data) {
+  return {
+    id: unguessableTokenToString(image.id),
+    data,
+    name: ActionName.SET_LOCAL_IMAGE_DATA,
+  };
+}
+
+/**
+ * Set the list of local images.
+ * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+ * @return {!Action}
+ */
+export function setLocalImagesAction(images) {
+  return {
+    images,
+    name: ActionName.SET_LOCAL_IMAGES,
+  };
+}
+
+/**
+ * Returns an action to set the current image as currently selected across the
+ * app. Can be called with null to represent no image currently selected or that
+ * an error occurred.
+ * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+ * @return {!Action}
+ */
+export function setSelectedImageAction(image) {
+  return {
+    image,
+    name: ActionName.SET_SELECTED_IMAGE,
+  };
 }

@@ -12,7 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */
-const Paths = {
+export const Paths = {
   CollectionImages: '/collection',
   Collections: '/',
 };
@@ -45,9 +45,25 @@ export class PersonalizationRouter extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-    this.selectCollection_ = this.selectCollection_.bind(this);
+  static instance() {
+    return document.querySelector(PersonalizationRouter.is);
+  }
+
+  get collectionId() {
+    if (this.path_ !== Paths.CollectionImages) {
+      return null;
+    }
+    return this.queryParams_.id;
+  }
+
+  /**
+   * Navigate to the selected collection id. Assumes validation of the
+   * collection id has already happened.
+   * @param {!string} collectionId
+   */
+  selectCollection(collectionId) {
+    this.setProperties(
+        {path_: Paths.CollectionImages, queryParams_: {id: collectionId}});
   }
 
   /**
@@ -57,17 +73,6 @@ export class PersonalizationRouter extends PolymerElement {
    */
   shouldShowCollections_(path) {
     return path === Paths.Collections;
-  }
-
-  /**
-   * Navigate to the selected collection id. Assumes validation of the
-   * collection id has already happened.
-   * @param {!string} collectionId
-   * @private
-   */
-  selectCollection_(collectionId) {
-    this.setProperties(
-        {path_: Paths.CollectionImages, queryParams_: {id: collectionId}});
   }
 
   /**

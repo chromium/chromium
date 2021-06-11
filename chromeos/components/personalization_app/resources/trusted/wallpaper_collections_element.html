@@ -1,5 +1,6 @@
 <style include="shared-style"></style>
-<paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
+<paper-spinner-lite active="[[collectionsLoading_]]"></paper-spinner-lite>
+<!-- TODO(b/189968254) move local images to untrusted -->
 <dom-repeat items="[[localImages_]]">
   <template>
     <img src="[[item]]">

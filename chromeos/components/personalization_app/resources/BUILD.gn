@@ -26,7 +26,7 @@ generate_grd("build_grd") {
 }
 
 group("closure_compile") {
-  public_deps = [
+  deps = [
     "common:closure_compile",
     "trusted:closure_compile",
     "untrusted:closure_compile",

@@ -3,7 +3,7 @@
 <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
 </iron-query-params>
 <wallpaper-selected></wallpaper-selected>
-<wallpaper-collections select-collection="[[selectCollection_]]"
-    active="[[shouldShowCollections_(path_)]]"></wallpaper-collections>
+<wallpaper-collections hidden$="[[!shouldShowCollections_(path_)]]">
+</wallpaper-collections>
 <wallpaper-images collection-id="[[queryParams_.id]]"
-    active="[[shouldShowCollectionImages_(path_)]]"></wallpaper-images>
+    hidden$="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>

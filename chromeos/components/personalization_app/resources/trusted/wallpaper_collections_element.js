@@ -11,11 +11,12 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EventType} from '../common/constants.js';
-import {sendCollections, validateReceivedSelection} from '../common/iframe_api.js';
-import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
-import {fetchCollectionsHelper, getWallpaperProvider} from './mojo_interface_provider.js';
+import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sendCollections} from '../common/iframe_api.js';
+import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
+import {getWallpaperProvider} from './mojo_interface_provider.js';
+import {getAllLocalImageThumbnails, getLocalImages, initializeBackdropData} from './personalization_controller.js';
+import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCollectionsFunction = sendCollections;
 
@@ -26,7 +27,8 @@ export function promisifySendCollectionsForTesting() {
   return promise;
 }
 
-export class WallpaperCollections extends PolymerElement {
+/** @polymer */
+export class WallpaperCollections extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-collections';
   }
@@ -37,27 +39,17 @@ export class WallpaperCollections extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {function(!string)} */
-      selectCollection: {
-        type: Function,
-      },
-
-      /**
-       * Used to bind/unbind the message listener when this element is shown or
-       * hidden.
-       */
-      active: {
-        type: Boolean,
-        observer: 'onActiveChanged_',
-      },
-
       /**
        * @private
        * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
        */
       collections_: {
         type: Array,
-        value: null,
+      },
+
+      /** @private */
+      collectionsLoading_: {
+        type: Boolean,
       },
 
       /**
@@ -66,100 +58,50 @@ export class WallpaperCollections extends PolymerElement {
        */
       localImages_: {
         type: Array,
-        value: [],
-      },
-
-      /** @private */
-      isLoading_: {
-        type: Boolean,
-        value: false,
       },
 
       /** @private */
       hasError_: {
         type: Boolean,
-        computed: 'computeHasError_(collections_, isLoading_)',
+        // Call computed functions with their dependencies as arguments so that
+        // polymer knows when to re-run the computation.
+        computed: 'computeHasError_(collections_, collectionsLoading_)',
       },
 
       /** @private */
       showCollections_: {
         type: Boolean,
-        computed: 'computeShowCollections_(collections_, isLoading_)',
+        computed: 'computeShowCollections_(collections_, collectionsLoading_)',
+        observer: 'onShowCollectionsChanged_',
       },
     };
   }
 
   constructor() {
     super();
-    this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
-        promisifyOnload(this, 'collections-iframe', afterNextRender));
-    this.onCollectionSelected_ = this.onCollectionSelected_.bind(this);
     /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
+    this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
+        promisifyOnload(this, 'collections-iframe', afterNextRender));
   }
 
   /** @override */
-  ready() {
-    super.ready();
-    this.fetchCollections_();
-    this.fetchLocalImages_();
-  }
-
-  /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener('message', this.onCollectionSelected_);
-  }
-
-  /**
-   * @private
-   * @param {boolean} value
-   */
-  onActiveChanged_(value) {
-    const func = value ? window.addEventListener : window.removeEventListener;
-    func('message', this.onCollectionSelected_);
-    this.hidden = !value;
-  }
-
-  /** @private */
-  async fetchCollections_() {
-    this.setProperties({isLoading_: true, collections_: null});
-    // Make sure iframe is fully loaded.
-    const iframe = await this.iframePromise_;
-    try {
-      const {collections} =
-          await fetchCollectionsHelper(this.wallpaperProvider_);
-      sendCollectionsFunction(iframe.contentWindow, collections);
-      this.collections_ = collections;
-    } catch (e) {
-      console.warn('Fetching wallpaper collections failed', e);
-    } finally {
-      this.isLoading_ = false;
-    }
-  }
-
-  /**
-   * TODO(b/189968254) clean up data fetching and move display into untrusted
-   * container.
-   * @private
-   */
-  async fetchLocalImages_() {
-    const {images} = await this.wallpaperProvider_.getLocalImages();
-    if (!Array.isArray(images)) {
-      console.warn('Error fetching local images');
-      return;
-    }
-    // TODO(b/189968254) only show first ten until follow-up CL.
-    images.length = Math.min(10, images.length);
-    for (const image of images) {
-      const {data} =
-          await this.wallpaperProvider_.getLocalImageThumbnail(image.id);
-      if (!data) {
-        console.warn('Error fetching image data');
-        continue;
-      }
-      this.push('localImages_', data);
-    }
+  connectedCallback() {
+    super.connectedCallback();
+    this.watch('collections_', state => state.backdrop.collections);
+    this.watch('collectionsLoading_', state => state.loading.collections);
+    this.watch(
+        'localImages_',
+        state => Array.isArray(state.local.images) ?
+            state.local.images.map(image => unguessableTokenToString(image.id))
+                .filter(id => !!state.local.data[id])
+                .map(id => state.local.data[id]) :
+            null);
+    this.updateFromStore();
+    const store = this.getStore();
+    initializeBackdropData(this.wallpaperProvider_, store);
+    getLocalImages(this.wallpaperProvider_, store)
+        .then(() => getAllLocalImageThumbnails(this.wallpaperProvider_, store));
   }
 
   /**
@@ -185,15 +127,14 @@ export class WallpaperCollections extends PolymerElement {
   }
 
   /**
-   * Called when untrusted iframe sends a selection back.
-   * @private
-   * @param {!Event} event
+   * Send updated wallpaper collections to the iframe.
+   * @param {?boolean} value
    */
-  onCollectionSelected_(event) {
-    /** @type {!chromeos.personalizationApp.mojom.WallpaperCollection} */
-    const collection = validateReceivedSelection(
-        event, EventType.SELECT_COLLECTION, this.collections_);
-    this.selectCollection(collection.id);
+  async onShowCollectionsChanged_(value) {
+    if (value) {
+      const iframe = await this.iframePromise_;
+      sendCollectionsFunction(iframe.contentWindow, this.collections_);
+    }
   }
 }
 
