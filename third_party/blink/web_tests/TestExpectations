@@ -2668,6 +2668,7 @@ crbug.com/626703 [ Win ] external/wpt/websockets/basic-auth.any.html?wss [ Timeo
 crbug.com/626703 [ Win ] external/wpt/websockets/basic-auth.any.serviceworker.html?wss [ Timeout Failure ]
 crbug.com/626703 [ Win ] external/wpt/websockets/opening-handshake/005.html [ Timeout Failure ]
 crbug.com/626703 [ Win ] external/wpt/websockets/opening-handshake/005.html?wss [ Timeout Failure ]
+crbug.com/626703 [ Linux ] external/wpt/websockets/opening-handshake/005.html [ Pass Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/getstats.html [ Timeout ]
