@@ -191,15 +191,6 @@ export class EmojiPicker extends PolymerElement {
             /** @type {!EmojiVariantsShownEvent} */ (ev)));
     this.addEventListener('click', () => this.hideDialogs());
     this.getHistory();
-
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'visible') {
-        if (this.emojiData !== []) {
-          await this.resetState();
-        }
-        this.apiProxy_.showUI();
-      }
-    }, true);
   }
 
   async getHistory() {
@@ -241,21 +232,6 @@ export class EmojiPicker extends PolymerElement {
     });
   }
 
-  /**
-   * Reset state of the emoji picker when it gets re-shown.
-   */
-  async resetState() {
-    // Recheck history to ensure that incognito mode is correct for this text
-    // field.
-    await this.getHistory();
-    this.hideEmojiVariants();
-    this.$.groups.scrollTop = 0;
-    const searchFeld =
-        this.$['search-container'].shadowRoot.querySelector('cr-search-field');
-    searchFeld.setValue('');
-    searchFeld.getSearchInput().focus();
-  }
-
   onSearchChanged(newValue) {
     this.$['list-container'].style.display = newValue ? 'none' : '';
   }
@@ -276,25 +252,15 @@ export class EmojiPicker extends PolymerElement {
    * @param {!string} name
    */
   async insertEmoji(emoji, isVariant, baseEmoji, allVariants, name) {
-    document.activeElement.blur();
-    this.apiProxy_.closeUI();
-    this.$['search-container'].clearSearch();
     this.$.message.textContent = emoji + ' inserted.';
     const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
     if (!incognito) {
       this.recentEmojiStore.bumpEmoji(
           {base: emoji, alternates: allVariants, name: name});
       this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
-
       this.set(
           ['history', 'emoji'],
           makeRecentlyUsed(this.recentEmojiStore.data.history));
-      // Ugly hack around updating the preference mapping, doing things directly
-      // doesn't work.
-      this.set('preferenceMapping', {});
-      requestAnimationFrame(time => {
-        this.preferenceMapping = this.recentEmojiStore.getPreferenceMapping();
-      });
     }
     const searchLength = this.$['search-container']
                              .shadowRoot.querySelector('cr-search-field')
@@ -306,7 +272,6 @@ export class EmojiPicker extends PolymerElement {
   clearRecentEmoji() {
     this.set(['history', 'emoji'], makeRecentlyUsed([]));
     this.set(['emojiGroupTabs', 0, 'disabled'], true);
-    this.set(['preferenceMapping'], {});
     this.recentEmojiStore.clearRecents();
     afterNextRender(
         this, () => this.updateActiveGroup(/*updateTabsScroll=*/ true));

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
@@ -28,7 +27,6 @@
 namespace {
 constexpr gfx::Size kDefaultWindowSize(340, 390);
 constexpr int kPaddingAroundCursor = 8;
-constexpr char kEmojiPickerDataKey[] = "EmojiPicker";
 
 class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
  public:
@@ -39,15 +37,6 @@ class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
 
  private:
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
-};
-
-struct EmojiManager : public base::SupportsUserData::Data {
-  explicit EmojiManager(Profile* profile)
-      : manager(nullptr,
-                profile,
-                GURL(chrome::kChromeUIEmojiPickerURL),
-                IDS_ACCNAME_EMOJI_PICKER) {}
-  WebUIBubbleManagerT<chromeos::EmojiUI> manager;
 };
 
 }  // namespace
@@ -77,14 +66,13 @@ void EmojiUI::Show(Profile* profile) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }
-  if (!profile->GetUserData(kEmojiPickerDataKey)) {
-    profile->SetUserData(kEmojiPickerDataKey,
-                         std::make_unique<EmojiManager>(profile));
-  }
+
   ui::InputMethod* input_method =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
+  const bool incognito_mode =
+      input_client ? !input_client->ShouldDoLearning() : false;
   gfx::Rect caret_bounds =
       input_client ? input_client->GetCaretBounds() : gfx::Rect();
 
@@ -107,10 +95,27 @@ void EmojiUI::Show(Profile* profile) {
       gfx::Rect(caret_bounds.x() + kDefaultWindowSize.width(),
                 caret_bounds.y() - kPaddingAroundCursor, 0,
                 caret_bounds.height() + kPaddingAroundCursor * 2);
-  EmojiManager* emojiManager =
-      static_cast<EmojiManager*>(profile->GetUserData(kEmojiPickerDataKey));
-  emojiManager->manager.SetAnchorRect(anchor_rect);
-  emojiManager->manager.ShowBubble();
+
+  // TODO(b/181703133): Refactor so that the webui_bubble_manager can be used
+  // here to reduce code duplication.
+
+  auto contents_wrapper = std::make_unique<BubbleContentsWrapperT<EmojiUI>>(
+      GURL(chrome::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER,
+      false /*enable_extension_apis*/);
+  // Need to reload the web contents here because the view isn't visible unless
+  // ShowUI is called from the JS side.  By reloading, we trigger the JS to
+  // eventually call ShowUI().
+  contents_wrapper->ReloadWebContents();
+  contents_wrapper->GetWebUIController()->incognito_mode_ = incognito_mode;
+
+  auto bubble_view =
+      std::make_unique<EmojiiBubbleDialogView>(std::move(contents_wrapper));
+  auto weak_ptr = bubble_view->GetWeakPtr();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  weak_ptr->SetAnchorRect(anchor_rect);
+  weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
+      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
+  weak_ptr->set_adjust_if_offscreen(true);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
@@ -123,8 +128,8 @@ void EmojiUI::BindInterface(
 
 void EmojiUI::CreatePageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<EmojiPageHandler>(std::move(receiver), web_ui(), this);
+  page_handler_ = std::make_unique<EmojiPageHandler>(
+      std::move(receiver), web_ui(), this, incognito_mode_);
 }
 
 }  // namespace chromeos

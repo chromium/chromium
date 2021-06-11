@@ -62,8 +62,6 @@ export class EmojiButton extends PolymerElement {
       allVariants: this.allVariants ? this.allVariants : this.variants,
       name: this.tooltip
     }));
-    ev.preventDefault();
-    ev.stopPropagation();
   }
 
   onContextMenu(ev) {

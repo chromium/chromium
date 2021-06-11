@@ -9,7 +9,6 @@ import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.
 /** @interface */
 export class EmojiPickerApiProxy {
   showUI() {}
-  closeUI() {}
   /**
    *
    * @param {string} emoji
@@ -36,11 +35,6 @@ export class EmojiPickerApiProxyImpl {
   /** @override */
   showUI() {
     this.handler.showUI();
-  }
-
-  /** @override */
-  closeUI() {
-    this.handler.closeUI();
   }
   /** @override */
   insertEmoji(emoji, isVariant, searchLength) {

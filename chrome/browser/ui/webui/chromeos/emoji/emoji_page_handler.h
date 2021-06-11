@@ -18,14 +18,14 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   EmojiPageHandler(
       mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
       content::WebUI* web_ui,
-      EmojiUI* webui_controller);
+      EmojiUI* webui_controller,
+      bool incognito_mode);
   EmojiPageHandler(const EmojiPageHandler&) = delete;
   EmojiPageHandler& operator=(const EmojiPageHandler&) = delete;
   ~EmojiPageHandler() override;
 
   // emoji_picker::mojom::PageHandler:
   void ShowUI() override;
-  void CloseUI() override;
   void InsertEmoji(const std::string& emoji_to_insert,
                    bool is_variant,
                    int16_t search_length) override;

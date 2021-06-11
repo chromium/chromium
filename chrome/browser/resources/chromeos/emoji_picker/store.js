@@ -51,11 +51,6 @@ export class RecentEmojiStore {
     save(this.data);
   }
 
-  clearPrefs() {
-    this.data.preference = {};
-    save(this.data);
-  }
-
   /**
    * Moves the given emoji to the front of the MRU list, inserting it if
    * it did not previously exist.

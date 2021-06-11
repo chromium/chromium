@@ -31,9 +31,7 @@ bool WebUIBubbleManager::ShowBubble() {
   cache_timer_->Stop();
 
   bubble_view_ = CreateWebUIBubbleDialog();
-  if (anchor_rect_.has_value()) {
-    bubble_view_->SetAnchorRect(*anchor_rect_);
-  }
+
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
   // picker in Chrome OS launcher). In that case, the close bubble helper isn't

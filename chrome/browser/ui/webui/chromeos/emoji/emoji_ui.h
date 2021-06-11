@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -46,6 +45,8 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
 
   mojo::Receiver<emoji_picker::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+  bool incognito_mode_;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 }  // namespace chromeos

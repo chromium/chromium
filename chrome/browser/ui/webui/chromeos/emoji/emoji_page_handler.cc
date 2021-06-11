@@ -39,24 +39,15 @@ void LogInsertEmojiDelay(base::TimeDelta delay) {
 EmojiPageHandler::EmojiPageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
     content::WebUI* web_ui,
-    EmojiUI* webui_controller)
+    EmojiUI* webui_controller,
+    bool incognito_mode)
     : receiver_(this, std::move(receiver)),
-      webui_controller_(webui_controller) {
-  ui::InputMethod* input_method =
-      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  ui::TextInputClient* input_client =
-      input_method ? input_method->GetTextInputClient() : nullptr;
-  incognito_mode_ = input_client ? !input_client->ShouldDoLearning() : false;
-}
+      webui_controller_(webui_controller),
+      incognito_mode_(incognito_mode) {}
 
 EmojiPageHandler::~EmojiPageHandler() {}
 
 void EmojiPageHandler::ShowUI() {
-  ui::InputMethod* input_method =
-      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  ui::TextInputClient* input_client =
-      input_method ? input_method->GetTextInputClient() : nullptr;
-  incognito_mode_ = input_client ? !input_client->ShouldDoLearning() : false;
   auto embedder = webui_controller_->embedder();
   // Embedder may not exist in some cases (e.g. user browses to
   // chrome://emoji-picker directly rather than using right click on
@@ -66,11 +57,7 @@ void EmojiPageHandler::ShowUI() {
   }
   shown_time_ = base::TimeTicks::Now();
 }
-void EmojiPageHandler::CloseUI() {
-  auto embedder = webui_controller_->embedder();
-  if (embedder)
-    embedder->CloseUI();
-}
+
 void EmojiPageHandler::IsIncognitoTextField(
     IsIncognitoTextFieldCallback callback) {
   std::move(callback).Run(incognito_mode_);
@@ -79,6 +66,12 @@ void EmojiPageHandler::IsIncognitoTextField(
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
                                    bool is_variant,
                                    int16_t search_length) {
+  // By hiding the emoji picker, we restore focus to the original text field so
+  // we can insert the text.
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
   LogInsertEmoji(is_variant, search_length);
   LogInsertEmojiDelay(base::TimeTicks::Now() - shown_time_);
   // In theory, we are returning focus to the input field where the user
