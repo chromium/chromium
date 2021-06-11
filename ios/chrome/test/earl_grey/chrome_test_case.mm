@@ -33,6 +33,9 @@ bool gExecutedSetUpForTestCase = false;
 
 bool gIsMockAuthenticationDisabled = false;
 
+// YES the test is for startup.
+bool gStartupTest = false;
+
 NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
@@ -172,6 +175,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[self class] disableMockAuthentication];
   [super tearDown];
   gExecutedSetUpForTestCase = false;
+  gStartupTest = false;
 }
 
 - (net::EmbeddedTestServer*)testServer {
@@ -199,7 +203,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Reset any remaining sign-in state from previous tests.
   [ChromeEarlGrey signOutAndClearIdentities];
-  [ChromeEarlGrey openNewTab];
+  if (![ChromeTestCase isStartupTest]) {
+    [ChromeEarlGrey openNewTab];
+  }
   _executedTestMethodSetUp = YES;
 }
 
@@ -227,7 +233,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Clean up any UI that may remain open so the next test starts in a clean
   // state.
-  [[self class] removeAnyOpenMenusAndInfoBars];
+  if (![ChromeTestCase isStartupTest]) {
+    [[self class] removeAnyOpenMenusAndInfoBars];
+  }
   [[self class] closeAllTabs];
 
   if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
@@ -280,6 +288,14 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
 - (BOOL)isRunningTest:(SEL)selector {
   return [[self currentTestMethodName] isEqual:NSStringFromSelector(selector)];
+}
+
++ (void)testForStartup {
+  gStartupTest = YES;
+}
+
++ (BOOL)isStartupTest {
+  return gStartupTest;
 }
 
 #pragma mark - Private methods
@@ -358,8 +374,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.
-  [self removeAnyOpenMenusAndInfoBars];
-  [self closeAllTabs];
+  if (![ChromeTestCase isStartupTest]) {
+    [[self class] removeAnyOpenMenusAndInfoBars];
+    [self closeAllTabs];
+  }
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are runing in portrait.
@@ -426,7 +444,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
       // Reset any remaining sign-in state from previous tests.
       [ChromeEarlGrey signOutAndClearIdentities];
-      [ChromeEarlGrey openNewTab];
+      if (![ChromeTestCase isStartupTest]) {
+        [ChromeEarlGrey openNewTab];
+      }
     }
   }
 }

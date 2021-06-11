@@ -49,6 +49,8 @@ id<GREYMatcher> SkipSigninButton() {
 @implementation FirstRunTestCase
 
 - (void)setUp {
+  [[self class] testForStartup];
+
   [super setUp];
   [FirstRunAppInterface setUMACollectionEnabled:NO];
   [FirstRunAppInterface resetUMACollectionEnabledByDefault];
@@ -64,13 +66,19 @@ id<GREYMatcher> SkipSigninButton() {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(kLocationPermissionsPrompt);
   config.features_disabled.push_back(kEnableFREUIModuleIOS);
+
+  // Show the First Run UI at startup.
+  config.additional_args.push_back("-FirstRunForceEnabled");
+  config.additional_args.push_back("true");
+
+  // Relaunch app at each test to rewind the startup state.
+  config.relaunch_policy = ForceRelaunchByKilling;
+
   return config;
 }
 
 // Navigates to the terms of service and back.
 - (void)testTermsAndConditions {
-  [FirstRunAppInterface showFirstRunUI];
-
   id<GREYMatcher> termsOfServiceLink =
       grey_accessibilityLabel(@"Terms of Service");
   [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
@@ -102,8 +110,6 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Toggle the UMA checkbox.
 - (void)testToggleMetricsOn {
-  [FirstRunAppInterface showFirstRunUI];
-
   id<GREYMatcher> metrics =
       grey_accessibilityID(first_run::kUMAMetricsButtonAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:metrics] performAction:grey_tap()];
@@ -123,8 +129,6 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Dismisses the first run screens.
 - (void)testDismissFirstRun {
-  [FirstRunAppInterface showFirstRunUI];
-
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
 
@@ -145,7 +149,6 @@ id<GREYMatcher> SkipSigninButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Launch First Run and accept tems of services.
-  [FirstRunAppInterface showFirstRunUI];
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
 
@@ -170,8 +173,6 @@ id<GREYMatcher> SkipSigninButton() {
 - (void)testFirstRunInMultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-
-  [FirstRunAppInterface showFirstRunUI];
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitForForegroundWindowCount:2];

@@ -51,6 +51,9 @@ class EmbeddedTestServer;
 // name of the currently running test method.
 - (BOOL)isRunningTest:(SEL)selector;
 
+// Configure the fixture for startup testing.
++ (void)testForStartup;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_TEST_CASE_H_

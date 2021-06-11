@@ -137,11 +137,11 @@ void FirstRunDismissed() {
 }
 
 bool ShouldPresentFirstRunExperience() {
-  if (tests_hook::DisableFirstRun())
-    return false;
-
   if (experimental_flags::AlwaysDisplayFirstRun())
     return true;
+
+  if (tests_hook::DisableFirstRun())
+    return false;
 
   if (kFirstRunSentinelCreated)
     return false;
