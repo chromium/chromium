@@ -19,7 +19,6 @@
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBKey;
@@ -53,11 +52,9 @@ IndexedDBCursor::IndexedDBCursor(
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<IndexedDBTransaction> transaction)
-    : origin_(transaction->BackingStoreTransaction()
-                  ->backing_store()
-                  ->storage_key()
-                  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-                  .origin()),
+    : storage_key_(transaction->BackingStoreTransaction()
+                       ->backing_store()
+                       ->storage_key()),
       task_type_(task_type),
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
@@ -132,9 +129,7 @@ leveldb::Status IndexedDBCursor::CursorAdvanceOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    dispatcher_host->CreateAllExternalObjects(blink::StorageKey(origin_),
-                                              external_objects,
+    dispatcher_host->CreateAllExternalObjects(storage_key_, external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -215,9 +210,7 @@ leveldb::Status IndexedDBCursor::CursorContinueOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    dispatcher_host->CreateAllExternalObjects(blink::StorageKey(origin_),
-                                              external_objects,
+    dispatcher_host->CreateAllExternalObjects(storage_key_, external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -344,8 +337,7 @@ leveldb::Status IndexedDBCursor::CursorPrefetchIterationOperation(
     mojo_values.push_back(
         IndexedDBValue::ConvertAndEraseValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin_), found_values[i].external_objects,
+        storage_key_, found_values[i].external_objects,
         &mojo_values[i]->external_objects);
   }
 
