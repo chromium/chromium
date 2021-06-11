@@ -474,11 +474,6 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
         // clang-format on
-        Assume.assumeFalse("https://crbug.com/1196473",
-            isInstantReturn()
-                && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
-
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
