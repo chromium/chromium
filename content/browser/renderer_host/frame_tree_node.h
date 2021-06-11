@@ -86,7 +86,8 @@ class CONTENT_EXPORT FrameTreeNode {
       bool is_created_by_script,
       const base::UnguessableToken& devtools_frame_token,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type);
+      blink::mojom::FrameOwnerElementType owner_type,
+      const blink::FramePolicy& frame_owner);
 
   ~FrameTreeNode();
 

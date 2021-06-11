@@ -68,6 +68,7 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateRaw) {
   EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
   EXPECT_EQ("<iframe></iframe>",
             fenced_frame->UserAgentShadowRoot()->innerHTML());
+  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
@@ -77,6 +78,7 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
   EXPECT_NE(nullptr, fenced_frame.UserAgentShadowRoot());
   EXPECT_EQ("<iframe></iframe>",
             fenced_frame.UserAgentShadowRoot()->innerHTML());
+  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {
@@ -121,6 +123,7 @@ TEST_F(FencedFrameShadowDOMDelegateTest, NavigationWithInsertionAndRemoval) {
   fenced_frame->setAttribute(html_names::kSrcAttr, "https://example-2.com");
   EXPECT_EQ("<iframe src=\"https://example-2.com/\"></iframe>",
             fenced_frame->UserAgentShadowRoot()->innerHTML());
+  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
 
   // Removal does not remove the internal iframe, or change its `src`.
   GetDocument().body()->RemoveChild(fenced_frame);
@@ -139,6 +142,7 @@ TEST_F(FencedFrameShadowDOMDelegateTest, NavigationWithInsertionAndRemoval) {
   AssertInternalIFrameExists(fenced_frame);
   EXPECT_EQ("<iframe src=\"https://example-3.com/\"></iframe>",
             fenced_frame->UserAgentShadowRoot()->innerHTML());
+  EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
 }
 
 }  // namespace blink

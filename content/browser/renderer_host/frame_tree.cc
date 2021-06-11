@@ -183,7 +183,8 @@ FrameTree::FrameTree(
                               false,
                               base::UnguessableToken::Create(),
                               blink::mojom::FrameOwnerProperties(),
-                              blink::mojom::FrameOwnerElementType::kNone)),
+                              blink::mojom::FrameOwnerElementType::kNone,
+                              blink::FramePolicy())),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
       type_(type) {}
@@ -300,7 +301,7 @@ FrameTreeNode* FrameTree::AddFrame(
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(new FrameTreeNode(
       this, parent, scope, frame_name, frame_unique_name, is_created_by_script,
-      devtools_frame_token, frame_owner_properties, owner_type));
+      devtools_frame_token, frame_owner_properties, owner_type, frame_policy));
 
   // Set sandbox flags and container policy and make them effective immediately,
   // since initial sandbox flags and permissions policy should apply to the

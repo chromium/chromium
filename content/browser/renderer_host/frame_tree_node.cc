@@ -114,7 +114,8 @@ FrameTreeNode::FrameTreeNode(
     bool is_created_by_script,
     const base::UnguessableToken& devtools_frame_token,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-    blink::mojom::FrameOwnerElementType owner_type)
+    blink::mojom::FrameOwnerElementType owner_type,
+    const blink::FramePolicy& frame_policy)
     : frame_tree_(frame_tree),
       frame_tree_node_id_(next_frame_tree_node_id_++),
       parent_(parent),
@@ -127,7 +128,7 @@ FrameTreeNode::FrameTreeNode(
           unique_name,
           blink::ParsedPermissionsPolicy(),
           network::mojom::WebSandboxFlags::kNone,
-          blink::FramePolicy(),
+          frame_policy,
           // should enforce strict mixed content checking
           blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
           // hashes of hosts for insecure request upgrades
@@ -136,6 +137,7 @@ FrameTreeNode::FrameTreeNode(
           false /* has an active user gesture */,
           false /* has received a user gesture before nav */,
           false /* is_ad_subframe */)),
+      pending_frame_policy_(frame_policy),
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
@@ -404,6 +406,16 @@ void FrameTreeNode::SetInsecureNavigationsSet(
 }
 
 void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
+  // The |is_fenced| bit should never be able to transition from what its
+  // initial value was. Since we never expect to be in a position where it can
+  // even be updated to new value, if we catch this happening we have to kill
+  // the renderer and refuse to accept any other frame policy changes here.
+  if (pending_frame_policy_.is_fenced != frame_policy.is_fenced) {
+    mojo::ReportBadMessage(
+        "The `is_fenced` FramePolicy bit is const and should never be changed");
+    return;
+  }
+
   pending_frame_policy_.sandbox_flags = frame_policy.sandbox_flags;
 
   if (parent()) {
@@ -469,6 +481,8 @@ bool FrameTreeNode::CommitFramePolicy(
   bool did_change_required_document_policy =
       pending_frame_policy_.required_document_policy !=
       replication_state_->frame_policy.required_document_policy;
+  DCHECK_EQ(new_frame_policy.is_fenced,
+            replication_state_->frame_policy.is_fenced);
   if (did_change_flags) {
     replication_state_->frame_policy.sandbox_flags =
         new_frame_policy.sandbox_flags;
