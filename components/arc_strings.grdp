@@ -37,4 +37,12 @@
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_LINK" desc="Text of link to app settings.">
     Settings
   </message>
+
+  <!-- ARC ghost window -->
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON" desc="The icon of launching app.">
+    App icon
+  </message>
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER" desc="The throbber of launching app.">
+    App launching throbber
+  </message>
 </grit-part>
