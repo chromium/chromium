@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+// #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /**
  * @fileoverview
  * 'OobeI18nBehavior' is extended I18nBehavior with automatic locale change
@@ -33,7 +38,7 @@ const OobeI18nBehaviorImpl = {
     // TODO(crbug.com/955194): move i18nUpdateLocale from I18nBehavior to this
     // class.
     I18nBehavior.i18nUpdateLocale.call(this);
-    var matches = Polymer.dom(this.root).querySelectorAll('.i18n-dynamic');
+    var matches = this.shadowRoot.querySelectorAll('.i18n-dynamic');
     for (var child of matches) {
       if (typeof (child.i18nUpdateLocale) === 'function') {
         child.i18nUpdateLocale();

@@ -38,6 +38,7 @@ js_type_check("closure_compile_local") {
 group("closure_compile_module") {
   deps = [
     ":oobe_icons.m",
+    "behaviors:closure_compile_module",
   ]
 }
 

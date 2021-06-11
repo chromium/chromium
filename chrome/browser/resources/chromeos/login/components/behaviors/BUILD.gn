@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   uses_legacy_modules = true
@@ -15,6 +16,14 @@ js_type_check("closure_compile") {
     ":multi_step_behavior",
   ]
 }
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":oobe_i18n_behavior.m",
+  ]
+}
+
 
 js_library("oobe_dialog_host_behavior") {
 }
@@ -37,4 +46,22 @@ js_library("login_screen_behavior") {
 }
 
 js_library("multi_step_behavior") {
+}
+
+#### Polymer3 / JS Modules
+
+js_library("oobe_i18n_behavior.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_behavior.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m"
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "oobe_i18n_behavior.js"
+  ]
+  namespace_rewrites = []
 }
