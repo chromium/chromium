@@ -844,14 +844,6 @@
       status: "stable",
     },
     {
-      name: "EncryptedMediaEncryptionSchemeQuery",
-      status: "stable",
-    },
-    {
-      name: "EncryptedMediaHdcpPolicyCheck",
-      status: "stable",
-    },
-    {
       name: "EnterKeyHintAttribute",
       status: "stable",
     },

@@ -7,5 +7,5 @@
 dictionary MediaKeySystemMediaCapability {
     DOMString contentType = "";
     DOMString robustness = "";
-    [RuntimeEnabled=EncryptedMediaEncryptionSchemeQuery] DOMString? encryptionScheme = null;
+    DOMString? encryptionScheme = null;
 };

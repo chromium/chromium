@@ -282,12 +282,6 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     title_watcher->AlsoWaitForTitle(kEmeRenewalMissingHeader);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "EncryptedMediaHdcpPolicyCheck");
-  }
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
