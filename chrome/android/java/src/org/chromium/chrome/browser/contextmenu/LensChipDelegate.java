@@ -24,15 +24,16 @@ public class LensChipDelegate implements ChipDelegate {
     private Callback<Integer> mOnChipShownCallback;
 
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
-            boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
-            Callback<Integer> onChipClickedCallback, Callback<Integer> onChipShownCallback) {
+            boolean isIncognito, boolean isTablet, WebContents webContents,
+            ContextMenuNativeDelegate nativeDelegate, Callback<Integer> onChipClickedCallback,
+            Callback<Integer> onChipShownCallback) {
         mLensController = LensController.getInstance();
         mIsChipSupported = mLensController.isQueryEnabled();
         if (!mIsChipSupported) {
             return;
         }
         mLensQueryParams =
-                new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito)
+                new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito, isTablet)
                         .withPageUrl(pageUrl)
                         .withImageTitleOrAltText(titleOrAltText)
                         .withSrcUrl(srcUrl)

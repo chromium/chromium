@@ -39,33 +39,10 @@ public class LensQueryParams {
         private @LensEntryPoint int mLensEntryPoint;
         private boolean mIsTablet;
 
-        // TODO(yusuyoutube): remove this constructor once downstream references are updated.
-        public Builder() {}
-
-        // TODO(yusuyoutube): remove this constructor once downstream references are updated.
-        public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
-            this();
-            this.mLensEntryPoint = lensEntryPoint;
-            this.mIsIncognito = isIncognito;
-        }
-
-        // TODO(yusuyoutube): remove the with* methods for the required params once
-        // downstream references are updated.
         public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito, boolean isTablet) {
-            this();
             this.mLensEntryPoint = lensEntryPoint;
             this.mIsIncognito = isIncognito;
             this.mIsTablet = isTablet;
-        }
-
-        /**
-         * Sets the Lens entry point.
-         *
-         * @param lensEntryPoint The entry point to set as a parameter
-         */
-        public Builder withLensEntryPoint(@LensEntryPoint int lensEntryPoint) {
-            this.mLensEntryPoint = lensEntryPoint;
-            return this;
         }
 
         /**
@@ -125,11 +102,6 @@ public class LensQueryParams {
          */
         public Builder withSrcUrl(String srcUrl) {
             this.mSrcUrl = srcUrl;
-            return this;
-        }
-
-        public Builder withIsIncognito(boolean isIncognito) {
-            this.mIsIncognito = isIncognito;
             return this;
         }
 

@@ -55,13 +55,6 @@ public class LensControllerDelegate {
 
     /** @see {@link LensController#getShareWithGoogleLensIntent()} */
     public Intent getShareWithGoogleLensIntent(Uri imageUri, boolean isIncognito, String srcUrl,
-            boolean requiresConfirmation, String titleOrAltText, String pageUrl,
-            @Nullable String lensIntentType) {
-        return null;
-    }
-
-    /** @see {@link LensController#getShareWithGoogleLensIntent()} */
-    public Intent getShareWithGoogleLensIntent(Uri imageUri, boolean isIncognito, String srcUrl,
             String titleOrAltText, String pageUrl, @Nullable String lensIntentType) {
         return null;
     }

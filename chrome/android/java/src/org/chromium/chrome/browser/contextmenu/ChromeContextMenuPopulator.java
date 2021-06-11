@@ -916,7 +916,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         if (LensUtils.enableImageChip() || LensUtils.enableTranslateChip()) {
             // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
             return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
-                    mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(),
+                    mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(), isTabletScreen(),
                     mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
                     getOnChipShownCallback());
         }
