@@ -54,7 +54,9 @@ TEST_F(NavigationManagerUtilTest, GetCommittedItemWithUniqueID) {
           /*is_renderer_initiated=*/false);
   manager_->AddPendingItem(GURL("http://chromium.org"), Referrer(),
                            ui::PAGE_TRANSITION_TYPED,
-                           web::NavigationInitiationType::BROWSER_INITIATED);
+                           web::NavigationInitiationType::BROWSER_INITIATED,
+                           /*is_post_navigation=*/false,
+                           /*is_using_https_as_default_scheme=*/false);
   NavigationItem* item = manager_->GetPendingItem();
   int unique_id = item->GetUniqueID();
   context->SetNavigationItemUniqueID(item->GetUniqueID());

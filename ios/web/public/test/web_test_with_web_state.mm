@@ -75,7 +75,9 @@ void WebTestWithWebState::AddPendingItem(const GURL& url,
   GetWebController(web_state())
       .webStateImpl->GetNavigationManagerImpl()
       .AddPendingItem(url, Referrer(), transition,
-                      web::NavigationInitiationType::BROWSER_INITIATED);
+                      web::NavigationInitiationType::BROWSER_INITIATED,
+                      /*is_post_navigation=*/false,
+                      /*is_using_https_as_default_scheme=*/false);
 }
 
 bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
