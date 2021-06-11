@@ -2317,7 +2317,7 @@ void LayoutBlock::RebuildFragmentTreeSpine() {
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
   LayoutBlock* cb = this;
-  while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
+  while (cb->PhysicalFragmentCount() && !cb->NeedsLayout()) {
     // Create and set a new identical results.
     for (auto& layout_result : cb->layout_results_) {
       layout_result =
