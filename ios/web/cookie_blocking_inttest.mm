@@ -179,7 +179,7 @@ TEST_F(CookieBlockingTest, CookiesBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -214,7 +214,7 @@ TEST_F(CookieBlockingTest, ThirdPartyCookiesBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -289,7 +289,7 @@ TEST_F(CookieBlockingTest, CookiesBlockedUndeletable) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -298,7 +298,7 @@ TEST_F(CookieBlockingTest, CookiesBlockedUndeletable) {
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 2;
   }));
 
-  web_state()->ExecuteJavaScript(u"delete docuemnt.cookie");
+  web_state()->ExecuteJavaScript(u"delete document.cookie");
 
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   EXPECT_TRUE(web::test::SetCookie(main_frame, @"x", @"value"));
@@ -322,7 +322,7 @@ TEST_F(CookieBlockingTest, LocalStorageAllowed) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -363,7 +363,7 @@ TEST_F(CookieBlockingTest, LocalStorageBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -405,7 +405,7 @@ TEST_F(CookieBlockingTest, LocalStorageBlockedUndeletable) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -445,7 +445,7 @@ TEST_F(CookieBlockingTest, SessionStorageAllowed) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -486,7 +486,7 @@ TEST_F(CookieBlockingTest, SessionStorageBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -528,7 +528,7 @@ TEST_F(CookieBlockingTest, SessionStorageBlockedUndeletable) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -567,7 +567,7 @@ TEST_F(CookieBlockingTest, CacheStorageAllowed) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -617,7 +617,7 @@ TEST_F(CookieBlockingTest, CacheStorageBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -667,7 +667,7 @@ TEST_F(CookieBlockingTest, IndexedDBAllowed) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -708,7 +708,7 @@ TEST_F(CookieBlockingTest, IndexedDBBlocked) {
   }));
 
   // Use arbitrary third party url for iframe.
-  GURL iframe_url = third_party_server_.GetURL(kIFrameUrl);
+  GURL iframe_url = third_party_server_.GetURL("localhost", kIFrameUrl);
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
@@ -805,21 +805,24 @@ TEST_F(CookieBlockingTest, RequestCookiesBlockedThirdParty) {
   }));
 
   // Check that page doesn't send a=b cookie.
-  test::LoadUrl(web_state(), third_party_server_.GetURL("/get-cookies"));
+  test::LoadUrl(web_state(),
+                third_party_server_.GetURL("localhost", "/get-cookies"));
   EXPECT_TRUE(test::WaitForPageToFinishLoading(web_state()));
   EXPECT_EQ(std::string::npos, latest_get_cookies_.find("a=b"));
 
   // Set cookie.
-  test::LoadUrl(web_state(), third_party_server_.GetURL("/set-cookies"));
+  test::LoadUrl(web_state(),
+                third_party_server_.GetURL("localhost", "/set-cookies"));
   EXPECT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 
   // Check that page does send a=b cookie in a first-party context.
-  test::LoadUrl(web_state(), third_party_server_.GetURL("/get-cookies"));
+  test::LoadUrl(web_state(),
+                third_party_server_.GetURL("localhost", "/get-cookies"));
   EXPECT_TRUE(test::WaitForPageToFinishLoading(web_state()));
   EXPECT_NE(std::string::npos, latest_get_cookies_.find("a=b"));
 
   // Load page in third-party context and check that page doesn't send cookie.
-  GURL iframe_url = third_party_server_.GetURL("/get-cookies");
+  GURL iframe_url = third_party_server_.GetURL("localhost", "/get-cookies");
   std::string url_spec = kPageUrl + net::EscapeQueryParamValue(
                                         iframe_url.spec(), /*use_plus=*/true);
   test::LoadUrl(web_state(), server_.GetURL(url_spec));
