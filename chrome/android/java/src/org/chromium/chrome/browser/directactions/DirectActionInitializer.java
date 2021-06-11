@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.directactions;
 
 import android.annotation.TargetApi;
+import android.app.DirectAction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -116,7 +117,8 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      * @param cancellationSignal Signal used to cancel a direct action from the caller.
      * @param callback Callback to run when the action is done.
      */
-    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer<List> callback) {
+    public void onGetDirectActions(
+            CancellationSignal cancellationSignal, Consumer<List<DirectAction>> callback) {
         if (mCoordinator == null || !mDirectActionsRegistered) {
             callback.accept(Collections.emptyList());
             return;

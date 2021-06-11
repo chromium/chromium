@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.DirectAction;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.app.assist.AssistContent;
@@ -1388,9 +1389,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
     }
 
-    // TODO(crbug.com/973781): Once Chromium is built against Android Q SDK, replace
-    // @SuppressWarnings with @Override
-    @SuppressWarnings("MissingOverride")
+    @Override
     @TargetApi(29)
     @UsedByReflection("Called from Android Q")
     public void onPerformDirectAction(String actionId, Bundle arguments,
@@ -1398,13 +1397,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mRootUiCoordinator.onPerformDirectAction(actionId, arguments, cancellationSignal, callback);
     }
 
-    // TODO(crbug.com/973781): Once Chromium is built against Android Q SDK:
-    //  - replace @SuppressWarnings with @Override
-    //  - replace Consumer with Consumer<List<DirectAction>>
-    @SuppressWarnings("MissingOverride")
+    @Override
     @TargetApi(29)
     @UsedByReflection("Called from Android Q")
-    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer callback) {
+    public void onGetDirectActions(
+            CancellationSignal cancellationSignal, Consumer<List<DirectAction>> callback) {
         mRootUiCoordinator.onGetDirectActions(cancellationSignal, callback);
     }
 

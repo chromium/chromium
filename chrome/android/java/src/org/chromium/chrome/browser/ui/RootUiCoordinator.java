@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.DirectAction;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
@@ -627,7 +628,8 @@ public class RootUiCoordinator
      * @param cancellationSignal Signal used to cancel a direct action from the caller.
      * @param callback Callback to run when the action is done.
      */
-    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer<List> callback) {
+    public void onGetDirectActions(
+            CancellationSignal cancellationSignal, Consumer<List<DirectAction>> callback) {
         if (mDirectActionInitializer == null) return;
         mDirectActionInitializer.onGetDirectActions(cancellationSignal, callback);
     }

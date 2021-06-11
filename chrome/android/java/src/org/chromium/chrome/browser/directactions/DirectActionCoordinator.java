@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.directactions;
 
 import android.annotation.TargetApi;
+import android.app.DirectAction;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,8 +48,8 @@ public abstract class DirectActionCoordinator {
     }
 
     /** Sends a list of supported actions to the given callback. */
-    public final void onGetDirectActions(Consumer<List> callback) {
-        DirectActionReporter reporter = createReporter(callback);
+    public final void onGetDirectActions(Consumer<List<DirectAction>> callback) {
+        DirectActionReporter reporter = createReporterDirectAction(callback);
         if (mIsEnabled.get()) {
             for (DirectActionHandler handler : mHandlers) {
                 handler.reportAvailableDirectActions(reporter);
@@ -79,7 +80,20 @@ public abstract class DirectActionCoordinator {
     }
 
     /** Subclasses should provide an implementation of a DirectActionReporter. */
-    protected abstract DirectActionReporter createReporter(Consumer<List> callback);
+    protected DirectActionReporter createReporter(Consumer<List> callback) {
+        return null;
+    }
+
+    /**
+     * This casting chain is necessary to migrate to the native DirectAction object and not break
+     * clank downstream.
+     */
+    protected DirectActionReporter createReporterDirectAction(
+            Consumer<List<DirectAction>> callback) {
+        Consumer castOne = (Consumer) callback;
+        Consumer<List> castTwo = (Consumer<List>) castOne;
+        return createReporter(castTwo);
+    }
 
     /** Initializes the coordinator. */
     void init(@NonNull Supplier<Boolean> isEnabled) {
