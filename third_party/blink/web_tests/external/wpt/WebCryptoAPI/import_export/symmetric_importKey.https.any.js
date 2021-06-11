@@ -1,7 +1,9 @@
+// META: title=WebCryptoAPI: importKey() for symmetric keys
+// META: timeout=long
+
 // Test importKey and exportKey for non-PKC algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
 
-function run_test() {
     var subtle = crypto.subtle;
 
     // keying material for algorithms that can use any bit string.
@@ -237,6 +239,3 @@ function run_test() {
 
         return "{" + keyValuePairs.join(", ") + "}";
     }
-
-    return; // from run_test
-}

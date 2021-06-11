@@ -1,7 +1,9 @@
+// META: title=WebCryptoAPI: importKey() for EC keys
+// META: timeout=long
+
 // Test importKey and exportKey for EC algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
 
-function run_test() {
     var subtle = crypto.subtle;
 
     var curves = ['P-256', 'P-384', 'P-521'];
@@ -275,5 +277,3 @@ function run_test() {
         return "{" + keyValuePairs.join(", ") + "}";
     }
 
-    return; // from run_test
-}

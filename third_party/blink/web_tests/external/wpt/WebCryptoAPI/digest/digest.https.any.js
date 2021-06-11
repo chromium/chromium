@@ -1,5 +1,6 @@
+// META: title=WebCryptoAPI: digest()
+// META: timeout=long
 
-function run_test() {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
     var sourceData = {
@@ -149,6 +150,3 @@ function run_test() {
 
         return true;
     }
-
-    return;
-}

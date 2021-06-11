@@ -1,0 +1,335 @@
+This is a testharness.js-based test.
+Found 331 tests; 217 PASS, 114 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS setup
+PASS AES-GCM 128-bit key, 32-bit tag
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag
+PASS AES-GCM 128-bit key, 64-bit tag
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag
+PASS AES-GCM 128-bit key, 96-bit tag
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag
+PASS AES-GCM 128-bit key, 104-bit tag
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag
+PASS AES-GCM 128-bit key, 112-bit tag
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag
+PASS AES-GCM 128-bit key, 120-bit tag
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag
+PASS AES-GCM 128-bit key, 128-bit tag
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag
+FAIL importKey step: AES-GCM 192-bit key, 32-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 64-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 96-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 104-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 112-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 120-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 128-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag
+PASS AES-GCM 256-bit key, 64-bit tag
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag
+PASS AES-GCM 256-bit key, 96-bit tag
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag
+PASS AES-GCM 256-bit key, 104-bit tag
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag
+PASS AES-GCM 256-bit key, 112-bit tag
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag
+PASS AES-GCM 256-bit key, 120-bit tag
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag
+PASS AES-GCM 256-bit key, 128-bit tag
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag
+PASS AES-GCM 128-bit key, 32-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 64-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 96-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 104-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 112-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 120-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 128-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag with altered plaintext
+FAIL importKey step: AES-GCM 192-bit key, 32-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 64-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 96-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 104-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 112-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 120-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 128-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag with altered plaintext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 64-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 96-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 104-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 112-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 120-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, 128-bit tag with altered plaintext
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag with altered plaintext
+PASS AES-GCM 128-bit key, 32-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag decryption
+PASS AES-GCM 128-bit key, 64-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag decryption
+PASS AES-GCM 128-bit key, 96-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag decryption
+PASS AES-GCM 128-bit key, 104-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag decryption
+PASS AES-GCM 128-bit key, 112-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag decryption
+PASS AES-GCM 128-bit key, 120-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag decryption
+PASS AES-GCM 128-bit key, 128-bit tag decryption
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag decryption
+FAIL importKey step for decryption: AES-GCM 192-bit key, 32-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 32-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 64-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 64-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 96-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 96-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 104-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 104-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 112-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 112-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 120-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 120-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 128-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 128-bit tag assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag decryption
+PASS AES-GCM 256-bit key, 64-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag decryption
+PASS AES-GCM 256-bit key, 96-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag decryption
+PASS AES-GCM 256-bit key, 104-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag decryption
+PASS AES-GCM 256-bit key, 112-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag decryption
+PASS AES-GCM 256-bit key, 120-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag decryption
+PASS AES-GCM 256-bit key, 128-bit tag decryption
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag decryption
+PASS AES-GCM 128-bit key, 32-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 64-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 96-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 104-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 112-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 120-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 128-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag decryption with altered ciphertext
+FAIL importKey step for decryption: AES-GCM 192-bit key, 32-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 32-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 64-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 64-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 96-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 96-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 104-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 104-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 112-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 112-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 120-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 120-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, 128-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step for decryption: AES-GCM 192-bit key, no additional data, 128-bit tag with altered ciphertext assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 64-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 96-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 104-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 112-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 120-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, 128-bit tag decryption with altered ciphertext
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag decryption with altered ciphertext
+PASS AES-GCM 128-bit key, 32-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 64-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 96-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 104-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 112-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 120-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 128-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag without encrypt usage
+FAIL importKey step: AES-GCM 192-bit key, 32-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 64-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 96-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 104-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 112-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 120-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 128-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag without encrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 64-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 96-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 104-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 112-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 120-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, 128-bit tag without encrypt usage
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag without encrypt usage
+PASS AES-GCM 128-bit key, 32-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 64-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 96-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 104-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 112-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 120-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 128-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag with mismatched key and algorithm
+FAIL importKey step: AES-GCM 192-bit key, 32-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 64-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 96-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 104-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 112-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 120-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 128-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag with mismatched key and algorithm assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 64-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 96-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 104-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 112-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 120-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, 128-bit tag with mismatched key and algorithm
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag with mismatched key and algorithm
+PASS AES-GCM 128-bit key, 32-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 32-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 64-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 64-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 96-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 96-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 104-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 104-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 112-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 112-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 120-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 120-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, 128-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, no additional data, 128-bit tag without decrypt usage
+FAIL importKey step: AES-GCM 192-bit key, 32-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 64-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 96-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 104-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 112-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 120-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, 128-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag without decrypt usage assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag Reached unreachable code
+PASS AES-GCM 256-bit key, 32-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 32-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 64-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 64-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 96-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 96-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 104-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 104-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 112-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 112-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 120-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 120-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, 128-bit tag without decrypt usage
+PASS AES-GCM 256-bit key, no additional data, 128-bit tag without decrypt usage
+PASS AES-GCM 128-bit key, illegal tag length 24-bits
+PASS AES-GCM 128-bit key, illegal tag length 48-bits
+PASS AES-GCM 128-bit key, illegal tag length 72-bits
+PASS AES-GCM 128-bit key, illegal tag length 95-bits
+PASS AES-GCM 128-bit key, illegal tag length 129-bits
+FAIL AES-GCM 128-bit key, illegal tag length 256-bits assert_equals: Should throw an OperationError instead of Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 24-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 24-bits Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 48-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 48-bits Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 72-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 72-bits Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 95-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 95-bits Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 129-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 129-bits Reached unreachable code
+FAIL importKey step: AES-GCM 192-bit key, illegal tag length 256-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 256-bits Reached unreachable code
+PASS AES-GCM 256-bit key, illegal tag length 24-bits
+PASS AES-GCM 256-bit key, illegal tag length 48-bits
+PASS AES-GCM 256-bit key, illegal tag length 72-bits
+PASS AES-GCM 256-bit key, illegal tag length 95-bits
+PASS AES-GCM 256-bit key, illegal tag length 129-bits
+FAIL AES-GCM 256-bit key, illegal tag length 256-bits assert_equals: Should throw an OperationError instead of Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
+PASS AES-GCM 128-bit key, illegal tag length 24-bits decryption
+PASS AES-GCM 128-bit key, illegal tag length 48-bits decryption
+PASS AES-GCM 128-bit key, illegal tag length 72-bits decryption
+PASS AES-GCM 128-bit key, illegal tag length 95-bits decryption
+PASS AES-GCM 128-bit key, illegal tag length 129-bits decryption
+FAIL AES-GCM 128-bit key, illegal tag length 256-bits decryption assert_equals: Should throw an OperationError instead of Failed to execute 'decrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 24-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 24-bits Reached unreachable code
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 48-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 48-bits Reached unreachable code
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 72-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 72-bits Reached unreachable code
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 95-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 95-bits Reached unreachable code
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 129-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 129-bits Reached unreachable code
+FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 256-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 256-bits Reached unreachable code
+PASS AES-GCM 256-bit key, illegal tag length 24-bits decryption
+PASS AES-GCM 256-bit key, illegal tag length 48-bits decryption
+PASS AES-GCM 256-bit key, illegal tag length 72-bits decryption
+PASS AES-GCM 256-bit key, illegal tag length 95-bits decryption
+PASS AES-GCM 256-bit key, illegal tag length 129-bits decryption
+FAIL AES-GCM 256-bit key, illegal tag length 256-bits decryption assert_equals: Should throw an OperationError instead of Failed to execute 'decrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
+Harness: the test ran to completion.
+

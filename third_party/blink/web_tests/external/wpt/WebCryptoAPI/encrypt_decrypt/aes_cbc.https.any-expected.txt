@@ -1,0 +1,46 @@
+This is a testharness.js-based test.
+PASS setup
+PASS AES-CBC 128-bit key
+FAIL importKey step: AES-CBC 192-bit key assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key
+PASS AES-CBC 128-bit key with altered plaintext
+FAIL importKey step: AES-CBC 192-bit key with altered plaintext assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key with altered plaintext
+PASS AES-CBC 128-bit key decryption
+FAIL importKey step for decryption: AES-CBC 192-bit key assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key decryption
+PASS AES-CBC 128-bit key decryption with altered ciphertext
+FAIL importKey step for decryption: AES-CBC 192-bit key with altered ciphertext assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key decryption with altered ciphertext
+PASS AES-CBC 128-bit key without encrypt usage
+FAIL importKey step: AES-CBC 192-bit key without encrypt usage assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key without encrypt usage
+PASS AES-CBC 128-bit key with mismatched key and algorithm
+FAIL importKey step: AES-CBC 192-bit key with mismatched key and algorithm assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key with mismatched key and algorithm
+PASS AES-CBC 128-bit key without decrypt usage
+FAIL importKey step: AES-CBC 192-bit key without decrypt usage assert_unreached: importKey failed for AES-CBC 192-bit key Reached unreachable code
+PASS AES-CBC 256-bit key without decrypt usage
+PASS AES-CBC 128-bit key, 64-bit IV
+PASS AES-CBC 128-bit key, 192-bit IV
+FAIL importKey step: AES-CBC 192-bit key, 64-bit IV assert_unreached: importKey failed for AES-CBC 192-bit key, 64-bit IV Reached unreachable code
+FAIL importKey step: AES-CBC 192-bit key, 192-bit IV assert_unreached: importKey failed for AES-CBC 192-bit key, 192-bit IV Reached unreachable code
+PASS AES-CBC 256-bit key, 64-bit IV
+PASS AES-CBC 256-bit key, 192-bit IV
+PASS AES-CBC 128-bit key, 64-bit IV decryption
+PASS AES-CBC 128-bit key, 192-bit IV decryption
+FAIL importKey step: decryption AES-CBC 192-bit key, 64-bit IV assert_unreached: importKey failed for AES-CBC 192-bit key, 64-bit IV Reached unreachable code
+FAIL importKey step: decryption AES-CBC 192-bit key, 192-bit IV assert_unreached: importKey failed for AES-CBC 192-bit key, 192-bit IV Reached unreachable code
+PASS AES-CBC 256-bit key, 64-bit IV decryption
+PASS AES-CBC 256-bit key, 192-bit IV decryption
+PASS AES-CBC 128-bit key, zeroPadChar
+PASS AES-CBC 128-bit key, bigPadChar
+PASS AES-CBC 128-bit key, inconsistentPadChars
+FAIL importKey step: decryption AES-CBC 192-bit key, zeroPadChar assert_unreached: importKey failed for AES-CBC 192-bit key, zeroPadChar Reached unreachable code
+FAIL importKey step: decryption AES-CBC 192-bit key, bigPadChar assert_unreached: importKey failed for AES-CBC 192-bit key, bigPadChar Reached unreachable code
+FAIL importKey step: decryption AES-CBC 192-bit key, inconsistentPadChars assert_unreached: importKey failed for AES-CBC 192-bit key, inconsistentPadChars Reached unreachable code
+PASS AES-CBC 256-bit key, zeroPadChar
+PASS AES-CBC 256-bit key, bigPadChar
+PASS AES-CBC 256-bit key, inconsistentPadChars
+Harness: the test ran to completion.
+

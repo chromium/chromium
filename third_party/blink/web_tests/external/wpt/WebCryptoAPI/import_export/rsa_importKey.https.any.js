@@ -1,7 +1,9 @@
+// META: title=WebCryptoAPI: importKey() for RSA keys
+// META: timeout=long
+
 // Test importKey and exportKey for RSA algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
 
-function run_test() {
     var subtle = crypto.subtle;
 
     var sizes = [1024, 2048, 4096];
@@ -291,6 +293,3 @@ function run_test() {
 
         return "{" + keyValuePairs.join(", ") + "}";
     }
-
-    return; // from run_test
-}

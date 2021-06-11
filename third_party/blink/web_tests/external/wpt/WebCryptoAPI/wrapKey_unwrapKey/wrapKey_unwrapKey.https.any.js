@@ -1,6 +1,8 @@
+// META: title=WebCryptoAPI: wrapKey() and unwrapKey()
+// META: timeout=long
+
 // Tests for wrapKey and unwrapKey round tripping
 
-function run_test() {
     var subtle = self.crypto.subtle;
 
     var wrappers = [];  // Things we wrap (and upwrap) keys with
@@ -9,7 +11,8 @@ function run_test() {
 
     // Generate all the keys needed, then iterate over all combinations
     // to test wrapping and unwrapping.
-    Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
+    promise_test(function() {
+    return Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
     .then(function(results) {
         var promises = [];
         wrappers.forEach(function(wrapper) {
@@ -18,19 +21,8 @@ function run_test() {
             })
         });
         return Promise.all(promises);
-    }, function(err) {
-        promise_test(function(test) {
-            assert_unreached("A key failed to generate: " + err.name + ": " + err.message)
-        }, "Could not run all tests")
-    })
-    .then(function() {
-        done();
-    }, function(err) {
-        promise_test(function(test) {
-            assert_unreached("A test failed to run: " + err.name + ": " + err.message)
-        }, "Could not run all tests")
     });
-
+    }, "setup");
 
     function generateWrappingKeys() {
         // There are five algorithms that can be used for wrapKey/unwrapKey.
@@ -513,5 +505,3 @@ function run_test() {
     function str2ab(str)        { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
     function ab2str(ab)         { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
 
-
-}
