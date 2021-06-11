@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
@@ -96,7 +97,8 @@ ExtensionInstallDialogViewTestSupervised::CreateAndShowPrompt(
     ExtensionInstallPromptTestHelper* helper,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   auto dialog = std::make_unique<ExtensionInstallDialogView>(
-      profile(), web_contents(), helper->GetCallback(), std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      helper->GetCallback(), std::move(prompt));
   ExtensionInstallDialogView* delegate_view = dialog.get();
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(

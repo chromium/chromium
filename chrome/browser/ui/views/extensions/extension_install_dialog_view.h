@@ -23,10 +23,6 @@
 
 class Profile;
 
-namespace content {
-class PageNavigator;
-}
-
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
 // Not a normal "bubble" despite being a subclass of BubbleDialogDelegateView.
@@ -38,8 +34,7 @@ class ExtensionInstallDialogView
   static const int kRatingsViewId = 1;
 
   ExtensionInstallDialogView(
-      Profile* profile,
-      content::PageNavigator* navigator,
+      std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
       const ExtensionInstallPrompt::DoneCallback& done_callback,
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
   ~ExtensionInstallDialogView() override;
@@ -59,6 +54,9 @@ class ExtensionInstallDialogView
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   bool ShouldShowCloseButton() const override;
+
+  ExtensionInstallPromptShowParams* GetShowParamsForTesting();
+  void ClickLinkForTesting();
 
  private:
   void CloseDialog();
@@ -93,7 +91,7 @@ class ExtensionInstallDialogView
   void UpdateInstallResultHistogram(bool accepted) const;
 
   Profile* profile_;
-  content::PageNavigator* navigator_;
+  std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
   base::string16 title_;

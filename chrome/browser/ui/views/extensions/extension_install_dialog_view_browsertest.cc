@@ -19,10 +19,12 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -38,6 +40,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -133,8 +136,8 @@ class ScrollbarTest : public ExtensionInstallDialogViewTestBase {
 bool ScrollbarTest::IsScrollbarVisible(
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
-      profile(), web_contents(), ExtensionInstallPrompt::DoneCallback(),
-      std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      ExtensionInstallPrompt::DoneCallback(), std::move(prompt));
 
   // Create the modal view around the install dialog view.
   views::Widget* modal = constrained_window::CreateBrowserModalDialogViews(
@@ -189,7 +192,8 @@ class ExtensionInstallDialogViewTest
   ExtensionInstallDialogView* CreateAndShowPrompt(
       ExtensionInstallPromptTestHelper* helper) {
     auto dialog = std::make_unique<ExtensionInstallDialogView>(
-        profile(), web_contents(), helper->GetCallback(),
+        std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+        helper->GetCallback(),
         CreatePrompt(ExtensionInstallPrompt::INSTALL_PROMPT));
     ExtensionInstallDialogView* delegate_view = dialog.get();
 
@@ -250,6 +254,90 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, InstallButtonDelay) {
 
   // Ensure default button (cancel) has focus.
   EXPECT_TRUE(delegate_view->GetInitiallyFocusedView()->HasFocus());
+  CloseAndWait(delegate_view->GetWidget());
+}
+
+// Regression test for https://crbug.com/1201060: Ensures that while an
+// ExtensionInstallDialogView is visible, it does not (and cannot) refer to its
+// originator tab/WebContents after the tab's closure.
+//
+// Note that the tab's closure is not typically possible by user interaction.
+// However, it can occur by other means:
+//   a) chrome.tabs.remove() or
+//   b) window.close() from devtools (See repro in crbug).
+// This test uses CloseWebContentsAt to mimic that behavior.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
+                       TabClosureClearsWebContentsFromDialogView) {
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* originator_contents =
+      tab_strip_model->GetActiveWebContents();
+  ASSERT_TRUE(delegate_view->GetShowParamsForTesting());
+  EXPECT_EQ(originator_contents,
+            delegate_view->GetShowParamsForTesting()->GetParentWebContents());
+
+  // Add a second tab.
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  {
+    // Close the first tab that results in install dialog moving to the second
+    // tab.
+    int tab1_idx = tab_strip_model->GetIndexOfWebContents(originator_contents);
+    content::WebContentsDestroyedWatcher tab_destroyed_watcher(
+        tab_strip_model->GetWebContentsAt(tab1_idx));
+    tab_strip_model->CloseWebContentsAt(tab1_idx, TabStripModel::CLOSE_NONE);
+    tab_destroyed_watcher.Wait();
+    EXPECT_TRUE(tab_strip_model->CloseWebContentsAt(tab1_idx,
+                                                    TabStripModel::CLOSE_NONE));
+  }
+
+  class TabAddedObserver : public TabStripModelObserver {
+   public:
+    explicit TabAddedObserver(TabStripModel* tab_strip_model) {
+      tab_strip_model->AddObserver(this);
+    }
+
+    void WaitForWebstoreTabAdded() { run_loop_.Run(); }
+
+    // TabStripModelObserver:
+    void OnTabStripModelChanged(
+        TabStripModel* tab_strip_model,
+        const TabStripModelChange& change,
+        const TabStripSelectionChange& selection) override {
+      if (change.type() != TabStripModelChange::kInserted)
+        return;
+
+      for (const auto& contents : change.GetInsert()->contents) {
+        // Note: GetVisibleURL() is used instead of GetLastCommittedURL() for
+        // simplicity's sake as this test doesn't serve webstore url and
+        // the url doesn't commit.
+        const GURL& url = contents.contents->GetVisibleURL();
+        if (url.host() == extension_urls::GetWebstoreLaunchURL().host()) {
+          run_loop_.Quit();
+          return;
+        }
+      }
+    }
+
+   private:
+    base::RunLoop run_loop_;
+  };
+
+  // The dialog remains visible even though |originator_contents| is gone. Note
+  // that this doesn't seem quite intuitive, but this is how things are at the
+  // moment. See crbug.com/1201060 for details.
+  EXPECT_TRUE(delegate_view->GetVisible());
+
+  EXPECT_EQ(nullptr,
+            delegate_view->GetShowParamsForTesting()->GetParentWebContents());
+
+  // Click webstore link.
+  {
+    TabAddedObserver observer(tab_strip_model);
+    delegate_view->ClickLinkForTesting();
+    observer.WaitForWebstoreTabAdded();
+  }
+
   CloseAndWait(delegate_view->GetWidget());
 }
 
@@ -486,7 +574,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt =
       CreatePrompt(ExtensionInstallPrompt::REPAIR_PROMPT, extension);
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
-      profile(), web_contents(), base::DoNothing(), std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
@@ -513,7 +602,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt =
       CreatePrompt(ExtensionInstallPrompt::REPAIR_PROMPT, extension);
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
-      profile(), web_contents(), base::DoNothing(), std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
@@ -553,7 +643,8 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
   prompt->SetWebstoreData("1,234", true, average_rating, num_ratings);
 
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
-      profile(), web_contents(), base::DoNothing(), std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
@@ -616,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
       extensions::URLPatternSet());
   prompt->AddPermissionSet(permissions);
   auto dialog = std::make_unique<ExtensionInstallDialogView>(
-      profile(), web_contents(), helper.GetCallback(), std::move(prompt));
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+      helper.GetCallback(), std::move(prompt));
   views::BubbleDialogDelegateView* delegate_view = dialog.get();
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
