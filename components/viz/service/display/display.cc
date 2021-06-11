@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -608,11 +609,18 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
     return;
 
   auto& root_render_pass = *frame.render_pass_list.back();
+  DBG_LOG_OPT("frame.root.numquads", DBG_OPT_BLUE, "Num root quads=%d",
+              static_cast<int>(root_render_pass.quad_list.size()));
+  DBG_DRAW_RECT_OPT("frame.root.damage", DBG_OPT_RED,
+                    root_render_pass.damage_rect);
+
   for (auto* quad : root_render_pass.quad_list) {
     auto& transform = quad->shared_quad_state->quad_to_target_transform;
     auto display_rect = gfx::RectF(quad->rect);
     transform.TransformRect(&display_rect);
-
+    DBG_DRAW_TEXT_OPT("frame.root.material", DBG_OPT_GREEN,
+                      display_rect.origin(),
+                      base::NumberToString(static_cast<int>(quad->material)));
     DBG_DRAW_RECT("frame.root.quad", display_rect);
   }
 }

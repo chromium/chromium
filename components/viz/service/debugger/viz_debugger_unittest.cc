@@ -124,6 +124,11 @@ class VisualDebuggerTest : public testing::Test {
     global_dict->FindKey("frame")->GetAsString(&str);
     base::StringToUint64(str.c_str(), &counter_);
     static const int kNoVal = -1;
+    int expected_version =
+        global_dict->FindKey("version")->GetIfInt().value_or(kNoVal);
+    // Check to update these unit tests if a backwards compatible change has
+    // been made.
+    EXPECT_EQ(1, expected_version);
 
     window_x_ = global_dict->FindKey("windowx")->GetIfInt().value_or(kNoVal);
     window_y_ = global_dict->FindKey("windowy")->GetIfInt().value_or(kNoVal);

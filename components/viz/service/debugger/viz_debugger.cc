@@ -18,6 +18,10 @@
 
 namespace viz {
 
+// Version the protocol in case we ever want or need backwards compatibility
+// support.
+static const int kVizDebuggerVersion = 1;
+
 std::atomic<bool> VizDebugger::enabled_;
 
 VizDebugger* VizDebugger::GetInstance() {
@@ -79,6 +83,7 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   submission_count_ = 0;
 
   base::DictionaryValue global_dict;
+  global_dict.SetInteger("version", kVizDebuggerVersion);
   global_dict.SetString("frame", base::NumberToString(counter));
   global_dict.SetInteger("windowx", window_pix.width());
   global_dict.SetInteger("windowy", window_pix.height());
@@ -228,6 +233,14 @@ void VizDebugger::DrawInternal(const gfx::Size& obj_size,
   DCHECK_CALLED_ON_VALID_THREAD(viz_compositor_thread_checker_);
   draw_rect_calls_.emplace_back(submission_count_++, dcs->reg_index, option,
                                 obj_size, pos);
+}
+
+void VizDebugger::DrawText(const gfx::PointF& pos,
+                           const std::string& text,
+                           const VizDebugger::StaticSource* dcs,
+                           VizDebugger::DrawOption option) {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_compositor_thread_checker_);
+  DrawText(gfx::Vector2dF(pos.OffsetFromOrigin()), text, dcs, option);
 }
 
 void VizDebugger::DrawText(const gfx::Point& pos,
