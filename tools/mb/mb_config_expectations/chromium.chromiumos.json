@@ -65,7 +65,6 @@
       "use_ozone": true,
       "use_pangocairo": false,
       "use_pulseaudio": false,
-      "use_system_libsync": false,
       "use_v8_context_snapshot": false,
       "use_vaapi": false
     }
@@ -130,7 +129,6 @@
       "use_ozone": true,
       "use_pangocairo": false,
       "use_pulseaudio": false,
-      "use_system_libsync": false,
       "use_v8_context_snapshot": false,
       "use_vaapi": false
     }
@@ -161,7 +159,6 @@
       "use_ozone": true,
       "use_pangocairo": false,
       "use_pulseaudio": false,
-      "use_system_libsync": false,
       "use_v8_context_snapshot": false,
       "use_vaapi": false
     }
@@ -192,7 +189,6 @@
       "use_ozone": true,
       "use_pangocairo": false,
       "use_pulseaudio": false,
-      "use_system_libsync": false,
       "use_v8_context_snapshot": false,
       "use_vaapi": false
     }
