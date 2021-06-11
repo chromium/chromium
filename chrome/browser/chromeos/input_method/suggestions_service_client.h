@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
@@ -32,6 +33,7 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
  private:
   // Called when results are returned from the suggestions service
   void OnSuggestionsReturned(
+      base::TimeTicks time_request_was_made,
       RequestSuggestionsCallback callback,
       ime::TextSuggestionMode suggestion_mode_requested,
       chromeos::machine_learning::mojom::TextSuggesterResultPtr result);

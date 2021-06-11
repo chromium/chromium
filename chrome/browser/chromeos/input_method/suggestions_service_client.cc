@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,6 +52,11 @@ std::string TrimText(const std::string& text) {
              : text;
 }
 
+void RecordRequestLatency(base::TimeDelta delta) {
+  base::UmaHistogramTimes(
+      "InputMethod.Assistive.CandidateGenerationTime.MultiWord", delta);
+}
+
 }  // namespace
 
 SuggestionsServiceClient::SuggestionsServiceClient() {
@@ -94,11 +100,12 @@ void SuggestionsServiceClient::RequestSuggestions(
   text_suggester_->Suggest(
       std::move(query),
       base::BindOnce(&SuggestionsServiceClient::OnSuggestionsReturned,
-                     base::Unretained(this), std::move(callback),
-                     suggestion_mode));
+                     base::Unretained(this), base::TimeTicks::Now(),
+                     std::move(callback), suggestion_mode));
 }
 
 void SuggestionsServiceClient::OnSuggestionsReturned(
+    base::TimeTicks time_request_was_made,
     RequestSuggestionsCallback callback,
     TextSuggestionMode suggestion_mode_requested,
     chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
@@ -113,6 +120,7 @@ void SuggestionsServiceClient::OnSuggestionsReturned(
     }
   }
 
+  RecordRequestLatency(base::TimeTicks::Now() - time_request_was_made);
   std::move(callback).Run(suggestions);
 }
 

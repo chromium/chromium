@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,6 +55,10 @@ TEST_F(SuggestionsServiceClientTest, ReturnsCompletionResultsFromMojoService) {
   SuggestionsServiceClient client;
   base::RunLoop().RunUntilIdle();
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.CandidateGenerationTime.MultiWord", 0);
+
   std::vector<TextSuggestion> returned_results;
   client.RequestSuggestions(
       /*preceding_text=*/"this is some text",
@@ -73,6 +78,8 @@ TEST_F(SuggestionsServiceClientTest, ReturnsCompletionResultsFromMojoService) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(returned_results, expected_results);
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.CandidateGenerationTime.MultiWord", 1);
 }
 
 TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
@@ -88,6 +95,10 @@ TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
 
   SuggestionsServiceClient client;
   base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.CandidateGenerationTime.MultiWord", 0);
 
   std::vector<TextSuggestion> returned_results;
   client.RequestSuggestions(
@@ -108,6 +119,8 @@ TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(returned_results, expected_results);
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.CandidateGenerationTime.MultiWord", 1);
 }
 
 }  // namespace
