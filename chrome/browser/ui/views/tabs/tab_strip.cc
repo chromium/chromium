@@ -2923,8 +2923,11 @@ void TabStrip::SetTabSlotVisibility() {
   for (std::vector<Tab*>::reverse_iterator tab = tabs.rbegin();
        tab != tabs.rend(); ++tab) {
     absl::optional<tab_groups::TabGroupId> current_group = (*tab)->group();
-    if (current_group != last_tab_group && last_tab_group.has_value())
-      group_header(last_tab_group.value())->SetVisible(last_tab_visible);
+    if (current_group != last_tab_group && last_tab_group.has_value()) {
+      TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
+      group_view->header()->SetVisible(last_tab_visible);
+      group_view->underline()->SetVisible(last_tab_visible);
+    }
     last_tab_visible = ShouldTabBeVisible(*tab);
     last_tab_group = (*tab)->closing() ? absl::nullopt : current_group;
 
