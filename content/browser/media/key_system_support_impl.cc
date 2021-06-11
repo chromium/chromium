@@ -30,6 +30,10 @@
 #include "content/browser/media/key_system_support_win.h"
 #endif
 
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
 namespace content {
 
 namespace {
@@ -119,15 +123,17 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     bool* lazy_initialize) {
   *lazy_initialize = false;
 
-  // We use the USE_CHROMEOS_PROTECTED_MEDIA build flag on Chrome OS to control
-  // when HW secure decryption is enabled, so disable the feature flag in that
-  // case.
-#if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if (!base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon)) {
+    DVLOG(1) << "Hardware secure decryption disabled";
+    return absl::nullopt;
+  }
+#else
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
     return absl::nullopt;
   }
-#endif
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   // Secure codecs override takes precedence over other checks.
   auto overridden_capability =

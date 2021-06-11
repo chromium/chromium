@@ -169,11 +169,11 @@ SupportedCodecs GetVP9Codecs(
   return supported_vp9_codecs;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 SupportedCodecs GetHevcCodecs(
     const std::vector<media::VideoCodecProfile>& profiles) {
+  // If no profiles are specified, then all are supported.
   if (profiles.empty()) {
-    // If no profiles are specified, then all are supported.
     return media::EME_CODEC_HEVC_PROFILE_MAIN |
            media::EME_CODEC_HEVC_PROFILE_MAIN10;
   }
@@ -196,10 +196,9 @@ SupportedCodecs GetHevcCodecs(
 
   return supported_hevc_codecs;
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
-                                   bool is_secure) {
+SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
   for (const auto& codec : capability.audio_codecs) {
@@ -245,17 +244,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       case media::VideoCodec::kCodecHEVC:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        if (is_secure && base::FeatureList::IsEnabled(
-                             chromeos::features::kCdmFactoryDaemon)) {
-          supported_codecs |= GetHevcCodecs(codec.second);
-        }
-#elif defined(OS_WIN)
-        if (is_secure) {
-          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
-          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
-        }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+        supported_codecs |= GetHevcCodecs(codec.second);
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:
@@ -335,8 +324,7 @@ void AddWidevine(
   bool cdm_supports_persistent_license = false;
 
   if (capability->sw_secure_capability) {
-    codecs = GetSupportedCodecs(capability->sw_secure_capability.value(),
-                                /*is_secure=*/false);
+    codecs = GetSupportedCodecs(capability->sw_secure_capability.value());
     encryption_schemes = capability->sw_secure_capability->encryption_schemes;
     if (!base::Contains(capability->sw_secure_capability->session_types,
                         media::CdmSessionType::kTemporary)) {
@@ -350,8 +338,8 @@ void AddWidevine(
   }
 
   if (capability->hw_secure_capability) {
-    hw_secure_codecs = GetSupportedCodecs(
-        capability->hw_secure_capability.value(), /*is_secure=*/true);
+    hw_secure_codecs =
+        GetSupportedCodecs(capability->hw_secure_capability.value());
     hw_secure_encryption_schemes =
         capability->hw_secure_capability->encryption_schemes;
     if (!base::Contains(capability->hw_secure_capability->session_types,
