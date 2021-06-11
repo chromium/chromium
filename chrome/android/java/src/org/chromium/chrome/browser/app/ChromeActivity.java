@@ -602,7 +602,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void initializeStartupMetrics() {
         // Initialize the activity session tracker as early as possible so that
         // it can start background tasks.
-        ChromeActivitySessionTracker.getInstance();
+        ChromeActivitySessionTracker chromeActivitySessionTracker =
+                ChromeActivitySessionTracker.getInstance();
+        chromeActivitySessionTracker.registerTabModelSelectorSupplier(
+                this, mTabModelSelectorSupplier);
         mActivityTabStartupMetricsTracker =
                 new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
     }
@@ -1514,6 +1517,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         mActivityTabProvider.destroy();
+        ChromeActivitySessionTracker.getInstance().unregisterTabModelSelectorSupplier(this);
 
         mComponent = null;
 

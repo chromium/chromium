@@ -20,8 +20,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -40,6 +40,9 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Tracks the foreground session state for the Chrome activities.
  */
@@ -49,6 +52,8 @@ public class ChromeActivitySessionTracker {
     private static ChromeActivitySessionTracker sInstance;
 
     private final PowerBroadcastReceiver mPowerBroadcastReceiver = new PowerBroadcastReceiver();
+    private final Map<Activity, Supplier<TabModelSelector>> mTabModelSelectorSuppliers =
+            new HashMap<>();
 
     // Used to trigger variation changes (such as seed fetches) upon application foregrounding.
     private VariationsSession mVariationsSession;
@@ -72,6 +77,24 @@ public class ChromeActivitySessionTracker {
      */
     protected ChromeActivitySessionTracker() {
         mVariationsSession = AppHooks.get().createVariationsSession();
+    }
+
+    /**
+     * Register a supplier which returns the total tab count for the given application.
+     * @param activity The activity associated with the given tab count supplier.
+     * @param tabCountSupplier Supplies the current tab count for the given activity.
+     */
+    public void registerTabModelSelectorSupplier(
+            Activity activity, Supplier<TabModelSelector> tabCountSupplier) {
+        mTabModelSelectorSuppliers.put(activity, tabCountSupplier);
+    }
+
+    /**
+     * Unregisters the supplier associated with the given activity.
+     * @param activity Tha activity to unregister.
+     */
+    public void unregisterTabModelSelectorSupplier(Activity activity) {
+        mTabModelSelectorSuppliers.remove(activity);
     }
 
     /**
@@ -165,14 +188,10 @@ public class ChromeActivitySessionTracker {
 
         int totalTabCount = 0;
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity instanceof ChromeActivity
-                    && ((ChromeActivity) activity).areTabModelsInitialized()) {
-                TabModelSelector tabModelSelector =
-                        ((ChromeActivity) activity).getTabModelSelector();
-                if (tabModelSelector != null) {
-                    totalTabCount += tabModelSelector.getTotalTabCount();
-                }
-            }
+            Supplier<TabModelSelector> tabModelSelectorSupplier =
+                    mTabModelSelectorSuppliers.get(activity);
+            if (tabModelSelectorSupplier == null || !tabModelSelectorSupplier.hasValue()) continue;
+            totalTabCount += tabModelSelectorSupplier.get().getTotalTabCount();
         }
         RecordHistogram.recordCountHistogram(
                 "Tab.TotalTabCount.BeforeLeavingApp", totalTabCount);
