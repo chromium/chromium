@@ -23,19 +23,19 @@ base::File OpenFileHandleAsync(const base::FilePath& zip_path) {
 
 }  // namespace
 
-ZipFileCreator::ZipFileCreator(ResultCallback callback,
+ZipFileCreator::ZipFileCreator(ResultCallback result_callback,
                                base::FilePath src_dir,
                                std::vector<base::FilePath> src_relative_paths,
                                base::FilePath dest_file)
-    : callback_(std::move(callback)),
+    : result_callback_(std::move(result_callback)),
       src_dir_(std::move(src_dir)),
       src_relative_paths_(std::move(src_relative_paths)),
       dest_file_(std::move(dest_file)) {
-  DCHECK(callback_);
+  DCHECK(result_callback_);
 }
 
 ZipFileCreator::~ZipFileCreator() {
-  DCHECK(!callback_);
+  DCHECK(!result_callback_);
   DCHECK(!remote_zip_file_creator_);
 }
 
@@ -54,11 +54,7 @@ void ZipFileCreator::Start(
 
 void ZipFileCreator::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  directory_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&ZipFileCreator::CloseDirectory, base::Unretained(this)),
-      base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this),
-                     false));
+  ReportDone(false);
 }
 
 void ZipFileCreator::CreateZipFile(
@@ -73,17 +69,8 @@ void ZipFileCreator::CreateZipFile(
     return;
   }
 
-  if (!directory_task_runner_) {
-    directory_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  }
-
   mojo::PendingRemote<filesystem::mojom::Directory> directory;
-  directory_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ZipFileCreator::BindDirectory, base::Unretained(this),
-                     directory.InitWithNewPipeAndPassReceiver()));
+  BindDirectory(directory.InitWithNewPipeAndPassReceiver());
 
   service_.Bind(std::move(service));
   service_->BindZipFileCreator(
@@ -92,22 +79,33 @@ void ZipFileCreator::CreateZipFile(
   // See comment in Start() on why using base::Unretained(this) is safe.
   remote_zip_file_creator_.set_disconnect_handler(base::BindOnce(
       &ZipFileCreator::ReportDone, base::Unretained(this), false));
+
   remote_zip_file_creator_->CreateZipFile(
       std::move(directory), src_relative_paths_, std::move(file),
       base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this)));
 }
 
 void ZipFileCreator::BindDirectory(
-    mojo::PendingReceiver<filesystem::mojom::Directory> receiver) {
-  src_dir_ref_ = mojo::MakeSelfOwnedReceiver(
-      std::make_unique<filesystem::DirectoryImpl>(
-          src_dir_, /*temp_dir=*/nullptr, /*lock_table=*/nullptr),
-      std::move(receiver));
-}
+    mojo::PendingReceiver<filesystem::mojom::Directory> receiver) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  using RunnerPtr = scoped_refptr<base::SequencedTaskRunner>;
+  const RunnerPtr runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
-void ZipFileCreator::CloseDirectory() {
-  if (src_dir_ref_)
-    src_dir_ref_->Close();
+  runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath src_dir,
+             mojo::PendingReceiver<filesystem::mojom::Directory> receiver,
+             RunnerPtr runner) {
+            mojo::MakeSelfOwnedReceiver(
+                std::make_unique<filesystem::DirectoryImpl>(
+                    std::move(src_dir), /*temp_dir=*/nullptr,
+                    /*lock_table=*/nullptr),
+                std::move(receiver), std::move(runner));
+          },
+          src_dir_, std::move(receiver), runner));
 }
 
 void ZipFileCreator::ReportDone(bool success) {
@@ -115,11 +113,12 @@ void ZipFileCreator::ReportDone(bool success) {
 
   remote_zip_file_creator_.reset();
 
+  // In case of error, remove the partially created ZIP file.
   if (!success)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
 
-  if (callback_)
-    std::move(callback_).Run(success);
+  if (result_callback_)
+    std::move(result_callback_).Run(success);
 }

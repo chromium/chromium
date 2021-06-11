@@ -23,20 +23,21 @@
 // input data from untrusted sources.
 class ZipFileCreator {
  public:
+  // Callback reporting the success or failure of the ZIP creation.
   using ResultCallback = base::OnceCallback<void(bool)>;
 
   // Creates a zip file from the specified list of files and directories.
-  ZipFileCreator(ResultCallback callback,
+  ZipFileCreator(ResultCallback result_callback,
                  base::FilePath src_dir,
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
 
   ~ZipFileCreator();
 
-  // Starts creating the ZIP file. The result will be passed to |callback|.
+  // Starts creating the ZIP file.
   void Start(mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
-  // Stops creating the ZIP file. Calls the |callback| with false.
+  // Stops creating the ZIP file.
   void Stop();
 
  private:
@@ -48,17 +49,14 @@ class ZipFileCreator {
 
   // Binds the Directory receiver to its implementation.
   void BindDirectory(
-      mojo::PendingReceiver<filesystem::mojom::Directory> receiver);
-
-  // Closes the Directory implementation.
-  void CloseDirectory();
+      mojo::PendingReceiver<filesystem::mojom::Directory> receiver) const;
 
   // Notifies by calling |callback| specified in the constructor the end of the
   // ZIP operation. Deletes this.
   void ReportDone(bool success);
 
-  // The callback.
-  ResultCallback callback_;
+  // The final result callback.
+  ResultCallback result_callback_;
 
   // The source directory for input files.
   const base::FilePath src_dir_;
@@ -69,13 +67,6 @@ class ZipFileCreator {
 
   // The output ZIP file path.
   const base::FilePath dest_file_;
-
-  // Task runner used by the Directory implementation.
-  scoped_refptr<base::SequencedTaskRunner> directory_task_runner_;
-
-  // Weak ref to the self-owned Directory implementation.
-  using DirectoryRef = mojo::SelfOwnedReceiverRef<filesystem::mojom::Directory>;
-  DirectoryRef src_dir_ref_;
 
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;

@@ -86,11 +86,10 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   const int kRandomDataSize = 100000;
   const std::string kRandomData = base::RandBytesAsString(kRandomDataSize);
   {
-    base::ScopedAllowBlockingForTesting allow_io;
-    base::CreateDirectory(zip_base_dir().Append(kDir1));
-    base::WriteFile(zip_base_dir().Append(kFile1), "123", 3);
-    base::WriteFile(zip_base_dir().Append(kFile2), kRandomData.c_str(),
-                    kRandomData.size());
+    const base::ScopedAllowBlockingForTesting allow_io;
+    ASSERT_TRUE(base::CreateDirectory(zip_base_dir().Append(kDir1)));
+    ASSERT_TRUE(base::WriteFile(zip_base_dir().Append(kFile1), "123"));
+    ASSERT_TRUE(base::WriteFile(zip_base_dir().Append(kFile2), kRandomData));
   }
 
   bool success = false;
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   run_loop.Run();
   EXPECT_TRUE(success);
 
-  base::ScopedAllowBlockingForTesting allow_io;
+  const base::ScopedAllowBlockingForTesting allow_io;
 
   // Check the archive content.
   zip::ZipReader reader;
@@ -135,6 +134,50 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, BigFile) {
+  // Prepare big file.
+  // TODO(crbug.com/1207737) Increase size to 5'000'000'000.
+  const base::FilePath kFile("big");
+  const int64_t kSize = 4'000'000'000;
+
+  {
+    const base::ScopedAllowBlockingForTesting allow_io;
+    base::File f(zip_base_dir().Append(kFile),
+                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(f.SetLength(kSize));
+  }
+
+  bool success = false;
+  base::RunLoop run_loop;
+
+  ZipFileCreator creator(
+      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+      zip_base_dir(), {kFile}, zip_archive_path());
+
+  creator.Start(LaunchService());
+
+  run_loop.Run();
+  EXPECT_TRUE(success);
+
+  const base::ScopedAllowBlockingForTesting allow_io;
+
+  // Check the archive content.
+  zip::ZipReader reader;
+  ASSERT_TRUE(reader.Open(zip_archive_path()));
+  while (reader.HasMore()) {
+    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
+    const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
+    if (entry->file_path() == kFile) {
+      EXPECT_FALSE(entry->is_directory());
+      EXPECT_EQ(kSize, entry->original_size());
+    } else {
+      ADD_FAILURE();
+    }
+
+    ASSERT_TRUE(reader.AdvanceToNextEntry());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   // Create the following file tree structure:
   // root_dir/
@@ -159,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   // File paths to file content. Used for validation.
   std::map<base::FilePath, std::string> file_tree_content;
   {
-    base::ScopedAllowBlockingForTesting allow_io;
+    const base::ScopedAllowBlockingForTesting allow_io;
     ASSERT_TRUE(base::CreateDirectory(root_dir));
 
     for (int i = 1; i < 90; i++) {
