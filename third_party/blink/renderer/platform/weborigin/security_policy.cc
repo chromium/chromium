@@ -92,9 +92,6 @@ Referrer SecurityPolicy::GenerateReferrer(
   if (!referrer_url.IsValid())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
 
-  if (SecurityOrigin::ShouldUseInnerURL(url))
-    return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
-
   // 5. Let referrerOrigin be the result of stripping referrerSource for use as
   // a referrer, with the origin-only flag set to true.
   KURL referrer_origin = referrer_url;
