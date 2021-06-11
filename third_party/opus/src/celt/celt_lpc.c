@@ -50,7 +50,11 @@ int          p
 #endif
 
    OPUS_CLEAR(lpc, p);
+#ifdef FIXED_POINT
    if (ac[0] != 0)
+#else
+   if (ac[0] > 1e-10f)
+#endif
    {
       for (i = 0; i < p; i++) {
          /* Sum up this iteration's reflection coefficient */
@@ -73,10 +77,10 @@ int          p
          error = error - MULT32_32_Q31(MULT32_32_Q31(r,r),error);
          /* Bail out once we get 30 dB gain */
 #ifdef FIXED_POINT
-         if (error<SHR32(ac[0],10))
+         if (error<=SHR32(ac[0],10))
             break;
 #else
-         if (error<.001f*ac[0])
+         if (error<=.001f*ac[0])
             break;
 #endif
       }

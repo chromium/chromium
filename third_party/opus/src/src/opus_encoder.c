@@ -900,10 +900,10 @@ static int decide_dtx_mode(opus_int activity,            /* indicates if this fr
 {
    if (!activity)
    {
-      /* The number of consecutive DTX frames should be within the allowed bounds. 
-      Note that the allowed bound is defined in the Silk headers and assumes 20 ms
-      frames. As this function can be called with any frame length, a conversion to
-      miliseconds is done before the comparisons. */
+      /* The number of consecutive DTX frames should be within the allowed bounds.
+         Note that the allowed bound is defined in the SILK headers and assumes 20 ms
+         frames. As this function can be called with any frame length, a conversion to
+         milliseconds is done before the comparisons. */
       (*nb_no_activity_ms_Q1) += frame_size_ms_Q1;
       if (*nb_no_activity_ms_Q1 > NB_SPEECH_FRAMES_BEFORE_DTX*20*2)
       {

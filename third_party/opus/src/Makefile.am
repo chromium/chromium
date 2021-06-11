@@ -222,6 +222,7 @@ EXTRA_DIST = opus.pc.in \
              cmake/OpusFunctions.cmake \
              cmake/OpusPackageVersion.cmake \
              cmake/OpusSources.cmake \
+             cmake/RunTest.cmake \
              cmake/config.h.cmake.in \
              cmake/vla.c \
              meson/get-version.py \
