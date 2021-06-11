@@ -269,6 +269,12 @@ gfx::Rect ToggleButton::GetThumbBounds() const {
 void ToggleButton::UpdateThumb() {
   thumb_view_->Update(GetThumbBounds(),
                       static_cast<float>(slide_animation_.GetCurrentValue()));
+  if (focus_ring()) {
+    // Updating the thumb changes the result of GetFocusRingPath(), make sure
+    // the focus ring gets updated to match this new state.
+    focus_ring()->InvalidateLayout();
+    focus_ring()->SchedulePaint();
+  }
 }
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
