@@ -212,6 +212,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
     // because it will call _exit(0) and kill the process before the browser
     // side is ready to exit.
     ANNOTATE_LEAKING_OBJECT_PTR(process_.get());
+    process_->FlushIOThreadForTesting();
     process_.release();
   }
 
