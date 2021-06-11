@@ -39,7 +39,7 @@ src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
 src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
 
 # Vulkan memory allocator
-src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
+src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 
 #############################################################################
 # Base class's constructor accesses a derived class.
@@ -171,7 +171,7 @@ src:*device/udev_linux/udev1_loader.cc
 src:*ui/gl/gl_bindings_autogen_*
 
 # Calls to vulkan function pointers from shared library.
-src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
+src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 src:*third_party/angle/third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
