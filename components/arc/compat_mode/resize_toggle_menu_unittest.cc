@@ -120,7 +120,15 @@ TEST_F(ResizeToggleMenuTest, TestResizePhone) {
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
-  // Test that the item is selected after the resize.
+  // Test that the selected item is changed dynamically after the resize.
+  EXPECT_TRUE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizePhone));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeTablet));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeDesktop));
+
+  // Test that the item is selected after re-showing.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
   EXPECT_TRUE(
@@ -143,7 +151,15 @@ TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
-  // Test that the item is selected after the resize.
+  // Test that the selected item is changed dynamically after the resize.
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizePhone));
+  EXPECT_TRUE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeTablet));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeDesktop));
+
+  // Test that the item is selected after re-showing.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
   EXPECT_FALSE(
