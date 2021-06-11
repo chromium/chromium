@@ -15,6 +15,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 
 import java.io.File;
 import java.util.List;
@@ -41,9 +42,9 @@ public abstract class IntentHelper {
     static void sendEmail(
             String email, String subject, String body, String chooserTitle, String fileToAttach) {
         if (TextUtils.isEmpty(email)) {
-            List<Account> accounts =
-                    AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-            if (accounts != null && accounts.size() == 1
+            List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
+            if (accounts.size() == 1
                     && Patterns.EMAIL_ADDRESS.matcher(accounts.get(0).name).matches()) {
                 email = accounts.get(0).name;
             }
