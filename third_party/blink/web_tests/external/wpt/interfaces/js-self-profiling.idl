@@ -42,7 +42,7 @@ dictionary ProfilerInitOptions {
   required unsigned long maxBufferSize;
 };
 
-[Exposed=(Window,Worker)]
+[CrossOriginIsolated, Exposed=(Window,Worker)]
 partial interface Performance {
   Promise<Profiler> profile(ProfilerInitOptions options);
 };

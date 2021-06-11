@@ -186,9 +186,10 @@ interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
   readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long duration; // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedAudioChunkInit {
@@ -206,17 +207,17 @@ enum EncodedAudioChunkType {
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
-  readonly attribute long long timestamp;    // microseconds
-  readonly attribute long long? duration;    // microseconds
+  readonly attribute long long timestamp;             // microseconds
+  readonly attribute unsigned long long? duration;    // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  [EnforceRange] required long long timestamp;    // microseconds
-  [EnforceRange] long long duration;              // microseconds
+  [EnforceRange] required long long timestamp;        // microseconds
+  [EnforceRange] unsigned long long duration;         // microseconds
   required BufferSource data;
 };
 
@@ -229,12 +230,12 @@ enum EncodedVideoChunkType {
 interface AudioData {
   constructor(AudioDataInit init);
 
-  readonly attribute AudioSampleFormat sampleFormat;
+  readonly attribute AudioSampleFormat format;
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
-  readonly attribute long long duration;     // microseconds
-  readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long long duration;  // microseconds
+  readonly attribute long long timestamp;          // microseconds
 
   unsigned long allocationSize(AudioDataCopyToOptions options);
   undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
@@ -243,11 +244,11 @@ interface AudioData {
 };
 
 dictionary AudioDataInit {
-  required AudioSampleFormat sampleFormat;
+  required AudioSampleFormat format;
   [EnforceRange] required float sampleRate;
   [EnforceRange] required unsigned long numberOfFrames;
   [EnforceRange] required unsigned long numberOfChannels;
-  [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] required long long timestamp;  // microseconds
   required BufferSource data;
 };
 
@@ -286,16 +287,16 @@ interface VideoFrame {
   readonly attribute unsigned long cropHeight;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
-  readonly attribute long long? duration;     // microseconds
-  readonly attribute long long? timestamp;    // microseconds
+  readonly attribute unsigned long long? duration;  // microseconds
+  readonly attribute long long? timestamp;          // microseconds
 
   VideoFrame clone();
   undefined close();
 };
 
 dictionary VideoFrameInit {
-  long long duration;     // microseconds
-  long long timestamp;    // microseconds
+  unsigned long long duration;  // microseconds
+  long long timestamp;          // microseconds
 };
 
 dictionary VideoFramePlaneInit {
@@ -308,8 +309,8 @@ dictionary VideoFramePlaneInit {
   [EnforceRange] unsigned long cropHeight;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
-  [EnforceRange] long long duration;     // microseconds
-  [EnforceRange] long long timestamp;    // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+  [EnforceRange] long long timestamp;          // microseconds
 };
 
 [Exposed=(Window,DedicatedWorker)]

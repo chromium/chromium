@@ -54,6 +54,7 @@ interface GPU {
 
 dictionary GPURequestAdapterOptions {
     GPUPowerPreference powerPreference;
+    boolean forceSoftware = false;
 };
 
 enum GPUPowerPreference {
@@ -66,6 +67,7 @@ interface GPUAdapter {
     readonly attribute DOMString name;
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
+    readonly attribute boolean isSoftware;
 
     Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
 };
@@ -498,7 +500,10 @@ interface mixin GPUPipelineBase {
 dictionary GPUProgrammableStage {
     required GPUShaderModule module;
     required USVString entryPoint;
+    record<USVString, GPUPipelineConstantValue> constants;
 };
+
+typedef double GPUPipelineConstantValue; // May represent WGSL’s bool, f32, i32, u32.
 
 [Exposed=Window, Serializable]
 interface GPUComputePipeline {
@@ -900,7 +905,7 @@ enum GPULoadOp {
 
 enum GPUStoreOp {
     "store",
-    "clear"
+    "discard"
 };
 
 [Exposed=Window]

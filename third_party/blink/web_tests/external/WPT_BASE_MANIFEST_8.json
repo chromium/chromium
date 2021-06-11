@@ -31,6 +31,13 @@
        {}
       ]
      ],
+     "included-descendant-layout-removal.html": [
+      "5270a36351988474e45eb4515df0a0e3db16d631",
+      [
+       null,
+       {}
+      ]
+     ],
      "table-ignored-child.html": [
       "99f385f6eaf3ebdbc5b8c4517c9a7ec7fce50117",
       [
@@ -277054,7 +277061,7 @@
      []
     ],
     "file-system-access.idl": [
-     "3eda19c9d84af81a8eecc5ef3f0ea06753290301",
+     "252e9cdc5987843894d8e27a3cdfb7a346290280",
      []
     ],
     "filter-effects.idl": [
@@ -277158,7 +277165,7 @@
      []
     ],
     "js-self-profiling.idl": [
-     "a2199999eada84ff43f1a237380685c5833c4791",
+     "b5cb290e18aa1bb2e25a36d14710cccb308d090a",
      []
     ],
     "keyboard-lock.idl": [
@@ -277386,7 +277393,7 @@
      []
     ],
     "screen-capture.idl": [
-     "7786b7fb4d7c9affd615bef5c7c51c22a8f9d8e9",
+     "38f077d6082bd0cd73842737a578c313b2bc4b5a",
      []
     ],
     "screen-orientation.idl": [
@@ -277538,7 +277545,7 @@
      []
     ],
     "webcodecs.idl": [
-     "08f9f7a345af4096efacc407a12b7406a2e5515e",
+     "16d6bd5ed5c3543f57d1ae69fe0967227aeb98d5",
      []
     ],
     "webdriver.idl": [
@@ -277554,7 +277561,7 @@
      []
     ],
     "webgpu.idl": [
-     "71b651baea0dbafe28588e1ac4b742e23ccc194f",
+     "9141df05c9cc2e2c215fba74084f6786cdc72e33",
      []
     ],
     "webhid.idl": [
@@ -283933,7 +283940,7 @@
       []
      ],
      "connection-reuse-test.js": [
-      "4def16c0b0ec9047f6f22207bfe1993302298641",
+      "453fbd34051067480139058d40541368bce2207c",
       []
      ],
      "cors-ahem.py": [
@@ -284005,7 +284012,7 @@
       []
      ],
      "fake_responses.py": [
-      "828748acdd8e85040a21593b92f543252c64d49d",
+      "e33adbfe44efc734a2ee6f98c6b0115327ee2f58",
       []
      ],
      "fake_responses_https.sub.html": [
@@ -428748,6 +428755,13 @@
       {}
      ]
     ],
+    "shift-scroll-anchoring-natural-scroll.html": [
+     "1b146b05d738fa9e7270bf26710fc36131ca66a9",
+     [
+      null,
+      {}
+     ]
+    ],
     "shift-while-scrolled.html": [
      "822aa94cff267e75fcfef5847d1cc8d1c32c9076",
      [
@@ -453724,14 +453738,14 @@
      ]
     ],
     "connection-reuse.html": [
-     "e82b7bc4ea9bb1c39047c5f51867dc3a3a45dbeb",
+     "a1bc927cfd3f2bdd960c4f686951b826f75e8fc8",
      [
       null,
       {}
      ]
     ],
     "connection-reuse.https.html": [
-     "e82b7bc4ea9bb1c39047c5f51867dc3a3a45dbeb",
+     "3461eed47249df338805f5006bb6f38e38d58772",
      [
       null,
       {}
@@ -478598,7 +478612,7 @@
        ]
       ],
       "audiobuffersource-duration-loop.html": [
-       "5fb8536b137ea7c18ff6d77bc29855e772e669f6",
+       "abb8983cc0b1b1306faff44239050af91b655153",
        [
         null,
         {}
