@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
@@ -90,19 +91,32 @@ TEST_F(ArcResizeLockManagerTest, TestArcWindowPropertyChange) {
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
 
   // Test EnableResizeLock will be called by the property change.
-  arc_window->SetProperty(ash::kArcResizeLockKey, true);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window));
 
   // Test nothing will be called by the property overwrite with the same value.
-  arc_window->SetProperty(ash::kArcResizeLockKey, true);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window));
 
   // Test DisableResizeLock will be called by the property change.
-  arc_window->SetProperty(ash::kArcResizeLockKey, false);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  // Test if enabling/disabling |FULLY_LOCKED| toggles the resize lock state
+  // properly.
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::FULLY_LOCKED);
+  EXPECT_TRUE(IsResizeLockEnabled(arc_window));
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
 
   // Test nothing will be called by the property overwrite with the same value.
-  arc_window->SetProperty(ash::kArcResizeLockKey, false);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
 
   // Test nothing will be called by the NON-interested property change.
@@ -114,9 +128,11 @@ TEST_F(ArcResizeLockManagerTest, TestArcWindowPropertyChange) {
 TEST_F(ArcResizeLockManagerTest, TestNonArcWindowPropertyChange) {
   auto* non_arc_window = CreateFakeWindow(false);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
-  non_arc_window->SetProperty(ash::kArcResizeLockKey, true);
+  non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                              ash::ArcResizeLockType::RESIZE_LIMITED);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
-  non_arc_window->SetProperty(ash::kArcResizeLockKey, false);
+  non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                              ash::ArcResizeLockType::RESIZABLE);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
 }
 

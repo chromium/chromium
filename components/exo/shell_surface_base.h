@@ -305,6 +305,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetParentInternal(aura::Window* window);
   void SetContainerInternal(int container);
 
+  // Returns the resizability of the window. Useful to get the resizability
+  // without actually updating it.
+  bool CalculateCanResize() const;
+
   views::Widget* widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;

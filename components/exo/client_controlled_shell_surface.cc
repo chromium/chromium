@@ -10,6 +10,7 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/rounded_corner_decorator.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -741,8 +742,18 @@ void ClientControlledShellSurface::SetResizeLock(bool resize_lock) {
 
 void ClientControlledShellSurface::UpdateCanResize() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
-  widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockKey,
-                                          pending_resize_lock_);
+  ash::ArcResizeLockType resizeLockType = ash::ArcResizeLockType::RESIZABLE;
+  if (pending_resize_lock_) {
+    // CalculateCanResize() returns the "raw" resizability of the window,
+    // in which the influence of the resize lock state is excluded.
+    if (CalculateCanResize()) {
+      resizeLockType = ash::ArcResizeLockType::RESIZE_LIMITED;
+    } else {
+      resizeLockType = ash::ArcResizeLockType::FULLY_LOCKED;
+    }
+  }
+  widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockTypeKey,
+                                          resizeLockType);
   // If resize lock is enabled, the window is explicitly marded as unresizable.
   // Otherwise, the decision is deferred to the parent class.
   if (ash::features::IsArcResizeLockEnabled() && pending_resize_lock_) {

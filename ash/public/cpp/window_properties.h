@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/base/class_property.h"
 
@@ -45,8 +46,8 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
     kArcPackageNameKey;
 
 // If true, the ARC window can not be resized freely.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kArcResizeLockKey;
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<ArcResizeLockType>* const
+    kArcResizeLockTypeKey;
 
 // A property key to specify whether the window should have backdrop and if
 // it has backdrop, the backdrop's mode and type. The backdrop is typically a

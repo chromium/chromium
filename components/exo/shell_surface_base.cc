@@ -576,12 +576,7 @@ void ShellSurfaceBase::DisableMovement() {
 }
 
 void ShellSurfaceBase::UpdateCanResize() {
-  if (overlay_widget_ && overlay_can_resize_.has_value()) {
-    SetCanResize(*overlay_can_resize_);
-    return;
-  }
-  SetCanResize(!movement_disabled_ &&
-               (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_));
+  SetCanResize(CalculateCanResize());
 }
 
 void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
@@ -1324,6 +1319,13 @@ void ShellSurfaceBase::SetParentInternal(aura::Window* parent) {
       !parent_ && ash::desks_util::IsDeskContainerId(container_));
   if (widget_)
     widget_->OnSizeConstraintsChanged();
+}
+
+bool ShellSurfaceBase::CalculateCanResize() const {
+  if (overlay_widget_ && overlay_can_resize_.has_value())
+    return *overlay_can_resize_;
+  return !movement_disabled_ &&
+         (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_);
 }
 
 void ShellSurfaceBase::CommitWidget() {

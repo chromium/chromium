@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
@@ -58,34 +59,35 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
   if (window_observations_.IsObservingSource(new_window))
     return;
 
-  if (new_window->GetProperty(ash::kArcResizeLockKey))
-    EnableResizeLock(new_window);
-
   window_observations_.AddObservation(new_window);
 }
 
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                                                    const void* key,
                                                    intptr_t old) {
-  if (key != ash::kArcResizeLockKey && key != ash::kAppIDKey)
+  if (key != ash::kArcResizeLockTypeKey && key != ash::kAppIDKey)
     return;
 
-  const bool current_resize_lock_value =
-      window->GetProperty(ash::kArcResizeLockKey);
+  if (window->GetProperty(ash::kAppIDKey) == nullptr)
+    return;
+
+  const ash::ArcResizeLockType current_resize_lock_value =
+      window->GetProperty(ash::kArcResizeLockTypeKey);
   const bool resize_lock_changed =
-      (key == ash::kArcResizeLockKey &&
-       current_resize_lock_value != static_cast<bool>(old));
-  const bool has_app_id = window->GetProperty(ash::kAppIDKey) != nullptr;
+      (key == ash::kArcResizeLockTypeKey &&
+       current_resize_lock_value != static_cast<ash::ArcResizeLockType>(old));
   const bool app_id_changed = key == ash::kAppIDKey;
 
   // Both the resize lock value and app id are needed to enable resize lock.
-  if (has_app_id && current_resize_lock_value &&
+  if (current_resize_lock_value != ash::ArcResizeLockType::RESIZABLE &&
       (app_id_changed || resize_lock_changed)) {
     EnableResizeLock(window);
   }
 
-  if (resize_lock_changed && !current_resize_lock_value)
+  if (resize_lock_changed &&
+      current_resize_lock_value == ash::ArcResizeLockType::RESIZABLE) {
     DisableResizeLock(window);
+  }
 }
 
 void ArcResizeLockManager::OnWindowDestroying(aura::Window* window) {

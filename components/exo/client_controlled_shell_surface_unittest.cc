@@ -8,6 +8,7 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -2739,6 +2740,19 @@ TEST_F(ClientControlledShellSurfaceTest,
     shell_surface->SetResizeLock(true);
     surface->Commit();
     EXPECT_FALSE(shell_surface->CanResize());
+
+    // Test if the proper resize lock type is set depending on the resizability
+    // of the window.
+    aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+    EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
+              ash::ArcResizeLockType::RESIZE_LIMITED);
+    shell_surface->SetMinimumSize(gfx::Size(1, 1));
+    shell_surface->SetMaximumSize(gfx::Size(1, 1));
+    surface->Commit();
+    EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
+              ash::ArcResizeLockType::FULLY_LOCKED);
+    shell_surface->SetMinimumSize(gfx::Size(0, 0));
+    shell_surface->SetMaximumSize(gfx::Size(0, 0));
 
     shell_surface->SetResizeLock(false);
     surface->Commit();
