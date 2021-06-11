@@ -3981,7 +3981,7 @@
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "omnibox-pedals-batch2",
