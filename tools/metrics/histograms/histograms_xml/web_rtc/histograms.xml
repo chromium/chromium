@@ -1539,6 +1539,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
+    enum="PeerConnectionProvisionalAnswer" expires_after="2022-06-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Whether provisional answers are used. Recorded during the first DTLS
+    connection establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.RtcpMux" enum="PeerConnectionRtcpMux"
     expires_after="2020-02-23">
   <owner>pthatcher@chromium.org</owner>

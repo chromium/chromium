@@ -62447,6 +62447,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Disabled"/>
 </enum>
 
+<enum name="PeerConnectionProvisionalAnswer">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Remote"/>
+</enum>
+
 <enum name="PeerConnectionRtcpMux">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
