@@ -44,6 +44,7 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_state/core/features.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -295,6 +296,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesLocalOrdering,
     &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
+    &send_tab_to_self::kSendTabToSelfV2,
     &signin::kMobileIdentityConsistency,
     &signin::kMobileIdentityConsistencyVar,
     &signin::kMobileIdentityConsistencyFRE,

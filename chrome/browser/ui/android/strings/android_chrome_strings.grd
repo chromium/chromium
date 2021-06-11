@@ -4092,6 +4092,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LAST_ACTIVE_TODAY" desc="String displayed in the device picker indicating the last time the device was synced to the user's account today.">
         Active today
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_GENERIC" desc="String displayed in the toast message when the type of the selected device can't be determined.">
+        device
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_PHONE" desc="String displayed in the toast message when the selected device is a phone.">
+        phone
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_COMPUTER" desc="String displayed in the toast message when the selected device is a computer.">
+        computer
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_V2_TOAST" desc="Toast message shown after a device is selected from the device picker.">
+          Page sent. To see it, open Chrome on your <ph name="device_type">%1$s<ex>phone</ex></ph>
+      </message>
 
       <!-- Sharing -->
       <message name="IDS_SHARING_SENDING_NOTIFICATION_TITLE" desc="Title text displayed in a sharing sending notification.">
