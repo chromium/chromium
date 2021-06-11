@@ -29,17 +29,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace {
-
-void RecursiveSchedulePainter(ui::Layer* layer) {
-  if (!layer)
-    return;
-  layer->SchedulePaint(gfx::Rect(layer->size()));
-  for (auto* child : layer->children())
-    RecursiveSchedulePainter(child);
-}
-
-}  // namespace
 
 // static
 DragWindowResizer* DragWindowResizer::instance_ = nullptr;
@@ -123,10 +112,6 @@ bool DragWindowResizer::ShouldAllowMouseWarp() {
 
 void DragWindowResizer::EndDragImpl() {
   drag_window_controller_.reset();
-
-  // TODO(malaykeshav) - This is temporary fix/workaround that keeps performance
-  // but may not give the best UI while dragging. See https://crbug/834114
-  RecursiveSchedulePainter(GetTarget()->layer());
 
   // Check if the destination is another display.
   if (details().source == wm::WINDOW_MOVE_SOURCE_TOUCH)
