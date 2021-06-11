@@ -786,9 +786,11 @@ void PagedAppsGridView::AnimateCardifiedState() {
     drag_view_start_ += translate_offset;
     drag_view_->SetPosition(drag_view_start_);
   }
-  // Drag view can be nullptr by EndDrag.
+  // Drag view can be nullptr or moved from the model by EndDrag.
+  const bool model_contains_drag_view =
+      drag_view_ && (view_model()->GetIndexOfView(drag_view_) != -1);
   const int number_of_views_to_animate =
-      view_model()->view_size() - (drag_view_ ? 1 : 0);
+      view_model()->view_size() - (model_contains_drag_view ? 1 : 0);
 
   base::RepeatingClosure on_bounds_animator_callback;
   if (number_of_views_to_animate > 0) {

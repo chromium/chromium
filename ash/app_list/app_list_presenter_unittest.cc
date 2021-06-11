@@ -1184,9 +1184,6 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
 
 // Tests that app list folder item reparenting drag to another folder.
 TEST_P(PopulatedAppListTest, AppsGridItemReparentToFolderDrag) {
-  // TODO(anasalazar): Fix for cardified state.
-  if (GetParam())
-    return;
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
