@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator.Listener;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -36,11 +35,11 @@ public class AccountPickerDialogCoordinator {
      * Constructs the coordinator and shows the account picker dialog.
      */
     @MainThread
-    public AccountPickerDialogCoordinator(Context context, Listener listener) {
+    public AccountPickerDialogCoordinator(
+            Context context, Listener listener, ModalDialogManager modalDialogManager) {
         mAccountPickerView = inflateAccountPickerView(context);
         mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener);
-        mDialogManager =
-                new ModalDialogManager(new AppModalPresenter(context), ModalDialogType.APP);
+        mDialogManager = modalDialogManager;
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.TITLE,
                                  context.getString(R.string.signin_account_picker_dialog_title))
@@ -75,7 +74,6 @@ public class AccountPickerDialogCoordinator {
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
                 mCoordinator.destroy();
-                mDialogManager.destroy();
             }
         };
     }

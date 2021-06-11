@@ -38,12 +38,15 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
@@ -93,7 +96,9 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
         addAccount(mAccountName1, mFullName1);
         addAccount(mAccountName2, "");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerDialogCoordinator(getActivity(), mListenerMock);
+            mCoordinator = new AccountPickerDialogCoordinator(getActivity(), mListenerMock,
+                    new ModalDialogManager(
+                            new AppModalPresenter(getActivity()), ModalDialogType.APP));
         });
     }
 

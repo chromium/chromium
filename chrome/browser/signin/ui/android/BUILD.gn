@@ -173,6 +173,7 @@ android_library("javatests") {
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/externalauth/android:java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
@@ -188,5 +189,6 @@ android_library("javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.signin.ui.SigninView;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -48,6 +49,8 @@ import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -104,7 +107,7 @@ public abstract class SyncConsentFragmentBase
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
     protected @SigninAccessPoint int mSigninAccessPoint;
-
+    private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
     private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
@@ -195,6 +198,9 @@ public abstract class SyncConsentFragmentBase
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
 
+        mModalDialogManager = new ModalDialogManager(
+                new AppModalPresenter(requireContext()), ModalDialogType.APP);
+
         // Don't have a selected account now, onResume will trigger the selection.
         mAccountSelectionPending = true;
 
@@ -202,8 +208,8 @@ public abstract class SyncConsentFragmentBase
             // If this fragment is being recreated from a saved state there's no need to show
             // account picked or starting AddAccount flow.
             if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
-                mAccountPickerDialogCoordinator =
-                        new AccountPickerDialogCoordinator(requireContext(), this);
+                mAccountPickerDialogCoordinator = new AccountPickerDialogCoordinator(
+                        requireContext(), this, mModalDialogManager);
             } else if (signinFlowType == SigninFlowType.ADD_ACCOUNT) {
                 addAccount();
             }
@@ -232,6 +238,7 @@ public abstract class SyncConsentFragmentBase
             mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed = */ true);
             mConfirmSyncDataStateMachine = null;
         }
+        mModalDialogManager.destroy();
         if (mRecordUndoSignin) RecordUserAction.record("Signin_Undo_Signin");
         mDestroyed = true;
     }
@@ -365,7 +372,7 @@ public abstract class SyncConsentFragmentBase
     private void onAccountPickerClicked() {
         if (ChildAccountStatus.isChild(mChildAccountStatus) || !areControlsEnabled()) return;
         mAccountPickerDialogCoordinator =
-                new AccountPickerDialogCoordinator(requireContext(), this);
+                new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
     }
 
     private void onRefuseButtonClicked(View button) {
@@ -554,6 +561,6 @@ public abstract class SyncConsentFragmentBase
         selectAccount(accounts.get(0).name, true);
         // Show account picker to user to confirm the account selection
         mAccountPickerDialogCoordinator =
-                new AccountPickerDialogCoordinator(requireContext(), this);
+                new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
     }
 }
