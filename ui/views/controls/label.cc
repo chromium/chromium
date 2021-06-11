@@ -107,6 +107,9 @@ void Label::SetText(const std::u16string& new_text) {
   ClearDisplayText();
   OnPropertyChanged(&full_text_ + kLabelText,
                     kPropertyEffectsPreferredSizeChanged);
+  if (accessible_name_.empty()) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  }
   stored_selection_range_ = gfx::Range::InvalidRange();
 }
 

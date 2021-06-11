@@ -36,6 +36,7 @@
 #include "ui/views/controls/base_control_test_widget.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
@@ -640,6 +641,24 @@ TEST_F(LabelTest, Accessibility) {
   label()->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(LabelTest, SetTextNotifiesAccessibilityEvent) {
+  test::AXEventCounter counter(views::AXEventManager::Get());
+
+  // Changing the text affects the accessible name, so it should notify.
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+  label()->SetText(u"Example");
+  EXPECT_EQ(u"Example", label()->GetAccessibleName());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+
+  // Changing the text when it doesn't affect the accessible name should not
+  // notify.
+  label()->SetAccessibleName(u"Name");
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
+  label()->SetText(u"Example2");
+  EXPECT_EQ(u"Name", label()->GetAccessibleName());
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
 }
 
 TEST_F(LabelTest, TextChangeWithoutLayout) {

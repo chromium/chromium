@@ -185,12 +185,13 @@ TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CandidateView* view = GetCandidateAt(1);
 
-  // Changing the text affects the accessible name, so it should notify.
+  // Calling SetEntry affects the accessible name, so it should notify twice:
+  // once for CandidateView's child label and once for CandidateView itself.
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   ui::CandidateWindow::Entry entry;
   entry.value = u"Candidate";
   view->SetEntry(entry);
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
 }
 
 }  // namespace ime
