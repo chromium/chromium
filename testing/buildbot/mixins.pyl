@@ -133,6 +133,14 @@
       ],
     },
     'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'avd_generic_android29',
+          }
+        ],
+      },
       'named_caches': [
         {
           'name': 'avd_generic_android29',
@@ -152,6 +160,14 @@
       ],
     },
     'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'avd_generic_android30',
+          }
+        ],
+      },
       'named_caches': [
         {
           'name': 'avd_generic_android30',
@@ -876,6 +892,14 @@
       ],
     },
     'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'avd_generic_android23',
+          }
+        ],
+      },
       'named_caches': [
         {
           'name': 'avd_generic_android23',
@@ -923,6 +947,14 @@
       ],
     },
     'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'avd_generic_android27',
+          }
+        ],
+      },
       'named_caches': [
         {
           'name': 'avd_generic_android27',
@@ -958,6 +990,14 @@
       ],
     },
     'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'avd_generic_android28',
+          }
+        ],
+      },
       'named_caches': [
         {
           'name': 'avd_generic_android28',

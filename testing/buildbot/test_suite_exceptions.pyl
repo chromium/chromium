@@ -925,6 +925,14 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
         ],
         'swarming': {
+          # soft affinity so that bots with caches will be picked first
+          'optional_dimensions': {
+            '60': [
+              {
+                'caches': 'avd_generic_playstore_android28',
+              }
+            ],
+          },
           'named_caches': [
             {
               'name': 'avd_generic_playstore_android28',

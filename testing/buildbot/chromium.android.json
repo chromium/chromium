@@ -35994,6 +35994,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36063,6 +36070,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36125,6 +36139,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36187,6 +36208,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36249,6 +36277,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36318,6 +36353,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36381,6 +36423,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36448,6 +36497,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36510,6 +36566,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36573,6 +36636,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36635,6 +36705,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36692,6 +36769,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -36745,6 +36829,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36807,6 +36898,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36869,6 +36967,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36931,6 +37036,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -36993,6 +37105,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37055,6 +37174,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37117,6 +37243,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37179,6 +37312,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37242,6 +37382,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37304,6 +37451,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37367,6 +37521,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37429,6 +37590,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37491,6 +37659,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37555,6 +37730,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37619,6 +37801,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37682,6 +37871,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37745,6 +37941,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37807,6 +38010,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37869,6 +38079,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37931,6 +38148,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -37993,6 +38217,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38055,6 +38286,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38117,6 +38355,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38179,6 +38424,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38244,6 +38496,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38306,6 +38565,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38368,6 +38634,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38430,6 +38703,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38492,6 +38772,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38554,6 +38841,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38616,6 +38910,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38678,6 +38979,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38740,6 +39048,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38802,6 +39117,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38864,6 +39186,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38927,6 +39256,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -38989,6 +39325,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39051,6 +39394,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39113,6 +39463,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39176,6 +39533,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39240,6 +39604,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39302,6 +39673,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39364,6 +39742,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39426,6 +39811,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39488,6 +39880,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39550,6 +39949,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39612,6 +40018,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39674,6 +40087,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39736,6 +40156,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39798,6 +40225,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39861,6 +40295,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39923,6 +40364,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -39985,6 +40433,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -40047,6 +40502,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -40109,6 +40571,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -40172,6 +40641,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -40234,6 +40710,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -40296,6 +40779,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components:components_perftests/"
@@ -40342,6 +40832,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
@@ -49042,6 +49539,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49105,6 +49609,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49169,6 +49680,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49231,6 +49749,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49288,6 +49813,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -49341,6 +49873,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49403,6 +49942,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49465,6 +50011,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49527,6 +50080,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49589,6 +50149,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49652,6 +50219,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49715,6 +50289,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49777,6 +50358,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49839,6 +50427,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49902,6 +50497,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -49964,6 +50566,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50027,6 +50636,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50089,6 +50705,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50151,6 +50774,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50213,6 +50843,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50283,6 +50920,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_playstore_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50346,6 +50990,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50408,6 +51059,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50472,6 +51130,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50536,6 +51201,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50599,6 +51271,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50662,6 +51341,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50724,6 +51410,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50786,6 +51479,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50848,6 +51548,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50910,6 +51617,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -50972,6 +51686,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51034,6 +51755,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51096,6 +51824,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51161,6 +51896,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51223,6 +51965,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51285,6 +52034,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51347,6 +52103,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51409,6 +52172,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51471,6 +52241,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51533,6 +52310,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51595,6 +52379,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51657,6 +52448,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51719,6 +52517,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51781,6 +52586,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51844,6 +52656,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51906,6 +52725,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -51968,6 +52794,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52030,6 +52863,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52092,6 +52932,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52154,6 +53001,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52216,6 +53070,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52279,6 +53140,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52343,6 +53211,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52405,6 +53280,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52467,6 +53349,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52529,6 +53418,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52591,6 +53487,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52653,6 +53556,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52715,6 +53625,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52777,6 +53694,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52839,6 +53763,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52901,6 +53832,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -52963,6 +53901,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53026,6 +53971,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53089,6 +54041,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53151,6 +54110,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53213,6 +54179,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53275,6 +54248,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53337,6 +54317,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53399,6 +54386,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53466,6 +54460,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53530,6 +54531,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53593,6 +54601,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53655,6 +54670,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53717,6 +54739,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53800,6 +54829,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53880,6 +54916,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -53960,6 +55003,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54040,6 +55090,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54120,6 +55177,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54200,6 +55264,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54268,6 +55339,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54346,6 +55424,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54425,6 +55510,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54504,6 +55596,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54583,6 +55682,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54662,6 +55768,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54741,6 +55854,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android27"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54809,6 +55929,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54887,6 +56014,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -54966,6 +56100,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -55045,6 +56186,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -55124,6 +56272,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -55203,6 +56358,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
@@ -55282,6 +56444,13 @@
               "path": ".emulator_sdk"
             }
           ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android28"
+              }
+            ]
+          },
           "output_links": [
             {
               "link": [
