@@ -6898,3 +6898,4 @@ crbug.com/1218484 [ Linux ] virtual/plz-service-worker/external/wpt/html/cross-o
 
 # Sheriff 2021-06-11
 crbug.com/1218667 [ Win ] virtual/portals/wpt_internal/portals/portals-dangling-markup.sub.html [ Pass Timeout ]
+crbug.com/1218714 [ Win ] virtual/scroll-unification/fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Pass Timeout ]
