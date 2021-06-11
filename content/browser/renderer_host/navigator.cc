@@ -449,6 +449,29 @@ void Navigator::DidNavigate(
     rvh->SetContentsMimeType(params.contents_mime_type);
   }
 
+  // Navigations that activate an existing bfcached or prerendered document do
+  // not create a new document.
+  //
+  // |was_within_same_document| (controlled by the renderer) also needs to be
+  // considered: in some cases, the browser and renderer can disagree. While
+  // this is usually a bad message kill, there are some situations where this
+  // can legitimately happen. When a new frame is created (e.g. with
+  // <iframe src="...">), the initial about:blank document doesn't have a
+  // corresponding entry in the browser process. As a result, the browser
+  // process incorrectly determines that the navigation is cross-document when
+  // in reality it's same-document.
+  //
+  // TODO(crbug/1099264): Remove |was_within_same_document| from this logic
+  // once all same-document navigations have a NavigationEntry. Once this
+  // happens there should be no cases where the browser and renderer
+  // legitimately disagree as described above.
+  bool did_create_new_document = !navigation_request->IsPageActivation() &&
+                                 !is_same_document_navigation &&
+                                 !was_within_same_document;
+
+  render_frame_host->DidNavigate(params, navigation_request.get(),
+                                 did_create_new_document);
+
   int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
   base::TimeTicks start = base::TimeTicks::Now();
@@ -480,27 +503,6 @@ void Navigator::DidNavigate(
         site_instance);
   }
 
-  // Navigations that activate an existing bfcached or prerendered document do
-  // not create a new document.
-  //
-  // |was_within_same_document| (controlled by the renderer) also needs to be
-  // considered: in some cases, the browser and renderer can disagree. While
-  // this is usually a bad message kill, there are some situations where this
-  // can legitimately happen. When a new frame is created (e.g. with
-  // <iframe src="...">), the initial about:blank document doesn't have a
-  // corresponding entry in the browser process. As a result, the browser
-  // process incorrectly determines that the navigation is cross-document when
-  // in reality it's same-document.
-  //
-  // TODO(crbug/1099264): Remove |was_within_same_document| from this logic
-  // once all same-document navigations have a NavigationEntry. Once this
-  // happens there should be no cases where the browser and renderer
-  // legitimately disagree as described above.
-  bool did_create_new_document =
-      !navigation_request->IsServedFromBackForwardCache() &&
-      !navigation_request->IsPrerenderedPageActivation() &&
-      !is_same_document_navigation && !was_within_same_document;
-
   // Store some information for recording WebPlatform security metrics. These
   // metrics depends on information present in the NavigationRequest. However
   // they must be recorded after the NavigationRequest has been destroyed and
@@ -509,9 +511,6 @@ void Navigator::DidNavigate(
   bool has_embedding_control = HasEmbeddingControl(navigation_request.get());
   bool is_error_page = navigation_request->IsErrorPage();
   const GURL original_request_url = navigation_request->GetOriginalRequestURL();
-
-  render_frame_host->DidNavigate(params, navigation_request.get(),
-                                 did_create_new_document);
 
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include

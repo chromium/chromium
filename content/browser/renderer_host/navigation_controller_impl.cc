@@ -1690,13 +1690,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
     new_entry->SetOriginalRequestURL(request->GetOriginalRequestURL());
 
-    if (!is_same_document) {
-      DCHECK_EQ(request->is_overriding_user_agent() && !rfh->GetParent(),
-                params.is_overriding_user_agent);
-    } else {
-      DCHECK_EQ(rfh->is_overriding_user_agent(),
-                params.is_overriding_user_agent);
-    }
+    DCHECK_EQ(rfh->is_overriding_user_agent(), params.is_overriding_user_agent);
     new_entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
 
     // Update the FrameNavigationEntry for new main frame commits.
@@ -4047,17 +4041,7 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     return previous_policies->Clone();
   }
 
-  if (!request->IsWaitingToCommit()) {
-    // This is the initial, "fake" navigation to about:blank. The
-    // NavigationRequest contains a dummy policy container, while the
-    // RenderFrameHost already inherited the policy container from the
-    // creator, so let's take the policies from there.
-    return rfh->policy_container_host()->policies().Clone();
-  }
-
-  // Take the policy container from the request since we did not move it
-  // into the RFH yet.
-  return request->GetPolicyContainerPolicies().Clone();
+  return rfh->policy_container_host()->policies().Clone();
 }
 
 void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,
