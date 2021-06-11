@@ -13,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
-#if defined(TOOLKIT_VIEWS)
+#if defined(SHELL_USE_TOOLKIT_VIEWS)
 #include "ui/base/models/simple_menu_model.h"    // nogncheck
 #include "ui/views/controls/menu/menu_runner.h"  // nogncheck
 #endif
@@ -42,7 +42,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   ContextMenuParams params_;
 #endif
 
-#if defined(TOOLKIT_VIEWS)
+#if defined(SHELL_USE_TOOLKIT_VIEWS)
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 #endif

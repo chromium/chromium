@@ -29,6 +29,9 @@ if (is_android) {
   import("//v8/gni/v8.gni")
 }
 
+# TODO(spang): Investigate using shell_views with is_chromecast=true.
+shell_use_toolkit_views = toolkit_views && !is_chromecast
+
 declare_args() {
   content_shell_product_name = "Content Shell"
   content_shell_version = "999.77.34.5"
@@ -311,8 +314,12 @@ static_library("content_shell_lib") {
     ]
   }
 
-  # TODO(spang): Investigate using shell_views with is_chromecast=true.
-  if (toolkit_views && !is_chromecast) {
+  if (shell_use_toolkit_views) {
+    # All content_shell code should use this define instead of TOOLKIT_VIEWS,
+    # since any transitive dependency on //ui/views from another component will
+    # cause TOOLKIT_VIEWS to be defined, even when content_shell does not want
+    # to use it internally. See https://crbug.com/1218907.
+    defines += [ "SHELL_USE_TOOLKIT_VIEWS=1" ]
     deps += [ "//ui/views" ]
   }
 
@@ -324,7 +331,7 @@ static_library("content_shell_lib") {
       "//ui/wm",
     ]
 
-    if (toolkit_views && !is_chromecast) {
+    if (shell_use_toolkit_views) {
       sources += [
         "browser/shell_platform_delegate_views.cc",
         "browser/shell_web_contents_view_delegate_views.cc",
@@ -436,7 +443,7 @@ repack("pak") {
     sources += [ "$root_gen_dir/content/browser/tracing/tracing_resources.pak" ]
   }
 
-  if (toolkit_views && !is_chromecast) {
+  if (shell_use_toolkit_views) {
     deps += [ "//ui/views/resources" ]
     sources +=
         [ "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak" ]
