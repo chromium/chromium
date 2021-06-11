@@ -215,12 +215,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (paint_info.phase != PaintPhase::kTextClip) {
-    if (DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, display_item_client, paint_info.phase)) {
-      return;
+    if (LIKELY(!paint_info.context.InDrawingRecorder())) {
+      if (DrawingRecorder::UseCachedDrawingIfPossible(
+              paint_info.context, display_item_client, paint_info.phase)) {
+        return;
+      }
+      recorder.emplace(paint_info.context, display_item_client,
+                       paint_info.phase, visual_rect);
     }
-    recorder.emplace(paint_info.context, display_item_client, paint_info.phase,
-                     visual_rect);
   }
 
   if (UNLIKELY(text_item.IsSymbolMarker())) {
