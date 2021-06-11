@@ -5649,6 +5649,14 @@ void WebContentsImpl::OnBackgroundColorChanged(RenderViewHostImpl* source) {
       last_sent_background_color_ != source->background_color()) {
     observers_.NotifyObservers(&WebContentsObserver::OnBackgroundColorChanged);
     last_sent_background_color_ = source->background_color();
+    return;
+  }
+
+  if (source->background_color().has_value()) {
+    if (auto* view = GetRenderWidgetHostView()) {
+      static_cast<RenderWidgetHostViewBase*>(view)->SetContentBackgroundColor(
+          source->background_color().value());
+    }
   }
 }
 
