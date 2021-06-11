@@ -515,7 +515,7 @@ AXObject* AXRelationCache::GetOrCreate(Node* node, const AXObject* owner) {
 }
 
 void AXRelationCache::ChildrenChanged(AXObject* object) {
-  object->ChildrenChanged();
+  object->ChildrenChangedWithCleanLayout();
 }
 
 void AXRelationCache::LabelChanged(Node* node) {

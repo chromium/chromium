@@ -58,7 +58,7 @@ void AXVirtualObject::AddChildren() {
   }
 }
 
-void AXVirtualObject::ChildrenChanged() {
+void AXVirtualObject::ChildrenChangedWithCleanLayout() {
   ClearChildren();
   AXObjectCache().PostNotification(this, ax::mojom::Event::kChildrenChanged);
 }

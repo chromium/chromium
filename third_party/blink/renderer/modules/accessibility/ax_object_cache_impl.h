@@ -98,8 +98,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void SelectionChanged(Node*) override;
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);
-  // void ChildrenChanged(AXObject*);
-  // void ChildrenChanged(const AXObject*);
+  void ChildrenChanged(AXObject*);
+  void ChildrenChangedWithCleanLayout(AXObject*);
   void ChildrenChanged(Node*) override;
   void ChildrenChanged(const LayoutObject*) override;
   void ChildrenChanged(AccessibleNode*) override;
@@ -116,7 +116,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(Node*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
-  // For any ancetor that could contain the passed-in AXObject* in their cached
+  // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
   // In addition, ChildrenChanged() on an included ancestor that might contain
   // this child, if one exists.
@@ -445,6 +445,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkElementDirty(const Node*, bool subtree);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
   void MarkElementDirtyWithCleanLayout(const Node*, bool subtree);
+
+  // Helper that clears children up to the first included ancestor and returns
+  // the ancestor if a children changed notification should be fired on it.
+  AXObject* InvalidateChildren(AXObject* obj);
 
   Member<Document> document_;
   ui::AXMode ax_mode_;
