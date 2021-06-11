@@ -46,6 +46,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2096,9 +2097,8 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
 // Tests that the video frames delivered to the service for recorded windows are
 // valid (i.e. they have the correct size, and suffer from no letterboxing, even
 // when the window gets resized).
-// TODO(https://crbug.com/1214023): This test is currently broken due to a
-// recent change in the Viz capturer. Re-enable the test once fixed.
-TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
+// This is a regression test for https://crbug.com/1214023.
+TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
   auto window = CreateTestWindow(gfx::Rect(100, 50, 200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
@@ -2110,17 +2110,64 @@ TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
   CaptureModeTestApi test_api;
   test_api.FlushRecordingServiceForTesting();
 
-  auto verify_video_frame = [](const media::VideoFrame& frame,
-                               const gfx::Rect& content_rect) {
-    // TODO(afakhry): Add more checks here.
-    EXPECT_EQ(gfx::Point(), content_rect.origin());
+  bool is_video_frame_valid = false;
+  std::string failures;
+  auto verify_video_frame = [&](const media::VideoFrame& frame,
+                                const gfx::Rect& content_rect) {
+    is_video_frame_valid = true;
+    failures.clear();
+
+    // Having the content positioned at (0,0) with a size that matches the
+    // current window's size means that there is no letterboxing.
+    if (gfx::Point() != content_rect.origin()) {
+      is_video_frame_valid = false;
+      failures =
+          base::StringPrintf("content_rect is not at (0,0), instead at: %s\n",
+                             content_rect.origin().ToString().c_str());
+    }
+
+    const gfx::Size window_size = window->bounds().size();
+    if (window_size != content_rect.size()) {
+      is_video_frame_valid = false;
+      failures += base::StringPrintf(
+          "content_rect doesn't match the window size:\n"
+          "  content_rect.size(): %s\n"
+          "  window_size: %s\n",
+          content_rect.size().ToString().c_str(),
+          window_size.ToString().c_str());
+    }
+
+    // The video frame contents should match the bounds of the video frame.
+    if (frame.visible_rect() != content_rect) {
+      is_video_frame_valid = false;
+      failures += base::StringPrintf(
+          "content_rect doesn't match the frame's visible_rect:\n"
+          "  content_rect: %s\n"
+          "  visible_rect: %s\n",
+          content_rect.ToString().c_str(),
+          frame.visible_rect().ToString().c_str());
+    }
+
+    if (frame.coded_size() != window_size) {
+      is_video_frame_valid = false;
+      failures += base::StringPrintf(
+          "the frame's coded size doesn't match the window size:\n"
+          "  frame.coded_size(): %s\n"
+          "  window_size: %s\n",
+          frame.coded_size().ToString().c_str(),
+          window_size.ToString().c_str());
+    }
   };
 
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   ASSERT_TRUE(test_delegate->recording_service());
-  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
-      base::BindOnce(verify_video_frame));
+  {
+    SCOPED_TRACE("Initial window size");
+    test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+        base::BindLambdaForTesting(verify_video_frame));
+    EXPECT_TRUE(is_video_frame_valid) << failures;
+  }
 
   // Even when the window is resized and the throttled size reaches the service,
   // new video frames should still be valid.
@@ -2128,8 +2175,20 @@ TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
   auto* recording_watcher = controller->video_recording_watcher_for_testing();
   recording_watcher->SendThrottledWindowSizeChangedNowForTesting();
   test_api.FlushRecordingServiceForTesting();
-  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
-      base::BindOnce(verify_video_frame));
+  {
+    SCOPED_TRACE("After window resizing");
+    // A video frame is produced on the Viz side when a CopyOutputRequest is
+    // fulfilled. Those CopyOutputRequests could have been placed before the
+    // window's layer resize results in a new resized render pass in Viz. But
+    // eventually this must happen, and a valid frame must be delivered.
+    int remaining_attempts = 2;
+    do {
+      --remaining_attempts;
+      test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+          base::BindLambdaForTesting(verify_video_frame));
+    } while (!is_video_frame_valid && remaining_attempts);
+    EXPECT_TRUE(is_video_frame_valid) << failures;
+  }
 
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());

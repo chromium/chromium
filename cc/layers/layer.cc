@@ -349,9 +349,13 @@ void Layer::SetBounds(const gfx::Size& size) {
 
   // Rounded corner clipping, bounds clipping and mask clipping can result in
   // new areas of subtrees being exposed on a bounds change. Ensure the damaged
-  // areas are updated.
+  // areas are updated. Also, if the layer subtree (rooted at this layer) is
+  // marked as capturable (via a valid SubtreeCaptureId), then the property tree
+  // needs rebuild so that |EffectNode::subtree_size| is updated with the new
+  // size of this layer.
   if (!layer_tree_host_->IsUsingLayerLists()) {
-    if (masks_to_bounds() || mask_layer() || HasRoundedCorner()) {
+    if (subtree_capture_id().is_valid() || masks_to_bounds() || mask_layer() ||
+        HasRoundedCorner()) {
       SetSubtreePropertyChanged();
       SetPropertyTreesNeedRebuild();
     }

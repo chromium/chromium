@@ -91,10 +91,10 @@ gfx::RectF GetCursorOverlayBounds(
     const SkBitmap& cursor_bitmap) {
   DCHECK(recorded_window);
 
-  // Even when recording a non-root window, we use the bounds of the root
-  // window, since it corresponds to the bounds of the source frame sink we are
-  // recording.
-  const auto window_size = recorded_window->GetRootWindow()->bounds().size();
+  // The video size, and the resolution constraints will be matching the size of
+  // the recorded window (whether a root or a non-root window). Hence, the
+  // bounds of the cursor overlay should be relative to that size.
+  const auto window_size = recorded_window->bounds().size();
   if (window_size.IsEmpty())
     return gfx::RectF();
 
