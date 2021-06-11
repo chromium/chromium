@@ -4497,7 +4497,7 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
     return;
 
   auto* flow_thread = LayoutMultiColumnFlowThread::CreateAnonymous(
-      GetDocument(), StyleRef(), !CanTraversePhysicalFragments());
+      GetDocument(), StyleRef(), !IsLayoutNGObject());
   AddChild(flow_thread);
   pagination_state_changed_ = true;
   if (IsLayoutNGObject()) {

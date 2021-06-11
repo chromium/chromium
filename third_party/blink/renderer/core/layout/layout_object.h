@@ -2016,11 +2016,19 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // object, when it comes to painting, hit-testing and other layout read
   // operations. If false is returned, we need to traverse the layout object
   // tree instead.
-  //
-  // It is not allowed to call this method on a non-LayoutBox object, unless its
-  // containing block is an NG object (e.g. not allowed to call it on a
-  // LayoutInline that's contained by a legacy LayoutBlockFlow).
-  inline bool CanTraversePhysicalFragments() const;
+  bool CanTraversePhysicalFragments() const {
+    NOT_DESTROYED();
+
+    if (!bitfields_.MightTraversePhysicalFragments())
+      return false;
+
+    // Non-LayoutBox objects (such as LayoutInline) don't necessarily create NG
+    // LayoutObjects. We'll allow traversing their fragments if they are laid
+    // out by an NG container.
+    if (!IsBox())
+      return IsInLayoutNGInlineFormattingContext();
+    return true;
+  }
 
   // Return true if |this| produces one or more inline fragments, including
   // whitespace-only text fragments.
@@ -3863,6 +3871,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           should_skip_next_layout_shift_tracking_(true),
           should_assume_paint_offset_translation_for_layout_shift_tracking_(
               false),
+          might_traverse_physical_fragments_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4192,6 +4201,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
         should_assume_paint_offset_translation_for_layout_shift_tracking_,
         ShouldAssumePaintOffsetTranslationForLayoutShiftTracking);
 
+    // True if there's a possibility that we can walk NG fragment children of
+    // this object. False if we definitely need to walk the LayoutObject tree.
+    ADD_BOOLEAN_BITFIELD(might_traverse_physical_fragments_,
+                         MightTraversePhysicalFragments);
+
    private:
     // This is the cached 'position' value of this object
     // (see ComputedStyle::position).
@@ -4374,32 +4388,6 @@ inline bool LayoutObject::IsMarkerContent() const {
 
 inline bool LayoutObject::IsBeforeOrAfterContent() const {
   return IsBeforeContent() || IsAfterContent();
-}
-
-inline bool LayoutObject::CanTraversePhysicalFragments() const {
-  if (LIKELY(!RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled()))
-    return false;
-  // Non-NG objects should be painted by legacy.
-  if (!IsLayoutNGObject()) {
-    if (IsBox())
-      return false;
-    // Non-LayoutBox objects (such as LayoutInline) don't necessarily create NG
-    // LayoutObjects. If they are laid out by an NG container, though, we may be
-    // allowed to traverse their fragments. Otherwise, bail now.
-    if (!IsInLayoutNGInlineFormattingContext())
-      return false;
-  }
-  // The NG paint system currently doesn't support replaced content.
-  if (IsLayoutReplaced())
-    return false;
-  // The NG paint system currently doesn't support table-cells.
-  if (IsTableCellLegacy())
-    return false;
-  // Text controls have some logic in the layout objects that will be missed if
-  // we traverse the fragment tree when hit-testing.
-  if (IsTextControlIncludingNG())
-    return false;
-  return true;
 }
 
 // setNeedsLayout() won't cause full paint invalidations as

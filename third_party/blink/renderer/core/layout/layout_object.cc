@@ -183,6 +183,33 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
   return nullptr;
 }
 
+inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
+  if (!RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled())
+    return false;
+  if (!obj.IsLayoutNGObject()) {
+    // Non-NG objects should be painted, hit-tested, etc. by legacy.
+    if (obj.IsBox())
+      return false;
+    // Non-LayoutBox objects (such as LayoutInline) don't necessarily create NG
+    // LayoutObjects. If they are laid out by an NG container, though, we may be
+    // allowed to traverse their fragments. We can't check that at this point
+    // (potentially before initial layout), though. Unless there are other
+    // reasons that prevent us from allowing fragment traversal, we'll
+    // optimistically return true now, and check later.
+  }
+  // The NG paint system currently doesn't support replaced content.
+  if (obj.IsLayoutReplaced())
+    return false;
+  // The NG paint system currently doesn't support table-cells.
+  if (obj.IsTableCellLegacy())
+    return false;
+  // Text controls have some logic in the layout objects that will be missed if
+  // we traverse the fragment tree when hit-testing.
+  if (obj.IsTextControlIncludingNG())
+    return false;
+  return true;
+}
+
 }  // namespace
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
@@ -3683,6 +3710,9 @@ void LayoutObject::InsertedIntoTree() {
   NOT_DESTROYED();
   // FIXME: We should DCHECK(isRooted()) here but generated content makes some
   // out-of-order insertion.
+
+  bitfields_.SetMightTraversePhysicalFragments(
+      MightTraversePhysicalFragments(*this));
 
   // Keep our layer hierarchy updated. Optimize for the common case where we
   // don't have any children and don't have a layer attached to ourselves.
