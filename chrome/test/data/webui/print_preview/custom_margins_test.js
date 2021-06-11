@@ -455,6 +455,7 @@ suite(custom_margins_test.suiteName, function() {
                   () => testAllTextboxes(controls, newMargin1, '1.2abc', true))
               .then(
                   () => testAllTextboxes(controls, newMargin1, '1.   2', true))
+              .then(() => testAllTextboxes(controls, newMargin1, '.', true))
               .then(() => testAllTextboxes(controls, newMargin1, value2, false))
               .then(() => testAllTextboxes(controls, newMargin2, value3, false))
               .then(
@@ -511,6 +512,9 @@ suite(custom_margins_test.suiteName, function() {
               .then(
                   () => testAllTextboxes(
                       controls, newMargin1Pts, '10,   2', true, newMargin1Pts))
+              .then(
+                  () => testAllTextboxes(
+                      controls, newMargin1Pts, ',', true, newMargin1Pts))
               .then(
                   () => testAllTextboxes(
                       controls, newMargin1Pts, newMargin2, false,

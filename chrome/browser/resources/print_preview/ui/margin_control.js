@@ -205,9 +205,10 @@ Polymer({
     const decimal = this.measurementSystem.decimalDelimiter;
     const thousands = this.measurementSystem.thousandsDelimiter;
     const whole = `(?:0|[1-9]\\d*|[1-9]\\d{0,2}(?:[${thousands}]\\d{3})*)`;
-    const fractional = `(?:[${decimal}]\\d*)`;
-    const validationRegex =
-        new RegExp(`^-?(?:${whole}${fractional}?|${fractional})$`);
+    const fractional = `(?:[${decimal}]\\d+)`;
+    const wholeDecimal = `(?:${whole}[${decimal}])`;
+    const validationRegex = new RegExp(
+        `^-?(?:${whole}${fractional}?|${fractional}|${wholeDecimal})$`);
     if (validationRegex.test(value)) {
       // Removing thousands delimiters and replacing the decimal delimiter with
       // the dot symbol in order to use parseFloat() properly.
