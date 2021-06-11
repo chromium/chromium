@@ -194,4 +194,13 @@ void MaybeDisableOsIntegration(const AppRegistrar* app_registrar,
 #endif  // !defined(OS_CHROMEOS)
 }
 
+bool CanWebAppUpdateIdentity(const WebApp* web_app) {
+  if (web_app->IsPolicyInstalledApp() &&
+      base::FeatureList::IsEnabled(
+          features::kWebAppManifestPolicyAppIdentityUpdate)) {
+    return true;
+  }
+  return web_app->IsPreinstalledApp();
+}
+
 }  // namespace web_app

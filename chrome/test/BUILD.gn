@@ -1999,6 +1999,10 @@ if (!is_android) {
     ]
     deps += [ "//services/audio/public/cpp:test_support" ]
 
+    if (enable_extensions) {
+      sources += [ "../browser/extensions/preinstalled_apps_browsertest.cc" ]
+    }
+
     if (enable_pdf) {
       deps += [ "//pdf:internal" ]
     }
@@ -2661,7 +2665,6 @@ if (!is_android) {
         "../browser/extensions/navigation_observer_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
         "../browser/extensions/page_action_browsertest.cc",
-        "../browser/extensions/preinstalled_apps_browsertest.cc",
         "../browser/extensions/printer_provider_apitest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",

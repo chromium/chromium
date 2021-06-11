@@ -23,7 +23,10 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -237,6 +240,15 @@ class PreinstalledAppsMigrationBrowserTest
     const web_app::AppId app_id = web_app::GenerateAppIdFromURL(GetAppUrl());
     return web_app::WebAppProvider::Get(profile())->registrar().IsInstalled(
         app_id);
+  }
+
+  bool CanWebAppAlwaysUpdateIdentity() {
+    const web_app::AppId app_id = web_app::GenerateAppIdFromURL(GetAppUrl());
+    const web_app::WebApp* web_app = web_app::WebAppProvider::Get(profile())
+                                         ->registrar()
+                                         .AsWebAppRegistrar()
+                                         ->GetAppById(app_id);
+    return CanWebAppUpdateIdentity(web_app);
   }
 
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
@@ -472,5 +484,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
+                       TestDefaultAppsCanUpdateIdentity) {
+  TestExtensionRegistryObserver observer(registry(), kDefaultInstalledId);
+  WaitForSystemReady();
+  EXPECT_TRUE(WasMigratedToWebApp());
+  EXPECT_TRUE(WasWebAppInstalledInThisRun());
+  EXPECT_TRUE(IsWebAppCurrentlyInstalled());
+  EXPECT_TRUE(CanWebAppAlwaysUpdateIdentity());
+}
 
 }  // namespace extensions

@@ -25,6 +25,9 @@ void MaybeDisableOsIntegration(const AppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options);
 
+// Returns true if web app is allowed to update its identity (name and/or icon).
+bool CanWebAppUpdateIdentity(const WebApp* web_app);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALLATION_UTILS_H_

@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -71,12 +72,7 @@ bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
-  if (web_app->IsPolicyInstalledApp() &&
-      base::FeatureList::IsEnabled(
-          features::kWebAppManifestPolicyAppIdentityUpdate)) {
-    return true;
-  }
-  return web_app->IsPreinstalledApp();
+  return CanWebAppUpdateIdentity(web_app);
 }
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore
@@ -86,13 +82,8 @@ bool AllowIconUpdating(const AppId& app_id, const AppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
-  if (web_app->IsPolicyInstalledApp() &&
-      base::FeatureList::IsEnabled(
-          features::kWebAppManifestPolicyAppIdentityUpdate)) {
-    return true;
-  }
-  return (web_app->IsPreinstalledApp() ||
-          base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating));
+  return CanWebAppUpdateIdentity(web_app) ||
+         base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating);
 }
 
 }  // namespace
