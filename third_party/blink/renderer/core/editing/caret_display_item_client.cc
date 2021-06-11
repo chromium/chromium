@@ -245,15 +245,20 @@ void CaretDisplayItemClient::PaintCaret(
     GraphicsContext& context,
     const PhysicalOffset& paint_offset,
     DisplayItem::Type display_item_type) const {
-  if (DrawingRecorder::UseCachedDrawingIfPossible(context, *this,
-                                                  display_item_type))
-    return;
-
   PhysicalRect drawing_rect = local_rect_;
   drawing_rect.Move(paint_offset);
 
-  DrawingRecorder recorder(context, *this, display_item_type,
-                           EnclosingIntRect(drawing_rect));
+  // When caret is in text-combine box with scaling, |context| is already
+  // associated to drawing record to apply affine transform.
+  absl::optional<DrawingRecorder> recorder;
+  if (LIKELY(!context.InDrawingRecorder())) {
+    if (DrawingRecorder::UseCachedDrawingIfPossible(context, *this,
+                                                    display_item_type))
+      return;
+    recorder.emplace(context, *this, display_item_type,
+                     EnclosingIntRect(drawing_rect));
+  }
+
   IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
   context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
                    DarkModeFilter::ElementRole::kText);
