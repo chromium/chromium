@@ -1178,7 +1178,12 @@ absl::optional<int> AXNode::GetTableCellAriaColIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return static_cast<int>(table_info->cell_data_vector[*index].aria_col_index);
+  int aria_col_index =
+      static_cast<int>(table_info->cell_data_vector[*index].aria_col_index);
+  // |aria-colindex| attribute is one-based, value less than 1 is invalid.
+  // https://www.w3.org/TR/wai-aria-1.2/#aria-colindex
+  return (aria_col_index > 0) ? absl::optional<int>(aria_col_index)
+                              : absl::nullopt;
 }
 
 absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
@@ -1190,7 +1195,12 @@ absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
   if (!index)
     return absl::nullopt;
 
-  return static_cast<int>(table_info->cell_data_vector[*index].aria_row_index);
+  int aria_row_index =
+      static_cast<int>(table_info->cell_data_vector[*index].aria_row_index);
+  // |aria-rowindex| attribute is one-based, value less than 1 is invalid.
+  // https://www.w3.org/TR/wai-aria-1.2/#aria-rowindex
+  return (aria_row_index > 0) ? absl::optional<int>(aria_row_index)
+                              : absl::nullopt;
 }
 
 std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {

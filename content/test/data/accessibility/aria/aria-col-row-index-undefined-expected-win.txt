@@ -1,0 +1,25 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_TABLE
+++++ROLE_SYSTEM_GROUPING
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_COLUMNHEADER name='row1 colheader1' colindex:1 rowindex:1 ia2_table_cell_column_index=0 ia2_table_cell_row_index=0
+++++++++++ROLE_SYSTEM_STATICTEXT name='row1 colheader1'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='row1 colheader2' colindex:2 rowindex:1 ia2_table_cell_column_index=1 ia2_table_cell_row_index=0
+++++++++++ROLE_SYSTEM_STATICTEXT name='row1 colheader2'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='row1 colheader3' colindex:3 rowindex:1 ia2_table_cell_column_index=2 ia2_table_cell_row_index=0
+++++++++++ROLE_SYSTEM_STATICTEXT name='row1 colheader3'
+++++ROLE_SYSTEM_GROUPING
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='row2 col1' colindex:1 rowindex:2 ia2_table_cell_column_index=0 ia2_table_cell_row_index=1
+++++++++++ROLE_SYSTEM_STATICTEXT name='row2 col1'
+++++++++ROLE_SYSTEM_CELL name='row2 col2' colindex:2 rowindex:2 ia2_table_cell_column_index=1 ia2_table_cell_row_index=1
+++++++++++ROLE_SYSTEM_STATICTEXT name='row2 col2'
+++++++++ROLE_SYSTEM_CELL name='row2 col3' colindex:3 rowindex:2 ia2_table_cell_column_index=2 ia2_table_cell_row_index=1
+++++++++++ROLE_SYSTEM_STATICTEXT name='row2 col3'
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='row3 col1' colindex:1 rowindex:3 ia2_table_cell_column_index=0 ia2_table_cell_row_index=2
+++++++++++ROLE_SYSTEM_STATICTEXT name='row3 col1'
+++++++++ROLE_SYSTEM_CELL name='row3 col2' colindex:2 rowindex:3 ia2_table_cell_column_index=1 ia2_table_cell_row_index=2
+++++++++++ROLE_SYSTEM_STATICTEXT name='row3 col2'
+++++++++ROLE_SYSTEM_CELL name='row3 col3' colindex:3 rowindex:3 ia2_table_cell_column_index=2 ia2_table_cell_row_index=2
+++++++++++ROLE_SYSTEM_STATICTEXT name='row3 col3'

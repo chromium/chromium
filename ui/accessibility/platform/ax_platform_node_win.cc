@@ -1952,9 +1952,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_Column(int* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GRIDITEM_GET_COLUMN);
   UIA_VALIDATE_CALL_1_ARG(result);
 
-  absl::optional<int> column;
-  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex))
-    column = GetDelegate()->GetTableCellAriaColIndex();
+  absl::optional<int> column = GetDelegate()->GetTableCellAriaColIndex();
+
+  // |aria-colindex| starts at 1, where as IGridItemProvider::get_Column's index
+  // starts at 0, so we need to subtract by 1 if |aria-colindex| attribute is
+  // present.
+  //  https://www.w3.org/TR/core-aam-1.2/#aria-colindex
+  if (column)
+    *column = *column - 1;
   else
     column = GetTableColumn();
 
@@ -1993,9 +1998,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_Row(int* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GRIDITEM_GET_ROW);
   UIA_VALIDATE_CALL_1_ARG(result);
 
-  absl::optional<int> row;
-  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex))
-    row = GetDelegate()->GetTableCellAriaRowIndex();
+  absl::optional<int> row = GetDelegate()->GetTableCellAriaRowIndex();
+
+  // |aria-rowindex| starts at 1, where as IGridItemProvider::get_Row's index
+  // starts at 0, so we need to subtract by 1 if |aria-rowindex| attribute is
+  // present.
+  //  https://www.w3.org/TR/core-aam-1.2/#aria-rowindex
+  if (row)
+    *row = *row - 1;
   else
     row = GetTableRow();
 
