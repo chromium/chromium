@@ -56,6 +56,16 @@ bool IsCharacterKeyEvent(const ui::KeyEvent* event) {
   return !IsControlChar(event) && !ui::IsSystemKeyModifier(event->flags());
 }
 
+int CursorBehaviorToCursorPosition(
+    ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+  switch (cursor_behavior) {
+    case ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText:
+      return 1;
+    case ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText:
+      return 0;
+  }
+}
+
 class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
  public:
   explicit ArcWindowDelegateImpl(ArcImeService* ime_service)
@@ -458,16 +468,16 @@ void ArcImeService::ClearCompositionText() {
   InvalidateSurroundingTextAndSelectionRange();
   if (has_composition_text_) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(std::u16string());
+    ime_bridge_->SendInsertText(std::u16string(), /*new_cursor_position=*/1);
   }
 }
 
 void ArcImeService::InsertText(const std::u16string& text,
                                InsertTextCursorBehavior cursor_behavior) {
-  // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   InvalidateSurroundingTextAndSelectionRange();
   has_composition_text_ = false;
-  ime_bridge_->SendInsertText(text);
+  ime_bridge_->SendInsertText(text,
+                              CursorBehaviorToCursorPosition(cursor_behavior));
 }
 
 void ArcImeService::InsertChar(const ui::KeyEvent& event) {
@@ -489,19 +499,20 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
   if (!HasModifier(&event) && !ShouldEnableKeyEventForwarding()) {
     if (event.key_code() ==  ui::VKEY_RETURN) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(u"\n");
+      ime_bridge_->SendInsertText(u"\n", /*new_cursor_position=*/1);
       return;
     }
     if (event.key_code() ==  ui::VKEY_BACK) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(u"\b");
+      ime_bridge_->SendInsertText(u"\b", /*new_cursor_position=*/1);
       return;
     }
   }
 
   if (IsCharacterKeyEvent(&event)) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(std::u16string(1, event.GetText()));
+    ime_bridge_->SendInsertText(std::u16string(1, event.GetText()),
+                                /*new_cursor_position=*/1);
   }
 }
 

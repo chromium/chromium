@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module arc.mojom;
 
@@ -118,6 +118,8 @@ interface ImeHost {
       => (bool is_consumed);
 };
 
+// Represents a text input field that is hosted inside ARC++, allowing Chrome OS
+// browser process to manipulate text within Android apps.
 // Next method ID: 9
 interface ImeInstance {
   // DEPRECATED: Please use Init@6 instead.
@@ -136,7 +138,14 @@ interface ImeInstance {
   ConfirmCompositionText@2();
 
   // Commits the specified text and clears the composition.
-  InsertText@3(string text);
+  // |new_cursor_position| indicates where to place the cursor after commit,
+  // relative to |text|.
+  // If |new_cursor_position| > 0, then it is relative to the end (1 being the
+  // end of the text). If |new_cursor_position| <= 0, then it is relative to the
+  // start (0 being the beginning of the text).
+  InsertText@3(
+     string text,
+     [MinVersion=17] int32 new_cursor_position);
 
   // Informs the virtual keyboard availability and bounds on screen is changing.
   // |is_available| whether a virtual keyboard is visible or not.

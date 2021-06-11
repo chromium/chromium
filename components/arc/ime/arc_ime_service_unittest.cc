@@ -47,7 +47,8 @@ class FakeArcImeBridge : public ArcImeBridge {
   void SendSelectionRange(const gfx::Range& selection_range) override {
     selection_range_ = selection_range;
   }
-  void SendInsertText(const std::u16string& text) override {
+  void SendInsertText(const std::u16string& text,
+                      int new_cursor_position) override {
     count_send_insert_text_++;
   }
   void SendExtendSelectionAndDelete(size_t before, size_t after) override {
