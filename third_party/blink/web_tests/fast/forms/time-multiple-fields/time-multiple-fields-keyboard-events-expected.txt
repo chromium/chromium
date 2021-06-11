@@ -55,7 +55,7 @@ PASS input.value is "15:00"
 PASS input.value is "15:03"
 PASS document.activeElement.id is "before"
 == Up key on maximum value ==
-PASS input.value is "13:00"
+PASS input.value is "13:00:00.000"
 == Down key on minimum value ==
 PASS input.value is "00:59:59.999"
 == Backspace key ==

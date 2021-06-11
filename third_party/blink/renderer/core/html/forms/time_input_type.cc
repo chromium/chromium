@@ -124,8 +124,7 @@ String TimeInputType::FormatDateTimeFieldsState(
   if (!date_time_fields_state.HasHour() ||
       !date_time_fields_state.HasMinute() || !date_time_fields_state.HasAMPM())
     return g_empty_string;
-  if (date_time_fields_state.HasMillisecond() &&
-      date_time_fields_state.Millisecond()) {
+  if (date_time_fields_state.HasMillisecond()) {
     return String::Format(
         "%02u:%02u:%02u.%03u", date_time_fields_state.Hour23(),
         date_time_fields_state.Minute(),
@@ -133,7 +132,7 @@ String TimeInputType::FormatDateTimeFieldsState(
                                            : 0,
         date_time_fields_state.Millisecond());
   }
-  if (date_time_fields_state.HasSecond() && date_time_fields_state.Second()) {
+  if (date_time_fields_state.HasSecond()) {
     return String::Format("%02u:%02u:%02u", date_time_fields_state.Hour23(),
                           date_time_fields_state.Minute(),
                           date_time_fields_state.Second());
