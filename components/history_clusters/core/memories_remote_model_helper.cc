@@ -35,8 +35,8 @@ proto::GetClustersRequest CreateRequestProto(
   base::ListValue debug_visits_list;
   for (auto& visit : visits) {
     // TODO(tommycli): Still need to set `site_engagement_score` and
-    //  `is_from_google_search`.
-    proto::Visit* request_visit = request.add_visits();
+    //  `is_from_google_search`
+    proto::AnnotatedVisit* request_visit = request.add_visits();
     request_visit->set_visit_id(visit.visit_row.visit_id);
     request_visit->set_url(visit.url_row.url().spec());
     request_visit->set_origin(visit.url_row.url().GetOrigin().spec());
@@ -101,9 +101,10 @@ std::vector<history::Cluster> ParseResponseProto(
     history::Cluster cluster;
     for (const std::string& keyword : cluster_proto.keywords())
       cluster.keywords.push_back(base::UTF8ToUTF16(keyword));
-    for (int64_t visit_id : cluster_proto.visit_ids()) {
+    for (const proto::ClusterVisit& cluster_visit :
+         cluster_proto.cluster_visits()) {
       const auto visits_it = base::ranges::find(
-          visits, visit_id,
+          visits, cluster_visit.visit_id(),
           [](const auto& visit) { return visit.visit_row.visit_id; });
       if (visits_it != visits.end())
         cluster.annotated_visits.push_back(*visits_it);
@@ -123,11 +124,17 @@ std::vector<history::Cluster> ParseResponseProto(
       }
       debug_cluster.SetKey("keywords", std::move(debug_keywords));
 
-      base::ListValue debug_visit_ids;
-      for (int64_t visit_id : cluster.visit_ids()) {
-        debug_visit_ids.Append(base::NumberToString(visit_id));
+      base::ListValue debug_visits;
+      for (const proto::ClusterVisit& cluster_visit :
+           cluster.cluster_visits()) {
+        base::DictionaryValue debug_visit;
+        debug_visit.SetStringKey(
+            "visit_id", base::NumberToString(cluster_visit.visit_id()));
+        debug_visit.SetStringKey("score",
+                                 base::NumberToString(cluster_visit.score()));
+        debug_visits.Append(std::move(debug_visit));
       }
-      debug_cluster.SetKey("visit_ids", std::move(debug_visit_ids));
+      debug_cluster.SetKey("visits", std::move(debug_visits));
 
       debug_clusters_list.Append(std::move(debug_cluster));
     }

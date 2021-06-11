@@ -11,7 +11,7 @@ package history_clusters.proto;
 
 message GetClustersRequest {
   // Represents a set of visits.
-  repeated Visit visits = 1;
+  repeated AnnotatedVisit visits = 1;
   // The experiment name that controls the clustering behavior served for
   // this request.
   string experiment_name = 2;
@@ -22,7 +22,7 @@ message GetClustersResponse {
   repeated Cluster clusters = 1;
 }
 
-message Visit {
+message AnnotatedVisit {
   // The ID associated with this visit.
   int64 visit_id = 1;
   // The URL for the visit.
@@ -47,10 +47,21 @@ message Visit {
   int64 referring_visit_id = 10;
 }
 
+message ClusterVisit {
+  // The ID of the visit where visit_id corresponds to the visit in the history
+  // table.
+  int64 visit_id = 1;
+  // The score associated with this visit.
+  //
+  // Used for calculating ordering of visits within a cluster.
+  float score = 2;
+}
+
 message Cluster {
+  reserved 2;
+
   // The keywords that the cluster contains/is related to.
   repeated string keywords = 1;
-  // The ids of each visit that is attached to this cluster where
-  // visit_id corresponds to the visit in the history table.
-  repeated int64 visit_ids = 2;
+  // The visits that are attached to this cluster.
+  repeated ClusterVisit cluster_visits = 3;
 }

@@ -195,7 +195,7 @@ class HistoryClustersServiceTest : public testing::Test {
     for (auto visit_ids : clustered_visit_ids) {
       auto* cluster = response.add_clusters();
       for (auto visit_id : visit_ids)
-        cluster->add_visit_ids(visit_id);
+        cluster->add_cluster_visits()->set_visit_id(visit_id);
     }
     if (!clustered_visit_ids.empty()) {
       response.mutable_clusters(0)->mutable_keywords()->Add("apples");
