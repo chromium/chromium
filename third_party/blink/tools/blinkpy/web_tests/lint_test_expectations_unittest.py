@@ -26,7 +26,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import StringIO
 import optparse
 import unittest
 
@@ -37,6 +36,8 @@ from blinkpy.web_tests import lint_test_expectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.web_tests.port.test import WEB_TEST_DIR
+
+from six import StringIO
 
 
 class FakePort(object):
@@ -486,7 +487,7 @@ class MainTest(unittest.TestCase):
         self.orig_lint_fn = lint_test_expectations.lint
         self.orig_check_fn = lint_test_expectations.check_virtual_test_suites
         lint_test_expectations.check_virtual_test_suites = lambda host, options: []
-        self.stderr = StringIO.StringIO()
+        self.stderr = StringIO()
 
     def tearDown(self):
         lint_test_expectations.lint = self.orig_lint_fn

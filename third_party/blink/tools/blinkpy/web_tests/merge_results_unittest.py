@@ -10,12 +10,11 @@ import json
 import types
 import unittest
 
-import cStringIO as StringIO
-
-from collections import OrderedDict
-
 from blinkpy.common.system.filesystem_mock import FileSystemTestCase, MockFileSystem
 from blinkpy.web_tests import merge_results
+
+from collections import OrderedDict
+from six import StringIO
 
 
 class JSONMergerTests(unittest.TestCase):
@@ -625,7 +624,7 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         self.assertEqual(expected_after, after)
 
     def assertDump(self, before, json_data, after):
-        fd = StringIO.StringIO()
+        fd = StringIO()
         merge_results.MergeFilesJSONP.dump_jsonp(fd, before, json_data, after)
         merged_str = fd.getvalue()
         self.assertTrue(self.check_before_after(merged_str, before, after))
@@ -644,7 +643,7 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         return json_str
 
     def test_load(self):
-        fdcls = StringIO.StringIO
+        fdcls = StringIO
         self.assertLoad(fdcls('{"a": 1}'), '', {'a': 1}, '')
         self.assertLoad(fdcls('f({"a": 1});'), 'f(', {'a': 1}, ');')
         self.assertLoad(fdcls('var o = {"a": 1}'), 'var o = ', {'a': 1}, '')

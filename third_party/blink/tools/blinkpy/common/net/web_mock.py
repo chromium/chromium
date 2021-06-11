@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urllib2
+from six.moves.urllib.error import HTTPError
 
 
 class MockWeb(object):
@@ -55,12 +55,12 @@ class MockResponse(object):
         self._info = MockInfo(values.get('headers', {}))
 
         if int(self.status_code) >= 400:
-            raise urllib2.HTTPError(
-                url=self.url,
-                code=self.status_code,
-                msg='Received error status code: {}'.format(self.status_code),
-                hdrs={},
-                fp=None)
+            raise HTTPError(url=self.url,
+                            code=self.status_code,
+                            msg='Received error status code: {}'.format(
+                                self.status_code),
+                            hdrs={},
+                            fp=None)
 
     def getcode(self):
         return self.status_code

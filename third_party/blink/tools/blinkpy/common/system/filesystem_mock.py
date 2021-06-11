@@ -30,10 +30,11 @@ import errno
 import hashlib
 import os
 import re
-import StringIO
 import unittest
 
 from blinkpy.common.system.filesystem import _remove_contents, _sanitize_filename
+
+from six import StringIO
 
 
 class MockFileSystem(object):
@@ -527,8 +528,8 @@ class ReadableBinaryFileObject(object):
 
 class ReadableTextFileObject(ReadableBinaryFileObject):
     def __init__(self, fs, path, data):
-        super(ReadableTextFileObject, self).__init__(
-            fs, path, StringIO.StringIO(data.decode('utf-8')))
+        super(ReadableTextFileObject,
+              self).__init__(fs, path, StringIO(data.decode('utf-8')))
 
     def close(self):
         self.data.close()

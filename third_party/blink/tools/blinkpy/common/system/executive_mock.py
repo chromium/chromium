@@ -29,9 +29,10 @@
 import collections
 import logging
 import os
-import StringIO
 
 from blinkpy.common.system.executive import ScriptError
+
+from six import StringIO
 
 _log = logging.getLogger(__name__)
 
@@ -39,9 +40,9 @@ _log = logging.getLogger(__name__)
 class MockProcess(object):
     def __init__(self, stdout='MOCK STDOUT\n', stderr='', returncode=0):
         self.pid = 42
-        self.stdout = StringIO.StringIO(stdout)
-        self.stderr = StringIO.StringIO(stderr)
-        self.stdin = StringIO.StringIO()
+        self.stdout = StringIO(stdout)
+        self.stderr = StringIO(stderr)
+        self.stdin = StringIO()
         self.returncode = returncode
 
     def wait(self):

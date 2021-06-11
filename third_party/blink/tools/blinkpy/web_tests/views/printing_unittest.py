@@ -28,7 +28,6 @@
 """Unit tests for printing.py."""
 
 import optparse
-import StringIO
 import sys
 import unittest
 
@@ -38,6 +37,8 @@ from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models import test_results
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.views import printing
+
+from six import StringIO
 
 
 def get_options(args):
@@ -96,7 +97,7 @@ class Testprinter(unittest.TestCase):
         host = MockHost()
         self._port = host.port_factory.get('test', options)
 
-        regular_output = StringIO.StringIO()
+        regular_output = StringIO()
         printer = printing.Printer(host, options, regular_output)
         return printer, regular_output
 
