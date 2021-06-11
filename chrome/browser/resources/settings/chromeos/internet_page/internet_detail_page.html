@@ -315,7 +315,8 @@
         </template>
       </template>
       <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
-                                 propertiesReceived_, showMeteredToggle_)]]">
+                                 propertiesReceived_, showMeteredToggle_,
+                                 deviceState_)]]">
         <!-- Advanced toggle. -->
         <cr-expand-button
             aria-label="$i18n{networkSectionAdvancedA11yLabel}"
@@ -362,9 +363,11 @@
               </network-property-list-mojo>
             </template>
             <!-- Device properties -->
-            <template is="dom-if" if="[[hasDeviceFields_(managedProperties_)]]">
+            <template is="dom-if"
+                if="[[hasDeviceFields_(managedProperties_, deviceState_)]]">
               <network-property-list-mojo id="deviceFields"
-                  fields="[[getDeviceFields_(managedProperties_)]]"
+                  fields="[[getDeviceFields_(managedProperties_,
+                      deviceState_)]]"
                   property-dict="[[managedProperties_]]"
                   disabled="[[disabled_]]">
               </network-property-list-mojo>

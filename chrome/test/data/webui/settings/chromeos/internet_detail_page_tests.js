@@ -735,61 +735,72 @@ suite('InternetDetailPage', function() {
           assertTrue(!!internetDetailPage.$$('#connectDisconnect'));
         });
 
-    test('Hide config section when sim becomes non-active', async () => {
-      loadTimeData.overrideValues({
-        updatedCellularActivationUi: true,
-      });
-      init();
-      const test_iccid = '11111111111111111';
+    test(
+        'Hide config section and Cellular Device object fields when' +
+            'sim becomes non-active',
+        async () => {
+          loadTimeData.overrideValues({
+            updatedCellularActivationUi: true,
+          });
+          init();
+          const test_iccid = '11111111111111111';
 
-      const mojom = chromeos.networkConfig.mojom;
-      await mojoApi_.setNetworkTypeEnabledState(
-          mojom.NetworkType.kCellular, true);
-      const cellularNetwork = getManagedProperties(
-          mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
-      cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+          const mojom = chromeos.networkConfig.mojom;
+          await mojoApi_.setNetworkTypeEnabledState(
+              mojom.NetworkType.kCellular, true);
+          const cellularNetwork = getManagedProperties(
+              mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
+          cellularNetwork.typeProperties.cellular.iccid = test_iccid;
 
-      // Set sim to non-active.
-      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-      mojoApi_.setDeviceStateForTest({
-        type: mojom.NetworkType.kCellular,
-        deviceState: mojom.DeviceStateType.kEnabled,
-        inhibitReason: mojom.InhibitReason.kNotInhibited,
-        simInfos: [{
-          iccid: test_iccid,
-          isPrimary: false,
-        }],
-      });
-      await flushAsync();
-      assertFalse(internetDetailPage.showConfigurableSections_);
+          const isShowingCellularDeviceObjectFields = () => {
+            return internetDetailPage.$$('#deviceFields')
+                .fields.includes('cellular.homeProvider.name');
+          };
 
-      // Set sim to active.
-      mojoApi_.setDeviceStateForTest({
-        type: mojom.NetworkType.kCellular,
-        deviceState: mojom.DeviceStateType.kEnabled,
-        inhibitReason: mojom.InhibitReason.kNotInhibited,
-        simInfos: [{
-          iccid: test_iccid,
-          isPrimary: true,
-        }],
-      });
-      await flushAsync();
-      assertTrue(internetDetailPage.showConfigurableSections_);
+          // Set sim to non-active.
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          mojoApi_.setDeviceStateForTest({
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kNotInhibited,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: false,
+            }],
+          });
+          await flushAsync();
+          assertFalse(internetDetailPage.showConfigurableSections_);
+          assertFalse(isShowingCellularDeviceObjectFields());
 
-      // Set sim to non-active again.
-      mojoApi_.setDeviceStateForTest({
-        type: mojom.NetworkType.kCellular,
-        deviceState: mojom.DeviceStateType.kEnabled,
-        inhibitReason: mojom.InhibitReason.kNotInhibited,
-        simInfos: [{
-          iccid: test_iccid,
-          isPrimary: false,
-        }],
-      });
-      await flushAsync();
-      assertFalse(internetDetailPage.showConfigurableSections_);
-    });
+          // Set sim to active.
+          mojoApi_.setDeviceStateForTest({
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kNotInhibited,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: true,
+            }],
+          });
+          await flushAsync();
+          assertTrue(internetDetailPage.showConfigurableSections_);
+          assertTrue(isShowingCellularDeviceObjectFields());
+
+          // Set sim to non-active again.
+          mojoApi_.setDeviceStateForTest({
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kNotInhibited,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: false,
+            }],
+          });
+          await flushAsync();
+          assertFalse(internetDetailPage.showConfigurableSections_);
+          assertFalse(isShowingCellularDeviceObjectFields());
+        });
 
     test('Do not show MAC address', async () => {
       const TEST_ICCID = '11111111111111111';
