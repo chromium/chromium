@@ -572,6 +572,14 @@ struct BootPerformanceInfo {
   double boot_up_seconds;
   // The timestamp when power on.
   double boot_up_timestamp;
+  // Total time(rough) since shutdown start to power off.
+  // Only meaningful when shutdown_reason is not "N/A".
+  double shutdown_seconds;
+  // The timestamp when shutdown.
+  // Only meaningful when shutdown_reason is not "N/A".
+  double shutdown_timestamp;
+  // The shutdown reason (including reboot).
+  string shutdown_reason;
 };
 
 // A collection of all the device's telemetry information that cros_healthd is
