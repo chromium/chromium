@@ -1800,6 +1800,10 @@ crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-page.htm
 crbug.com/770028 external/wpt/pointerevents/pointerlock/pointerevent_getPredictedEvents_when_pointerlocked-manual.html [ Skip ]
 crbug.com/770028 external/wpt/pointerevents/pointerevent_predicted_events_attributes-manual.html [ Skip ]
 
+# crbug.com/1218729 These tests fail when InterestCohortAPIOriginTrial is enabled.
+crbug.com/1218729 http/tests/origin_trials/webexposed/interest-cohort-origin-trial-interfaces.html [ Failure ]
+crbug.com/1218729 virtual/stable/webexposed/feature-policy-features.html [ Failure ]
+
 # This test relies on racy should_send_resource_timing_info_to_parent() flag being sent between processes.
 crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Pass Failure ]
 
