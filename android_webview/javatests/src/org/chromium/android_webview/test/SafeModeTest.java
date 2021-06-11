@@ -41,6 +41,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -90,6 +91,8 @@ public class SafeModeTest {
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
 
         SafeModeController.getInstance().unregisterActionsForTesting();
+
+        SafeModeService.clearSharedPrefsForTesting();
     }
 
     @Test
@@ -152,6 +155,111 @@ public class SafeModeTest {
 
         Assert.assertFalse("SafeMode should be re-disabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_disabled() throws Throwable {
+        Assert.assertEquals(
+                "Querying the ContentProvider should yield empty set when SafeMode is disabled",
+                asSet(), SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_singleAction() throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        final String variationsActionId = new VariationsSeedSafeModeAction().getId();
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(variationsActionId));
+        }
+
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+                asSet(variationsActionId),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_autoDisableAfter30Days() throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        final String variationsActionId = new VariationsSeedSafeModeAction().getId();
+        final long initialStartTimeMs = 12345L;
+        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(variationsActionId));
+        }
+
+        final long beforeTimeLimitMs =
+                initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS - 1L;
+        SafeModeService.setClockForTesting(() -> { return beforeTimeLimitMs; });
+
+        Assert.assertTrue("SafeMode should be enabled (before timeout)",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+                asSet(variationsActionId),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+
+        final long afterTimeLimitMs =
+                initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
+        SafeModeService.setClockForTesting(() -> { return afterTimeLimitMs; });
+
+        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_extendTimeoutWithDuplicateConfig() throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        final String variationsActionId = new VariationsSeedSafeModeAction().getId();
+        final long initialStartTimeMs = 12345L;
+        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(variationsActionId));
+        }
+
+        // Send a duplicate config after 1 day to extend the SafeMode timeout for another 30 days.
+        final long duplicateConfigTimeMs = initialStartTimeMs + TimeUnit.DAYS.toMillis(1);
+        SafeModeService.setClockForTesting(() -> { return duplicateConfigTimeMs; });
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(variationsActionId));
+        }
+
+        // 30 days after the original timeout
+        final long firstTimeLimitMs =
+                initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
+        SafeModeService.setClockForTesting(() -> { return firstTimeLimitMs; });
+
+        Assert.assertEquals(
+                "Querying the ContentProvider should yield the action we set (timeout extended)",
+                asSet(variationsActionId),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+
+        final long secondTimeLimitMs =
+                duplicateConfigTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
+        SafeModeService.setClockForTesting(() -> { return secondTimeLimitMs; });
+
+        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
     private class TestSafeModeAction implements SafeModeAction {
