@@ -43,6 +43,7 @@ const debug_suites_list = [
   'OnboardingChooseDestinationPageTest',
   'OnboardingChooseWpDisableMethodPageTest',
   'OnboardingEnterRsuWpDisableCodePageTest',
+  'OnboardingNetworkPageTest',
   'OnboardingSelectComponentsPageTest',
   'OnboardingUpdatePageTest',
   'OnboardingWaitForManualWpDisablePageTest',

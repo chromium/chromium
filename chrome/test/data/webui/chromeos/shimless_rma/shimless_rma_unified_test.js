@@ -8,6 +8,7 @@ import {fakeShimlessRmaServiceTestSuite} from './fake_shimless_rma_service_test.
 import {onboardingChooseDestinationPageTest} from './onboarding_choose_destination_page_test.js';
 import {onboardingChooseWpDisableMethodPageTest} from './onboarding_choose_wp_disable_method_page_test.js';
 import {onboardingEnterRsuWpDisableCodePageTest} from './onboarding_enter_rsu_wp_disable_code_page_test.js';
+import {onboardingNetworkPageTest} from './onboarding_network_page_test.js';
 import {onboardingSelectComponentsPageTest} from './onboarding_select_components_page_test.js';
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
@@ -29,6 +30,7 @@ runSuite(
 runSuite(
     'OnboardingEnterRsuWpDisableCodePageTest',
     onboardingEnterRsuWpDisableCodePageTest);
+runSuite('OnboardingNetworkPageTest', onboardingNetworkPageTest);
 runSuite(
     'OnboardingSelectComponentsPageTest', onboardingSelectComponentsPageTest);
 runSuite('OnboardingUpdatePageTest', onboardingUpdatePageTest);

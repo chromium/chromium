@@ -5,6 +5,8 @@
 #ifndef ASH_CONTENT_SHIMLESS_RMA_SHIMLESS_RMA_H_
 #define ASH_CONTENT_SHIMLESS_RMA_SHIMLESS_RMA_H_
 
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace content {
@@ -21,6 +23,13 @@ class ShimlessRMADialogUI : public ui::MojoWebDialogUI {
 
   ShimlessRMADialogUI(const ShimlessRMADialogUI&) = delete;
   ShimlessRMADialogUI& operator=(const ShimlessRMADialogUI&) = delete;
+
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+          receiver);
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash

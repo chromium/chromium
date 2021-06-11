@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Component, ComponentRepairState, ComponentType, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+
+import {Component, ComponentRepairState, ComponentType, Network, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
   {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+  {state: RmaState.kConfigureNetwork, error: RmadErrorCode.kOk},
   {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
@@ -35,5 +38,11 @@ export const fakeComponents = [
 export const fakeComponentsForRepairStateTest = [
   {component: ComponentType.kKeyboard, state: ComponentRepairState.kOriginal},
   {component: ComponentType.kThumbReader, state: ComponentRepairState.kMissing},
-  {component: ComponentType.kTrackpad,state: ComponentRepairState.kReplaced},
+  {component: ComponentType.kTrackpad, state: ComponentRepairState.kReplaced},
+];
+
+/** @type {!Array<!Network>} */
+export const fakeNetworks = [
+  OncMojo.getDefaultNetworkState(
+      chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi0'),
 ];

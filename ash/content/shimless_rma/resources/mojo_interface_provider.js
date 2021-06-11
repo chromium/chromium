@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeChromeVersion, fakeComponents, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
-import {Component, ComponentRepairState, ComponentType, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {Component, ComponentRepairState, ComponentType, NetworkConfigServiceInterface, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -37,6 +37,11 @@ function setupFakeShimlessRmaService_() {
 let shimlessRmaService = null;
 
 /**
+ * @type {?NetworkConfigServiceInterface}
+ */
+let networkConfigService = null;
+
+/**
  * @param {!ShimlessRmaServiceInterface} testService
  */
 export function setShimlessRmaServiceForTesting(testService) {
@@ -55,4 +60,24 @@ export function getShimlessRmaService() {
   assert(!!shimlessRmaService);
 
   return shimlessRmaService;
+}
+
+/**
+ * @param {!NetworkConfigServiceInterface} testService
+ */
+export function setNetworkConfigServiceForTesting(testService) {
+  networkConfigService = testService;
+}
+
+/**
+ * @return {!NetworkConfigServiceInterface}
+ */
+export function getNetworkConfigService() {
+  if (!networkConfigService) {
+    networkConfigService =
+        chromeos.networkConfig.mojom.CrosNetworkConfig.getRemote();
+  }
+
+  assert(!!networkConfigService);
+  return networkConfigService;
 }

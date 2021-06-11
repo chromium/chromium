@@ -161,6 +161,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/content/scanning/mojom/scanning.mojom.h"
 #include "ash/content/scanning/scanning_ui.h"
+#include "ash/content/shimless_rma/shimless_rma.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
@@ -766,7 +767,7 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::network_config::mojom::CrosNetworkConfig,
       chromeos::InternetConfigDialogUI, chromeos::InternetDetailDialogUI,
       chromeos::NetworkUI, chromeos::OobeUI, chromeos::settings::OSSettingsUI,
-      chromeos::LockScreenNetworkUI>(map);
+      chromeos::LockScreenNetworkUI, ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,

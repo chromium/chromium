@@ -5,16 +5,20 @@
 #include "ash/content/shimless_rma/shimless_rma.h"
 
 #include <string>
+#include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/content/shimless_rma/url_constants.h"
 #include "ash/grit/ash_shimless_rma_resources.h"
 #include "ash/grit/ash_shimless_rma_resources_map.h"
+#include "ash/public/cpp/network_config_service.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -33,6 +37,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddBoolean("updatedCellularActivationUi",
+                     chromeos::features::IsCellularActivationUiEnabled());
 }
 
 }  // namespace
@@ -51,10 +57,25 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(content::WebUI* web_ui)
   SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
 
+  ui::network_element::AddLocalizedStrings(html_source.get());
+  ui::network_element::AddOncLocalizedStrings(html_source.get());
+  ui::network_element::AddDetailsLocalizedStrings(html_source.get());
+  ui::network_element::AddConfigLocalizedStrings(html_source.get());
+  ui::network_element::AddErrorLocalizedStrings(html_source.get());
+  html_source.get()->UseStringsJs();
+
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }
 
 ShimlessRMADialogUI::~ShimlessRMADialogUI() = default;
+
+void ShimlessRMADialogUI::BindInterface(
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
+  ash::GetNetworkConfigService(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ShimlessRMADialogUI)
 
 }  // namespace ash

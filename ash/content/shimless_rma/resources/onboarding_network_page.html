@@ -1,0 +1,24 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    display: inline-flex;
+  }
+
+  #networkList {
+    flex: 1;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(joonbug): Update for i18n -->
+    <h1>Get connected</h1>
+    <p>Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</p>
+  </div>
+  <div slot="body" id="container">
+    <network-list id="networkList" show-buttons
+        show-technology-badge="true"
+        networks="[[networks_]]"
+        on-selected="onNetworkSelected_">
+    </network-list>
+  </div>
+</base-page>

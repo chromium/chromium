@@ -7,6 +7,7 @@ import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
 import './onboarding_landing_page.js';
+import './onboarding_network_page.js';
 import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
@@ -54,6 +55,12 @@ const StateComponentMapping = {
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.HIDDEN,
+  },
+  [RmaState.kConfigureNetwork]: {
+    componentIs: 'onboarding-network-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.VISIBLE,
   },
   [RmaState.kChooseDestination]: {
     componentIs: 'onboarding-choose-destination-page',

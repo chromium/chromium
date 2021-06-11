@@ -10,6 +10,8 @@
  * re-aliased to the corresponding mojo types, or replaced by them.
  */
 
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+
 /**
  * Return type from state progression methods.
  * Convenience type as mojo-lite does not define types for method results and
@@ -192,3 +194,23 @@ export let SetStatesFunction;
  * }}
  */
 export let ShimlessRmaServiceInterface;
+
+/**
+ * Type alias for NetworkConfigServiceInterface.
+ * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigInterface}
+ */
+export let NetworkConfigServiceInterface =
+    chromeos.networkConfig.mojom.CrosNetworkConfigInterface;
+
+/**
+ * Type alias for NetworkConfigServiceRemote.
+ * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
+ */
+export let NetworkConfigServiceRemote =
+    chromeos.networkConfig.mojom.CrosNetworkConfigRemote;
+
+/**
+ * Type alias for Network
+ * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
+ */
+export let Network = chromeos.networkConfig.mojom.NetworkStateProperties;

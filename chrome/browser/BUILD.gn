@@ -2363,6 +2363,7 @@ static_library("browser") {
       "//ash/constants",
       "//ash/content/scanning",
       "//ash/content/scanning/mojom",
+      "//ash/content/shimless_rma",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/nearby_sharing/common",

@@ -20,6 +20,7 @@ polymer_element_files = [
   "onboarding_select_components_page.js",
   "onboarding_update_page.js",
   "onboarding_wait_for_manual_wp_disable_page.js",
+  "onboarding_network_page.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
 ]
@@ -82,6 +83,7 @@ js_library("base_page") {
 }
 
 js_library("fake_data") {
+  deps = [ "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m" ]
 }
 
 js_library("fake_shimless_rma_service") {
@@ -98,6 +100,7 @@ js_library("mojo_interface_provider") {
     ":fake_data",
     ":fake_shimless_rma_service",
     ":shimless_rma_types",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -139,6 +142,14 @@ js_library("onboarding_select_components_page") {
   ]
 }
 
+js_library("onboarding_network_page") {
+  deps = [
+    ":base_page",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("onboarding_update_page") {
   deps = [
     ":base_page",
@@ -155,6 +166,7 @@ js_library("onboarding_wait_for_manual_wp_disable_page") {
 }
 
 js_library("shimless_rma_types") {
+  deps = [ "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile" ]
 }
 
 preprocess_if_expr("preprocess_generated") {
