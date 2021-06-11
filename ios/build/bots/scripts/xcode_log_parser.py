@@ -52,7 +52,9 @@ def parse_passed_tests_for_interrupted_run(output):
   for test_line in output:
     m_test = passed_test_regex.search(test_line.decode("utf-8"))
     if m_test:
-      passed_tests.append('%s/%s' % (m_test.group(1), m_test.group(2)))
+      passed_tests.append(
+          '%s/%s' %
+          (m_test.group(1).encode('utf-8'), m_test.group(2).encode('utf-8')))
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
   return passed_tests
 

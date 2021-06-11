@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import subprocess
+
 import test_runner as tr
 
 LOGGER = logging.getLogger(__name__)
@@ -129,7 +130,11 @@ def fetch_test_names_for_debug(stdout):
     Returns:
         (list) a list of (TestCase, testMethod), containing disabled tests.
     """
-  test_names = TEST_NAMES_DEBUG_APP_PATTERN.findall(stdout.decode("utf-8"))
+  test_names = TEST_NAMES_DEBUG_APP_PATTERN.findall(stdout.decode('utf-8'))
+  test_names = list(
+      map(
+          lambda test_name: (test_name[0].encode('utf-8'), test_name[1].encode(
+              'utf-8')), test_names))
   return list(
       filter(lambda test_name: test_name[0] not in IGNORED_CLASSES, test_names))
 

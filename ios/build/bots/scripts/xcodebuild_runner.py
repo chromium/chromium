@@ -10,6 +10,7 @@ import logging
 from multiprocessing import pool
 import os
 import subprocess
+import sys
 import time
 
 import file_util
@@ -461,7 +462,17 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       for attempt, attempt_results in enumerate(shard_attempts):
 
         for test in attempt_results['failed'].keys():
-          output.mark_failed(test, test_log='\n'.join(self.logs.get(test, [])))
+          # TODO(crbug.com/1178923): Remove unicode check when it's figured out
+          # where unicode is introduced.
+          log_lines = []
+          for line in self.logs.get(test, []):
+            if sys.version_info.major == 2:
+              if isinstance(line, unicode):
+                LOGGER.warning('Unicode string: %s' % line)
+                line = line.encode('utf-8')
+            log_lines.append(line)
+
+          output.mark_failed(test, test_log='\n'.join(log_lines))
 
         # 'aborted tests' in logs is an array of strings, each string defined
         # as "{TestCase}/{testMethod}"
