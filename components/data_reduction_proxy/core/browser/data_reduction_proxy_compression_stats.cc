@@ -368,7 +368,6 @@ void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(
     int64_t data_used,
     int64_t original_size,
     bool data_saver_enabled,
-    DataReductionProxyRequestType request_type,
     const std::string& mime_type,
     bool is_user_traffic,
     data_use_measurement::DataUseUserData::DataUseContentType content_type,
@@ -383,7 +382,7 @@ void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(
                     original_size);
 
   RecordRequestSizePrefs(data_used, original_size, data_saver_enabled,
-                         request_type, mime_type, base::Time::Now());
+                         mime_type, base::Time::Now());
   RecordWeeklyAggregateDataUse(
       base::Time::Now(), std::round(static_cast<double>(data_used) / 1024),
       is_user_traffic, content_type, service_hash_code);
@@ -636,7 +635,6 @@ void DataReductionProxyCompressionStats::RecordRequestSizePrefs(
     int64_t data_used,
     int64_t original_size,
     bool with_data_saver_enabled,
-    DataReductionProxyRequestType request_type,
     const std::string& mime_type,
     const base::Time& now) {
   // TODO(bengr): Remove this check once the underlying cause of

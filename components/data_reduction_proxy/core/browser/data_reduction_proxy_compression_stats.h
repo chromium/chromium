@@ -86,7 +86,6 @@ class DataReductionProxyCompressionStats {
       int64_t compressed_size,
       int64_t original_size,
       bool data_reduction_proxy_enabled,
-      DataReductionProxyRequestType request_type,
       const std::string& mime_type,
       bool is_user_traffic,
       data_use_measurement::DataUseUserData::DataUseContentType content_type,
@@ -214,7 +213,6 @@ class DataReductionProxyCompressionStats {
   void RecordRequestSizePrefs(int64_t compressed_size,
                               int64_t original_size,
                               bool with_data_reduction_proxy_enabled,
-                              DataReductionProxyRequestType request_type,
                               const std::string& mime_type,
                               const base::Time& now);
 

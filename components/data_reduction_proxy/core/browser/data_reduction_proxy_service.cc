@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
@@ -53,6 +52,10 @@ absl::optional<base::Value> GetSaveDataSavingsPercentEstimateFromFieldTrial() {
   return origin_savings_estimates;
 }
 
+// Hostname used for the other bucket which consists of chrome-services traffic.
+// This should be in sync with the same in DataReductionSiteBreakdownView.java
+const char kOtherHostName[] = "Other";
+
 }  // namespace
 
 DataReductionProxyService::DataReductionProxyService(
@@ -61,15 +64,12 @@ DataReductionProxyService::DataReductionProxyService(
     std::unique_ptr<DataStore> store,
     data_use_measurement::DataUseMeasurement* data_use_measurement,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
-    const base::TimeDelta& commit_delay,
-    const std::string& channel,
-    const std::string& user_agent)
+    const base::TimeDelta& commit_delay)
     : settings_(settings),
       prefs_(prefs),
       db_data_owner_(new DBDataOwner(std::move(store))),
       db_task_runner_(db_task_runner),
       data_use_measurement_(data_use_measurement),
-      channel_(channel),
       save_data_savings_estimate_dict_(
           GetSaveDataSavingsPercentEstimateFromFieldTrial()) {
   DCHECK(data_use_measurement_);
@@ -116,7 +116,6 @@ void DataReductionProxyService::UpdateContentLengths(
     int64_t data_used,
     int64_t original_size,
     bool data_reduction_proxy_enabled,
-    DataReductionProxyRequestType request_type,
     const std::string& mime_type,
     bool is_user_traffic,
     data_use_measurement::DataUseUserData::DataUseContentType content_type,
@@ -124,8 +123,8 @@ void DataReductionProxyService::UpdateContentLengths(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (compression_stats_) {
     compression_stats_->RecordDataUseWithMimeType(
-        data_used, original_size, data_reduction_proxy_enabled, request_type,
-        mime_type, is_user_traffic, content_type, service_hash_code);
+        data_used, original_size, data_reduction_proxy_enabled, mime_type,
+        is_user_traffic, content_type, service_hash_code);
   }
 }
 
@@ -210,14 +209,12 @@ void DataReductionProxyService::OnServicesDataUse(int32_t service_hash_code,
   if (compression_stats_) {
     // Record non-content initiated traffic to the Other bucket for data saver
     // site-breakdown.
-    compression_stats_->RecordDataUseByHost(
-        util::GetSiteBreakdownOtherHostName(), sent_bytes, sent_bytes,
-        base::Time::Now());
-    compression_stats_->RecordDataUseByHost(
-        util::GetSiteBreakdownOtherHostName(), recv_bytes, recv_bytes,
-        base::Time::Now());
+    compression_stats_->RecordDataUseByHost(kOtherHostName, sent_bytes,
+                                            sent_bytes, base::Time::Now());
+    compression_stats_->RecordDataUseByHost(kOtherHostName, recv_bytes,
+                                            recv_bytes, base::Time::Now());
     compression_stats_->RecordDataUseWithMimeType(
-        recv_bytes, recv_bytes, settings_->IsDataReductionProxyEnabled(), HTTPS,
+        recv_bytes, recv_bytes, settings_->IsDataReductionProxyEnabled(),
         std::string(), false, data_use_measurement::DataUseUserData::OTHER,
         service_hash_code);
   }

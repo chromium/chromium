@@ -6,8 +6,7 @@ include_rules = [
   "+crypto",
   "+google_apis",
   "+net",
-  "+mojo/public/cpp",  
-  "+services/network/public/cpp",
+  "+mojo/public/cpp",
   "+services/network/public/mojom",
 
   "-components"

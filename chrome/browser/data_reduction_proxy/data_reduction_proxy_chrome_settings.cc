@@ -246,9 +246,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
       std::make_unique<data_reduction_proxy::DataReductionProxyService>(
           this, profile_prefs, std::move(store),
           data_use_measurement::ChromeDataUseMeasurement::GetInstance(),
-          db_task_runner, commit_delay,
-          version_info::GetChannelString(chrome::GetChannel()),
-          embedder_support::GetUserAgent());
+          db_task_runner, commit_delay);
   data_reduction_proxy::DataReductionProxySettings::
       InitDataReductionProxySettings(profile_prefs, std::move(service));
 

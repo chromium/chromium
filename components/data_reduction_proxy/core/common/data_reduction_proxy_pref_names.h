@@ -15,7 +15,6 @@ extern const char kDailyHttpContentLengthLastUpdateDate[];
 extern const char kDailyHttpOriginalContentLength[];
 extern const char kDailyHttpReceivedContentLength[];
 
-extern const char kDataReductionProxy[];
 extern const char kDataSaverEnabled[];
 extern const char kDataUsageReportingEnabled[];
 extern const char kDataReductionProxyWasEnabledBefore[];

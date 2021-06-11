@@ -24,10 +24,6 @@ const char kDailyHttpOriginalContentLength[] =
 const char kDailyHttpReceivedContentLength[] =
     "data_reduction.daily_received_length";
 
-// String that specifies the origin allowed to use data reduction proxy
-// authentication, if any.
-const char kDataReductionProxy[] = "auth.spdyproxy.origin";
-
 // A boolean specifying whether the DataSaver feature is enabled for this
 // client. Note that this preference key name is a legacy string for the sdpy
 // proxy.

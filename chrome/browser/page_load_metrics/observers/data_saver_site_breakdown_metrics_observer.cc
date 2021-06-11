@@ -118,7 +118,6 @@ void DataSaverSiteBreakdownMetricsObserver::OnResourceDataUseObserved(
             received_data_length,
             received_data_length + data_reduction_proxy_bytes_saved,
             data_reduction_proxy_settings->IsDataReductionProxyEnabled(),
-            data_reduction_proxy::VIA_DATA_REDUCTION_PROXY,
             std::string() /* mime_type */, true /*is_user_traffic*/,
             data_use_measurement::DataUseUserData::OTHER, 0);
   }
@@ -169,8 +168,7 @@ void DataSaverSiteBreakdownMetricsObserver::OnNewDeferredResourceCounts(
       ->UpdateContentLengths(
           0, savings_to_report,
           data_reduction_proxy_settings->IsDataReductionProxyEnabled(),
-          data_reduction_proxy::HTTPS, std::string() /* mime_type */,
-          true /*is_user_traffic*/,
+          std::string() /* mime_type */, true /*is_user_traffic*/,
           data_use_measurement::DataUseUserData::OTHER, 0);
 }
 

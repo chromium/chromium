@@ -7,9 +7,6 @@
 namespace data_reduction_proxy {
 namespace switches {
 
-// The origin of the data reduction proxy.
-const char kDataReductionProxy[]         = "spdy-proxy-auth-origin";
-
 // Enable the data reduction proxy.
 const char kEnableDataReductionProxy[] = "enable-spdy-proxy-auth";
 

@@ -48,17 +48,15 @@ class MockDataReductionProxyService : public DataReductionProxyService {
   ~MockDataReductionProxyService() override;
 
   MOCK_METHOD2(SetProxyPrefs, void(bool enabled, bool at_startup));
-  MOCK_METHOD8(
-      UpdateContentLengths,
-      void(int64_t data_used,
-           int64_t original_size,
-           bool data_reduction_proxy_enabled,
-           data_reduction_proxy::DataReductionProxyRequestType request_type,
-           const std::string& mime_type,
-           bool is_user_traffic,
-           data_use_measurement::DataUseUserData::DataUseContentType
-               content_type,
-           int32_t service_hash_code));
+  MOCK_METHOD7(UpdateContentLengths,
+               void(int64_t data_used,
+                    int64_t original_size,
+                    bool data_reduction_proxy_enabled,
+                    const std::string& mime_type,
+                    bool is_user_traffic,
+                    data_use_measurement::DataUseUserData::DataUseContentType
+                        content_type,
+                    int32_t service_hash_code));
   MOCK_METHOD3(UpdateDataUseForHost,
                void(int64_t network_bytes,
                     int64_t original_bytes,

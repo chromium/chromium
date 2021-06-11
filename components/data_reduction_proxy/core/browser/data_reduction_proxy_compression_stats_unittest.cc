@@ -276,21 +276,19 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void RecordContentLengthPrefs(int64_t received_content_length,
                                 int64_t original_content_length,
                                 bool with_data_reduction_proxy_enabled,
-                                DataReductionProxyRequestType request_type,
                                 const std::string& mime_type,
                                 base::Time now) {
     compression_stats_->RecordRequestSizePrefs(
         received_content_length, original_content_length,
-        with_data_reduction_proxy_enabled, request_type, mime_type, now);
+        with_data_reduction_proxy_enabled, mime_type, now);
   }
 
   void RecordContentLengthPrefs(int64_t received_content_length,
                                 int64_t original_content_length,
                                 bool with_data_reduction_proxy_enabled,
-                                DataReductionProxyRequestType request_type,
                                 base::Time now) {
     RecordContentLengthPrefs(received_content_length, original_content_length,
-                             with_data_reduction_proxy_enabled, request_type,
+                             with_data_reduction_proxy_enabled,
                              "application/octet-stream", now);
   }
 
@@ -440,8 +438,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
 
   compression_stats()->RecordDataUseWithMimeType(
       kReceivedLength, kOriginalLength, IsDataReductionProxyEnabled(),
-      UNKNOWN_TYPE, std::string(), true,
-      data_use_measurement::DataUseUserData::OTHER, 0);
+      std::string(), true, data_use_measurement::DataUseUserData::OTHER, 0);
 
   EXPECT_EQ(kReceivedLength,
             GetInt64(data_reduction_proxy::prefs::kHttpReceivedContentLength));
@@ -452,8 +449,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
   // Record the same numbers again, and total lengths should be doubled.
   compression_stats()->RecordDataUseWithMimeType(
       kReceivedLength, kOriginalLength, IsDataReductionProxyEnabled(),
-      UNKNOWN_TYPE, std::string(), true,
-      data_use_measurement::DataUseUserData::OTHER, 0);
+      std::string(), true, data_use_measurement::DataUseUserData::OTHER, 0);
 
   EXPECT_EQ(kReceivedLength * 2,
             GetInt64(data_reduction_proxy::prefs::kHttpReceivedContentLength));
@@ -468,9 +464,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, OneResponse) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
@@ -481,35 +475,29 @@ TEST_F(DataReductionProxyCompressionStatsTest, MultipleResponses) {
   const int64_t kReceivedLength = 100;
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
@@ -520,16 +508,13 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
   const int64_t kOriginalLength = 200;
   const int64_t kReceivedLength = 100;
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Forward one day.
   SetFakeTimeDeltaInHours(24);
 
   // Proxy not enabled. Not via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
 
   int64_t original[] = {kOriginalLength, kOriginalLength};
   int64_t received[] = {kReceivedLength, kReceivedLength};
@@ -537,17 +522,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
                                               kNumDaysInHistory);
 
   // Proxy enabled. Not via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
                                               kNumDaysInHistory);
 
   // Proxy enabled and via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -557,7 +539,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
   const int64_t kBigOriginalLength = 0x300000000LL;  // 12G.
   const int64_t kBigReceivedLength = 0x200000000LL;  // 8G.
   RecordContentLengthPrefs(kBigReceivedLength, kBigOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+                           FakeNow());
   original[1] += kBigOriginalLength;
   received[1] += kBigReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -570,18 +552,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, PartialDayTimeChange) {
   int64_t original[] = {0, kOriginalLength};
   int64_t received[] = {0, kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
                                               kNumDaysInHistory);
 
   // Forward 10 hours, stay in the same day.
   // See kLastUpdateTime: "Now" in test is 03:45am.
   SetFakeTimeDeltaInHours(10);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -589,9 +567,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, PartialDayTimeChange) {
 
   // Forward 11 more hours, comes to tomorrow.
   AddFakeTimeDeltaInHours(11);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   int64_t original2[] = {kOriginalLength * 2, kOriginalLength};
   int64_t received2[] = {kReceivedLength * 2, kReceivedLength};
   VerifyDailyDataSavingContentLengthPrefLists(original2, 2, received2, 2,
@@ -605,15 +581,11 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardAndForwardOneDay) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Backward one day, expect no count.
   SetFakeTimeDeltaInHours(-24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
@@ -623,9 +595,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardAndForwardOneDay) {
 
   // Then forward one day, expect no count.
   AddFakeTimeDeltaInHours(24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   int64_t original2[] = {kOriginalLength * 2, kOriginalLength};
   int64_t received2[] = {kReceivedLength * 2, kReceivedLength};
   VerifyDailyDataSavingContentLengthPrefLists(original2, 2, received2, 2,
@@ -641,15 +611,11 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardTwoDays) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Backward two days, expect SYSTEM_CLOCK_MOVED_BACK.
   SetFakeTimeDeltaInHours(-2 * 24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
   histogram_tester.ExpectUniqueSample(
@@ -658,16 +624,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardTwoDays) {
 
   // Backward another two days, expect SYSTEM_CLOCK_MOVED_BACK.
   SetFakeTimeDeltaInHours(-4 * 24);
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.SavingsCleared.Reason",
       DataReductionProxySavingsClearedReason::SYSTEM_CLOCK_MOVED_BACK, 2);
 
   // Forward 2 days, expect no change.
   AddFakeTimeDeltaInHours(2 * 24);
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.SavingsCleared.Reason",
       DataReductionProxySavingsClearedReason::SYSTEM_CLOCK_MOVED_BACK, 2);
@@ -951,8 +915,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);

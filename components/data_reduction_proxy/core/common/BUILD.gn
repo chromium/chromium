@@ -44,32 +44,12 @@ common_tmpl("common") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "data_reduction_proxy_headers_test_utils.cc",
-    "data_reduction_proxy_headers_test_utils.h",
-  ]
-
-  public_deps = [ ":common" ]
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//net",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "data_reduction_proxy_params_unittest.cc" ]
 
   deps = [
     ":common",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/prefs",

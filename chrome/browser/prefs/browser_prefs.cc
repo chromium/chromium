@@ -583,6 +583,9 @@ const char kSessionExitedCleanly[] = "profile.exited_cleanly";
 const char kSpellCheckBlacklistedDictionaries[] =
     "spellcheck.blacklisted_dictionaries";
 
+// Deprecated 06/2021.
+const char kDataReductionProxy[] = "auth.spdyproxy.origin";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -727,6 +730,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
+
+  registry->RegisterStringPref(kDataReductionProxy, std::string());
 }
 
 }  // namespace
@@ -1462,6 +1467,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
+
+  // Added 06/2021
+  profile_prefs->ClearPref(kDataReductionProxy);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

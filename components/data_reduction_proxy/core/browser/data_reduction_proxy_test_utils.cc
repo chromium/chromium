@@ -54,15 +54,12 @@ MockDataReductionProxyService::MockDataReductionProxyService(
     DataReductionProxySettings* settings,
     PrefService* prefs,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
-    : DataReductionProxyService(
-          settings,
-          prefs,
-          std::make_unique<TestDataStore>(),
-          data_use_measurement,
-          task_runner,
-          base::TimeDelta(),
-          std::string(),
-          std::string()) {}
+    : DataReductionProxyService(settings,
+                                prefs,
+                                std::make_unique<TestDataStore>(),
+                                data_use_measurement,
+                                task_runner,
+                                base::TimeDelta()) {}
 
 MockDataReductionProxyService::~MockDataReductionProxyService() {}
 
@@ -71,15 +68,12 @@ TestDataReductionProxyService::TestDataReductionProxyService(
     DataReductionProxySettings* settings,
     PrefService* prefs,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner)
-    : DataReductionProxyService(
-          settings,
-          prefs,
-          std::make_unique<TestDataStore>(),
-          data_use_measurement,
-          db_task_runner,
-          base::TimeDelta(),
-          std::string(),
-          std::string()) {}
+    : DataReductionProxyService(settings,
+                                prefs,
+                                std::make_unique<TestDataStore>(),
+                                data_use_measurement,
+                                db_task_runner,
+                                base::TimeDelta()) {}
 
 TestDataReductionProxyService::~TestDataReductionProxyService() {}
 
