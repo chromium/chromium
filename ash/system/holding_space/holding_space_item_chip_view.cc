@@ -108,7 +108,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   UpdateImage();
 
   // Checkmark.
-  AddCheckmark(/*parent=*/image_checkmark_and_secondary_action_container);
+  image_checkmark_and_secondary_action_container->AddChildView(
+      CreateCheckmark());
 
   // Secondary action.
   secondary_action_container_ =
@@ -180,8 +181,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddPrimaryAction(/*parent=*/primary_action_container,
-                   /*min_size=*/gfx::Size());
+  primary_action_container->AddChildView(
+      CreatePrimaryAction(/*min_size=*/gfx::Size()));
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;

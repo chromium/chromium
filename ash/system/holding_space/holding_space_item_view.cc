@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/vector_icons.h"
@@ -327,54 +328,57 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
   OnSelectionUiChanged();
 }
 
-views::ImageView* HoldingSpaceItemView::AddCheckmark(views::View* parent) {
+std::unique_ptr<views::ImageView> HoldingSpaceItemView::CreateCheckmark() {
   DCHECK(!checkmark_);
-  checkmark_ = parent->AddChildView(std::make_unique<views::ImageView>());
-  checkmark_->SetID(kHoldingSpaceItemCheckmarkId);
-  checkmark_->SetVisible(selected());
-  return checkmark_;
+  return views::Builder<views::ImageView>()
+      .CopyAddressTo(&checkmark_)
+      .SetID(kHoldingSpaceItemCheckmarkId)
+      .SetVisible(selected())
+      .Build();
 }
 
-views::View* HoldingSpaceItemView::AddPrimaryAction(views::View* parent,
-                                                    const gfx::Size& min_size) {
+std::unique_ptr<views::View> HoldingSpaceItemView::CreatePrimaryAction(
+    const gfx::Size& min_size) {
   DCHECK(!primary_action_container_);
   DCHECK(!primary_action_cancel_);
   DCHECK(!primary_action_pin_);
 
-  primary_action_container_ =
-      parent->AddChildView(std::make_unique<MinimumSizableView>(min_size));
-  primary_action_container_->SetID(kHoldingSpaceItemPrimaryActionContainerId);
-  primary_action_container_->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
-  primary_action_container_->SetVisible(false);
+  using HorizontalAlignment = views::ImageButton::HorizontalAlignment;
+  using VerticalAlignment = views::ImageButton::VerticalAlignment;
 
-  // Cancel.
-  primary_action_cancel_ = primary_action_container_->AddChildView(
-      std::make_unique<views::ImageButton>(
-          base::BindRepeating(&HoldingSpaceItemView::OnPrimaryActionPressed,
-                              base::Unretained(this))));
-  primary_action_cancel_->SetID(kHoldingSpaceItemCancelButtonId);
-  primary_action_cancel_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  primary_action_cancel_->SetImageHorizontalAlignment(
-      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
-  primary_action_cancel_->SetImageVerticalAlignment(
-      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
-  primary_action_cancel_->SetVisible(false);
+  gfx::Size preferred_size(kHoldingSpaceIconSize, kHoldingSpaceIconSize);
+  preferred_size.SetToMax(min_size);
 
-  // Pin.
-  primary_action_pin_ = primary_action_container_->AddChildView(
-      std::make_unique<views::ToggleImageButton>(
-          base::BindRepeating(&HoldingSpaceItemView::OnPrimaryActionPressed,
-                              base::Unretained(this))));
-  primary_action_pin_->SetID(kHoldingSpaceItemPinButtonId);
-  primary_action_pin_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  primary_action_pin_->SetImageHorizontalAlignment(
-      views::ToggleImageButton::HorizontalAlignment::ALIGN_CENTER);
-  primary_action_pin_->SetImageVerticalAlignment(
-      views::ToggleImageButton::VerticalAlignment::ALIGN_MIDDLE);
-  primary_action_pin_->SetVisible(false);
-
-  return primary_action_container_;
+  return views::Builder<views::View>()
+      .CopyAddressTo(&primary_action_container_)
+      .SetID(kHoldingSpaceItemPrimaryActionContainerId)
+      .SetUseDefaultFillLayout(true)
+      .SetVisible(false)
+      .AddChild(
+          views::Builder<views::ImageButton>()
+              .CopyAddressTo(&primary_action_cancel_)
+              .SetID(kHoldingSpaceItemCancelButtonId)
+              .SetCallback(base::BindRepeating(
+                  &HoldingSpaceItemView::OnPrimaryActionPressed,
+                  base::Unretained(this)))
+              .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+              .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
+              .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
+              .SetPreferredSize(preferred_size)
+              .SetVisible(false))
+      .AddChild(
+          views::Builder<views::ToggleImageButton>()
+              .CopyAddressTo(&primary_action_pin_)
+              .SetID(kHoldingSpaceItemPinButtonId)
+              .SetCallback(base::BindRepeating(
+                  &HoldingSpaceItemView::OnPrimaryActionPressed,
+                  base::Unretained(this)))
+              .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+              .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
+              .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
+              .SetPreferredSize(preferred_size)
+              .SetVisible(false))
+      .Build();
 }
 
 void HoldingSpaceItemView::OnSelectionUiChanged() {

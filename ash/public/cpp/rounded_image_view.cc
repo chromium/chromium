@@ -12,6 +12,9 @@
 
 namespace ash {
 
+RoundedImageView::RoundedImageView()
+    : RoundedImageView(/*corner_radius=*/0, Alignment::kLeading) {}
+
 RoundedImageView::RoundedImageView(int corner_radius, Alignment alignment)
     : alignment_(alignment) {
   for (int i = 0; i < 4; ++i)
@@ -52,6 +55,10 @@ void RoundedImageView::SetCornerRadii(int top_left,
   corner_radius_[1] = top_right;
   corner_radius_[2] = bottom_right;
   corner_radius_[3] = bottom_left;
+}
+
+void RoundedImageView::SetCornerRadius(int corner_radius) {
+  SetCornerRadii(corner_radius, corner_radius, corner_radius, corner_radius);
 }
 
 gfx::Size RoundedImageView::CalculatePreferredSize() const {

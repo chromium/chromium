@@ -80,8 +80,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   bool selected() const { return selected_; }
 
  protected:
-  views::ImageView* AddCheckmark(views::View* parent);
-  views::View* AddPrimaryAction(views::View* parent, const gfx::Size& min_size);
+  std::unique_ptr<views::ImageView> CreateCheckmark();
+  std::unique_ptr<views::View> CreatePrimaryAction(const gfx::Size& min_size);
   virtual void OnPrimaryActionVisibilityChanged(bool visible) {}
   virtual void OnSelectionUiChanged();
 

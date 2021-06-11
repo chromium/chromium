@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -25,8 +26,7 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
     kCenter
   };
 
-  // Constructs a new rounded image view with rounded corners of radius
-  // |corner_radius|.
+  RoundedImageView();
   RoundedImageView(int corner_radius, Alignment alignment);
   ~RoundedImageView() override;
 
@@ -42,6 +42,9 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
                       int top_right,
                       int bottom_right,
                       int bottom_left);
+
+  // Sets all radii of the corners collectively.
+  void SetCornerRadius(int corner_radius);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -63,6 +66,12 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(RoundedImageView);
 };
 
+BEGIN_VIEW_BUILDER(ASH_PUBLIC_EXPORT, RoundedImageView, views::View)
+VIEW_BUILDER_PROPERTY(int, CornerRadius)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_PUBLIC_EXPORT, ash::RoundedImageView)
 
 #endif  // ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_

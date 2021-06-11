@@ -1030,6 +1030,7 @@ component("ash") {
     "system/holding_space/holding_space_tray_icon_preview.h",
     "system/holding_space/holding_space_util.cc",
     "system/holding_space/holding_space_util.h",
+    "system/holding_space/holding_space_view_builder.h",
     "system/holding_space/holding_space_view_delegate.cc",
     "system/holding_space/holding_space_view_delegate.h",
     "system/holding_space/pinned_files_bubble.cc",

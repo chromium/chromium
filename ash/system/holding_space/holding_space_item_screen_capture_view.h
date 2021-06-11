@@ -42,9 +42,6 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
 
   void UpdateImage();
 
-  // Overlays a play icon over `image_`.
-  void AddPlayIcon();
-
   // Owned by view hierarchy.
   RoundedImageView* image_ = nullptr;
   views::ImageView* play_icon_ = nullptr;
