@@ -225,7 +225,8 @@ class TestAutofillClient : public AutofillClient {
     return save_credit_card_options_.value();
   }
 
-  MockAutocompleteHistoryManager* GetMockAutocompleteHistoryManager() {
+  ::testing::NiceMock<MockAutocompleteHistoryManager>*
+  GetMockAutocompleteHistoryManager() {
     return &mock_autocomplete_history_manager_;
   }
 
@@ -253,7 +254,8 @@ class TestAutofillClient : public AutofillClient {
   syncer::SyncService* test_sync_service_ = nullptr;
   TestAddressNormalizer test_address_normalizer_;
   TestPersonalDataManager test_personal_data_manager_;
-  MockAutocompleteHistoryManager mock_autocomplete_history_manager_;
+  ::testing::NiceMock<MockAutocompleteHistoryManager>
+      mock_autocomplete_history_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 
   // NULL by default.
