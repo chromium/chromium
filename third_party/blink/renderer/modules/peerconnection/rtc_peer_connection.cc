@@ -319,19 +319,35 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
       if (RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
               context) ||
           context->Url().IsLocalFile()) {
-        // TODO(https://crbug.com/857004): In M97, replace this deprecation
-        // warning with the throwing of an exception (Reverse Origin Trial has
-        // ended).
+        // TODO(https://crbug.com/857004): In M97, when the Deprecation Trial
+        // ends, remove this code path in favor of throwing the exception below.
         Deprecation::CountDeprecation(
             context,
             WebFeature::
                 kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial);
       } else {
-        // The deadline is not being extended.
-        // TODO(https://crbug.com/857004): In M93, replace this deprecation
-        // warning with the throwing of an exception.
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
+        // The deadline is not being extended (e.g. Deprecation Trial is not
+        // active). In this case, throw an exception unless the kill switch is
+        // enabled.
+        if (!base::FeatureList::IsEnabled(
+                features::kRTCAllowPlanBOutsideDeprecationTrial)) {
+          // Throw Plan B exception!
+          UseCounter::Count(
+              context, WebFeature::kRTCPeerConnectionPlanBThrewAnException);
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "Plan B SDP semantics is a legacy version of the Session "
+              "Description Protocol that has severe compatibility issues on "
+              "modern browsers and is no longer supported. See "
+              "https://www.chromestatus.com/feature/5823036655665152 for more "
+              "details, including the possibility of registering to a "
+              "Deprecation Trial in order to extend the Plan B deprecation "
+              "deadline for a limited amount of time.");
+        } else {
+          // The kill-switch prevented throwing.
+          Deprecation::CountDeprecation(
+              context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
+        }
       }
     } else {
       DCHECK_EQ(configuration->sdpSemantics(), "unified-plan");

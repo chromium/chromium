@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Plan B is not supported assert_not_equals: got disallowed value "plan-b"
+Harness: the test ran to completion.
+
